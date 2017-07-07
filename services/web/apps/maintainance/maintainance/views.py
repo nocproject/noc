@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # maintainance.maintainance application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,18 +29,18 @@ class MaintainanceApplication(ExtDocApplication):
         o = self.get_object_or_404(Maintainance, id=id)
         r = []
         for mao in o.affected_objects:
-                mo = mao.object
-                r += [
-            {
-                "id": mo.id,
-                "name": mo.name,
-                "is_managed": mo.is_managed,
-                "profile": mo.profile_name,
-                # "platform": mo.platform,
-                # "administrative_domain": unicode(mo.administrative_domain),
-                "address": mo.address,
-                "description": mo.description,
-                "tags": mo.tags
-            }
-        ]
+            mo = mao.object
+            r += [
+                {
+                    "id": mo.id,
+                    "name": mo.name,
+                    "is_managed": mo.is_managed,
+                    "profile": mo.profile.name,
+                    # "platform": mo.platform,
+                    # "administrative_domain": unicode(mo.administrative_domain),
+                    "address": mo.address,
+                    "description": mo.description,
+                    "tags": mo.tags
+                }
+            ]
         return r

@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Failed Scripts Report
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
 from django import forms
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport, TableColumn
+from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
@@ -19,6 +17,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportForm(forms.Form):
@@ -57,8 +56,8 @@ class ReportFilterApplication(SimpleReport):
             is_managed = is_managed.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_man = is_not_man.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_resp = is_not_resp.filter(administrative_domain__in=UserAccess.get_domains(request.user))
-        is_managed_not_generic = is_managed.exclude(profile_name="Generic.Host")
-        is_managed_undef = is_managed.filter(profile_name="Generic.Host")
+        is_managed_not_generic = is_managed.exclude(profile_name=GENERIC_PROFILE)
+        is_managed_undef = is_managed.filter(profile_name=GENERIC_PROFILE)
         is_managed_undef_in = list(is_managed_undef.values_list("id", flat=True))
         is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))
 

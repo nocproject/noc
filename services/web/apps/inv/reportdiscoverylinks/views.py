@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Report Discovery Link Summary
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
-from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
@@ -16,9 +13,8 @@ from pymongo import ReadPreference
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportFilterApplication(SimpleReport):
@@ -34,7 +30,14 @@ class ReportFilterApplication(SimpleReport):
 
         value = get_db()["noc.links"].aggregate([
             {"$unwind": "$interfaces"},
-            {"$lookup": {"from": "noc.interfaces", "localField": "interfaces", "foreignField": "_id", "as": "int"}},
+            {
+                "$lookup": {
+                    "from": "noc.interfaces",
+                    "localField": "interfaces",
+                    "foreignField": "_id",
+                    "as": "int"
+                }
+            },
             {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}
         ], read_preference=ReadPreference.SECONDARY_PREFERRED)
         count = {0: set([]), 1: set([]), 2: set([]), 3: set([])}
@@ -55,7 +58,7 @@ class ReportFilterApplication(SimpleReport):
             smos = set(
                 ManagedObject.objects.filter(
                     pool=p, is_managed=True).exclude(
-                    profile_name="Generic.Host").exclude(
+                    profile_name=GENERIC_PROFILE).exclude(
                     auth_profile__in=ap
                 ).values_list('id', flat=True))
             all_p = 100.0/len(smos) if len(smos) else 1.0

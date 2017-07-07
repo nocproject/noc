@@ -19,19 +19,21 @@ import cachetools
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
+from noc.core.profile.loader import loader, GENERIC_PROFILE
 
 id_lock = threading.Lock()
 
 
 @bi_sync
 @on_delete_check(check=[
-    ("inv.Firmware", "profile")
+    ("inv.Firmware", "profile"),
+    ("sa.ManagedObject", "profile")
 ])
 class Profile(Document):
     meta = {
         "collection": "noc.profiles",
         "allow_inheritance": False,
-        "json_collection": "inv.profiles"
+        "json_collection": "sa.profiles"
     }
     name = StringField(unique=True)
     description = StringField(required=False)
@@ -62,3 +64,18 @@ class Profile(Document):
     def get_json_path(self):
         vendor, soft = self.name.split(".")
         return os.path.join(vendor, "%s.json" % soft)
+
+    def get_profile(self):
+        return loader.get_profile(self.name)()
+
+    @property
+    def is_generic(self):
+        return self.name == GENERIC_PROFILE
+
+    @classmethod
+    def get_generic_profile_id(cls):
+        if not hasattr(cls, "_generic_profile_id"):
+            cls._generic_profile_id = Profile.objects.filter(
+                name=GENERIC_PROFILE
+            ).first().id
+        return cls._generic_profile_id

@@ -37,8 +37,11 @@ from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.profile import Profile
+from noc.inv.models.vendor import Vendor
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
 from noc.fm.models.ttsystem import TTSystem
-from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
 from noc.lib.db import SQL
 from noc.lib.app.site import site
@@ -70,7 +73,6 @@ scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
-Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
 
 id_lock = Lock()
 
@@ -121,9 +123,22 @@ class ManagedObject(Model):
         Pool,
         null=False, blank=False
     )
-    profile_name = CharField(
-        "SA Profile",
-        max_length=128, choices=profile_loader.choices()
+    profile = DocumentReferenceField(
+        Profile, null=False, blank=False
+    )
+    vendor = DocumentReferenceField(
+        Vendor, null=True, blank=True
+    )
+    platform = DocumentReferenceField(
+        Platform, null=True, blank=True
+    )
+    version = DocumentReferenceField(
+        Firmware, null=True, blank=True
+    )
+    # Firmware version to upgrade
+    # Empty, when upgrade not scheduled
+    next_version = DocumentReferenceField(
+        Firmware, null=True, blank=True
     )
     object_profile = CachedForeignKey(
         ManagedObjectProfile,
@@ -206,7 +221,7 @@ class ManagedObject(Model):
     config = GridVCSField("config", mirror=CONFIG_MIRROR)
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
-                            blank=True, null=True)
+                     blank=True, null=True)
     # Reference to controller, when object is CPE
     controller = ForeignKey(
         "self", verbose_name="Controller",
@@ -243,8 +258,10 @@ class ManagedObject(Model):
         related_name="access_set"
     )
     # Stencils
-    shape = CharField("Shape", blank=True, null=True,
-        choices=stencil_registry.choices, max_length=128)
+    shape = CharField(
+        "Shape", blank=True, null=True,
+        choices=stencil_registry.choices, max_length=128
+    )
     #
     time_pattern = ForeignKey(
         TimePattern,
@@ -281,6 +298,9 @@ class ManagedObject(Model):
     x = FloatField(null=True, blank=True)
     y = FloatField(null=True, blank=True)
     default_zoom = IntegerField(null=True, blank=True)
+    # Software characteristics
+    software_image = CharField("Software Image", max_length=255,
+                               null=True, blank=True)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem,
@@ -330,9 +350,6 @@ class ManagedObject(Model):
     tt_system_id = CharField(max_length=64, null=True, blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
-
-    # Use special filter for profile
-    profile_name.existing_choices_filter = True
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -396,21 +413,6 @@ class ManagedObject(Model):
 
     def get_absolute_url(self):
         return site.reverse("sa:managedobject:change", self.id)
-
-    @property
-    def profile(self):
-        """
-        Get object's profile instance. Instances are cached. Same profile's
-        instance will be returned for all .profile invocations for
-        given managed objet
-
-        :rtype: Profile instance
-        """
-        cp = getattr(self, "_cached_profile", None)
-        if not cp:
-            cp = profile_loader.get_profile(self.profile_name)()
-            self._cached_profile = cp
-        return cp
 
     @classmethod
     def user_objects(cls, user):
@@ -509,12 +511,13 @@ class ManagedObject(Model):
             "super_password" in self.changed_fields or
             "snmp_ro" in self.changed_fields or
             "snmp_rw" in self.changed_fields or
-            "profile_name" in self.changed_fields or
+            "profile" in self.changed_fields or
+            "vendor" in self.changed_fields or
+            "platform" in self.changed_fields or
+            "version" in self.changed_fields or
             "pool" in self.changed_fields
         ):
             deleted_cache_keys += ["cred-%s" % self.id]
-            if "profile_name" in self.changed_fields:
-                self.reset_platform()
         # Rebuild paths
         if (
             self.initial_data["id"] is None or
@@ -597,8 +600,11 @@ class ManagedObject(Model):
             ).save()
             return
         # Update existing address
-        if (a.managed_object != self or
-            a.address != self.address or a.fqdn != fqdn):
+        if (
+            a.managed_object != self or
+            a.address != self.address or
+            a.fqdn != fqdn
+        ):
             a.managed_object = self
             a.address = self.address
             a.fqdn = fqdn
@@ -643,7 +649,7 @@ class ManagedObject(Model):
     def is_router(self):
         """
         Returns True if Managed Object presents in more than one networks
-        :return: 
+        :return:
         """
         # @todo: Rewrite
         return self.address_set.count() > 1
@@ -651,9 +657,9 @@ class ManagedObject(Model):
     def get_attr(self, name, default=None):
         """
         Return attribute as string
-        :param name: 
-        :param default: 
-        :return: 
+        :param name:
+        :param default:
+        :return:
         """
         try:
             return self.managedobjectattribute_set.get(key=name).value
@@ -663,9 +669,9 @@ class ManagedObject(Model):
     def get_attr_bool(self, name, default=False):
         """
         Return attribute as bool
-        :param name: 
-        :param default: 
-        :return: 
+        :param name:
+        :param default:
+        :return:
         """
         v = self.get_attr(name)
         if v is None:
@@ -678,9 +684,9 @@ class ManagedObject(Model):
     def get_attr_int(self, name, default=0):
         """
         Return attribute as integer
-        :param name: 
-        :param default: 
-        :return: 
+        :param name:
+        :param default:
+        :return:
         """
         v = self.get_attr(name)
         if v is None:
@@ -693,9 +699,9 @@ class ManagedObject(Model):
     def set_attr(self, name, value):
         """
         Set attribute
-        :param name: 
-        :param value: 
-        :return: 
+        :param name:
+        :param value:
+        :return:
         """
         value = unicode(value)
         try:
@@ -705,30 +711,6 @@ class ManagedObject(Model):
             v = ManagedObjectAttribute(managed_object=self,
                                        key=name, value=value)
         v.save()
-
-    def reset_platform(self):
-        """
-        Reset platform and version information
-        """
-        self.managedobjectattribute_set.filter(
-            key__in=["vendor", "platform", "version"]
-        ).delete()
-
-    @property
-    def platform(self):
-        """
-        Return "vendor model" string from attributes
-        """
-        x = [self.get_attr("vendor"), self.get_attr("platform")]
-        x = [a for a in x if a]
-        if x:
-            return " ".join(x)
-        else:
-            return None
-
-    @property
-    def vendor(self):
-        return self.get_attr("vendor")
 
     def is_ignored_interface(self, interface):
         interface = self.profile.convert_interface_name(interface)
@@ -803,7 +785,8 @@ class ManagedObject(Model):
             groups, subject=subject, body=body, delay=delay, tag=tag)
         # Schedule FTS reindex
         if event_id in (
-            self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED):
+            self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED
+        ):
             TextIndex.update_index(ManagedObject, self)
 
     def save_config(self, data):
@@ -937,31 +920,20 @@ class ManagedObject(Model):
         Disable all discovery methods related with managed object
         """
 
-    @property
-    def version(self):
-        """
-        Returns filled Version object
-        """
-        if not hasattr(self, "_c_version"):
-            self._c_version = Version(
-                profile=self.profile_name,
-                vendor=self.get_attr("vendor"),
-                platform=self.get_attr("platform"),
-                version=self.get_attr("version")
-            )
-        return self._c_version
-
     def get_parser(self):
         """
         Return parser instance or None.
         Depends on version_discovery
         """
-        v = self.version
-        cls = self.profile.get_parser(v.vendor, v.platform, v.version)
-        if cls:
-            return get_handler(cls)(self)
-        else:
-            return get_handler("noc.cm.parsers.base.BaseParser")(self)
+        if self.vendor and self.platform and self.version:
+            cls = self.profile.get_profile().get_parser(
+                self.vendor.code,
+                self.platform.name,
+                self.version.version
+            )
+            if cls:
+                return get_handler(cls)(self)
+        return get_handler("noc.cm.parsers.base.BaseParser")(self)
 
     def get_interface(self, name):
         from noc.inv.models.interface import Interface
@@ -1084,7 +1056,7 @@ class ManagedObject(Model):
     def can_escalate(self):
         """
         Check alarm can be escalated
-        :return: 
+        :return:
         """
         if not self.tt_system or not self.tt_system_id:
             return False
@@ -1137,6 +1109,7 @@ class ManagedObject(Model):
         else:
             return self.segment.profile.multicast_vlan
 
+
 @on_save
 class ManagedObjectAttribute(Model):
 
@@ -1148,11 +1121,15 @@ class ManagedObjectAttribute(Model):
         unique_together = [("managed_object", "key")]
         ordering = ["managed_object", "key"]
 
-    managed_object = ForeignKey(ManagedObject,
-            verbose_name="Managed Object")
+    managed_object = ForeignKey(
+        ManagedObject,
+        verbose_name="Managed Object"
+    )
     key = CharField("Key", max_length=64)
-    value = CharField("Value", max_length=4096,
-            blank=True, null=True)
+    value = CharField(
+        "Value", max_length=4096,
+        blank=True, null=True
+    )
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object, self.key)
@@ -1179,7 +1156,7 @@ class ScriptsProxy(object):
         if name in self._cache:
             return self._cache[name]
         if not script_loader.has_script("%s.%s" % (
-                self._object.profile_name, name)):
+                self._object.profile.name, name)):
             raise AttributeError("Invalid script %s" % name)
         cw = ScriptsProxy.CallWrapper(self._object, name)
         self._cache[name] = cw
@@ -1194,16 +1171,16 @@ class ScriptsProxy(object):
         """
         if "." not in item:
             # Normalize to full name
-            item = "%s.%s" % (self._object.profile_name, item)
+            item = "%s.%s" % (self._object.profile.name, item)
         return script_loader.has_script(item)
 
     def __iter__(self):
         return itertools.imap(
-                lambda y: y.split(".")[-1],
-                itertools.ifilter(
-                        lambda x: x.startswith(self._object.profile_name + "."),
-                        script_loader.iter_scripts()
-                )
+            lambda y: y.split(".")[-1],
+            itertools.ifilter(
+                lambda x: x.startswith(self._object.profile.name + "."),
+                script_loader.iter_scripts()
+            )
         )
 
 
@@ -1230,6 +1207,7 @@ class ActionsProxy(object):
         cw = ActionsProxy.CallWrapper(self._object, name, a)
         self._cache[name] = cw
         return cw
+
 
 # Avoid circular references
 from .useraccess import UserAccess

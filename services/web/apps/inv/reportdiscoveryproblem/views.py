@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.reportdiscovery
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ from noc.sa.models.objectdata import ObjectData
 from noc.main.models.pool import Pool
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportForm(forms.Form):
@@ -65,9 +66,9 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 )
 
         mos_set = set(mos)
-        # Get all managed objects with Generic.Host profiles
+        # Get all managed objects with generic profile
         for mo in mos:
-            if mos[mo].profile_name == "Generic.Host":
+            if mos[mo].profile_name == GENERIC_PROFILE:
                 problems[mo] = _("Profile check failed")
         # Get all managed objects without interfaces
         if_mo = dict(

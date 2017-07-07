@@ -105,7 +105,7 @@ class Action(Document):
         """
         version = obj.version
         for ac in ActionCommands.objects.filter(
-                action=self, profile=obj.profile_name
+                action=self, profile=obj.profile.name
         ).order_by("preference"):
             if not ac.match:
                 return ac

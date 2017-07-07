@@ -21,11 +21,16 @@ from noc.sa.models.profile import Profile
 from noc.lib.nosql import ReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
+from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
 
 @bi_sync
+@on_delete_check(check=[
+    ("sa.ManagedObject", "version"),
+    ("sa.ManagedObject", "next_version")
+])
 class Firmware(Document):
     meta = {
         "collection": "noc.firmwares",
@@ -52,7 +57,7 @@ class Firmware(Document):
     _id_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
-        return self.name
+        return self.version
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),

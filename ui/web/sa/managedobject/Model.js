@@ -61,7 +61,52 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
-            name: "profile_name",
+            name: "profile",
+            type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "vendor",
+            type: "string"
+        },
+        {
+            name: "vendor__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "platform",
+            type: "string"
+        },
+        {
+            name: "platform__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "version",
+            type: "string"
+        },
+        {
+            name: "version__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "next_version",
+            type: "string"
+        },
+        {
+            name: "next_version__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "software_image",
             type: "string"
         },
         {
@@ -239,16 +284,6 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "auto"
         },
         {
-            name: "platform",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "version",
-            type: "string",
-            persist: false
-        },
-        {
             name: "interface_count",
             type: "integer",
             persist: false
@@ -280,7 +315,7 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
-            name: "tt_system_system__label",
+            name: "tt_system__label",
             type: "string",
             persist: false
         },

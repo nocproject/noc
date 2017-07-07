@@ -19,3 +19,6 @@ class PlatformApplication(ExtDocApplication):
     title = "Platform"
     menu = [_("Setup"), _("Platforms")]
     model = Platform
+    query_fields = [
+        "name__icontains", "description__icontains"
+    ]

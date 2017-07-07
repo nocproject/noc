@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Profile loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Profile loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import glob
 import logging
 import inspect
 import os
 import threading
-## NOC modules
+# NOC modules
 from base import BaseProfile
 
 logger = logging.getLogger(__name__)
+
+GENERIC_PROFILE = "Generic.Host"
 
 
 class ProfileLoader(object):
@@ -37,7 +39,7 @@ class ProfileLoader(object):
                 if not self.is_valid_name(name):
                     logger.error("Invalid profile name")
                     return None
-                if name == "Generic.Host":
+                if name == GENERIC_PROFILE:
                     module_name = "noc.sa.profiles.Generic"
                 else:
                     module_name = "noc.sa.profiles.%s" % name
@@ -81,7 +83,7 @@ class ProfileLoader(object):
         """
         Scan all available profiles
         """
-        ns = set(["Generic.Host"])
+        ns = set([GENERIC_PROFILE])
         for path in glob.glob("sa/profiles/*/*/__init__.py"):
             vendor, system = path.split(os.sep)[-3:-1]
             ns.add("%s.%s" % (vendor, system))

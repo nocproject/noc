@@ -29,6 +29,12 @@ Ext.define("NOC.inv.platform.Application", {
         Ext.apply(me, {
             columns: [
                 {
+                    text: __("Vendor"),
+                    dataIndex: "vendor",
+                    width: 150,
+                    renderer: NOC.render.Lookup("vendor")
+                },
+                {
                     text: "Name",
                     dataIndex: "name",
                     flex: 1
@@ -77,6 +83,15 @@ Ext.define("NOC.inv.platform.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
+                }
+            ],
+
+            filters: [
+                {
+                    title: __("By Vendor"),
+                    name: "vendor",
+                    ftype: "lookup",
+                    lookup: "inv.vendor"
                 }
             ]
         });

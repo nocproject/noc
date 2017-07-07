@@ -436,7 +436,7 @@ class ClassifierService(Service):
         else:
             chain = "other"
         # Find rules lookup
-        lookup = self.rules.get(event.managed_object.profile_name, {}).get(chain)
+        lookup = self.rules.get(event.managed_object.profile.name, {}).get(chain)
         if lookup:
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
@@ -524,7 +524,7 @@ class ClassifierService(Service):
         :returns: Classification status (CR_*)
         """
         resolved_vars = {
-            "profile": event.managed_object.profile_name
+            "profile": event.managed_object.profile.name
         }
         if event.source == "SNMP Trap":
             # For SNMP traps format values according to MIB definitions

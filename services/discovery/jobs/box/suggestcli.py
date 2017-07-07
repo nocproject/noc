@@ -21,7 +21,7 @@ class SuggestCLICheck(DiscoveryCheck):
     def handler(self):
         if not self.object.auth_profile or not self.object.auth_profile.enable_suggest:
             return
-        if self.object.profile_name == "Generic.Host":
+        if self.object.profile.is_generic:
             self.logger.info("Profile is not detected properly. Skipping")
             return
         for user, password, super_password in self.object.auth_profile.iter_cli():
@@ -53,7 +53,7 @@ class SuggestCLICheck(DiscoveryCheck):
                 pool=self.object.pool.name,
                 calling_service="discovery"
             ).script(
-                "%s.login" % self.object.profile_name,
+                "%s.login" % self.object.profile.name,
                 {
                     "cli_protocol": "ssh" if self.object.scheme == 2 else "telnet",
                     "address": self.object.address,

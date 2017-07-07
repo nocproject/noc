@@ -31,6 +31,11 @@ Ext.define("NOC.inv.platform.Model", {
         {
             name: "uuid",
             type: "string"
+        },
+        {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
         }
     ]
 });

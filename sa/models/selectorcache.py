@@ -91,7 +91,7 @@ class SelectorCache(Document):
                 continue
             if s.filter_managed is not None and object.is_managed != s.filter_managed:
                 continue
-            if s.filter_profile and object.profile_name != s.filter_profile:
+            if s.filter_profile and object.profile.id != s.filter_profile.id:
                 continue
             if s.filter_pool and object.pool.id != s.filter_pool.id:
                 continue

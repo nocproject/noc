@@ -47,7 +47,7 @@ class ReportStaleDiscoveryJob(SimpleReport):
             data += [[
                          mo.administrative_domain.name,
                          mo.name,
-                         mo.profile_name,
+                         mo.profile.name,
                          mo.platform,
                          mo.address,
                          r['jcls'],

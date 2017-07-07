@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
-# Failed Scripts Report
+# Discovery Problems report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
 from django import forms
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
@@ -19,6 +17,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportForm(forms.Form):
@@ -89,7 +88,7 @@ class ReportFilterApplication(SimpleReport):
             mos = mos.filter(object_profile=obj_profile)
         if filter_view_other:
             mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
-            mos = mos.filter(profile_name="Generic.Host").exclude(object_profile__in=mnp_in)
+            mos = mos.filter(profile_name=GENERIC_PROFILE).exclude(object_profile__in=mnp_in)
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         mos_id = list(mos.values_list("id", flat=True))
         if avail_status:

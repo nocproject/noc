@@ -14,6 +14,8 @@ Ext.define("NOC.inv.firmware.Application", {
         "NOC.sa.profile.LookupField"
     ],
     model: "NOC.inv.firmware.Model",
+    search: true,
+
     initComponent: function() {
         var me = this;
 
@@ -41,6 +43,13 @@ Ext.define("NOC.inv.firmware.Application", {
                     text: __("Version"),
                     dataIndex: "version",
                     flex: 1
+                },
+                {
+                    text: __("Builtin"),
+                    dataIndex: "is_builtin",
+                    width: 30,
+                    renderer: NOC.render.Bool,
+                    sortable: false
                 }
             ],
 
@@ -90,6 +99,21 @@ Ext.define("NOC.inv.firmware.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
+                }
+            ],
+
+            filters: [
+                {
+                    title: __("By Profile"),
+                    name: "profile",
+                    ftype: "lookup",
+                    lookup: "sa.profile"
+                },
+                {
+                    title: __("By Vendor"),
+                    name: "vendor",
+                    ftype: "lookup",
+                    lookup: "inv.vendor"
                 }
             ]
         });

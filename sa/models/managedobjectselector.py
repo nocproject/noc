@@ -22,9 +22,13 @@ import six
 from .administrativedomain import AdministrativeDomain
 from .managedobjectprofile import ManagedObjectProfile
 from .terminationgroup import TerminationGroup
+from .profile import Profile
+from noc.inv.models.vendor import Vendor
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
+from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.pool import Pool
 from noc.main.models.prefixtable import PrefixTable
-from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
@@ -70,9 +74,10 @@ class ManagedObjectSelector(models.Model):
         _("Filter by Is Managed"),
         null=True, blank=True, default=True)
     filter_pool = DocumentReferenceField(Pool, null=True, blank=True)
-    filter_profile = models.CharField(_("Filter by Profile"),
-            max_length=64, null=True, blank=True,
-            choices=profile_loader.choices())
+    filter_profile = DocumentReferenceField(Profile, null=True, blank=True)
+    filter_vendor = DocumentReferenceField(Vendor, null=True, blank=True)
+    filter_platform = DocumentReferenceField(Platform, null=True, blank=True)
+    filter_version = DocumentReferenceField(Firmware, null=True, blank=True)
     filter_object_profile = models.ForeignKey(ManagedObjectProfile,
             verbose_name=_("Filter by Object's Profile"), null=True, blank=True)
     filter_address = models.CharField(_("Filter by Address (REGEXP)"),
@@ -94,6 +99,7 @@ class ManagedObjectSelector(models.Model):
             verbose_name=_("Filter by service terminator"), null=True, blank=True,
             related_name="selector_service_terminator_set"
             )
+    filter_tt_system = DocumentReferenceField(TTSystem, null=True, blank=True)
     filter_user = models.CharField(_("Filter by User (REGEXP)"),
             max_length=256, null=True, blank=True)
     filter_remote_path = models.CharField(_("Filter by Remote Path (REGEXP)"),
@@ -135,10 +141,6 @@ class ManagedObjectSelector(models.Model):
         Returns Q object which can be applied to
         ManagedObject.objects.filter
         """
-        from .managedobject import ManagedObjectAttribute
-
-        # Exclude NOC internal objects
-        q = ~Q(profile_name__startswith="NOC.")
         # Exclude objects being wiped
         q &= ~Q(name__startswith="wiping-")
         # Filter by is_managed
@@ -155,7 +157,19 @@ class ManagedObjectSelector(models.Model):
             q &= Q(name__regex=self.filter_name)
         # Filter by profile
         if self.filter_profile:
-            q &= Q(profile_name=self.filter_profile)
+            q &= Q(profile=self.filter_profile.id)
+        # Filter by vendor
+        if self.filter_vendor:
+            q &= Q(vendor=self.filter_vendor.id)        
+        # Filter by platform
+        if self.filter_platform:
+            q &= Q(platform=self.filter_platform.id)        
+        # Filter by version
+        if self.filter_version:
+            q &= Q(version=self.filter_version.id)        
+        # Filter by ttsystem
+        if self.filter_ttsystem:
+            q &= Q(tt_system=self.filter_ttsystem.id)
         # Filter by object's profile
         if self.filter_object_profile:
             q &= Q(object_profile=self.filter_object_profile)
@@ -288,11 +302,12 @@ class ManagedObjectSelector(models.Model):
             expr = [op.join(u"(%s)" % x for x in expr)]
         return expr[0]
 
-    ##
-    ## Returns queryset containing managed objects
-    ##
     @property
     def managed_objects(self):
+        """
+        Returns queryset containing managed objects
+        :return:
+        """
         from .managedobject import ManagedObject
         return ManagedObject.objects.filter(self.Q)
 
@@ -311,30 +326,6 @@ class ManagedObjectSelector(models.Model):
         :return:
         """
         return self.match(managed_object)
-
-    def scripts_profiles(self, scripts):
-        """
-        Returns a list of profile names supporting scripts
-        :param scripts: List of script names
-        :return: List of profile names
-        """
-        sp = set()
-        for p in profile_registry.classes:
-            skip = False
-            for s in scripts:
-                if s not in profile_registry[p].scripts:
-                    skip = True
-                    continue
-            if not skip:
-                sp.add(p)
-        return list(sp)
-
-    ##
-    ## Returns queryset containing managed objects supporting scripts
-    ##
-    def objects_with_scripts(self, scripts):
-        return self.managed_objects.filter(
-            profile_name__in=self.scripts_profiles(scripts))
 
     @classmethod
     def resolve_expression(cls, s):

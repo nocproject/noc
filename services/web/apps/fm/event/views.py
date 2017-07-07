@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -186,7 +186,7 @@ class EventApplication(ExtApplication):
         # Managed object properties
         mo = event.managed_object
         d["managed_object_address"] = mo.address
-        d["managed_object_profile"] = mo.profile_name
+        d["managed_object_profile"] = mo.profile.name
         d["managed_object_platform"] = mo.platform
         d["managed_object_version"] = mo.get_attr("version")
         d["segment"] = mo.segment.name

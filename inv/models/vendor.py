@@ -26,7 +26,8 @@ id_lock = threading.Lock()
 @on_delete_check(check=[
     ("inv.ObjectModel", "vendor"),
     ("inv.Platform", "vendor"),
-    ("inv.Firmware", "vendor")
+    ("inv.Firmware", "vendor"),
+    ("sa.ManagedObject", "profile")
 ])
 class Vendor(Document):
     """

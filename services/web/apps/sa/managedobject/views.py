@@ -19,7 +19,7 @@ from mongoengine.queryset import Q as MQ
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import (ManagedObject,
-                                         ManagedObjectAttribute, Version)
+                                         ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -70,12 +70,6 @@ class ManagedObjectApplication(ExtModelApplication):
         ("periodic", "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob")
     ]
 
-    def field_platform(self, o):
-        return o.platform
-
-    def field_version(self, o):
-        return o.get_attr("version")
-
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
@@ -123,42 +117,6 @@ class ManagedObjectApplication(ExtModelApplication):
             qs = qs.filter(UserAccess.Q(request.user))
         qs = qs.exclude(name__startswith="wiping-")
         return qs
-
-    def extra_query(self, q, order):
-        # Query for MO attributest. Get key - ex_ATTRNAME
-        sql = """SELECT value AS platform 
-                 FROM sa_managedobjectattribute AS saa 
-                 WHERE key=\'%s\' AND saa.managed_object_id=sa_managedobject.id"""
-        # Query for filter by attributest
-        sql_w = """EXISTS (SELECT managed_object_id 
-                           FROM sa_managedobjectattribute 
-                           WHERE managed_object_id=sa_managedobject.id AND key=%s AND value LIKE %s)
-                           """
-        extra = {"select": {}}
-        for v in Version._fields:
-            # key = "ex_" + v
-            extra["select"]["ex_" + v] = sql % v
-            if v in order:
-                extra["order_by"] = ["ex_" + v]
-            elif "-" + v in order:
-                extra["order_by"] = ["-ex_" + v]
-        if "address" in order:
-            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
-            extra["order_by"] = ["ex_address", "address"]
-        elif "-address" in order:
-            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
-            extra["order_by"] = ["-ex_address", "-address"]
-
-        e_q = set(q).intersection(set(Version._fields))
-        # Extra filter query
-        if e_q:
-            extra["where"] = []
-            extra["params"] = []
-            for e in e_q:
-                extra["where"].append(sql_w)
-                extra["params"] += [e, "%" + q[e] + "%"]
-        self.logger.info("Extra: %s" % extra)
-        return extra, [] if "order_by" in extra else order
 
     @view(url="^(?P<id>\d+)/links/$", method=["GET"],
           access="read", api=True)

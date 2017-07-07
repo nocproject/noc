@@ -219,7 +219,7 @@ class AlarmApplication(ExtApplication):
         # Managed object properties
         mo = alarm.managed_object
         d["managed_object_address"] = mo.address
-        d["managed_object_profile"] = mo.profile_name
+        d["managed_object_profile"] = mo.profile.name
         d["managed_object_platform"] = mo.platform
         d["managed_object_version"] = mo.get_attr("version")
         d["segment"] = mo.segment.name

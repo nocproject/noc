@@ -15,7 +15,7 @@ from noc.lib.nosql import Q as m_Q
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import Version
+from noc.inv.models.firmware import Firmware
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectcapabilities import ObjectCapabilities

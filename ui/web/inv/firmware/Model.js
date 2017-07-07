@@ -44,6 +44,11 @@ Ext.define("NOC.inv.firmware.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
         }
     ]
 });
