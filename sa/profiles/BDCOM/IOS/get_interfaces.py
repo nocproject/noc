@@ -83,7 +83,7 @@ class Script(BaseScript):
                 if ifname == i["name"]:
                     i["subinterfaces"][0]["untagged_vlan"] = match.group("vlan_id")
                     break
-        for r in parse_table(self.cli("show vlan"), allow_wrap=True, add_delimiter=", "):
+        for r in parse_table(self.cli("show vlan"), allow_wrap=True, n_row_delim=", "):
             if not r[3]:
                 continue
             vlan_id = int(r[0])

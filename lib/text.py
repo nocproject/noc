@@ -23,11 +23,11 @@ rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
-def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None, add_delimiter=None):
+def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None, n_row_delim=""):
     """
     :param s: Table for parsing
     :type s: str
-    :param allow_wrap:
+    :param allow_wrap: Union if cell contins multiple line
     :type allow_wrap: bool
     :param allow_extend: Check if column on row longest then column width, and fix it
     :type allow_extend: bool
@@ -35,10 +35,14 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     :type max_width: int
     :param footer: stop iteration if match expression footer
     :type footer: string
+    :param n_row_delim: Append delimiter to next cell line
+    :type n_row_delim: string
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
     >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
     [['a', '', 'c'], ['ddd', 'eee', 'fff']]
+    >>> parse_table("VLAN Status  Name                             Ports\\n---- ------- -------------------------------- ---------------------------------\\n4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\\n                                              g0/10\\n", allow_wrap=True, n_row_delim=", ")
+    [['4090', 'Static', 'VLAN4090', 'f0/5, f0/6, f0/7, f0/8, g0/9, g0/10']]
     """
     r = []
     columns = []
@@ -95,10 +99,8 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                 row = [l[f:t] for f, t in columns]
                 if row[0].startswith(" ") and r:
                     for i, x in enumerate(row):
-                        if (add_delimiter is not None):
-                            r[-1][i] += "%s%s" % (add_delimiter, x)
-                        else:
-                            r[-1][i] += x
+                        r[-1][i] += x if not x.strip() else "%s%s" % (n_row_delim, x)
+                        print "'" + x + "'"
                 else:
                     r += [row]
             else:
