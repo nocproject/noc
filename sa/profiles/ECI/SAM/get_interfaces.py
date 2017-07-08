@@ -85,8 +85,10 @@ class Script(BaseScript):
         else:
             for match in self.rx_sh_int3.finditer(cmd):
                 mac = match.group("mac")
-                ifname = match.group("ifname")
-                typ = self.profile.get_interface_type(ifname)
+                name = match.group("ifname")
+                unit = match.group("unit")
+                ifname = "%s/%s" % (name, unit)
+                typ = self.profile.get_interface_type(name)
                 ip = match.group("ip")
                 n = match.group("nmask")
                 nn = [int(n[2:][i:i+2],16) for i in range(0,len(n[2:]),2)]
