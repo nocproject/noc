@@ -23,7 +23,7 @@ rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
-def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None):
+def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None, add_delimiter=None):
     """
     :param s: Table for parsing
     :type s: str
@@ -95,7 +95,10 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                 row = [l[f:t] for f, t in columns]
                 if row[0].startswith(" ") and r:
                     for i, x in enumerate(row):
-                        r[-1][i] += x
+                        if (add_delimiter is not None):
+                            r[-1][i] += "%s%s" % (add_delimiter, x)
+                        else:
+                            r[-1][i] += x
                 else:
                     r += [row]
             else:
