@@ -48,6 +48,7 @@ class Script(BaseScript):
                 else:
                     match = self.rx_sh_int2.search(i)
                 ifname = match.group("ifname")
+                typ = self.profile.get_interface_type(ifname)
                 mtu = match.group("mtu")
                 ifindex = match.group("ifindex")
                 ip = match.group("ip")
@@ -64,7 +65,7 @@ class Script(BaseScript):
                     enabled_afi += ["IPv4"]
                 iface = {
                     "name": ifname,
-                    "type": "physical",
+                    "type": typ,
                     "admin_status": True,
                     "oper_status": True,
                     "subinterfaces": [{
@@ -82,10 +83,10 @@ class Script(BaseScript):
                     iface["subinterfaces"][0]["mac"] = mac
                 interfaces += [iface]
         else:
-            print cmd
             for match in self.rx_sh_int3.finditer(cmd):
                 mac = match.group("mac")
                 ifname = match.group("ifname")
+                typ = self.profile.get_interface_type(ifname)
                 ip = match.group("ip")
                 n = match.group("nmask")
                 nn = [int(n[2:][i:i+2],16) for i in range(0,len(n[2:]),2)]
@@ -102,7 +103,7 @@ class Script(BaseScript):
                     enabled_afi += ["IPv4"]
                 iface = {
                     "name": ifname,
-                    "type": "physical",
+                    "type": typ,
                     "admin_status": True,
                     "oper_status": True,
                     "subinterfaces": [{

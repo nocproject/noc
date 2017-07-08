@@ -37,17 +37,15 @@ class Profile(BaseProfile):
             # Do not remove this
             script.credentials["user"] = "   " + user
 
-    class shell(object):
-        """Switch context manager to use with "with" statement"""
+    INTERFACE_TYPES = {
+        "lo": "loopback",  # Loopback
+        "fe": "physical",  # FortyGigabitEthernet
+        "vn": "physical",  # FortyGigabitEthernet
+        "en": "physical",  # FortyGigabitEthernet
+        "at": "physical",  # FortyGigabitEthernet
+        "cp": "physical"  # FortyGigabitEthernet
+    }
 
-        def __init__(self, script):
-            self.script = script
-
-        def __enter__(self):
-            """Enter switch context"""
-            self.script.cli("SHOW")
-
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            """Leave switch context"""
-            if exc_type is None:
-                self.script.cli("END\r")
+    @classmethod
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get((name[:2]).lower())
