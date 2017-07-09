@@ -13,6 +13,10 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.sa.managedobjectselector.AttributesModel",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.sa.managedobjectselector.M2MField",
+        "NOC.sa.profile.LookupField",
+        "NOC.inv.vendor.LookupField",
+        "NOC.inv.platform.LookupField",
+        "NOC.inv.firmware.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.main.prefixtable.LookupField",
         "NOC.sa.administrativedomain.LookupField",
@@ -20,7 +24,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.vc.vcdomain.LookupField",
         "NOC.sa.terminationgroup.LookupField",
         "NOC.sa.terminationgroup.LookupField",
-        "NOC.main.ref.profile.LookupField",
+        "NOC.fm.ttsystem.LookupField",
         "NOC.main.pool.LookupField"
     ],
     model: "NOC.sa.managedobjectselector.Model",
@@ -119,8 +123,32 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 },
                 {
                     name: "filter_profile",
-                    xtype: "main.ref.profile.LookupField",
+                    xtype: "sa.profile.LookupField",
                     fieldLabel: __("Filter by Profile"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
+                },
+                {
+                    name: "filter_vendor",
+                    xtype: "inv.vendor.LookupField",
+                    fieldLabel: __("Filter by Vendor"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
+                },
+                {
+                    name: "filter_platform",
+                    xtype: "inv.platform.LookupField",
+                    fieldLabel: __("Filter by Platform"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
+                },
+                {
+                    name: "filter_version",
+                    xtype: "inv.firmware.LookupField",
+                    fieldLabel: __("Filter by Version"),
                     allowBlank: true,
                     uiStyle: "large",
                     labelWidth: 170
@@ -185,6 +213,14 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     name: "filter_service_terminator",
                     xtype: "sa.terminationgroup.LookupField",
                     fieldLabel: __("Filter by service terminator"),
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
+                },
+                {
+                    name: "filter_tt_system",
+                    xtype: "fm.ttsystem.LookupField",
+                    fieldLabel: __("Filter by TT System"),
                     allowBlank: true,
                     uiStyle: "large",
                     labelWidth: 170

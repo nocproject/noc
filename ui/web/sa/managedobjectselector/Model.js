@@ -44,8 +44,45 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
             type: "string"
         },
         {
+            name: "filter_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "filter_vendor",
+            type: "string"
+        },
+        {
+            name: "filter_vendor__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "filter_platform",
+            type: "string"
+        },
+        {
+            name: "filter_platform__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "filter_version",
+            type: "string"
+        },
+        {
+            name: "filter_version__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "filter_pool",
             type: "string"
+        },
+        {
+            name: "filter_pool__label",
+            type: "string",
+            persist: false
         },
         {
             name: "filter_object_profile",
@@ -125,6 +162,15 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
         {
             name: "filter_description",
             type: "string"
+        },
+        {
+            name: "filter_tt_system",
+            type: "string"
+        },
+        {
+            name: "filter_tt_system__label",
+            type: "string",
+            persist: false
         },
         {
             name: "filter_tags",
