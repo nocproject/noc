@@ -38,6 +38,9 @@ class Firmware(Document):
         "collection": "noc.firmwares",
         "allow_inheritance": False,
         "json_collection": "inv.firmwares",
+        "json_depends_on": [
+            "sa.profile"
+        ],
         "indexes": [
             {
                 "fields": ["profile", "vendor", "version"],

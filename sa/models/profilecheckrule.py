@@ -25,7 +25,10 @@ class ProfileCheckRule(Document):
     meta = {
         "collection": "noc.profilecheckrules",
         "allow_inheritance": False,
-        "json_collection": "sa.profilecheckrules"
+        "json_collection": "sa.profilecheckrules",
+        "json_depends_on": [
+            "sa.profile"
+        ]
     }
 
     name = StringField(required=True, unique=True)
