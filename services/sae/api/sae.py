@@ -126,7 +126,7 @@ class SAEAPI(API):
         # Get Object's attributes
         with self.service.get_pg_connect() as connection:
             cursor = connection.cursor()
-            cursor.execute(self.RUN_SQL, [object_id, object_id])
+            cursor.execute(self.RUN_SQL, [object_id])
             data = cursor.fetchall()
         if not data:
             raise APIError("Object is not found")
