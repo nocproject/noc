@@ -103,7 +103,7 @@ class AlarmsExtractor(BaseExtractor):
                 managed_object=mo,
                 pool=mo.pool,
                 ip=mo.address,
-                profile=mo.profile_name,
+                profile=mo.profile,
                 object_profile=mo.object_profile,
                 vendor=mo.vendor,
                 platform=mo.platform,
