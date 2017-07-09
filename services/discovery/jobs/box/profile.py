@@ -9,7 +9,6 @@
 # Python modules
 import re
 import threading
-import time
 import cachetools
 import operator
 # NOC modules
@@ -36,7 +35,7 @@ class ProfileCheck(DiscoveryCheck):
         profile = self.get_profile()
         if not profile:
             return  # Cannot detect
-        if profile.id == self.object.profile.id
+        if profile.id == self.object.profile.id:
             self.logger.info("Profile is correct: %s", profile)
         else:
             self.logger.info(
