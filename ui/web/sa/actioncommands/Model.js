@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.actioncommands Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.actioncommands.Model");
@@ -18,6 +18,11 @@ Ext.define("NOC.sa.actioncommands.Model", {
         {
             name: "profile",
             type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string",
+            persist: false
         },
         {
             name: "commands",

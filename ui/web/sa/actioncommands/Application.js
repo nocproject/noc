@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.actioncommands application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.actioncommands.Application");
@@ -11,7 +11,7 @@ Ext.define("NOC.sa.actioncommands.Application", {
     requires: [
         "NOC.sa.actioncommands.Model",
         "NOC.sa.action.LookupField",
-        "NOC.main.ref.profile.LookupField"
+        "NOC.sa.profile.LookupField"
     ],
     model: "NOC.sa.actioncommands.Model",
     search: true,
@@ -79,7 +79,7 @@ Ext.define("NOC.sa.actioncommands.Application", {
                 },
                 {
                     name: "profile",
-                    xtype: "main.ref.profile.LookupField",
+                    xtype: "sa.profile.LookupField",
                     fieldLabel: __("Profile"),
                     uiStyle: "medium",
                     allowBlank: false
@@ -145,7 +145,7 @@ Ext.define("NOC.sa.actioncommands.Application", {
             title: __("By SA Profile"),
             name: "profile",
             ftype: "lookup",
-            lookup: "main.ref.profile"
+            lookup: "sa.profile"
         },
         {
             title: __("By Action"),
