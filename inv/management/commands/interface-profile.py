@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # Interface profile management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from optparse import OptionParser, make_option
-from collections import defaultdict
+from optparse import make_option
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
@@ -95,7 +94,7 @@ class Command(BaseCommand):
             raise CommandError("No classification solution")
         pcache = {}
         for o in self.get_objects(args):
-            print "%s (%s):" % (o.name, o.platform or o.profile_name)
+            print "%s (%s):" % (o.name, o.platform.name if o.platform else o.profile.name)
             ifaces = self.get_interfaces(o)
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
