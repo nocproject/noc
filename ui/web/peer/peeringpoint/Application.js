@@ -12,7 +12,7 @@ Ext.define("NOC.peer.peeringpoint.Application", {
         "NOC.peer.peeringpoint.Model",
         "NOC.peer.as.LookupField",
         "NOC.main.notificationgroup.LookupField",
-        "NOC.main.ref.profile.LookupField"
+        "NOC.sa.profile.LookupField"
     ],
     model: "NOC.peer.peeringpoint.Model",
     search: true,
@@ -41,7 +41,8 @@ Ext.define("NOC.peer.peeringpoint.Application", {
         {
             text: __("Profile"),
             flex: 1,
-            dataIndex: "profile_name"
+            dataIndex: "profile",
+            renderer: NOC.render.Lookup("profile")
         },
         {
             text: __("Import Communities"),
@@ -74,8 +75,8 @@ Ext.define("NOC.peer.peeringpoint.Application", {
             allowBlank: false
         },
         {
-            name: "profile_name",
-            xtype: "main.ref.profile.LookupField",
+            name: "profile",
+            xtype: "sa.profile.LookupField",
             fieldLabel: __("Profile"),
             allowBlank: false
         },
