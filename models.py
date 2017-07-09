@@ -166,7 +166,7 @@ _MODELS = {
     "inv.Vendor": "noc.inv.models.vendor.Vendor",
     # sa models
     "sa.Action": "noc.sa.models.action.Action",
-    "sa.ActionCommands": "noc.sa.models.action.ActionCommands",
+    "sa.ActionCommands": "noc.sa.models.actioncommands.ActionCommands",
     "sa.AdministrativeDomain": "noc.sa.models.administrativedomain.AdministrativeDomain",
     "sa.AuthProfile": "noc.sa.models.authprofile.AuthProfile",
     "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
@@ -182,13 +182,12 @@ _MODELS = {
     "sa.MapTask": "noc.sa.models.maptask.MapTask",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
     "sa.Profile": "noc.sa.models.Profile",
+    "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
     "sa.ReduceTask": "noc.sa.models.reducetask.ReduceTask",
     "sa.Service": "noc.sa.models.service.Service",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
-    "sa.Profile": "noc.sa.models.profile.Profile",
-    "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
     # fm models
     "fm.ActiveAlarm": "noc.fm.models.activealarm.ActiveAlarm",
     "fm.ActiveEvent": "noc.fm.models.activeevent.ActiveEvent",
