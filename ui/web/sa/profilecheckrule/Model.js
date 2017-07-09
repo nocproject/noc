@@ -20,6 +20,11 @@ Ext.define("NOC.sa.profilecheckrule.Model", {
             type: "string"
         },
         {
+            name: "profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "match_method",
             type: "string",
             defaultValue: "eq"
