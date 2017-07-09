@@ -15,10 +15,13 @@ import hashlib
 import uuid
 from collections import namedtuple
 import sys
+import six
 # Third-party modules
 import ujson
 import bson
 from mongoengine.fields import ListField, EmbeddedDocumentField
+from mongoengine.errors import NotUniqueError
+# NOC modules
 from noc.core.fileutils import safe_rewrite
 
 
@@ -162,8 +165,8 @@ class Collection(object):
                         data = f.read()
                     try:
                         jdata = ujson.loads(data)
-                    except ValueError, why:
-                        raise ValueError("Error load %s: %s" % (fp, why))
+                    except ValueError as e:
+                        raise ValueError("Error load %s: %s" % (fp, e))
                     if "uuid" not in jdata:
                         raise ValueError("Invalid JSON %s: No UUID" % fp)
                     csum = hashlib.sha256(data).hexdigest()
@@ -232,12 +235,12 @@ class Collection(object):
     def update_item(self, data):
         if data["uuid"] in self.partial_errors:
             del self.partial_errors[data["uuid"]]
-        o = self.model.objects.filter(uuid=data["uuid"]).first()
         try:
             d = self.dereference(data)
         except ValueError as e:
             self.partial_errors[data["uuid"]] = str(e)
             return False  # Partials
+        o = self.model.objects.filter(uuid=data["uuid"]).first()
         if o:
             self.stdout.write(
                 "[%s|%s] Updating %s\n" % (
@@ -246,6 +249,8 @@ class Collection(object):
             ))
             for k in d:
                 setattr(o, k, d[k])
+            o.save()
+            return True
         else:
             self.stdout.write(
                 "[%s|%s] Creating %s\n" % (
@@ -253,8 +258,33 @@ class Collection(object):
                     data.get(self.name_field)
             ))
             o = self.model(**d)
-        o.save()
-        return True
+            try:
+                o.save()
+                return True
+            except NotUniqueError as e:
+                # Possible local alternative with different uuid
+                if not self.model._meta.get("json_unique_fields"):
+                    raise
+                # Try to find conflicting item
+                qs = dict(
+                    (k, d[k])
+                    for k in self.model._meta["json_unique_fields"]
+                )
+                o = self.model.objects.filter(**qs).first()
+                if o:
+                    self.stdout.write(
+                        "[%s|%s] Changing local uuid %s (%s)\n" % (
+                            self.name, data["uuid"],
+                            o.uuid,
+                            getattr(o, self.name_field)
+                        )
+                    )
+                    o.uuid = data["uuid"]
+                    o.save()
+                    # Try again
+                    return self.update_item(data)
+                else:
+                    raise
 
     def delete_item(self, uuid):
         o = self.model.objects.filter(uuid=uuid).first()
@@ -268,6 +298,10 @@ class Collection(object):
     def sync(self):
         # Read collection from JSON files
         cdata = self.get_items()
+        if not cdata:
+            self.stdout.write("[%s] Ignoring empty collection\n" % self.name)
+            return
+        self.stdout.write("[%s] Synchronizing\n" % self.name)
         # Get previous state
         cs = self.get_state()
         #

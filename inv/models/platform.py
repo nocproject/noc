@@ -32,6 +32,7 @@ class Platform(Document):
         "collection": "noc.platforms",
         "allow_inheritance": False,
         "json_collection": "inv.platforms",
+        "json_unique_fields": ["vendor", "name"],
         "indexes": [
             {
                 "fields": ["vendor", "name"],

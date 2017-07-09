@@ -41,6 +41,7 @@ class Firmware(Document):
         "json_depends_on": [
             "sa.profile"
         ],
+        "json_unique_fields": ["profile", "vendor", "version"],
         "indexes": [
             {
                 "fields": ["profile", "vendor", "version"],

@@ -33,7 +33,8 @@ class Profile(Document):
     meta = {
         "collection": "noc.profiles",
         "allow_inheritance": False,
-        "json_collection": "sa.profiles"
+        "json_collection": "sa.profiles",
+        "json_unique_fields": ["name"]
     }
     name = StringField(unique=True)
     description = StringField(required=False)
