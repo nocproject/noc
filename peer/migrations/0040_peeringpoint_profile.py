@@ -4,6 +4,10 @@ from noc.core.model.fields import DocumentReferenceField
 
 
 class Migration:
+    depends_on = [
+        ("sa", "0150_managed_object_profile")
+    ]
+
     def forwards(self):
         # Get profile record mappings
         pcoll = get_db()["noc.profiles"]
