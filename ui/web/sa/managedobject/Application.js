@@ -901,7 +901,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         },
         {
             title: __("By SA Profile"),
-            name: "profile_name",
+            name: "profile",
             ftype: "lookup",
             lookup: "sa.profile"
         },

@@ -79,7 +79,7 @@ Ext.define('NOC.sa.runcommands.Application', {
             },
             {
                 text: __('Profile'),
-                dataIndex: 'profile_name',
+                dataIndex: 'profile',
                 width: 100
             },
             {
