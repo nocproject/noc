@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ class Script(BaseScript):
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard = re.compile(
-        r"\[(?:Main_Board|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        r"\[(?:Main_Board|BackPlane|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_subitem = re.compile(
@@ -74,7 +74,7 @@ class Script(BaseScript):
             self.logger.info("Port number %s not having asset" % number)
         vendor = match_body.group("vendor").strip()
         serial = match_body.group("bar_code").strip()
-        part_no = match_body.group("board_type")
+        part_no = match_body.group("board_type").strip()
         desc = match_body.group("desc")
         manufactured = match_body.group("mnf_date")
         #todo create dictonary for normalize types
@@ -154,7 +154,9 @@ class Script(BaseScript):
         v = self.cli("display device")
         s = self.parse_table(v)
         for i in s:
-            type = i["Type"]
+            type = i.get("Type")
+            if not type:
+                continue
             if "SubCard" in i:
                 num = i["SubCard"]
                 if i["SubCard"] == 0:

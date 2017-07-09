@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -311,6 +311,8 @@ class Script(BaseScript):
                         iface["enabled_protocols"] += ["LACP"]
                 interfaces += [iface]
             else:
+                iface, vlan_id = ifname.split(".")
+                sub["vlan_ids"] = [vlan_id]
                 interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
         vrfs = {

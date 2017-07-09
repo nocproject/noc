@@ -41,7 +41,7 @@ m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=Tru
                                                                                "percentile", "q1", "q2", "q3",
                                                                                "p95", "p99"],
                                                                       default="last"),
-                                   "window_config": StringParameter(default=None),
+                                   "window_config": StringParameter(default=""),
                                    "window_related": BooleanParameter(default=False),
                                    "low_error": IntParameter(required=False),
                                    "high_error": IntParameter(required=False),
@@ -384,7 +384,7 @@ class ManagedObjectProfile(models.Model):
         # Validate MeticType for object profile
         if self.metrics:
             try:
-                m_valid.clean(self.metrics)
+                self.metrics = m_valid.clean(self.metrics)
             except ValueError as e:
                 raise ValueError(e)
         super(ManagedObjectProfile, self).save(force_insert, force_update)

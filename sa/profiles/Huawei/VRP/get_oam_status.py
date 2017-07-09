@@ -34,7 +34,7 @@ class Script(BaseScript):
             raise self.NotSupportedError
         oams = re.findall(self.oam_splitter, v)
         if not oams:
-            raise self.NotSupportedError
+            return []
         for l in oams:
             match = self.rx_line.match(l)
             if match:

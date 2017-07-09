@@ -25,7 +25,7 @@ class Script(BaseScript):
     rx_vlan_au = re.compile(r"^\s*Untagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
 
     rx_description = re.compile(
-        r"^\s*(?P<interface>e\S+)\s+((?P<description>(\S+ \S+|\S+))|)$",
+        r"^\s*(?P<interface>e\S+)\s+((?P<description>[A-Za-z0-9-=_ \.\,'\(\)]+|\S+ \S+|\S+|))$",
         re.MULTILINE)
 #    rx_channel_description = re.compile(
 #        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)

@@ -20,7 +20,7 @@ class HierarchyReportAppplication(ReportApplication):
     """
     title = _("Events and Alarm Hierarchy")
 
-    def report_html(self):
+    def report_html(self, request, result=None, query=None):
         # Event classes
         ec = []
         ne = 0
@@ -32,7 +32,7 @@ class HierarchyReportAppplication(ReportApplication):
             ec += [(len(p) * 24, cc.name, None)]
             ec += [(-1, c,
                     EventClassificationRule.objects.filter(event_class=c.id))
-                    for c in e]
+                   for c in e]
             ne += len(e)
         ncr = 0
         for _, _, r in ec:

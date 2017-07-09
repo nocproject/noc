@@ -16,7 +16,7 @@ from noc.core.translation import ugettext as _
 class ReportLOC(SimpleReport):
     title = _("Cone Analysis")
 
-    def get_data(self):
+    def get_data(self, request):
         def ppower(prefix):
             m = int(prefix.split("/")[1])
             if m <= powermask:
@@ -62,9 +62,9 @@ class ReportLOC(SimpleReport):
         r = sorted(r, key=lambda x: -x[4])
         
         return self.from_dataset(title=self.title,
-            columns=[
-                "Peer", "ASN", "Import Filter",
-                TableColumn("Cone Power",format="numeric",align="right"),
-                TableColumn("Uniq. Cone Power",format="numeric",align="right"),
-            ],
-            data=r)
+                                 columns=[
+                                     "Peer", "ASN", "Import Filter",
+                                     TableColumn("Cone Power", format="numeric", align="right"),
+                                     TableColumn("Uniq. Cone Power", format="numeric", align="right"),
+                                 ],
+                                 data=r)

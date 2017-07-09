@@ -19,7 +19,7 @@ from noc.core.translation import ugettext as _
 class ReportClassificationRules(ReportApplication):
     title = _("Local Classification Rules (JSON)")
 
-    def report_html(self):
+    def report_html(self, request, result=None, query=None):
         def is_local(r):
             return not bool(CollectionCache.objects.filter(uuid=r.uuid))
 
