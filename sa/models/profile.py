@@ -43,6 +43,7 @@ class Profile(Document):
     bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _name_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -52,6 +53,12 @@ class Profile(Document):
                              lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Profile.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"),
+                             lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        return Profile.objects.filter(name=name).first()
 
     def to_json(self):
         return to_json({
