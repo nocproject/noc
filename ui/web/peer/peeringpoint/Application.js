@@ -101,7 +101,7 @@ Ext.define("NOC.peer.peeringpoint.Application", {
             title: "By Profile",
             name: "profile_name",
             ftype: "lookup",
-            lookup: "main.ref.profile"
+            lookup: "sa.profile"
         }
     ]
 });
