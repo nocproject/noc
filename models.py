@@ -181,7 +181,7 @@ _MODELS = {
     "sa.ManagedObjectSelectorByAttribute": "noc.sa.models.managedobjectselector.ManagedObjectSelectorByAttribute",
     "sa.MapTask": "noc.sa.models.maptask.MapTask",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
-    "sa.Profile": "noc.sa.models.Profile",
+    "sa.Profile": "noc.sa.models.profile.Profile",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
     "sa.ReduceTask": "noc.sa.models.reducetask.ReduceTask",
     "sa.Service": "noc.sa.models.service.Service",
