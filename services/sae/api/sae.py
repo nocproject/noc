@@ -11,6 +11,7 @@ import tornado.gen
 # NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
+from noc.sa.models.managedobject import ManagedObject  # Do not delete
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
@@ -31,18 +32,18 @@ class SAEAPI(API):
 
     RUN_SQL = """
         SELECT
-            name, is_managed, profile,
-            vendor, platform, version,
-            scheme, address, port, "user",
-            password,
-            super_password, remote_path,
-            snmp_ro, pool,
-            auth_profile_id,
+            mo.name, mo.is_managed, mo.profile,
+            mo.vendor, mo.platform, mo.version,
+            mo.scheme, mo.address, mo.port,
+            mo."user", mo.password, mo.super_password, mo.remote_path,
+            mo.snmp_ro, mo.pool, mo.sofrware_image,
+            mo.auth_profile_id,
             ap.user, ap.password, ap.super_password,
             ap.snmp_ro, ap.snmp_rw
         FROM
-            sa_managedobject
-        WHERE id = %s
+            sa_managedobject mo
+            LEFT JOIN sa_authprofile ap ON (mo.auth_profile_id = ap.id)
+        WHERE mo.id = %s
     """
 
     @tornado.gen.coroutine
@@ -133,7 +134,7 @@ class SAEAPI(API):
          vendor, platform, version,
          scheme, address, port, user, password,
          super_password, remote_path,
-         snmp_ro, pool_id,
+         snmp_ro, pool_id, sw_image,
          auth_profile_id,
          ap_user, ap_password, ap_super_password,
          ap_snmp_ro, ap_snmp_rw) = data[0]
@@ -176,6 +177,8 @@ class SAEAPI(API):
                 "platform": Platform.get_by_id(platform).name,
                 "version": Firmware.get_by_id(version).version
             }
+            if sw_image:
+                version["image"] = sw_image
         else:
             version = None
         # Build capabilities
