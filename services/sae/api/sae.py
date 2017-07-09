@@ -36,7 +36,7 @@ class SAEAPI(API):
             mo.vendor, mo.platform, mo.version,
             mo.scheme, mo.address, mo.port,
             mo."user", mo.password, mo.super_password, mo.remote_path,
-            mo.snmp_ro, mo.pool, mo.sofrware_image,
+            mo.snmp_ro, mo.pool, mo.software_image,
             mo.auth_profile_id,
             ap.user, ap.password, ap.super_password,
             ap.snmp_ro, ap.snmp_rw

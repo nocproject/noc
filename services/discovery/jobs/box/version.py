@@ -66,7 +66,7 @@ class VersionCheck(DiscoveryCheck):
             else:
                 self.logger.info("Set image: %s", image)
         # Sync attributes
-        if result["attributes"]:
+        if "attributes" in result:
             self.object.update_attributes(result["attributes"])
         #
         if changed:
