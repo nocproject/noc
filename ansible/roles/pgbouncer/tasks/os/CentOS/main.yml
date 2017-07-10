@@ -12,6 +12,7 @@
     src: "etc/pgbouncer/pgbouncer.ini.j2"
     dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
   notify: reload pgbouncer
+  no_log: true
   tags:
     - config
 
