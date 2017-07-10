@@ -140,7 +140,7 @@
     - noc_config
 
 - name: Build supervisor config
-  command: "{{ noc_root }}/scripts/deploy/apply-config {{ inventory_hostname }}"
+  command: "{{ noc_root }}/scripts/deploy/apply-config {{ ansible_nodename }}"
   register: result
   changed_when: "'CHANGED' in result.stdout"
   args:
