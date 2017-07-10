@@ -22,10 +22,13 @@ from noc.lib.nosql import PlainReferenceField
 from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
+from noc.core.defer import call_later
+from noc.core.model.decorator import on_save
 
 id_lock = Lock()
 
 
+@on_save
 @category
 class MetricType(Document):
     meta = {
@@ -107,3 +110,10 @@ class MetricType(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return MetricType.objects.filter(id=id).first()
+
+    def on_save(self):
+        call_later(
+            "noc.core.clickhouse.ensure.ensure_pm_scopes",
+            scheduler="scheduler",
+            delay=30
+        )

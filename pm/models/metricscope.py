@@ -18,6 +18,7 @@ from mongoengine.fields import (
 import cachetools
 # NOC Modules
 from noc.lib.prettyjson import to_json
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
@@ -54,13 +55,16 @@ class PathItem(EmbeddedDocument):
     def to_json(self):
         v = {
             "name": self.name,
-            "is_required": self.is_required
+            "is_required": bool(self.is_required)
         }
         if self.default_value:
             v["default_value"] = self.default_value
         return v
 
 
+@on_delete_check(check=[
+    ("pm.MetricType", "scope")
+])
 class MetricScope(Document):
     meta = {
         "collection": "noc.metricscopes",
@@ -94,8 +98,8 @@ class MetricScope(Document):
             "uuid": self.uuid,
             "table_name": self.table_name,
             "description": self.description,
-            "key_fields": [kf.json_data() for kf in self.key_fields],
-            "path": [p.json_data() for p in self.path]
+            "key_fields": [kf.to_json() for kf in self.key_fields],
+            "path": [p.to_json() for p in self.path]
         }
         return r
 
@@ -133,6 +137,8 @@ class MetricScope(Document):
         :return:
         """
         pk = ["ts"] + [f.field_name for f in self.key_fields]
+        if self.path:
+            pk += ["path"]
         r = [
             "CREATE TABLE IF NOT EXISTS %s (" % self.table_name,
             ",\n".join("%s %s" % (n, t) for n, t in self.iter_fields()),
