@@ -77,6 +77,7 @@ class AlarmEscalation(Document):
     pre_reasons = ListField(EmbeddedDocumentField(PreReasonItem))
     escalations = ListField(EmbeddedDocumentField(EscalationItem))
     global_limit = IntField()
+    max_escalation_retries = IntField(default=30)
 
     _ac_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
 
@@ -133,6 +134,7 @@ class AlarmEscalation(Document):
                     "noc.services.escalator.escalation.escalate",
                     scheduler="escalator",
                     delay=delay,
+                    max_runs=esc.max_escalation_retries,
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
                     escalation_delay=e_item.delay

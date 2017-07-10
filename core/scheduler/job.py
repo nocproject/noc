@@ -54,6 +54,7 @@ class Job(object):
     ATTR_LAST_DURATION = "ldur"  # last job duration, in success
     ATTR_LAST_SUCCESS = "st"  # last success timestamp
     ATTR_RUNS = "runs"  # Number of runs
+    ATTR_MAX_RUNS = "mruns"  # Maximum allowed number of runs
     ATTR_FAULTS = "f"  # Amount of sequental faults
     ATTR_OFFSET = "o"  # Random offset [0 .. 1]
 
@@ -116,6 +117,11 @@ class Job(object):
     @tornado.gen.coroutine
     def run(self):
         self.start_time = time.time()
+        if self.is_retries_exceeded():
+            self.logger.info("[%s|%s] Retries exceeded. Remove job",
+                             self.name, self.attrs[Job.ATTR_ID])
+            self.remove_job()
+            return
         self.logger.info(
             "[%s] Starting at %s (Lag %.2fms)",
             self.name,
@@ -327,3 +333,12 @@ class Job(object):
         :return:
         """
         raise RetryAfter(msg, delay=delay)
+
+    def is_retries_exceeded(self):
+        """
+        Check if maximal amount of retries is exceeded
+        :return:
+        """
+        runs = self.attrs.get(Job.ATTR_RUNS, 0)
+        max_runs = self.attrs.get(Job.ATTR_MAX_RUNS, 0)
+        return max_runs and runs >= max_runs
