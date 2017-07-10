@@ -15,6 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import (absolute_import, division, print_function)
+import os
+from urlparse import urlparse
+from ansible.errors import AnsibleError
+from ansible.plugins.lookup import LookupBase
+
 
 __metaclass__ = type
 
@@ -53,12 +58,6 @@ of the kv store you'd like to use.
 '''
 
 ######################################################################
-
-import os
-import sys
-from urlparse import urlparse
-from ansible.errors import AnsibleError
-from ansible.plugins.lookup import LookupBase
 
 try:
     import json

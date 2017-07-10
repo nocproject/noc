@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## RIR model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# RIR model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import urllib
 import urllib2
-## Django modules
+# Django modules
 from django.db import models
 
 
 class RIRDBUpdateError(Exception):
     pass
 
-## Check ssl library is available
+# Check ssl library is available
 try:
     import ssl
     # Use SSL-enabled version when possible

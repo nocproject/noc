@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObject
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ManagedObject
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import difflib
 from collections import namedtuple
 import logging
@@ -15,26 +16,28 @@ import re
 import itertools
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              DateTimeField, SET_NULL)
+                              DateTimeField, BigIntegerField, SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
-## NOC modules
-from administrativedomain import AdministrativeDomain
-from authprofile import AuthProfile
-from managedobjectprofile import ManagedObjectProfile
-from objectstatus import ObjectStatus
-from objectmap import ObjectMap
-from objectdata import ObjectData
-from terminationgroup import TerminationGroup
+# NOC modules
+from .administrativedomain import AdministrativeDomain
+from .authprofile import AuthProfile
+from .managedobjectprofile import ManagedObjectProfile
+from .objectstatus import ObjectStatus
+from .objectmap import ObjectMap
+from .objectdata import ObjectData
+from .terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.networksegment import NetworkSegment
+from noc.fm.models.ttsystem import TTSystem
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
 from noc.lib.db import SQL
@@ -48,7 +51,7 @@ from noc.main.models.textindex import full_text_search, TextIndex
 from noc.settings import config
 from noc.core.scheduler.job import Job
 from noc.core.handler import get_handler
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
@@ -57,7 +60,10 @@ from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
+from noc.core.bi.decorator import bi_sync
 
+# Increase whenever new field added
+MANAGEDOBJECT_CACHE_VERSION = 2
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
@@ -72,6 +78,7 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
+@bi_sync
 @on_init
 @on_save
 @on_delete
@@ -274,6 +281,53 @@ class ManagedObject(Model):
     x = FloatField(null=True, blank=True)
     y = FloatField(null=True, blank=True)
     default_zoom = IntegerField(null=True, blank=True)
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem,
+                                           null=True, blank=True)
+    # Object id in remote system
+    remote_id = CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = BigIntegerField(null=True, blank=True)
+    # Object alarms can be escalated
+    escalation_policy = CharField(
+        "Escalation Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    # Raise alarms on discovery problems
+    box_discovery_alarm_policy = CharField(
+        "Box Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    periodic_discovery_alarm_policy = CharField(
+        "Box Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    # TT system for this object
+    tt_system = DocumentReferenceField(TTSystem,
+                                       null=True, blank=True)
+    # TT system queue for this object
+    tt_queue = CharField(max_length=64, null=True, blank=True)
+    # Object id in tt system
+    tt_system_id = CharField(max_length=64, null=True, blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -306,7 +360,8 @@ class ManagedObject(Model):
     @classmethod
     @cachedmethod(operator.attrgetter("_id_cache"),
                   key="managedobject-id-%s",
-                  lock=lambda _: id_lock)
+                  lock=lambda _: id_lock,
+                  version=MANAGEDOBJECT_CACHE_VERSION)
     def get_by_id(cls, id):
         mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
@@ -405,7 +460,6 @@ class ManagedObject(Model):
     def on_save(self):
         # Invalidate caches
         deleted_cache_keys = [
-            "managedobject-id-%s" % self.id,
             "managedobject-name-to-id-%s" % self.name
         ]
         # IPAM sync
@@ -433,6 +487,7 @@ class ManagedObject(Model):
         if (
             self.initial_data["id"] is None or
             "is_managed" in self.changed_fields or
+            "object_profile" in self.changed_fields or
             "trap_source_type" in self.changed_fields or
             "trap_source_ip" in self.changed_fields or
             "syslog_source_type" in self.changed_fields or
@@ -502,6 +557,8 @@ class ManagedObject(Model):
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
         #
+        cache.delete("managedobject-id-%s" % self.id,
+                     version=MANAGEDOBJECT_CACHE_VERSION)
         cache.delete_many(deleted_cache_keys)
         # Clear alarm when necessary
         if (
@@ -582,27 +639,34 @@ class ManagedObject(Model):
         }
         return r
 
-    ##
-    ## Returns True if Managed Object presents in more than one networks
-    ## @todo: Rewrite
-    ##
     @property
     def is_router(self):
+        """
+        Returns True if Managed Object presents in more than one networks
+        :return: 
+        """
+        # @todo: Rewrite
         return self.address_set.count() > 1
 
-    ##
-    ## Return attribute as string
-    ##
     def get_attr(self, name, default=None):
+        """
+        Return attribute as string
+        :param name: 
+        :param default: 
+        :return: 
+        """
         try:
             return self.managedobjectattribute_set.get(key=name).value
         except ManagedObjectAttribute.DoesNotExist:
             return default
 
-    ##
-    ## Return attribute as bool
-    ##
     def get_attr_bool(self, name, default=False):
+        """
+        Return attribute as bool
+        :param name: 
+        :param default: 
+        :return: 
+        """
         v = self.get_attr(name)
         if v is None:
             return default
@@ -611,10 +675,13 @@ class ManagedObject(Model):
         else:
             return False
 
-    ##
-    ## Return attribute as integer
-    ##
     def get_attr_int(self, name, default=0):
+        """
+        Return attribute as integer
+        :param name: 
+        :param default: 
+        :return: 
+        """
         v = self.get_attr(name)
         if v is None:
             return default
@@ -623,10 +690,13 @@ class ManagedObject(Model):
         except:
             return default
 
-    ##
-    ## Set attribute
-    ##
     def set_attr(self, name, value):
+        """
+        Set attribute
+        :param name: 
+        :param value: 
+        :return: 
+        """
         value = unicode(value)
         try:
             v = self.managedobjectattribute_set.get(key=name)
@@ -714,8 +784,9 @@ class ManagedObject(Model):
         # Find notification groups
         groups = set()
         for o in ObjectNotification.objects.filter(**{
-            event_id: True,
-            "selector__in": selectors}):
+                event_id: True,
+                "selector__in": selectors
+        }):
             groups.add(o.notification_group)
         if not groups:
             return  # Nothing to notify
@@ -995,7 +1066,7 @@ class ManagedObject(Model):
             elif is_ipv4_prefix(query):
                 # Match by prefix
                 p = IP.prefix(query)
-                return SQL("address::inet <<= '%s'" % p)
+                return SQL("cast_test_to_inet(address) <<= '%s'" % p)
             else:
                 try:
                     mac = MACAddressParameter().clean(query)
@@ -1010,6 +1081,61 @@ class ManagedObject(Model):
     def open_session(self, idle_timeout=None):
         return SessionContext(self, idle_timeout)
 
+    def can_escalate(self):
+        """
+        Check alarm can be escalated
+        :return: 
+        """
+        if not self.tt_system or not self.tt_system_id:
+            return False
+        if self.escalation_policy == "E":
+            return True
+        elif self.escalation_policy == "P":
+            return self.object_profile.can_escalate()
+        else:
+            return False
+
+    def can_create_box_alarms(self):
+        if self.box_discovery_alarm_policy == "E":
+            return True
+        elif self.box_discovery_alarm_policy == "P":
+            return self.object_profile.can_create_box_alarms()
+        else:
+            return False
+
+    def can_create_periodic_alarms(self):
+        if self.periodic_discovery_alarm_policy == "E":
+            return True
+        elif self.periodic_discovery_alarm_policy == "P":
+            return self.object_profile.can_create_periodic_alarms()
+        else:
+            return False
+
+    @property
+    def management_vlan(self):
+        """
+        Return management vlan settings
+        :return: Vlan id or None
+        """
+        if self.segment.management_vlan_policy == "d":
+            return None
+        elif self.segment.management_vlan_policy == "e":
+            return self.segment.management_vlan
+        else:
+            return self.segment.profile.management_vlan
+
+    @property
+    def multicast_vlan(self):
+        """
+        Return multicast vlan settings
+        :return: Vlan id or None
+        """
+        if self.segment.multicast_vlan_policy == "d":
+            return None
+        elif self.segment.multicast_vlan_policy == "e":
+            return self.segment.multicast_vlan
+        else:
+            return self.segment.profile.multicast_vlan
 
 @on_save
 class ManagedObjectAttribute(Model):
@@ -1035,7 +1161,7 @@ class ManagedObjectAttribute(Model):
         cache.delete("cred-%s" % self.managed_object.id)
 
 
-## object.scripts. ...
+# object.scripts. ...
 class ScriptsProxy(object):
     class CallWrapper(object):
         def __init__(self, obj, name):
@@ -1105,10 +1231,10 @@ class ActionsProxy(object):
         self._cache[name] = cw
         return cw
 
-## Avoid circular references
-from useraccess import UserAccess
-from groupaccess import GroupAccess
-from objectnotification import ObjectNotification
-from action import Action
-from selectorcache import SelectorCache
-from objectcapabilities import ObjectCapabilities
+# Avoid circular references
+from .useraccess import UserAccess
+from .groupaccess import GroupAccess
+from .objectnotification import ObjectNotification
+from .action import Action
+from .selectorcache import SelectorCache
+from .objectcapabilities import ObjectCapabilities

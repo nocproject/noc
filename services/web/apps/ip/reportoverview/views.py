@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ip.reportoverview
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ip.reportoverview
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import connection
-## NOC modules
+# NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
 from noc.ip.models import VRFGroup, Prefix
@@ -77,7 +77,9 @@ TABLE TR TD {
 </style>
 """
 
+
 class Node(object):
+
     def __init__(self, app):
         self.app = app
         self.children = []
@@ -91,7 +93,7 @@ class Node(object):
         if not self.depth:
             if self.children:
                 self.depth = 1 + max(c.get_depth()
-                    for c in self.children)
+                                     for c in self.children)
             else:
                 self.depth = 1
         return self.depth
@@ -125,12 +127,13 @@ class Node(object):
     def get_html(self):
         return ""
 
-    def get_bar(self, percent):
+    @staticmethod
+    def get_bar(percent):
         return ("<div class='bar_wrap'>"
-        "<div class='bar' style='width:%d%%'>"
-        "<div class='bar_text'>%d%%</div>"
-        "</div>"
-        "</div>") % (int(percent), int(percent))
+                "<div class='bar' style='width:%d%%'>"
+                "<div class='bar_text'>%d%%</div>"
+                "</div>"
+                "</div>") % (int(percent), int(percent))
 
 
 class VRFGroupNode(Node):
@@ -141,9 +144,9 @@ class VRFGroupNode(Node):
 
     def populate(self):
         if self.vrfs:
-            vid = "{%s}" % ",".join([str(v.id) for v in self.vrfs ])
+            vid = "{%s}" % ",".join([str(v.id) for v in self.vrfs])
             root = Prefix.objects.get(vrf=self.vrfs[0],
-                prefix="0.0.0.0/0")
+                                      prefix="0.0.0.0/0")
             c = GPrefixNode(self.app, root, vid)
             self.children = c.children  # Relink
 
@@ -169,7 +172,9 @@ class VRFNode(Node):
 
 
 class PrefixNode(Node):
+
     show_vrf = False
+
     def __init__(self, app, prefix):
         self.prefix = prefix
         if self.prefix.afi == "4":
@@ -235,7 +240,9 @@ class PrefixNode(Node):
 
 
 class GPrefixNode(PrefixNode):
+
     show_vrf = True
+
     def __init__(self, app, prefix, vrfs):
         self.vrfs = vrfs
         super(GPrefixNode, self).__init__(app, prefix)
@@ -264,7 +271,8 @@ class GPrefixNode(PrefixNode):
 class ReportOverviewApplication(ReportApplication):
     title = "Overview"
 
-    def get_ip_usage(self):
+    @staticmethod
+    def get_ip_usage():
         """
         Returns dict of prefix_id -> ip address count
         :return:
@@ -277,7 +285,8 @@ class ReportOverviewApplication(ReportApplication):
             """)
         return dict(c.fetchall())
 
-    def get_prefix_children(self):
+    @staticmethod
+    def get_prefix_children():
         """
         Returns dict of prefix_id -> count of nested prefixes
         :return:
@@ -290,7 +299,7 @@ class ReportOverviewApplication(ReportApplication):
             """)
         return dict(c.fetchall())
 
-    def report_html(self):
+    def report_html(self, request, result=None, query=None):
         #
         self.ip_usage = self.get_ip_usage()
         self.prefix_children = self.get_prefix_children()

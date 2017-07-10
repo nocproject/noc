@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CSV Parser
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CSV Parser
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import csv
 
 import services.web.apps.kb.parsers
 
 
-##
-## Creole Parser
-##
+#
+# Creole Parser
+#
 class Parser(services.web.apps.kb.parsers.Parser):
     name="CSV"
     @classmethod

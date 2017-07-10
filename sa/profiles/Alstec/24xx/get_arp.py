@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## Alstec.24xx.get_arp
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Alstec.24xx.get_arp
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 import re
 from noc.core.script.base import BaseScript
@@ -61,7 +61,6 @@ class Script(BaseScript):
                     mac_gw = MACAddressParameter().clean([mac[0] for mac in macs if mac[3] == "Learned"][0])
         except self.CLISyntaxError:
             macs = parse_table(self.cli("show mac-addr-table"))
-            print(macs)
             f_mac_gw = [mac[0] for mac in macs if mac[2] == "1"]
             if not f_mac_gw:
                 f_mac_gw = [mac[0] for mac in macs if mac[2] == gw_vlan[0] and mac[3] == "Learned"]

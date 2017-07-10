@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DLink.DVG.ping
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DLink.DVG.ping
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
 
@@ -18,7 +18,8 @@ class Script(BaseScript):
     interface = IPing
 
     rx_result = re.compile(
-        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received), \d+% packet loss$",
+        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
+        r"(packets received|received), \d+% packet loss$",
         re.MULTILINE)
     rx_stat = re.compile(
         r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+) ms$",
@@ -40,7 +41,7 @@ class Script(BaseScript):
         if result:
             r = {
                 "success": result.group("success"),
-                "count": result.group("count"),
+                "count": result.group("count")
                 }
         else:
             raise self.NotSupportedError()
@@ -49,6 +50,6 @@ class Script(BaseScript):
             r.update({
                 "min": stat.group("min"),
                 "avg": stat.group("avg"),
-                "max": stat.group("max"),
+                "max": stat.group("max")
                 })
         return r

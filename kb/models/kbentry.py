@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## KBEntry model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# KBEntry model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import difflib
-## Third-party modules
+# Third-party modules
 from core.model.fields import AutoCompleteTagsField
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.lib.app import site
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers import parser_registry
@@ -89,6 +89,8 @@ class KBEntry(models.Model):
         """
         Write article preview log
         """
+        from kbentrypreviewlog import KBEntryPreviewLog
+
         KBEntryPreviewLog(kb_entry=self, user=user).save()
 
     @property
@@ -179,7 +181,6 @@ class KBEntry(models.Model):
             b.delete()
 
 
-## Avoid circular references
+# Avoid circular references
 from kbentryhistory import KBEntryHistory
-from kbentrypreviewlog import KBEntryPreviewLog
 from kbuserbookmark import KBUserBookmark

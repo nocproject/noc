@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -15,6 +15,6 @@ class Migration:
         db.add_column("main_userprofile", "preferred_language",
                       models.CharField("Preferred Language", max_length=16,
                                         null=True, blank=True))
-    
+
     def backwards(self):
         pass    

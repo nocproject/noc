@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## sa.managedobject application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# sa.managedobject application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
 import zlib
-## Django modules
+# Django modules
 from django.http import HttpResponse
-## Third-party modules
+# Third-party modules
 import gridfs
 import ujson
 from mongoengine.queryset import Q as MQ
-## NOC modules
+# NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import (ManagedObject,
-                                         ManagedObjectAttribute)
+                                         ManagedObjectAttribute, Version)
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -123,6 +123,42 @@ class ManagedObjectApplication(ExtModelApplication):
             qs = qs.filter(UserAccess.Q(request.user))
         qs = qs.exclude(name__startswith="wiping-")
         return qs
+
+    def extra_query(self, q, order):
+        # Query for MO attributest. Get key - ex_ATTRNAME
+        sql = """SELECT value AS platform 
+                 FROM sa_managedobjectattribute AS saa 
+                 WHERE key=\'%s\' AND saa.managed_object_id=sa_managedobject.id"""
+        # Query for filter by attributest
+        sql_w = """EXISTS (SELECT managed_object_id 
+                           FROM sa_managedobjectattribute 
+                           WHERE managed_object_id=sa_managedobject.id AND key=%s AND value LIKE %s)
+                           """
+        extra = {"select": {}}
+        for v in Version._fields:
+            # key = "ex_" + v
+            extra["select"]["ex_" + v] = sql % v
+            if v in order:
+                extra["order_by"] = ["ex_" + v]
+            elif "-" + v in order:
+                extra["order_by"] = ["-ex_" + v]
+        if "address" in order:
+            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
+            extra["order_by"] = ["ex_address", "address"]
+        elif "-address" in order:
+            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
+            extra["order_by"] = ["-ex_address", "-address"]
+
+        e_q = set(q).intersection(set(Version._fields))
+        # Extra filter query
+        if e_q:
+            extra["where"] = []
+            extra["params"] = []
+            for e in e_q:
+                extra["where"].append(sql_w)
+                extra["params"] += [e, "%" + q[e] + "%"]
+        self.logger.info("Extra: %s" % extra)
+        return extra, [] if "order_by" in extra else order
 
     @view(url="^(?P<id>\d+)/links/$", method=["GET"],
           access="read", api=True)
@@ -279,7 +315,7 @@ class ManagedObjectApplication(ExtModelApplication):
         }
 
     @view(url="^(?P<id>\d+)/interface/$", method=["GET"],
-        access="read", api=True)
+          access="read", api=True)
     def api_interface(self, request, id):
         """
         GET interfaces
@@ -384,8 +420,8 @@ class ManagedObjectApplication(ExtModelApplication):
                 "untagged_vlan": i.untagged_vlan,
                 "tagged_vlans": i.tagged_vlans
             } for i in
-              SubInterface.objects.filter(managed_object=o.id,
-                  enabled_afi="BRIDGE")
+            SubInterface.objects.filter(managed_object=o.id,
+                                        enabled_afi="BRIDGE")
         ]
         # L3 interfaces
         q = MQ(enabled_afi="IPv4") | MQ(enabled_afi="IPv6")
@@ -410,7 +446,7 @@ class ManagedObjectApplication(ExtModelApplication):
         }
 
     @view(url="^(?P<id>\d+)/interface/$", method=["POST"],
-        access="change_interface", api=True)
+          access="change_interface", api=True)
     def api_set_interface(self, request, id):
         def get_or_none(c, v):
             if not v:
@@ -533,7 +569,7 @@ class ManagedObjectApplication(ExtModelApplication):
         return r
 
     @view(url="^(?P<id>\d+)/inventory/$", method=["GET"],
-        access="read", api=True)
+          access="read", api=True)
     def api_inventory(self, request, id):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
@@ -549,7 +585,7 @@ class ManagedObjectApplication(ExtModelApplication):
         }
 
     @view(url="^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"],
-        access="read", api=True)
+          access="read", api=True)
     def api_job_log(self, request, id, job):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):

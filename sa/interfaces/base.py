@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Abstract script interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Abstract script interfaces
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-import types
 import datetime
-## NOC Modules
+# Third-party modules
+import six
+# NOC Modules
 from noc.lib.text import list_to_ranges, ranges_to_list
 from noc.core.ip import IPv6
 from noc.core.mac import MAC
@@ -130,7 +131,7 @@ class REParameter(StringParameter):
     def clean(self, value):
         try:
             re.compile(value)
-        except Exception, why:
+        except re.error:
             self.raise_error(value)
         return value
 
@@ -148,7 +149,7 @@ class PyExpParameter(StringParameter):
     def clean(self, value):
         try:
             compile(value, "<string>", "eval")
-        except SyntaxError, why:
+        except SyntaxError:
             self.raise_error(value)
         return value
 
@@ -179,11 +180,11 @@ class BooleanParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) == types.BooleanType:
+        if isinstance(value, bool):
             return value
-        if type(value) in (types.IntType, types.LongType):
+        if isinstance(value, six.integer_types):
             return value != 0
-        if type(value) in (types.StringType, types.UnicodeType):
+        if isinstance(value, six.string_types):
             return value.lower() in ("true", "t", "yes", "y")
         self.raise_error(value)
 
@@ -240,8 +241,8 @@ class IntParameter(Parameter):
             i = int(value)
         except (ValueError, TypeError):
             self.raise_error(value)
-        if ((self.min_value is not None and i < self.min_value)
-                or (self.max_value is not None and i > self.max_value)):
+        if ((self.min_value is not None and i < self.min_value) or
+                (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
         return i
 
@@ -284,10 +285,10 @@ class FloatParameter(Parameter):
             return self.default
         try:
             i = float(value)
-        except:
+        except ValueError:
             self.raise_error(value)
-        if ((self.min_value is not None and i < self.min_value)
-                or (self.max_value is not None and i > self.max_value)):
+        if ((self.min_value is not None and i < self.min_value) or
+                (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
         return i
 
@@ -341,8 +342,8 @@ class InstanceOfParameter(Parameter):
         return isinstance(value, self.cls)
 
     def is_valid_classname(self, value):
-        return (hasattr(value, "__class__")
-                and value.__class__.__name__ == self.cls)
+        return (hasattr(value, "__class__") and
+                value.__class__.__name__ == self.cls)
 
     def clean(self, value):
         if value is None:
@@ -512,7 +513,7 @@ class DictParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) != types.DictType:
+        if not isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -523,12 +524,14 @@ class DictParameter(Parameter):
                 if attr.default is not None:
                     out_value[a_name] = attr.default
                 else:
-                    self.raise_error(value,
-                                     "Attribute '%s' is required in %s" % (a_name, value))
+                    self.raise_error(
+                        value,
+                        "Attribute '%s' is required in %s" % (
+                            a_name, value))
             if a_name in in_value:
                 try:
                     out_value[a_name] = attr.clean(in_value[a_name])
-                except InterfaceTypeError, why:
+                except InterfaceTypeError as e:
                     if not in_value[a_name] and not attr.required:
                         if attr.default:
                             out_value[a_name] = attr.default
@@ -537,7 +540,7 @@ class DictParameter(Parameter):
                     else:
                         self.raise_error(
                             value,
-                            "Invalid value for '%s': %s" % (a_name, why))
+                            "Invalid value for '%s': %s" % (a_name, e))
                 del in_value[a_name]
         # Copy left items
         if not self.truncate:
@@ -548,7 +551,7 @@ class DictParameter(Parameter):
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) != types.DictType:
+        if not isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -570,7 +573,7 @@ class DictParameter(Parameter):
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) != types.DictType:
+        if not isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -583,8 +586,10 @@ class DictParameter(Parameter):
                 try:
                     out_value[a_name] = attr.script_clean_result(profile,
                                                              in_value[a_name])
-                except InterfaceTypeError, why:
-                    self.raise_error(value, "Invalid value for '%s': %s" % (a_name, str(why)))
+                except InterfaceTypeError as e:
+                    self.raise_error(
+                        value,
+                        "Invalid value for '%s': %s" % (a_name, str(e)))
                 del in_value[a_name]
         for k, v in in_value.items():
             out_value[k] = v
@@ -714,9 +719,9 @@ class IPv4PrefixParameter(StringParameter):
         return v
 
 
-##
-## IPv6 Parameter
-##
+#
+# IPv6 Parameter
+#
 class IPv6Parameter(StringParameter):
     """
     >>> IPv6Parameter().clean("::")
@@ -785,9 +790,9 @@ class IPv6PrefixParameter(StringParameter):
         return "%s/%d" % (n, m)
 
 
-##
-## IPv4/IPv6 parameter
-##
+#
+# IPv4/IPv6 parameter
+#
 class IPParameter(StringParameter):
     def clean(self, value):
         """
@@ -802,9 +807,9 @@ class IPParameter(StringParameter):
             return IPv4Parameter().clean(value)
 
 
-##
-## Prefix parameter
-##
+#
+# Prefix parameter
+#
 class PrefixParameter(StringParameter):
     def clean(self, value):
         """
@@ -817,9 +822,9 @@ class PrefixParameter(StringParameter):
             return IPv4PrefixParameter().clean(value)
 
 
-##
-##
-##
+#
+#
+#
 class VLANIDParameter(IntParameter):
     """
     >>> VLANIDParameter().clean(10)
@@ -863,9 +868,9 @@ class VLANStackParameter(ListOfParameter):
         return value
 
 
-##
-##
-##
+#
+#
+#
 class VLANIDListParameter(ListOfParameter):
     """
     >>> VLANIDListParameter().clean(["1","2","3"])
@@ -878,9 +883,9 @@ class VLANIDListParameter(ListOfParameter):
                                            required=required, default=default)
 
 
-##
-##
-##
+#
+#
+#
 class VLANIDMapParameter(StringParameter):
     def clean(self, value):
         """
@@ -947,10 +952,10 @@ class MACAddressParameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        value = super(MACAddressParameter, self).clean(value)
-        if len(value) == 6 and self.accept_bin:
-            # MAC address in binary form
-            return str(MAC(":".join(["%02X" % ord(c) for c in value])))
+        if isinstance(value, six.string_types):
+            value = super(MACAddressParameter, self).clean(value)
+        if not self.accept_bin and len(value) <= 6:
+            self.raise_error(value)
         try:
             return str(MAC(value))
         except ValueError:
@@ -1032,7 +1037,7 @@ class RDParameter(Parameter):
                 if r > 65535:  # 4-byte ASN
                     self.raise_error(value)
             else:
-                if r > 0xFFFFFFFFL:  # 2-byte ASN
+                if r > 0xFFFFFFFF:  # 2-byte ASN
                     self.raise_error(value)
         return "%s:%s" % (l, r)
 
@@ -1192,9 +1197,9 @@ class ObjectIdParameter(REStringParameter):
             "^[0-9a-f]{24}$", required=required, default=default
         )
 
-##
-## Module Test
-##
+#
+# Module Test
+#
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

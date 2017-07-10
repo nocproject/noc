@@ -1,21 +1,21 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## migrate-repo
-## Migrate HG repo to GridVCS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# migrate-repo
+# Migrate HG repo to GridVCS
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import sys
 import subprocess
 import datetime
-## Django modules
+# Django modules
 from django.db import connection
-## NOC modules
+# NOC modules
 from noc.settings import config
 from noc.core.gridvcs.manager import GridVCS
 

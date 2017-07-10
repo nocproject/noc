@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Huawei.MA5300.get_version
-## sergey.sadovnikov@gmail.com
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Huawei.MA5300.get_version
+# sergey.sadovnikov@gmail.com
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 
@@ -22,7 +22,6 @@ class Script(BaseScript):
     rx_ver = re.compile(r"Version (?P<version>\S+)")
 
     def execute(self):
-        self.cli("en")
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
         version = match.group("version")

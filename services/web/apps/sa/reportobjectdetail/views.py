@@ -1,42 +1,131 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.reportobjectdetail application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.reportobjectdetail application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import csv
 import tempfile
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from django.db import connection
 from django.http import HttpResponse
 from pymongo import ReadPreference
 import xlsxwriter
-import itertools
 import bson
-## NOC modules
+# NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import ManagedObjectAttribute
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
-from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
-from noc.sa.models.objectpath import ObjectPath
+from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.object import Object
 
 # @todo ThreadingCount
-# @todo SerialNumber Report
 # @todo ReportDiscovery Problem
+
+
+class ReportObjectDetailLinks(object):
+    """Report for MO links detail"""
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.out = self.load(mo_ids)
+
+    @staticmethod
+    def load(mo_ids):
+        match = {"int.managed_object": {"$in": mo_ids}}
+        group = {"_id": "$int.managed_object",
+                 "links": {"$push": {"link": "$_id",
+                                     "iface_n": "$int.name",
+                                     "iface_id": "$int._id",
+                                     "mo": "$int.managed_object"}}}
+        value = get_db()["noc.links"].aggregate([
+            {"$unwind": "$interfaces"},
+            {"$lookup": {"from": "noc.interfaces", "localField": "interfaces", "foreignField": "_id", "as": "int"}},
+            {"$match": match},
+            {"$group": group}
+        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+
+        return dict((v["_id"][0], v["links"]) for v in value["result"] if v["_id"])
+
+    def __getitem__(self, item):
+        return self.out.get(item, [])
+
+
+class ReportDiscoveryResult(object):
+    """Report for Discovery Result"""
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.out = self.load(self.mo_ids)
+
+    @staticmethod
+    def load(mo_ids):
+
+        discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
+        match = {"job.problems": {"$exists": True, "$ne": {  }}}
+
+        pipeline = [
+            {"$match": {"key": {"$in": mo_ids}, "jcls": discovery}},
+            {"$project": {
+                "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
+                "st": True,
+                "key": True}},
+            {"$lookup": {"from": "noc.joblog", "localField": "j_id", "foreignField": "_id", "as": "job"}},
+            {"$project": {"job.problems": True, "st": True, "key": True}},
+            {"$match": match}]
+
+        value = {}
+        for p in []:
+            value = get_db()["noc.schedules.discovery.%s" % p.name].aggregate(pipeline,
+                                                                         read_preference=ReadPreference.SECONDARY_PREFERRED)
+
+        r = defaultdict(dict)
+        for v in value["result"]:
+            pass
+        # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
+        return r
+
+    def __getitem__(self, item):
+        return self.out.get(item, {})
+
+
+class ReportContainer(object):
+    """Report for MO Container"""
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.out = self.load(self.mo_ids)
+
+    @staticmethod
+    def load(mo_ids):
+        match = {"data.management.managed_object": {"$exists": True}}
+        if mo_ids:
+            match = {"data.management.managed_object": {"$in": mo_ids}}
+        value = get_db()["noc.objects"].aggregate([
+            {"$match": match},
+            {"$lookup": {"from": "noc.objects", "localField": "container", "foreignField": "_id", "as": "cont"}},
+            {"$project": {"data": 1, "cont.data": 1}}
+        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+
+        r = defaultdict(dict)
+        for v in value["result"]:
+            if "asset" in v["data"]:
+                r[v["data"]["management"]["managed_object"]].update(v["data"]["asset"])
+            if v["cont"]:
+                if "data" in v["cont"][0]:
+                    r[v["data"]["management"]["managed_object"]].update(v["cont"][0]["data"].get("address", {}))
+        # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
+        return r
+
+    def __getitem__(self, item):
+        return self.out.get(item, {})
 
 
 class ReportObjectLinkCount(object):
@@ -53,7 +142,7 @@ class ReportObjectLinkCount(object):
             {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}
         ], read_preference=ReadPreference.SECONDARY_PREFERRED)
 
-        return dict((v["_id"][0], v["count"]) for v in value["result"])
+        return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
 
     def __getitem__(self, item):
         return self.out.get(item, 0)
@@ -84,10 +173,11 @@ class ReportObjectIfacesTypeStat(object):
 
 class ReportObjectIfacesStatusStat(object):
     """Report for interfaces speed and status count"""
-    def __init__(self, mo_ids, columns=list("-")):
+    def __init__(self, mo_ids, columns=list("-"), oper=True):
         self.mo_ids = mo_ids
         # self.columns = ["1G_UP", "1G_DOWN"]
         self.columns = columns
+        self.oper = oper
         self.out = self.load()
 
     def load(self):
@@ -101,14 +191,18 @@ class ReportObjectIfacesStatusStat(object):
         { "_id" : { "oper_status" : false, "in_speed" : 100000, "managed_object" : 6757 }, "count_in_speed" : 1 }
         :return:
         """
+        group = {"in_speed": "$in_speed",
+                 "managed_object": "$managed_object"}
+        if self.oper:
+            group["oper_status"] = "$oper_status"
+
         match = {"type": "physical"}
         if self.mo_ids:
             match = {"type": "physical",
                      "managed_object": {"$in": self.mo_ids}}
         value = get_db()["noc.interfaces"].aggregate([
             {"$match": match},
-            {"$group": {"_id": {"oper_status": "$oper_status", "in_speed": "$in_speed",
-                                "managed_object": "$managed_object"},
+            {"$group": {"_id": group,
                         "count": {"$sum": 1}}}
         ], read_preference=ReadPreference.SECONDARY_PREFERRED)
         def_l = [""] * len(self.columns)
@@ -118,7 +212,7 @@ class ReportObjectIfacesStatusStat(object):
                 True: "Up",
                 False: "Down",
                 None: "-"
-            }[v["_id"].get("oper_status", None)]
+            }[v["_id"].get("oper_status", None)] if self.oper else ""
 
             if v["_id"].get("in_speed", None):
                 c += "/" + self.humanize_speed(v["_id"]["in_speed"])
@@ -153,7 +247,7 @@ class ReportObjectIfacesStatusStat(object):
 class ReportObjectAttributes(object):
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
-        self.attr_list = ["vendor", "version", "platform"]
+        self.attr_list = ["vendor", "version", "platform", "Serial Number", "HW version"]
         self.out = self.load(self.attr_list)
 
     @staticmethod
@@ -170,22 +264,23 @@ class ReportObjectAttributes(object):
         base_select = "select %s "
         base_select += "from (select distinct managed_object_id from sa_managedobjectattribute) as saa "
 
-        value_select = "INNER JOIN (select managed_object_id,value from sa_managedobjectattribute where key='%s') "
+        value_select = "LEFT JOIN (select managed_object_id,value from sa_managedobjectattribute where key='%s') "
         value_select += "as %s on %s.managed_object_id=saa.managed_object_id"
 
         s = ["saa.managed_object_id"]
-        s.extend([".".join([al, "value"]) for al in attr_list])
+        s.extend([".".join([al.replace(" ", "_"), "value"]) for al in attr_list])
 
         query1 = base_select % ", ".join(tuple(s))
-        query2 = " ".join([value_select % tuple([al]*3) for al in attr_list])
+        query2 = " ".join([value_select % tuple([al, al.replace(" ", "_"), al.replace(" ", "_")]) for al in attr_list])
         query = query1 + query2
         cursor.execute(query)
-        mo_attrs.update(dict([(c[0], c[1:4]) for c in cursor]))
+        mo_attrs.update(dict([(c[0], c[1:6]) for c in cursor]))
+        # print mo_attrs
 
         return mo_attrs
 
     def __getitem__(self, item):
-        return self.out.get(item, ["", "", ""])
+        return self.out.get(item, ["", "", "", "", ""])
 
 
 class ReportObjects(object):
@@ -214,6 +309,9 @@ class ReportObjects(object):
     def __getitem__(self, item):
         # @todo Create dynamic column
         return self.element[item]
+
+    def get_all(self):
+        return {e: self.element for e in self}
 
 
 class ReportObjectsHostname(object):
@@ -301,6 +399,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "object_vendor",
             "object_platform",
             "object_version",
+            "object_serial",
             "avail",
             "admin_domain",
             "container",
@@ -320,6 +419,7 @@ class ReportObjectDetailApplication(ExtApplication):
          "OBJECT_VENDOR",
          "OBJECT_PLATFORM",
          "OBJECT_VERSION",
+         "OBJECT_SERIAL",
          "AVAIL",
          "ADMIN_DOMAIN",
          "CONTAINER",
@@ -368,6 +468,7 @@ class ReportObjectDetailApplication(ExtApplication):
         iface_count = {}
         link_count = {}
         iface_type_count = {}
+        container_lookup = ReportContainer(mos_id)
         if "segment" in columns.split(","):
             segment_lookup = dict(NetworkSegment.objects.all().values_list("id", "name"))
         if "avail" in columns.split(","):
@@ -381,7 +482,7 @@ class ReportObjectDetailApplication(ExtApplication):
         if len(mos_id) < 70000:
             # @todo Warning - too many objects
             if "object_vendor" in columns.split(",") or "object_platform" in columns.split(",") \
-                    or "object_version" in columns.split(","):
+                    or "object_version" in columns.split(",") or "object_serial" in columns.split(","):
                 attr = ReportObjectAttributes([])
             moss = ReportObjects([])
         # @todo mo_attributes_lookup
@@ -400,10 +501,10 @@ class ReportObjectDetailApplication(ExtApplication):
                 attr[mo][0] if attr else "",
                 attr[mo][2] if attr else "",
                 attr[mo][1] if attr else "",
+                attr[mo][3] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
                 _("Yes") if avail.get(mo, None) else _("No"),
                 moss[5],
-                # mo.container.name if mo.container else "None",
-                "None",
+                container_lookup[mo].get("text", ""),
                 segment_lookup.get(bson.objectid.ObjectId(moss[6]), "No segment") if segment_lookup else "",
                 iface_count[mo] if iface_count else "",
                 link_count[mo] if link_count else ""

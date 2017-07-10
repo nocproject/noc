@@ -12,7 +12,9 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.inv.networksegment.Model",
         "NOC.inv.networksegment.TreeCombo",
         "NOC.sa.managedobjectselector.LookupField",
-        "Ext.ux.form.DictField"
+        "NOC.main.remotesystem.LookupField",
+        "Ext.ux.form.DictField",
+        "NOC.inv.networksegmentprofile.LookupField"
     ],
     model: "NOC.inv.networksegment.Model",
     search: true,
@@ -102,11 +104,18 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "parent",
                     emptyText: __("Select parent..."),
                     fieldLabel: __("Parent"),
+                    listWidth: 0.6,
                     labelAlign: "left",
                     labelWidth: 100,
                     margin: '0 0 5',
                     allowBlank: true
                 }),
+                {
+                    name: "profile",
+                    xtype: "inv.networksegmentprofile.LookupField",
+                    fieldLabel: __("Profile"),
+                    allowBlank: false
+                },
                 {
                     name: "description",
                     xtype: "textarea",
@@ -118,6 +127,7 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "sibling",
                     emptyText: __("Select sibling..."),
                     fieldLabel: __("Sibling"),
+                    listWidth: 0.6,
                     labelAlign: "left",
                     labelWidth: 100,
                     margin: '0 0 5',
@@ -139,6 +149,37 @@ Ext.define("NOC.inv.networksegment.Application", {
                     xtype: "numberfield",
                     fieldLabel: __("Max Links"),
                     allowBlank: true
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "textfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
                 },
                 {
                     name: "tags",

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service host
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Service host
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from base import BaseFact
 
 
@@ -27,7 +27,7 @@ class Service(BaseFact):
     @property
     def name(self):
         return self._name
-    
+
     @name.setter
     def name(self, value):
         self._name = value or None
@@ -35,7 +35,7 @@ class Service(BaseFact):
     @property
     def enabled(self):
         return self._enabled
-    
+
     @enabled.setter
     def enabled(self, value):
         self._enabled = bool(value)
@@ -43,7 +43,7 @@ class Service(BaseFact):
     @property
     def version(self):
         return self._version
-    
+
     @version.setter
     def version(self, value):
         self._version = value
@@ -51,7 +51,7 @@ class Service(BaseFact):
     @property
     def port(self):
         return self._port
-    
+
     @port.setter
     def port(self, value):
         self._port = value

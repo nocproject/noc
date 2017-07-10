@@ -33,8 +33,8 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             defaultValue: "A"
         },
         {
-            name: "mac_discovery",
-            type: "bool",
+            name: "mac_discovery_policy",
+            type: "string",
             defaultValue: false
         },
         {
@@ -72,6 +72,23 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "is_uni",
             type: "bool",
             defaultValue: false
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string"
         },
         // CSS
         {

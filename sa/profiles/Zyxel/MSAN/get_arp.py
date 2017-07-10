@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Zyxel.MSAN.get_arp
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Zyxel.MSAN.get_arp
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python modules
 import re
@@ -31,6 +31,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             v = self.cli("ip arp list")
         for match in self.rx_arp1.finditer(v):
+            if match.group("interface") == "-":
+                continue
             r += [match.groupdict()]
         if not r:
             for match in self.rx_arp2.finditer(v):

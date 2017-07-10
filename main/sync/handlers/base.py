@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SyncHandler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# SyncHandler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import subprocess
-## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+# NOC modules
+from noc.core.log import PrefixLoggerAdapter
 
 
 class SyncHandler(object):

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Base BI extractor
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Base BI extractor
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import datetime
 import itertools
@@ -15,7 +15,8 @@ import shutil
 
 
 class Stream(object):
-    CHUNK_SIZE = 1000000
+    # @todo: Make configurable
+    CHUNK_SIZE = 4000
 
     def __init__(self, model, prefix, date=None):
         self.prefix = prefix
@@ -46,7 +47,8 @@ class Stream(object):
         if not self.out:
             self.out_path = os.path.join(
                 self.prefix,
-                "%s-%06d.tsv.gz.tmp" % (self.fs, self.chunk_count.next())
+                "%s-%06d.tsv.gz.tmp" % (self.fs,
+                                        self.chunk_count.next())
             )
             meta_path = self.out_path[:-11] + ".meta"
             with open(meta_path, "w") as f:

@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MIB model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# MIB model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import subprocess
 import re
 import imp
 import datetime
 import os
-## NOC modules
+# NOC modules
 import noc.lib.nosql as nosql
 from noc.settings import config
-from noc.lib.fileutils import temporary_file, safe_rewrite
+from noc.core.fileutils import temporary_file, safe_rewrite
 from error import (MIBNotFoundException, MIBRequiredException,
                    OIDCollision)
 from mibpreference import MIBPreference
@@ -26,7 +26,7 @@ from noc.lib.validators import is_oid
 from noc.lib.escape import fm_unescape, fm_escape
 from noc.core.snmp.util import render_tc
 
-## Regular expression patterns
+# Regular expression patterns
 rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
@@ -474,5 +474,5 @@ class MIB(nosql.Document):
         return r
 
 
-## Avoid circular references
+# Avoid circular references
 from mibdata import MIBData

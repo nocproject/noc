@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.IOS.add_vlan
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
+# ---------------------------------------------------------------------
+# Cisco.IOS.add_vlan
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iaddvlan import IAddVlan
 

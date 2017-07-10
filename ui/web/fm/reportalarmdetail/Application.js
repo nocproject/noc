@@ -29,19 +29,22 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["duration_sec", __("Duration"), true],
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
+                ["object_profile", __("IP"), true],
                 ["object_platform", __("Platform"), true],
+                ["object_version", __("Version"), true],
                 ["alarm_class", __("Alarm Class"), true],
                 ["objects", __("Affected Objects"), true],
                 ["subscribers", __("Affected Subscriber"), true],
                 ["tt", __("TT"), true],
                 ["escalation_ts", __("Escalation Time"), true],
-                ["container_0", __("Container (Level 1)"), true],
-                ["container_1", __("Container (Level 2)"), true],
-                ["container_2", __("Container (Level 3)"), true],
-                ["container_3", __("Container (Level 4)"), true],
-                ["container_4", __("Container (Level 5)"), true],
-                ["container_5", __("Container (Level 6)"), true],
-                ["container_6", __("Container (Level 7)"), true],
+                ["container_address", __("Container Address"), true],
+                ["container_0", __("Container (Level 1)"), false],
+                ["container_1", __("Container (Level 2)"), false],
+                ["container_2", __("Container (Level 3)"), false],
+                ["container_3", __("Container (Level 4)"), false],
+                ["container_4", __("Container (Level 5)"), false],
+                ["container_5", __("Container (Level 6)"), false],
+                ["container_6", __("Container (Level 7)"), false],
                 ["segment_0", __("Segment (Level 1)"), true],
                 ["segment_1", __("Segment (Level 2)"), true],
                 ["segment_2", __("Segment (Level 3)"), true],
@@ -88,11 +91,11 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             items: [
                 {
                     text: __("CSV"),
-                    pressed: true,
                     width: 70
                 },
                 {
                     text: __("Excel"),
+                    pressed: true,
                     width: 70
                 }
             ],

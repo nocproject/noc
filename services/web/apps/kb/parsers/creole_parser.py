@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Creole 1.0 Parser (http://www.wikicreole.org)
-## Requires python-creole
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Creole 1.0 Parser (http://www.wikicreole.org)
+# Requires python-creole
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import services.web.apps.kb.parsers
 
-##
-## Macro wrapper
-##
+#
+# Macro wrapper
+#
 class MacroWrapper(object): pass
 macro_wrapper=MacroWrapper()
 for n,c in services.web.apps.kb.parsers.macro_registry.classes.items():
     setattr(macro_wrapper,n,c.expand)
-##
-## Creole Parser
-##
+#
+# Creole Parser
+#
 class Parser(services.web.apps.kb.parsers.Parser):
     name="Creole"
     @classmethod

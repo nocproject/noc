@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.event application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.event application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import inspect
 import re
-## NOC modules
+# NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.fm.models.newevent import NewEvent
 from noc.fm.models.activeevent import ActiveEvent

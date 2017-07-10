@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: HP
-## OS:     ProCurve
-##----------------------------------------------------------------------
-## Copyright (C) 2007-10 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: HP
+# OS:     ProCurve
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-10 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.profile.base import BaseProfile
@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_more = [
         ("Press any key to continue", "\n"),
         ("-- MORE --, next page: Space, next line: Enter, quit: Control-C", " ")
-        ]
+    ]
     pattern_syntax_error = r"Invalid input: "
     command_disable_pager = "terminal length 1000"
     command_super = "enable"
@@ -27,11 +27,11 @@ class Profile(BaseProfile):
     command_save_config = "write memory\n"
     command_exit = "exit"
 
-    ##
-    ## Compare versions
-    ##
-    ## Version format is <letter>.<major>.<minor>
-    ##
+    #
+    # Compare versions
+    #
+    # Version format is <letter>.<major>.<minor>
+    #
     @classmethod
     def cmp_version(cls, v1, v2):
         l1, mj1, mn1 = v1.split(".")

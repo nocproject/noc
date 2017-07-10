@@ -7,6 +7,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
+  no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_node_role == 'bootstrap' }}"
@@ -23,6 +24,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
+  no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_node_role == 'server' }}"
@@ -39,6 +41,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
+  no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_node_role == 'client' }}"
@@ -69,3 +72,31 @@
   when: "'prod' in noc_env_type"
   tags:
     - config
+
+# fight against thousands of time-wait connections. good enough reading http://fx-files.ru/archives/602
+- name: Tune sysctl.conf for consul
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+    reload: yes
+  with_items:
+    - { name: 'net.ipv4.tcp_tw_reuse', value: 1}
+    - { name: 'net.ipv4.tcp_rfc1337', value: 1}
+  tags:
+    - config
+  when: "'Linux' in ansible_system"
+
+# fight against thousands of time-wait connections. good enough reading http://fx-files.ru/archives/602
+# that one is dangerous
+- name: Tune sysctl.conf for consul
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+    reload: yes
+  with_items:
+    - { name: 'net.ipv4.tcp_tw_recycle', value: 1}
+  tags:
+    - config
+  when: "'Linux' in ansible_system and 'prod' in noc_env_type"

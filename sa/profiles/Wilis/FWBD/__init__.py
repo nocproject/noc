@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Willis
-## OS:     FWBD
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Willis
+# OS:     FWBD
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 '''
 '''
 from noc.core.profile.base import BaseProfile
@@ -44,4 +44,3 @@ class Profile(BaseProfile):
             """Leave switch context"""
             if exc_type is None:
                 self.script.cli("exit\r")
-

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOS.get_sla_probes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOS.get_sla_probes
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 
@@ -19,7 +19,8 @@ class Script(BaseScript):
 
     rx_res = re.compile(
         r"^\s+Owner: (?P<owner>\S+), Test: (?P<test>\S+)\s*\n"
-        r"^\s+Target address: (?P<target>\S+), Probe type: (?P<type>\S+), Test size: \d+ probes\s*\n"
+        r"^\s+Target address: (?P<target>\S+), Probe type: (?P<type>\S+), "
+        r"Test size: \d+ probes\s*\n"
         r"^\s+Probe results:\s*\n"
         r"^\s+Response received,.+,(?P<hw_timestamp>.+)\n",
         re.MULTILINE)
@@ -41,7 +42,8 @@ class Script(BaseScript):
                 "name": match.group("test"),
                 "type": self.TEST_TYPES[match.group("type")],
                 "target": match.group("target"),
-                "hw_timestamp": match.group("hw_timestamp").strip() != "No hardware timestamps"
+                "hw_timestamp": match.group("hw_timestamp").strip() !=
+                "No hardware timestamps"
             }
             found = False
             for rpm in r:

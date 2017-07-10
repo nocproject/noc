@@ -3,10 +3,10 @@ from south.db import db
 
 
 class Migration:
-    
+
     def forwards(self):
         db.execute(PROC)
-    
+
     def backwards(self):
         pass
 
@@ -28,12 +28,12 @@ BEGIN
     DELETE FROM fm_eventdata
     WHERE event_id=p_event_id
         AND "type" IN ('R','V');
-    
+
     FOR i IN array_lower(p_vars,1) .. array_upper(p_vars,1) LOOP
         INSERT INTO fm_eventdata(event_id,"type",key,value)
         VALUES(p_event_id,p_vars[i][1],p_vars[i][2],p_vars[i][3]);
     END LOOP;
-    
+
     UPDATE fm_event
     SET
         event_class_id=p_event_class_id,

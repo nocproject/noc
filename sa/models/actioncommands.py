@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ActionCommands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ActionCommands
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import os
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField,
                                 BooleanField, ListField, IntField,
                                 EmbeddedDocumentField, ReferenceField)
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
-from action import Action
+from .action import Action
 
 
 class PlatformMatch(EmbeddedDocument):

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------
-## Huawei.VRP.get_oam_status
-##----------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------
+# ---------------------------------------------------------------
+# Huawei.VRP.get_oam_status
+# ---------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
 from noc.sa.interfaces.base import MACAddressParameter
@@ -34,7 +34,7 @@ class Script(BaseScript):
             raise self.NotSupportedError
         oams = re.findall(self.oam_splitter, v)
         if not oams:
-            raise self.NotSupportedError
+            return []
         for l in oams:
             match = self.rx_line.match(l)
             if match:

@@ -1,26 +1,23 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Escalator
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Escalator
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 
 
 class EscalatorService(Service):
     name = "escalator"
-
-    def __init__(self):
-        super(EscalatorService, self).__init__()
-        self.scheduler = None
+    leader_lock_name = "escalator"
 
     @tornado.gen.coroutine
     def on_activate(self):

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Person models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Person models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-## NOC modules
+# NOC modules
 from rir import RIR
 from noc.core.gridvcs.manager import GridVCSField
 from noc.lib.rpsl import rpsl_format, rpsl_multiple
@@ -62,9 +62,9 @@ class Person(models.Model):
         # todo: sliding job
 
 
-##
-## Signal handlers
-##
+#
+# Signal handlers
+#
 @receiver(post_save, sender=Person)
 def on_save(sender, instance, created, **kwargs):
     instance.touch()

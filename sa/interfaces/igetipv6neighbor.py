@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IGetIPv6Neighbor - interface to query IPv6 neighbor cache
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# IGetIPv6Neighbor - interface to query IPv6 neighbor cache
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
 from base import (ListOfParameter, StringParameter, DictParameter,
                   InterfaceNameParameter, IPv6Parameter, MACAddressParameter)

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.MES.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.MES.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -48,7 +48,10 @@ class Script(BaseScript):
         "42": "MES-1024",
         "43": "MES-2124",
         "52": "MES-1124",
-        "54": "MES-5248"
+        "54": "MES-5248",
+        "59": "MES-2124P",
+        "74": "MES-5324",
+        "81": "MES-3324F"
     }
 
     def execute(self):
@@ -80,13 +83,21 @@ class Script(BaseScript):
                 pass
 
         # Fallback to CLI
+        stacked = False
         plat = self.cli("show system", cached=True)
+        match = self.rx_platform.search(plat)
+        if not match:
+            plat = self.cli("show system unit 1", cached=True)
+            stacked = True
         match = self.re_search(self.rx_platform, plat)
         platform = match.group("platform")
         platform = platform.split(".")[8]
         platform = self.platforms.get(platform)
 
-        ver = self.cli("show version", cached=True)
+        if stacked:
+            ver = self.cli("show version unit 1", cached=True)
+        else:
+            ver = self.cli("show version", cached=True)
         match = self.rx_version1.search(ver)
         if match:
             version = self.re_search(self.rx_version1, ver)
@@ -97,7 +108,10 @@ class Script(BaseScript):
             bootprom = None
             hardware = None
 
-        ser = self.cli("show system id", cached=True)
+        if stacked:
+            ser = self.cli("show system id unit 1", cached=True)
+        else:
+            ser = self.cli("show system id", cached=True)
         match = self.rx_serial1.search(ser)
         if match:
             serial = self.re_search(self.rx_serial1, ser)

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: MikroTik
-## OS:     RouterOS
-## Compatible: 3.14 and above
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: MikroTik
+# OS:     RouterOS
+# Compatible: 3.14 and above
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -29,7 +29,7 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
     rogue_chars = ["\r", "\x00"]
 
-    #telnet_naws = "\x00\xfa\x00\xfa"
+    # telnet_naws = "\x00\xfa\x00\xfa"
 
     def setup_script(self, script):
         """
@@ -45,9 +45,8 @@ class Profile(BaseProfile):
         self.add_script_method(script, "cli_detail", self.cli_detail)
 
     def setup_session(self, script):
-        #MikroTik Remove duplicates prompt
+        # MikroTik Remove duplicates prompt
         script.cli("\n")
-
 
     def cli_detail(self, script, cmd, cached=False):
         """
@@ -67,7 +66,6 @@ class Profile(BaseProfile):
 
     def parse_detail(self, s):
         """
-
         :param s:
         :return:
         """

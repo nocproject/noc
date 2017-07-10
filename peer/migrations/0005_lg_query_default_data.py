@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -41,6 +41,6 @@ class Migration:
                 q=qtype[k]
                 if db.execute("SELECT COUNT(*) FROM peer_lgquerycommand WHERE peering_point_type_id=%s AND query_type_id=%s",[ppt_id,q])[0][0]==0:
                     db.execute("INSERT INTO peer_lgquerycommand(peering_point_type_id,query_type_id,command) VALUES(%s,%s,%s)",[ppt_id,q,v])
-    
+
     def backwards(self):
         "Write your backwards migration here"

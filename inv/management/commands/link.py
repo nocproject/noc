@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Link management CLI interface
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Link management CLI interface
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from optparse import OptionParser, make_option
 from collections import defaultdict
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
-## NOC modules
+# NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 

@@ -1,14 +1,14 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Favorites model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Favorites model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
+# NOC modules
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
                            BooleanField, ListField)
 from noc.main.models import User

@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "nsqlookupd",
+    "tags": [ ],
+    "port": 4151,
+    "enableTagOverride": false,
+    "check": {
+        "http": "http://127.0.0.1:4151/ping",
+        "interval": "10s"
+    }
+  }
+}

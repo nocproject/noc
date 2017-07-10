@@ -1,25 +1,27 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface Profile models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Interface Profile models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField,
+from mongoengine.fields import (StringField, BooleanField, LongField,
                                 ReferenceField, FloatField, ListField,
                                 EmbeddedDocumentField, IntField)
 import cachetools
-## NOC modules
+# NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.remotesystem import RemoteSystem
 from noc.pm.models.metrictype import MetricType
+from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -27,13 +29,71 @@ id_lock = Lock()
 
 class InterfaceProfileMetrics(EmbeddedDocument):
     metric_type = ReferenceField(MetricType, required=True)
+    # Collect metric
     is_active = BooleanField()
+    # Send metrics to persistent store
+    is_stored = BooleanField(default=True)
+    # Window depth
+    window_type = StringField(
+        max_length=1,
+        choices=[
+            ("m", "Measurements"),
+            ("t", "Time")
+        ]
+    )
+    # Window size. Depends on window type
+    # * m - amount of measurements
+    # * t - time in seconds
+    window = IntField(default=1)
+    # Window function
+    # Accepts window as a list of [(timestamp, value)]
+    # and window_config
+    # and returns float value
+    window_function = StringField(
+        choices=[
+            # Call handler
+            # window_config is a handler
+            ("handler", "Handler"),
+            # Last measure
+            ("last", "Last Value"),
+            # Average, no config
+            ("avg", "Average"),
+            # Percentile, window_config is in a percent
+            ("percentile", "Percentile"),
+            # 25% percentile
+            ("q1", "1st quartile"),
+            # 50% percentile, median
+            ("q2", "2st quartile"),
+            # 75% percentile
+            ("q3", "3st quartile"),
+            # 95% percentile
+            ("p95", "95% percentile"),
+            # 99% percentile
+            ("p99", "99% percentile")
+        ],
+        default="last"
+    )
+    # Window function configuration
+    window_config = StringField()
+    # Convert window function result to percents of interface bandwidth
+    window_related = BooleanField(default=False)
+    # Threshold settings
+    # Raise error if window_function result is below *low_error*
     low_error = FloatField(required=False)
+    # Raise warning if window_function result is below *low_warn*
     low_warn = FloatField(required=False)
+    # Raise warning if window_function result is above *high_warn*
     high_warn = FloatField(required=False)
+    # Raise error if window_function result is above *high_err*
     high_error = FloatField(required=False)
+    # Severity weights
+    low_error_weight = IntField(default=10)
+    low_warn_weight = IntField(default=1)
+    high_warn_weight = IntField(default=1)
+    high_error_weight = IntField(default=10)
 
 
+@bi_sync
 @on_delete_check(check=[
     ("inv.Interface", "profile"),
     ("inv.InterfaceClassificationRule", "profile"),
@@ -72,7 +132,14 @@ class InterfaceProfile(Document):
         default="R"
     )
     # Collect mac addresses on interface
-    mac_discovery = BooleanField(default=False)
+    mac_discovery_policy = StringField(
+        choices=[
+            ("d", "Disabled"),
+            ("m", "Management VLAN"),
+            ("e", "Enabled")
+        ],
+        default="d"
+    )
     # Collect and keep interface status
     status_discovery = BooleanField(default=False)
     #
@@ -87,6 +154,13 @@ class InterfaceProfile(Document):
     # User network interface
     # MAC discovery can be restricted to UNI
     is_uni = BooleanField(default=False)
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 

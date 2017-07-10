@@ -1,14 +1,14 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface Classification Rules models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Interface Classification Rules models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
     ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
     IntField, PlainReferenceField)

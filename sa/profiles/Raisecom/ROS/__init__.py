@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Raisecom
-## OS:     ROS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Raisecom
+# OS:     ROS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -25,6 +25,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
 
+    # Version until ROS_4.15.1086.ISCOM2128EA-MA-AC.002.20151224
     rx_ver = re.compile(
         r"Product name: (?P<platform>\S+)\s*\n"
         r"(ROS|QOS)\s+Version\s*(?P<version>\S+)\.\s*\(Compiled.+\)\s*\n"
@@ -59,6 +60,16 @@ class Profile(BaseProfile):
         r"Serial number: (?P<serial>\S+)\s*\n",
         re.MULTILINE)
 
+    # Version start  ROS_4.15.1200_20161130(Compiled Nov 30 2016, 10:51:45)
+    rx_ver_2016 = re.compile(
+        r"Product name: (?P<platform>\S+)\s*\n"
+        r"(ROS|QOS)\s+Version(:|)\s*(?P<version>\S+)(\.|)\s*\(Compiled.+\)\s*\n"
+        r"Bootstrap\s*Version(:|)\s*(?P<bootstrap>\S+)\s*\n"
+        r"Hardware\s*\S*\s*Version(\sRev\.|:)\s*(?P<hw_rev>\S+)\s*\n\n"
+        r"System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
+        r"Serial number\s*:\s*(?P<serial>\S+)\s*",
+        re.MULTILINE | re.IGNORECASE)
+
     def get_version(self, script):
         c = script.cli("show version", cached=True)
         if "Support ipv6" in c:
@@ -69,6 +80,10 @@ class Profile(BaseProfile):
             return match.groupdict()
         else:
             match = self.rx_ver2.search(c)
+        if match:
+            return match.groupdict()
+        else:
+            match = self.rx_ver_2016.search(c)
             return match.groupdict()
 
     def get_interface_names(self, name):

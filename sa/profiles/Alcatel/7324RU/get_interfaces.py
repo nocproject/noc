@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.7324RU.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alcatel.7324RU.get_interfaces
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import *
@@ -43,7 +43,7 @@ class Script(BaseScript):
             "admin_status": True,
             "enabled_protocols": [],
             "mac": mac,
-            "name": vl,
+            "name": parse_table(ipif)[0][0],
             "oper_status": True,
             "subinterfaces": [{
                 "admin_status": True,
@@ -51,7 +51,7 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "ipv4_addresses": ip,
                 "mac": mac,
-                "name": vl,
+                "name": parse_table(ipif)[0][0],
                 "oper_status": True,
                 "vlan_ids": [vl]
             }],

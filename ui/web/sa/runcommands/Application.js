@@ -86,6 +86,11 @@ Ext.define('NOC.sa.runcommands.Application', {
                 text: __('Platform'),
                 dataIndex: 'platform',
                 flex: 1
+            },
+            {
+                text: __('Version'),
+                dataIndex: 'version',
+                flex: 1
             }
         ];
         me.selectedStore = me.viewModel.get('selectedStore');
@@ -899,7 +904,8 @@ Ext.define('NOC.sa.runcommands.Application', {
                 'script': 'commands',
                 'args': {
                     'commands': me.commandPanel.getValues().cmd.split('\n'),
-                    'include_commands': 'true'
+                    'include_commands': 'true',
+                    'ignore_cli_errors': 'true'
                 }
             });
         } else if('snippets' === me.modeField.getValue()) {

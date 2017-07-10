@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Basic DLink parser
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Basic DLink parser
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
     Literal, delimitedList
-## NOC modules
+# NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
 from noc.lib.validators import is_ipv4, is_int

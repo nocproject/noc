@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Zyxel
-## OS:     ZyNOS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Zyxel
+# OS:     ZyNOS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Zyxel.ZyNOS"
     pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_prompt = r"^\S+?#"
+    pattern_prompt = r"^\S+?\s*(\S+|)#"
     pattern_more = r"^-- more --.*?$"
     pattern_zynos = r"^\S+?>"
     command_super = "enable"

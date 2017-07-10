@@ -1,29 +1,29 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## "now"search"" macro
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# "now"search"" macro
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from django.db.models import Q
 
 from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 from noc.lib.db import QTags
 
 
-##
-## "search" macro
-## USAGE:
-## <<search [criteria] [order_by] [limit] [title]>>
-## WHERE:
-##     criteria:
-##         tags=tag1,...,tagN
-##         language=lang
-##     order_by - one of "subject","-subject","id","-id"
-##     limit
-##     title - table title
-##     display_list - list of fields ("id","subject")
-##
+#
+# "search" macro
+# USAGE:
+# <<search [criteria] [order_by] [limit] [title]>>
+# WHERE:
+#     criteria:
+#         tags=tag1,...,tagN
+#         language=lang
+#     order_by - one of "subject","-subject","id","-id"
+#     limit
+#     title - table title
+#     display_list - list of fields ("id","subject")
+#
 class Macro(MacroBase):
     name="search"
     @classmethod

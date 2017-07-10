@@ -1,29 +1,29 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Validation engine
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Validation engine
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 from collections import defaultdict
 import datetime
 import uuid
 import re
 import threading
-## Third-party modules
+# Third-party modules
 import clips
 from pymongo.errors import BulkWriteError
-## NOC modules
+# NOC modules
 from noc.cm.facts.error import Error
 from noc.cm.facts.role import Role
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from noc.cm.models.validationpolicysettings import ValidationPolicySettings
 from noc.inv.models.interface import Interface as InvInterface
 from noc.inv.models.subinterface import SubInterface as InvSubInterface
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.core.handler import get_handler
 from noc.cm.models.objectfact import ObjectFact
 from noc.lib.clipsenv import CLIPSEnv

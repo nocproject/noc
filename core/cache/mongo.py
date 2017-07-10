@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Mongo backend
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Mongo backend
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import datetime
-import cPickle
-## Third-party modules
+# Third-party modules
 import bson
-## NOC modules
-from base import BaseCache
+from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
+# NOC modules
+from .base import BaseCache
 from noc.lib.nosql import get_db
 from noc.core.config.base import config
 
@@ -44,7 +45,7 @@ class MongoCache(BaseCache):
         })
         if d and d[self.EXPIRES_FIELD] > now:
             # Found, not expired
-            return cPickle.loads(d[self.VALUE_FIELD])
+            return loads(d[self.VALUE_FIELD])
         else:
             return default
 
@@ -63,7 +64,8 @@ class MongoCache(BaseCache):
             self.KEY_FIELD: k
         }, {
             "$set": {
-                self.VALUE_FIELD: bson.Binary(cPickle.dumps(value, cPickle.HIGHEST_PROTOCOL)),
+                self.VALUE_FIELD: bson.Binary(
+                    dumps(value, HIGHEST_PROTOCOL)),
                 self.EXPIRES_FIELD: expires
             }
         }, upsert=True)

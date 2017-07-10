@@ -1,33 +1,33 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Various text-processing utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Various text-processing utilities
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import re
 
-##
-## Parse string containing table an return a list of table rows.
-## Each row is a list of cells.
-## Columns are determined by a sequences of ---- or ==== which are
-## determines rows bounds.
-## Examples:
-## First Second Third
-## ----- ------ -----
-## a     b       c
-## ddd   eee     fff
-## Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
-##
+#
+# Parse string containing table an return a list of table rows.
+# Each row is a list of cells.
+# Columns are determined by a sequences of ---- or ==== which are
+# determines rows bounds.
+# Examples:
+# First Second Third
+# ----- ------ -----
+# a     b       c
+# ddd   eee     fff
+# Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
+#
 rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
-def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None):
+def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None, n_row_delim=""):
     """
     :param s: Table for parsing
     :type s: str
-    :param allow_wrap:
+    :param allow_wrap: Union if cell contins multiple line
     :type allow_wrap: bool
     :param allow_extend: Check if column on row longest then column width, and fix it
     :type allow_extend: bool
@@ -35,17 +35,21 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     :type max_width: int
     :param footer: stop iteration if match expression footer
     :type footer: string
+    :param n_row_delim: Append delimiter to next cell line
+    :type n_row_delim: string
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
     >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
     [['a', '', 'c'], ['ddd', 'eee', 'fff']]
+    >>> parse_table("VLAN Status  Name                             Ports\\n---- ------- -------------------------------- ---------------------------------\\n4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\\n                                              g0/10\\n", allow_wrap=True, n_row_delim=", ")
+    [['4090', 'Static', 'VLAN4090', 'f0/5, f0/6, f0/7, f0/8, g0/9, g0/10']]
     """
     r = []
     columns = []
     if footer is not None:
         rx_footer = re.compile(footer)
     for l in s.splitlines():
-        if not l.strip():
+        if not l.strip() and footer is None:
             columns = []
             continue
         if (footer is not None) and rx_footer.search(l):
@@ -95,7 +99,8 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                 row = [l[f:t] for f, t in columns]
                 if row[0].startswith(" ") and r:
                     for i, x in enumerate(row):
-                        r[-1][i] += x
+                        r[-1][i] += x if not x.strip() else "%s%s" % (n_row_delim, x)
+                        print "'" + x + "'"
                 else:
                     r += [row]
             else:
@@ -105,9 +110,9 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     else:
         return r
 
-##
-## Convert HTML to plain text
-##
+#
+# Convert HTML to plain text
+#
 rx_html_tags = re.compile("</?[^>+]+>", re.MULTILINE | re.DOTALL)
 
 
@@ -119,9 +124,9 @@ def strip_html_tags(s):
     return t
 
 
-##
-## Convert XML to list of elements
-##
+#
+# Convert XML to list of elements
+#
 def xml_to_table(s, root, row):
     """
     >>> xml_to_table('<?xml version="1.0" encoding="UTF-8" ?><response><action><row><a>1</a><b>2</b></row><row><a>3</a><b>4</b></row></action></response>','action','row')
@@ -145,9 +150,9 @@ def xml_to_table(s, root, row):
     return r
 
 
-##
-## Convert list of values to string of ranges
-##
+#
+# Convert list of values to string of ranges
+#
 def list_to_ranges(s):
     """
     >>> list_to_ranges([])
@@ -187,9 +192,9 @@ def list_to_ranges(s):
         r += [f()]
     return ",".join(r)
 
-##
-## Convert range string to a list of integers
-##
+#
+# Convert range string to a list of integers
+#
 rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 
 
@@ -225,9 +230,9 @@ def ranges_to_list(s, splitter=","):
     return sorted(r)
 
 
-##
-## Replace regular expression group with pattern
-##
+#
+# Replace regular expression group with pattern
+#
 def replace_re_group(expr, group, pattern):
     """
     >>> replace_re_group("nothing","(?P<groupname>","groupvalue")
@@ -270,10 +275,10 @@ def replace_re_group(expr, group, pattern):
 def indent(text, n=4):
     """
     Indent each line of text with spaces
-    
+
     :param text: text
     :param n: amount of spaces to ident
-    
+
     >>> indent("")
     ''
     >>> indent("the quick brown fox\\njumped over an lazy dog\\nend")
@@ -436,4 +441,3 @@ def format_table(widths, data, sep=" ", hsep=" "):
     ]
     out += [mask % tuple(row) for row in data[1:]]
     return "\n".join(out)
-

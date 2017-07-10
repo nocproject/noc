@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "influxdb",
+    "tags": [ ],
+    "port": {{ influxdb_port }},
+    "enableTagOverride": false,
+    "check": {
+        "http": "http://localhost:{{ influxdb_port }}/ping",
+        "interval": "10s"
+    }
+  }
+}

@@ -1,30 +1,33 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOS.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOS.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import (IntParameter,
                                     MACAddressParameter,
                                     InterfaceTypeError)
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.lib.validators import (is_int, is_ipv4, is_ipv6)
 
 
 class Script(BaseScript):
     name = "Juniper.JUNOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
-    ##
-    ## EX Series
-    ##
-    rx_localport = re.compile(r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$",
+    #
+    # EX Series
+    #
+    rx_localport = re.compile(
+        r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$",
         re.MULTILINE | re.DOTALL)
-    rx_neigh = re.compile(r"^(?P<local_if>.e-\S+?|me0|fxp0)\s.*?$",
+    rx_neigh = re.compile(
+        r"^(?P<local_if>.e-\S+?|me0|fxp0)\s.*?$",
         re.MULTILINE | re.IGNORECASE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
@@ -65,8 +68,9 @@ class Script(BaseScript):
         for i in ifs:
             if i["local_interface"] in local_port_ids:
                 i["local_interface_id"] = local_port_ids[i["local_interface"]]
-            v = self.cli("show lldp neighbors interface %s" % \
-                i["local_interface"])
+            v = self.cli(
+                "show lldp neighbors interface %s" % i["local_interface"]
+            )
             match = self.match_lines(self.rx_detail, v)
             n = {"remote_chassis_id_subtype": 4}
             if match:
@@ -100,11 +104,11 @@ class Script(BaseScript):
                     # Station Only
                     s = s.replace(" Only", "")
                     for c in s.strip().split(" "):
-                            cap |= {
+                        cap |= {
                             "Other": 1, "Repeater": 2, "Bridge": 4,
                             "WLAN": 8, "Router": 16, "Telephone": 32,
                             "Cable": 64, "Station": 128
-                            }[c]
+                        }[c]
                 n["remote_capabilities"] = cap
             else:
                 match = self.match_lines(self.rx_detail1, v)
@@ -153,6 +157,9 @@ class Script(BaseScript):
                             remote_port = match.get("p_id")
                         n["remote_chassis_id"] = match.get("id")
                         n["remote_port"] = str(remote_port)
+            if is_ipv4(n["remote_chassis_id"]) \
+              or is_ipv6(n["remote_chassis_id"]):
+                n["remote_chassis_id_subtype"] = 5
             i["neighbors"] += [n]
             r += [i]
         for q in r:
@@ -160,9 +167,9 @@ class Script(BaseScript):
                 q['local_interface'] = q['local_interface'][:-2]
         return r
 
-    ##
-    ## No lldp on M/T
-    ##
+    #
+    # No lldp on M/T
+    #
     @BaseScript.match()
     def execute_other(self):
         raise self.NotSupportedError()

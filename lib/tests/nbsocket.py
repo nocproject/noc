@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## lib/nbsocket tests
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-## Python modules
+# ---------------------------------------------------------------------
+# lib/nbsocket tests
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+# Python modules
 from unittest import TestCase
-## NOC modules
+# NOC modules
 from noc.lib.nbsocket import *
 from noc.lib.nbsocket.pollers.detect import get_methods
 from noc.lib.nbsocket.popen import PopenSocket
 from noc.lib.nbsocket.ptysocket import PTYSocket
 
-##
-## TCP Ping server
-##
+#
+# TCP Ping server
+#
 TCP_TEST_SIZE = 128 * 1024
 TCP_TEST_DATA = "X" * TCP_TEST_SIZE
 
@@ -35,9 +35,9 @@ class TCPServer(AcceptedTCPSocket):
             self.close()
 
 
-##
-## TCP Ping client
-##
+#
+# TCP Ping client
+#
 class TCPClient(ConnectedTCPSocket):
     def __init__(self, *args, **kwargs):
         self._read_count = 0
@@ -53,9 +53,9 @@ class TCPClient(ConnectedTCPSocket):
             self.close()
 
 
-##
-##
-##
+#
+#
+#
 class PopenTestSocket(PopenSocket):
     def on_read(self, data):
         if data and not hasattr(self, "_done"):
@@ -63,9 +63,9 @@ class PopenTestSocket(PopenSocket):
             self._done = True
 
 
-##
-##
-##
+#
+#
+#
 class PTYTestSocket(PTYSocket):
     def on_read(self, data):
         if data and not hasattr(self, "_done"):

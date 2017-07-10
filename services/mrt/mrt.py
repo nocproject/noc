@@ -1,23 +1,23 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MRTHandler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# MRTHandler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## Third-party modules
+# Third-party modules
 import ujson
 import tornado.gen
-## Python modules
+# Python modules
 from noc.core.service.authhandler import AuthRequestHandler
 from noc.core.perf import metrics
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 
 logger = logging.getLogger(__name__)

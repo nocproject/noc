@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## RefBook Downloaders
-## Downloader is a class performing download and parsing of refbook
-## And returning a list of hashes (for RefBook.bulk_upload)
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# RefBook Downloaders
+# Downloader is a class performing download and parsing of refbook
+# And returning a list of hashes (for RefBook.bulk_upload)
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.lib.registry import Registry
@@ -35,10 +35,11 @@ class Downloader(object):
     __metaclass__ = DownloaderBase
     # Profile name
     name = None
-    ##
-    ## Abstract metrod returning a list of records
-    ## Each record is a hash with field name -> value mapping
-    ##
+
+    #
+    # Abstract metrod returning a list of records
+    # Each record is a hash with field name -> value mapping
+    #
     @classmethod
     def download(cls, ref_book):
         return []

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.authprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.authprofile.Application");
@@ -9,7 +9,8 @@ console.debug("Defining NOC.sa.authprofile.Application");
 Ext.define("NOC.sa.authprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.sa.authprofile.Model"
+        "NOC.sa.authprofile.Model",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.authprofile.Model",
     columns: [
@@ -98,6 +99,44 @@ Ext.define("NOC.sa.authprofile.Application", {
             xtype: "textfield",
             fieldLabel: __("RW Community"),
             allowBlank: true
+        },
+        {
+            xtype: "fieldset",
+            layout: "hbox",
+            title: __("Integration"),
+            defaults: {
+                padding: 4,
+                labelAlign: "right"
+            },
+            items: [
+                {
+                    name: "remote_system",
+                    xtype: "main.remotesystem.LookupField",
+                    fieldLabel: __("Remote System"),
+                    allowBlank: true
+                },
+                {
+                    name: "remote_id",
+                    xtype: "textfield",
+                    fieldLabel: __("Remote ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "bi_id",
+                    xtype: "textfield",
+                    fieldLabel: __("BI ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                }
+            ]
+        },
+        {
+            name: "tags",
+            xtype: "tagsfield",
+            fieldLabel: __("Tags"),
+            allowBlank: true,
+            uiStyle: "extra"
         }
     ],
     inlines: [

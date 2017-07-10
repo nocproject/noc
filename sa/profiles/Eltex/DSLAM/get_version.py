@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.DSLAM.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.DSLAM.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -21,7 +21,10 @@ class Script(BaseScript):
     rx_version = re.compile(r"version:\s+(?P<version>\S+)")
 
     def execute(self):
-        ver = self.cli("system show software info", cached=True)
+        try:
+            ver = self.cli("system show software info", cached=True)
+        except self.CLISyntaxError:
+            ver = self.cli("system show software version", cached=True)
         match = self.rx_version.search(ver)
         if match:
             return {
@@ -33,5 +36,5 @@ class Script(BaseScript):
             return {
                 "vendor": "Eltex",
                 "platform": "DSLAM",
-                "version": "UNKNOWN"
+                "version": "mxa24"
             }

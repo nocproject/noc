@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -10,7 +10,7 @@ from django.db import models
 from noc.lib.url import URL
 
 class Migration:
-    
+
     def forwards(self):
         db.add_column("cm_object","scheme",models.IntegerField("Scheme",blank=True,null=True,choices=[(0,"telnet"),(1,"ssh")]))
         db.add_column("cm_object","address",models.CharField("Address",max_length=64,blank=True,null=True))
@@ -27,7 +27,7 @@ class Migration:
             db.execute("UPDATE cm_object SET scheme=%s,address=%s,port=%s,\"user\"=%s,password=%s,remote_path=%s WHERE id=%s",
                 [scheme,u.host,u.port,u.user,u.password,u.path,id])
         db.delete_column("cm_object","stream_url")
-    
+
     def backwards(self):
         db.delete_column("cm_object","scheme")
         db.delete_column("cm_object","address")

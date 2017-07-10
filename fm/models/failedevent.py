@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## FailedEvent model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# FailedEvent model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import struct
-## Third-party modules
+# Third-party modules
 from mongoengine import document, fields
 from bson import Binary
-## NOC modules
+# NOC modules
 from eventlog import EventLog
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib import nosql
@@ -66,5 +66,5 @@ class FailedEvent(document.Document):
                      message=message)]
         self.save()
 
-## Avoid circular references
+# Avoid circular references
 from newevent import NewEvent

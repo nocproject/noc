@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlarmTrigger
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlarmTrigger
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import NotificationGroup

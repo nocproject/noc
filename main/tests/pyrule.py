@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Unittests for Activator
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Unittests for Activator
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.lib.test import ModelTestCase
 from noc.main.models import *
 from noc.sa.interfaces.base import InterfaceTypeError
-##
-##
-##
+#
+#
+#
 class PyRuleTestCase(ModelTestCase):
     model=PyRule
 
@@ -35,5 +35,5 @@ def get_version():
             raise AssertionError("InterfaceTypeError exception expected")
         except InterfaceTypeError:
             pass
-        
-        
+
+

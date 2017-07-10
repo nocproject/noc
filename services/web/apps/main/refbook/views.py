@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## main.refbook application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# main.refbook application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.views.generic import list_detail
 from django.shortcuts import get_object_or_404
-## NOC modules
+# NOC modules
 from noc.lib.app.application import Application, view, HasPerm
 from noc.main.models.permission import Permission
 from noc.main.models.refbook import RefBook

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Eltex
-## OS:     ESR
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Eltex
+# OS:     ESR
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -17,7 +17,7 @@ class Profile(BaseProfile):
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
         (r"^More\? Enter - next line; Space - next page; Q - quit; R - show the rest.", "r"),
         (r"\[Yes/press any key for no\]", "Y")
-        ]
+    ]
     pattern_unpriveleged_prompt = r"^\S+> "
     pattern_syntax_error = r"^% (Unrecognized command|Incomplete command|Wrong number of parameters or invalid range, size or characters entered)$"
     command_disable_pager = "terminal datadump"

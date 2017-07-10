@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -25,6 +25,6 @@ class Migration:
                 db.execute("INSERT INTO cm_prefixlist(repo_path) VALUES(%s)",[repo_path])
             else:
                 raise Exception("Unsupported handler_class_name='%s'"%handler_class_name)
-    
+
     def backwards(self):
         "Write your backwards migration here"

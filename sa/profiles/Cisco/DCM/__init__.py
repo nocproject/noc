@@ -3,6 +3,7 @@
 __author__ = 'boris'
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Cisco.DCM"
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"

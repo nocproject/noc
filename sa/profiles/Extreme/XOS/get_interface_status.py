@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Extreme.XOS.get_interface_status
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Extreme.XOS.get_interface_status
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 from noc.sa.interfaces.base import MACAddressParameter
 
-##
-## @todo: CLI Support
-##
+#
+# @todo: CLI Support
+#
 
 
 class Script(BaseScript):
@@ -44,7 +44,7 @@ class Script(BaseScript):
                        continue
                     if match:
                         n = match.group("port")
-                        #print " !!! PORT --   %s " % n
+                        # print " !!! PORT --   %s " % n
                     macaddr = ""
                     if m:
                         macaddr = MACAddressParameter().clean(m)

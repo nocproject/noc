@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Import OpenStreetMap spatial data from
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Import OpenStreetMap spatial data from
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
+# Python modules
 from optparse import make_option
 from urllib2 import urlopen
 import os
 import subprocess
 import re
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
-## NOC modules
+# NOC modules
 from noc.settings import config
 from noc.lib.db import check_postgis, check_srs
-from noc.lib.fileutils import search_path, temporary_file
+from noc.core.fileutils import search_path, temporary_file
 from noc.gis.models import Area
 from noc.gis.geo import MIN_ZOOM, MAX_ZOOM
 from noc.gis.utils import parse_osm_bounds

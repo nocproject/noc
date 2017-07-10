@@ -35,7 +35,6 @@ class Migration:
         # Save data
         db.execute("DELETE FROM vc_vcdomainprovisioningconfig")
         for vc_domain_id, c in pc.items():
-            print vc_domain_id, c
             for selector_id, v in c.items():
                 db.execute(
                     "INSERT INTO vc_vcdomainprovisioningconfig(vc_domain_id,selector_id,is_enabled,tagged_ports,notification_group_id) VALUES(%s,%s,%s,%s,%s)"

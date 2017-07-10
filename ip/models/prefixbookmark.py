@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## PrefixBookmark model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# PrefixBookmark model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from operator import attrgetter
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-## NOC modules
+# NOC modules
 from prefix import Prefix
 
 

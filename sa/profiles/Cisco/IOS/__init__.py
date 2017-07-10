@@ -1,47 +1,55 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Cisco
-## OS:     IOS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Cisco
+# OS:     IOS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 import six
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Cisco.IOS"
     pattern_more = [
-        (r"^ --More--", "\n"),
+        (r"^ --More--", "\r\n"),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+    pattern_syntax_error = \
+        r"% Invalid input detected at|% Ambiguous command:|" \
+        r"% Incomplete command."
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" \
+        r"(?:\(config[^\)]*\))?#"
     can_strip_hostname_to = 20
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
     config_volatile = ["^ntp clock-period .*?^"]
 
-    rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
+    rx_cable_if = re.compile(
+        r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)",
+        re.IGNORECASE)
     default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
     rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
 
     def cmp_version(self, x, y):
         """12(25)SEC2"""
-        return cmp([int(z) for z in self.rx_ver.findall(x)[0]],
-            [int(z) for z in self.rx_ver.findall(y)[0]])
+        return cmp(
+            [int(z) for z in self.rx_ver.findall(x)[0]],
+            [int(z) for z in self.rx_ver.findall(y)[0]]
+        )
 
     def convert_interface_name(self, interface):
         if " efp_id " in interface:
@@ -95,7 +103,9 @@ class Profile(BaseProfile):
         if il.startswith("cable"):
             match = self.rx_cable_if.search(interface)
             if match:
-                return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
+                return "Ca %s/%s" % (
+                    match.group('pr_if'), match.group('sub_if')
+                )
         if il.startswith("virtual-template"):
             return "Vi %s" % il[16:].strip()
         # Serial0/1/0:15-Signaling -> Serial0/1/0:15
@@ -139,7 +149,8 @@ class Profile(BaseProfile):
                     cluster_member = p[8:].strip()
             # Switch to cluster member, if necessary
             if cluster_member:
-                script.logger.debug("Switching to cluster member '%s'" % cluster_member)
+                script.logger.debug(
+                    "Switching to cluster member '%s'" % cluster_member)
                 script.cli("rc %s" % cluster_member)
 
     INTERFACE_TYPES = {
@@ -178,7 +189,7 @@ class Profile(BaseProfile):
         "Te": "physical",  # TenGigabitEthernet
         "To": "physical",  # TokenRing
         "Tu": "tunnel",  # Tunnel
-        "Vi": "template", # Virtual-Template
+        "Vi": "template",  # Virtual-Template
         "VL": "SVI",  # VLAN, found on C3500XL
         "Vl": "SVI",  # Vlan
         "Vo": "physical",  # Voice

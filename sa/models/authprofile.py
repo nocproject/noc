@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AuthProfile
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# AuthProfile
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from django.db import models
 import cachetools
-## NOC modules
+# NOC modules
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
 from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import TagsField, DocumentReferenceField
 
 id_lock = Lock()
 
@@ -52,6 +54,16 @@ class AuthProfile(models.Model):
         "RO Community", blank=True, null=True, max_length=64)
     snmp_rw = models.CharField(
         "RW Community", blank=True, null=True, max_length=64)
+    # Integration with external NRI systems
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem,
+                                           null=True, blank=True)
+    # Object id in remote system
+    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = models.BigIntegerField(null=True, blank=True)
+
+    tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 

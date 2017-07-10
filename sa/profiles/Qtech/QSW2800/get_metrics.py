@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Qtech.QSW2800.get_metrics
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Qtech.QSW2800.get_metrics
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 from noc.sa.profiles.Generic.get_metrics import OIDRule
-from noc.lib.mib import mib
+from noc.core.mib import mib
 
 
 class Script(GetMetricsScript):
     name = "Qtech.QSW2800.get_metrics"
 
 
-                    
+
 class SlotRule(OIDRule):
 
     name = "slot"

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## GIS module database models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# GIS module database models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import inspect
-## NOC modules
+# NOC modules
 from noc.lib import nosql
 
 from layer import Layer
@@ -46,7 +46,7 @@ class Rule(nosql.EmbeddedDocument):
             self.maxscale_zoom == other.maxscale_zoom and
             self.rule_filter == other.rule_filter and
             self.symbolizers == other.symbolizers
-            )
+        )
 
 
 class Style(nosql.Document):
@@ -70,7 +70,7 @@ class _Layer(nosql.Document):
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
     is_active = nosql.BooleanField(default=True)
-    #srs = nosql.ForeignKeyField(SRS)
+    # srs = nosql.ForeignKeyField(SRS)
     styles = nosql.ListField(nosql.StringField())
     datasource = nosql.DictField()
 
@@ -168,8 +168,10 @@ class Overlay(nosql.Document):
             m = __import__("noc.gis.overlays.%s" % self.overlay, {}, {}, "*")
             for n in dir(m):
                 o = getattr(m, n)
-                if (inspect.isclass(o) and o != OverlayHandler and
-                    issubclass(o, OverlayHandler)):
+                if (
+                    inspect.isclass(o) and o != OverlayHandler and
+                    issubclass(o, OverlayHandler)
+                ):
                     self._overlay_cache[self.overlay] = o
                     break
         h = self._overlay_cache[self.overlay]

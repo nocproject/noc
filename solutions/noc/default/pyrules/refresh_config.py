@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Refresh config
-##----------------------------------------------------------------------
-## INTERFACE: IEventTrigger
-##----------------------------------------------------------------------
-## DESCRIPTION:
-## Reschedule device configuration to fetch
-## Used in event trigger for Config | Config Changed event class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Refresh config
+# ---------------------------------------------------------------------
+# INTERFACE: IEventTrigger
+# ---------------------------------------------------------------------
+# DESCRIPTION:
+# Reschedule device configuration to fetch
+# Used in event trigger for Config | Config Changed event class
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.inv.discovery.scheduler import get_scheduler
 
 DELAY = 600

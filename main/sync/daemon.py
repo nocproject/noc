@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## noc-sync daemon
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# noc-sync daemon
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
-## NOC modules
+# NOC modules
 from noc.core.handler import get_handler
 from noc.lib.daemon.autoconf import AutoConfDaemon
 from noc.sa.interfaces.base import DictParameter, InterfaceTypeError

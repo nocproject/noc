@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SelectorCache
-## Updated by sa.refresh_selector_cache job
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SelectorCache
+# Updated by sa.refresh_selector_cache job
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import logging
 import operator
 from threading import Lock
 import re
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField
 import cachetools
 from pymongo import ReadPreference
-## NOC modules
+# NOC modules
 from noc.core.defer import call_later
 
 logger = logging.getLogger(__name__)
@@ -51,8 +52,10 @@ class SelectorCache(Document):
         oid = object
         if hasattr(object, "id"):
             oid = object.id
-        return cls.objects.filter(object=oid,
-                                  read_preference=ReadPreference.SECONDARY_PREFERRED).values_list("selector")
+        return cls.objects.filter(
+            object=oid,
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).values_list("selector")
 
     @classmethod
     def is_in_selector(cls, object, selector):
@@ -70,7 +73,7 @@ class SelectorCache(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("q_cache"), lock=lambda x: q_lock)
     def get_active_selectors(cls):
-        from managedobjectselector import ManagedObjectSelector
+        from .managedobjectselector import ManagedObjectSelector
         return list(ManagedObjectSelector.objects.filter(is_enabled=True))
 
     @classmethod
@@ -191,7 +194,7 @@ def refresh():
     def diff(old, new):
         def getnext(g):
             try:
-                return g.next()
+                return next(g)
             except StopIteration:
                 return None
 
@@ -222,7 +225,7 @@ def refresh():
                     yield o, None
                     o = getnext(old)
 
-    from managedobjectselector import ManagedObjectSelector
+    from .managedobjectselector import ManagedObjectSelector
 
     r = []
     logger.info("Building selector cache")

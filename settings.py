@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Django settings
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Django settings
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import ConfigParser
 import sys
 import os
@@ -32,8 +32,8 @@ if config.has_section("solutions"):
 DEBUG = config.getboolean("main", "debug")
 TEMPLATE_DEBUG = DEBUG
 
-## Set up admins
-## @todo: remove
+# Set up admins
+# @todo: remove
 ADMINS = []
 for a in config.get("main", "admin_emails").split(","):
     a = a.strip()
@@ -46,7 +46,7 @@ MANAGERS = ADMINS
 
 SERVER_EMAIL = config.get("main", "server_email")
 
-## RDBMS settings
+# RDBMS settings
 DATABASES = {
     "default": {
         "ENGINE": "noc.core.model.db",
@@ -110,7 +110,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "noc.lib.app.setup_processor",
-    )
+)
 #
 MIDDLEWARE_CLASSES = [
     "noc.lib.middleware.WSGISetupMiddleware",
@@ -187,33 +187,33 @@ LANGUAGES = [
 
 LOCALE_PATHS = ["locale"]
 
-#SOUTH_AUTO_FREEZE_APP = False
+# SOUTH_AUTO_FREEZE_APP = False
 
 AUTH_PROFILE_MODULE = "main.UserProfile"
-##
-## Determine WEB process
-##
+#
+# Determine WEB process
+#
 IS_WEB = sys.argv[0].endswith("/web/service.py")
 IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
 
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
-## Do not enforce lowercase tags
+# Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
-## Message application setup
+# Message application setup
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
-## Store sessions in mongodb
+# Store sessions in mongodb
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-## X-Forwarded-Proto
+# X-Forwarded-Proto
 if config.get("main", "x_forwarded_proto"):
     h = config.get("main", "x_forwarded_proto").upper().replace("-", "_")
     SECURE_PROXY_SSL_HEADER = ("HTTP_%s" % h, "https")
-## Set up crashinfo limit
+# Set up crashinfo limit
 CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
-## Traceback order
+# Traceback order
 TRACEBACK_REVERSE = config.get("main", "traceback_order") == "reverse"
-## Fixed beefs directory
-## Set up by test runner
+# Fixed beefs directory
+# Set up by test runner
 TEST_FIXED_BEEF_BASE = None
 
 LOG_MRT_COMMAND = None
@@ -226,8 +226,8 @@ if config.get("audit", "log_mrt_commands"):
         sys.stderr.write(
             "Cannot write to '%s'. MRT command logging disabled\n" % lmc
         )
-## Set up logging
-## Disable SQL statement logging
+# Set up logging
+# Disable SQL statement logging
 import logging
 
 logging.getLogger("django.db.backends").setLevel(logging.ERROR)

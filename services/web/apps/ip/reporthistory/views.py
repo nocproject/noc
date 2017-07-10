@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ip.reporthistory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ip.reporthistory
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 import datetime
 import re
-## Django modules
+# Django modules
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import (SimpleReport, SectionRow,
                                       SafeString)
 from noc.main.models.audittrail import AuditTrail

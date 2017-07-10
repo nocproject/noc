@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.LTP.get_mac_address_table
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.LTP.get_mac_address_table
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -28,6 +29,29 @@ class Script(BaseScript):
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
+
+        # Switch ports
+        cmd = "show mac"
+        if vlan is not None:
+            cmd += " include vlan %s" % vlan
+        elif interface is not None:
+            cmd += " include interface %s" % interface
+        elif mac is not None:
+            cmd += " include mac %s" % self.profile.convert_mac(mac)
+        with self.profile.switch(self):
+            t = parse_table(self.cli(cmd))
+            for i in t:
+                if i[3] == "Dynamic":
+                    mtype = "D"
+                else:
+                    mtype = "S"
+                r += [{
+                    "vlan_id": int(i[0]),
+                    "mac": i[1],
+                    "interfaces": [i[2]],
+                    "type": mtype
+                }]
+
         # GPON ports
         cmd = "show mac interface gpon-port "
         if interface is not None:
@@ -42,6 +66,5 @@ class Script(BaseScript):
                 "interfaces": [interfaces],
                 "type": "D"
             }]
-        # 
-        #cmd = "show mac interface ont "
+
         return r

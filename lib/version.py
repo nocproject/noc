@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NOC components versions
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# NOC components versions
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import sys
 import subprocess
 import platform
-## NOC modules
+# NOC modules
 from noc.core.config.base import config
 
 DEFAULT_BRAND = "NOC"
 BRAND_PATH = "custom/BRAND"
 
-## Version cache
+# Version cache
 _version = None
 BRANCH = None
 TIP = None

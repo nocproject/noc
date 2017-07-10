@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## RADIUS Authentication backend
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# RADIUS Authentication backend
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from pyrad.packet import AccessAccept
 from pyrad.client import Client
 from pyrad.dictionary import Dictionary
-## NOC modules
+# NOC modules
 from base import BaseAuthBackend
 
 

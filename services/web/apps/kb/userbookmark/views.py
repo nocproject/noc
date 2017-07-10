@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## KBUserBookmark Manager
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# KBUserBookmark Manager
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from django.contrib import admin
 from django import forms
 from noc.lib.app.modelapplication import ModelApplication
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbuserbookmark import KBUserBookmark
-##
+#
 
-##
-## KBUserBookmark admin
-##
+#
+# KBUserBookmark admin
+#
 class KBUserBookmarkAdmin(admin.ModelAdmin):
     def queryset(self,request):
         return KBUserBookmark.objects.filter(user=request.user)
@@ -27,14 +27,14 @@ class KBUserBookmarkAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self,request,obj=None):
         return self.has_change_permission(request,obj)
-        
+
     def save_model(self, request, obj, form, change):
         obj.user=request.user
         obj.save()
-        
-##
-## KBUserBookmark application
-##
+
+#
+# KBUserBookmark application
+#
 class KBUserBookmarkApplication(ModelApplication):
     model=KBUserBookmark
     model_admin=KBUserBookmarkAdmin

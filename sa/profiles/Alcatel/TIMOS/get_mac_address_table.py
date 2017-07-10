@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.TIMOS.get_mac_address_table
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
+# ----------------------------------------------------------------------
+# Alcatel.TIMOS.get_mac_address_table
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -30,7 +30,7 @@ class Migration:
                     db.execute("UPDATE fm_eventpriority SET font_color=%s WHERE id=%s",[font,pid])
                 if not dbf:
                     db.execute("UPDATE fm_eventpriority SET background_color=%s WHERE id=%s",[bg,pid])
-                
-    
+
+
     def backwards(self):
         "Write your backwards migration here"

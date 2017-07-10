@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Ping service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Ping service
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import functools
 import time
 import datetime
@@ -17,8 +17,7 @@ import os
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
@@ -27,7 +26,6 @@ from probesetting import ProbeSetting
 
 class PingService(Service):
     name = "ping"
-
     #
     leader_group_name = "ping-%(pool)s"
     pooled = True
@@ -45,9 +43,21 @@ class PingService(Service):
         self.omap = None
         self.ping = None
         self.is_throttled = False
+        self.slot_number = 0
+        self.total_slots = 1
 
     @tornado.gen.coroutine
     def on_activate(self):
+        # Acquire slot
+        self.slot_number, self.total_slots = yield self.acquire_slot()
+        if self.total_slots > 1:
+            self.logger.info(
+                "Enabling distributed mode: Slot %d/%d",
+                self.slot_number, self.total_slots
+            )
+        else:
+            self.logger.info("Enabling standalone mode")
+
         self.logger.info("Setting nice level to -20")
         try:
             os.nice(-20)
@@ -112,7 +122,7 @@ class PingService(Service):
         """
         def is_my_task(d):
             x = struct.unpack("!L", socket.inet_aton(d))[0]
-            return x % self.config.global_n_instances == (self.config.instance + self.config.global_offset)
+            return x % self.total_slots == self.slot_number
 
         self.logger.info("Requesting object mappings")
         try:
@@ -124,7 +134,7 @@ class PingService(Service):
             return
         #
         xd = set(self.probes)
-        if self.config.global_n_instances > 1:
+        if self.total_slots > 1:
             nd = set(x for x in sm if is_my_task(x))
         else:
             nd = set(sm)
@@ -198,10 +208,12 @@ class PingService(Service):
             if not eval(ps.time_cond, {"T": dt}):
                 self.perf_metrics["ping_check_skips"] += 1
                 return
-        rtt = yield self.ping.ping_check_rtt(
-            address,
-            count=self.config.max_packets,
-            timeout=self.config.timeout
+        rtt, attempts = yield self.ping.ping_check_rtt(
+            ps.address,
+            policy=ps.policy,
+            size=ps.size,
+            count=ps.count,
+            timeout=ps.timeout
         )
         s = rtt is not None
         if s:
@@ -262,6 +274,13 @@ class PingService(Service):
                     q(ps.name), rtt, int(time.time())
                 )
             ])
+        if ps.report_attempts:
+            self.register_metrics([
+                "Ping\\ |\\ Attempts,object=%s value=%s %s" % (
+                    q(ps.name), attempts, int(time.time())
+                )
+            ])
+
 
 if __name__ == "__main__":
     PingService().start()

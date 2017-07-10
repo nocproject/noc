@@ -2,7 +2,7 @@
 - name: Create replica set configuration script
   template:
     src: rsinit.js.j2
-    dest: "{{ noc_root }}/var/etc/mongo/rsinit.js"
+    dest: "{{ mongo_dir }}/rsinit.js"
   register: rs_conf_status
   tags:
     - config
@@ -16,13 +16,14 @@
     - config
 
 - name: Initial replica set configuration
-  shell: "{{ mongo_path }} {{ noc_root }}/var/etc/mongo/rsinit.js"
+  shell: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
   when: rs_status.rc != 0
 
 - name: Create admin user configuration script
   template:
     src: admininit.js.j2
-    dest: "{{ noc_root }}/var/etc/mongo/admininit.js"
+    dest: "{{ mongo_dir }}/admininit.js"
+  no_log: true
   when: rs_status.rc != 0
   tags:
     - config
@@ -33,21 +34,22 @@
   when: rs_status.rc != 0
 
 - name: Create admin user
-  shell: "{{ mongo_path }} admin {{ noc_root }}/var/etc/mongo/admininit.js"
+  shell: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
   when: rs_status.rc != 0
 
 - name: Create database user configuration script
   template:
     src: userinit.js.j2
-    dest: "{{ noc_root }}/var/etc/mongo/userinit.js"
+    dest: "{{ mongo_dir }}/userinit.js"
+  no_log: true
   register: user_status
   tags:
     - config
 
 - name: Create database user
-  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' {{ noc_mongo_db }} --authenticationDatabase admin {{ noc_root }}/var/etc/mongo/userinit.js"
+  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' {{ noc_mongo_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"
   when: user_status.changed
 
 - name: Update replica set configuration
-  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ noc_root }}/var/etc/mongo/rsinit.js"
+  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ mongo_dir }}/rsinit.js"
   when: rs_conf_status.changed and rs_status.rc == 0

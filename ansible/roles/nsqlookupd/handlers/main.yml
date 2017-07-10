@@ -9,4 +9,15 @@
   become: yes
   service:
     name: telegraf
-    state: restarted
+    state: reloaded
+
+- name: reload consul
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+
+- name: reload systemd
+  systemd:
+    name: nsqlookupd
+    daemon_reload: yes

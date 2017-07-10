@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc wipe
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ./noc wipe
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
+# Python modules
 import sys
 from contextlib import contextmanager
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
-## NOC modules
+# NOC modules
 from noc.lib.validators import is_int
 
 
@@ -40,7 +39,7 @@ class Command(BaseCommand):
                 raise CommandError("Object '%s' is not found" % o_id)
             objects += [o]
         # Wipe objects
-        from noc.lib.debug import error_report
+        from noc.core.debug import error_report
         for o in objects:
             with self.log("Wiping '%s':" % unicode(o), True):
                 try:

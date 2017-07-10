@@ -1,30 +1,56 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObjectProfile
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ManagedObjectProfile
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import operator
 from threading import Lock
-## Django modules
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 import cachetools
-## NOC modules
+# NOC modules
 from noc.main.models.style import Style
-from authprofile import AuthProfile
+from .authprofile import AuthProfile
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
-from noc.core.model.fields import TagsField, PickledField
+from noc.core.model.fields import (TagsField, PickledField,
+                                   DocumentReferenceField)
 from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
-from objectmap import ObjectMap
+from .objectmap import ObjectMap
+from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
+                                    IntParameter, StringParameter)
+
+m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
+                                   "is_active": BooleanParameter(default=False),
+                                   "is_stored": BooleanParameter(default=True),
+                                   "window_type": StringParameter(choices=["m", "t"],
+                                                                  default="m"),
+                                   "window": IntParameter(default=1),
+                                   "window_function": StringParameter(choices=["handler", "last", "avg",
+                                                                               "percentile", "q1", "q2", "q3",
+                                                                               "p95", "p99"],
+                                                                      default="last"),
+                                   "window_config": StringParameter(default=""),
+                                   "window_related": BooleanParameter(default=False),
+                                   "low_error": IntParameter(required=False),
+                                   "high_error": IntParameter(required=False),
+                                   "low_warn": IntParameter(required=False),
+                                   "high_warn": IntParameter(required=False),
+                                   "low_error_weight": IntParameter(default=10),
+                                   "low_warn_weight": IntParameter(default=1),
+                                   "high_warn_weight": IntParameter(default=1),
+                                   "high_error_weight": IntParameter(default=10)})
 
 id_lock = Lock()
 
@@ -54,23 +80,42 @@ class ManagedObjectProfile(models.Model):
         Style, verbose_name=_("Style"), blank=True, null=True)
     # Stencils
     shape = models.CharField(_("Shape"), blank=True, null=True,
-        choices=stencil_registry.choices, max_length=128)
-    ## Name restrictions
+                             choices=stencil_registry.choices, max_length=128)
+    # Name restrictions
     # Regular expression to check name format
     name_template = models.CharField(_("Name template"), max_length=256,
-        blank=True, null=True)
-    ## IPAM Synchronization
-    ## During ManagedObject save
+                                     blank=True, null=True)
+    # IPAM Synchronization
+    # During ManagedObject save
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
     fqdn_template = models.TextField(_("FQDN template"),
-        null=True, blank=True)
-    #@todo: Name validation function
-    ## FM settings
+                                     null=True, blank=True)
+    # @todo: Name validation function
+    # FM settings
     enable_ping = models.BooleanField(
         _("Enable ping check"), default=True)
     ping_interval = models.IntegerField(_("Ping interval"), default=60)
+    ping_policy = models.CharField(
+        _("Ping check policy"),
+        max_length=1,
+        choices=[
+            ("f", "First Success"),
+            ("a", "All Successes")
+        ],
+        default="f"
+    )
+    ping_size = models.IntegerField(_("Ping packet size"), default=64)
+    ping_count = models.IntegerField(_("Ping packets count"), default=3)
+    ping_timeout_ms = models.IntegerField(
+        _("Ping timeout (ms)"),
+        default=1000
+    )
     report_ping_rtt = models.BooleanField(
         _("Report RTT"),
+        default=False
+    )
+    report_ping_attempts = models.BooleanField(
+        _("Report Attempts"),
         default=False
     )
     # Additional alarm weight
@@ -204,6 +249,60 @@ class ManagedObjectProfile(models.Model):
         max_length=255,
         null=True, blank=True
     )
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem,
+                                           null=True, blank=True)
+    # Object id in remote system
+    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = models.BigIntegerField(null=True, blank=True)
+    # Object alarms can be escalated
+    escalation_policy = models.CharField(
+        "Escalation Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="E"
+    )
+    #
+    # Raise alarms on discovery problems
+    box_discovery_alarm_policy = models.CharField(
+        "Box Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="E"
+    )
+    periodic_discovery_alarm_policy = models.CharField(
+        "Periodic Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="E"
+    )
+    box_discovery_fatal_alarm_weight = models.IntegerField(
+        "Box Fatal Alarm Weight",
+        default=10
+    )
+    box_discovery_alarm_weight = models.IntegerField(
+        "Box Alarm Weight",
+        default=1
+    )
+    periodic_discovery_fatal_alarm_weight = models.IntegerField(
+        "Box Fatal Alarm Weight",
+        default=10
+    )
+    periodic_discovery_alarm_weight = models.IntegerField(
+        "Periodic Alarm Weight",
+        default=1
+    )
     #
     metrics = PickledField()
     #
@@ -258,10 +357,37 @@ class ManagedObjectProfile(models.Model):
         if (
             self.initial_data["report_ping_rtt"] != self.report_ping_rtt or
             self.initial_data["enable_ping"] != self.enable_ping or
-            self.initial_data["ping_interval"] != self.ping_interval
+            self.initial_data["ping_interval"] != self.ping_interval or
+            self.initial_data["ping_policy"] != self.ping_policy or
+            self.initial_data["ping_size"] != self.ping_size or
+            self.initial_data["ping_count"] != self.ping_count or
+            self.initial_data["ping_timeout_ms"] != self.ping_timeout_ms or
+            self.initial_data["report_ping_attempts"] != self.ping_interval
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
+
+    def can_escalate(self):
+        """
+        Check alarms on objects within profile can be escalated
+        :return: 
+        """
+        return self.escalation_policy == "E"
+
+    def can_create_box_alarms(self):
+        return self.box_discovery_alarm_policy == "E"
+
+    def can_create_periodic_alarms(self):
+        return self.periodic_discovery_alarm_policy == "E"
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        # Validate MeticType for object profile
+        if self.metrics:
+            try:
+                self.metrics = m_valid.clean(self.metrics)
+            except ValueError as e:
+                raise ValueError(e)
+        super(ManagedObjectProfile, self).save(force_insert, force_update)
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

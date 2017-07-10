@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Activator API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Activator API
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python module
+# Python module
 import socket
-## Third-party modules
+# Third-party modules
 import tornado.gen
-import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
 from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+from noc.core.http.client import fetch
 
 
 class ActivatorAPI(API):
@@ -24,6 +24,8 @@ class ActivatorAPI(API):
     Monitoring API
     """
     name = "activator"
+
+    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=20, request_timeout=30)
 
     @api
     @executor("script")
@@ -141,21 +143,16 @@ class ActivatorAPI(API):
         :returns" Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
-        client = tornado.httpclient.AsyncHTTPClient()
-        client.configure(None, defaults=dict(connect_timeout=20, request_timeout=30))
-        result = None
-        try:
-            response = yield client.fetch(
-                url,
-                follow_redirects=True,
-                validate_cert=False
-            )
-            result = response.body
-        except (tornado.httpclient.HTTPError, socket.error) as e:
-            self.logger.debug("HTTP GET %s failed: %s", url, e)
-        finally:
-            client.close()
-        raise tornado.gen.Return(result)
+        code, header, body = yield fetch(
+            url,
+            follow_redirects=True,
+            validate_cert=False
+        )
+        if 200 <= code <= 299:
+            raise tornado.gen.Return(body)
+        else:
+            self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
+            raise tornado.gen.Return(None)
 
     @api
     @executor("script")

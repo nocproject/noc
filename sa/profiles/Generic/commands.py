@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Generic.commands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Generic.commands
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.icommands import ICommands
 
@@ -25,13 +25,13 @@ class Script(BaseScript):
                 return self.cli(c)
             # except self.CLISyntaxError, why:
             except self.CLISyntaxError as e:
-                return ["%%ERROR: %s" % e]
+                return "%%ERROR: %s" % e
 
         cli = safe_cli if ignore_cli_errors else self.cli
         r = []
         for c in commands:
             if include_commands:
-                r += [c + "\n" + cli(c)]
+                r += [c + "\n\n" + cli(c)]
             else:
                 r += [cli(c)]
         return r

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Varios metric converting functions
-## to use in get_metrics scripts
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Varios metric converting functions
+# to use in get_metrics scripts
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 
 def percent(value, total):
@@ -20,10 +20,20 @@ def percent(value, total):
 
 def percent_usage(value, total):
     """
-    Convert usage and total values to percent
+    Convert avail and usage values to percent
     """
     if total:
         return float(value) * 100.0 / (float(total) + float(value))
+    else:
+        return 100.0
+
+
+def percent_invert(value, total):
+    """
+    Convert avail and total values to percent
+    """
+    if total:
+        return (float(total) - float(value)) * 100.0 / float(total) if value <= total else 100.00
     else:
         return 100.0
 

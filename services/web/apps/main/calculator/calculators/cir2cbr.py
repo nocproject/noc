@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## bps to burst-rate conversion
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# bps to burst-rate conversion
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from decimal import *
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.utils.safestring import mark_safe
-## NOC modules
+# NOC modules
 from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 
-##
-## Calculator form
-##
+#
+# Calculator form
+#
 class CalculatorForm(forms.Form):
     value = forms.CharField(help_text=_("CIR(bps). K, M and G suffixes can be used"))
     Tc = forms.DecimalField(initial="0.25",
@@ -27,7 +27,7 @@ class CalculatorForm(forms.Form):
                                         ("ios_policy",  _("Cisco IOS policer")),
                                         ("ios_rate",    _("Cisco IOS rate-limit")),
                                         ("junos_policy",_("Juniper JUNOS policer"))])
-    
+
     MULTIPLIERS = {
         "k": 1000,
         "m": 1000000,
@@ -81,7 +81,7 @@ class Calculator(CalculatorBase):
         return [("CIR(bps)", value),
                 ("normal-burst-bytes, extended-burst-bytes", v),\
                 ("Policy-map example", self.escape(self.template_ios_policy % {"value": value, "v": v}))]
-    
+
     def calculate_ios_rate(self,value,v):
         """Calculate IOS rate"""
         v1 = 2*v
@@ -89,13 +89,13 @@ class Calculator(CalculatorBase):
                 ("burst-normal", v),
                 ("burst-max", v1),
                 ("Rate-limit example", self.escape(self.template_ios_rate % {"value": value, "v": v, "v1": v1}))]
-    
+
     def calculate_junos_policy(self, value, v):
         """Calculate Junos policy"""
         return [("CIR(bps)", value),
                 ("burst-rate", v),
                 ("Policer example", self.escape(self.template_junos_policy % {"value": value, "v": v}))]
-    
+
     def calculate(self, value, Tc, calculation):
         """Calculator"""
         v = int(value*Tc/8)

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Group Group Manager
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Group Group Manager
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.utils.translation import  ugettext_lazy as _
 from django import forms
-## NOC modules
+# NOC modules
 from noc.lib.app.modelapplication import ModelApplication, view
 from django.contrib.auth.models import Group
 from django.contrib import admin
@@ -42,9 +42,9 @@ class GroupChangeForm(forms.ModelForm):
         Permission.set_group_permissions(model, self.new_perms)
         return model
 
-##
-## Admin for groups
-##
+#
+# Admin for groups
+#
 class GroupAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name',)}),
@@ -56,9 +56,9 @@ class GroupAdmin(admin.ModelAdmin):
     list_display = ("name",)
     form = GroupChangeForm
 
-##
-##
-##
+#
+#
+#
 class GroupApplication(ModelApplication):
     model = Group
     model_admin = GroupAdmin

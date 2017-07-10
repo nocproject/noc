@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.IOS.get_inventory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cisco.IOS.get_inventory
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 from itertools import groupby
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -21,8 +21,8 @@ class Script(BaseScript):
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>[\S ]+)?\s*, "
-        r"SN: (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
+        r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>\S+)?\s*, "
+        r"SN:\s(?P<serial>\S+)?", re.MULTILINE | re.DOTALL)
     rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
     rx_cvend = re.compile("(CISCO.(?P<ven>\S{3,15}))")
     rx_idprom = re.compile(
@@ -46,8 +46,9 @@ class Script(BaseScript):
         r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? "
         r"(?:Universal Broadband Router|chassis)")
 
-    rx_c4xk = re.compile(
-        r"^Linecard\(slot\s(\d+)\)", re.IGNORECASE)
+    rx_slot_id = re.compile(
+        r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)(?P<slot_id>[\d|\w]+).*", re.IGNORECASE)
+    slot_id = 0
 
     IGNORED_SERIAL = set([
         "H22L714"
@@ -71,11 +72,8 @@ class Script(BaseScript):
     def get_inv(self):
         objects = []
         try:
-            if self.match_version(platform__regex=r"2[89]0[01]$"):
-                # Inventory include motherboard for Cisco 2800 and 2900
-                v = self.cli("show inventory raw")
-            else:
-                v = self.cli("show inventory")
+            v = self.cli("show inventory raw")
+            self.slot_id = 0
             for match in self.rx_item.finditer(v):
                 vendor, serial = "", ""
                 if match.group("name") in self.IGNORED_NAMES:
@@ -84,6 +82,11 @@ class Script(BaseScript):
                     match.group("name"), match.group("pid"),
                     match.group("descr"), len(objects)
                 )
+                if type == "SLOTID":
+                    self.slot_id = number
+                    continue
+                if not match.group("pid") and not match.group("vid") and not match.group("serial"):
+                    continue
                 serial = match.group("serial")
                 if not part_no:
                     if type and "XCVR" in type:
@@ -100,12 +103,10 @@ class Script(BaseScript):
                         if not serial:
                             serial = t_sn
                         if not part_no:
-                            print "!!! UNKNOWN: ", match.groupdict()
                             continue
                     elif type == 'MOTHERBOARD':
                         part_no = "CISCO%s-MB" % match.group("descr")[1:5]
                     else:
-                        print "!!! UNKNOWN: ", match.groupdict()
                         continue
                 if serial in self.IGNORED_SERIAL:
                     serial = None
@@ -184,7 +185,7 @@ class Script(BaseScript):
                     }]
             return objects
         except self.CLISyntaxError:
-            print "%s command not supported" % cmd
+            pass
 
     def get_idprom(self, int, descr):
         try:
@@ -225,7 +226,6 @@ class Script(BaseScript):
             else:
                 return None, None, None, None
         except self.CLISyntaxError:
-            print "sh idprom command not supported"
             return None, None, None, None
 
 
@@ -235,15 +235,19 @@ class Script(BaseScript):
         """
         if pid is None:
             pid = ""
+            match = self.rx_slot_id.search(name)
+            if match:
+                return "SLOTID", match.group("slot_id"), None
         if ("Transceiver" in descr or
                 name.startswith("GigabitEthernet") or
                 name.startswith("TenGigabitEthernet") or
                 pid.startswith("X2-") or
                 pid.startswith("XENPAK") or
-                pid.startswith("Xenpak")):
+                pid.startswith("Xenpak") or
+                name.startswith("Converter")):
             # Transceivers
             # Get number
-            if name.startswith("Transceiver "):
+            if name.startswith("Transceiver ") or name.startswith("Converter "):
                 # Get port number
                 _, number = name.rsplit("/", 1)
             elif name.startswith("GigabitEthernet"):
@@ -275,56 +279,42 @@ class Script(BaseScript):
             if pid == "CISCO2801":
                 return "MOTHERBOARD", None, "CISCO2801-MB"
             return "MOTHERBOARD", None, pid
+        elif (pid.startswith("WS-X4920") or (pid.startswith("WS-C4900M") and "Linecard" in name)):
+            return "LINECARD", self.slot_id, pid
         elif ((lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
               and not pid.startswith("WS-CAC-") and not pid.endswith("-MB")
               and not "Clock" in descr and not "VTT FRU" in descr
               and not "C2801 Motherboard " in descr):
-            try:
-                number = int(name)
-            except ValueError:
-                number = None
             if pid in ("", "N/A"):
                 if self.rx_7100.search(descr):
                     pid = "CISCO7100"
-            return "CHASSIS", number, pid
+            return "CHASSIS", self.slot_id, pid
         elif (("SUP" in pid or "S2U" in pid)
             and "supervisor" in descr):
                 # Sup2
-                try:
-                    number = int(name)
-                except ValueError:
-                    number = None
-                return "SUP", number, pid
+                return "SUP", self.slot_id, pid
         elif name.startswith("module "):
             # Linecards or supervisors
             if (pid.startswith("RSP")
             or ((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
             and "Supervisor Engine" in descr)):
-                return "SUP", name[7:], pid
+                return "SUP", self.slot_id, pid
             else:
                 if (pid == "N/A" and "Gibraltar,G-20" in descr):
                     # 2-port 100BASE-TX Fast Ethernet port adapter
                     pid = "CISCO7100-MB"
-                if pid == "ASR1001":
-                    return "RP", name[7:], "ASR1001-RP"
-                return "MOTHERBOARD", name[7:], pid
+                if pid in ("ASR1001", "ASR1001-X"):
+                    return "RP", self.slot_id, pid+"-RP"
+                return "MOTHERBOARD", self.slot_id, pid
         elif ((pid.startswith("WS-X64") or pid.startswith("WS-X67")
               or pid.startswith("WS-X65")) and "port" in descr):
-            try:
-                number = int(name)
-            except ValueError:
-                number = None
-            return "LINECARD", number, pid
+            return "LINECARD", self.slot_id, pid
         elif (((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
         and "Supervisor Engine" in descr) or ((pid.startswith("C72")
         or pid.startswith("NPE") or pid.startswith("uBR7200-NPE")
         or pid.startswith("7301-NPE") or pid.startswith("7304-NPE"))
         and "Network Processing Engine" in descr)):
-            try:
-                number = int(name)
-            except ValueError:
-                number = None
-            return "SUP", number, pid
+            return "SUP", self.slot_id, pid
         elif "-PFC" in pid:
             # PFC subcard
             return "PFC", None, pid
@@ -336,58 +326,52 @@ class Script(BaseScript):
             return "DFC", None, pid
         elif name.startswith("PS "):
             # Power supply
-            return "PSU", name.split()[1], pid
+            return "PSU", self.slot_id, pid
         elif name.startswith("Power Supply "):
-            return "PSU", name.split()[2], pid
+            return "PSU", self.slot_id, pid
         elif "FRU Power Supply" in descr:
-            return "PSU", name.split()[-1], pid
+            return "PSU", self.slot_id, pid
         elif " Power Supply" in name:
             if pid == "PWR-2911-AC":
                 return "PSU", None, pid
-            return "PSU", name[-1], pid
-        elif pid.startswith("FAN"):
+            return "PSU", self.slot_id, pid
+        elif pid.startswith("FAN") or pid == "WS-X4992":
             # Fan module
-            try:
-                number = int(name[-1:])
-            except:
-                number = name.split()[1]
-            return "FAN", number, pid
+            return "FAN", self.slot_id, pid
         elif (pid.startswith("NM-") or pid.startswith("NME-")
         or pid.startswith("EVM-") or pid.startswith("EM-")):
             # Network Module
-            return "NM", name[-1], pid
+            return "NM", self.slot_id, pid
         elif pid.startswith("SM-"):
             # ISR 2900/3900 ServiceModule
-            return "SM", name[-1], pid
+            return "SM", self.slot_id, pid
         elif "-NM-" in pid:
             # Network module 2
-            if self.rx_c4xk.match(name):
-                return "NM", self.rx_c4xk.match(name).group(1), pid
-            return "NM", name.split()[5], pid
+            return "NM", self.slot_id, pid
         elif (pid.startswith("WIC-") or pid.startswith("HWIC-")
               or pid.startswith("VWIC-") or pid.startswith("VWIC2-")
               or pid.startswith("EHWIC-") or pid.startswith("VWIC3-")
               or pid.startswith("VIC2-") or pid.startswith("VIC3-")):
                 # DaughterCard
-                return "DCS", name[-1], pid
+                return "DCS", self.slot_id, pid
         elif pid.startswith("AIM-"):
             # Network Module
-            return "AIM", name[-1], pid
+            return "AIM", self.slot_id, pid
         elif (pid.startswith("PVDM2-") or pid.startswith("PVDM3-")):
             # PVDM Type 2 and 3
-            return "PVDM", name[-1], pid
+            return "PVDM", self.slot_id, pid
         elif pid.endswith("-MB"):
             # Motherboard
             return "MOTHERBOARD", None, pid
         elif pid.startswith("C3900-SPE"):
             # SPE for 3900
-            return "SPE", name[-1], pid
+            return "SPE", self.slot_id, pid
         elif "Clock FRU" in descr:
             # Clock module
-            return "CLK", name.split()[1], pid
+            return "CLK", self.slot_id, pid
         elif "VTT FRU" in descr:
             # Clock module
-            return "VTT", name.split()[1], pid
+            return "VTT", self.slot_id, pid
         elif "Compact Flash Disk" in descr:
             # Compact Flash
             return "Flash | CF", name, pid

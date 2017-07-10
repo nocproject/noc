@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOS.get_dom_status
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOS.get_dom_status
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 
@@ -27,7 +27,8 @@ class Script(BaseScript):
     rx_tx_dbm = re.compile(
         r"Laser output power\s+:\s+\S+ mW / (?P<tx_dbm>\S+) dBm")
     rx_rx_dbm = re.compile(
-        r"(?:Laser rx|Receiver signal average optical) power\s+:\s+\S+ mW / (?P<rx_dbm>\S+) dBm")
+        r"(?:Laser rx|Receiver signal average optical) power\s+:\s+\S+ mW "
+        r"/ (?P<rx_dbm>\S+) dBm")
 
     def execute(self, interface=None):
         r = []

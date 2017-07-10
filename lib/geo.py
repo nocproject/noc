@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Gis-related utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Gis-related utilities
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import math
-## Third-party modules
+# Third-party modules
 import geojson
 from geopy.point import Point as GPoint
 from geopy.distance import vincenty, great_circle, ELLIPSOIDS
-## NOC settings
+# NOC settings
 from noc.settings import config
 
 # major, minor, flattening=(major-minor)/major

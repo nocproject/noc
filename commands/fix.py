@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fix command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# fix command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import argparse
 import os
-## Third-party modules
-import yaml
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
 
@@ -41,16 +40,19 @@ class Command(BaseCommand):
                 continue
             files = os.listdir(d)
             if "__init__.py" not in files:
-                print "WARNING: %s is missed. Create empty file or all fixes from %s will be ignored" % (
-                    os.path.join(d, "__init__.py"),
-                    d
+                print(
+                    "WARNING: %s is missed. "
+                    "Create empty file "
+                    "or all fixes from %s will be ignored" % (
+                        os.path.join(d, "__init__.py"), d),
+                    file=self.stdout
                 )
                 continue
             for f in files:
                 if not f.startswith("_") and f.endswith(".py"):
                     fixes.add(f[:-3])
         for f in sorted(fixes):
-            self.stdout.write("%s\n" % f)
+            print(f, file=self.stdout)
 
     def get_fix(self, name):
         for d in self.FIX_DIRS:
@@ -68,9 +70,9 @@ class Command(BaseCommand):
             fix = self.get_fix(f)
             if not fix:
                 self.die("Invalid fix '%s'" % f)
-            self.stdout.write("Apply %s ...\n" % f)
+            print("Apply %s ..." % f, file=self.stdout)
             fix()
-            self.stdout.write("... done\n")
+            print("... done", file=self.stdout)
 
 
 if __name__ == "__main__":

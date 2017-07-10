@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DLink.DVG.get_arp
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DLink.DVG.get_arp
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
@@ -27,8 +27,11 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.4.22.1.2",
                     "1.3.6.1.2.1.4.22.1.1"
                 ]):  # IP-MIB
-                    r += [{"ip": ip, "mac": mac, "interface": self.snmp.get(
-                        "1.3.6.1.2.1.2.2.1.2" + '.' + i, cached=True)}]  # IF-MIB
+                    r += [{
+                        "ip": ip, "mac": mac, "interface": self.snmp.get(
+                            "1.3.6.1.2.1.2.2.1.2" + '.' + i, cached=True
+                        )
+                    }]  # IF-MIB
                 return r
             except self.snmp.TimeOutError:
                 raise self.NotSupportedError()

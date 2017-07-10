@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Ericsson.SEOS.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Ericsson.SEOS.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(r"^Active SBL\s+:\s+CXP:\s+(?P<version>\S+.*)\s+"
-                        r"^Passive NPU\s+:\s+CXP:\s+[\S\s]+"
+                        r"^Passive (?:NPU|SBL)\s+:\s+CXP:\s+[\S\s]+"
                         r"^Active BNS\s+:\s+CXCR:\s+(?P<sw_backup>\S+.*)$",
                         re.MULTILINE)
 

@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Generic.get_metrics
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Generic.get_metrics
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import os
 from threading import Lock
 import re
-## Third-party modules
+# Third-party modules
 import six
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmetrics import IGetMetrics
-from noc.lib.mib import mib
+from noc.core.mib import mib
 from noc.core.handler import get_handler
 
 NS = 1000000000.0
@@ -244,7 +244,7 @@ class CapabilityListRule(OIDRule):
     name = "caplist"
 
     def __init__(self, oid, type=None, scale=1, capability=None, separator=",", strip=True):
-        super(CapabilityIndexRule, self).__init__(oid, type=type, scale=scale)
+        super(CapabilityListRule, self).__init__(oid, type=type, scale=scale)
         self.capability = capability
         self.separator = separator
         self.strip = strip

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Prefix model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Prefix model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 from django.db.models import Q
 from django.contrib.auth.models import User
-## NOC modules
+# NOC modules
 from noc.project.models.project import Project
 from vrf import VRF
 from afi import AFI_CHOICES

@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## UserAccess model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# UserAccess model
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Django modules
+# Python modules
+from __future__ import absolute_import
+from functools import reduce
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
-## NOC modules
-from managedobjectselector import ManagedObjectSelector
-from groupaccess import GroupAccess
-from administrativedomain import AdministrativeDomain
+# NOC modules
+from .managedobjectselector import ManagedObjectSelector
+from .groupaccess import GroupAccess
+from .administrativedomain import AdministrativeDomain
 
 
 class UserAccess(models.Model):
@@ -27,8 +30,10 @@ class UserAccess(models.Model):
 
     user = models.ForeignKey(User, verbose_name=_("User"))
     # Legacy interface
-    selector = models.ForeignKey(ManagedObjectSelector,
-            null=True, blank=True)
+    selector = models.ForeignKey(
+        ManagedObjectSelector,
+        null=True, blank=True
+    )
     #
     administrative_domain = models.ForeignKey(
         AdministrativeDomain,
@@ -52,7 +57,7 @@ class UserAccess(models.Model):
         :return:
         """
         if user.is_superuser:
-            return Q() # All objects
+            return Q()  # All objects
         # Build Q for user access
         uq = []
         domains = set()

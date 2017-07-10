@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: D-Link
-## OS:     DxS_Smart
-## Compatible:
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: D-Link
+# OS:     DxS_Smart
+# Compatible:
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import re
@@ -45,28 +45,24 @@ class Profile(BaseProfile):
 
     def get_pmib(self, v):
         if v["platform"].startswith("DES-1210-52"):
-            if v["version"].startswith("1") \
-            or v["version"].startswith("2"):
+            if v["version"].startswith("1") or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.7"
             else:
                 return "1.3.6.1.4.1.171.10.75.17"
         if v["platform"].startswith("DES-1210-48"):
             return "1.3.6.1.4.1.171.10.76.11"
         if v["platform"].startswith("DES-1210-08P"):
-            if v["version"].startswith("1") \
-            or v["version"].startswith("2"):
+            if v["version"].startswith("1") or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.13"
             else:
                 return "1.3.6.1.4.1.171.10.75.14"
         if v["platform"].startswith("DES-1210-28P"):
-            if v["version"].startswith("2") \
-            or v["version"].startswith("3"):
+            if v["version"].startswith("2") or v["version"].startswith("3"):
                 return "1.3.6.1.4.1.171.10.75.6"
             else:
                 return "1.3.6.1.4.1.171.10.75.19.1"
         if v["platform"].startswith("DES-1210-28"):
-            if v["version"].startswith("1") \
-            or v["version"].startswith("2"):
+            if v["version"].startswith("1") or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.5"
             else:
                 return "1.3.6.1.4.1.171.10.75.15"
@@ -90,7 +86,8 @@ class Profile(BaseProfile):
             return "1.3.6.1.4.1.171.10.76.17"
         return None
 
-    rx_port = re.compile(r"^(?P<port>\d+)\s+"
+    rx_port = re.compile(
+        r"^(?P<port>\d+)\s+"
         r"(?P<admin_state>Enabled|Disabled)\s+"
         r"(?P<admin_speed>Auto|10M|100M|1000M|10G)/"
         r"((?P<admin_duplex>Half|Full)/)?"
@@ -101,7 +98,8 @@ class Profile(BaseProfile):
         r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?",
         re.MULTILINE)
 
-    rx_descr = re.compile(r"^\s+(?P<port>\d+)\s(?P<descr>.+)\n",
+    rx_descr = re.compile(
+        r"^\s+(?P<port>\d+)\s(?P<descr>.+)\n",
         re.MULTILINE)
 
     def get_ports(self, script, interface=None):
@@ -143,7 +141,7 @@ class Profile(BaseProfile):
                 if int(i['port']) == int(d['port']):
                     i['descr'] = d['descr']
             if prev_port and (prev_port == i['port']):
-                if i['status'] == True:
+                if i['status'] is True:
                     k = 0
                     for j in ports:
                         if j['port'] == i['port']:
@@ -156,21 +154,23 @@ class Profile(BaseProfile):
             prev_port = i['port']
         return ports
 
-    rx_vlan = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-    r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
-    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
-    r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
-    r"^(Current Untagged P|Untagged p)orts\s*:\s*"
-    r"(?P<untagged_ports>\S*?)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_vlan = re.compile(
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
+        r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
+        r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
+        r"^(Current Untagged P|Untagged p)orts\s*:\s*"
+        r"(?P<untagged_ports>\S*?)\s*\n",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    rx_vlan1 = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-    r"VLAN Name\s+:\s*(?P<vlan_name>\S*)\s*\n"
-    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
-    r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
-    r"(Static ports\s+:\s*\S+\s*\n)?"
-    r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_vlan1 = re.compile(
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
+        r"VLAN Name\s+:\s*(?P<vlan_name>\S*)\s*\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
+        r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
+        r"(Static ports\s+:\s*\S+\s*\n)?"
+        r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def get_vlans(self, script):
         vlans = []
@@ -194,7 +194,8 @@ class Profile(BaseProfile):
                     script.expand_interface_range(match.group("member_ports"))
                 untagged_ports = \
                     script.expand_interface_range(
-                    match.group("untagged_ports"))
+                        match.group("untagged_ports")
+                    )
                 for port in member_ports:
                     if port not in untagged_ports:
                         tagged_ports += [port]

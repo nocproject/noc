@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Authenticated API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Authenticated API
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 import cachetools
-## NOC modules
-from api import APIRequestHandler
+# NOC modules
+from .api import APIRequestHandler
 from noc.main.models import User
-
 
 user_lock = Lock()
 

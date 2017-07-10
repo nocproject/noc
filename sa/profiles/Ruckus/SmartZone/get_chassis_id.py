@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Ruckus.SmartZone.get_chassis_id
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-## Python modules
+# ---------------------------------------------------------------------
+# Ruckus.SmartZone.get_chassis_id
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.lib.mac import MAC
@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Ruckus.SmartZone.get_chassis_id"
     cache = True
     interface = IGetChassisID
-    
+
     def execute(self):
         # Try SNMP first
         if self.has_snmp():
@@ -31,4 +31,4 @@ class Script(BaseScript):
                 pass
 
         # Fallback to CLI
-        raise Exception("Not implemented")    
+        raise Exception("Not implemented")

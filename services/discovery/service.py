@@ -1,19 +1,17 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Discovery
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Discovery
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 # Python modules
-import threading
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 
@@ -27,22 +25,21 @@ class DiscoveryService(Service):
 
     def __init__(self):
         super(DiscoveryService, self).__init__()
-        self.scheduler = None
         self.send_callback = None
 
     @tornado.gen.coroutine
     def on_activate(self):
-        if self.config.global_n_instances > 1:
+        slot_number, total_slots = yield self.acquire_slot()
+        if total_slots > 1:
             self.logger.info(
-                "Enabling distributed mode: Slot %d of %d",
-                self.config.instance + self.config.global_offset,
-                self.config.global_n_instances
+                "Enabling distributed mode: Slot %d/%d",
+                slot_number, total_slots
             )
             ifilter = {
                 "key": {
                     "$mod": [
-                        self.config.global_n_instances,
-                        self.config.instance + self.config.global_offset
+                        total_slots,
+                        slot_number
                     ]
                 }
             }
@@ -58,10 +55,16 @@ class DiscoveryService(Service):
             max_threads=self.config.max_threads,
             ioloop=self.ioloop,
             filter=ifilter,
-            use_cache=True
+            service=self
         )
-        self.scheduler.service = self
         self.scheduler.run()
+
+    def get_mon_data(self):
+        r = super(DiscoveryService, self).get_mon_data()
+        if self.scheduler:
+            self.scheduler.apply_metrics(r)
+        return r
+
 
 if __name__ == "__main__":
     DiscoveryService().start()

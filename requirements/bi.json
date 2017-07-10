@@ -4,6 +4,10 @@
     {
       "name": "bi-runner",
       "version": "latest"
+    },
+    {
+      "name": "bi-runner-legacy",
+      "version": "0.0.20"
     }
   ]
 }

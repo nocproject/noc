@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ActiveEvent model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ActiveEvent model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import struct
 from threading import Lock
-## Django modules
+# Django modules
 from django.template import Template, Context
-## Third-party modules
+# Third-party modules
 from mongoengine import document, fields
 from bson import Binary
-## NOC modules
+# NOC modules
 from eventlog import EventLog
 from eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
@@ -196,7 +196,7 @@ class ActiveEvent(document.Document):
             return o
         return o.id
 
-## Avoid circular references
+# Avoid circular references
 from newevent import NewEvent
 from failedevent import FailedEvent
 from archivedevent import ArchivedEvent

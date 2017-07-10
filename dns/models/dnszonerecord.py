@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DNSZoneRecord model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DNSZoneRecord model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-## NOC modules
+# NOC modules
 from dnszone import DNSZone
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
@@ -51,9 +51,9 @@ class DNSZoneRecord(models.Model):
         """
         return site.reverse("dns:dnszone:change", self.zone.id)
 
-##
-## Signal handlers
-##
+#
+# Signal handlers
+#
 @receiver(post_save, sender=DNSZoneRecord)
 def on_save(sender, instance, created, **kwargs):
     instance.zone.touch(instance.zone.name)

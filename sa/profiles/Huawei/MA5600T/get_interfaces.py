@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Huawei.MA5600T.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Huawei.MA5600T.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -35,7 +35,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_tagged = re.compile("(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
-        r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E\s+(\S+\s+)?\d+\s+\S+\s+\S+\s+\S+\s+"
+        r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E\s+(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
         r"\S+\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
         re.MULTILINE)
     rx_adsl_state = re.compile(
@@ -86,7 +86,7 @@ class Script(BaseScript):
         elif int_type in ["xDSLchan", "DOCSISup", "DOCSISdown"]:
             index += intNum << 5
         else:
-            index += intNum << 5
+            index += intNum << 6
 
         return index
 
@@ -100,7 +100,6 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        vlans = []
         stp_ports = self.get_stp()
         display_pvc = False
         display_service_port = False
@@ -164,9 +163,12 @@ class Script(BaseScript):
                 if display_pvc:
                     v = self.cli("display pvc 0/%d\n" % i)
                     rx_adsl = self.rx_pvc
-                if display_service_port:
+                elif display_service_port:
                     v = self.cli("display service-port board 0/%d\n" % i)
                     rx_adsl = self.rx_sp
+                else:
+                    v = ""
+                    rx_adsl = ""
                 for match in rx_adsl.finditer(v):
                     port = int(match.group("port"))
                     ifname = "0/%d/%d" % (i, port)

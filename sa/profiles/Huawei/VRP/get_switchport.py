@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Huawei.VRP.get_switchport
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Huawei.VRP.get_switchport
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.lib.validators import is_int
@@ -94,7 +94,7 @@ class Script(BaseScript):
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)
                     # For VRP version 5.3
-                    if r and r[-1]["interface"] == match.group("interface"): 
+                    if r and r[-1]["interface"] == match.group("interface"):
                         r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
                         continue
             members = []

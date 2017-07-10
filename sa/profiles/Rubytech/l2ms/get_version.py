@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Rubytech.l2ms.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Rubytech.l2ms.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 Test on:
 - FGS-2824
@@ -35,9 +35,9 @@ Flash Size                   : 2 M
 
 
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -46,7 +46,7 @@ class Script(BaseScript):
     name = "Rubytech.l2ms.get_version"
     cache = True
     interface = IGetVersion
-    
+
     rx_ver = re.compile(
         r"Model Name\s+:\s(?P<platform>[^, ]+)\n"
         r".*BIOS Version\s+:\s(?P<biosversion>[^, ]+)\n"
@@ -54,18 +54,18 @@ class Script(BaseScript):
         r".*Hardware-Mechanical Version\s+:\s(?P<hwversion>[^, ]+)\n"
         r".*Serial Number\s+:\s(?P<sn>[^, ]+)\n"
         , re.MULTILINE | re.DOTALL | re.IGNORECASE)
-                
+
 
     def execute(self):
         ver = ""
         self.cli("system", cached=True)
-        
+
         ver = self.cli("show", cached=True)
 #        print (ver)
         match = self.re_search(self.rx_ver, ver)
 
 #        print (match.group("platform"))
-        
+
         return {
             "vendor": "Rubytech",
             "platform": match.group("platform"),
@@ -76,4 +76,3 @@ class Script(BaseScript):
                 "Bios": match.group("biosversion"),
                           }
             }
-

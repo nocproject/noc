@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CloneClassificationRule management
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CloneClassificationRule management
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine import fields
-## NOC modules
+# NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 

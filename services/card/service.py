@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Card service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Card service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.service.ui import UIService
 from card import CardRequestHandler
 from search import SearchRequestHandler
@@ -19,6 +19,9 @@ class CardService(UIService):
 
     use_translation = True
     use_jinja = True
+
+    traefik_backend = "card"
+    traefik_frontend_rule = "PathPrefix:/api/card"
 
     def get_handlers(self):
         CardRequestHandler.load_cards()

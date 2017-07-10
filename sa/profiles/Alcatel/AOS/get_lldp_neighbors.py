@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.AOS.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
+# ----------------------------------------------------------------------
+# Alcatel.AOS.get_lldp_neighbors
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -61,22 +59,16 @@ class Script(BaseScript):
             # remote_chassis_id_subtype
             match = self.rx_remote_chassis_id_subtype.search(s)
             if not match:
-                # Debug string
-                print "\n\n\n\n\nremote_chassis_id_subtype\n\n\n\n\n"
                 continue
             remote_chassis_id_subtype = match.group("subtype").strip()
                 # remote_chassis_id
             match = self.rx_remote_chassis_id.search(s)
             if not match:
-                # Debug string
-                print "\n\n\n\n\nremote_chassis_id\n\n\n\n\n"
                 continue
             n["remote_chassis_id"] = match.group("id").strip()
                 # remote_port_subtype
             match = self.rx_remote_port_id_subtype.search(s)
             if not match:
-                # Debug string
-                print "\n\n\n\n\nremote_port_id_subtype\n\n\n\n\n"
                 continue
             remote_port_subtype = match.group("subtype").strip()
             # TODO: Find other subtypes
@@ -106,16 +98,12 @@ class Script(BaseScript):
                 # remote_port
             match = self.rx_remote_port_id.search(s)
             if not match:
-                # Debug string
-                print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
                 continue
             n["remote_port"] = match.group("port").strip()
             if n["remote_port_subtype"] == 7 \
             and n["remote_port"].lower().startswith("rmon port"):
                 match = self.rx_remote_port_id2.search(n["remote_port"])
                 if not match:
-                    # Debug string
-                    print "\n\n\n\n\nInvalid remote_port_id\n\n\n\n\n"
                     continue
                 n["remote_port"] = match.group("port")
                 # remote_system_name

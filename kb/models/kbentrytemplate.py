@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## KBEntryTemplate model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# KBEntryTemplate model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## Third-party modules
+# Third-party modules
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.lib.app import site
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language

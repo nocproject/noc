@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.alarm application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.alarm application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import inspect
 import datetime
-## Third-party modules
+# Third-party modules
 import bson
-## NOC modules
+# NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment

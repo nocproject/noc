@@ -5,7 +5,7 @@ from django.db import models
 from noc.peer.models import *
 
 class Migration:
-    
+
     def forwards(self):
         if db.execute("SELECT COUNT(*) FROM peer_whoisdatabase WHERE name=%s",["RIPE"])[0][0]==0:
             db.execute("INSERT INTO peer_whoisdatabase(name) VALUES(%s)",["RIPE"])
@@ -15,6 +15,6 @@ class Migration:
             ("ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz","R","origin","route")]:
             db.execute("INSERT INTO peer_whoislookup(whois_database_id,url,direction,key,value) values(%s,%s,%s,%s,%s)",
                 [ripe_id,url,direction,key,value])
-    
+
     def backwards(self):
         pass

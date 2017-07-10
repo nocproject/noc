@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: D-Link
-## OS:     DxS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: D-Link
+# OS:     DxS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -21,6 +21,7 @@ class Profile(BaseProfile):
         r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"
     pattern_prompt = r"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
+    password_submit = "\r\n"
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
@@ -28,16 +29,18 @@ class Profile(BaseProfile):
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
-    ##
-    ## Version comparison
-    ## Version format:
-    ## <major>.<minor><sep><patch>
-    ##
+    #
+    # Version comparison
+    # Version format:
+    # <major>.<minor><sep><patch>
+    #
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
-        return cmp([int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)])
+        return cmp(
+            [int(z) for z in self.rx_ver.findall(x)],
+            [int(z) for z in self.rx_ver.findall(y)]
+        )
 
     """
     IF-MIB:IfDescr
@@ -88,8 +91,12 @@ class Profile(BaseProfile):
         match = self.rx_interface_name.match(s)
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
-                match.group("re_platform") and any(match.group("re_platform").startswith(p) for p in platforms_with_stacked_ports):
-                return "%s:%s" % (match.group("re_slot"), match.group("re_port"))
+                match.group("re_platform") and \
+                any(match.group("re_platform").startswith(p)
+                    for p in platforms_with_stacked_ports):
+                return "%s:%s" % (
+                    match.group("re_slot"), match.group("re_port")
+                )
             elif match.group("re_port"):
                 return "%s" % match.group("re_port")
         elif s.startswith("Slot0/"):
@@ -103,7 +110,7 @@ class Profile(BaseProfile):
         r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$", re.MULTILINE)
 
     def setup_session(self, script):
-        #Remove duplicates prompt in DLink DGS-3120-24SC ver. 4.04.R004
+        # Remove duplicates prompt in DLink DGS-3120-24SC ver. 4.04.R004
         script.cli("")
         # Cache "show switch" command and fetch CLI Paging from it
         s_switch = script.scripts.get_switch()
@@ -112,12 +119,12 @@ class Profile(BaseProfile):
             # "DES-3528" and "DES-3552" not working without clipaging
             if match:
                 script.logger.debug("Enabling CLI Paging...")
-                script.cli("enable clipaging")
+                script.cli("enable clipaging", ignore_errors=True)
             match = True
         if not match:
             self.dlink_pager = True
             script.logger.debug("Disabling CLI Paging...")
-            script.cli("disable clipaging")
+            script.cli("disable clipaging", ignore_errors=True)
 
         # Parse path parameters
         if "patch" in script.credentials and script.credentials["path"]:
@@ -126,14 +133,16 @@ class Profile(BaseProfile):
                     self.cluster_member = p[8:].strip()
         # Switch to cluster member, if necessary
         if self.cluster_member:
-            script.logger.debug("Switching to SIM member %s" % script.cluster_member)
+            script.logger.debug(
+                "Switching to SIM member %s" % script.cluster_member
+            )
             script.cli("reconfig member_id %s" % script.cluster_member)
 
     def shutdown_session(self, script):
         if self.cluster_member:
             script.cli("reconfig exit")
         if self.dlink_pager:
-            script.cli("enable clipaging")
+            script.cli("enable clipaging", ignore_errors=True)
 
     rx_port = re.compile(
         r"^\s*(?P<port>\d+(/|:)?\d*)\s*"
@@ -147,7 +156,7 @@ class Profile(BaseProfile):
         r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"((?P<asd>\-)\s*)?"
-        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|Cross|\-)\s*)?"
+        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|Cross|Normal|\-)\s*)?"
         r"(\n\s*Desc(ription)?:\s*?(?P<desc>.*?))?$",
         re.MULTILINE)
 
@@ -158,7 +167,7 @@ class Profile(BaseProfile):
             media_type = match.group("media_type")
             descr = match.group("desc")
             if descr:
-                descr = descr.decode("ascii","ignore")
+                descr = descr.decode("ascii", "ignore")
                 descr = descr.strip()
             else:
                 descr = ''
@@ -184,13 +193,15 @@ class Profile(BaseProfile):
             return None
 
     def get_ports(self, script, interface=None):
-        if ((script.match_version(DES3200, version__gte="1.70.B007") \
-            and script.match_version(DES3200, version__lte="3.00.B000"))
-            or script.match_version(DES3200, version__gte="4.38.B000") \
-            or script.match_version(DES3028, version__gte="2.90.B10") \
-            or script.match_version(DGS3120, version__gte="3.00.B022") \
-            or script.match_version(DGS3620, version__gte="2.50.017")) \
-            and not script.match_version(DES3200, platform="DES-3200-28F"):
+        if (
+            (
+                script.match_version(DES3200, version__gte="1.70.B007") and
+                script.match_version(DES3200, version__lte="3.00.B000")
+            ) or script.match_version(DES3200, version__gte="4.38.B000") or
+            script.match_version(DES3028, version__gte="2.90.B10") or
+            script.match_version(DGS3120, version__gte="3.00.B022") or
+            script.match_version(DGS3620, version__gte="2.50.017")
+        ) and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             if interface is not None:
                 c = script.cli(("show ports %s description" % interface))
@@ -238,7 +249,7 @@ class Profile(BaseProfile):
         ports = []
         for i in objects:
             if prev_port and (prev_port == i['port']):
-                if i['status'] == True:
+                if i['status'] is True:
                     k = 0
                     for j in ports:
                         if j['port'] == i['port']:
@@ -275,13 +286,13 @@ class Profile(BaseProfile):
             untagged_ports = []
             member_ports = []
             if match.group("member_ports"):
-                member_ports = \
-                script.expand_interface_range(
-                match.group("member_ports"))
+                member_ports = script.expand_interface_range(
+                    match.group("member_ports")
+                )
             if match.group("untagged_ports"):
-                untagged_ports = \
-                script.expand_interface_range(
-                match.group("untagged_ports"))
+                untagged_ports = script.expand_interface_range(
+                    match.group("untagged_ports")
+                )
             for port in member_ports:
                 if port not in untagged_ports:
                     tagged_ports += [port]
@@ -304,9 +315,13 @@ class Profile(BaseProfile):
                 match = self.rx_vlan.search(l)
                 if match:
                     tagged_ports = \
-                        script.expand_interface_range(match.group("tagged_ports"))
+                        script.expand_interface_range(
+                            match.group("tagged_ports")
+                        )
                     untagged_ports = \
-                        script.expand_interface_range(match.group("untagged_ports"))
+                        script.expand_interface_range(
+                            match.group("untagged_ports")
+                        )
                     vlans += [{
                         "vlan_id": int(match.group("vlan_id")),
                         "vlan_name": match.group("vlan_name").strip(),
@@ -411,9 +426,11 @@ def DGS3600(v):
     :param v:
     :return:
     """
-    return ("DGS-3610" not in v["platform"] and
-            "DGS-3620" not in v["platform"] and
-            v["platform"].startswith("DGS-36"))
+    return (
+        "DGS-3610" not in v["platform"] and
+        "DGS-3620" not in v["platform"] and
+        v["platform"].startswith("DGS-36")
+    )
 
 
 def DGS3620(v):
@@ -426,17 +443,19 @@ def DGS3620(v):
 
 
 def DxS_L2(v):
-    if v["platform"].startswith("DES-1100") \
-        or v["platform"].startswith("DES-12") \
-        or v["platform"].startswith("DES-30") \
-        or v["platform"].startswith("DES-32") \
-        or v["platform"].startswith("DES-35") \
-        or v["platform"].startswith("DES-3810") \
-        or v["platform"].startswith("DGS-1100") \
-        or v["platform"].startswith("DGS-12") \
-        or v["platform"].startswith("DGS-15") \
-        or v["platform"].startswith("DGS-30") \
-        or v["platform"].startswith("DGS-32"):
+    if (
+        v["platform"].startswith("DES-1100") or
+        v["platform"].startswith("DES-12") or
+        v["platform"].startswith("DES-30") or
+        v["platform"].startswith("DES-32") or
+        v["platform"].startswith("DES-35") or
+        v["platform"].startswith("DES-3810") or
+        v["platform"].startswith("DGS-1100") or
+        v["platform"].startswith("DGS-12") or
+        v["platform"].startswith("DGS-15") or
+        v["platform"].startswith("DGS-30") or
+        v["platform"].startswith("DGS-32")
+    ):
         return True
     else:
         return False

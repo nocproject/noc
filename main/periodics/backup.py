@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Backup database,  repo and configs to main.backupdir
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Backup database,  repo and configs to main.backupdir
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from __future__ import with_statement
 import os
 import subprocess
 import datetime
 import re
 import shutil
-## NOC modules
+# NOC modules
 from noc.lib.periodic import Task as PeriodicTask
 from noc.settings import config
 from noc import settings
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 from noc.core.config.base import config as cfg
 
 
@@ -242,7 +242,6 @@ class Task(PeriodicTask):
         return self.tar(etc_out, files)
 
     def execute(self):
-        from django.conf import settings
 
         if not self.check_paths():
             return False

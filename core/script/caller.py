@@ -11,8 +11,9 @@ from threading import Lock
 import uuid
 import itertools
 ## NOC modules
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.script.loader import loader
+from noc.core.service.loader import get_dcs
 
 CALLING_SERVICE = "MTManager"
 DEFAULT_IDLE_TIMEOUT = 60
@@ -58,25 +59,30 @@ class Session(object):
         )
 
     @classmethod
-    def _get_service(cls, session, default=None):
+    def _get_service(cls, session, pool=None):
         with cls._lock:
-            service = cls._sessions.get(session)
-            if not service and default:
-                cls._sessions[session] = default
-                service = default
-        return service
+            svc = cls._sessions.get(session)
+        if not pool:
+            return svc
+        nsvc = get_dcs().resolve_sync("activator-%s" % pool, hint=svc)
+        if nsvc:
+            if (svc and svc != nsvc) or (not svc):
+                with cls._lock:
+                    cls._sessions[session] = nsvc
+        return nsvc
 
     def _call_script(self, script, args, timeout=None):
         # Call SAE
-        data = RPCClient(
+        data = open_sync_rpc(
             "sae",
             calling_service=CALLING_SERVICE
         ).get_credentials(self._object.id)
-        # Get hints from session
-        service = self._get_service(self._id, data["service"])
+        # Resolve service address
+        service = self._get_service(self._id, data["pool"])
         # Call activator
-        return RPCClient(
-            "activator-%s" % self._object.pool.name,
+        return open_sync_rpc(
+            "activator",
+            pool=self._object.pool.name,
             calling_service=CALLING_SERVICE,
             hints=[service]
         ).script(
@@ -94,10 +100,11 @@ class Session(object):
         service = self._get_service(self._id)
         if service:
             # Close at activator
-            RPCClient(
-                "activator-%s" % self._object.pool.name,
-                calling_service=CALLING_SERVICE,
-                hints=[service]
+            # @todo: Use hints
+            open_sync_rpc(
+                "activator",
+                pool=self._object.pool.name,
+                calling_service=CALLING_SERVICE
             ).close_session(self._id)
             # Remove from cache
             with self._lock:

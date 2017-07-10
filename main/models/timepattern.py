@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## TimePattern database model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# TimePattern database model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from threading import RLock
+# Python modules
+from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 import cachetools
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.lib.timepattern import TimePattern as TP
 from noc.core.model.decorator import on_delete_check
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 @on_delete_check(check=[

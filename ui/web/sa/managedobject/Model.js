@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Model");
@@ -257,6 +257,52 @@ Ext.define("NOC.sa.managedobject.Model", {
             name: "link_count",
             type: "integer",
             persist: false
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string"
+        },
+        {
+            name: "tt_system",
+            type: "string"
+        },
+        {
+            name: "tt_system_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "tt_queue",
+            type: "string"
+        },
+        {
+            name: "tt_system_id",
+            type: "string"
+        },
+        {
+            name: "escalation_policy",
+            type: "string"
+        },
+        {
+            name: "box_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "periodic_discovery_alarm_policy",
+            type: "string"
         },
         {
             name: "row_class",

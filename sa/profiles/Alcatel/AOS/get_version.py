@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.AOS.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alcatel.AOS.get_version
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -18,14 +18,18 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_sys = re.compile(r"Module in slot.+?Model.*?Name:\s+(?P<platform>.+?),$",
+    rx_sys = re.compile(
+        r"Module in slot.+?Model.*?Name:\s+(?P<platform>.+?),$",
         re.MULTILINE | re.DOTALL)
-    rx_ver = re.compile(r"System.*?Description:\s+(?P<version>.+?)\s.*$",
+    rx_ver = re.compile(
+        r"System.*?Description:\s+(?P<version>.+?)\s.*$",
         re.MULTILINE | re.DOTALL)
-    rx_ser = re.compile(r"Serial Number:\s+(?P<serial>.+?),$",
+    rx_ser = re.compile(
+        r"Serial Number:\s+(?P<serial>.+?),$",
         re.MULTILINE | re.DOTALL)
     rx_ver1 = re.compile(
-        r"System.*?Description:\s+Alcatel-Lucent\s+\S+\s+(?P<version>\S+)\s.*$",
+        r"System.*?Description:\s+Alcatel-Lucent\s+"
+        r"(?P<ver1>\S+)\s+(?P<version>\S+)\s.*$",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
@@ -33,14 +37,18 @@ class Script(BaseScript):
         match_sys = self.rx_sys.search(v)
         match_serial = self.rx_ser.search(v)
         v = self.cli("show system")
-        match_ver = self.rx_ver.search(v)
-        if match_ver.group("version") == "Alcatel-Lucent":
-            match_ver = self.rx_ver1.search(v)
+        match = self.rx_ver.search(v)
+        version = match.group("version")
+        if version == "Alcatel-Lucent":
+            match = self.rx_ver1.search(v)
+            version = match.group("version")
+            if version.endswith(","):
+                version = match.group("ver1")
         return {
             "vendor": "Alcatel",
             "platform": match_sys.group("platform"),
-            "version": match_ver.group("version"),
+            "version": version,
             "attributes": {
-            "Serial Number": match_serial.group("serial")
+                "Serial Number": match_serial.group("serial")
             }
         }

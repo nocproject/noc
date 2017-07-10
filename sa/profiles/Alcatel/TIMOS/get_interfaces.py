@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.TIMOS.get_interfaces
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  Alcatel.TIMOS.get_interfaces
+# ----------------------------------------------------------------------
 
 # Python modules
 import re
@@ -206,7 +206,7 @@ class Script(BaseScript):
                             }
                         ]
                 else:
-                    print iface
+                    pass
             else:
                 continue
             if my_dict['description'] == '(Not Specified)':

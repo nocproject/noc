@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -10,9 +10,9 @@ from django.db import models
 
 
 class Migration:
-    
+
     def forwards(self):
-        
+
         # Model 'EventPriority'
         db.create_table('fm_eventpriority', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -29,7 +29,7 @@ class Migration:
         # Mock Models
         EventPriority = db.mock_model(model_name='EventPriority', db_table='fm_eventpriority', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         EventCategory = db.mock_model(model_name='EventCategory', db_table='fm_eventcategory', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'EventClass'
         db.create_table('fm_eventclass', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -43,7 +43,7 @@ class Migration:
         ))
         # Mock Models
         EventClass = db.mock_model(model_name='EventClass', db_table='fm_eventclass', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'EventClassificationRule'
         db.create_table('fm_eventclassificationrule', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -51,10 +51,10 @@ class Migration:
             ('name', models.CharField("Name",max_length=64)),
             ('preference', models.IntegerField("Preference", default=1000))
         ))
-        
+
         # Mock Models
         EventClassificationRule = db.mock_model(model_name='EventClassificationRule', db_table='fm_eventclassificationrule', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'EventClassificationRE'
         db.create_table('fm_eventclassificationre', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -62,11 +62,11 @@ class Migration:
             ('left_re', models.CharField("Left RE",max_length=256)),
             ('right_re', models.CharField("Right RE",max_length=256))
         ))
-        
+
         # Mock Models
         ManagedObject = db.mock_model(model_name='ManagedObject', db_table='sa_managedobject', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         Event = db.mock_model(model_name='Event', db_table='fm_event', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'Event'
         db.create_table('fm_event', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -79,10 +79,10 @@ class Migration:
             ('subject', models.CharField("Subject",max_length=256,null=True,blank=True)),
             ('body', models.TextField("Body",null=True,blank=True))
         ))
-        
+
         # Mock Models
         Event = db.mock_model(model_name='Event', db_table='fm_event', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'EventData'
         db.create_table('fm_eventdata', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -92,10 +92,10 @@ class Migration:
             ('type', models.CharField("Type",max_length=1,choices=[(">","Received"),("V","Variable"),("R","Resolved")],default=">"))
         ))
         db.create_index('fm_eventdata', ['event_id','key','type'], unique=True, db_tablespace='')
-        
+
         db.send_create_signal('fm', ['EventPriority','EventCategory','EventClass','EventClassificationRule','EventClassificationRE',
             'Event','EventData'])
-    
+
     def backwards(self):
         db.delete_table('fm_eventdata')
         db.delete_table('fm_event')

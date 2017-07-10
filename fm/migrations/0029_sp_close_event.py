@@ -4,7 +4,7 @@ from south.db import db
 
 
 class Migration:
-    
+
     def forwards(self):
         db.execute(SQL_PROC)
 
@@ -26,7 +26,7 @@ BEGIN
     INTO   p_status
     FROM   fm_event
     WHERE  id=p_event_id;
-    
+
     IF p_status = 'C' THEN
         RETURN;
     END IF;
@@ -34,7 +34,7 @@ BEGIN
     UPDATE fm_event
     SET status='C'
     WHERE id=p_event_id;
-    
+
     INSERT INTO fm_eventlog(event_id,timestamp,from_status,to_status,message)
     VALUES(p_event_id,'now',p_status,'C',p_message);
 END;

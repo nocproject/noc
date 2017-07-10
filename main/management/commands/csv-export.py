@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Export model to CSV
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Export model to CSV
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 from optparse import make_option
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.core.csvutils import csv_export
 
 

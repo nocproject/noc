@@ -13,7 +13,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
-        "NOC.pm.metrictype.LookupField"
+        "NOC.pm.metrictype.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
@@ -71,8 +72,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     },
                     {
                         text: __("MAC"),
-                        dataIndex: "mac_discovery",
-                        renderer: NOC.render.Bool,
+                        dataIndex: "mac_discovery_policy",
+                        renderer: NOC.render.Choices({
+                            e: __("Enable"),
+                            d: __("Disable"),
+                            m: __("Management VLAN")
+                        }),
                         width: 50
                     },
                     {
@@ -148,10 +153,16 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         uiStyle: "small"
                     },
                     {
-                        name: "mac_discovery",
-                        xtype: "checkbox",
-                        boxLabel: __("MAC Discovery"),
-                        allowBlank: true
+                        name: "mac_discovery_policy",
+                        xtype: "combobox",
+                        fieldLabel: __("MAC Discovery Policy"),
+                        allowBlank: false,
+                        store: [
+                            ["e", __("Enable")],
+                            ["d", __("Disable")],
+                            ["m", __("Management VLAN")]
+                        ],
+                        uiStyle: "medium"
                     },
                     {
                         name: "allow_lag_mismatch",
@@ -178,6 +189,37 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        xtype: "fieldset",
+                        layout: "hbox",
+                        title: __("Integration"),
+                        defaults: {
+                            padding: 4,
+                            labelAlign: "right"
+                        },
+                        items: [
+                            {
+                                name: "remote_system",
+                                xtype: "main.remotesystem.LookupField",
+                                fieldLabel: __("Remote System"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "remote_id",
+                                xtype: "textfield",
+                                fieldLabel: __("Remote ID"),
+                                allowBlank: true,
+                                uiStyle: "medium"
+                            },
+                            {
+                                name: "bi_id",
+                                xtype: "textfield",
+                                fieldLabel: __("BI ID"),
+                                allowBlank: true,
+                                uiStyle: "medium"
+                            }
+                        ]
+                    },
+                    {
                         name: "metrics",
                         xtype: "gridfield",
                         fieldLabel: __("Metrics"),
@@ -200,6 +242,60 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 width: 50,
                                 renderer: NOC.render.Bool,
                                 editor: "checkbox"
+                            },
+                            {
+                                text: __("Stored"),
+                                dataIndex: "is_stored",
+                                width: 50,
+                                renderer: NOC.render.Bool,
+                                editor: "checkbox"
+                            },
+                            {
+                                text: __("Window"),
+                                dataIndex: "window",
+                                width: 50,
+                                editor: "textfield"
+                            },
+                            {
+                                text: __("Window Type"),
+                                dataIndex: "window_type",
+                                width: 70,
+                                renderer: NOC.render.Choices({
+                                    m: __("Measurements"),
+                                    t: __("Seconds")
+                                }),
+                                editor: {
+                                    xtype: "combobox",
+                                    store: [
+                                        ["m", __("Measurements")],
+                                        ["t", __("Seconds")]
+                                    ]
+                                }
+                            },
+                            {
+                                text: __("Window Function"),
+                                dataIndex: "window_function",
+                                width: 70,
+                                editor: {
+                                    xtype: "combobox",
+                                    store: [
+                                        ["last", "Last Value"],
+                                        ["avg", "Average"],
+                                        ["percentile", "Percentile"],
+                                        ["q1", "1st quartile"],
+                                        ["q2", "2st quartile"],
+                                        ["q3", "3st quartile"],
+                                        ["p95", "95% percentile"],
+                                        ["p99", "99% percentile"],
+                                        ["handler", "Handler"]
+                                    ]
+                                }
+                            },
+                            {
+                                text: __("Config"),
+                                dataIndex: "window_config",
+                                width: 70,
+                                editor: "textfield"
                             },
                             {
                                 text: __("Low Error"),

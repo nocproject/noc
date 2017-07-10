@@ -17,9 +17,9 @@
   yum:
     name: "{{ item }}"
     state: present
-    update_cache: yes
+    update_cache: no
   with_items:
-   - telegraf
+   - "telegraf"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"

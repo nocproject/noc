@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service Profile
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service Profile
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import operator
-from threading import RLock
-## Third-party modules
+from threading import Lock
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, IntField,
-                                BooleanField)
+                                BooleanField, LongField, ListField)
 import cachetools
-## NOC modules
+# NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
 from noc.core.defer import call_later
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 @on_save
@@ -41,6 +43,15 @@ class ServiceProfile(Document):
     interface_profile = ReferenceField(InterfaceProfile)
     # Alarm weight
     weight = IntField(default=0)
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()    
+    # Object id in BI
+    bi_id = LongField()
+    # Tags
+    tags = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -62,7 +73,7 @@ class ServiceProfile(Document):
 
 
 def refresh_interface_profiles(sp_id, ip_id):
-    from service import Service
+    from .service import Service
     from noc.inv.models.interface import Interface
     svc = [
         x["_id"]

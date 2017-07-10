@@ -1,23 +1,28 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CLI FSM
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# CLI FSM
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import socket
 import re
 import functools
 import datetime
-## Third-party modules
+from functools import reduce
+# Third-party modules
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
-## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+import six
+# NOC modules
+from noc.core.log import PrefixLoggerAdapter
 from noc.lib.text import replace_re_group
+from .error import (CLIError, CLIAuthFailed, CLINoSuperCommand,
+                    CLILowPrivileges, CLIConnectionRefused)
 
 
 class CLI(object):
@@ -43,9 +48,6 @@ class CLI(object):
     KEEP_INTVL = 10
     # Terminate connection after N keepalive failures
     KEEP_CNT = 3
-
-    class CLIError(Exception):
-        pass
 
     class InvalidPagerPattern(Exception):
         pass
@@ -175,7 +177,7 @@ class CLI(object):
                 yield self.iostream.connect(address)
             except tornado.iostream.StreamClosedError:
                 self.logger.debug("Connection refused")
-                self.error = self.CLIError("Connection refused")
+                self.error = CLIConnectionRefused("Connection refused")
                 raise tornado.gen.Return(None)
             self.logger.debug("Connected")
             yield self.iostream.startup()
@@ -270,13 +272,16 @@ class CLI(object):
                 self.buffer += self.cleaned_input(r)
             # Try to find matched pattern
             offset = max(0, len(self.buffer) - self.MATCH_TAIL)
-            for rx, handler in self.pattern_table.iteritems():
+            for rx, handler in six.iteritems(self.pattern_table):
                 match = rx.search(self.buffer, offset)
                 if match:
                     self.logger.debug("Match: %s", rx.pattern)
                     matched = self.buffer[:match.start()]
                     self.buffer = self.buffer[match.end():]
-                    r = handler(matched, match)
+                    if isinstance(handler, tuple):
+                        r = handler[0](matched, match, *handler[1:])
+                    else:
+                        r = handler(matched, match)
                     if r is not None:
                         raise tornado.gen.Return(r)
 
@@ -300,7 +305,6 @@ class CLI(object):
         seen = set()
         buffer = ""
         repeats = 0
-        repeats_n = 0
         r_key = None
         stop_sent = False
         done = False
@@ -323,17 +327,8 @@ class CLI(object):
             while buffer:
                 pr = parser(buffer)
                 if not pr:
-                    self.logger.debug("No new objects")
-                    repeats_n += 1
-                    if repeats_n >= 6 and cmd_stop and not stop_sent:
-                        # Stop loop
-                        # After 5 repeats for None
-                        self.logger.debug("Stopping stream. Sending %r" % cmd_stop)
-                        self.send(cmd_stop)
-                        stop_sent = True
                     break  # No new objects
                 key, obj, buffer = pr
-                repeats_n = 0
                 if key not in seen:
                     seen.add(key)
                     objects += [obj]
@@ -354,7 +349,7 @@ class CLI(object):
                         self.logger.debug("Next screen. Sending %r" % cmd_next)
                         self.send(cmd_next)
             # Check for prompt
-            for rx, handler in self.pattern_table.iteritems():
+            for rx, handler in six.iteritems(self.pattern_table):
                 offset = max(0, len(buffer) - self.MATCH_TAIL)
                 match = rx.search(buffer, offset)
                 if match:
@@ -409,7 +404,7 @@ class CLI(object):
             (self.profile.username_submit or "\n")
         )
         self.expect({
-            "username": self.on_failure,
+            "username": (self.on_failure, CLIAuthFailed),
             "password": self.on_password,
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt
@@ -422,8 +417,8 @@ class CLI(object):
             (self.profile.password_submit or "\n")
         )
         self.expect({
-            "username": self.on_failure,
-            "password": self.on_failure,
+            "username": (self.on_failure, CLIAuthFailed),
+            "password": (self.on_failure, CLIAuthFailed),
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
@@ -432,20 +427,29 @@ class CLI(object):
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
         if not self.profile.command_super:
-            self.on_failure(data, match)
+            self.on_failure(data, match, CLINoSuperCommand)
         self.send(
             self.profile.command_super +
             (self.profile.command_submit or "\n")
         )
+        """
+        Do not remove `pager` section
+        It fixes this situation on Huawei MA5300:
+        xxx>enable
+        { <cr>|level-value<U><1,15> }:
+        xxx#
+        """
         self.expect({
             "username": self.on_super_username,
             "password": self.on_super_password,
-            "prompt": self.on_prompt
+            "prompt": self.on_prompt,
+            "pager": self.send_pager_reply
         }, self.profile.cli_timeout_super)
 
-    def on_failure(self, data, match):
+    def on_failure(self, data, match, error_cls=None):
         self.logger.debug("State: <FAILURE>")
-        raise self.CLIError(self.buffer or data or None)
+        error_cls = error_cls or CLIError
+        raise error_cls(self.buffer or data or None)
 
     def on_prompt(self, data, match):
         self.logger.debug("State: <PROMT>")
@@ -466,7 +470,7 @@ class CLI(object):
             (self.profile.username_submit or "\n")
         )
         self.expect({
-            "username": self.on_failure,
+            "username": (self.on_failure, CLILowPrivileges),
             "password": self.on_super_password,
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
@@ -480,9 +484,9 @@ class CLI(object):
         )
         self.expect({
             "prompt": self.on_prompt,
-            "password": self.on_failure,
+            "password": (self.on_failure, CLILowPrivileges),
             "pager": self.send_pager_reply,
-            "unprivileged_prompt": self.on_failure
+            "unprivileged_prompt": (self.on_failure, CLILowPrivileges)
         }, self.profile.cli_timeout_password)
 
     def build_patterns(self):
@@ -504,7 +508,7 @@ class CLI(object):
             )
         else:
             patterns["unprivileged_prompt"] = None
-        if isinstance(self.profile.pattern_more, basestring):
+        if isinstance(self.profile.pattern_more, six.string_types):
             more_patterns = [self.profile.pattern_more]
             self.more_commands = [self.profile.command_more]
         else:
@@ -527,7 +531,7 @@ class CLI(object):
         old_pattern_prompt = self.patterns["prompt"].pattern
         pattern_prompt = old_pattern_prompt
         sl = self.profile.can_strip_hostname_to
-        for k, v in match.groupdict().iteritems():
+        for k, v in six.iteritems(match.groupdict()):
             if v:
                 if k == "hostname" and sl and len(v) > sl:
                     ss = list(reversed(v[sl:]))

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.ASA.get_inventory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cisco.ASA.get_inventory
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
@@ -36,7 +36,6 @@ class Script(BaseScript):
                 match.group("descr"), len(objects)
             )
             if not part_no:
-                print "!!! UNKNOWN: ", match.groupdict()
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## gis.tms application
-## Tile Server
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# gis.tms application
+# Tile Server
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from xml.dom.minidom import Document
-## NOC modules
-from noc.lib.fileutils import read_file
+# NOC modules
+from noc.core.fileutils import read_file
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.gis.models import TileCache, Map
 

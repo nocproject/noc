@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc update-tilecache command
-## @todo: logging
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ./noc update-tilecache command
+# @todo: logging
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 from optparse import make_option
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
-## NOC modules
+# NOC modules
 from noc.gis.models import Map
 from noc.gis.tile import TileTask
 from noc.lib.sysutils import get_cpu_cores
@@ -36,11 +36,11 @@ class Command(BaseCommand):
         maps = []
         # Set up logging
         logging.root.setLevel(logging.DEBUG)
-        #logging.root.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
-        #if options["log"]:
+        # logging.root.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
+        # if options["log"]:
         #    logging.basicConfig(filename=options["log"], level=logging.DEBUG,
         #                        format="%(asctime)s %(message)s")
-        #else:
+        # else:
         #    logging.basicConfig(level=logging.DEBUG,
         #                        format="%(asctime)s %(message)s")
         # Process -a option

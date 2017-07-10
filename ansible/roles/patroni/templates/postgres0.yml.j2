@@ -57,7 +57,7 @@ bootstrap:
 
 
 postgresql:
-  name: {{ ansible_hostname }}
+  name: {{ ansible_nodename }}
   scope: *scope
   listen: 0.0.0.0:5432
   connect_address: {{ ansible_default_ipv4.address }}:5432

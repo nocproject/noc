@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Linux.RHEL.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Linux.RHEL.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
-#### LLDP demon ####
+### LLDP demon ####
 
 1) "ladvd"
 
@@ -27,7 +27,7 @@ usermod -G _lldpd -a <noc_user_for_this_username>
 
 enable CDP in /etc/sysconfig/lldpd : LLDPD_OPTIONS="-c"
 
-#### KVM host ####
+### KVM host ####
 
 dump CDP traffic 
 # tcpdump -nn -v -i bond0 -s 1500 -c 100 'ether[20:2] == 0x2000'

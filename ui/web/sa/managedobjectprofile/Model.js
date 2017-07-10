@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Model");
@@ -79,6 +79,31 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "report_ping_rtt",
             type: "boolean",
             defaultValue: true
+        },
+        {
+            name: "report_ping_attempts",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
+            name: "ping_policy",
+            type: "string",
+            defaultValue: "f"
+        },
+        {
+            name: "ping_size",
+            type: "int",
+            defaultValue: 64
+        },
+        {
+            name: "ping_count",
+            type: "int",
+            defaultValue: 3
+        },
+        {
+            name: "ping_timeout_ms",
+            type: "int",
+            defaultValue: 1000
         },
         {
             name: "weight",
@@ -246,6 +271,18 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "box_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "box_discovery_fatal_alarm_weight",
+            type: "int"
+        },
+        {
+            name: "box_discovery_alarm_weight",
+            type: "int"
+        },
+        {
             name: "enable_periodic_discovery",
             xtype: "boolean",
             defaultValue: false
@@ -274,6 +311,18 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "enable_periodic_discovery_metrics",
             xtype: "boolean",
             defaultValue: false
+        },
+        {
+            name: "periodic_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "periodic_discovery_fatal_alarm_weight",
+            type: "int"
+        },
+        {
+            name: "periodic_discovery_alarm_weight",
+            type: "int"
         },
         {
             name: "clear_links_on_platform_change",
@@ -330,7 +379,28 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "metrics",
             type: "auto"
-        }
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string"
+        },
+        {
+            name: "escalation_policy",
+            type: "string"
+        },
     ]
 })
 ;

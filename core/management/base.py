@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CLI Command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# CLI Command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import sys
 import argparse
-## NOC modules
-from noc.lib.debug import error_report
+# NOC modules
+from noc.core.debug import error_report
 
 
 class CommandError(Exception):
@@ -24,6 +25,9 @@ class BaseCommand(object):
         self.verbose_level = 0
         self.stdout = stdout
         self.stderr = stderr
+
+    def print(self, *args):
+        print(*args, file=self.stdout)
 
     def run(self):
         """
@@ -53,8 +57,8 @@ class BaseCommand(object):
             self.setup_logging(loglevel)
         try:
             return self.handle(*args, **cmd_options) or 0
-        except CommandError, why:
-            self.stderr.write(str(why))
+        except CommandError as e:
+            self.stderr.write(str(e))
             self.stderr.write("\n")
             self.stderr.flush()
             return 1

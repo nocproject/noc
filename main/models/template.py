@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Template model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Template model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from threading import RLock
+# Python modules
+from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from django.db import models
 import jinja2
 import cachetools
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 class Template(models.Model):

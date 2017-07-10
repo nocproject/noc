@@ -44,7 +44,9 @@
       {% include "template_device_id.j2" with context -%},
       {% include "template_ip_info.j2" with context -%},
       {% include "template_segment.j2" with context -%},
-      {% include "template_firmware_version.j2" with context -%}
+      {% include "template_firmware_version.j2" with context -%},
+      {% include "template_discovery_interval.j2" with context -%},
+      {% include "template_ping_interval.j2" with context -%}
     ]
   },
   "annotations": {
@@ -78,6 +80,16 @@
       "keepTime": true,
       "tags": [
         "{{pool}}"
+      ],
+      "targetBlank": true,
+      "type": "dashboards"
+    },
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "tags": [
+        "SYSTEM"
       ],
       "targetBlank": true,
       "type": "dashboards"

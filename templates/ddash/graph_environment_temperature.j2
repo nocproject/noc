@@ -22,7 +22,13 @@
         {
           "type": "time",
           "params": [
-            "$interval"
+            "$discovery_interval"
+          ]
+        },
+        {
+          "type": "tag",
+          "params": [
+            "slot"
           ]
         },
         {
@@ -48,7 +54,7 @@
       ],
       "refId": "A",
       "measurement": "{{graph}}",
-      "alias": "{{graph}}"
+      "alias": "{{graph}} on slot $tag_slot"
     }
   ],
   "datasource": null,

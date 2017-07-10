@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.AOS.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alcatel.AOS.get_interfaces
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 # Python modules
 import re
@@ -224,9 +224,7 @@ class Script(BaseScript):
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
-            print i
             t = pc["type"] == "L"
-            print t
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
             n = {}
@@ -336,7 +334,6 @@ class Script(BaseScript):
                 ip_list = [ip]
             vlan = match.group("vlan")
             a_stat = "UP"
-            print ifname
             if ospf_enable and ifname in ospf:
                 enabled_protocols += ["OSPF"]
             if ospf3_enable and ifname in ospf3:
@@ -351,7 +348,6 @@ class Script(BaseScript):
                 enabled_protocols += ["ISIS"]
             if bgp_enable and ifname in bgp:
                 enabled_protocols += ["BGP"]
-            print ifname
             iface = {
                 "name": ifname,
                 "type": "SVI",

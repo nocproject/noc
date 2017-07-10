@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## TFortis.PSW.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# TFortis.PSW.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -73,7 +73,6 @@ class Script(BaseScript):
         vlans=[]
         for section in v.split("\n\n"):
             if not section:
-                print section
                 continue
             vlans.append(self.parse_vlans(section))
 
@@ -81,7 +80,6 @@ class Script(BaseScript):
         ifaces = []
         for section in v.split("------------------------------"):
             if not section:
-                print section
                 continue
             name, cfg = self.parse_section(section)
             untag=""

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ArchivedAlarm model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ArchivedAlarm model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Django modules
+# Django modules
 from django.template import Template, Context
-## NOC modules
+# NOC modules
 import noc.lib.nosql as nosql
 from noc.sa.models.managedobject import ManagedObject
 from alarmclass import AlarmClass
@@ -59,6 +59,8 @@ class ArchivedAlarm(nosql.Document):
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
     escalation_error = nosql.StringField(required=False)
+    escalation_close_ts = nosql.DateTimeField(required=False)
+    escalation_close_error = nosql.StringField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
@@ -203,7 +205,25 @@ class ArchivedAlarm(nosql.Document):
                 seen.add(a.managed_object)
                 yield a.managed_object
 
+    def set_escalation_close_error(self, error):
+        self.escalation_error = error
+        self._get_collection().update(
+            {"_id": self.id},
+            {"$set": {
+                "escalation_close_error": error
+            }}
+        )
 
-## Avoid circular references
+    def close_escalation(self):
+        now = datetime.datetime.now()
+        self.escalation_close_ts = now
+        self._get_collection().update(
+            {"_id": self.id},
+            {"$set": {
+                "escalation_close_ts": now
+            }}
+        )
+
+# Avoid circular references
 from activealarm import ActiveAlarm
 

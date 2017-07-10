@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IGetBFDSessions
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# IGetBFDSessions
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC Modules
+# NOC Modules
 from noc.core.interface.base import BaseInterface
 from base import (DictListParameter, IPParameter,
                   InterfaceNameParameter, StringParameter, IntParameter, ListOfParameter)

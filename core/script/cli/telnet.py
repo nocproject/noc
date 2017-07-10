@@ -91,7 +91,10 @@ class TelnetIOStream(IOStream):
 
     @tornado.gen.coroutine
     def startup(self):
-        pass
+        if self.cli.profile.telnet_send_on_connect:
+            self.logger.debug("Sending %r on connect",
+                              self.cli.profile.telnet_send_on_connect)
+            yield self.write(self.cli.profile.telnet_send_on_connect)
 
     def read_from_fd(self):
         chunk = super(TelnetIOStream, self).read_from_fd()

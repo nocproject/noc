@@ -1,31 +1,31 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## peer.update_whois_cache periodic task
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# peer.update_whois_cache periodic task
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
 import urllib2
 import socket
-## NOC modules
+# NOC modules
 from noc.lib.periodic import Task as NOCTask
 from noc.settings import config
-from noc.lib.fileutils import urlopen
+from noc.core.fileutils import urlopen
 
 
 class Task(NOCTask):
     name = "peer.update_whois_cache"
     description = "Update whois cache"
     wait_for = ["cm.prefix_list_pull"]
-    
+
     RIPE_AS_SET_MEMBERS = "ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.as-set.gz"
     RIPE_ROUTE_ORIGIN = "ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz"
     ARIN = "ftp://ftp.arin.net/pub/rr/arin.db"
     RADB = "ftp://ftp.radb.net/radb/dbase/radb.db.gz"
-    
+
     to_cache = [ARIN, RADB]
 
     def parse_rpsl(self, f, fields=None):
@@ -96,12 +96,12 @@ class Task(NOCTask):
         n = 0
         try:
             f = self.urlopen(url)
-        except urllib2.URLError, why:
-            self.error("Failed to download %s: %s" % (url, why))
+        except urllib2.URLError as e:
+            self.error("Failed to download %s: %s" % (url, e))
             self.download_status = False
             return 0
-        except socket.error, why:
-            self.error("Failed to download %s: %s" % (url, why))
+        except socket.error as e:
+            self.error("Failed to download %s: %s" % (url, e))
             self.download_status = False
             return 0
         for o in parser(f, [key_field, values_field]):

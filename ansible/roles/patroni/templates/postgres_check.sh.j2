@@ -1,0 +1,9 @@
+#!/bin/sh
+export PGPASSWORD={{ noc_pg_password }}
+isok=$(timeout 1 {{ postgres_bin_dir }}/psql -U {{ noc_pg_user }} --host {{ ansible_host }} -qAt0 --port 5432 {{ noc_pg_db }} -c "select pg_is_in_recovery()::int")
+if [ "$isok" == "0" ]
+then
+    exit 0
+else
+    exit 2
+fi

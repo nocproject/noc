@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## FM Events and Alarms Hierarchy Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# FM Events and Alarms Hierarchy Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.fm.models.eventclass import EventClass, EventClassCategory
 from noc.fm.models.alarmclass import AlarmClass, AlarmClassCategory
@@ -20,7 +20,7 @@ class HierarchyReportAppplication(ReportApplication):
     """
     title = _("Events and Alarm Hierarchy")
 
-    def report_html(self):
+    def report_html(self, request, result=None, query=None):
         # Event classes
         ec = []
         ne = 0
@@ -32,7 +32,7 @@ class HierarchyReportAppplication(ReportApplication):
             ec += [(len(p) * 24, cc.name, None)]
             ec += [(-1, c,
                     EventClassificationRule.objects.filter(event_class=c.id))
-                    for c in e]
+                   for c in e]
             ne += len(e)
         ncr = 0
         for _, _, r in ec:

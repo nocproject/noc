@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -19,7 +19,7 @@ class Migration:
         Template = db.mock_model(model_name="Template",
             db_table="main_template", db_tablespace="", pk_field_name="id",
             pk_field_type=models.AutoField)
-        
+
         ManagedObjectSelector = db.mock_model(model_name="ManagedObjectSelector",
             db_table="sa_managedobjectselector", db_tablespace="", pk_field_name="id",
             pk_field_type=models.AutoField)
@@ -31,7 +31,7 @@ class Migration:
         PyRule = db.mock_model(model_name="PyRule",
             db_table="main_pyrule", db_tablespace="",
             pk_field_name="id", pk_field_type=models.AutoField)
-        
+
         db.create_table("fm_eventtrigger", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
             ("name", models.CharField(_("Name"), max_length=64, unique=True)),
@@ -79,7 +79,7 @@ class Migration:
         ))
 
         db.send_create_signal("main", ["EventTrigger", "AlarmTrigger"])
-    
+
     def backwards(self):
         db.delete_table("fm_eventtrigger")
         db.delete_table("fm_alarmtrigger")

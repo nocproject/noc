@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 __author__ = 'FeNikS'
-##----------------------------------------------------------------------
-## Sencore.Probe.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Sencore.Probe.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.sa.script import Script as NOCScript
 from noc.sa.interfaces import IGetVersion
 

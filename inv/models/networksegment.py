@@ -1,31 +1,36 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Network Segment
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Network Segment
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import operator
 import cachetools
-from threading import RLock
-## Third-party modules
+from threading import Lock
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 ListField, BooleanField, IntField,
-                                EmbeddedDocumentField)
+                                EmbeddedDocumentField, LongField)
 from django.db.models.aggregates import Count
-## NOC modules
+# NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check
 from noc.core.defer import call_later
+from noc.core.bi.decorator import bi_sync
+from .networksegmentprofile import NetworkSegmentProfile
 
-id_lock = RLock()
+id_lock = Lock()
 
 
+@bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "segment"),
     ("inv.NetworkSegment", "parent")
@@ -38,7 +43,35 @@ class NetworkSegment(Document):
 
     name = StringField(unique=True)
     parent = ReferenceField("self", required=False)
+    profile = ReferenceField(NetworkSegmentProfile, required=True)
     description = StringField(required=False)
+    # Management VLAN processing order
+    # * d - disable management vlan
+    # * e - enable management vlan and get from management_vlan field
+    # * p - use profile settings
+    management_vlan_policy = StringField(
+        choices=[
+            ("d", "Disable"),
+            ("p", "Profile"),
+            ("e", "Enable")
+        ],
+        default="p"
+    )
+    management_vlan = IntField(required=False, min_value=1, max_value=4095)
+    # MVR VLAN processing order
+    # * d - disable multicast vlan
+    # * e - enable multicast vlan and get from multicast_vlan field
+    # * p - use profile settings
+    multicast_vlan_policy = StringField(
+        choices=[
+            ("d", "Disable"),
+            ("p", "Profile"),
+            ("e", "Enable")
+        ],
+        default="p"
+    )
+    multicast_vlan = IntField(required=False, min_value=1, max_value=4095)
+
     settings = DictField(default=lambda: {}.copy())
     tags = ListField(StringField())
     # Selectors for fake segments
@@ -66,6 +99,13 @@ class NetworkSegment(Document):
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.MES.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.MES.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
+from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
 
 
@@ -20,14 +20,22 @@ class Script(BaseScript):
     name = "Eltex.MES.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
-
     CAPS_MAP = {
         "O": 1, "r": 2, "B": 4,
         "W": 8, "R": 16, "T": 32,
         "C": 64, "S": 128, "D": 256,
         "H": 512, "TP": 1024,
     }
+
+    rx_detail = re.compile(
+        r"^Device ID: (?P<dev_id>\S+)\s*\n"
+        r"^Port ID: (?P<port_id>\S+)\s*\n"
+        r"^Capabilities:(?P<caps>.*)\n"
+        r"^System Name:(?P<sys_name>.*)\n"
+        r"^System description:(?P<sys_descr>.*)\n"
+        r"^Port description:(?P<port_descr>.*)\n",
+        re.MULTILINE
+    )
 
     def execute(self):
         r = []
@@ -90,9 +98,19 @@ class Script(BaseScript):
                 if c:
                     cap |= self.CAPS_MAP[c]
 
+            if is_mac(remote_chassis_id):
+                remote_chassis_id = MACAddressParameter().clean(
+                    remote_chassis_id
+                )
+                remote_chassis_id_subtype = 4
+            elif (is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id)):
+                remote_chassis_id_subtype = 5
+            else:
+                remote_chassis_id_subtype = 7
+
             # Get remote port subtype
-            remote_port_subtype = 5
-            if self.rx_mac.match(remote_port):
+            remote_port_subtype = 1
+            if is_mac(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
@@ -102,22 +120,57 @@ class Script(BaseScript):
                 remote_port_subtype = 4
             elif is_int(remote_port):
                 # Actually local(7)
-                remote_port_subtype = 5
-
+                remote_port_subtype = 7
             i = {
                 "local_interface": local_interface,
                 "neighbors": []
             }
             n = {
                 "remote_chassis_id": remote_chassis_id,
+                "remote_chassis_id_subtype": remote_chassis_id_subtype,
                 "remote_port": remote_port,
-                "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
+                "remote_capabilities": cap,
             }
             if remote_system_name:
                 n["remote_system_name"] = remote_system_name
-            # @todo:
-            # n["remote_chassis_id_subtype"] = 4
+            #
+            # XXX: Dirty hack for older firmware. Switch rebooted.
+            #
+            if remote_chassis_id_subtype != 7:
+                i["neighbors"] = [n]
+                r += [i]
+                continue
+            try:
+                c = self.cli("show lldp neighbors %s" % local_interface)
+                match = self.rx_detail.search(c)
+                if match:
+                    remote_chassis_id = match.group("dev_id")
+                    if is_mac(remote_chassis_id):
+                        remote_chassis_id = MACAddressParameter().clean(
+                            remote_chassis_id
+                        )
+                        remote_chassis_id_subtype = 4
+                    elif (
+                        is_ipv4(remote_chassis_id) or
+                        is_ipv6(remote_chassis_id)
+                    ):
+                        remote_chassis_id_subtype = 5
+                    else:
+                        remote_chassis_id_subtype = 7
+                    n["remote_chassis_id"] = remote_chassis_id
+                    n["remote_chassis_id_subtype"] = remote_chassis_id_subtype
+                    if match.group("sys_name").strip():
+                        sys_name = match.group("sys_name").strip()
+                        n["remote_system_name"] = sys_name
+                    if match.group("sys_descr").strip():
+                        sys_descr = match.group("sys_descr").strip()
+                        n["remote_system_description"] = sys_descr
+                    if match.group("port_descr").strip():
+                        port_descr = match.group("port_descr").strip()
+                        n["remote_port_description"] = port_descr
+            except:
+                pass
             i["neighbors"] += [n]
             r += [i]
         return r

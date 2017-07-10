@@ -119,6 +119,10 @@
     <td>{% if description %}{{ description }}{% endif %}</td>
 </tr>
 <tr>
+    <th scope="row">{{ _("Dashboard") }}</th>
+    <td><a href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ object.id }}">View metrics</a></td>
+</tr>
+<tr>
     <th scope="row">{{ _("Service Range") }}</th>
     <td>N/A</td>
 </tr>

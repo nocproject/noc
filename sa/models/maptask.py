@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MapTask
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# MapTask
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import datetime
 import time
-## Django modules
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models, connection
-## NOC modules
-from managedobject import ManagedObject
+from django.db import models
+import six
+# NOC modules
+from .managedobject import ManagedObject
 from noc.core.model.fields import PickledField
 
 
@@ -70,7 +72,7 @@ class MapTask(models.Model):
     @classmethod
     def resolve_object(cls, object):
         # Resolve object
-        if isinstance(object, basestring):
+        if isinstance(object, six.string_types):
             return ManagedObject.objects.get(name=object)
         elif isinstance(object, (int, long)):
             return ManagedObject.objects.get(id=object)

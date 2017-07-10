@@ -1,7 +1,7 @@
 ! Configuration File for keepalived
 
 global_defs {
-   router_id {{ ansible_hostname }}
+   router_id {{ ansible_nodename }}
 }
 
 {% if groups['svc-nginx'] | count  > 1 %}

@@ -1,21 +1,20 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## pmwriter service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# pmwriter service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
-import noc.core.service.httpclient
+from noc.core.http.client import fetch
 
 
 class PMWriterService(Service):
@@ -122,43 +121,32 @@ class PMWriterService(Service):
                 self.perf_metrics["slept_time"] += sleep_time
                 yield tornado.gen.sleep(sleep_time)
             batch, self.buffer = self.buffer[:bs], self.buffer[bs:]
-            body = "\n".join(batch)
+            data = "\n".join(batch)
             while True:
                 t0 = self.ioloop.time()
                 self.logger.debug("Sending %d metrics", len(batch))
-                client = tornado.httpclient.AsyncHTTPClient()
-                try:
-                    response = yield client.fetch(
-                        # Configurable database name
-                        "http://%s/write?db=%s&precision=s" % (
-                            self.influx,
-                            self.config.influx_db
-                        ),
-                        method="POST",
-                        body=body
+                code, headers, body = yield fetch(
+                    "http://%s/write?db=%s&precision=s" % (
+                        self.influx,
+                        self.config.influx_db
+                    ),
+                    method="POST",
+                    body=data
+                )
+                # @todo: Check for 204
+                if code == 204:
+                    self.logger.info(
+                        "%d metrics sent in %.2fms",
+                        len(batch), (self.ioloop.time() - t0) * 1000
                     )
-                    # @todo: Check for 204
-                    if response.code == 204:
-                        self.logger.info(
-                            "%d metrics sent in %.2fms",
-                            len(batch), (self.ioloop.time() - t0) * 1000
-                        )
-                        self.perf_metrics["metrics_written"] += len(batch)
-                        break
-                    else:
-                        self.logger.info(
-                            "Failed to write metrics: %s",
-                            response.body
-                        )
-                        self.perf_metrics["metrics_spool_failed"] += 1
-                except tornado.httpclient.HTTPError as e:
-                    self.logger.error("Failed to spool %d metrics: %s",
-                                      len(batch), e)
-                except Exception as e:
-                    self.logger.error(
-                        "Failed to spool %d metrics due to unknown error: %s",
-                        len(batch), e
+                    self.perf_metrics["metrics_written"] += len(batch)
+                    break
+                else:
+                    self.logger.info(
+                        "Failed to write metrics: %s",
+                        body
                     )
+                    self.perf_metrics["metrics_spool_failed"] += 1
                 timeout = 1.0
                 self.logger.info(
                     "InfluxDB is getting ill. "

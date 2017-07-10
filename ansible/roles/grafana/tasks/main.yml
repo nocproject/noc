@@ -1,24 +1,12 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Create Grafana directories
-  file:
-    path: "{{ noc_root }}/{{ item.path }}"
-    state: directory
-    owner: "{{ item.owner }}"
-  with_items:
-    - path: var/etc/grafana
-      owner: root
-    - path: var/db/grafana
-      owner: "{{ grafana_user }}"
-    - path: var/db/grafana_plugins
-      owner: "{{ grafana_user }}"
-
 - name: Create Grafana config
   template:
     src: grafana.ini
-    dest: "{{ noc_root }}/var/etc/grafana/grafana.ini"
+    dest: "{{ etc_prefix }}/grafana/grafana.ini"
   notify: restart grafana
+  no_log: true
   tags:
     - config
 
@@ -30,11 +18,16 @@
 
 - name: Set up dynamic dashboards
   template:
-    src: noc.js.j2
-    dest: "{{ grafana_home }}/public/dashboards/noc.js"
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - src: noc.js.j2
+      dest: "{{ grafana_home }}/public/dashboards/noc.js"
+    - src: report.js.j2
+      dest: "{{ grafana_home }}/public/dashboards/report.js"
 
 - name: Install Grafana simple datasource plugin
-  shell: "grafana-cli --pluginsDir {{ noc_root }}/var/db/grafana_plugins plugins install grafana-simple-json-datasource"
+  shell: "grafana-cli plugins install grafana-simple-json-datasource"
   args:
     creates: "{{ noc_root }}/var/db/grafana_plugins/grafana-simple-json-datasource/src/datasource.js"
   notify: restart grafana
@@ -43,3 +36,11 @@
     https_proxy: "{{http_proxy}}"
   tags:
     - requirements
+
+- name: copy Grafana consul templates
+  template:
+    src: grafana.json.j2
+    dest: "{{consul_configd_path}}/grafana.json"
+  notify: reload consul
+  tags:
+    - consul

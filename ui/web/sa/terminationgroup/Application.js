@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.terminationgroup application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.terminationgroup.Application");
@@ -11,7 +11,8 @@ Ext.define("NOC.sa.terminationgroup.Application", {
     requires: [
         "NOC.sa.terminationgroup.Model",
         "NOC.sa.terminationgroup.IPPoolModel",
-        "NOC.ip.vrf.LookupField"
+        "NOC.ip.vrf.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.terminationgroup.Model",
     search: true,
@@ -61,6 +62,44 @@ Ext.define("NOC.sa.terminationgroup.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "textfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Tags"),
+                    allowBlank: true,
+                    uiStyle: "extra"
                 }
             ]
         });

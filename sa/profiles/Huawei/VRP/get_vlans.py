@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Huawei.VRP.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Huawei.VRP.get_vlans
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
-## NOC Modules
+# NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 
@@ -67,7 +67,7 @@ class Script(BaseScript):
             r"(?:Name|Description):\s+(?P<name>.*?)\n"
             r".*?(\n\n|$)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
         version = self.profile.fix_version(self.scripts.get_version())
-        if version.startswith("5."):
+        if self.match_version(version__gte="5.0"):
             vlans = self.cli("display vlan", cached=True)
             return [{
                 "vlan_id": int(match.group("vlan_id"))

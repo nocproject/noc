@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ResultReport
-##----------------------------------------------------------------------
-## INTERFACE: IReduceTask
-##----------------------------------------------------------------------
-## DESCRIPTION:
-## Display reduce task result as a table. Each column represent
-## single map script output parameter
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ResultReport
+# ---------------------------------------------------------------------
+# INTERFACE: IReduceTask
+# ---------------------------------------------------------------------
+# DESCRIPTION:
+# Display reduce task result as a table. Each column represent
+# single map script output parameter
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import types
 
 def matrix_report(task):

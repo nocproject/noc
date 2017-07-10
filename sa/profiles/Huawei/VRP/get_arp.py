@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Huawei.VRP.get_arp
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Huawei.VRP.get_arp
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 
@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"(?P<mac>[0-9a-f\-]+)\s+\d*\s*.{3}\s+(?P<interface>\S+)",
         re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
-    @BaseScript.match(version__startswith="5.")
+    @BaseScript.match(version__gte="5.0")
     def execute_vrp5(self, vrf=None):
         if self.match_version(version__startswith="5.3"):
             displayarp = "display arp"

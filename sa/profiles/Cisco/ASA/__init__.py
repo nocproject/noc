@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Cisco
-## OS:     ASA
-## Compatible: 7.0
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Cisco
+# OS:     ASA
+# Compatible: 7.0
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.profile.base import BaseProfile
@@ -33,15 +33,15 @@ class Profile(BaseProfile):
         return self.convert_interface_name_cisco(interface)
 
     INTERFACE_TYPES = {
-            "L": "loopback",
-            "I": "loopback",
-            "E": "physical",
-            "G": "physical",
-            "T": "physical",
-            "M": "management",
-            "R": "aggregated",
-            "P": "aggregated",
-            "V": "SVI"
+        "L": "loopback",
+        "I": "loopback",
+        "E": "physical",
+        "G": "physical",
+        "T": "physical",
+        "M": "management",
+        "R": "aggregated",
+        "P": "aggregated",
+        "V": "SVI"
     }
 
     @classmethod

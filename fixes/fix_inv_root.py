@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Fix inventory tree
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Fix inventory tree
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 import logging
@@ -33,7 +33,7 @@ def fix():
                 o.save()
             logging.info("   ... removing duplicated root %s", r)
             r.delete()
-    
+
     # chech "Lost&Found" container
     logging.info("Checking Loste&Found object")
     lostfound_model = ObjectModel.objects.get(uuid="b0fae773-b214-4edf-be35-3468b53b03f2")
@@ -55,7 +55,7 @@ def fix():
             o.save()
         else:
             logging.info("Global Lost&Found object container is valid")
-        
+
     else:
         logging.info("Global Lost&Found object found great that one!!!!")
         # merge Lost&found
@@ -68,7 +68,7 @@ def fix():
                 ls.save()
             logging.info("   ... removing duplicated Lost&Found %s", l)
             l.delete()
-        
+
         if Object.objects.get(name="Global Lost&Found").container != Object.objects.get(name="Root",model=root_model).id:
             logging.info("Global Lost&Found object not valid container - fix")  # fix
             o = Object.objects.get(name="Global Lost&Found")
@@ -80,6 +80,6 @@ def fix():
 
 
 
-        
+
 
 

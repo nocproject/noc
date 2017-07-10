@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Full-text search index management
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Full-text search index management
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from optparse import make_option
 import os
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.validators import is_int
 from noc.settings import config
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 
 
 class Command(BaseCommand):

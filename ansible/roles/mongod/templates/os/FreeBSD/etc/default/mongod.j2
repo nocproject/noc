@@ -10,7 +10,7 @@ net:
   bindIp: 0.0.0.0
 
 security:
-  keyFile: {{ noc_root }}/var/etc/mongo/mongo.key
+  keyFile: {{ mongo_dir }}/mongo.key
   clusterAuthMode: keyFile
   authorization: enabled
 

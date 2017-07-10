@@ -19,9 +19,8 @@
     group: nsq
     owner: nsq
   with_items:
-    - "{{noc_root}}/var/db/nsq"
-    - "{{noc_root}}/var/etc/nsq"
-    - "{{noc_root}}/var/log/nsq"
+    - "{{nsqd_db_dir}}"
+    - "{{nsqd_config_dir}}"
 
 - name: check if nsq already exists
   stat:
@@ -41,7 +40,7 @@
 - name: Install nsqd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/nsqd.conf"
+    dest: "{{ telegraf_confd_path }}/nsqd.conf"
   notify: reload telegraf
   tags:
     - config
@@ -50,7 +49,7 @@
 - name: install nsqd config
   template:
     src: etc/config/nsqd.conf.j2
-    dest: "{{noc_root}}/var/etc/nsq/nsqd.conf"
+    dest: "{{nsqd_config_dir}}/nsqd.conf"
   notify: restart nsqd
   tags:
     - config
@@ -60,3 +59,11 @@
     name: "nsqd"
     enabled: yes
     state: started
+
+- name: copy nsqd consul templates
+  template:
+    src: nsqd.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  tags:
+    - consul

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-## Third-party modules
+# Third-party modules
 from south.db import db
 
 

@@ -161,7 +161,10 @@ def on_delete_check(check=None, clean=None, delete=None):
 
     :return:
     """
-    def on_delete_handler(sender, instance, *args, **kwargs):
+    def on_delete_handler(sender, instance=None, *args, **kwargs):
+        if not instance:
+            # If mongo document instance
+            instance = kwargs.get("document")
         # Raise value error when referred
         for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
@@ -182,7 +185,7 @@ def on_delete_check(check=None, clean=None, delete=None):
                 ro.delete()
 
     def iter_related(object, model, field):
-        for ro in model.objects.filter(**{field: object.id}):
+        for ro in model.objects.filter(**{field: str(object.id)}):
             yield ro
 
     def iter_models(name):
@@ -198,7 +201,8 @@ def on_delete_check(check=None, clean=None, delete=None):
         if is_document(cls):
             mongo_signals.pre_delete.connect(
                 on_delete_handler,
-                sender=cls
+                sender=cls,
+                weak=False
             )
         else:
             django_signals.pre_delete.connect(

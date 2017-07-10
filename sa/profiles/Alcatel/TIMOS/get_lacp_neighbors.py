@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-##----------------------------------------------------------------------
-## Alcatel.TIMOS.get_lacp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-## Python modules
+# ----------------------------------------------------------------------
+# Alcatel.TIMOS.get_lacp_neighbors
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
@@ -53,7 +52,6 @@ class Script(BaseScript):
                     is_table_body = False
                 if is_table_body:
                     row = l.split()
-                    print row
                     bundle += [{
                         "interface": row[0],
                         "local_port_id": row[1],

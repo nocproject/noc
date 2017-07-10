@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.reportalarmdetail application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.reportalarmdetail application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import csv
 import tempfile
-## Third-party modules
+# Third-party modules
 from django.http import HttpResponse
 import xlsxwriter
 import bson
-## NOC modules
+# NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, IntParameter
@@ -22,9 +22,14 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectpath import ObjectPath
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
+from noc.sa.models.useraccess import UserAccess
+from noc.core.translation import ugettext as _
 
 
 class ReportAlarmDetailApplication(ExtApplication):
@@ -86,28 +91,34 @@ class ReportAlarmDetailApplication(ExtApplication):
             "duration_sec",
             "object_name",
             "object_address",
+            "object_profile",
             "object_platform",
+            "object_version",
             "alarm_class",
             "objects",
             "subscribers",
             "tt",
-            "escalation_ts"
+            "escalation_ts",
+            "container_address"
         ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         header_row = [
          "ID",
-         "ROOT_ID",
-         "FROM_TS",
-         "TO_TS",
-         "DURATION_SEC",
-         "OBJECT_NAME",
-         "OBJECT_ADDRESS",
-         "OBJECT_PLATFORM",
-         "ALARM_CLASS",
-         "OBJECTS",
-         "SUBSCRIBERS",
-         "TT",
-         "ESCALATION_TS"
+         _("ROOT_ID"),
+         _("FROM_TS"),
+         _("TO_TS"),
+         _("DURATION_SEC"),
+         _("OBJECT_NAME"),
+         _("OBJECT_ADDRESS"),
+         _("OBJECT_PROFILE"),
+         _("OBJECT_PLATFORM"),
+         _("OBJECT_VERSION"),
+         _("ALARM_CLASS"),
+         _("OBJECTS"),
+         _("SUBSCRIBERS"),
+         _("TT"),
+         _("ESCALATION_TS"),
+         _("CONTAINER_ADDRESS")
         ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         if columns:
@@ -127,16 +138,41 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "$lt": datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
             }
         }
+
+        mos = ManagedObject.objects.filter(is_managed=True)
+
         if segment:
             try:
                 q["segment_path"] = bson.ObjectId(segment)
             except bson.errors.InvalidId:
                 pass
+
+        if administrative_domain:
+            administrative_domain = [int(administrative_domain)]
+            ads = AdministrativeDomain.get_nested_ids(administrative_domain[0])
+            mos = mos.filter(administrative_domain__in=ads)
+
+        if not request.user.is_superuser:
+            user_ads = UserAccess.get_domains(request.user)
+            mos = mos.filter(
+                administrative_domain__in=user_ads)
+            if administrative_domain:
+                if administrative_domain[0] not in user_ads:
+                    administrative_domain = user_ads
+            else:
+                administrative_domain = user_ads
+
+        # Working if Administrative domain set
         if administrative_domain:
             try:
-                q["adm_path"] = {"$in": [int(administrative_domain)]}
+                q["adm_path"] = {"$in": administrative_domain}
+                # @todo More 2 level hierarhy
             except bson.errors.InvalidId:
                 pass
+
+        mos_id = list(mos.values_list("id", flat=True))
+        container_lookup = ReportContainer(mos_id)
+        attr = ReportObjectAttributes([])
         if source in ["archive", "both"]:
             # Archived Alarms
             for a in ArchivedAlarm._get_collection().find(q).sort(
@@ -175,12 +211,15 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
-                    mo.platform,
+                    mo.profile_name,
+                    attr[mo.id][2] if attr else "",
+                    attr[mo.id][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
-                    a.get("escalation_ts")
+                    a.get("escalation_ts"),
+                    container_lookup[mo.id].get("text", "") if container_lookup else ""
                 ], container_path, segment_path), cmap)]
         # Active Alarms
         if source in ["active", "both"]:
@@ -221,12 +260,15 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
-                    mo.platform,
+                    mo.profile_name,
+                    attr[mo.id][2] if attr else "",
+                    attr[mo.id][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
-                    a.get("escalation_ts")
+                    a.get("escalation_ts"),
+                    container_lookup[mo.id].get("text", ""),
                 ], container_path, segment_path), cmap)]
 
         if format == "csv":

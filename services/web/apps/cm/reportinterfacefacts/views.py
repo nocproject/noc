@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## Interface Facts Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Interface Facts Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 
 from django import forms
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference

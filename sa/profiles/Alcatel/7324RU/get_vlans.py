@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.7324RU.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alcatel.7324RU.get_vlans
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_vlan = re.compile(
         r"\s*(?P<vid>\d+)"
         r"\s*(?P<vname>[A-Za-z0-9\-\.]+)\n"
-        r"([ 0-9]+)\n[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
+        r"(([ 0-9]+)\n)?[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
         r"([ \-xnf]+)\n[ ]+(?P<portmask>[\-tu]+)\s*"
         r"(?P<uplinkmask>[\-tu]*)", re.MULTILINE | re.IGNORECASE)
 

@@ -1,31 +1,31 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Knowledge Base viewer
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Knowledge Base viewer
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
 from noc.lib.app.application import Application,HasPerm
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbentryattachment import KBEntryAttachment
 from noc.main.models.mimetype import MIMEType
-##
-## View application
-##
+#
+# View application
+#
 class ViewAppplication(Application):
     title="View"
-    ##
-    ## Index page must redirect to index application
-    ##
+    #
+    # Index page must redirect to index application
+    #
     def view_index(self,request):
         return self.response_redirect("kb:index:index")
     view_index.url=r"^$"
     view_index.url_name="index"
     view_index.access=HasPerm("view")
-    ##
-    ## KB Entry Preview
-    ##
+    #
+    # KB Entry Preview
+    #
     def view_view(self,request,kb_id):
         e=get_object_or_404(KBEntry,id=int(kb_id))
         e.log_preview(request.user)
@@ -33,9 +33,9 @@ class ViewAppplication(Application):
     view_view.url=r"^(?P<kb_id>\d+)/$"
     view_view.url_name="view"
     view_view.access=HasPerm("view")
-    ##
-    ## Download attachment
-    ##
+    #
+    # Download attachment
+    #
     def view_attachment(self,request,kb_id,name):
         e=get_object_or_404(KBEntry,id=int(kb_id))
         a=get_object_or_404(KBEntryAttachment,kb_entry=e,name=name)
@@ -43,9 +43,9 @@ class ViewAppplication(Application):
     view_attachment.url=r"^(?P<kb_id>\d+)/attachment/(?P<name>.+)/$"
     view_attachment.url_name="attachment"
     view_attachment.access=HasPerm("view")
-    ##
-    ## Manipulate user bookmark
-    ##     action is one of "set" or "unset"
+    #
+    # Manipulate user bookmark
+    #     action is one of "set" or "unset"
     def view_bookmark(self,request,kb_id,action):
         if action not in ("set","unset"):
             return self.response_not_found()

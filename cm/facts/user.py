@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Local user
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Local user
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from base import BaseFact
 
 
@@ -26,15 +26,15 @@ class User(BaseFact):
     @property
     def name(self):
         return self._name
-    
+
     @name.setter
     def name(self, value):
         self._name = value or None
-        
+
     @property
     def level(self):
         return self._level
-    
+
     @level.setter
     def level(self, value):
         self._level = value
@@ -42,7 +42,7 @@ class User(BaseFact):
     @property
     def groups(self):
         return self._groups
-    
+
     @groups.setter
     def groups(self, value):
         self._groups = value or []

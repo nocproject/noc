@@ -1,15 +1,15 @@
 
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## HP.1910.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# HP.1910.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
@@ -94,7 +94,6 @@ class Script(BaseScript):
 
                 # Get remote chassis id subtype
                 chassis_type = match.group("chassis_type")
-                print chassis_type
                 if chassis_type == 'MAC address':
                     remote_chassis_id_subtype = 4
                 # Get remote port subtype

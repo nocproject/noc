@@ -35,6 +35,10 @@ Ext.define("NOC.sa.runcommands.ApplicationModel", {
             type: "string"
         },
         {
+            name: "version",
+            type: "string"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

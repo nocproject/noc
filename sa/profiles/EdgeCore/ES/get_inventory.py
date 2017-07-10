@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## EdgeCore.ES.get_inventory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# EdgeCore.ES.get_inventory
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
@@ -83,7 +83,6 @@ class Script(BaseScript):
                                 pid = self.get_transceiver_pid(
                                     i.group("type").upper())
                             if not pid:
-                                print "!!! UNKNOWN SFP: Eth", number
                                 continue
                             else:
                                 if "\\x" in repr(vendor).strip("'"):
@@ -105,10 +104,8 @@ class Script(BaseScript):
                                 }]
 
                 except self.CLISyntaxError:
-                    print "show transceiver command not supported"
                     pid = self.get_transceiver_pid(i.group("type").upper())
                     if not pid:
-                        print "!!! UNKNOWN SFP: ", i.group("int")
                         continue
                     else:
                         # Add transceiver

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObject's dynamic dashboard
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ManagedObject's dynamic dashboard
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 import os
-## NOC modules
+# NOC modules
 from noc.lib.text import split_alnum
 from noc.sa.models.managedobject import ManagedObject
 from base import BaseDashboard
@@ -51,17 +51,18 @@ class MODashboard(BaseDashboard):
         for profile in profiles:
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
-            for iface in sorted(ifaces, key=split_alnum):
+            for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
                 if iface.description:
                     iface.description = iface.description.replace('\"', '')
                 if iface.type == u"aggregated" and iface.lag_members:
                     lags += [{
                         "name": iface.name,
                         "ports": [i.name for i in iface.lag_members],
-                        "descr": iface.description or "No description"
+                        "descr": iface.description or "No description",
+                        "status": ["status : ".join([i.name, i.status]) for i in iface.lag_members]
                     }]
                     continue
-                ports += [{"name": iface.name, "descr": iface.description}]
+                ports += [{"name": iface.name, "descr": iface.description, "status": iface.status}]
             if not ports:
                 continue
             port_types += [{"type": profile.id, "name": profile.name,
@@ -92,7 +93,9 @@ class MODashboard(BaseDashboard):
             "firmare_version": self.object.version.version or None,
             "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown version",
-            "pool": self.object.pool.name
+            "pool": self.object.pool.name,
+            "ping_interval": self.object.object_profile.ping_interval,
+            "discovery_interval": self.object.object_profile.periodic_discovery_interval
         }
         self.logger.info("Context with data: %s" % context)
         PM_TEMPLATE_PATH = "templates/ddash/"

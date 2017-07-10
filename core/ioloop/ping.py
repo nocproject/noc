@@ -348,7 +348,7 @@ class Ping(object):
         if not socket:
             raise tornado.gen.Return(None)
         req_id = self.iter_request.next() & 0xFFFF
-        result = False
+        result = policy == self.CHECK_ALL and count > 0
         for seq in range(count):
             r = yield socket.ping(address, timeout, size, req_id, seq)
             if r and policy == self.CHECK_FIRST:
@@ -377,7 +377,7 @@ class Ping(object):
         if not socket:
             raise tornado.gen.Return(None)
         req_id = self.iter_request.next() & 0xFFFF
-        result = False
+        result = policy == self.CHECK_ALL and count > 0
         rtts = []
         attempt = 0
         for seq in range(count):
@@ -398,7 +398,7 @@ class Ping(object):
             elif attempt > 0:
                 metrics["ping_check_recover"] += 1
             logger.debug("[%s] Result: success, rtt=%s, attempt=%d", address, rtt, attempt)
-            raise tornado.gen.Return(rtt)
+            raise tornado.gen.Return((rtt, attempt))
         else:
             logger.debug("[%s] Result: failed", address)
-            raise tornado.gen.Return(None)
+            raise tornado.gen.Return((None, attempt))

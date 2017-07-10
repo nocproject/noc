@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 __author__ = 'FeNikS'
 
-##----------------------------------------------------------------------
-## SUMAVISION.EMR.get_config
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# SUMAVISION.EMR.get_config
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-#NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
-#Python modules
+# Python modules
 import os
 from ftplib import FTP
 import gzip

@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## discovery commands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# discovery commands
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import argparse
 import time
-## NOC modules
+from collections import defaultdict
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -29,7 +31,7 @@ class Command(BaseCommand):
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri",
             "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe",
-            "lacp", "hk"
+            "lacp", "hk", "mac"
         ],
         "periodic": [
             "uptime", "interfacestatus",
@@ -83,8 +85,8 @@ class Command(BaseCommand):
             self.run_job(job, mo, checks)
 
     def run_job(self, job, mo, checks):
-        scheduler = Scheduler("discovery", pool=mo.pool.name)
-        scheduler.service = ServiceStub()
+        scheduler = Scheduler("discovery", pool=mo.pool.name,
+                              service=ServiceStub())
         jcls = self.jcls[job]
         # Try to dereference job
         job_args = scheduler.get_collection().find_one({
@@ -92,7 +94,7 @@ class Command(BaseCommand):
             Job.ATTR_KEY: mo.id
         })
         if job_args:
-            self.stdout.write("Job ID: %s\n" % job_args["_id"])
+            self.print("Job ID: %s" % job_args["_id"])
         else:
             job_args = {
                 Job.ATTR_ID: "fakeid",
@@ -102,33 +104,45 @@ class Command(BaseCommand):
         job = get_handler(jcls)(scheduler, job_args)
         if job.context_version:
             ctx_key = job.get_context_cache_key()
-            self.stdout.write("Loading job context from %s\n" % ctx_key)
+            self.print("Loading job context from %s" % ctx_key)
             ctx = cache.get(ctx_key, version=job.context_version)
             if not ctx:
-                self.stdout.write("Job context is empty\n")
+                self.print("Job context is empty")
             job.load_context(ctx)
         job.dereference()
         job.handler()
         if scheduler.service.metrics:
             for m in scheduler.service.metrics:
-                self.stdout.write("Collected metric: %s\n" % m)
+                self.print("Collected metric: %s" % m)
+        if scheduler.service.ch_metrics:
+            self.print("Collected CH data:")
+            for f in scheduler.service.ch_metrics:
+                self.print("Fields: %s", f)
+                self.print("\n".join(scheduler.service.ch_metrics[f]))
         if job.context_version and job.context:
-            scheduler.run_cache_thread()
-            self.stdout.write("Saving job context to %s\n" % ctx_key)
+            self.print("Saving job context to %s" % ctx_key)
             scheduler.cache_set(
                 key=ctx_key,
                 value=job.context,
                 version=job.context_version
             )
-            time.sleep(2)
+            scheduler.apply_cache_ops()
+            time.sleep(3)
 
 
 class ServiceStub(object):
     def __init__(self):
         self.metrics = []
+        self.ch_metrics = defaultdict(list)
+        self.service_id = "stub"
+        self.address = "127.0.0.1"
+        self.port = 0
 
     def register_metrics(self, batch):
         self.metrics += batch
+
+    def register_ch_metrics(self, fields, data):
+        self.ch_metrics[fields] += data
 
 if __name__ == "__main__":
     Command().run()

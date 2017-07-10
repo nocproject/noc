@@ -5,13 +5,13 @@ from noc.core.model.fields import AutoCompleteTagsField
 
 
 class Migration:
-    
+
     def forwards(self):
         # Mock models
         ManagedObjectSelector = db.mock_model(model_name="ManagedObjectSelector",
             db_table="sa_managedobjectselector", db_tablespace="", pk_field_name="id",
             pk_field_type=models.AutoField)
-        
+
         # Model "ReduceTask"
         db.create_table("sa_commandsnippet", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
@@ -26,9 +26,9 @@ class Migration:
             ("timeout", models.IntegerField("Timeout", default=60)),
             ("tags", AutoCompleteTagsField("Tags", null=True, blank=True)),
         ))
-        
+
         db.send_create_signal("sa", ["CommandSnippet"])
-    
+
     def backwards(self):
         db.delete_table("sa_commandsnippet")
-    
+

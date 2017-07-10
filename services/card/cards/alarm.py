@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alarm card handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Alarm card handler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import operator
-## Third-party modules
+# Third-party modules
 from jinja2 import Template
-## NOC modules
+# NOC modules
 from base import BaseCard
 from noc.fm.models.utils import get_alarm
 from noc.inv.models.object import Object
@@ -101,7 +101,12 @@ class AlarmCard(BaseCard):
             "maintenance": mainteinance,
             "lon": mo.x,
             "lat": mo.y,
-            "zoom": mo.default_zoom
+            "zoom": mo.default_zoom,
+            "tt_system": self.object.managed_object.tt_system.name if self.object.managed_object.tt_system else None,
+            "tt_system_failed": (self.object.status == "A" and
+                                 not self.object.escalation_tt and
+                                 self.object.managed_object.tt_system and
+                                 self.object.managed_object.tt_system.is_failed())
         }
         return r
 

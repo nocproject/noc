@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.NXOS.get_inventory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cisco.NXOS.get_inventory
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -79,7 +79,6 @@ class Script(BaseScript):
             serial = [match.group("serial"), None]["N/A" in match.group("serial")]
             rev = [match.group("vid"), None]["N/A" in match.group("vid")]
             if not part_no:
-                print "!!! UNKNOWN: ", match.groupdict()
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"

@@ -4,9 +4,9 @@ from django.db import models
 
 
 class Migration:
-    
+
     def forwards(self):
-        
+
         # Model 'EventCorrelationRule'
         db.create_table('fm_eventcorrelationrule', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -15,8 +15,8 @@ class Migration:
             ('description', models.TextField("Description", null=True, blank=True)),
             ('is_builtin', models.BooleanField("Is Builtin", default=False))
         ))
-        
+
         db.send_create_signal('fm', ['EventCorrelationRule'])
-    
+
     def backwards(self):
         db.delete_table('fm_eventcorrelationrule')

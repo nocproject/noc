@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Raisecom.ROS.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Raisecom.ROS.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
+from noc.lib.validators import is_int, is_ipv4, is_ipv6
 
 
 class Script(BaseScript):
@@ -34,10 +34,51 @@ class Script(BaseScript):
         r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
 
+    rx_lldp_womac = re.compile(
+        r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
+        r"^\s*Remote\s*1\s*\n"
+        r"^\s*\-+\n"
+        r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
+        r"^\s*PortIdSubtype\s*:\s+(?P<port_id_subtype>\S+)\s*\n"
+        r"^\s*PortId\s*:\s+(?P<port_id>.+)\s*\n"
+        r"^\s*PortDesc\s*:\s+(?P<port_descr>.+)\s*\n"
+        r"^\s*SysName\s*:\s+(?P<sys_name>.+)\s*\n"
+        r"^\s*SysDesc\s*:\s+(?P<sys_descr>[\S\s?]+?)\n"
+        r"^\s*SysCapSupported\s*:\s+(?P<sys_caps_supported>\S+)\s*\n"
+        r"^\s*SysCapEnabled\s*:\s+(?P<sys_caps_enabled>\S+)\s*\n",
+        re.MULTILINE | re.IGNORECASE)
+
+    rx_lldp_rem = re.compile(
+        r"^port(?P<port>\d+)\s+(?P<ch_id>\S+)", re.MULTILINE)
+
     def execute(self):
         r = []
+        r_rem = []
+        v = self.cli("show lldp remote")
+        for match in self.rx_lldp_rem.finditer(v):
+            chassis_id = match.group("ch_id")
+            if is_ipv4(chassis_id) or is_ipv6(chassis_id):
+                chassis_id_subtype = 5
+            else:
+                try:
+                    MACAddressParameter().clean(chassis_id)
+                    chassis_id_subtype = 4
+                except ValueError:
+                    chassis_id_subtype = 7
+            r_rem += [{
+                "local_interface": match.group("port"),
+                "remote_chassis_id": chassis_id,
+                "remote_chassis_id_subtype": chassis_id_subtype
+            }]
         v = self.cli("show lldp remote detail")
-        for match in self.rx_lldp.finditer(v):
+        # If detail command not contain ch id
+        ext_ch_id = False
+        lldp_iter = list(self.rx_lldp.finditer(v))
+        if not lldp_iter:
+            ext_ch_id = True
+            lldp_iter = list(self.rx_lldp_womac.finditer(v))
+            self.logger.debug("Not Find MAC in re")
+        for match in lldp_iter:
             i = {"local_interface": match.group("port"), "neighbors": []}
             cap = 0
             for c in match.group("sys_caps_enabled").strip().split(","):
@@ -53,11 +94,12 @@ class Script(BaseScript):
                         "macAddress": 4,
                         "networkAddress": 5
                     }[match.group("ch_type")],
-                "remote_chassis_id": match.group("ch_id"),
+                "remote_chassis_id": match.group("ch_id") if not ext_ch_id else None,
                 "remote_port_subtype": {
                         "ifAlias": 1,
                         "macAddress": 3,
                         "ifName": 5,
+                        "portComponent": 5,
                         "local": 7
                     }[match.group("port_id_subtype")],
                 "remote_port": match.group("port_id"),
@@ -72,6 +114,13 @@ class Script(BaseScript):
                 n["remote_system_description"] = sd
             if match.group("port_descr") != "N/A":
                 n["remote_port_description"] = match.group("port_descr")
+            if n["remote_chassis_id"] is None:
+                for j in r_rem:
+                    if i["local_interface"] == j["local_interface"]:
+                        n["remote_chassis_id"] = j["remote_chassis_id"]
+                        n["remote_chassis_id_subtype"] = \
+                            j["remote_chassis_id_subtype"]
+                        break
             i["neighbors"] += [n]
             r += [i]
         return r

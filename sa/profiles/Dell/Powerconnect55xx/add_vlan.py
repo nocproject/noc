@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Dell.Powerconnect55xx.add_vlan
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
+# ---------------------------------------------------------------------
+# Dell.Powerconnect55xx.add_vlan
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iaddvlan import IAddVlan
 

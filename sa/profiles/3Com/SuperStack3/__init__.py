@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: 3Com
-## OS:     SuperStack3
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Vendor: 3Com
+# OS:     SuperStack3
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 from noc.lib.validators import is_int
 

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.ASA.get_portchannel
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cisco.ASA.get_portchannel
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -54,8 +54,6 @@ class Script(BaseScript):
                 """If last symbol Interfaces is comma - next row
                 consist only Interfaces"""
                 nextinterface = True
-
-            print("Format {0}".format(row[3]))
 
             r += [{
                 "interface": "Po %s" % interface['Group'],

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlliedTelesis.AT9400.get_interface_status
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlliedTelesis.AT9400.get_interface_status
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -17,7 +17,8 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
     rx_line = re.compile(r"ifIndex\.+ ", re.IGNORECASE | re.MULTILINE)
     rx_if = re.compile(r"(?P<interface>\d+)", re.IGNORECASE | re.MULTILINE)
-    rx_oper = re.compile(r"ifOperStatus\.+ (?P<status>Up|Down)", re.IGNORECASE | re.MULTILINE)
+    rx_oper = re.compile(
+        r"ifOperStatus\.+ (?P<status>Up|Down)", re.IGNORECASE | re.MULTILINE)
 
     def execute(self, interface=None):
         # Not tested. Must be identical in different vendors
@@ -31,9 +32,9 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
                     if not n.startswith("802.1Q Encapsulation Tag") \
-                    and (interface is not None and interface == n):
+                      and (interface is not None and interface == n):
                         # ifOperStatus up(1)
-                        r += [{"interface": n, "status":int(s) == 1}]
+                        r += [{"interface": n, "status": int(s) == 1}]
                 return r
             except self.snmp.TimeOutError:
                 pass

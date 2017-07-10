@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AuditTrail model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AuditTrail model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import datetime
-## Django modules
+# Django modules
 from django.db.models import signals as django_signals
 from django.utils.encoding import smart_unicode
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField,
                                 ListField, EmbeddedDocumentField)
-## NOC modules
+# NOC modules
 from noc.lib.middleware import get_user
 from noc import settings
 from noc.lib.utils import get_model_id

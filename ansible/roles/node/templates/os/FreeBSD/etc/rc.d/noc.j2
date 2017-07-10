@@ -21,7 +21,7 @@ rcvar=`set_rcvar`
 load_rc_config $name
 
 : ${noc_enable="NO"}
-: ${noc_config="{{ noc_root }}/etc/supervisord.conf"}
+: ${noc_config="{{ noc_etc }}/supervisord.conf"}
 : ${noc_flags="-c ${noc_config}"}
 
 export PATH=$PATH:/usr/local/bin

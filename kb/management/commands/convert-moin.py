@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Import MoinMoin wiki data to NOC KB
-## USAGE:
-## python manage.py convert-moin [--encoding=charset] [--language=lang] [--tags=<taglist>] <path to moin data/ >
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Import MoinMoin wiki data to NOC KB
+# USAGE:
+# python manage.py convert-moin [--encoding=charset] [--language=lang] [--tags=<taglist>] <path to moin data/ >
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import re
 import stat
@@ -17,20 +17,20 @@ import sys
 import types
 import gc
 from optparse import OptionParser, make_option
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
-## NOC modules
+# NOC modules
 from noc.main.models.language import Language
 from noc.main.models.databasestorage import database_storage
 from noc.kb.models import KBEntry,KBEntryAttachment
 
-##
+#
 rx_hexseq=re.compile(r"\(((?:[0-9a-f][0-9a-f])+)\)")
-##
-## convert-moin command handler
-##
+#
+# convert-moin command handler
+#
 class Command(BaseCommand):
     help="Import MoinMoin wiki into NOC KB"
     option_list=BaseCommand.option_list+(

@@ -198,7 +198,7 @@ Ext.define('NOC.core.TreeCombo', {
                     var coord = me.getXY();
                     var x_coord = coord[0];
 
-                    if(me.listAlign === 'right') x_coord -= me.getWidth();
+                    if(me.listAlign === 'right') x_coord -= (me.listWidth - 1) * me.getWidth();
                     me.selectWindow.showAt([x_coord, coord[1]]);
                     me.selectWindow.setWidth(me.getWidth() * me.listWidth);
                 }

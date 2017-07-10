@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: f5
-## OS:     BIG-IP
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: f5
+# OS:     BIG-IP
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.profile.base import BaseProfile
@@ -39,7 +39,7 @@ class Profile(BaseProfile):
                     h = clean(header[0])
                     d = "\n".join([clean(x) for x in data])
                     yield h, d
-                    hader = []
+                    header = []
                     data = []
             elif s.startswith("----------"):
                 if not in_header:

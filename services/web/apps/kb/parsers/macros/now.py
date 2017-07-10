@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## now macro
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# now macro
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import datetime
 
 from django.utils.dateformat import DateFormat
@@ -12,13 +12,13 @@ from django.utils.dateformat import DateFormat
 from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 
 
-##
-## now macro
-##     Returns current date and time
-##     Optional arguments
-##     format - PHP date()-like format string
-##
-##
+#
+# now macro
+#     Returns current date and time
+#     Optional arguments
+#     format - PHP date()-like format string
+#
+#
 class Macro(MacroBase):
     name = "now"
     @classmethod

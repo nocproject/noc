@@ -1,14 +1,14 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MAC Vendor
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# MAC Vendor
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
+# NOC modules
 from noc.lib.nosql import Document, StringField
 
 logger = logging.getLogger(__name__)

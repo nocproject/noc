@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models
-## Third-party modules
+# Third-party modules
 from south.db import db
 
 
 class Migration:
-    
+
     def forwards(self):
         db.delete_table('sa_task')
-        
+
     def backwards(self):
-        
+
         # Model 'Task'
         db.create_table('sa_task', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -30,5 +30,5 @@ class Migration:
             ('status', models.CharField("Status",max_length=1,choices=[("n","New"),("p","In Progress"),("f","Failure"),("c","Complete")])),
             ('out', models.TextField("Out"))
         ))
-        
+
         db.send_create_signal('sa', ['Task'])

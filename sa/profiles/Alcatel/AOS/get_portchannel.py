@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.AOS.get_portchannel
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
+# ----------------------------------------------------------------------
+# Alcatel.AOS.get_portchannel
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
 import re
@@ -45,7 +44,7 @@ class Script(BaseScript):
             r += [{
                 "interface": "%i" % port,
                 "members": members,
-                #<!> TODO: port-channel type detection
+                # <!> TODO: port-channel type detection
                 "type": "L"
             }]
         return r

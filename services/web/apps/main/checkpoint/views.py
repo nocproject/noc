@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Checkpoint manager
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Checkpoint manager
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Django modules
+# Django modules
 from django import forms
-## NOC modules
+# NOC modules
 from noc.lib.app.application import Application, view, HasPerm
 from noc.lib.forms import NOCForm
 from noc.main.models import Checkpoint
@@ -19,10 +19,10 @@ from noc.core.translation import ugettext as _
 
 class CheckpointAppplication(Application):
     title = _("Checkpoints")
-    
+
     class PrivateCheckpointForm(NOCForm):
         comment = forms.CharField(label=_("Comment"))
-    
+
     class FullCheckpointForm(NOCForm):
         comment = forms.CharField(label=_("Comment"))
         is_private = forms.BooleanField(label=_("Private"), required=False)

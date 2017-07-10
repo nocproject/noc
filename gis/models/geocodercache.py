@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Geoconding cache
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Geoconding cache
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 
-## Python modules
+# Python modules
 import re
 import hashlib
 import base64
 import datetime
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, FloatField, ListField,
                                 DateTimeField)
-## NOC modules
+# NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
 from noc.core.config.base import config
 from noc.core.handler import get_handler
@@ -106,10 +106,12 @@ class GeocoderCache(Document):
         r = c.find_one({"_id": hash})
         if r:
             # Found
-            if r.get("error"):
+            if r.get("error") and r.get("exact") is None:
+                # If exact result - continue
+                print("Error result is not exact")
                 return None
             return GeoCoderResult(
-                exact=True,
+                exact=r.get("exact", True),
                 query=query,
                 path=r.get("path") or [],
                 lon=r.get("lon"),
@@ -130,11 +132,11 @@ class GeocoderCache(Document):
                         error = None
                         break
                     else:
-                        if r and not lr and r.lon and r.lat:
-                            lr = r  # Save first non-exact
                         r = None
                         error = "No coordinates"
                 else:
+                    if r and not lr and r.lon and r.lat:
+                        lr = r  # Save first non-exact
                     r = None
             except GeoCoderError as e:
                 error = str(e)

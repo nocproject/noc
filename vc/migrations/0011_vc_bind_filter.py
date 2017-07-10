@@ -22,10 +22,10 @@ class Migration:
             ('vc_filter', models.ForeignKey(VCFilter,verbose_name="VC Filter")),
         ))
         db.send_create_signal('vc', ['VCBindFilter'])
-        
+
         # Adding field 'VCDomain.enable_vc_bind_filter'
         db.add_column('vc_vcdomain', 'enable_vc_bind_filter', models.BooleanField("Enable VC Bind filter",default=False))
-    
+
     def backwards(self):
         # Deleting model 'VCBindFilter'
         db.delete_table('vc_vcbindfilter')

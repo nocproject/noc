@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Run version inventory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Run version inventory
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.reducetask import ReduceTask
 
 
-## Reduce task script
+# Reduce task script
 def reduce_script(task):
     import csv
     import sys

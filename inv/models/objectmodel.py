@@ -1,23 +1,23 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ObjectModel model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# ObjectModel model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
 from mongoengine import signals
 import cachetools
-## NOC modules
+# NOC modules
 from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
 from unknownmodel import UnknownModel

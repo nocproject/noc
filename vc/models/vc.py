@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## VC model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# VC model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 import operator
 from threading import Lock
-## Django modules
+# Django modules
 from django.db import models
-## Third-party modules
+# Third-party modules
 from mongoengine.queryset import Q as MEQ
 import cachetools
-## NOC modules
+# NOC modules
 from error import InvalidLabelException, MissedLabelException
 from vcdomain import VCDomain
 from noc.main.models.style import Style
@@ -27,7 +27,7 @@ from noc.main.models.textindex import full_text_search
 from noc.core.cache.decorator import cachedmethod
 from noc.core.model.decorator import on_delete_check
 
-## Regular expressions
+# Regular expressions
 rx_vc_underline = re.compile("\s+")
 rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
 

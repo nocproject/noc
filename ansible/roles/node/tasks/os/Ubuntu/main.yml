@@ -12,10 +12,10 @@
     - python-dev
     - python-virtualenv
     - mercurial
+    - libjemalloc1
     - quilt
     - gcc
     - libpq-dev
-    - libcurl4-openssl-dev
     - libffi6
     - libffi-dev
     - libmemcached11
@@ -31,6 +31,4 @@
     src: "os/Ubuntu/etc/systemd/system/noc.service.j2"
     dest: "/etc/systemd/system/{{ noc_system_service }}.service"
     mode: "a+r"
-
-- name: Reload systemd daemon
-  command: /bin/systemctl daemon-reload
+  notify: reload systemd

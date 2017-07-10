@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Data type validators
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Data type validators
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import re
 import uuid
 try:
     from django.forms import ValidationError
 except:  # pragma: no cover
     pass
+from noc.core.mac import MAC
 
-##
-## Regular expressions
-##
+#
+# Regular expressions
+#
 rx_fqdn = re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$", re.IGNORECASE)
 rx_asset = re.compile(r"^AS-[A-Z0-9\-]+$")
 rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
@@ -25,9 +26,9 @@ rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
 rx_objectid = re.compile(r"^[0-9a-f]{24}$")
 
 
-##
-## Validators returning boolean
-##
+#
+# Validators returning boolean
+#
 def is_int(v):
     """
     Check for valid integer
@@ -369,6 +370,44 @@ def is_vlan(v):
     except:
         return False
 
+def is_mac(v):
+    """
+    >>> is_mac("1234.5678.9ABC")
+    True
+    >>> is_mac("1234.5678.9abc")
+    True
+    >>> is_mac("0112.3456.789a.bc")
+    True
+    >>> is_mac("1234.5678.9abc.def0")
+    False
+    >>> is_mac("12:34:56:78:9A:BC")
+    True
+    >>> is_mac("12-34-56-78-9A-BC")
+    True
+    >>> is_mac("0:13:46:50:87:5")
+    True
+    >>> is_mac("123456-789abc")
+    True
+    >>> is_mac("12-34-56-78-9A-BC-DE")
+    False
+    >>> is_mac("AB-CD-EF-GH-HJ-KL")
+    False
+    >>> is_mac("aabb-ccdd-eeff")
+    True
+    >>> is_mac("aabbccddeeff")
+    True
+    >>> is_mac("AABBCCDDEEFF")
+    True
+    >>> is_mac("\\xa8\\xf9K\\x80\\xb4\\xc0")
+    False
+    """
+    if v is None or len(v) < 12:
+        return False
+    try:
+        m = MAC(v)
+        return True
+    except ValueError:
+        return False
 
 def is_email(v):
     """
@@ -460,9 +499,9 @@ def generic_validator(check, error_message):
         return value
     return inner_validator
 
-##
-## Validators
-##
+#
+# Validators
+#
 check_asn = generic_validator(is_asn, "Invalid ASN")
 check_prefix = generic_validator(is_prefix, "Invalid prefix")
 check_ipv4 = generic_validator(is_ipv4, "Invalid IPv4")

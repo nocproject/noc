@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: D-Link
-## OS:     DGS3100
-## Compatible:
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: D-Link
+# OS:     DGS3100
+# Compatible:
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import re
 from noc.core.profile.base import BaseProfile
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Profile(BaseProfile):
@@ -28,11 +27,11 @@ class Profile(BaseProfile):
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
-    ##
-    ## Version comparison
-    ## Version format:
-    ## <major>.<minor><sep><patch>
-    ##
+    #
+    # Version comparison
+    # Version format:
+    # <major>.<minor><sep><patch>
+    #
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
@@ -64,7 +63,6 @@ class Profile(BaseProfile):
     def root_interface(self, name):
         return name
 
-
     def open_brackets(self, str):
         """
         Open brackets in expression
@@ -72,11 +70,11 @@ class Profile(BaseProfile):
         """
         rx_group = re.compile(r"(?P<prefix>[ch\d\:]+)\((?P<range>[\d\-,]+)\)")
         rx_range = re.compile(r"(?P<interface>[\d]+)(?P<comma>[-,])?")
-        list_in  = str
+        list_in = str
         list_out = list_in
         for match in rx_group.finditer(list_in):
             group = match.group()
-            #group = prefix + "(" + range + ")"
+            # group = prefix + "(" + range + ")"
             prefix = match.group("prefix")
             range = match.group("range")
             convert_group = ""
@@ -88,6 +86,7 @@ class Profile(BaseProfile):
                     convert_group += comma
             list_out = list_out.replace(group, convert_group)
         return list_out
+
 
 # DGS-3100-series
 def DGS3100(v):
