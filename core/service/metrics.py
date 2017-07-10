@@ -10,6 +10,7 @@
 import string
 # Third-party modules
 import tornado.web
+from config import config
 
 TR = string.maketrans(".-\"", "___")
 
@@ -23,16 +24,21 @@ class MetricsHandler(tornado.web.RequestHandler):
             return s.translate(TR)
 
         labels = [
-            "service=\"%s\"" % self.service.name
+            "service=\"%s\"" % self.service.name,
+            "node=\"%s\"" % config.node
         ]
         if self.service.pooled:
-            labels += ["pool=\"%s\"" % self.service.config.pool]
+            labels += ["pool=\"%s\"" % config.pool]
         labels = ",".join(labels)
         out = []
         mdata = self.service.get_mon_data()
-        for m in mdata:
+        sdata = mdata.copy()
+        for key in mdata:
+            if isinstance(mdata[key], str) or isinstance(mdata[key], bool):
+                sdata.pop(key)
+        for m in sdata:
             qm = q(m)
             out += ["# TYPE %s gauge" % qm]
-            out += ["%s{%s} %s" % (qm, labels, mdata[m])]
+            out += ["%s{%s} %s" % (qm, labels, sdata[m])]
         self.add_header("Content-Type", "text/plain; version=0.0.4")
         self.write("\n".join(out))
