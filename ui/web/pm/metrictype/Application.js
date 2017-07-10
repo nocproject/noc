@@ -97,13 +97,15 @@ Ext.define("NOC.pm.metrictype.Application", {
                         ["Float32", "Float32"],
                         ["Float64", "Float64"],
                         ["String", "String"]
-                    ]
+                    ],
+                    uiStyle: "medium"
                 },
                 {
                     name: "measure",
                     xtype: "textfield",
                     fieldLabel: __("Measure"),
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
                 }
             ],
             formToolbar: [
