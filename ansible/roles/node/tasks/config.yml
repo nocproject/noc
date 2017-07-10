@@ -11,6 +11,7 @@
   template:
     src: "etc/supervisord.conf.j2"
     dest: "{{ noc_etc }}/supervisord.conf"
+  no_log: true
   tags:
     - config
     - noc_config
