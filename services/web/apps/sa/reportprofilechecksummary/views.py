@@ -12,6 +12,7 @@ from pymongo import ReadPreference
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
+from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.useraccess import UserAccess
@@ -59,9 +60,9 @@ class ReportFilterApplication(SimpleReport):
                 is_not_resp = is_not_resp.filter(administrative_domain__in=UserAccess.get_domains(request.user))
 
             # Managed w defined profile (not Generic.Host)
-            is_managed_not_generic = is_managed.exclude(profile_name=GENERIC_PROFILE)
+            is_managed_not_generic = is_managed.exclude(profile=Profile.get_by_name(GENERIC_PROFILE))
             # Managed w undefined profile (Generic.Host)
-            is_managed_undef = is_managed.filter(profile_name=GENERIC_PROFILE)
+            is_managed_undef = is_managed.filter(profile=Profile.get_by_name(GENERIC_PROFILE))
 
             is_managed_undef_in = list(is_managed_undef.values_list("id", flat=True))
             is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))

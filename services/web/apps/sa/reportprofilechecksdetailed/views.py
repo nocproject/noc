@@ -12,6 +12,7 @@ from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
+from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
@@ -56,8 +57,8 @@ class ReportFilterApplication(SimpleReport):
             is_managed = is_managed.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_man = is_not_man.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_resp = is_not_resp.filter(administrative_domain__in=UserAccess.get_domains(request.user))
-        is_managed_not_generic = is_managed.exclude(profile_name=GENERIC_PROFILE)
-        is_managed_undef = is_managed.filter(profile_name=GENERIC_PROFILE)
+        is_managed_not_generic = is_managed.exclude(profile=Profile.get_by_name(GENERIC_PROFILE))
+        is_managed_undef = is_managed.filter(profile=Profile.get_by_name(GENERIC_PROFILE))
         is_managed_undef_in = list(is_managed_undef.values_list("id", flat=True))
         is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))
 
@@ -91,7 +92,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.profile_name,
+                mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
@@ -105,7 +106,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.profile_name,
+                mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
@@ -118,7 +119,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.profile_name,
+                mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,

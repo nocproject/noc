@@ -187,7 +187,7 @@ class ReportAvailabilityApplication(SimpleReport):
                 o.name,
                 mo_hostname[o.id],
                 o.address,
-                o.profile_name,
+                o.profile.name,
                 round(a.get(o.id, (100.0, 0, 0))[0], 2)
             ]
             s.extend(a.get(o.id, (100.0, 0, 0))[1:])

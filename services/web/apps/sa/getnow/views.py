@@ -40,7 +40,7 @@ class GetNowApplication(ObjectListApplication):
         return {
             'id': str(mo.id),
             'name': mo.name,
-            'profile_name': mo.profile_name,
+            'profile_name': mo.profile.name,
             'last_success': last_success,
             'status': job["s"] if job else '--',
             'last_status': last_status,
