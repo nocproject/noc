@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
@@ -35,6 +36,10 @@ class KeyField(EmbeddedDocument):
             "field_name": self.field_name,
             "model": self.model
         }
+
+    @property
+    def field_type(self):
+        return "UInt64"
 
 
 class PathItem(EmbeddedDocument):
@@ -105,3 +110,72 @@ class MetricScope(Document):
 
     def get_json_path(self):
         return "%s.json" % self.name
+
+    def iter_fields(self):
+        """
+        Yield (field_name, field_type) tuples
+        :return:
+        """
+        from .metrictype import MetricType
+
+        yield ("date", "Date")
+        yield ("ts", "DateTime")
+        for f in self.key_fields:
+            yield (f.field_name, f.field_type)
+        if self.path:
+            yield ("path", "Array(String)")
+        for t in MetricType.objects.filter(scope=self.id).order_by("id"):
+            yield (t.field_name, t.field_type)
+
+    def get_create_sql(self):
+        """
+        Get CREATE TABLE SQL statement
+        :return:
+        """
+        pk = ["ts"] + [f.field_name for f in self.key_fields]
+        r = [
+            "CREATE TABLE IF NOT EXISTS %s (" % self.table_name,
+            ",\n".join("%s %s" % (n, t) for n, t in self.iter_fields()),
+            ") ENGINE = MergeTree(date, (%s), 8192)" % ", ".join(pk)
+        ]
+        return "\n".join(r)
+
+    def ensure_table(self):
+        """
+        Ensure table is exists
+        :return: True, if table has been changed
+        """
+        from noc.core.clickhouse.connect import connection
+
+        changed = False
+        ch = connection()
+        if not ch.has_table(self.table_name):
+            # Create new table
+            ch.execute(post=self.get_create_sql())
+            changed = True
+        else:
+            # Alter when necessary
+            existing = {}
+            for name, type in ch.execute(
+                """
+                SELECT name, type
+                FROM system.columns
+                WHERE
+                  database=%s
+                  AND table=%s
+                """,
+                [ch.DB, self.table_name]
+            ):
+                existing[name] = type
+            after = None
+            for f, t in self.iter_fields():
+                if f not in existing:
+                    ch.execute(
+                        post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s" % (
+                            self.table_name,
+                            f, t,
+                            after)
+                    )
+                    changed = True
+                after = f
+        return changed

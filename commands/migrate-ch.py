@@ -8,18 +8,18 @@
 
 # Python modules
 from __future__ import print_function
-import os
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.clickhouse.connect import connection
-from noc.core.clickhouse.model import Model
+from noc.core.clickhouse.ensure import ensure_bi_models, ensure_pm_scopes
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         self.connect()
         self.ensure_db()
-        changed = self.ensure_bi_models()
+        changed = ensure_bi_models()
+        changed |= ensure_pm_scopes()
         if changed:
             self.print("CHANGED")
         else:
@@ -28,35 +28,18 @@ class Command(BaseCommand):
     def connect(self):
         """
         Connect to database
-        :return: 
+        :return:
         """
         self.connect = connection()
 
     def ensure_db(self):
         """
         Ensure clickhouse database is exists
-        :return: 
+        :return:
         """
         self.print("Ensuring database")
         self.connect.ensure_db()
 
-    def ensure_bi_models(self):
-        self.print("Ensuring BI models:")
-        models = set()
-        # Get models
-        for f in os.listdir("bi/models"):
-            if f.startswith("_") or not f.endswith(".py"):
-                continue
-            mn = f[:-3]
-            model = Model.get_model_class(mn)
-            if model:
-                models.add(model)
-        # Ensure fields
-        changed = False
-        for model in models:
-            self.print("  * %s" % model._meta.db_table)
-            changed |= model.ensure_table()
-        return changed
 
 if __name__ == "__main__":
     Command().run()
