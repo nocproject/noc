@@ -64,6 +64,7 @@ Ext.define("NOC.pm.metricscope.Application", {
                 {
                     name: "key_fields",
                     xtype: "gridfield",
+                    fieldLabel: __("Key Fields"),
                     allowBlank: false,
                     columns: [
                         {
@@ -83,6 +84,7 @@ Ext.define("NOC.pm.metricscope.Application", {
                 {
                     name: "path",
                     xtype: "gridfield",
+                    fieldLabel: __("Path"),
                     allowBlank: true,
                     columns: [
                         {
