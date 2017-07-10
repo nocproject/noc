@@ -8,9 +8,10 @@
 
 # Python modules
 import string
+import six
 # Third-party modules
 import tornado.web
-from config import config
+from noc.config import config
 
 TR = string.maketrans(".-\"", "___")
 
@@ -32,13 +33,11 @@ class MetricsHandler(tornado.web.RequestHandler):
         labels = ",".join(labels)
         out = []
         mdata = self.service.get_mon_data()
-        sdata = mdata.copy()
         for key in mdata:
-            if isinstance(mdata[key], str) or isinstance(mdata[key], bool):
-                sdata.pop(key)
-        for m in sdata:
-            qm = q(m)
-            out += ["# TYPE %s gauge" % qm]
-            out += ["%s{%s} %s" % (qm, labels, sdata[m])]
+            if isinstance(mdata[key], six.string_types) or isinstance(mdata[key], bool):
+                continue
+            qm = q(key)
+            out += ["# TYPE %s counter" % qm]
+            out += ["%s{%s} %s" % (qm, labels, mdata[key])]
         self.add_header("Content-Type", "text/plain; version=0.0.4")
         self.write("\n".join(out))
