@@ -23,28 +23,29 @@ from noc.core.translation import ugettext as _
 class MAC(Model):
     """
     MAC address table snapshot
-    
+
     Common queries:
-    
+
     Last seen MAC location:
-    
-    SELECT timestamp, object, interface 
-    FROM mac 
-    WHERE 
-      date >= ? 
+
+    SELECT timestamp, object, interface
+    FROM mac
+    WHERE
+      date >= ?
       AND mac = ?
-       AND uni = 1 
+       AND uni = 1
     ORDER BY timestamp DESC LIMIT 1;
-    
+
     All MAC locations for date interval:
 
-    SELECT timestamp, object, interface 
-    FROM mac 
-    WHERE 
-      date >= ? 
-      AND mac = ? 
+    SELECT timestamp, object, interface
+    FROM mac
+    WHERE
+      date >= ?
+      AND mac = ?
       AND uni = 1;
     """
+
     class Meta:
         db_table = "mac"
         engine = MergeTree("date", ("ts", "managed_object"))
@@ -68,13 +69,14 @@ class MAC(Model):
     vlan = UInt16Field(description=_("VLAN"))
     is_uni = UInt8Field(description=_("Is UNI"))
 
-    def get_neighbors_by_mac(self, macs):
+    def get_neighbors_by_mac(self, macs, mos=None):
         """
         Return list BI ID MO by interfaces. Filter mo by macs
         :param macs: list(int)
+        :param mos: list(int)
         :return: Dict {mo_a: {iface1: [mo1, mo2], iface2: [mo3, mo4], ...}, mo_b: ...}
         """
-        if not macs:
+        if not macs or not mos:
             return
         neighbors = defaultdict(dict)
         fields = [{"expr": "max(ts)", "alias": "timestamp", "order": 0},
@@ -83,9 +85,12 @@ class MAC(Model):
                   {"expr": "managed_object", "alias": "managed_object", "group": 3},
                   {"expr": "interface", "alias": "interface", "group": 4}
                   ]
-
-        res = self.query(
-            {"fields": fields, "filter": {"$in": [{"$field": 'mac'}, macs]}})
+        if mos:
+            res = self.query(
+                {"fields": fields, "filter": {"$in": [{"$field": 'managed_object'}, mos]}})
+        else:
+            res = self.query(
+                {"fields": fields, "filter": {"$in": [{"$field": 'mac'}, macs]}})
 
         for r in res["result"]:
             val = dict(zip(res["fields"], r))
@@ -94,10 +99,5 @@ class MAC(Model):
                 neighbors[agg][val["interface"]] += [int(val["mac"])]
             else:
                 neighbors[agg][val["interface"]] = [int(val["mac"])]
-
-        for r in res["result"]:
-            val = dict(zip(res["fields"], r))
-            agg = int(val["managed_object"])
-            neighbors[agg][val["interface"]] = [int(val["mac"])]
 
         return neighbors
