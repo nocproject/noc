@@ -9,7 +9,8 @@ console.debug("Defining NOC.pm.metrictype.Application");
 Ext.define("NOC.pm.metrictype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.pm.metrictype.Model"
+        "NOC.pm.metrictype.Model",
+        "NOC.pm.metricscope.LookupField"
     ],
     model: "NOC.pm.metrictype.Model",
     search: true,
@@ -23,6 +24,7 @@ Ext.define("NOC.pm.metrictype.Application", {
             restUrl: new Ext.XTemplate('/pm/metrictype/{id}/json/'),
             previewName: new Ext.XTemplate('Metric Type: {name}')
         });
+
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
         Ext.apply(me, {
@@ -60,23 +62,48 @@ Ext.define("NOC.pm.metrictype.Application", {
                 },
                 {
                     name: "description",
-                    xtype: "textareafield",
+                    xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "scope",
-                    xtype: "combobox",
+                    xtype: "pm.metricscope.LookupField",
                     fieldLabel: __("Scope"),
-                    store: [
-                        ["o", "Object"],
-                        ["i", "Interface"]
-                    ]
+                    allowBlank: false
                 },
+                {
+                    name: "field_name",
+                    xtype: "textfield",
+                    fieldLabel: __("Field Name"),
+                    allowBlank: false,
+                    regex: /[a-z][0-9a-z_]*/,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "field_type",
+                    xtype: "combobox",
+                    fieldLabel: __("Field Type"),
+                    allowBlank: false,
+                    store: [
+                        ["UInt8", "UInt8"],
+                        ["Int8", "Int8"],
+                        ["UInt16", "UInt16"],
+                        ["Int16", "Int16"],
+                        ["UInt32", "UInt32"],
+                        ["Int32", "Int32"],
+                        ["UInt64", "UInt64"],
+                        ["Int64", "Int64"],
+                        ["Float32", "Float32"],
+                        ["Float64", "Float64"],
+                        ["String", "String"]
+                    ]
+                }
                 {
                     name: "measure",
                     xtype: "textfield",
-                    fieldLabel: __("Measure")
+                    fieldLabel: __("Measure"),
+                    allowBlank: false
                 }
             ],
             formToolbar: [

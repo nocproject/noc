@@ -7,16 +7,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 import operator
 from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, ReferenceField,
-                                UUIDField, ObjectIdField)
+from mongoengine.fields import StringField, UUIDField, ObjectIdField
 import cachetools
 # NOC Modules
+from .metricscope import MetricScope
 from noc.inv.models.capability import Capability
+from noc.lib.nosql import PlainReferenceField
 from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
@@ -28,27 +30,43 @@ id_lock = Lock()
 class MetricType(Document):
     meta = {
         "collection": "noc.metrictypes",
-        "json_collection": "pm.metrictypes"
+        "json_collection": "pm.metrictypes",
+        "json_depends_on": [
+            "pm.metricscopes"
+        ]
     }
 
+    # Metric type name, i.e. Interface | Load | In
     name = StringField(unique=True)
-    # InfluxDB table name
+    # Global ID
     uuid = UUIDField(binary=True)
-    description = StringField(required=False)
-    scope = StringField(
+    # Metric scope reference
+    scope = PlainReferenceField(MetricScope)
+    # Database field name
+    field_name = StringField()
+    # Database field type
+    field_type = StringField(
         choices=[
-            ("o", "Object"),
-            ("i", "Interface"),
-            ("p", "Probe")
+            ("UInt8", "UInt8"),
+            ("Int8", "Int8"),
+            ("UInt16", "UInt16"),
+            ("Int16", "Int16"),
+            ("UInt32", "UInt32"),
+            ("Int32", "Int32"),
+            ("UInt64", "UInt64"),
+            ("Int64", "Int64"),
+            ("Float32", "Float32"),
+            ("Float64", "Float64"),
+            ("String", "String")
         ]
     )
+    # Text description
+    description = StringField(required=False)
     # Measure name, like 'kbit/s'
+    # Compatible to Grafana
     measure = StringField()
-    #
-    required_capability = ReferenceField(Capability)
-    # If not empty, script returns a list of metrics
-    # denoted wiht <vector_tag>=<value> tags
-    vector_tag = StringField()
+    # Optional required capability
+    required_capability = PlainReferenceField(Capability)
     #
     category = ObjectIdField()
 
@@ -63,20 +81,23 @@ class MetricType(Document):
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
+            "scope__name": self.scope.name,
+            "field_name": self.field_name,
+            "field_type": self.field_type,
             "description": self.description,
-            "scope": self.scope,
-            "measure": self.measure,
-            "vector_tag": self.vector_tag
+            "measure": self.measure
         }
         if self.required_capability:
             r["required_capability__name"] = self.required_capability.name
         return r
 
     def to_json(self):
-        return to_json(self.json_data,
-                       order=["name", "$collection",
-                              "uuid", "description",
-                              "scope", "measure", "vector_tag"])
+        return to_json(
+            self.json_data,
+            order=[
+                "name", "$collection",
+                "uuid", "scope__name", "field_name", "field_type",
+                "description", "measure", "vector_tag"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
