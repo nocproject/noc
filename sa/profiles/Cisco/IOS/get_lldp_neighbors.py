@@ -32,6 +32,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(
         r"^System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
+    rx_descr = re.compile(r"^Port Description:\s*(?P<descr>.+)$", re.MULTILINE)
 
     def execute(self):
         r = []
@@ -87,6 +88,9 @@ class Script(BaseScript):
                 "remote_port_subtype": remote_port_subtype,
                 "remote_chassis_id_subtype": 4
             }
+            match = self.rx_descr.search(v)
+            if match:
+                n["remote_port_description"] = match.group("descr")
             # Get chassis id
             match = self.rx_chassis_id.search(v)
             if not match:
