@@ -26,7 +26,7 @@ class Script(BaseScript):
     rx_descr_if = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)(\s+)?(?P<description>\S+)?(\s+\S+)?")
     rx_snmp_name_eth = re.compile(
-        r"^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE | re.DOTALL)
+        r"^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE | re.DOTALL)
     rx_body_port = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)(\S+)?", re.IGNORECASE)
     rx_body_untagvl = re.compile(
