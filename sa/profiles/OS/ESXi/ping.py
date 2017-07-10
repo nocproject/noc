@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## OS.ESXi.ping
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# OS.ESXi.ping
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -16,12 +16,15 @@ class Script(BaseScript):
     name = "OS.ESXi.ping"
     interface = IPing
     rx_result = re.compile(
-        r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\n"
-        r"round-trip min/avg/max = (?P<min>\d+\.\d+)/(?P<avg>\d+\.\d+)/(?P<max>\d+\.\d+) ms",
+        r"^\s*(?P<count>\d+) packets transmitted, "
+        r"(?P<success>\d+) packets received, \d+% packet loss\n"
+        r"round-trip min/avg/max = (?P<min>\d+\.\d+)/(?P<avg>\d+\.\d+)/"
+        r"(?P<max>\d+\.\d+) ms",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None):
+    def execute(
+        self, address, count=None, source_address=None, size=None, df=None
+    ):
         cmd = "ping"
         if count:
             cmd += " -c %d" % int(count)

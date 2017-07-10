@@ -15,10 +15,12 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "BDCOM.IOS.get_vlans"
     interface = IGetVlans
+    cache = True
 
     def execute(self):
         r = []
-        for i in parse_table(self.cli("show vlan"), allow_wrap=True, n_row_delim=","):
+        c = self.cli("show vlan", cached=True)
+        for i in parse_table(c, allow_wrap=True, n_row_delim=","):
             r += [{
                 "vlan_id": i[0],
                 "name": i[2]
