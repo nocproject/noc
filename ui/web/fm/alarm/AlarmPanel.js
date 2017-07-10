@@ -33,18 +33,18 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             layout: "fit",
             bodyPadding: 4,
             tpl: "<div class='noc-alarm-subject {row_class}'>{subject} [{severity__label}/{severity}]"
-                + "  <span class='noc-alarm-timestamp'>{timestamp} ({duration})</span>"
-                + "</div>"
-                + "<div>"
-                + "<span class='noc-alarm-label'>Object</span> {managed_object__label} "
-                + "<span class='noc-alarm-label'>IP</span> {managed_object_address} "
-                + "<tpl if='managed_object_platform'><span class='noc-alarm-label'>Platform</span> {managed_object_platform} </tpl>"
-                + "<tpl if='managed_object_version'><span class='noc-alarm-label'>Version</span> {managed_object_version} </tpl>"
-                + "</div>"
-                + "<tpl if='segment_path'><div><span class='noc-alarm-label'>Segment</span> {segment_path}"
-                + "</div></tpl>"
-                + "<tpl if='container_path'><div><span class='noc-alarm-label'>Location</span> {container_path}"
-                + "</div></tpl>"
+            + "  <span class='noc-alarm-timestamp'>{timestamp} ({duration})</span>"
+            + "</div>"
+            + "<div>"
+            + "<span class='noc-alarm-label'>Object</span> {managed_object__label} "
+            + "<span class='noc-alarm-label'>IP</span> {managed_object_address} "
+            + "<tpl if='managed_object_platform'><span class='noc-alarm-label'>Platform</span> {managed_object_platform} </tpl>"
+            + "<tpl if='managed_object_version'><span class='noc-alarm-label'>Version</span> {managed_object_version} </tpl>"
+            + "</div>"
+            + "<tpl if='segment_path'><div><span class='noc-alarm-label'>Segment</span> {segment_path}"
+            + "</div></tpl>"
+            + "<tpl if='container_path'><div><span class='noc-alarm-label'>Location</span> {container_path}"
+            + "</div></tpl>"
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
@@ -203,7 +203,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             viewConfig: {
                 getRowClass: function(record, index, params, store) {
                     var c = record.get("row_class");
-                    return c ? c: "";
+                    return c ? c : "";
                 }
             }
         });
@@ -256,6 +256,14 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             handler: me.onShowObject
         });
 
+        me.escaletetButton = Ext.create("Ext.button.Button", {
+            text: __("Escalate"),
+            glyph: NOC.glyph.ambulance,
+            tooltip: __('Escalate'),
+            scope: me,
+            handler: me.onEscalateObject
+        });
+
         me.showAlarmCardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
             glyph: NOC.glyph.eye,
@@ -282,13 +290,14 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                             handler: me.onRefresh
                         },
                         "-",
-                        me.clearButton,
-                        me.watchButton,
-                        me.setRootButton,
-                        "-",
+                        me.escaletetButton,
                         me.showAlarmCardButton,
                         me.showMapButton,
                         me.showObjectButton,
+                        "-",
+                        me.clearButton,
+                        me.watchButton,
+                        me.setRootButton,
                         "->",
                         me.alarmIdField
                     ]
@@ -345,8 +354,8 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.updatePanel(me.helpPanel, data.symptoms, data);
         me.updatePanel(me.dataPanel,
             (data.vars && data.vars.length)
-                || (data.raw_vars && data.raw_vars.length)
-                || (data.resolved_vars && data.resolved_vars.length),
+            || (data.raw_vars && data.raw_vars.length)
+            || (data.resolved_vars && data.resolved_vars.length),
             data);
         me.logStore.loadData(data.log || []);
         //
@@ -457,7 +466,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             }).join(", ");
         // me.watchersField.setValue(msg);
         me.watchButton.setIconCls(
-            is_watcher? "icon_star" : "icon_star_grey"
+            is_watcher ? "icon_star" : "icon_star_grey"
         );
         me.watchButton.toggle(is_watcher);
     },
@@ -489,7 +498,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
     //
     onWatch: function() {
         var me = this,
-            cmd = me.watchButton.pressed? "/subscribe/" : "/unsubscribe/";
+            cmd = me.watchButton.pressed ? "/subscribe/" : "/unsubscribe/";
         Ext.Ajax.request({
             url: "/fm/alarm/" + me.data.id + cmd,
             method: "POST",
@@ -544,7 +553,25 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             "/api/card/view/managedobject/" + me.data.managed_object + "/"
         );
     },
+    onEscalateObject: function() {
+        var me = this;
 
+        Ext.Ajax.request({
+            url: "/fm/alarm/" + me.data.id + "/escalate/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                if(response) {
+                    NOC.info(_('Escalated'));
+                } else {
+                    NOC.error(__("Escalate failed"));
+                }
+            },
+            failure: function() {
+                NOC.error(__("Escalate failed"));
+            }
+        });
+    },
     onShowCard: function() {
         var me = this;
         window.open(
