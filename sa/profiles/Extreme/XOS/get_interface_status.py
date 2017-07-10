@@ -23,9 +23,11 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
     cache = True
 
-    rx_snmp_name_eth = re.compile(r"^X\S+\s+Port\s+(?P<port>\d+)", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_snmp_name_eth = re.compile(
+        r"^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_port = re.compile(
-        r"^\s*(?P<port>\d+)(?P<descr>.*)\n", re.MULTILINE)
+        r"^\s*(?P<port>\d+(\:\d+)?)(?P<descr>.*)\n", re.MULTILINE)
     rx_port_status = re.compile(
         r"^\s*(?P<port>\S+)\s+[ED]\S+\s+(?P<state>\S+)", re.MULTILINE)
 
