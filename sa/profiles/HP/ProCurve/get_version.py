@@ -26,6 +26,10 @@ class Script(BaseScript):
     rx_ver_new = re.compile(
         r"HP\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
         r"\s+revision\s+(?P<version>\S+),", re.IGNORECASE)
+    #Added for 3500yl
+    rx_ver_3500yl = re.compile(
+        r"HP\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
+        r"\s*revision\s+(?P<version>\S+),", re.IGNORECASE)
 
     def execute(self):
         v = None
@@ -39,7 +43,11 @@ class Script(BaseScript):
         try:
             match = self.re_search(self.rx_ver, v.strip())
         except self.UnexpectedResultError:
-            match = self.re_search(self.rx_ver_new, v.strip())
+        #Added for 3500yl
+            try:
+                match = self.re_search(self.rx_ver_new, v.strip())
+            except self.UnexpectedResultError:
+                match = self.re_search(self.rx_ver_3500yl, v.strip())
         platform = match.group("platform").split('-')[0]
         return {
             "vendor": "HP",
