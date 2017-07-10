@@ -28,6 +28,10 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.profile import Profile
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.vendor import Vendor
 
 # @todo ThreadingCount
 # @todo ReportDiscovery Problem
@@ -258,29 +262,32 @@ class ReportObjectAttributes(object):
         :return: Dict tuple MO attributes mo_id -> (attrs_list)
         :rtype: dict
         """
+        platform = {str(p["_id"]): p["name"] for p in Platform.objects.all().as_pymongo().scalar("id", "name")}
+        vendor = {str(p["_id"]): p["name"] for p in Vendor.objects.all().as_pymongo().scalar("id", "name")}
+        version = {str(p["_id"]): p["version"] for p in Firmware.objects.all().as_pymongo().scalar("id", "version")}
+        profile = {str(p["_id"]): p["name"] for p in Profile.objects.all().as_pymongo().scalar("id", "name")}
+
         mo_attrs = {}
         cursor = connection.cursor()
 
-        base_select = "select %s "
-        base_select += "from (select distinct managed_object_id from sa_managedobjectattribute) as saa "
+        base_select = "select id, profile, vendor, platform, version from sa_managedobject"
 
-        value_select = "LEFT JOIN (select managed_object_id,value from sa_managedobjectattribute where key='%s') "
-        value_select += "as %s on %s.managed_object_id=saa.managed_object_id"
+        query1 = base_select
 
-        s = ["saa.managed_object_id"]
-        s.extend([".".join([al.replace(" ", "_"), "value"]) for al in attr_list])
-
-        query1 = base_select % ", ".join(tuple(s))
-        query2 = " ".join([value_select % tuple([al, al.replace(" ", "_"), al.replace(" ", "_")]) for al in attr_list])
-        query = query1 + query2
+        query = query1
         cursor.execute(query)
-        mo_attrs.update(dict([(c[0], c[1:6]) for c in cursor]))
-        # print mo_attrs
+        mo_attrs.update(dict([(c[0], [vendor.get(c[2], ""),
+                                      version.get(c[4], ""),
+                                      platform.get(c[3], ""),
+                                      "",
+                                      "",
+                                      profile.get(c[1], "")])
+                              for c in cursor]))
 
         return mo_attrs
 
     def __getitem__(self, item):
-        return self.out.get(item, ["", "", "", "", ""])
+        return self.out.get(item, ["", "", "", "", "", ""])
 
 
 class ReportObjects(object):
@@ -293,7 +300,7 @@ class ReportObjects(object):
     @staticmethod
     def load(mos_id):
         query = "select sa.id,sa.name,sa.address, sa.is_managed, "
-        query += "profile_name, op.name as object_profile, ad.name as  administrative_domain, sa.segment "
+        query += "profile, op.name as object_profile, ad.name as  administrative_domain, sa.segment "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         query += "WHERE op.id = sa.object_profile_id and ad.id = sa.administrative_domain_id "
         # query += "LIMIT 20"
