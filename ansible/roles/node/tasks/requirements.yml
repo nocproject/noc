@@ -1,0 +1,51 @@
+- name: Revert local patches
+  command: "{{ noc_root }}/scripts/deploy/apply-patches --revert"
+  args:
+    chdir: "{{ noc_root }}"
+
+- name: Install node python packages(should take a while for a first time)
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/node.txt"
+    virtualenv: "{{noc_root}}"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
+    CFLAGS: "{{ pip_cflags | default('') }}"
+  tags:
+    - requirements
+
+- name: Install additional prod requirements
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/prod.txt"
+    virtualenv: "{{noc_root}}"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    CFLAGS: "{{ pip_cflags | default('') }}"
+  when: "'prod' in noc_env_type"
+  tags:
+    - requirements
+
+- name: Install python 2.6 compatibility packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: "requirements/python-2.6.txt"
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    CFLAGS: "{{ pip_cflags | default('') }}"
+  when: "ansible_python_version.startswith('2.6')"
+  tags:
+    - requirements
+
+- name: Apply local patches
+  command: "{{ noc_root }}/scripts/deploy/apply-patches"
+  args:
+    chdir: "{{ noc_root }}"

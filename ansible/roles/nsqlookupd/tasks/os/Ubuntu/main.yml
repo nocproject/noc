@@ -3,8 +3,6 @@
   template:
      src: "etc/systemd/system/nsqlookupd.service"
      dest: "/etc/systemd/system/nsqlookupd.service"
-  register: nsqlookupd_service
-
-- name: reload systemd
-  shell: systemctl daemon-reload
-  when: nsqlookupd_service.changed
+  notify:
+    - reload systemd
+    - restart nsqlookupd

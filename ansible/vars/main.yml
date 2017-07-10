@@ -5,23 +5,26 @@
 # packages
 postgresql_version: "{{ lookup('env','POSTGRES_VERSION') | default(9.4, True)}}"
 mongo_version: "{{ lookup('env','MONGO_VERSION') | default(3.2, True)}}"
-grafana_version: "4.1.2-1486989747"
+grafana_version: "4.3.2"
 nsq_version: "0.3.8"
 
-consul_version: "0.8.1"
+consul_version: "0.8.5"
 consul_url: "{{ lookup('env','CONSUL_URL')}}"
 consul_token: "{{lookup('env','CONSUL_TOKEN')}}"
 consul_env: '{{ True if (consul_url and consul_token) else False}}'
+consul_user: consul
+consul_home: "/home/{{consul_user}}"
 
-consul_template_version: "0.18.2"
+consul_template_version: "0.19.0"
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
-consul_template_templates_dir: "{{consul_template_config_dir}}/templates"
+consul_template_templates_dir: "{{etc_prefix}}/consul-template/templates"
 
 telegraf_prometheus_enabled: "{{lookup('env','PROMETHEUS_ENABLED') | default(False, True)}}"
 telegraf_influxdb_enabled: "{{lookup('env','INFLUXDB_ENABLED') | default(True, True)}}"
 
 tower_ip: 127.0.0.1
 tower_path: /opt/tower
+tower_dist_dir: "{{tower_path}}/var/tower/data/src_dist"
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
 tower_minimum_version: "0.1a66"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
@@ -38,7 +41,9 @@ etc_prefix: /etc
 
 influx_path: /usr/bin/influx
 influxdb_conf: /etc/influxdb/influxdb.conf
-influxdb_db_path: /var/lib/influxdb
+influxdb_db_path_meta: "{{ lookup('env','INFLUXDB_META_DIRECTORY') | default('/var/lib/influxdb/meta', True) }}"
+influxdb_db_path_data: "{{ lookup('env','INFLUXDB_DATA_DIRECTORY') | default('/var/lib/influxdb/data', True) }}"
+influxdb_db_path_wal: "{{ lookup('env','INFLUXDB_WAL_DIRECTORY') | default('/var/lib/influxdb/wal', True) }}"
 influxdb_group: influxdb
 influxdb_system_service: influxdb
 influxdb_user: influxdb
@@ -53,15 +58,20 @@ mongo_user: mongodb
 mongod_arbiter_system_service: mongod-arbiter
 mongod_path: /usr/bin/mongod
 mongod_system_service: mongod
-nginx_conf_path: /etc/nginx/conf.d/noc.conf
 nginx_log_dir: /var/log/nginx
 nginx_path: /usr/sbin/nginx
-nginx_ssl_cert_path: /etc/nginx/ssl/noc.crt
-nginx_ssl_key_path: /etc/nginx/ssl/noc.key
+nginx_conf_path: "{{etc_prefix}}/nginx/conf.d/noc.conf"
+nginx_conf_upstream_path: "{{etc_prefix}}/nginx/upstream.conf"
+nginx_ssl_cert_path: "{{etc_prefix}}/nginx/ssl/noc.crt"
+nginx_ssl_key_path: "{{etc_prefix}}/nginx/ssl/noc.key"
 nginx_system_service: nginx
 nginx_user: nginx
 noc_service_pidfile: /var/run/noc.pid
 noc_system_service: noc
+telegraf_confd_path: "{{etc_prefix}}/telegraf/telegraf.d"
+
+nginx_reload_command: "systemctl reload nginx"
+telegraf_reload_command: "systemctl reload telegraf"
 
 #Memtune
 kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
@@ -75,51 +85,21 @@ postgres_listen: 5432
 patroni_listen: 8008
 haproxy_patroni_listen: 5000
 
+grafana_http_port: 8002
+influxdb_port: 8086
+
 apt_cache_valid_time: 86400
-pycurl_ssl_library: openssl
 
 memcahed_user: memcache
 memcahed_log_file: /var/log/memcached.log
 memcahed_conf: /etc/memcached.conf
 
+notebook_port: 4007
+
 # Alerta http://docs.alerta.io/en/latest/api/reference.html
 # seconds
 alerta_blackout_duration: 300
 
-
-vg_name: vg00
-vg_device: /dev/sdb
-
-vg_fast_name: vg_fast
-vg_fast_device: /dev/sdb
-
-wal_lv_size: 256M
-wal_mount_point: /wal
-wal_fs: xfs
-
-influx_data_lv_size: 2G
-influx_data_mount_point: /data/influx
-influx_data_fs: xfs
-
-mongo_index_lv_size: 1G
-mongo_index_mount_point: /data/mongo_index
-mongo_index_fs: xfs
-
-mongo_data_lv_size: 4G
-mongo_data_mount_point: /data/mongo
-mongo_data_fs: xfs
-
-postgres_data_lv_size: 4G
-postgres_data_mount_point: /data/postgres
-postgres_data_fs: xfs
-
-nsq_cache_lv_size: 10G
-nsq_cache_mount_point: /opt/noc/var/db/nsq
-nsq_cache_fs: xfs
-
-opt_lv_size: 5G
-opt_mount_point: /opt/noc
-opt_fs: xfs
 
 sentry_scheme: "{{ lookup('env','SENTRY_SCHEME') | default('https', True)}}"
 sentry_host: "{{ lookup('env','SENTRY_HOST') | default('localhost', True)}}"
@@ -129,3 +109,30 @@ sentry_path: "{{ lookup('env','SENTRY_PATH') | default('/', True)}}"
 sentry_project_id: "{{ lookup('env','SENTRY_PROJECT_ID') }}"
 sentry_js_token: "{{ lookup('env','SENTRY_JS_TOKEN') }}"
 sentry_url: "{{sentry_scheme}}://{{sentry_public_key}}:{{sentry_secret_key}}@{{sentry_host}}{{sentry_path}}{{sentry_project_id}}"
+
+consul_config_path: "{{etc_prefix}}/consul"
+consul_configd_path: "{{etc_prefix}}/consul.d"
+consul_scripts_path: "{{consul_configd_path}}/scripts"
+
+supervisor_sock_path: /var/run/supervisor_noc.sock
+
+bi_export_dir: "{{noc_root}}/var/bi"
+bi_export_dict_dir: "{{noc_root}}/var/bi-dict"
+bi_export_dict_data_dir: "{{noc_root}}/var/bi-dict-data"
+
+noc_logs: /var/log/noc
+noc_var_lib: /var/lib/noc
+noc_var: /var/opt/noc
+noc_etc: "{{noc_root}}/etc"
+noc_reports_dir: "{{noc_var_lib}}/reports"
+noc_crashinfo_dir: "{{noc_root}}/var/cp/crashinfo/new"
+
+
+nsqd_db_dir: "/var/spool/nsqd"
+nsqd_config_dir: "{{etc_prefix}}/nsq"
+
+
+noc_services_file: "{{noc_etc}}/noc_services.conf"
+
+mongo_dir: "{{etc_prefix}}/mongod"
+mongo_conf: "{{ etc_prefix }}/mongod.conf"

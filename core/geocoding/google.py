@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Google geocoder
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Google geocoder
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import urllib
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
+# NOC modules
 from base import (BaseGeocoder, GeoCoderError, GeoCoderResult)
 from noc.core.config.base import config
 

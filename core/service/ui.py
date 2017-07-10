@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## UI backend service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-1016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# UI backend service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-1017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import os
 import hashlib
 import logging
-## Third-party modules
+# Third-party modules
 import tornado.web
 # NOC modules
-from base import Service
+from .base import Service
 
 logger = logging.getLogger("ui")
 

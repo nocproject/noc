@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP GET PDU generator
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP GET PDU generator
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import random
 from collections import namedtuple
-## NOC modules
-from ber import BEREncoder, BERDecoder
-from consts import (SNMP_v2c, SNMP_v1,
-                    PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
+# NOC modules
+from .ber import BEREncoder, BERDecoder
+from .consts import (PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
                     PDU_RESPONSE, PDU_GETBULK_REQUEST)
+from .version import SNMP_v1, SNMP_v2c
 
 
 def _build_pdu(community, pdu_type, oids, request_id, version=SNMP_v2c):

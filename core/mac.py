@@ -1,29 +1,31 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MAC address manipulation routines
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# MAC address manipulation routines
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
+# Third-party modules
+import six
 
-## Regular expressions
+# Regular expressions
 
-## Cisco-like AABB.CCDD.EEFF
+# Cisco-like AABB.CCDD.EEFF
 rx_mac_address_cisco = re.compile(
     r"^[0-9A-F]{4}(?P<sep>[.\-])[0-9A-F]{4}(?P=sep)[0-9A-F]{4}$")
-## Alternative Cisco form 01AA.BBCC.DDEE.FF
+# Alternative Cisco form 01AA.BBCC.DDEE.FF
 rx_mac_address_cisco_media = re.compile(
     "^01[0-9A-F]{2}\.[0-9A-F]{4}\.[0-9A-F]{4}\.[0-9A-F]{2}$")
-## Size blocks, leading zeroes can be ommited
-## AA:BB:C:DD:EE:F
+# Size blocks, leading zeroes can be ommited
+# AA:BB:C:DD:EE:F
 rx_mac_address_sixblock = re.compile(
     "^([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2}):([0-9A-F]{1,2})$")
-## HP-like AABBCC-DDEEFF
+# HP-like AABBCC-DDEEFF
 rx_mac_address_hp = re.compile("^[0-9A-F]{6}-[0-9A-F]{6}$")
-## Unseparated block
+# Unseparated block
 rx_mac_address_solid = re.compile(r"^[0-9A-F]{12}$")
 
 
@@ -63,14 +65,35 @@ class MAC(str):
     'AA:BB:CC:DD:EE:FF'
     >>> MAC("AABBCCDDEEFF")
     'AA:BB:CC:DD:EE:FF'
+    >>> MAC(0xAABBCCDDEEFF)
+    'AA:BB:CC:DD:EE:FF'
     >>> MAC("AABBCCDDEEFF") + " -- " + MAC("0011.2233.4455")
     'AA:BB:CC:DD:EE:FF -- 00:11:22:33:44:55'
     """
     def __new__(cls, mac):
         return super(MAC, cls).__new__(cls, cls._clean(mac))
 
+    def __long__(self):
+        return int(self.replace(":", ""), 16)
+
+    def __int__(self):
+        return int(self.replace(":", ""), 16)
+
     @classmethod
-    def _clean(self, mac):
+    def _clean(cls, mac):
+        if isinstance(mac, six.integer_types):
+            return "%02X:%02X:%02X:%02X:%02X:%02X" % (
+                (mac >> 40) & 0xff,
+                (mac >> 32) & 0xff,
+                (mac >> 24) & 0xff,
+                (mac >> 16) & 0xff,
+                (mac >> 8) & 0xff,
+                mac & 0xff
+            )
+
+        if len(mac) == 6:
+            return ":".join(["%02X" % ord(c) for c in mac])
+        
         value = mac
         value = value.upper()
         match = rx_mac_address_solid.match(value)

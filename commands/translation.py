@@ -1,20 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## translation cli
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# translation cli
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import subprocess
 import argparse
 import os
-import glob
-import cStringIO
-## Third-party modules
+# Third-party modules
 from babel.util import pathmatch
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.settings import LANGUAGES
 
@@ -180,9 +179,9 @@ class Command(BaseCommand):
                         js = os.path.join(jsp, "%s.json" % lang)
                         if not os.path.isdir(jsp):
                             os.makedirs(jsp)
-                        print "compiling catalog '%s' to '%s'" % (
+                        print("compiling catalog '%s' to '%s'" % (
                             po, js
-                        )
+                        ), file=self.stdout)
                         with open(js, "w") as f:
                             subprocess.check_call([
                                 self.POJSON,

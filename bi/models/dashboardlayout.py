@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Dashboard Layout
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Dashboard Layout
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 ListField, EmbeddedDocumentField)

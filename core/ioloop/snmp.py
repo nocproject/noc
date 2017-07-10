@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP methods implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP methods implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import socket
 import errno
-## Third-party modules
+# Third-party modules
 from tornado.gen import coroutine, Return
-## NOC modules
+import six
+# NOC modules
 from noc.core.snmp.version import SNMP_v2c
 from noc.core.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
                                parse_get_response)
 from noc.core.snmp.set import set_pdu
 from noc.core.snmp.error import (NO_ERROR, NO_SUCH_NAME,
-                                 SNMPError, TIMED_OUT)
+                                 SNMPError, TIMED_OUT, UNREACHABLE)
 from noc.core.ioloop.udp import UDPSocket
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
@@ -32,13 +33,14 @@ def snmp_get(address, oids, port=161,
              version=SNMP_v2c,
              timeout=10,
              tos=None,
-             ioloop=None):
+             ioloop=None,
+             udp_socket=None):
     """
     Perform SNMP get request and returns Future to be used
     inside @tornado.gen.coroutine
     """
     oid_map = {}
-    if isinstance(oids, basestring):
+    if isinstance(oids, six.string_types):
         oids = [oids]
     elif isinstance(oids, dict):
         oid_map = dict((oids[k], k) for k in oids)
@@ -48,7 +50,11 @@ def snmp_get(address, oids, port=161,
     logger.debug("[%s] SNMP GET %s", address, oids)
     # Send GET PDU
     pdu = get_pdu(community=community, oids=oids, version=version)
-    sock = UDPSocket(ioloop=ioloop, tos=tos)
+    if udp_socket:
+        sock = udp_socket
+        prev_timeout = sock.get_timeout()
+    else:
+        sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     # Wait for result
     try:
@@ -56,8 +62,17 @@ def snmp_get(address, oids, port=161,
         data, addr = yield sock.recvfrom(4096)
     except socket.timeout:
         raise SNMPError(code=TIMED_OUT, oid=oids[0])
+    except socket.gaierror as e:
+        logger.debug("[%s] Cannot resolve address: %s", address, e)
+        raise SNMPError(code=UNREACHABLE, oid=oids[0])
+    except socket.error as e:
+        logger.debug("[%s] Socket error: %s", address, e)
+        raise SNMPError(code=UNREACHABLE, oid=oids[0])
     finally:
-        sock.close()
+        if udp_socket:
+            sock.settimeout(prev_timeout)
+        else:
+            sock.close()
     resp = parse_get_response(data)
     if resp.error_status != NO_ERROR:
         oid = None
@@ -93,17 +108,25 @@ def snmp_count(address, oid, port=161,
                filter=None,
                max_repetitions=BULK_MAX_REPETITIONS,
                tos=None,
-               ioloop=None):
+               ioloop=None,
+               udp_socket=None):
     """
     Perform SNMP get request and returns Future to be used
     inside @tornado.gen.coroutine
     """
+    def true(x, y):
+        return true
+
     logger.debug("[%s] SNMP COUNT %s", address, oid)
     if not filter:
-        filter = lambda x, y: True
+        filter = true
     poid = oid + "."
     result = 0
-    sock = UDPSocket(ioloop=ioloop, tos=tos)
+    if udp_socket:
+        sock = udp_socket
+        prev_timeout = sock.get_timeout()
+    else:
+        sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     while True:
         # Get PDU
@@ -118,8 +141,18 @@ def snmp_count(address, oid, port=161,
             yield sock.sendto(pdu, (address, port))
             data, addr = yield sock.recvfrom(4096)
         except socket.timeout:
-            sock.close()
             raise SNMPError(code=TIMED_OUT, oid=oid)
+        except socket.gaierror as e:
+            logger.debug("[%s] Cannot resolve address: %s", address, e)
+            raise SNMPError(code=UNREACHABLE, oid=oid)
+        except socket.error as e:
+            logger.debug("[%s] Socket error: %s", address, e)
+            raise SNMPError(code=UNREACHABLE, oid=oid)
+        finally:
+            if udp_socket:
+                sock.settimeout(prev_timeout)
+            else:
+                sock.close()
         # Parse response
         resp = parse_get_response(data)
         if resp.error_status == NO_SUCH_NAME:
@@ -127,7 +160,6 @@ def snmp_count(address, oid, port=161,
             break
         elif resp.error_status != NO_ERROR:
             # Error
-            sock.close()
             raise SNMPError(code=resp.error_status, oid=oid)
         else:
             # Success value
@@ -141,7 +173,6 @@ def snmp_count(address, oid, port=161,
                                  address, result)
                     sock.close()
                     raise Return(result)
-    sock.close()
 
 
 @coroutine
@@ -154,17 +185,31 @@ def snmp_getnext(address, oid, port=161,
                  max_repetitions=BULK_MAX_REPETITIONS,
                  only_first=False,
                  tos=None,
-                 ioloop=None):
+                 ioloop=None,
+                 udp_socket=None):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
     inside @tornado.gen.coroutine
     """
+    def true(x, y):
+        return True
+
+    def close_socket():
+        if udp_socket:
+            sock.settimeout(prev_timeout)
+        else:
+            sock.close()
+
     logger.debug("[%s] SNMP GETNEXT %s", address, oid)
     if not filter:
-        filter = lambda x, y: True
+        filter = true
     poid = oid + "."
     result = []
-    sock = UDPSocket(ioloop=ioloop, tos=tos)
+    if udp_socket:
+        sock = udp_socket
+        prev_timeout = sock.get_timeout()
+    else:
+        sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     while True:
         # Get PDU
@@ -181,8 +226,16 @@ def snmp_getnext(address, oid, port=161,
             yield sock.sendto(pdu, (address, port))
             data, addr = yield sock.recvfrom(4096)
         except socket.timeout:
-            sock.close()
+            close_socket()
             raise SNMPError(code=TIMED_OUT, oid=oid)
+        except socket.gaierror as e:
+            logger.debug("[%s] Cannot resolve address: %s", address, e)
+            close_socket()
+            raise SNMPError(code=UNREACHABLE, oid=oid)
+        except socket.error as e:
+            logger.debug("[%s] Socket error: %s", address, e)
+            close_socket()
+            raise SNMPError(code=UNREACHABLE, oid=oid)
         # Parse response
         resp = parse_get_response(data)
         if resp.error_status == NO_SUCH_NAME:
@@ -190,7 +243,7 @@ def snmp_getnext(address, oid, port=161,
             break
         elif resp.error_status != NO_ERROR:
             # Error
-            sock.close()
+            close_socket()
             raise SNMPError(code=resp.error_status, oid=oid)
         else:
             # Success value
@@ -202,9 +255,10 @@ def snmp_getnext(address, oid, port=161,
                 else:
                     logger.debug("[%s] GETNEXT result: %s",
                                  address, result)
-                    sock.close()
+                    close_socket()
                     raise Return(result)
-    sock.close()
+    close_socket()
+
 
 @coroutine
 def snmp_set(address, varbinds, port=161,
@@ -212,13 +266,18 @@ def snmp_set(address, varbinds, port=161,
              version=SNMP_v2c,
              timeout=10,
              tos=None,
-             ioloop=None):
+             ioloop=None,
+             udp_socket=None):
     """
     Perform SNMP set request and returns Future to be used
     inside @tornado.gen.coroutine
     """
     logger.debug("[%s] SNMP SET %s", address, varbinds)
-    sock = UDPSocket(ioloop=ioloop, tos=tos)
+    if udp_socket:
+        sock = udp_socket
+        prev_timeout = sock.get_timeout()
+    else:
+        sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     # Send GET PDU
     pdu = set_pdu(community=community, varbinds=varbinds, version=version)
@@ -228,6 +287,17 @@ def snmp_set(address, varbinds, port=161,
         data, addr = yield sock.recvfrom(4096)
     except socket.timeout:
         raise SNMPError(code=TIMED_OUT, oid=varbinds[0][0])
+    except socket.gaierror as e:
+        logger.debug("[%s] Cannot resolve address: %s", address, e)
+        raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
+    except socket.error as e:
+        logger.debug("[%s] Socket error: %s", address, e)
+        raise SNMPError(code=UNREACHABLE, oid=varbinds[0][0])
+    finally:
+        if udp_socket:
+            sock.settimeout(None)
+        else:
+            sock.close()
     resp = parse_get_response(data)
     if resp.error_status != NO_ERROR:
         oid = None
@@ -235,9 +305,7 @@ def snmp_set(address, varbinds, port=161,
             oid = resp.varbinds[resp.error_index - 1][0]
         logger.debug("[%s] SNMP error: %s %s",
                      address, oid, resp.error_status)
-        sock.close()
         raise SNMPError(code=resp.error_status, oid=oid)
     else:
         logger.debug("[%s] SET result: OK", address)
-        sock.close()
         raise Return(True)

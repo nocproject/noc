@@ -4,7 +4,7 @@
 - name: Install notebook monitoring
   template:
     src: "etc/telegraf/telegraf.d/notebook.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/notebook.conf"
+    dest: "{{ telegraf_confd_path }}/notebook.conf"
   notify: reload telegraf
   tags:
     - config
@@ -20,23 +20,43 @@
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
 
-- name: Create notebook directories
-  file: path="{{ noc_root }}/{{ item }}" owner="{{ noc_user }}" mode=0700 state=directory
+- name: Create etc notebook directories
+  file:
+    path: "{{ noc_etc }}/{{ item }}"
+    owner: "{{ noc_user }}"
+    mode: 0700
+    state: directory
   with_items:
-    - etc/jupyter
-    - etc/jupyter/profile_default
-    - etc/jupyter/profile_default/startup
-    - var/notebooks
-    - var/jupyter
-    - var/jupyter/runtime
+    - jupyter
+    - jupyter/profile_default
+    - jupyter/profile_default/startup
+
+- name: Create var notebook directories
+  file:
+    path: "{{ noc_var }}/{{ item }}"
+    owner: "{{ noc_user }}"
+    mode: 0700
+    state: directory
+  with_items:
+    - notebooks
+    - jupyter
+    - jupyter/runtime
 
 - name: Set up configs
   template:
-    src: "{{ item }}"
-    dest: "{{ noc_root }}/{{ item[:-3] }}"
+    src: "etc/jupyter/{{ item }}"
+    dest: "{{ noc_etc }}/jupyter/{{ item[:-3] }}"
   with_items:
-    - etc/jupyter/jupyter_notebook_config.py.j2
-    - etc/jupyter/profile_default/ipython_kernel_config.py.j2
-    - etc/jupyter/profile_default/startup/00-logging.py.j2
+    - jupyter_notebook_config.py.j2
+    - profile_default/ipython_kernel_config.py.j2
+    - profile_default/startup/00-logging.py.j2
   tags:
     - config
+
+- name: copy notebook consul templates
+  template:
+    src: notebook.json.j2
+    dest: "{{consul_configd_path}}/notebook.json"
+  notify: reload consul
+  tags:
+    - consul

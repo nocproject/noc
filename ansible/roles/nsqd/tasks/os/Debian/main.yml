@@ -1,25 +1,26 @@
 ---
-
 - name: download nsq daemon
   get_url:
-    url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.linux-amd64.go1.6.2.tar.gz
-    dest: /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz
+    url: "{{nsq_url}}"
+    dest: "{{nsq_temp_file}}"
     validate_certs: no
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: true
   environment:
     https_proxy: "{{http_proxy}}"
 
-# waits for https://github.com/ansible/ansible-modules-core/pull/2491
-- name: install nsq
-  command: /bin/tar --strip-components=1 -xf /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz -C {{ noc_root }}
-  args:
+- name: unanchive nsqd
+  unarchive:
+    src: "{{nsq_temp_file}}"
+    dest: "{{ noc_root }}"
+    extra_opts: ['--strip-components=1']
     creates: "{{ noc_root }}/bin/nsqd"
 
 - name: install nsqd.service file
   template:
      src: etc/systemd/nsqd.service
      dest: /etc/systemd/system/nsqd.service
-  register: nsqd_service
-
-- name: reload systemd
-  shell: systemctl daemon-reload
-  when: nsqd_service.changed
+  notify:
+    - reload systemd
+    - restart nsqd

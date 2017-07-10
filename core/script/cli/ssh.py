@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SSH CLI
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SSH CLI
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import os
-## Third-party modules modules
+# Third-party modules modules
 import six
 from tornado.iostream import IOStream
 import tornado.gen
 import libssh2
 import _libssh2
-## NOC modules
-from base import CLI
+# NOC modules
+from .base import CLI
+from .error import CLIAuthFailed, CLISSHProtocolError
 
 
 class SSHIOStream(IOStream):
@@ -58,14 +60,14 @@ class SSHIOStream(IOStream):
                 self.logger.debug("User is authenticated")
             else:
                 self.logger.error("Failed to authenticate user '%s'", user)
-                raise self.cli.CLIError("Failed to log in")
+                raise CLIAuthFailed("Failed to log in")
             self.logger.debug("Open channel")
             self.channel = self.session.open_session()
             self.channel.pty("xterm")
             self.channel.shell()
             self.channel.setblocking(0)
         except _libssh2.Error as e:
-            raise self.cli.CLIError("SSH Error: %s" % e)
+            raise CLISSHProtocolError("SSH Error: %s" % e)
 
     def read_from_fd(self):
         try:
@@ -80,15 +82,18 @@ class SSHIOStream(IOStream):
             elif isinstance(r, six.string_types):
                 return r
             else:
-                raise self.cli.CLIError("SSH Error code %s" % r)
+                raise CLISSHProtocolError("SSH Error code %s" % r)
         except _libssh2.Error as e:
-            raise self.cli.CLIError("SSH Error: %s" % e)
+            raise CLISSHProtocolError("SSH Error: %s" % e)
 
     def write_to_fd(self, data):
+        # libssh2 doesn't accept memoryview
+        if isinstance(data, memoryview):
+            data = data.tobytes()
         try:
             return self.channel.write(data)
         except _libssh2.Error as e:
-            raise self.cli.CLIError("SSH Error: %s" % e)
+            raise CLISSHProtocolError("SSH Error: %s" % e)
 
     def close(self, exc_info=False):
         if not self.closed():

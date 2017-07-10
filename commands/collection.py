@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Collections manipulation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Collections manipulation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import os
-from collections import namedtuple
 import argparse
-## Third-party modules
+# Third-party modules
 import ujson
-from mongoengine.fields import ListField, EmbeddedDocumentField
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.collection.base import Collection
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 from noc.models import COLLECTIONS, get_model
 
 
@@ -133,14 +132,15 @@ class Command(BaseCommand):
         if list_collection is not None:
             if list_collection is True:
                 for c in Collection.iter_collections():
-                    print "%s" % c.name
+                    print("%s" % c.name, file=self.stdout)
             else:
                 if list_collection not in MODELS:
-                    print "Collection not found"
+                    print("Collection not found", file=self.stdout)
                     return
                 objs = MODELS[list_collection].objects.all().order_by('name')
                 for o in objs:
-                    print "uuid:%s name:\"%s\"" % (o.uuid, o.name)
+                    print("uuid:%s name:\"%s\"" % (o.uuid, o.name),
+                          file=self.stdout)
         else:
             if not export_path or not export_collections:
                 return
@@ -149,7 +149,7 @@ class Command(BaseCommand):
 
             for ecname in export_collections:
                 if ecname not in MODELS:
-                    print "Collection not found"
+                    print("Collection not found", file=self.stdout)
                     continue
                 kwargs = {}
                 if export_model_names:
@@ -163,11 +163,12 @@ class Command(BaseCommand):
                         ecname,
                         o.get_json_path()
                     )
-                    print "export \"%s\" to %s" % (o.name, path)
+                    print("export \"%s\" to %s" % (o.name, path),
+                          file=self.stdout)
                     safe_rewrite(
                         path,
                         o.to_json(),
-                        mode=0644
+                        mode=0o644
                     )
 
 if __name__ == "__main__":

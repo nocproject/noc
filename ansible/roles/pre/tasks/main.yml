@@ -6,13 +6,33 @@
     - config
     - always
 
-- name: Set tower_ip
-  set_fact:
-    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
-  when: "'smart' or 'ssh' in ansible_connection"
+- name: Display ansible_connection type
+  debug:
+    var: ansible_connection
+    verbosity: 8
   tags:
     - always
 
+- name: Set tower_ip
+  set_fact:
+    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
+  when: "'smart' in ansible_connection or 'ssh' in ansible_connection"
+  tags:
+    - always
+
+- name: Set tower_ip on local connection
+  set_fact:
+    tower_ip: "{{ansible_default_ipv4.address}}"
+  when: "'smart' not in ansible_connection and 'ssh' not in ansible_connection"
+  tags:
+    - always
+
+- name: resolv consul_env
+  set_fact:
+    consul_env: "{{consul_env}}"
+  tags:
+    - config
+    - always
 
 - name: "Load variables from consul"
   include_vars: "consul.yml"
@@ -30,6 +50,21 @@
   tags:
     - always
 
+- name: resolv web_ui_language
+  set_fact:
+    web_ui_language: "{{web_ui_language}}"
+  tags:
+    - config
+    - always
+
+- name: resolv virtual vars
+  set_fact:
+    keepalived_nginx_virtual_ip: "{{keepalived_nginx_virtual_ip}}"
+    keepalived_patroni_virtual_ip: "{{keepalived_patroni_virtual_ip}}"
+  tags:
+    - config
+    - always
+
 - name: set proxy
   set_fact:
     http_proxy: "{{ proxy }}"
@@ -43,7 +78,16 @@
     postgres_master: "{{keepalived_patroni_virtual_ip}}"
     postgres_listen: "{{haproxy_patroni_listen}}"
   when: groups['svc-haproxy'] | count > 1
+  tags:
+    - config
+    - always
 
+- name: create tower dist dir
+  file:
+    path: "{{tower_dist_dir}}"
+    state: directory
+  run_once: true
+  delegate_to: 127.0.0.1
 
 - name: Display all variables/facts known for a host
   debug:
@@ -112,8 +156,9 @@
   tags:
     - config
 
-- debug:
-    msg: "Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
+- name: mention hosts file location
+  debug:
+    msg: "Please setup cluster wide /etc/hosts via {{tower_path}}/var/tower/data/{{noc_env}}/hosts on Tower server"
   run_once: true
 
 
@@ -121,7 +166,7 @@
   local_action:
     module: template
     src: "hosts.j2"
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     force: no
   become: false
   run_once: true
@@ -131,7 +176,7 @@
 
 - name: Setup /etc/hosts
   lineinfile:
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     regexp: ".*{{ item }}$"
     create: no
@@ -147,12 +192,11 @@
 
 - name: ensure consul ip is in hosts file
   lineinfile:
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     line: "127.0.0.1 consul"
     regexp: "127.0.0.1 consul"
     create: no
   become: false
-  with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
   delegate_to: 127.0.0.1
   when: "'nodes' in groups"
   register: hostsc
@@ -163,7 +207,7 @@
 
 - name: copy hosts file to nodes
   copy:
-    src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    src: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     dest: /etc/hosts
   when: "'nodes' in groups"
   become: true

@@ -1,5 +1,5 @@
 ---
-- name: Install Debian system packages
+- name: Install Ubuntu system packages
   apt:
     name: "{{item}}"
     update_cache: yes

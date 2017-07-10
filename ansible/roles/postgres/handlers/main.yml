@@ -14,4 +14,10 @@
   become: yes
   service:
     name: telegraf
-    state: restarted
+    state: reloaded
+
+- name: reload consul
+  become: yes
+  service:
+    name: consul
+    state: reloaded

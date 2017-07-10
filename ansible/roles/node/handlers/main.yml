@@ -2,7 +2,7 @@
   become: yes
   service:
     name: telegraf
-    state: restarted
+    state: reloaded
 
 - name: reload systemd
   systemd:

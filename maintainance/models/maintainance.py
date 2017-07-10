@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Maintainance
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Maintainance
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python
+# Python
 import datetime
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField, BooleanField, ReferenceField, DateTimeField,
     ListField, EmbeddedDocumentField
 )
 import cachetools
-## NOC modules
+# NOC modules
 from maintainancetype import MaintainanceType
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
@@ -188,3 +188,22 @@ class Maintainance(Document):
                     continue
             affected.update([x["object"] for x in d["affected_objects"]])
         return list(affected)
+
+    @classmethod
+    def get_object_maintenance(cls, mo):
+        """
+        Returns a list of active maintenance for object
+        :param mo: Managed Object instance
+        :return: List of Maintainance instances or empty list
+        """
+        r = []
+        now = datetime.datetime.now()
+        for m in Maintainance.objects.filter(
+                start__lte=now,
+                is_completed=False,
+                affected_objects__object=mo.id
+        ).exclude("affected_objects").order_by("start"):
+            if m.time_pattern and not m.time_pattern.match(now):
+                continue
+            r += [m]
+        return r

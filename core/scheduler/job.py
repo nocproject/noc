@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Scheduler Job Class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Scheduler Job Class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import logging
 import time
 import datetime
-## Third-party modules
+# Third-party modules
 import tornado.gen
-import bson
-## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
-from noc.lib.debug import error_report
-from noc.lib.nosql import get_db
+# NOC modules
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.debug import error_report
 from noc.lib.dateutils import total_seconds
+from .error import RetryAfter
 
 logger = logging.getLogger(__name__)
 
@@ -70,13 +70,15 @@ class Job(object):
     E_EXCEPTION = "X"  # Terminated by exception
     E_DEFERRED = "D"  # Cannot be run
     E_DEREFERENCE = "d"  # Cannot be dereferenced
+    E_RETRY = "r"  # Forcefully retried
 
     STATUS_MAP = {
         E_SUCCESS: "SUCCESS",
         E_FAILED: "FAILED",
         E_EXCEPTION: "EXCEPTION",
         E_DEFERRED: "DEFERRED",
-        E_DEREFERENCE: "DEREFERENCE"
+        E_DEREFERENCE: "DEREFERENCE",
+        E_RETRY: "RETRY"
     }
 
     class JobFailed(Exception):
@@ -115,14 +117,16 @@ class Job(object):
     def run(self):
         self.start_time = time.time()
         self.logger.info(
-            "[%s] Starting (Lag %.2fms)",
+            "[%s] Starting at %s (Lag %.2fms)",
             self.name,
+            self.scheduler.scheduler_id,
             total_seconds(
                 datetime.datetime.now() - self.attrs[self.ATTR_TS]
             ) * 1000.0
         )
         # Run handler
         status = self.E_EXCEPTION
+        delay = None
         try:
             ds = self.dereference()
             can_run = self.can_run()
@@ -140,6 +144,10 @@ class Job(object):
                         # Wait for future
                         result = yield result
                     status = self.E_SUCCESS
+                except RetryAfter as e:
+                    self.logger.info("Retry after %ss: %s", e.delay, e)
+                    status = self.E_RETRY
+                    delay = e.delay
                 except self.failed_exceptions:
                     status = self.E_FAILED
                 except Exception:
@@ -156,7 +164,25 @@ class Job(object):
                          self.STATUS_MAP.get(status, status),
                          self.duration * 1000)
         # Schedule next run
-        self.schedule_next(status)
+        if delay is None:
+            self.schedule_next(status)
+        else:
+            # Retry
+            if self.context_version:
+                ctx = self.context or None
+                ctx_key = self.get_context_cache_key()
+            else:
+                ctx = None
+                ctx_key = None
+            self.scheduler.set_next_run(
+                self.attrs[self.ATTR_ID],
+                status=status,
+                ts=datetime.datetime.now() + datetime.timedelta(seconds=delay),
+                duration=self.duration,
+                context_version=self.context_version,
+                context=ctx,
+                context_key=ctx_key
+            )
 
     def handler(self, **kwargs):
         """
@@ -247,7 +273,7 @@ class Job(object):
         :param keep_ts: Do not touch timestamp of existing jobs,
             set timestamp only for created jobs
         """
-        from scheduler import Scheduler
+        from .scheduler import Scheduler
         scheduler = Scheduler(
             name=scheduler,
             pool=pool
@@ -263,7 +289,7 @@ class Job(object):
 
     @classmethod
     def remove(cls, scheduler, name=None, key=None, pool=None):
-        from scheduler import Scheduler
+        from .scheduler import Scheduler
         scheduler = Scheduler(
             name=scheduler,
             pool=pool
@@ -272,7 +298,7 @@ class Job(object):
 
     @classmethod
     def get_job_data(cls, scheduler, jcls, key=None, pool=None):
-        from scheduler import Scheduler
+        from .scheduler import Scheduler
         scheduler = Scheduler(
             name=scheduler,
             pool=pool
@@ -289,3 +315,15 @@ class Job(object):
             "job_id": self.attrs[self.ATTR_ID]
         }
         return self.context_cache_key % ctx
+
+    @classmethod
+    def retry_after(cls, delay, msg=""):
+        """
+        Must be called from job handler to deal with temporary problems.
+        Current job handler will be terminated and job
+        will be scheduled after *delay* seconds
+        :param delay: Delay in seconds
+        :param msg: Informational message
+        :return:
+        """
+        raise RetryAfter(msg, delay=delay)

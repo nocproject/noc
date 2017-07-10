@@ -25,7 +25,7 @@
 - name: Install haproxy monitoring
   template:
     src: "etc/telegraf/telegraf.d/haproxy.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/haproxy.conf"
+    dest: "{{ telegraf_confd_path }}/haproxy.conf"
   notify: reload telegraf
   tags:
     - config

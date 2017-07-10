@@ -16,8 +16,8 @@
 - name: Install CentOS system packages
   yum:
     name: "{{ item }}"
-    state: present
-    update_cache: yes
+    state: latest
+    update_cache: no
   with_items:
    - telegraf
   environment:

@@ -1,0 +1,22 @@
+- name: Create ch directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: 0755
+  with_items:
+    - "{{ch_etc_path}}"
+    - "{{ch_log_dir}}"
+    - "{{ch_data_dir}}"
+    - "{{ch_big_query_dir}}"
+
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: install configs
+  template:
+    src: "{{item}}"
+    dest: "{{ch_etc_path}}/"
+  no_log: true
+  with_items:
+    - "config.xml"
+    - "users.xml"
