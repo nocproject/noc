@@ -12,6 +12,7 @@ consul_template_pkg: "consul-template_{{ consul_template_version }}_{{ consul_te
 consul_template_zip_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/{{consul_template_pkg}}"
 consul_template_checksum_file_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version}}_SHA256SUMS"
 consul_template_temp_file: "{{tower_dist_dir}}/{{consul_template_pkg}}"
+consul_template_temp_unarchive: "/tmp/consul-template/{{ consul_template_version }}"
 consul_template_temp_file_checksum: "{{tower_dist_dir}}/{{ consul_template_version }}_SHA256SUMS"
 
 
