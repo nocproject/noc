@@ -219,6 +219,7 @@ _MODELS = {
     "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     # pm models
     "pm.GrafanaDashboard": "noc.pm.models.grafanadashboard.GrafanaDashboard",
+    "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
     # cm models
     "cm.ErrorType": "noc.cm.models.errortype.ErrorType",
@@ -305,6 +306,7 @@ COLLECTIONS = [
     "fm.SyntaxAlias",
     "sa.Action",
     "inv.Capability",
+    "pm.MetricScope",
     "pm.MetricType",
     "fm.Enumeration",
     "inv.ConnectionRule",
