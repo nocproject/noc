@@ -45,8 +45,6 @@
   with_items:
     - name: noc.conf.j2
       path: "{{ nginx_conf_path }}"
-    - name: upstream.conf.j2
-      path: "{{nginx_conf_upstream_path}}"
   tags:
     - config
 
