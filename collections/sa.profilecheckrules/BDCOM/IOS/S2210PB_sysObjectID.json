@@ -1,0 +1,13 @@
+{
+    "name": "BDCOM | IOS | S2210PB sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "0259846a-74fc-4583-b6a4-e3b96fa11189",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3320.1.347.0",
+    "action": "match",
+    "profile": "BDCOM.IOS"
+}
