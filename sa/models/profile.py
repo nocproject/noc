@@ -49,6 +49,9 @@ class Profile(Document):
     def __unicode__(self):
         return self.name
 
+    def __getitem__(self, item):
+        return self.get_by_name(item)
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
                              lock=lambda _: id_lock)

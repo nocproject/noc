@@ -8,109 +8,113 @@
 
 # Python modules
 import logging
-from optparse import make_option
 import subprocess
 import re
 import datetime
 import os
 # Django modules
-from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 # Third-party modules
 import pytz
 # NOC modules
+from noc.core.management.base import BaseCommand, CommandError
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.gridvcs.manager import GridVCSField
+from noc.core.gridvcs.manager import GridVCS
 import noc.settings
-
-logger = logging.getLogger("main")
-TZ = pytz.timezone(noc.settings.TIME_ZONE)
-TMP = "/tmp/noc-import-rancid"
 
 
 class Command(BaseCommand):
     """
     Manage Jobs
     """
+    logger = logging.getLogger("main")
+    TZ = pytz.timezone(noc.settings.TIME_ZONE)
+    TMP = "/tmp/noc-import-rancid"
+
     help = "Import data from rancid"
-    option_list = BaseCommand.option_list + (
-        make_option(
-            "--routerdb",
-            action="append",
-            dest="routerdb",
-            help="Path to the router.db"
-        ),
-        make_option(
-            "--cloginrc",
-            action="append",
-            dest="cloginrc",
-            help="Path to the .cloginrc"
-        ),
-        make_option(
-            "--hosts",
-            action="append",
-            dest="hosts",
-            help="Path to the /etc/hosts"
-        ),
-        make_option(
-            "--repo",
-            action="store",
-            dest="repo",
-            help="CVS repository"
-        ),
-        make_option(
-            "--repo-prefix",
-            action="store",
-            dest="repoprefix",
-            help="File path prefix to checkout from repo"
-        ),
-        make_option(
-            "--dry-run",
-            action="store_true",
-            dest="dry_run",
-            help="Check only, do not write to database"
-        ),
-        make_option(
-            "--tags",
-            action="append",
-            dest="tags",
-            help="Mark created managed objects by tags"
-        ),
-        make_option(
-            "--profile",
-            action="store",
-            dest="object_profile",
-            help="Set managed object profile for created objects",
-            default="default"
-        ),
-        make_option(
-            "--domain",
-            action="store",
-            dest="domain",
-            help="Set administrative domain for created objects",
-            default="default"
-        ),
-        make_option(
-            "--pool",
-            action="store",
-            dest="pool",
-            help="Set pool for created objects",
-            default="default"
-        ),
-        make_option(
-            "--shard",
-            action="store",
-            dest="shard",
-            help="Shard import to separate processes"
+
+    def add_arguments(self, parser):
+
+        parser.add_argument(
+            parser.add_argument(
+                "--routerdb",
+                action="append",
+                dest="routerdb",
+                help="Path to the router.db"
+            ),
+            parser.add_argument(
+                "--cloginrc",
+                action="append",
+                dest="cloginrc",
+                help="Path to the .cloginrc"
+            ),
+            parser.add_argument(
+                "--hosts",
+                action="append",
+                dest="hosts",
+                help="Path to the /etc/hosts"
+            ),
+            parser.add_argument(
+                "--repo",
+                action="store",
+                dest="repo",
+                help="CVS repository"
+            ),
+            parser.add_argument(
+                "--repo-prefix",
+                action="store",
+                dest="repoprefix",
+                help="File path prefix to checkout from repo"
+            ),
+            parser.add_argument(
+                "--dry-run",
+                action="store_true",
+                dest="dry_run",
+                help="Check only, do not write to database"
+            ),
+            parser.add_argument(
+                "--tags",
+                action="append",
+                dest="tags",
+                help="Mark created managed objects by tags"
+            ),
+            parser.add_argument(
+                "--profile",
+                action="store",
+                dest="object_profile",
+                help="Set managed object profile for created objects",
+                default="default"
+            ),
+            parser.add_argument(
+                "--domain",
+                action="store",
+                dest="domain",
+                help="Set administrative domain for created objects",
+                default="default"
+            ),
+            parser.add_argument(
+                "--pool",
+                action="store",
+                dest="pool",
+                help="Set pool for created objects",
+                default="default"
+            ),
+            parser.add_argument(
+                "--shard",
+                action="store",
+                dest="shard",
+                help="Shard import to separate processes"
+            )
         )
-    )
 
     PROFILE_MAP = {
-        "cisco": "Cisco.IOS",
-        "juniper": "Juniper.JUNOS"
+        "cisco": Profile["Cisco.IOS"],
+        "juniper": Profile["Juniper.JUNOS"]
     }
 
     rx_f = re.compile(
@@ -145,7 +149,7 @@ class Command(BaseCommand):
         """
         r = {}
         for path in hosts:
-            logger.info("Reading hosts from %s", path)
+            self.logger.info("Reading hosts from %s", path)
             with open(path) as f:
                 for line in f.readlines():
                     if "#" in line:
@@ -164,7 +168,7 @@ class Command(BaseCommand):
     def parse_routerdb(self, routerdb):
         rdb = {}  # Name -> profile
         for path in routerdb:
-            logger.info("Reading routers from %s", path)
+            self.logger.info("Reading routers from %s", path)
             with open(path) as f:
                 for line in f.readlines():
                     if "#" in line:
@@ -177,11 +181,11 @@ class Command(BaseCommand):
                         continue
                     name, t, s = r
                     if s != "up":
-                        logger.debug("Skipping %s", name)
+                        self.logger.debug("Skipping %s", name)
                         continue
                     p = self.PROFILE_MAP.get(t)
                     if not p:
-                        logger.info("Unknown type '%s'. Skipping", t)
+                        self.logger.info("Unknown type '%s'. Skipping", t)
                         continue
                     rdb[name] = p
         return rdb
@@ -190,7 +194,7 @@ class Command(BaseCommand):
         login = {}
         defaults = {}
         for path in cloginrc:
-            logger.info("Reading cloginrc from %s", path)
+            self.logger.info("Reading cloginrc from %s", path)
             with open(path) as f:
                 for line in f.readlines():
                     if "#" in line:
@@ -246,7 +250,7 @@ class Command(BaseCommand):
                     date = "%s %s" % (ds[0], ds[1])
                 r[fn] += [(
                     rev,
-                    TZ.normalize(
+                    self.TZ.normalize(
                         pytz.utc.localize(
                             datetime.datetime.strptime(
                                 date,
@@ -259,10 +263,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options["verbosity"] >= 2:
-            logger.setLevel(logging.DEBUG)
+            self.logger.setLevel(logging.DEBUG)
         else:
-            logger.setLevel(logging.INFO)
-        for h in logger.handlers:
+            self.logger.setLevel(logging.INFO)
+        for h in self.logger.handlers:
             h.setFormatter(logging.Formatter(
                 "%(asctime)s [%(levelname)s] %(message)s"
             ))
@@ -309,8 +313,8 @@ class Command(BaseCommand):
                 tags += [x.strip() for x in t.split(",")]
         self.dry_run = bool(options["dry_run"])
         #
-        if not os.path.isdir(TMP):
-            os.mkdir(TMP)
+        if not os.path.isdir(self.TMP):
+            os.mkdir(self.TMP)
         #
         revisions = self.index_cvs(options["repo"])
         # Read configs
@@ -325,17 +329,17 @@ class Command(BaseCommand):
                 if n % shard_members != shard_member:
                     n += 1
                     continue  # Processed by other shard
-            logger.debug("[%s/%s] Processing host %s", n, count, name)
+            self.logger.debug("[%s/%s] Processing host %s", n, count, name)
             n += 1
-            profile = rdb[name]
+            profile = Profile.get_by_name(rdb[name])
             address = hosts.get(name)
             if not address:
                 # @todo: Resolve
-                logger.info("Cannot resolve address for %s. Skipping", name)
+                self.logger.info("Cannot resolve address for %s. Skipping", name)
                 continue
             ld = login.get(name, ldefaults)
             if not ld:
-                logger.info("No credentials for %s. Skipping", name)
+                self.logger.info("No credentials for %s. Skipping", name)
                 continue
             user = ld.get("user")
             password = ld.get("password")
@@ -343,16 +347,16 @@ class Command(BaseCommand):
                 method = "ssh"
             else:
                 method = "telnet"
-            logger.info("Managed object found: %s (%s, %s://%s@%s/)",
-                        name, profile, method, user, address)
+            self.logger.info("Managed object found: %s (%s, %s://%s@%s/)",
+                             name, profile.name, method, user, address)
             if not self.dry_run:
                 try:
                     mo = ManagedObject.objects.get(
                         Q(name=name) | Q(address=address)
                     )
-                    logger.info("Already in the database")
+                    self.logger.info("Already in the database")
                 except ManagedObject.DoesNotExist:
-                    logger.info("Creating managed object %s", name)
+                    self.logger.info("Creating managed object %s", name)
                     mo = ManagedObject(
                         name=name,
                         object_profile=object_profile,
@@ -360,7 +364,7 @@ class Command(BaseCommand):
                         pool=pool,
                         scheme=1 if method == "ssh" else 0,
                         address=address,
-                        profile_name=profile,
+                        profile=profile,
                         user=user,
                         password=password,
                         trap_source_ip=address,
@@ -368,7 +372,7 @@ class Command(BaseCommand):
                     )
                     mo.save()
             if name not in revisions:
-                logger.error("Cannot find config for %s", name)
+                self.logger.error("Cannot find config for %s", name)
                 continue
             if not self.dry_run:
                 self.import_revisions(
@@ -391,14 +395,14 @@ class Command(BaseCommand):
             with open(path, "w") as f:
                 f.write(data)
 
-        path = os.path.join(TMP, name)
+        path = os.path.join(self.TMP, name)
         lr = len(revisions)
         n = 1
         gridvcs = GridVCS("config")
-        split_re = self.SPLIT_MAP[mo.profile_name]
+        split_re = self.SPLIT_MAP[mo.profile.name]
         for rev, ts in reversed(revisions):
-            logger.debug("%s: importing rev %s [%s/%s]",
-                         name, rev, n, lr)
+            self.logger.debug("%s: importing rev %s [%s/%s]",
+                              name, rev, n, lr)
             n += 1
             try:
                 subprocess.check_call(
@@ -411,9 +415,9 @@ class Command(BaseCommand):
                     shell=True
                 )
             except subprocess.CalledProcessError, why:
-                logger.error("Failed to import %s@%s. Skipping",
-                             name, rev)
-                logger.error("CVS reported: %s", why)
+                self.logger.error("Failed to import %s@%s. Skipping",
+                                  name, rev)
+                self.logger.error("CVS reported: %s", why)
                 continue
             if not self.dry_run:
                 with open(path, "r") as f:
