@@ -1,9 +1,24 @@
 ---
-- name: "Install PostgreSQL"
-  pkgng: name="{{item}}" state=present
+- name: "Install PostgreSQL 1/2"
+  pkgng:
+    name: "{{item}}"
+    state: present
   with_items:
-    - postgresql96-server
-    - py27-psycopg2
+    - 'postgresql{{postgresql_version|replace(".","")}}-server'
+
+
+- name: "Install PostgreSQL 2/2"
+  pkgng:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - 'py27-psycopg2'
+    - 'postgresql{{postgresql_version|replace(".","")}}-contrib'
+
+- name: Enable postgres system service
+  service:
+    name: "{{postgres_system_service}}"
+    enabled: yes
 
 - name: PostgreSQL init db
   command: service postgresql initdb
