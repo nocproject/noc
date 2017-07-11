@@ -33,6 +33,7 @@ from noc.maintainance.models.maintainance import MaintainanceObject
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmescalation import AlarmEscalation
 
 
 class AlarmApplication(ExtApplication):
@@ -465,3 +466,13 @@ class AlarmApplication(ExtApplication):
             r += [get_summary(s["service"], ServiceProfile)]
         r = [x for x in r if x]
         return "&nbsp;".join(r)
+
+    @view(url=r"^(?P<id>[a-z0-9]{24})/escalate/", method=["GET"],
+          api=True, access="escalate")
+    def api_escalation_alarm(self, request, id):
+        alarm = get_alarm(id)
+        if alarm.status == "A":
+            AlarmEscalation.watch_escalations(alarm)
+            return {'status': True}
+        else:
+            return {'status': False}
