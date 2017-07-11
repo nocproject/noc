@@ -392,7 +392,7 @@ class ClassifierService(Service):
         return MACAddressParameter().clean(value)
 
     def decode_interface_name(self, event, value):
-        return event.managed_object.profile.convert_interface_name(value)
+        return event.managed_object.get_profile().convert_interface_name(value)
 
     def decode_oid(self, event, value):
         return value
@@ -436,7 +436,7 @@ class ClassifierService(Service):
         else:
             chain = "other"
         # Find rules lookup
-        lookup = self.rules.get(event.managed_object.profile_name, {}).get(chain)
+        lookup = self.rules.get(event.managed_object.profile.name, {}).get(chain)
         if lookup:
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
@@ -524,7 +524,7 @@ class ClassifierService(Service):
         :returns: Classification status (CR_*)
         """
         resolved_vars = {
-            "profile": event.managed_object.profile_name
+            "profile": event.managed_object.profile.name
         }
         if event.source == "SNMP Trap":
             # For SNMP traps format values according to MIB definitions
@@ -583,7 +583,7 @@ class ClassifierService(Service):
         # Additionally check link events
         disposable = True
         if event_class.link_event and "interface" in vars:
-            if_name = event.managed_object.profile.convert_interface_name(vars["interface"])
+            if_name = event.managed_object.get_profile().convert_interface_name(vars["interface"])
             iface = self.get_interface(event.managed_object.id, if_name)
             if iface:
                 self.logger.info(

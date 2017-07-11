@@ -149,7 +149,7 @@ class Interface(BaseFact):
 
     def bind(self):
         if self.name:
-            self.name = self.managed_object.profile.convert_interface_name(self.name)
+            self.name = self.managed_object.get_profile().convert_interface_name(self.name)
             iface = DBInterface.objects.filter(
                 managed_object=self.managed_object.id,
                 name=self.name
@@ -159,4 +159,4 @@ class Interface(BaseFact):
                 if iface.profile:
                     self.profile = iface.profile.name
             if not self.type:
-                self.type = self.managed_object.profile.get_interface_type(self.name)
+                self.type = self.managed_object.get_profile().get_interface_type(self.name)

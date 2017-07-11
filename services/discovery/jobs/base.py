@@ -461,7 +461,7 @@ class DiscoveryCheck(object):
         Returns Interface instance
         """
         mo = mo or self.object
-        name = mo.profile.convert_interface_name(name)
+        name = mo.get_profile().convert_interface_name(name)
         self.logger.debug("Searching port by name: %s:%s", mo.name, name)
         key = (mo, name)
         if key not in self.if_name_cache:
@@ -794,7 +794,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         May return aliases name which can be finally resolved
         during clean interface
         """
-        return remote_object.profile.convert_interface_name(
+        return remote_object.get_profile().convert_interface_name(
             remote_interface
         )
 
