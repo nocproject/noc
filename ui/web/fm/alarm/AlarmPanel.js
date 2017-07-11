@@ -256,7 +256,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             handler: me.onShowObject
         });
 
-        me.escaletetButton = Ext.create("Ext.button.Button", {
+        me.escalateButton = Ext.create("Ext.button.Button", {
             text: __("Escalate"),
             glyph: NOC.glyph.ambulance,
             tooltip: __('Escalate'),
@@ -290,7 +290,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                             handler: me.onRefresh
                         },
                         "-",
-                        me.escaletetButton,
+                        me.escalateButton,
                         me.showAlarmCardButton,
                         me.showMapButton,
                         me.showObjectButton,
@@ -367,6 +367,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         // Subscribe/Clear button
         me.clearButton.setDisabled(me.data.status !== "A");
         me.watchButton.setDisabled(me.data.status !== "A");
+        me.escalateButton.setDisabled(me.data.status === "C");
         me.setWatchers(me.data.subscribers || []);
         //
         me.setRootButton.setDisabled(me.data.status !== "A");
@@ -561,10 +562,12 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             method: "GET",
             scope: me,
             success: function(response) {
-                if(response) {
+                var data = Ext.decode(response.responseText);
+
+                if(data.status) {
                     NOC.info(_('Escalated'));
                 } else {
-                    NOC.error(__("Escalate failed"));
+                    NOC.error(__("Escalate failed : ") + (data.hasOwnProperty('error') ? data.error : 'unknowns error!'));
                 }
             },
             failure: function() {
