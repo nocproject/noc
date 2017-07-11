@@ -8,26 +8,29 @@
 
 # Python modules
 import os
-from optparse import make_option
 import gzip
 import re
 import datetime
 import time
+import argparse
 # Third-party modules
-from django.core.management.base import BaseCommand, CommandError
 import ujson
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 
 
 class Command(BaseCommand):
     help = "Upload bundled MIBs"
 
-    option_list = BaseCommand.option_list + (
-        make_option("-f", "--force", dest="force", action="store_true",
-                    default=False, help="Force reload"),
-    )
-
+    def add_arguments(self, parser):
+        parser.add_argument("-f", "--force", dest="force", action="store_true",
+                            default=False, help="Force reload"),
+        parser.add_argument(
+            "args",
+            nargs=argparse.REMAINDER,
+            help="List of extractor names"
+        )
     rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
                                  re.MULTILINE)
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
@@ -45,7 +48,7 @@ class Command(BaseCommand):
         for root, dirs, files in os.walk(self.PREFIX):
             for f in files:
                 if (not f.startswith(".") and
-                    (f.endswith(".json.gz") or f.endswith(".json"))):
+                        (f.endswith(".json.gz") or f.endswith(".json"))):
                     mib_name = f.split(".", 1)[0]
                     yield mib_name, os.path.join(root, f)
 
@@ -125,3 +128,6 @@ class Command(BaseCommand):
         # Upload
         if d["data"]:
             mib.load_data(d["data"])
+
+if __name__ == "__main__":
+    Command().run()

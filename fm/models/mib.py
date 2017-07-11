@@ -47,6 +47,7 @@ class MIB(nosql.Document):
 
     MIBRequiredException = MIBRequiredException
     MIB_PATH = ["var/mibs/local", "var/mibs/dist"]
+    SMILINT_PATH = ["/usr/local/bin/"]
 
     def __unicode__(self):
         return self.name
@@ -114,6 +115,10 @@ class MIB(nosql.Document):
         """
         if not os.path.exists(path):
             raise ValueError("File not found: %s" % path)
+        # Detect smilint
+        smilint_bin = config.get("path", "smilint")
+        if not os.path.exists(smilint_bin):
+            raise ValueError("SMILINT binary not not found in: %s, set true path to noc.conf" % smilint_bin)
         # Pass MIB through smilint to detect missed modules
         f = subprocess.Popen(
             [config.get("path", "smilint"), "-m", path],
@@ -124,10 +129,14 @@ class MIB(nosql.Document):
             if match:
                 raise MIBRequiredException("Uploaded MIB",
                                            match.group(1))
+        # Detect smilint
+        smidump_bin = config.get("path", "smidump")
+        if not os.path.exists(smidump_bin):
+            raise ValueError("SMIDUMP binary not not found in: %s, set true path to noc.conf" % smidump_bin)
         # Convert MIB to python module and load
         with temporary_file() as p:
             subprocess.check_call(
-                [config.get("path", "smidump"), "-k", "-q",
+                [smidump_bin, "-k", "-q",
                  "-f", "python", "-o", p, path],
                 env={"SMIPATH": ":".join(cls.MIB_PATH)})
             # Add coding string

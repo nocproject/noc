@@ -7,19 +7,23 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from optparse import make_option
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
+import argparse
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 from noc.fm.models.error import MIBRequiredException, OIDCollision
 
 
 class Command(BaseCommand):
     help = "Import MIBs into database"
-    option_list = BaseCommand.option_list + (
-        make_option("-f", "--force", dest="force", action="store_true",
-                    default=False),
+
+    def add_arguments(self, parser):
+        parser.add_argument("-f", "--force", dest="force", action="store_true",
+                            default=False),
+        parser.add_argument(
+            "args",
+            nargs=argparse.REMAINDER,
+            help="List of extractor names"
         )
 
     def handle(self, *args, **options):
@@ -27,8 +31,12 @@ class Command(BaseCommand):
             try:
                 MIB.load(a, force=options.get("force"))
             except MIBRequiredException as e:
-                raise CommandError(str(e))
+                self.die(str(e))
             except ValueError as e:
-                raise CommandError(str(e))
+                self.die(str(e))
             except OIDCollision as e:
-                raise CommandError(str(e))
+                self.die(str(e))
+        self.stdout.write("Import successful\n")
+
+if __name__ == "__main__":
+    Command().run()

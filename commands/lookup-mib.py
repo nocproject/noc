@@ -8,14 +8,21 @@
 
 # Python modules
 import re
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
+import argparse
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 
 
 class Command(BaseCommand):
     help = "Lookup MIBs"
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "args",
+            nargs=argparse.REMAINDER,
+            help="SNMP OIDs"
+        )
 
     rx_oid = re.compile("^\d+(\.\d+)+")
 
@@ -32,4 +39,7 @@ class Command(BaseCommand):
         if r:
             print r
         else:
-            raise CommandError("Not found: %s" % v)
+            self.die("Not found: %s" % v)
+
+if __name__ == "__main__":
+    Command().run()

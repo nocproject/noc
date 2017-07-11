@@ -11,10 +11,9 @@ import sys
 import os
 import logging
 import datetime
-from optparse import make_option
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
+import argparse
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 
@@ -25,13 +24,16 @@ logger = logging.getLogger("make-cmib")
 class Command(BaseCommand):
     help = "Make compiled MIB for SA and PM scripts"
 
-    option_list = BaseCommand.option_list + (
-        make_option("-o", "--output", dest="output", default=""),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument("-o", "--output",
+                            dest="output", default="")
+        parser.add_argument("args",
+                            nargs=argparse.REMAINDER,)
 
     def handle(self, *args, **options):
         if len(args) != 1:
-            raise CommandError("Specify one MIB")
+            self.stdout.write("Specify one MIB\n")
+            self.die("")
         if options["output"]:
             self.prepare_dirs(options["output"])
             logging.debug("Opening file %s", options["output"])
@@ -43,7 +45,8 @@ class Command(BaseCommand):
         try:
             m = MIB.objects.get(name=mib)
         except MIB.DoesNotExist:
-            raise CommandError("MIB not found: %s" % mib)
+            self.stdout.write("MIB not found: %s\n" % mib)
+            self.die("")
         year = datetime.date.today().year
         r = [
             "# -*- coding: utf-8 -*-",
@@ -77,8 +80,12 @@ class Command(BaseCommand):
         data = "\n".join(r)
         f.write(data)
 
-    def prepare_dirs(self, path):
+    @staticmethod
+    def prepare_dirs(path):
         d = os.path.dirname(path)
         if not os.path.isdir(d):
             logger.info("Creating directory %s", d)
             os.makedirs(d)
+
+if __name__ == "__main__":
+    Command().run()

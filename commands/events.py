@@ -7,15 +7,15 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from optparse import OptionParser, make_option
 import re
 import hashlib
 from htmlentitydefs import name2codepoint
 # Third-party modules
-from django.core.management.base import BaseCommand, CommandError
 from bson import ObjectId
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
@@ -35,30 +35,31 @@ def unescape(s):
 
 class Command(BaseCommand):
     help = "Manage events"
-    option_list = BaseCommand.option_list + (
-        make_option("-a", "--action", dest="action",
-                    default="show",
-                    help="Action: show, reclassify"),
-        make_option("-s", "--selector", dest="selector",
-                    help="Selector name"),
-        make_option("-o", "--object", dest="object",
-                    help="Managed Object's name"),
-        make_option("-p", "--profile", dest="profile",
-                    help="Object's profile"),
-        make_option("-e", "--event", dest="event",
-                    help="Event ID"),
-        make_option("-c", "--class", dest="class",
-                    help="Event class name"),
-        make_option("-T", "--trap", dest="trap",
-                    help="SNMP Trap OID or name"),
-        make_option("-S", "--syslog", dest="syslog",
-                    help="SYSLOG Message RE"),
-        make_option("-d", "--suppress-duplicated", dest="suppress",
-                    action="store_true",
-                    help="Suppress duplicated subjects"),
-        make_option("-l", "--limit", dest="limit", default=0, type="int",
-                    help="Limit action to N records")
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-a", "--action",
+                            dest="action",
+                            default="show",
+                            help="Action: show, reclassify"),
+        parser.add_argument("-s", "--selector", dest="selector",
+                            help="Selector name"),
+        parser.add_argument("-o", "--object", dest="object",
+                            help="Managed Object's name"),
+        parser.add_argument("-p", "--profile", dest="profile",
+                            help="Object's profile"),
+        parser.add_argument("-e", "--event", dest="event",
+                            help="Event ID"),
+        parser.add_argument("-c", "--class", dest="class",
+                            help="Event class name"),
+        parser.add_argument("-T", "--trap", dest="trap",
+                            help="SNMP Trap OID or name"),
+        parser.add_argument("-S", "--syslog", dest="syslog",
+                            help="SYSLOG Message RE"),
+        parser.add_argument("-d", "--suppress-duplicated", dest="suppress",
+                            action="store_true",
+                            help="Suppress duplicated subjects"),
+        parser.add_argument("-l", "--limit", dest="limit", default=0, type=int,
+                            help="Limit action to N records")
 
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
     rx_float = re.compile(r"\d+\.\d+")
@@ -79,18 +80,18 @@ class Command(BaseCommand):
             try:
                 o = ManagedObject.objects.get(name=options["object"])
             except ManagedObject.DoesNotExist:
-                raise CommandError("Object not found: %s" % options["object"])
+                self.die("Object not found: %s" % options["object"])
             c = c.filter(managed_object=o.id)
         if options["selector"]:
             try:
                 s = ManagedObjectSelector.objects.get(name=options["selector"])
             except ManagedObjectSelector.DoesNotExist:
-                raise CommandError("Selector not found: %s" % options["selector"])
+                self.die("Selector not found: %s" % options["selector"])
             c = c.filter(managed_object__in=[o.id for o in s.managed_objects])
         if options["class"]:
             o = EventClass.objects.filter(name=options["class"]).first()
             if not o:
-                raise CommandError("Event class not found: %s" % options["class"])
+                self.die("Event class not found: %s" % options["class"])
             c = c.filter(event_class=o.id)
         if options["trap"]:
             if is_oid(options["trap"]):
@@ -98,29 +99,29 @@ class Command(BaseCommand):
             else:
                 trap_oid = MIB.get_oid(options["trap"])
                 if trap_oid is None:
-                    raise CommandError("Cannot find OID for %s" % options["trap"])
+                    self.die("Cannot find OID for %s" % options["trap"])
             c = c.filter(raw_vars__source="SNMP Trap")
         if options["syslog"]:
             try:
                 syslog_re = re.compile(options["syslog"], re.IGNORECASE)
-            except Exception, why:
-                raise CommandError("Invalid RE: %s" % why)
+            except Exception as e:
+                self.die("Invalid RE: %s" % str(e))
             c = c.filter(raw_vars__source="syslog")
         for e in c:
             if profile:
-                if not e.managed_object.profile_name == profile:
+                if not e.managed_object.profile == Profile[profile]:
                     continue
             if trap_oid:
                 if ("source" in e.raw_vars and
                     e.raw_vars["source"] == "SNMP Trap" and
                     "1.3.6.1.6.3.1.1.4.1.0" in e.raw_vars and
-                    e.raw_vars["1.3.6.1.6.3.1.1.4.1.0"] == trap_oid):
+                            e.raw_vars["1.3.6.1.6.3.1.1.4.1.0"] == trap_oid):
                     yield e
             elif syslog_re:
                 if ("source" in e.raw_vars and
                     e.raw_vars["source"] == "syslog" and
                     "message" in e.raw_vars and
-                    syslog_re.search(e.raw_vars["message"])):
+                        syslog_re.search(e.raw_vars["message"])):
                     yield e
             else:
                 yield e
@@ -130,14 +131,14 @@ class Command(BaseCommand):
             return self._handle(*args, **options)
         except KeyboardInterrupt:
             pass
-        except IOError, why:
-            print "IO Error: %s" % why
+        except IOError as e:
+            self.stdout.write("IO Error: %s" % str(e))
 
     def _handle(self, *args, **options):
         try:
             handler = getattr(self, "handle_%s" % options["action"])
         except AttributeError:
-            raise CommandError("Invalid action: %s" % options["action"])
+            self.die("Invalid action: %s" % options["action"])
         events = self.get_events(options)
         handler(options, events)
 
@@ -146,10 +147,10 @@ class Command(BaseCommand):
         to_suppress = options["suppress"]
         seen = set()  # Message hashes
         if show_json:
-            print "["
+            self.stdout.write("[\n")
             spool = None
         else:
-            print "ID, Object, Class, Subject"
+            self.stdout.write("ID, Object, Class, Subject\n")
         for e in events:
             subject = unescape(e.subject)
             if to_suppress:
@@ -184,28 +185,29 @@ class Command(BaseCommand):
                     if k in ("collector",):
                         continue
                     x += ["            \"%s\": \"%s\"" % (json_escape(k),
-                            json_escape(vars[k]))]
+                                                          json_escape(vars[k]))]
                 s += [",\n".join(x)]
                 s += ["        }"]
                 s += ["    }"]
                 spool = "\n".join(s)
             else:
-                print "%s, %s, %s, %s" % (e.id, e.managed_object.name,
+                self.stdout.write("%s, %s, %s, %s\n" % (e.id, e.managed_object.name,
                                           e.event_class.name,
-                                          subject)
+                                          subject))
             if limit:
                 limit -= 1
                 if not limit:
                     break
         if show_json:
             if spool:
-                print spool
+                self.stdout.write(spool)
             print "]"
 
     def handle_json(self, option, events):
         return self.handle_show(option, events, show_json=True)
 
-    def handle_reclassify(self, options, events):
+    @staticmethod
+    def handle_reclassify(options, events):
         limit = int(options["limit"])
         for e in events:
             e.mark_as_new("Reclassification requested via CLI")
@@ -214,3 +216,6 @@ class Command(BaseCommand):
                 limit -= 1
                 if not limit:
                     break
+
+if __name__ == "__main__":
+    Command().run()

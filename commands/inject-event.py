@@ -11,20 +11,21 @@
 from __future__ import with_statement
 import sys
 import datetime
-from optparse import OptionParser, make_option
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
-from django.utils import simplejson
+import json
+import argparse
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.newevent import NewEvent
 
 
 class Command(BaseCommand):
     help = "Inject events from JSON files"
-    option_list = BaseCommand.option_list + (
-        make_option("-s", "--syslog", dest="syslog"),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-s", "--syslog", dest="syslog"),
+        parser.add_argument("args",
+                            nargs=argparse.REMAINDER)
 
     def _usage(self):
         print "./noc inject-event <object name> [<file1> [ .. <fileN>]]"
@@ -37,7 +38,7 @@ class Command(BaseCommand):
         try:
             o = ManagedObject.objects.get(name=args[0])
         except ManagedObject.DoesNotExist:
-            raise CommandError("Managed Object '%s' is not found" % args[0])
+            self.die("Managed Object '%s' is not found" % args[0])
         # Inject syslog messages
         if options["syslog"]:
             self.syslog_message(o, options["syslog"])
@@ -56,15 +57,15 @@ class Command(BaseCommand):
         # Decode JSON
         with open(path) as f:
             try:
-                data = simplejson.JSONDecoder().decode(f.read())
-            except ValueError, why:
-                raise CommandError("Failed to decode JSON file \"%s\": %s" % (
-                    path, why))
+                data = json.load(f.read())
+            except ValueError as e:
+                self.die("Failed to decode JSON file \"%s\": %s" % (
+                    path, str(e)))
         # Load events
         for e in data:
             if e["profile"] != obj.profile_name:
-                print "Profile mismatch in %s: %s != %s %s" % (
-                    path, obj.profile_name, e["profile"], e)
+                self.stdout.write("Profile mismatch in %s: %s != %s %s" % (
+                    path, obj.profile.name, e["profile"], e))
                 continue
             ne = NewEvent(
                 timestamp=datetime.datetime.now(),
@@ -73,7 +74,7 @@ class Command(BaseCommand):
                 log=[]
             )
             ne.save()
-            print ne.id
+            self.stdout.write(ne.id)
 
     def syslog_message(self, obj, msg):
         raw_vars = {
@@ -89,4 +90,7 @@ class Command(BaseCommand):
             log=[]
         )
         ne.save()
-        print ne.id
+        self.stdout.write(ne.id)
+
+if __name__ == "__main__":
+    Command().run()

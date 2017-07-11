@@ -9,12 +9,13 @@
 # Python modules
 import sys
 import os
-from optparse import make_option
 import gzip
+import argparse
 # Third-party modules
-from django.core.management.base import BaseCommand, CommandError
 import ujson
+from noc.lib.nosql import DoesNotExist
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 
@@ -22,12 +23,12 @@ from noc.fm.models.mibdata import MIBData
 class Command(BaseCommand):
     help = "Compile loaded MIB to compact JSON form"
 
-    option_list = BaseCommand.option_list + (
-        make_option("-o", "--output", dest="output", default=""),
-        make_option("-l", "--list", dest="list", default=""),
-        make_option("-b", "--bump", dest="bump", action="store_true",
-                    default=False)
-    )
+    def add_arguments(self, parser):
+        parser.add_argument("-o", "--output", dest="output", default=""),
+        parser.add_argument("-l", "--list", dest="list", default=""),
+        parser.add_argument("-b", "--bump", dest="bump", action="store_true",
+                            default=False)
+        parser.add_argument("args", nargs=argparse.REMAINDER)
 
     def handle(self, *args, **options):
         job = []  # List of (MIB name, out path)
@@ -42,19 +43,19 @@ class Command(BaseCommand):
                     job += [(m, p)]
         else:
             if len(args) != 1:
-                raise CommandError("Single MIB name required")
+                self.die("Single MIB name required")
             job = [(args[0], options.get("output"))]
 
         # Compile
         for mib_name, path in job:
             try:
                 mib = MIB.objects.get(name=mib_name)
-            except MIB.DoesNotExist:
-                raise CommandError("MIB not loaded: '%s'" % mib_name)
+            except DoesNotExist:
+                self.die("MIB not loaded: '%s'" % mib_name)
             self.compile_mib(mib, path, bump=options.get("bump"))
 
     def compile_mib(self, mib, out_path, bump=False):
-        sys.stderr.write("%s -> %s\n" % (mib.name, out_path))
+        self.stderr.write("%s -> %s\n" % (mib.name, out_path))
         if out_path:
             d = os.path.dirname(out_path)
             if not os.path.isdir(d):
@@ -108,3 +109,6 @@ class Command(BaseCommand):
         out.write(ujson.dumps(data))
         if out_path:
             out.close()
+
+if __name__ == "__main__":
+    Command().run()
