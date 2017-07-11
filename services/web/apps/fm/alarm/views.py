@@ -475,4 +475,4 @@ class AlarmApplication(ExtApplication):
             AlarmEscalation.watch_escalations(alarm)
             return {'status': True}
         else:
-            return {'status': False}
+            return {'status': False, 'error': 'The alarm is not active at the moment'}
