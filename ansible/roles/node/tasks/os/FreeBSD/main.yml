@@ -2,7 +2,7 @@
 - name: Install FreeBSD system packages
   pkgng: name={{item}} state=present
   with_items:
-    - postgresql95-client
+    - postgresql96-client
     - python2
     - py27-virtualenv
     - mercurial
