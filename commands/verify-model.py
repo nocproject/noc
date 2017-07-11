@@ -7,26 +7,26 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from optparse import OptionParser, make_option
-
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
+import argparse
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
 
 
 class Command(BaseCommand):
     help = "Verify models"
-    option_list = BaseCommand.option_list + (
-    make_option("-r", "--rebuild", dest="action",
-        action="store_const", const="rebuild_cache",
-        help="Rebuild connection cache"),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument("-r", "--rebuild",
+                            dest="action",
+                            action="store_const", const="rebuild_cache",
+                            help="Rebuild connection cache")
 
     def handle(self, *args, **options):
         if options.get("action") == "rebuild_cache":
-            print "Rebuilding connections cache"
+            self.stdout.write("Rebuilding connections cache")
             ModelConnectionsCache.rebuild()
+
         CHECK_MAP = {
             "Electrical | DB9": self.check_ct_db9,
             "Electrical | RJ45": self.check_ct_rj45,
@@ -54,9 +54,9 @@ class Command(BaseCommand):
                 if check:
                     check(c)
             if self.errors:
-                print "%s errors:" % m.name
+                self.stdout.write("%s errors:\n" % m.name)
                 for e in self.errors:
-                    print "    %s" % e
+                    self.stdout.write("    %s\n" % e)
 
     def e(self, connection, msg):
         self.errors += ["%s: %s" % (connection.name, msg)]
@@ -141,3 +141,6 @@ class Command(BaseCommand):
         self.check_protocols(c, [
             "TransEth10G"
         ])
+
+if __name__ == "__main__":
+    Command().run()

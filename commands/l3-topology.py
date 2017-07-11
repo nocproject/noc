@@ -10,11 +10,9 @@
 import os
 import tempfile
 import subprocess
-from optparse import make_option
 from collections import namedtuple, defaultdict
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
 # NOC modules
+from noc.core.management.base import BaseCommand, CommandError
 from noc.ip.models.vrf import VRF
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.forwardinginstance import ForwardingInstance
@@ -27,22 +25,28 @@ class Command(BaseCommand):
     help = "Show L3 topology"
     LAYOUT = ["neato", "cicro", "sfdp", "dot", "twopi"]
 
-    option_list = BaseCommand.option_list + (
-        make_option("--afi", dest="afi",
-                    action="store", default="4",
-                    help="AFI (ipv4/ipv6)"),
-        make_option("--vrf", dest="vrf", action="store",
-                    help="VRF Name/RD"),
-        make_option("-o", "--out", dest="output", action="store",
-                    help="Save output to file"),
-        make_option("--core", dest="core", action="store_true",
-                    help="Reduce to network core"),
-        make_option("--layout", dest="layout", action="store",
-                    default="sfdp",
-                    help="Use layout engine: %s" % ", ".join(LAYOUT)),
-        make_option("--exclude", dest="exclude", action="append",
-                    help="Exclude prefix from map"),
-    )
+    def add_arguments(self, parser):
+
+        parser.add_argument("--afi",
+                            dest="afi",
+                            action="store", default="4",
+                            help="AFI (ipv4/ipv6)"),
+        parser.add_argument("--vrf",
+                            dest="vrf", action="store",
+                            help="VRF Name/RD"),
+        parser.add_argument("-o", "--out",
+                            dest="output", action="store",
+                            help="Save output to file"),
+        parser.add_argument("--core",
+                            dest="core", action="store_true",
+                            help="Reduce to network core"),
+        parser.add_argument("--layout",
+                            dest="layout", action="store",
+                            default="sfdp",
+                            help="Use layout engine: %s" % ", ".join(self.LAYOUT)),
+        parser.add_argument("--exclude",
+                            dest="exclude", action="append",
+                            help="Exclude prefix from map"),
 
     SI = namedtuple("SI", ["object", "interface", "fi", "ip", "prefix"])
     IPv4 = "4"
@@ -209,3 +213,6 @@ class Command(BaseCommand):
                     rd = None  # Missed data
             self.rd_cache[object, fi] = rd
         return rd
+
+if __name__ == "__main__":
+    Command().run()

@@ -6,9 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
 # NOC modules
+from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
@@ -40,3 +39,6 @@ class Command(BaseCommand):
         for name, remote, remote_name in obj.iter_connections("i"):
             self.clean_obj(remote)
         obj.delete()
+
+if __name__ == "__main__":
+    Command().run()

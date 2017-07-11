@@ -7,35 +7,45 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from optparse import OptionParser, make_option
+import argparse
 from collections import defaultdict
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
 # NOC modules
+from noc.core.management.base import BaseCommand, CommandError
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 
 
 class Command(BaseCommand):
     help = "Show Links"
-    option_list = BaseCommand.option_list + (
-        make_option("-s", "--show", dest="action",
-            action="store_const", const="show",
-            help="Show link"),
-        make_option("-a", "--add", dest="action",
-            action="store_const", const="add",
-            help="Add link"),
-        make_option("-r", "--remove", dest="action",
-            action="store_const", const="remove",
-            help="Remove link"),
-        make_option("-m", "--show-method", dest="show_method",
-            action="store_true",
-            help="Show discovery method"
-        )
-    )
+
+    def add_arguments(self, parser):
+        subparsers = parser.add_subparsers(dest="cmd")
+        # show command
+        show_parser = subparsers.add_parser("show",
+                                            help="Show link")
+        show_parser.add_argument("-m", "--show-method",
+                                 dest="show_method",
+                                 action="store_true",
+                                 help="Show discovery method")
+        show_parser.add_argument("args",
+                                 nargs=argparse.REMAINDER,
+                                 help="Show discovery method")
+        # add command
+        add_parser = subparsers.add_parser("add",
+                                           help="Add link")
+        add_parser.add_argument("args",
+                                nargs=argparse.REMAINDER,
+                                help="Show discovery method")
+        # remove command
+        remove_parser = subparsers.add_parser("remove",
+                                              help="Remove link")
+        remove_parser.add_argument("args",
+                                   nargs=argparse.REMAINDER,
+                                   help="Show discovery method")
 
     def handle(self, *args, **options):
-        action = options["action"]
+        print args
+        action = options["cmd"]
         if not action:
             action = "show"
         getattr(self, "handle_%s" % action)(*args, **options)
@@ -53,8 +63,7 @@ class Command(BaseCommand):
         l = " --- ".join(r)
         if show_method:
             l += " [%s]" % link.discovery_method
-        print l
-
+        self.stdout.write(l)
 
     def handle_show(self, *args, **options):
         show_method = options.get("show_method")
@@ -103,3 +112,6 @@ class Command(BaseCommand):
             iface = Interface.get_interface(i)
             if iface:
                 iface.unlink()
+
+if __name__ == "__main__":
+    Command().run()
