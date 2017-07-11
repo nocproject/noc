@@ -937,7 +937,7 @@ class ManagedObject(Model):
         """
         profile = getattr(self, "_profile", None)
         if not profile:
-            self._profile = self.profile.get_profile()()
+            self._profile = self.profile.get_profile()
         return self._profile
 
     def get_parser(self):
