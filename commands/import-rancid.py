@@ -428,3 +428,6 @@ class Command(BaseCommand):
                 gridvcs.put(mo.id, data, ts=ts)
         if os.path.exists(path):
             os.unlink(path)
+
+if __name__ == "__main__":
+    Command().run()
