@@ -37,7 +37,7 @@ class UnknownModel(Document):
         cls._get_collection().find_and_modify({
             "vendor": vendor,
             "managed_object": managed_object.name,
-            "platform": managed_object.platform.name if managed_object.platform else "",
+            "platform": managed_object.platform,
             "part_no": part_no
         }, update={
             # "$setOnInsert": {

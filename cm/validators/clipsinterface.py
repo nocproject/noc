@@ -17,6 +17,6 @@ class CLIPSInterfaceValidator(CLIPSValidator):
         ctx = super(CLIPSInterfaceValidator, self).get_context()
         mo = self.object.managed_object
         ctx.update({
-            "name": mo.get_profile().convert_interface_name(self.object.name)
+            "name": mo.profile.convert_interface_name(self.object.name)
         })
         return ctx

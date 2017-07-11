@@ -28,7 +28,8 @@ class PrefixListBuilderForm(forms.Form):
     as_set = forms.CharField(validators=[RegexValidator(as_set_re)])
 
     def clean(self):
-        if not self.cleaned_data["name"] and "as_set" in self.cleaned_data:
+        if not self.cleaned_data[
+            "name"] and "as_set" in self.cleaned_data:
             self.cleaned_data["name"] = self.cleaned_data["as_set"]
         return self.cleaned_data
 
@@ -51,7 +52,7 @@ class PrefixListBuilderApplication(ExtApplication):
           })
     def api_list(self, request, peering_point, name, as_set):
         prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(as_set)
-        pl = peering_point.get_profile().generate_prefix_list(name, prefixes)
+        pl = peering_point.profile.generate_prefix_list(name, prefixes)
         return {
             "name": name,
             "prefix_list": pl,

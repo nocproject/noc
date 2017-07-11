@@ -315,7 +315,7 @@ class SubInterface(BaseFact):
 
     def bind(self):
         if self.name:
-            self.name = self.managed_object.get_profile().convert_interface_name(self.name)
+            self.name = self.managed_object.profile.convert_interface_name(self.name)
             si = DBSubInterface.objects.filter(
                 managed_object=self.managed_object.id,
                 name=self.name

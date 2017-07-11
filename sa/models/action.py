@@ -9,8 +9,6 @@
 # Python modules
 from __future__ import absolute_import
 import re
-import threading
-import operator
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, IntField,
@@ -18,13 +16,10 @@ from mongoengine.fields import (StringField, UUIDField, IntField,
                                 EmbeddedDocumentField)
 import six
 import jinja2
-import cachetools
 # NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 from noc.core.ip import IP
-
-id_lock = threading.Lock()
 
 
 class ActionParameter(EmbeddedDocument):
@@ -74,16 +69,8 @@ class Action(Document):
     #
     params = ListField(EmbeddedDocumentField(ActionParameter))
 
-    _id_cache = cachetools.TTLCache(1000, ttl=60)
-    
     def __unicode__(self):
         return self.name
-
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
-                             lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return Action.objects.filter(id=id).first()
 
     def get_json_path(self):
         return "%s.json" % quote_safe_path(self.name)
@@ -116,22 +103,22 @@ class Action(Document):
         Returns ActionCommands instance or None
         :param obj: Managed Object
         """
-        from .actioncommands import ActionCommands
+        version = obj.version
         for ac in ActionCommands.objects.filter(
-                action=self, profile=obj.profile.id
+                action=self, profile=obj.profile_name
         ).order_by("preference"):
             if not ac.match:
                 return ac
             for m in ac.match:
                 if (
                     not m.platform_re or (
-                        obj.platform and
-                        re.search(m.platform_re, obj.platform.name)
+                        version.platform and
+                        re.search(m.platform_re, version.platform)
                     )
                 ) and (
                     not m.version_re or (
-                        obj.version and
-                        re.search(m.version_re, obj.version.version))
+                        version.version and
+                        re.search(m.version_re, version.version))
                 ):
                     return ac
         return None
@@ -190,7 +177,7 @@ class Action(Document):
             elif p.type == "interface":
                 # Interface
                 try:
-                    v = obj.get_profile().convert_interface_name(v)
+                    v = obj.profile.convert_interface_name(v)
                 except Exception:
                     raise ValueError(
                         "Invalid interface name in parameter '%s': '%s'" % (
@@ -230,4 +217,5 @@ class Action(Document):
 
 
 #
+from .actioncommands import ActionCommands
 from noc.ip.models.vrf import VRF

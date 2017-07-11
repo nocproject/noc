@@ -82,7 +82,7 @@ class Command(BaseCommand):
         # Load script
         script = script[0]
         if "." not in script:
-            script = "%s.%s" % (obj.profile.name, script)
+            script = "%s.%s" % (obj.profile_name, script)
         script_class = loader.get_script(script)
         if not script_class:
             self.die("Failed to load script %s" % script_class)
@@ -96,11 +96,10 @@ class Command(BaseCommand):
                 del caps["SNMP"]
         # Get version info
         v = obj.version
-        p = obj.platform
         if v.version:
             version = {
-                "vendor": v.vendor.name,
-                "platform": p.name,
+                "vendor": v.vendor,
+                "platform": v.platform,
                 "version": v.version
             }
         else:
@@ -242,26 +241,6 @@ class PoolStub(object):
         self.name = name
 
 
-class ProfileStub(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class VendorStub(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class PlatformStub(object):
-    def __init__(self, name):
-        self.name = name
-
-
-class VersionStub(object):
-    def __init__(self, version):
-        self.version = version
-
-
 class JSONObject(object):
     def __init__(self, path):
         with open(path) as f:
@@ -270,16 +249,16 @@ class JSONObject(object):
             "telnet": 1,
             "ssh": 2
         }.get(data.get("scheme", "telnet"), 1)
-        self.profile = ProfileStub(data.get("profile"))
+        self.profile_name = data.get("profile")
         self.address = data["address"]
         self.port = data.get("port")
         self.creds = data.get("credentials", {})
         self.caps = data.get("caps")
         self.remote_path = None
         self.pool = PoolStub("default")
-        self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
-        self.platform = PlatformStub(data["platform"]) if "platform" in data else None
-        self.version = VersionStub(data["version"]) if "version" else None
+        self._vendor = data.get("vendor")
+        self._platform = data.get("platfrom")
+        self._version = data.get("version")
 
     @property
     def credentials(self):
@@ -291,6 +270,16 @@ class JSONObject(object):
 
     def get_caps(self):
         return self.caps
+
+    @property
+    def version(self):
+        from noc.sa.models.managedobject import Version
+        return Version(
+            profile=self.profile_name,
+            vendor=self._vendor,
+            platform=self._platform,
+            version=self._version
+        )
 
 
 if __name__ == "__main__":
