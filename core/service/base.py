@@ -121,11 +121,9 @@ class Service(object):
         self.pid = os.getpid()
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
-        self._metrics = []
-        self._ch_metrics = defaultdict(list)
+        self._metrics = defaultdict(list)
         self.metrics_lock = threading.Lock()
         self.metrics_callback = None
-        self.ch_metrics_callback = None
         self.dcs = None
         # Effective address and port
         self.server = None
@@ -755,35 +753,20 @@ class Service(object):
             self.executors[name] = executor
         return executor
 
-    def register_metrics(self, metrics):
+    def register_metrics(self, fields, metrics):
         """
         Register metrics to send
-        :param metric: List of strings
-        """
-        if not isinstance(metrics, (set, list)):
-            metrics = [metrics]
-        with self.metrics_lock:
-            if not self.metrics_callback:
-                self.metrics_callback = tornado.ioloop.PeriodicCallback(
-                    self.send_metrics, 100, self.ioloop
-                )
-                self.metrics_callback.start()
-            self._metrics += [str(x) for x in metrics]
-
-    def register_ch_metrics(self, fields, metrics):
-        """
-        Register metrics to send (Clickhouse version)
         :param fields: String containing "<table>.<field1>...<fieldN>"
         :param metrics: list of tab-separated strings with values
         :return:
         """
         with self.metrics_lock:
-            if not self.ch_metrics_callback:
-                self.ch_metrics_callback = tornado.ioloop.PeriodicCallback(
-                    self.send_ch_metrics, 250, self.ioloop
+            if not self.metrics_callback:
+                self.metrics_callback = tornado.ioloop.PeriodicCallback(
+                    self.send_metrics, 250, self.ioloop
                 )
-                self.ch_metrics_callback.start()
-            self._ch_metrics[fields] += metrics
+                self.metrics_callback.start()
+            self._metrics[fields] += metrics
 
     @tornado.gen.coroutine
     def send_metrics(self):
@@ -791,17 +774,8 @@ class Service(object):
             return
         w = self.get_nsq_writer()
         with self.metrics_lock:
-            w.pub("metrics", "\n".join(self._metrics))
-            self._metrics = []
-
-    @tornado.gen.coroutine
-    def send_ch_metrics(self):
-        if not self._ch_metrics:
-            return
-        w = self.get_nsq_writer()
-        with self.metrics_lock:
-            data = self._ch_metrics
-            self._ch_metrics = defaultdict(list)
+            data = self._metrics
+            self._metrics = defaultdict(list)
         for fields in data:
             to_send = data[fields]
             while to_send:

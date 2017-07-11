@@ -27,6 +27,38 @@ OID_GENERATOR_TYPE = {}
 rx_rule_var = re.compile(r"{{\s*([^}]+?)\s*}}")
 
 
+class MetricConfig(object):
+    __slots__ = (
+        "id",
+        "metric",
+        "path",
+        "ifindex",
+        "sla_test"
+    )
+
+    def __init__(self, id, metric, path=None, ifindex=None,
+                 sla_test=None):
+        self.id = id
+        self.metric = metric
+        self.path = path
+        self.ifindex = ifindex
+        self.sla_test = sla_test
+
+    def __repr__(self):
+        return "<MetricConfig #%s %s>" % (self.id, self.metric)
+
+
+class BatchConfig(object):
+    __slots__ = ("id", "metric", "path", "type", "scale")
+
+    def __init__(self, id, metric, path, type, scale):
+        self.id = id
+        self.metric = metric
+        self.path = path
+        self.type = type
+        self.scale = scale
+
+
 class OIDRuleBase(type):
     def __new__(mcs, name, bases, attrs):
         m = type.__new__(mcs, name, bases, attrs)
@@ -55,7 +87,7 @@ class OIDRule(object):
 
     def iter_oids(self, script, metric):
         """
-        Generator yielding oid, type, scale, tags
+        Generator yielding oid, type, scale, path
         :param script:
         :param metric:
         :return:
@@ -201,13 +233,11 @@ class InterfaceRule(OIDRule):
     """
     name = "ifindex"
 
-    def iter_oids(self, script, metric):
-        for i in metric["interfaces"]:
-            ifindex = script.get_ifindex(i)
-            if ifindex is not None:
-                oid = self.expand_oid(ifIndex=ifindex)
-                if oid:
-                    yield oid, self.type, self.scale, {"interface": i}
+    def iter_oids(self, script, cfg):
+        if cfg.ifindex is not None:
+            oid = self.expand_oid(ifIndex=cfg.ifindex)
+            if oid:
+                yield oid, self.type, self.scale, cfg.path
 
 
 class CapabilityIndexRule(OIDRule):
@@ -279,10 +309,7 @@ class Script(BaseScript):
     def __init__(self, *args, **kwargs):
         super(Script, self).__init__(*args, **kwargs)
         self.metrics = []
-        self.tags = {
-            "object": self.credentials.get("name")
-        }
-        self.ifindexes = {}
+        self.ts = None
 
     def get_snmp_metrics_get_timeout(self):
         """
@@ -299,27 +326,16 @@ class Script(BaseScript):
         """
         return self.profile.snmp_metrics_get_chunk
 
-    def execute(self, metrics, hints=None):
+    def execute(self, metrics):
         """
-        metrics is the dict of
-        name ->
-            scope:
-                o - object level
-                i - interface level
-                p - profile level
-            interfaces: [list of interface names], for *i* scope
-            probes: [{
-                tests: [{
-                    name
-                    type
-                }
-            }] for *p* scope
+        Metrics is a list of:
+        * id -- Opaque id, must be returned back
+        * metric -- Metric type
+        * path -- metric path
+        * ifindex - optional ifindex
+        * sla_test - optional sla test inventory
         """
-        # Populate ifindexes
-        hints = hints or {}
-        self.ifindexes = hints.get("ifindexes", {})
-        self.probes = hints.get("probes", {})
-        #
+        metrics = [MetricConfig(**m) for m in metrics]
         self.collect_profile_metrics(metrics)
         if self.has_capability("SNMP"):
             self.collect_snmp_metrics(metrics)
@@ -339,16 +355,17 @@ class Script(BaseScript):
         batch = {}
         for m in metrics:
             # Calculate oids
-            self.logger.debug("Make oid for metrics: %s" % m)
-            snmp_rule = self.get_snmp_rule(m)
+            self.logger.debug("Make oid for metrics: %s" % m.metric)
+            snmp_rule = self.get_snmp_rule(m.metric)
             if snmp_rule:
-                for oid, vtype, scale, tags in snmp_rule.iter_oids(self, metrics[m]):
-                    batch[oid] = {
-                        "name": m,
-                        "tags": tags,
-                        "type": vtype,
-                        "scale": scale
-                    }
+                for oid, vtype, scale, path in snmp_rule.iter_oids(self, m):
+                    batch[oid] = BatchConfig(
+                        id=m.id,
+                        metric=m.metric,
+                        path=path,
+                        type=vtype,
+                        scale=scale
+                    )
         self.logger.debug("Batch: %s" % batch)
         # Run snmp batch
         if not batch:
@@ -428,43 +445,44 @@ class Script(BaseScript):
                     oid
                 )
                 continue
+            bv = batch[oid]
             self.set_metric(
-                name=batch[oid]["name"],
+                id=bv.id,
+                metric=bv.metric,
                 value=v,
                 ts=ts,
-                tags=batch[oid]["tags"],
-                type=batch[oid]["type"],
-                scale=batch[oid]["scale"]
+                path=bv.path,
+                type=bv.type,
+                scale=bv.scale
             )
 
     def get_ifindex(self, name):
         return self.ifindexes.get(name)
 
-    @staticmethod
-    def get_ts():
+    def get_ts(self):
         """
         Returns current timestamp in nanoseconds
         """
-        return int(time.time() * NS)
+        if not self.ts:
+            self.ts = int(time.time() * NS)
+        return self.ts
 
-    def set_metric(self, name, value, ts=None, tags=None,
-                   type="gauge", scale=1):
+    def set_metric(self, id, metric, value, ts=None,
+                   path=None, type="gauge", scale=1):
         """
         Append metric to output
         """
-        tags = tags or {}
-        tags = tags.copy()
-        tags.update(self.tags)
         if callable(scale):
             if not isinstance(value, list):
                 value = [value]
             value = scale(*value)
             scale = 1
         self.metrics += [{
+            "id": id,
             "ts": ts or self.get_ts(),
-            "name": name,
+            "metric": metric,
+            "path": path or [],
             "value": value,
-            "tags": tags,
             "type": type,
             "scale": scale
         }]

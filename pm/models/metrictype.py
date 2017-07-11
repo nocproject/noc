@@ -13,7 +13,8 @@ import operator
 from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, ObjectIdField
+from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
+                                LongField)
 import cachetools
 # NOC Modules
 from .metricscope import MetricScope
@@ -24,11 +25,13 @@ from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save
+from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 
 
 @on_save
+@bi_sync
 @category
 class MetricType(Document):
     meta = {
@@ -70,6 +73,8 @@ class MetricType(Document):
     measure = StringField()
     # Optional required capability
     required_capability = PlainReferenceField(Capability)
+    # Object id in BI, used for counter context hashing
+    bi_id = LongField()
     #
     category = ObjectIdField()
 
@@ -117,3 +122,98 @@ class MetricType(Document):
             scheduler="scheduler",
             delay=30
         )
+
+    def clean_value(self, value):
+        return getattr(self, "clean_%s" % self.field_type)(value)
+
+    @staticmethod
+    def clean_UInt8(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < 0 or v > 255:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_Int8(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < -127 or v > 127:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_UInt16(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < 0 or v > 65535:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_Int16(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < -32767 or v > 32767:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_UInt32(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < 0 or v > 4294967295:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_Int32(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < -2147483647 or v > 2147483647:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_UInt64(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < 0 or v > 18446744073709551615:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_Int64(value):
+        try:
+            v = int(value)
+        except ValueError:
+            raise
+        if v < -9223372036854775807 or v > 9223372036854775807:
+            raise ValueError("Value out of range")
+        return v
+
+    @staticmethod
+    def clean_Float32(value):
+        return float(value)
+
+    @staticmethod
+    def clean_Float64(value):
+        return float(value)
+
+    @staticmethod
+    def clean_String(value):
+        return str(value)

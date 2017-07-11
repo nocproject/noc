@@ -80,7 +80,7 @@ class MACCheck(DiscoveryCheck):
         if data:
             self.logger.info("%d MAC addresses are collected. Sending",
                              processed_macs)
-            self.service.register_ch_metrics(
+            self.service.register_metrics(
                 self.METRIC_FIELDS,
                 data
             )

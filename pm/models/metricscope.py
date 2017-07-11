@@ -141,7 +141,7 @@ class MetricScope(Document):
             pk += ["path"]
         r = [
             "CREATE TABLE IF NOT EXISTS %s (" % self.table_name,
-            ",\n".join("%s %s" % (n, t) for n, t in self.iter_fields()),
+            ",\n".join("  %s %s" % (n, t) for n, t in self.iter_fields()),
             ") ENGINE = MergeTree(date, (%s), 8192)" % ", ".join(pk)
         ]
         return "\n".join(r)

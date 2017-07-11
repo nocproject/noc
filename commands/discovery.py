@@ -29,7 +29,7 @@ class Command(BaseCommand):
     checks = {
         "box": [
             "profile", "version", "caps", "interface",
-            "id", "config", "asset", "vlan", "nri",
+            "id", "config", "asset", "vlan", "nri", "udld",
             "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe",
             "lacp", "hk", "mac"
         ],
@@ -112,13 +112,10 @@ class Command(BaseCommand):
         job.dereference()
         job.handler()
         if scheduler.service.metrics:
-            for m in scheduler.service.metrics:
-                self.print("Collected metric: %s" % m)
-        if scheduler.service.ch_metrics:
-            self.print("Collected CH data:")
-            for f in scheduler.service.ch_metrics:
-                self.print("Fields: %s", f)
-                self.print("\n".join(scheduler.service.ch_metrics[f]))
+            self.print("Collected metrics:")
+            for f in scheduler.service.metrics:
+                self.print("Fields: %s" % f)
+                self.print("\n".join(scheduler.service.metrics[f]))
         if job.context_version and job.context:
             self.print("Saving job context to %s" % ctx_key)
             scheduler.cache_set(
@@ -132,17 +129,13 @@ class Command(BaseCommand):
 
 class ServiceStub(object):
     def __init__(self):
-        self.metrics = []
-        self.ch_metrics = defaultdict(list)
+        self.metrics = defaultdict(list)
         self.service_id = "stub"
         self.address = "127.0.0.1"
         self.port = 0
 
-    def register_metrics(self, batch):
-        self.metrics += batch
-
-    def register_ch_metrics(self, fields, data):
-        self.ch_metrics[fields] += data
+    def register_metrics(self, fields, data):
+        self.metrics[fields] += data
 
 if __name__ == "__main__":
     Command().run()
