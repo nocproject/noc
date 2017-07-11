@@ -96,10 +96,11 @@ class Command(BaseCommand):
                 del caps["SNMP"]
         # Get version info
         v = obj.version
+        p = obj.platform
         if v.version:
             version = {
-                "vendor": v.vendor,
-                "platform": v.platform,
+                "vendor": v.vendor.name,
+                "platform": p.name,
                 "version": v.version
             }
         else:

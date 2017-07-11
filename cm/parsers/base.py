@@ -64,8 +64,8 @@ class BaseParser(object):
 
     def convert_interface_name(self, name):
         try:
-            return self.managed_object.profile.convert_interface_name(name)
-        except:
+            return self.managed_object.get_profile().convert_interface_name(name)
+        except Exception as e:
             return name
 
     def get_system_fact(self):

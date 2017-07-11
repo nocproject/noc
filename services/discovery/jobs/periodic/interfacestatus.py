@@ -39,7 +39,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             if_name = interfaces.get(name)
             if if_name:
                 return if_name
-            for iname in self.object.profile.get_interface_names(i["interface"]):
+            for iname in self.object.profile().get_interface_names(i["interface"]):
                 if_name = interfaces.get(iname)
                 if if_name:
                     return if_name

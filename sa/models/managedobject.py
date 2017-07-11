@@ -712,8 +712,16 @@ class ManagedObject(Model):
                                        key=name, value=value)
         v.save()
 
+    def update_attributes(self, attr):
+        for k in attr:
+            v = attr[k]
+            ov = self.get_attr(k)
+            if ov != v:
+                self.set_attr(k, v)
+                logger.info("%s: %s -> %s", k, ov, v)
+
     def is_ignored_interface(self, interface):
-        interface = self.profile.convert_interface_name(interface)
+        interface = self.get_profile().convert_interface_name(interface)
         rx = self.get_attr("ignored_interfaces")
         if rx:
             return re.match(rx, interface) is not None
@@ -920,6 +928,18 @@ class ManagedObject(Model):
         Disable all discovery methods related with managed object
         """
 
+    def get_profile(self):
+        """
+        Getting profile methods
+        Exa:
+         mo.get_profile().convert_interface_name(i)
+        :return:
+        """
+        profile = getattr(self, "_profile", None)
+        if not profile:
+            self._profile = self.profile.get_profile()()
+        return self._profile
+
     def get_parser(self):
         """
         Return parser instance or None.
@@ -938,12 +958,12 @@ class ManagedObject(Model):
     def get_interface(self, name):
         from noc.inv.models.interface import Interface
 
-        name = self.profile.convert_interface_name(name)
+        name = self.get_profile().convert_interface_name(name)
         try:
             return Interface.objects.get(managed_object=self.id, name=name)
         except Interface.DoesNotExist:
             pass
-        for n in self.profile.get_interface_names(name):
+        for n in self.profile().get_interface_names(name):
             try:
                 return Interface.objects.get(managed_object=self.id, name=n)
             except Interface.DoesNotExist:

@@ -26,7 +26,7 @@ class InterfaceDS(DataSource):
             "managed_object": managed_object.id
         }
         if interface:
-            q["name"] = managed_object.profile.convert_interface_name(interface)
+            q["name"] = managed_object.get_profile().convert_interface_name(interface)
         if ifindex:
             q["ifindex"] = int(ifindex)
         self._description = None

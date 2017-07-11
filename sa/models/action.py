@@ -190,7 +190,7 @@ class Action(Document):
             elif p.type == "interface":
                 # Interface
                 try:
-                    v = obj.profile.convert_interface_name(v)
+                    v = obj.get_profile().convert_interface_name(v)
                 except Exception:
                     raise ValueError(
                         "Invalid interface name in parameter '%s': '%s'" % (
