@@ -446,8 +446,7 @@ class MetricsCheck(DiscoveryCheck):
 
         result = [
             MData(**r)
-            #for r in self.object.scripts.get_metrics(metrics=metrics)
-            for r in [{'scale': 8, 'metric': 'Interface | Load | In', 'ts': 1499805527002161920, 'value': 2750787937.0, 'path': ['', '', '', 'WD'], 'type': 'counter', 'id': 4}, {'scale': 8, 'metric': 'Interface | Load | In', 'ts': 1499805527002161920, 'value': 55496314348.0, 'path': ['', '', '', 'WAN'], 'type': 'counter', 'id': 2}, {'scale': 8, 'metric': 'Interface | Load | In', 'ts': 1499805527002161920, 'value': 8997115624.0, 'path': ['', '', '', 'wlan1'], 'type': 'counter', 'id': 6}, {'scale': 8, 'metric': 'Interface | Load | In', 'ts': 1499805527002161920, 'value': 26288534.0, 'path': ['', '', '', 'TV'], 'type': 'counter', 'id': 0}, {'scale': 8, 'metric': 'Interface | Load | Out', 'ts': 1499805527002161920, 'value': 2526164204.0, 'path': ['', '', '', 'TV'], 'type': 'counter', 'id': 1}, {'scale': 8, 'metric': 'Interface | Load | Out', 'ts': 1499805527002161920, 'value': 45122703697.0, 'path': ['', '', '', 'wlan1'], 'type': 'counter', 'id': 7}, {'scale': 8, 'metric': 'Interface | Load | Out', 'ts': 1499805527002161920, 'value': 9467422961.0, 'path': ['', '', '', 'WAN'], 'type': 'counter', 'id': 3}, {'scale': 8, 'metric': 'Interface | Load | Out', 'ts': 1499805527002161920, 'value': 179974975.0, 'path': ['', '', '', 'WD'], 'type': 'counter', 'id': 5}]
+            for r in self.object.scripts.get_metrics(metrics=metrics)
         ]
         if not result:
             self.logger.info("No metrics found")
