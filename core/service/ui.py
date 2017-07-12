@@ -15,7 +15,7 @@ import logging
 import tornado.web
 # NOC modules
 from .base import Service
-from config import config
+from noc.config import config
 
 logger = logging.getLogger("ui")
 

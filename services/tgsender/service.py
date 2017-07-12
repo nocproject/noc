@@ -18,7 +18,7 @@ import time
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.perf import metrics
-from config import config
+from noc.config import config
 
 
 class TgSenderService(Service):

@@ -16,7 +16,7 @@ import datetime
 # Django modules
 from django.db import connection
 # NOC modules
-from config import config
+from noc.config import config
 from noc.core.gridvcs.manager import GridVCS
 
 

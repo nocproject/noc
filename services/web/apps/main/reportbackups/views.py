@@ -6,7 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from noc.lib.app.simplereport import SimpleReport,Report
-from config import config
+from noc.config import config
 import os,datetime,stat
 from noc.core.translation import ugettext as _
 #
