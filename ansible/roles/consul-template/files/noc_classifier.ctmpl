@@ -10,7 +10,7 @@ pattern = "noc-classifier"
         {{ if .Service | contains "classifier" -}}
             {{range $index, $service:= service (printf "%s~_agent|any" .Service) -}}
                 {{if ne $index 0 -}}, {{- end}}
-                "http://{{$service.Address}}:{{$service.Port}}/mon/", $index
+                "http://{{$service.Address}}:{{$service.Port}}/mon/"
             {{- end}}
         {{- end}}
      {{- end}}
