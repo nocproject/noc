@@ -5,7 +5,7 @@
       dest: "{{ consul_template_templates_dir }}/upstream.conf.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install nginx upstream config for template
     template:
       src: services/upstream.conf.j2
       dest: "{{consul_template_config_dir}}/upstream.conf"
@@ -19,7 +19,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_activator.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_activator config for template
     template:
       src: services/noc_activator.conf.j2
       dest: "{{consul_template_config_dir}}/noc_activator.conf"
@@ -33,7 +33,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_bi.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_bi config for template
     template:
       src: services/noc_bi.conf.j2
       dest: "{{consul_template_config_dir}}/noc_bi.conf"
@@ -47,7 +47,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_chwriter.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_chwriter config for template
     template:
       src: services/noc_chwriter.conf.j2
       dest: "{{consul_template_config_dir}}/noc_chwriter.conf"
@@ -61,7 +61,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_card.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_card config for template
     template:
       src: services/noc_card.conf.j2
       dest: "{{consul_template_config_dir}}/noc_card.conf"
@@ -75,7 +75,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_classifier.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_classifier config for template
     template:
       src: services/noc_classifier.conf.j2
       dest: "{{consul_template_config_dir}}/noc_classifier.conf"
@@ -89,7 +89,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_correlator.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_correlator config for template
     template:
       src: services/noc_correlator.conf.j2
       dest: "{{consul_template_config_dir}}/noc_correlator.conf"
@@ -103,7 +103,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_discovery.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_discovery config for template
     template:
       src: services/noc_discovery.conf.j2
       dest: "{{consul_template_config_dir}}/noc_discovery.conf"
@@ -117,7 +117,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_escalator.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_escalator config for template
     template:
       src: services/noc_escalator.conf.j2
       dest: "{{consul_template_config_dir}}/noc_escalator.conf"
@@ -131,7 +131,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_grafanads.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_grafanads config for template
     template:
       src: services/noc_grafanads.conf.j2
       dest: "{{consul_template_config_dir}}/noc_grafanads.conf"
@@ -145,7 +145,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_login.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_login config for template
     template:
       src: services/noc_login.conf.j2
       dest: "{{consul_template_config_dir}}/noc_login.conf"
@@ -159,7 +159,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_mailsender.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_mailsender config for template
     template:
       src: services/noc_mailsender.conf.j2
       dest: "{{consul_template_config_dir}}/noc_mailsender.conf"
@@ -173,7 +173,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_mrt.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_mrt config for template
     template:
       src: services/noc_mrt.conf.j2
       dest: "{{consul_template_config_dir}}/noc_mrt.conf"
@@ -187,7 +187,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_omap.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_omap config for template
     template:
       src: services/noc_omap.conf.j2
       dest: "{{consul_template_config_dir}}/noc_omap.conf"
@@ -201,7 +201,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_ping.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_ping config for template
     template:
       src: services/noc_ping.conf.j2
       dest: "{{consul_template_config_dir}}/noc_ping.conf"
@@ -215,7 +215,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_pmwriter.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_pmwriter config for template
     template:
       src: services/noc_pmwriter.conf.j2
       dest: "{{consul_template_config_dir}}/noc_pmwriter.conf"
@@ -229,7 +229,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_sae.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_sae config for template
     template:
       src: services/noc_sae.conf.j2
       dest: "{{consul_template_config_dir}}/noc_sae.conf"
@@ -243,7 +243,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_scheduler.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_scheduler config for template
     template:
       src: services/noc_scheduler.conf.j2
       dest: "{{consul_template_config_dir}}/noc_scheduler.conf"
@@ -257,7 +257,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_syslogcollector.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_syslogcollector config for template
     template:
       src: services/noc_syslogcollector.conf.j2
       dest: "{{consul_template_config_dir}}/noc_syslogcollector.conf"
@@ -271,7 +271,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_trapcollector.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_trapcollector config for template
     template:
       src: services/noc_trapcollector.conf.j2
       dest: "{{consul_template_config_dir}}/noc_trapcollector.conf"
@@ -285,7 +285,7 @@
       dest: "{{ consul_template_templates_dir }}/noc_web.ctmpl"
     notify: reload consul-template
 
-  - name: install nginx upstream template for template
+  - name: install noc_web config for template
     template:
       src: services/noc_web.conf.j2
       dest: "{{consul_template_config_dir}}/noc_web.conf"
