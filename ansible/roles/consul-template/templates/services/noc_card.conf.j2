@@ -4,7 +4,7 @@ template {
   command = "{{ telegraf_reload_command }}"
   command_timeout = "60s"
   perms = 0644
-  backup = true
+  backup = false
   wait {
     min = "2s"
     max = "60s"

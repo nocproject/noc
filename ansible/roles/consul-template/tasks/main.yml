@@ -44,7 +44,8 @@
 - name: include services
   include: "services.yml"
   tags:
-  - requirements
+    - requirements
+    - config
 
 - name: start consul-template service
   service:

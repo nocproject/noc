@@ -1,16 +1,6 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Install discovery monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-discovery.conf.j2"
-    dest: "{{ telegraf_confd_path }}/noc-discovery.conf"
-  notify: reload telegraf
-  tags:
-    - config
-    - telegraf
-
-
 - name: Tune sysctl.conf for keepalive
   sysctl:
     name: "{{item.name}}"

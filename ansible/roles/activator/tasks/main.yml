@@ -53,12 +53,3 @@
   tags:
     - config
   when: "'Linux' in ansible_system"
-
-- name: Install activator monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-activator.conf.j2"
-    dest: "{{ telegraf_confd_path }}/noc-activator.conf"
-  notify: reload telegraf
-  tags:
-    - config
-    - telegraf
