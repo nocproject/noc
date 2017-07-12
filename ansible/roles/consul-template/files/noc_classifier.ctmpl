@@ -5,8 +5,16 @@ pattern = "noc-classifier"
 [[inputs.httpjson]]
   name = "noc-classifier"
   servers = [
-  {{range $index, $service:= service "classifier~_agent|any"}}{{if eq $service.Node (env "HOSTNAME")}}{{if ne $index 0}}, {{end}}"http://{{$service.Address}}:{{$service.Port}}/mon/"{{end}}{{end}}
-  ]
+  {{ with node -}}
+    {{range .Services -}}
+        {{ if .Service | contains "classifier" -}}
+            {{range $index, $service:= service (printf "%s~_agent|any" .Service) -}}
+                {{if ne $index 0 -}}, {{- end}}
+                "http://{{$service.Address}}:{{$service.Port}}/mon/", $index
+            {{- end}}
+        {{- end}}
+     {{- end}}
+  {{- end}}  ]
   method = "GET"
   tag_keys = ["service", "instance"]
   tagexclude = ["server"]
