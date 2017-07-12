@@ -5,7 +5,16 @@ pattern = "noc-correlator"
 [[inputs.httpjson]]
   name = "noc-correlator"
   servers = [
-  {{range $index, $service:= service "correlator~_agent|any"}}{{if eq $service.Node (env "HOSTNAME")}}{{if ne $index 0}}, {{end}}"http://{{$service.Address}}:{{$service.Port}}/mon/"{{end}}{{end}}
+  {{ with node -}}
+    {{range .Services -}}
+        {{ if .Service | contains "correlator" -}}
+            {{range $index, $service:= service (printf "%s~_agent|any" .Service) -}}
+                {{if ne $index 0 -}}, {{- end}}
+                "http://{{$service.Address}}:{{$service.Port}}/mon/", $index
+            {{- end}}
+        {{- end}}
+     {{- end}}
+  {{- end}}
   ]
   method = "GET"
   tag_keys = ["service", "instance"]
