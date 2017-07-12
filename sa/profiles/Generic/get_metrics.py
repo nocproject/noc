@@ -253,7 +253,7 @@ class CapabilityIndexRule(OIDRule):
         self.start = start
         self.capability = capability
 
-    def iter_oids(self, script, metric):
+    def iter_oids(self, script, cfg):
         if self.capability and script.has_capability(self.capability):
             for i in range(
                 self.start,
@@ -261,7 +261,7 @@ class CapabilityIndexRule(OIDRule):
             ):
                 oid = self.expand_oid(index=i)
                 if oid:
-                    yield oid, self.type, self.scale, {}
+                    yield oid, self.type, self.scale, cfg.path
 
 
 class CapabilityListRule(OIDRule):
@@ -273,13 +273,14 @@ class CapabilityListRule(OIDRule):
     """
     name = "caplist"
 
-    def __init__(self, oid, type=None, scale=1, capability=None, separator=",", strip=True):
+    def __init__(self, oid, type=None, scale=1, capability=None,
+                 separator=",", strip=True):
         super(CapabilityListRule, self).__init__(oid, type=type, scale=scale)
         self.capability = capability
         self.separator = separator
         self.strip = strip
 
-    def iter_oids(self, script, metric):
+    def iter_oids(self, script, cfg):
         if self.capability and script.has_capability(self.capability):
             for i in script.capabilities[self.capability].split(self.separator):
                 if self.strip:
@@ -288,7 +289,7 @@ class CapabilityListRule(OIDRule):
                     continue
                 oid = self.expand_oid(item=i)
                 if oid:
-                    yield oid, self.type, self.scale, {}
+                    yield oid, self.type, self.scale, cfg.path
 
 
 class Script(BaseScript):
