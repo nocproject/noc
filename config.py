@@ -89,7 +89,7 @@ class Config(BaseConfig):
     class clickhouse(ConfigSection):
         addresses = ServiceParameter(service="clickhouse", wait=True)
         db = StringParameter(default="noc")
-        user = StringParameter()
+        user = StringParameter(default="default")
         password = SecretParameter()
 
     class influxdb(ConfigSection):
