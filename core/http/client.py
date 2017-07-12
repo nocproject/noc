@@ -83,17 +83,26 @@ def fetch(url, method="GET",
           max_redirects=DEFAULT_MAX_REDIRECTS,
           validate_cert=False,
           allow_proxy=False,
-          proxies=None
+          proxies=None,
+          user=None,
+          password=None
     ):
     """
 
-    :param url:
-    :param method:
-    :param headers:
-    :param body:
+    :param url: Fetch URL
+    :param method: request method "GET", "POST", "PUT" etc
+    :param headers: Dict of additional headers
+    :param body: Request body for POST and PUT request
     :param connect_timeout:
     :param request_timeout:
     :param ioloop:
+    :param follow_redirects:
+    :param max_redirects:
+    :param validate_cert:
+    :param allow_proxy:
+    :param proxies:
+    :param user:
+    :param password:
     :param max_buffer_size:
     :return: code, headers, body
     """
@@ -233,6 +242,11 @@ def fetch(url, method="GET",
         if method in REQUIRE_LENGTH_METHODS:
             h["Content-Length"] = str(len(body))
             h["Content-Type"] = "application/binary"
+        if user and password:
+            # Include basic auth header
+            h["Authorization"] = "Basic %s" % (
+                "%s:%s" % (user, password)
+            ).encode("base64").strip()
         if headers:
             h.update(headers)
         path = u.path
@@ -325,7 +339,10 @@ def fetch_sync(url, method="GET",
                max_redirects=DEFAULT_MAX_REDIRECTS,
                validate_cert=False,
                allow_proxy=False,
-               proxies=None):
+               proxies=None,
+               user=None,
+               password=None
+               ):
 
     @tornado.gen.coroutine
     def _fetch():
@@ -340,7 +357,9 @@ def fetch_sync(url, method="GET",
             max_redirects=max_redirects,
             validate_cert=validate_cert,
             allow_proxy=allow_proxy,
-            proxies=proxies
+            proxies=proxies,
+            user=user,
+            password=password
         )
         r.append(result)
 

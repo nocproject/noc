@@ -1,21 +1,31 @@
 ---
-- name: Install pgbouncer
-  pkgng: name="pgbouncer" state=present
-  tags:
-    - requirements
-
-- name: Setting pgbouncer flags
-  lineinfile: dest=/etc/rc.conf regexp=^pgbouncer_conf= line="pgbouncer_conf=\"/usr/local/etc/pgbouncer/pgbouncer.ini\""
-  tags:
-    - config
-
 - name: Create pgbouncer directories
   file:
     path: "{{ item }}"
-    owner: "{{postgres_user}}"
+    owner: "pgbouncer"
     mode: 0700
     state: directory
   with_items:
     - /var/log/pgbouncer/
     - /var/run/pgbouncer/
     - /usr/local/etc/pgbouncer/
+
+- name: Install pgbouncer
+  pkgng: name="pgbouncer" state=present
+  tags:
+    - requirements
+
+- name: Install pgbouncer config
+  template:
+    src: "etc/pgbouncer/pgbouncer.ini.j2"
+    dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
+  notify: reload pgbouncer
+  tags:
+    - config
+
+- name: Setting pgbouncer flags
+  lineinfile: dest=/etc/rc.conf regexp=^pgbouncer_conf= line="pgbouncer_conf=\"{{etc_prefix}}/pgbouncer/pgbouncer.ini\""
+  tags:
+    - config
+
+
