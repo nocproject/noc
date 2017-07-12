@@ -133,6 +133,7 @@ class AlarmEscalation(Document):
                 call_later(
                     "noc.services.escalator.escalation.escalate",
                     scheduler="escalator",
+                    pool=alarm.managed_object.escalator_shard,
                     delay=delay,
                     max_runs=esc.max_escalation_retries,
                     alarm_id=alarm.id,

@@ -14,7 +14,7 @@ import logging
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ListField, IntField,
-                                DateTimeField)
+                                DateTimeField, BooleanField)
 import cachetools
 # NOC modules
 from noc.core.model.decorator import on_delete_check
@@ -22,6 +22,8 @@ from noc.core.handler import get_handler
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
+
+DEFAULT_TTSYSTEM_SHARD = "default"
 
 
 @on_delete_check(check=[
@@ -34,14 +36,19 @@ class TTSystem(Document):
     }
 
     name = StringField(unique=True)
+    #
+    is_active = BooleanField(default=False)
     # Full path to BaseTTSystem instance
     handler = StringField()
     description = StringField()
     # Connection string
     connection = StringField()
-    #
+    # Failure condition checking
     failure_cooldown = IntField(default=0)
     failed_till = DateTimeField()
+    # Threadpool settings
+    shard_name = StringField(default=DEFAULT_TTSYSTEM_SHARD)
+    max_threads = IntField(default=10)
     #
     tags = ListField(StringField())
 
