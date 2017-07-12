@@ -5,7 +5,16 @@ pattern = "noc-mrt"
 [[inputs.httpjson]]
   name = "noc-mrt"
   servers = [
-  {{range $index, $service:= service "mrt~_agent|any"}}{{if eq $service.Node (env "HOSTNAME")}}{{if ne $index 0}}, {{end}}"http://{{$service.Address}}:{{$service.Port}}/mon/"{{end}}{{end}}
+  {{ with node -}}
+    {{range .Services -}}
+        {{ if eq .Service "mrt" -}}
+            {{range $index, $service:= service (printf "%s~_agent|any" .Service) -}}
+                {{if ne $index 0 -}}, {{- end}}
+                "http://{{$service.Address}}:{{$service.Port}}/mon/"
+            {{- end}}
+        {{- end}}
+     {{- end}}
+  {{- end}}
   ]
   method = "GET"
   tag_keys = ["service", "instance"]

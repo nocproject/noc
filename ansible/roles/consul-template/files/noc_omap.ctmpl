@@ -5,7 +5,16 @@ pattern = "noc-omap"
 [[inputs.httpjson]]
   name = "noc-omap"
   servers = [
-  {{range $index, $service:= service "omap~_agent|any"}}{{if eq $service.Node (env "HOSTNAME")}}{{if ne $index 0}}, {{end}}"http://{{$service.Address}}:{{$service.Port}}/mon/"{{end}}{{end}}
+  {{ with node -}}
+    {{range .Services -}}
+        {{ if eq .Service "omap" -}}
+            {{range $index, $service:= service (printf "%s~_agent|any" .Service) -}}
+                {{if ne $index 0 -}}, {{- end}}
+                "http://{{$service.Address}}:{{$service.Port}}/mon/"
+            {{- end}}
+        {{- end}}
+     {{- end}}
+  {{- end}}
   ]
   method = "GET"
   tag_keys = ["service", "instance"]
