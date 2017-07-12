@@ -20,8 +20,10 @@ class Script(BaseScript):
     name = "Extreme.XOS.get_interface_index"
     interface = IGetIfIndex
 
-    rx_ifidx_phys = re.compile("^X\S+\s+Port\s+(?P<port>\d+)", re.IGNORECASE )
-    rx_ifidx_vlan = re.compile("^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.IGNORECASE )
+    rx_ifidx_phys = re.compile(
+        "^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE)
+    rx_ifidx_vlan = re.compile(
+        "^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.IGNORECASE)
 
     requires = []
 
@@ -34,11 +36,11 @@ class Script(BaseScript):
                 if match:
                     v = match.group("port")
                     if v == interface:
-                      return int(oid.split(".")[-1])
+                        return int(oid.split(".")[-1])
                 match = self.rx_ifidx_vlan.match(v)
                 if match:
                     v = match.group("port")
                     if v == interface:
-                      return int(oid.split(".")[-1])
+                        return int(oid.split(".")[-1])
         except self.snmp.TimeOutError:
             return None

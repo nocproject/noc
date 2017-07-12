@@ -32,7 +32,7 @@ class Script(BaseScript):
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard = re.compile(
-        r"\[(?:Main_Board|BackPlane|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        r"\[(?:Main_Board|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_subitem = re.compile(
@@ -66,6 +66,8 @@ class Script(BaseScript):
         r"MAC_ADDRESS\s+:\s+(?P<mac>\S+)\s*\n"
         r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n", re.MULTILINE)
 
+    unit = False
+
     def parse_item_content(self, item, number, item_type):
         """Parse display elabel block"""
         date_check = re.compile("\d+-\d+-\d+")
@@ -77,21 +79,6 @@ class Script(BaseScript):
         part_no = match_body.group("board_type").strip()
         desc = match_body.group("desc")
         manufactured = match_body.group("mnf_date")
-        #todo create dictonary for normalize types
-        if part_no == "PAC-350WB-L":
-            item_type = "POWER"
-        if part_no == "AR01PSAC35":
-            item_type = "POWER"
-        if part_no == "AR01SRU2C":
-            item_type = "SRU"
-        if part_no == "AR01XSX550A":
-            item_type = "XSIC"
-        if part_no == "AR01WSX220A":
-            item_type = "WSIC"
-        if part_no == "AR0MSEG1CA00":
-            item_type = "SIC"
-        if part_no == "":
-            return None
         if vendor == "":
             vendor = "NONAME"
         if " " in serial:
@@ -112,101 +99,152 @@ class Script(BaseScript):
             "mfg_date": manufactured
         }
 
-    def part_parse(self, type, slot_num, subcard_num=""):
+    def part_parse(self, i_type, slot_num, subcard_num=""):
+        """
+        Getting detail information about slot from display elabel command
+        :param i_type: Inventory type
+        :param slot_num: Number slot, installed card
+        :param subcard_num: Number subcard on slot, empty if device not support subcard
+        """
+        v_cli = "display elabel slot %s %s"
+        if self.unit:
+            v_cli = "display elabel unit %s %s"
+        elif self.match_version(platform__regex="^(S93..|AR[12].+)$"):
+            v_cli = "display elabel %s %s"
         try:
-            v = self.cli("display elabel slot %s %s" % (slot_num or "", subcard_num))
+            v = self.cli(v_cli % (slot_num, subcard_num))
         except self.CLISyntaxError:
-            # For Router Device (not slot part in cli)
-            try:
-                v = self.cli("display elabel %s" % subcard_num)
-            except self.CLISyntaxError:
-                # For old devices
-                try:
-                    v = self.cli("display elabel unit %s" % subcard_num)
-                except self.CLISyntaxError:
-                    # print("Exception !!!!!!!!!!!!!")
-                    return []
+            return []
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
 
-        if type == "CHASSIS":
+        if i_type == "CHASSIS":
             f = re.search(self.rx_mainboard, v)
             sh = self.parse_item_content(f.group("body"), slot_num, "CHASSIS")
             r.append(sh)
-        elif type == "XCVR":
-            for f in re.finditer(self.rx_port, v):
-                num = f.group("port_num")
-                if f.group("body") == '':
-                    self.logger.info("Slot %s, Port %s not having asset" % (slot_num, num))
-                    continue
-                sfp = self.parse_item_content(f.group("body"), num, "XCVR")
-                if sfp:
-                    r.append(sfp)
         else:
-            r.append(self.parse_item_content(v, subcard_num, type))
+            r.append(self.parse_item_content(v, subcard_num, i_type))
+
+        for f in re.finditer(self.rx_port, v):
+            # port block, search XCVR
+            num = f.group("port_num")
+            if f.group("body") == '':
+                self.logger.info("Slot %s, Port %s not having asset" % (slot_num, num))
+                continue
+            sfp = self.parse_item_content(f.group("body"), num, "XCVR")
+            if not sfp.get("part_no", [])[0] and not sfp.get("serial"):
+                # Skipping SFP
+                self.logger.debug("Not p_no in SFP slot, %s skipping" % num)
+                continue
+            if sfp:
+                r.append(sfp)
 
         return r
 
     def get_inv(self):
-        """Get inventory table"""
+        """
+        Get inventory table. Detect Slot and Subcard number and inventory type
+        """
+        # @todo Stack
         inv = []
         v = self.cli("display device")
+        if "Unit " in v:
+            self.unit = True
+        slot_num = 0
         s = self.parse_table(v)
+        chassis = False
         for i in s:
-            type = i.get("Type")
-            if not type:
-                continue
-            if "SubCard" in i:
-                num = i["SubCard"]
-                if i["SubCard"] == 0:
-                    type = "CHASSIS"
-            elif i["Slot"] == "0" and i["Sub"] == "-":
-                num = i["Slot"]
-                type = "CHASSIS"
-            elif i["Slot"] == "-":
-                if "Sub" in i:
-                    num = i["Sub"]
-                elif "#" in i:
-                    num = i["#"]
-            elif i["Slot"] != "-":
-                num = i["Slot"]
-            elif self.rx_slot_key.match(i["Slot"]):
-                num = i["Slot"][3:]
-                type = i["Slot"][0:3]
+            i_type = i["Type"]
+            # Detect slot number
+            if "Slot" in i:
+                i_slot = i["Slot"]
+            elif "Unit#" in i:
+                i_slot = i["Unit#"]
             else:
-                self.logger("Not response number place")
+                i_slot = 0
+
+            # Detect sub slot number
+            if "Sub" in i:
+                i_sub = i["Sub"]
+            elif "SubCard#" in i:
+                i_sub = i["SubCard#"]
+            else:
+                i_sub = None
+            if i_sub == "-":
+                i_sub = ""
+            i_type, number, part_no = self.get_type(i_slot, i_sub, i_type)
+
+            if i_slot != "-":
+                self.logger.info("Slot Number constant")
+                slot_num = number
+            self.logger.debug("%s, %s ,%s", i_type, number, part_no)
+            if i_type == "CHASSIS" and not chassis:
+                inv.extend(self.part_parse(i_type, number))
+                chassis = True
+            elif i_type == "CHASSIS" and chassis:
+                # chassis must be only one
+                self.logger.info("chassis must be only one, Skipping...")
                 continue
+            else:
+                inv.extend(self.part_parse(i_type, slot_num, i_sub))
+            """
             inv += [{
                 "type": type,
-                "number": num,
+                "number": number,
+                "part_no": part_no,
                 "vendor": "HUAWEI"
             }]
-        found = False
-        for i in inv:
-            if i["type"] == "CHASSIS":
-                found = True
-                break
-        if not found:
-            inv += [{
-                "type": "CHASSIS",
-                "number": None,
-                "vendor": "HUAWEI"
-            }]
+            """
+
         return inv
 
     @staticmethod
     def parse_table(s):
         """List of Dict [{column1: row1, column2: row2}, ...]"""
-        rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+")
+        rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+", re.MULTILINE)
+        rx_header_repl = re.compile(r"((Slot|Brd|Subslot|Sft|Unit|SubCard)\s)")
+        header_first_line = False
+
+        if not rx_header_start.search(s):
+            # if not header splitter in table
+            header_first_line = True
 
         r = []
         columns = []
-        chassis = False
-        for l in s.splitlines():
+        l_old = ""
+        chassis = ""
+        s = s.splitlines()
+
+        if "'" in s[0]:
+            # Chassis: S5328C-EI-24S's Device status:
+            ch = s.pop(0)
+            chassis = ch.split("'")[0]
+            r.append({"Type": "CHASSIS",
+                      "Slot": 0,
+                      "Sub": "-",
+                      "part_no": ch.split("'")[0]})
+        elif "Unit" in s[0]:
+            # @todo Unit devices
+            s.pop(0)
+
+        for l in s:
             if not l.strip():
                 continue
+            if header_first_line:
+                """
+                If S85XX column with spaces:
+                Slot No.   Brd Type        Brd Status   Subslot Num    Sft Ver
+                Merge word
+                """
+                l = rx_header_repl.sub(r"\g<2>", l)
+                columns = [c.strip() for c in l.split(" ") if c]
+                header_first_line = False
+                continue
             if rx_header_start.match(l):
+                if " #" in l_old:
+                    # If Slot # in first column name - strip whitespace
+                    l_old = rx_header_repl.sub(r"\g<2>", l_old)
                 columns = l_old.split()
             elif columns:
                 """Fetch cells"""
@@ -214,12 +252,15 @@ class Script(BaseScript):
                 if len(l.strip().split()) != len(columns):
                     """First column is empty"""
                     row.insert(0, "-")
-                    if chassis:
-                        # @todo Make algoritm to response chassis
-                        r[-1]["Type"] = "CHASSIS"
-                        chassis = False
-                else:
-                    chassis = True
+                # else:
+                #    chassis = True
+                if chassis and chassis == row[2]:
+                    # CHASSIS Already append, skipping
+                    # @todo Make algoritm to response chassis
+                    # r[-1]["Type"] = "CHASSIS"
+                    chassis = ""
+                    continue
+
                 r.append(dict(zip(columns, row)))
                 # r.append([l[f:t].strip() for f,t in columns])
             l_old = l
@@ -249,10 +290,74 @@ class Script(BaseScript):
             result = '-'.join([str(el) for el in parts])
         return result
 
-    def execute(self):
-        objects = []
-        slot_num = 0
+    def get_type(self, slot, sub, part_no):
+        """
+        Resolve inventory type
+        :param slot:
+        :param sub:
+        :param part_no:
+        :return: type, number, part_no
+        :rtype: list
+        """
+        cx_600_t = ["LPU", "MPU", "SFU", "CLK", "PWR", "FAN", "POWER"]
+        self.logger.info("Getting type %s, %s, %s", slot, sub, part_no)
 
+        try:
+            slot = int(slot)
+        except ValueError:
+            if "PWR" in str(slot) or "FAN" in str(slot):
+                return slot[0:3], slot[3], None
+            self.logger.warning("Slot have unknown text format...")
+            return None, None, None
+
+        if sub:
+            try:
+                sub = int(sub)
+            except ValueError:
+                self.logger.warning("Sub have unknown text format...")
+
+        if slot == 0 and not sub:
+            return "CHASSIS", 0, part_no
+        elif slot == 0 and sub == 0:
+            return "CHASSIS", 0, part_no
+        elif sub and part_no in cx_600_t:
+            return part_no, sub, None
+        elif slot and part_no in cx_600_t:
+            return part_no, slot, None
+        elif not sub and part_no in cx_600_t:
+            return part_no, slot, None
+        elif part_no.startswith("LE0"):
+            return "FRU", slot, part_no
+        elif part_no.startswith("AR"):
+            # AR Series ISR, Examples:
+            # "SIC": ["AR0MSEG1CA00"], "WSIC": ["AR01WSX220A"], "XSIC": ["AR01XSX550A"], "SRU": ["AR01SRU2C"],
+            # PWR: ["AR01PSAC35"]
+            if "SRU" in part_no:
+                tp = "SRU"
+            elif part_no[4] == "S" or part_no[-1] == "S":
+                tp = "SIC"
+            elif part_no[4:6] == "WS":
+                tp = "WSIC"
+            elif part_no[4:6] == "XS":
+                tp = "XSIC"
+            elif part_no[4:6] == "PS":
+                tp = "PWR"
+            else:
+                return None, slot, part_no
+            return tp, slot, part_no
+        elif "PAC" in part_no:
+            # PAC-350WB-L
+            return "PWR", slot, part_no
+        elif not sub and "FAN" in part_no:
+            return "FAN", slot, None
+        elif not sub and "PWR" in part_no:
+            return "PWR", slot, None
+
+        else:
+            self.logger.info("Not response number place")
+            return None, None, None
+
+    def execute(self):
         items = self.get_inv()
         if not items:
             try:
@@ -268,13 +373,5 @@ class Script(BaseScript):
                     "revision": None,
                     "mfg_date": match.group("mdate")
                 }]
-        for i in items:
-            if i["type"] == "CHASSIS":
-                objects.extend(self.part_parse(i["type"], i["number"]))
-                for si in self.part_parse("XCVR", i["number"]):
-                    objects.append(si)
-                slot_num = i["number"]
-            else:
-                objects.extend(self.part_parse(i["type"], slot_num, i["number"]))
 
-        return objects
+        return items

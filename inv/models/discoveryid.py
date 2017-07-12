@@ -231,7 +231,11 @@ class DiscoveryID(Document):
         # c_macs = [r.macs for r in os]
         # Other interface macs
         i_macs = {int(MAC(i[0])): i[1] for i in Interface.objects.filter(
-            managed_object__in=objects, mac__exists=True).scalar("mac", "managed_object")}
+            managed_object__in=objects, mac__exists=True).scalar("mac", "managed_object") if i[0]}
+        # Other subinterface macs (actual for DSLAM)
+        si_macs = {int(MAC(i[0])): i[1] for i in SubInterface.objects.filter(
+            managed_object__in=objects, mac__exists=True).scalar("mac", "managed_object") if i[0]}
         c_macs.update(i_macs)
+        c_macs.update(si_macs)
 
         return c_macs

@@ -743,7 +743,13 @@ class ManagedObject(Model):
         return ObjectStatus.get_last_status(self)
 
     def set_status(self, status, ts=None):
-        ObjectStatus.set_status(self, status, ts=ts)
+        """
+        Update managed object status
+        :param status: new status
+        :param ts: status change time
+        :return: False if out-of-order update, True otherwise
+        """
+        return ObjectStatus.set_status(self, status, ts=ts)
 
     def get_inventory(self):
         """

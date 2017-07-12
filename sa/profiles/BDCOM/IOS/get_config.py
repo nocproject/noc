@@ -1,25 +1,22 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Extreme.XOS.get_arp
+# BDCOM.IOS.get_config
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetarp import IGetARP
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):
-    name = "Extreme.XOS.get_arp"
-    interface = IGetARP
-
-    rx_line = re.compile(
-        r"^\S+\s+(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+\S+\s+"
-        r"(?P<interface>\S+).+$")
+    name = "BDCOM.IOS.get_config"
+    interface = IGetConfig
 
     def execute(self):
-        return self.cli("sh iparp", list_re=self.rx_line)
+        config = self.cli("show running-config")
+        config = self.strip_first_lines(config, 4)
+        return self.cleaned_config(config)

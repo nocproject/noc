@@ -25,6 +25,8 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 
+ALARM_CLOSE_RETRIES = 5
+
 
 class ActiveAlarm(nosql.Document):
     meta = {
@@ -269,6 +271,7 @@ class ActiveAlarm(nosql.Document):
             call_later(
                 "noc.services.escalator.escalation.notify_close",
                 scheduler="escalator",
+                max_runs=ALARM_CLOSE_RETRIES,
                 alarm_id=self.id,
                 tt_id=self.escalation_tt,
                 subject=subject,

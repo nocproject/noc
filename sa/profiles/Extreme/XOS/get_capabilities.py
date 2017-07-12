@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -34,3 +35,15 @@ class Script(BaseScript):
         """
         cmd = self.cli("show cdp")
         return self.rx_cdp.search(cmd) is not None
+
+    def execute_platform(self, caps):
+        try:
+            s = []
+            cmd = self.cli("show stacking")
+            for i in parse_table(cmd, footer="Indicates this node"):
+                s += [i[1]]
+            if s:
+                caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+                caps["Stack | Member Ids"] = " | ".join(s)
+        except:
+            pass

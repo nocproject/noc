@@ -29,7 +29,7 @@ def check_down(alarm):
     status, last = alarm.managed_object.get_last_status()
     if not status or not last:
         return
-    if alarm.timestamp >= last:
+    if alarm.timestamp >= last or not status:
         return
     # Out-of-ordered, dispose closing job
     logger.error(

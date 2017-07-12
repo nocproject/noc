@@ -324,6 +324,8 @@ class Scheduler(object):
                             cjobs[v][k].load_context(ctx.get(k, {}))
                 #
                 for job in rjobs:
+                    if job.is_retries_exceeded():
+                        metrics["%s_jobs_retries_exceeded" % self.name] += 1
                     executor.submit(job.run)
                     metrics["%s_jobs_started" % self.name] += 1
                     n += 1
@@ -392,7 +394,7 @@ class Scheduler(object):
             self.bulk_ops += 1
 
     def submit(self, jcls, key=None, data=None, ts=None, delta=None,
-               keep_ts=False):
+               keep_ts=False, max_runs=None):
         """
         Submit new job or adjust existing one
         :param jcls: Job class name
@@ -402,6 +404,7 @@ class Scheduler(object):
         :param delta: Set next run time after delta seconds
         :param keep_ts: Do not touch timestamp of existing jobs,
             set timestamp only for created jobs
+        :param max_runs: Limit maximum runs attempts
         """
         now = datetime.datetime.now()
         data = data or {}
@@ -412,6 +415,8 @@ class Scheduler(object):
             Job.ATTR_FAULTS: 0,
             Job.ATTR_OFFSET: random.random()
         }
+        if max_runs is not None:
+            iset_op[Job.ATTR_MAX_RUNS] = max_runs
         if ts:
             set_op[Job.ATTR_TS] = ts
         elif delta:

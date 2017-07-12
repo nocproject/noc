@@ -22,7 +22,10 @@ class Script(BaseScript):
         r"^(?:EXOS )?[Vv]ersion:\s+(?P<version>\S+)", re.MULTILINE)
 
     def execute(self):
-        v = self.cli("debug hal show version")
+        try:
+            v = self.cli("debug hal show version")
+        except self.CLISyntaxError:
+            v = self.cli("debug hal show version slot 1")
         platform = self.rx_platform.search(v).group("platform")
         version = self.rx_version.search(v).group("version")
         return {
