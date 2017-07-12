@@ -963,7 +963,7 @@ class ManagedObject(Model):
             return Interface.objects.get(managed_object=self.id, name=name)
         except Interface.DoesNotExist:
             pass
-        for n in self.profile().get_interface_names(name):
+        for n in self.get_profile().get_interface_names(name):
             try:
                 return Interface.objects.get(managed_object=self.id, name=n)
             except Interface.DoesNotExist:
