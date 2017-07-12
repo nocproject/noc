@@ -1,6 +1,6 @@
 template {
   source = "{{ consul_template_templates_dir }}/noc_card.ctmpl"
-  destination = "{{ telegraf_confd_path }}/noc_card.conf"
+  destination = "{{ telegraf_confd_path }}/noc-card.conf"
   command = "{{ telegraf_reload_command }}"
   command_timeout = "60s"
   perms = 0644

@@ -1,6 +1,6 @@
 template {
   source = "{{ consul_template_templates_dir }}/noc_chwriter.ctmpl"
-  destination = "{{ telegraf_confd_path }}/noc_chwriter.conf"
+  destination = "{{ telegraf_confd_path }}/noc-chwriter.conf"
   command = "{{ telegraf_reload_command }}"
   command_timeout = "60s"
   perms = 0644
