@@ -2,7 +2,7 @@
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
-    validate_certs: no
+    validate_certs: yes
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

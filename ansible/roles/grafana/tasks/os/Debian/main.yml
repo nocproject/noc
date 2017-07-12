@@ -2,7 +2,7 @@
 - name: Add Grafana apt key
   apt_key:
     url: https://packagecloud.io/gpg.key
-    validate_certs: no
+    validate_certs: yes
   environment:
     https_proxy: "{{http_proxy}}"
   tags:
