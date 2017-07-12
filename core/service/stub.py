@@ -16,7 +16,7 @@ import tornado.ioloop
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from .rpc import RPCProxy
 from noc.core.perf import metrics
-from config import config
+from noc.config import config
 
 
 class ServiceStub(object):
