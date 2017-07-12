@@ -169,7 +169,7 @@ class Command(BaseCommand):
                 if spool:
                     print spool + ","
                 s = ["    {"]
-                s += ["        \"profile\": \"%s\"," % json_escape(e.managed_object.profile_name)]
+                s += ["        \"profile\": \"%s\"," % json_escape(e.managed_object.profile.name)]
                 s += ["        \"raw_vars\": {"]
                 x = []
                 vars = e.raw_vars

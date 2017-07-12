@@ -274,7 +274,7 @@ class EventApplication(ExtApplication):
                     e_class = match.group(1)
         r = ["["]
         r += ["    {"]
-        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
+        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile.name)]
         if e_class:
             r += ["        \"event_class__name\": \"%s\"," % e_class]
         r += ["        \"raw_vars\": {"]

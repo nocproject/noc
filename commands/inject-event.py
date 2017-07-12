@@ -63,7 +63,7 @@ class Command(BaseCommand):
                     path, str(e)))
         # Load events
         for e in data:
-            if e["profile"] != obj.profile_name:
+            if e["profile"] != obj.profile.name:
                 self.stdout.write("Profile mismatch in %s: %s != %s %s" % (
                     path, obj.profile.name, e["profile"], e))
                 continue

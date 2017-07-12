@@ -579,7 +579,7 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         r = []
         for s in o.scripts:
-            sn = o.profile_name + "." + s
+            sn = o.profile.name + "." + s
             script = script_loader.get_script(sn)
             if not script:
                 self.logger.error("Failed to load script: %s", sn)

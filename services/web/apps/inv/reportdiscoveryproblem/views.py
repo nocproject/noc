@@ -68,7 +68,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         mos_set = set(mos)
         # Get all managed objects with generic profile
         for mo in mos:
-            if mos[mo].profile_name == GENERIC_PROFILE:
+            if mos[mo].profile.name == GENERIC_PROFILE:
                 problems[mo] = _("Profile check failed")
         # Get all managed objects without interfaces
         if_mo = dict(
@@ -104,8 +104,8 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             data += [[
                 mo.name,
                 mo.address,
-                mo.profile_name,
-                mo.platform,
+                mo.profile.name,
+                mo.platform.name if mo.platform else "",
                 mo.segment.name if mo.segment else "",
                 problems[mo_id]
             ]]
