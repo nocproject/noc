@@ -8,9 +8,8 @@ pattern = "noc-escalator"
   {{ with node -}}
     {{range .Services -}}
         {{ if eq .Service "escalator" -}}
-            {{range $index, $service:= service (printf "%s~_agent|any" .Service) -}}
-                {{if ne $index 0 -}}, {{- end}}
-                "http://{{$service.Address}}:{{$service.Port}}/mon/"
+            {{range $service:= service (printf "%s~_agent|any" .Service) -}}
+                "http://{{$service.Address}}:{{$service.Port}}/mon/",
             {{- end}}
         {{- end}}
      {{- end}}
