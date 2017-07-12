@@ -1,4 +1,15 @@
 ---
+- name: Create pgbouncer directories
+  file:
+    path: "{{ item }}"
+    owner: "pgbouncer"
+    mode: 0700
+    state: directory
+  with_items:
+    - /var/log/pgbouncer/
+    - /var/run/pgbouncer/
+    - /usr/local/etc/pgbouncer/
+
 - name: Install pgbouncer
   pkgng: name="pgbouncer" state=present
   tags:
@@ -17,13 +28,4 @@
   tags:
     - config
 
-- name: Create pgbouncer directories
-  file:
-    path: "{{ item }}"
-    owner: "{{postgres_user}}"
-    mode: 0700
-    state: directory
-  with_items:
-    - /var/log/pgbouncer/
-    - /var/run/pgbouncer/
-    - /usr/local/etc/pgbouncer/
+
