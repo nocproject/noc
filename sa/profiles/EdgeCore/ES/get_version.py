@@ -126,6 +126,8 @@ class Script(BaseScript):
             pass
         elif "ES4100-28T" in platform:
             pass
+        elif "ES4100-52T" in platform:
+            pass
         elif "MR2228N" in platform:
             vendor = "MRV"
         elif platform.lower() == "8 sfp ports + 4 gigabit combo ports " \
