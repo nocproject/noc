@@ -248,7 +248,7 @@ class Config(BaseConfig):
         vcinterfacescount = SecondsParameter(default="1h")
         vcprefixes = SecondsParameter(default="1h")
         cache_class = StringParameter(default="noc.core.cache.mongo.MongoCache")
-        default_ttl = IntParameter(default=86400)
+        default_ttl = IntParameter(default="1d")
         pool_size = IntParameter(default=8)
 
     class dns(ConfigSection):
@@ -259,7 +259,7 @@ class Config(BaseConfig):
         submit_threshold_factor = IntParameter(default=10)
         max_chunk_factor = IntParameter(default=1)
         updates_per_check = IntParameter(default=4)
-        cache_default_ttl = SecondsParameter(default=7 * 24 * 3600)
+        cache_default_ttl = SecondsParameter(default="1d")
 
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
@@ -300,11 +300,11 @@ class Config(BaseConfig):
     class bi(ConfigSection):
         language = StringParameter(default="en")
         query_threads = IntParameter(default=10)
-        extract_delay_alarms = SecondsParameter(default=3600)
-        clean_delay_alarms = SecondsParameter(default=86400)
-        reboot_interval = SecondsParameter(default=60)
-        extract_delay_reboots = SecondsParameter(default=3600)
-        clean_delay_reboots = SecondsParameter(default=86400)
+        extract_delay_alarms = SecondsParameter(default="1h")
+        clean_delay_alarms = SecondsParameter(default="1d")
+        reboot_interval = SecondsParameter(default="1m")
+        extract_delay_reboots = SecondsParameter(default="1h")
+        clean_delay_reboots = SecondsParameter(default="1d")
         chunk_size = IntParameter(default=4000)
 
     class card(ConfigSection):
@@ -321,17 +321,17 @@ class Config(BaseConfig):
 
     class consul(ConfigSection):
         token = SecretParameter()
-        connect_timeout = SecondsParameter(default=5)
-        request_timeout = SecondsParameter(default=3600)
+        connect_timeout = SecondsParameter(default="5s")
+        request_timeout = SecondsParameter(default="1h")
         near_retry_timeout = IntParameter(default=1)
         host = StringParameter(default="consul")
         port = IntParameter(default=8500)
-        check_interval = SecondsParameter(default=1)
-        check_timeout = SecondsParameter(default=1)
-        release = SecondsParameter(default=60)
-        session_ttl = SecondsParameter(default=10)
-        lock_delay = SecondsParameter(default=1)
-        retry_timeout = SecondsParameter(default=1)
+        check_interval = SecondsParameter(default="1s")
+        check_timeout = SecondsParameter(default="1s")
+        release = SecondsParameter(default="1m")
+        session_ttl = SecondsParameter(default="10s")
+        lock_delay = SecondsParameter(default="1s")
+        retry_timeout = SecondsParameter(default="1s")
         keepalive_attempts = IntParameter(default=5)
         base = StringParameter(default="noc", help="kv lookup base")
 
@@ -339,26 +339,26 @@ class Config(BaseConfig):
         use_uvlib = BooleanParameter(default=False)
 
     class dcs(ConfigSection):
-        resolution_timeout = SecondsParameter(default=300)
+        resolution_timeout = SecondsParameter(default="5m")
 
     class http_client(ConfigSection):
-        connect_timeout = SecondsParameter(default=10)
-        request_timeout = SecondsParameter(default=3600)
+        connect_timeout = SecondsParameter(default="10s")
+        request_timeout = SecondsParameter(default="1h")
         user_agent = StringParameter(default="noc")
         buffer_size = IntParameter(default=128 * 1024)
         max_redirects = IntParameter(default=5)
 
         ns_cache_size = IntParameter(default=1000)
-        resolver_ttl = SecondsParameter(default=3)
+        resolver_ttl = SecondsParameter(default="3s")
 
         http_port = IntParameter(default=80)
         https_port = IntParameter(default=443)
         validate_certs = BooleanParameter(default=False, help="Have to be set as True")
 
     class script(ConfigSection):
-        timeout = SecondsParameter(default=120, help="default script timeout")
-        session_idle_timeout = SecondsParameter(default=60, help="defeault session timeout")
-        caller_timeout = SecondsParameter(default=60)
+        timeout = SecondsParameter(default="2m", help="default script timeout")
+        session_idle_timeout = SecondsParameter(default="1m", help="defeault session timeout")
+        caller_timeout = SecondsParameter(default="1m")
         calling_service = StringParameter(default="MTManager")
 
     def __init__(self):
