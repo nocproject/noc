@@ -39,6 +39,7 @@ postgres_user: pgsql
 postgres_data_dir: /usr/local/pgsql/data
 postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
 postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
+postgresql_version: 9.5
 
 tower_path: /usr/local/tower
 
@@ -46,7 +47,10 @@ consul_bin_path: /usr/local/bin
 consul_template_bin_path: /usr/local/bin
 consul_template_group: wheel
 
-pip_cflags: "-I/usr/local/include -L/usr/local/lib"
+pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -I/usr/local/include"
+pip_ldflags: "-L/usr/local/lib"
 
 noc_prefix: /usr/local
 noc_root: "{{noc_prefix}}/noc"
+
+pgbouncer_path_pid: /var/run/pgbouncer

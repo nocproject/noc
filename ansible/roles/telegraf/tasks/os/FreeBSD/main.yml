@@ -14,6 +14,7 @@
   with_items:
     - /usr/local/etc/telegraf
     - /usr/local/etc/telegraf/telegraf.d
+    - /usr/local/etc/newsyslog.conf.d
 
 - name: Setting telegraf config
   lineinfile: dest=/etc/rc.conf regexp=^telegraf_conf= line="telegraf_conf=\"/usr/local/etc/telegraf/telegraf.conf\""

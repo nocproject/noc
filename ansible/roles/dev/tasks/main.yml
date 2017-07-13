@@ -11,6 +11,7 @@
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
     CFLAGS: "{{ pip_cflags | default('') }}"
+    LDFLAGS: "{{ pip_ldflags | default('') }}"
 
 - name: Install assets
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Wait TT
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016, The NOC Project
+# Copyright (C) 2007-2017, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import datetime
 # NOC modules
 from noc.fm.models.utils import get_alarm
 from escalation import tt_system_cache
-from noc.core.defer import call_later
+from noc.core.scheduler.job import Job
 
 
 logger = logging.getLogger(__name__)
@@ -48,10 +48,4 @@ def wait_tt(alarm_id):
             force=True
         )
     else:
-        # Check later
-        call_later(
-            "noc.services.escalator.wait_tt.wait_tt",
-            scheduler="escalator",
-            delay=CHECK_INTERVAL,
-            alarm_id=alarm_id
-        )
+        Job.retry_after(CHECK_INTERVAL, msg="Next check")

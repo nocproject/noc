@@ -34,6 +34,18 @@ Ext.define("NOC.fm.ttsystem.Model", {
         {
             name: "failure_cooldown",
             type: "int"
+        },
+        {
+            name: "is_active",
+            type: "boolean"
+        },
+        {
+            name: "max_threads",
+            type: "int"
+        },
+        {
+            name: "shard_name",
+            type: "string"
         }
     ]
 });

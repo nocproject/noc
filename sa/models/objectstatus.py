@@ -73,13 +73,41 @@ class ObjectStatus(Document):
 
     @classmethod
     def set_status(cls, object, status, ts=None):
+        """
+        Update object status
+        :param object: Managed Object instance
+        :param status: New status
+        :param ts: Status change timestamp
+        :return: True, if status has been changed, False - out-of-order update
+        """
         ts = ts or datetime.datetime.now()
-        ObjectStatus._get_collection().update({
+        coll = ObjectStatus._get_collection()
+        # Update naively
+        # Must work in most cases
+        # find_and_modify returns old document or None for upsert
+        r = coll.find_and_modify({
             "object": object.id
-        }, {
+        }, update={
             "$set": {
                 "status": status,
                 "last": ts
             }
         }, upsert=True)
-        Outage.register_outage(object, not status, ts=ts)
+        if not r:
+            # Setting status for first time
+            # Work complete
+            return True
+        if r["last"] > ts:
+            # Oops, out-of-order update
+            # Restore correct state
+            coll.update({
+                "object": object.id
+            }, {
+                "status": r["status"],
+                "last": r["last"]
+            })
+            return False
+        if r["status"] != status:
+            # Status changed
+            Outage.register_outage(object, not status, ts=ts)
+        return True
