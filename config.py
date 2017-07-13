@@ -115,7 +115,7 @@ class Config(BaseConfig):
     class memcached(ConfigSection):
         addresses = ServiceParameter(service="memcached", wait=True)
         pool_size = IntParameter(default=8)
-        default_ttl = StringParameter(default="1d")
+        default_ttl = SecondsParameter(default="1d")
 
     class cm(ConfigSection):
         vcs_path = StringParameter(default="/usr/local/bin/hg")
@@ -248,7 +248,7 @@ class Config(BaseConfig):
         vcinterfacescount = SecondsParameter(default="1h")
         vcprefixes = SecondsParameter(default="1h")
         cache_class = StringParameter(default="noc.core.cache.mongo.MongoCache")
-        default_ttl = IntParameter(default="1d")
+        default_ttl = SecondsParameter(default="1d")
         pool_size = IntParameter(default=8)
 
     class dns(ConfigSection):
