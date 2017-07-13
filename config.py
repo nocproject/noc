@@ -196,6 +196,7 @@ class Config(BaseConfig):
         babel_cfg = StringParameter(default="etc/babel.cfg")
         babel = StringParameter(default="./bin/pybabel")
         pojson = StringParameter(default="./bin/pojson")
+        collection_fm_mibs = StringParameter(default="collections/fm.mibs/")
 
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
@@ -291,6 +292,14 @@ class Config(BaseConfig):
     class correlator(ConfigSection):
         max_threads = IntParameter(default=20)
         topology_rca_window = IntParameter(default=0)
+        oo_close_delay = SecondsParameter(default="20s")
+        discovery_delay = SecondsParameter(default="10m")
+
+    class fm(ConfigSection):
+        active_window = SecondsParameter(default="1d")
+        keep_events_wo_alarm = IntParameter(default=0)
+        keep_events_with_alarm = IntParameter(default=-1)
+        alarm_close_retries = IntParameter(default=5)
 
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
