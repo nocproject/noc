@@ -156,12 +156,15 @@ class Config(BaseConfig):
         enable_osm = BooleanParameter(default=True)
         enable_google_sat = BooleanParameter(default=False)
         enable_google_roadmap = BooleanParameter(default=False)
+        tile_size = IntParameter(default=256, help="Tile size 256x256")
+        tilecache_padding = IntParameter(default=0)
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")
         yandex_key = SecretParameter(default="")
         google_key = SecretParameter(default="")
         google_language = StringParameter(default="en")
+
 
     class escalation(ConfigSection):
         global_limit = IntParameter(default=50)
@@ -277,6 +280,8 @@ class Config(BaseConfig):
         max_chunk_factor = IntParameter(default=1)
         updates_per_check = IntParameter(default=4)
         cache_default_ttl = SecondsParameter(default="1d")
+        autointervaljob_interval = SecondsParameter(default="1d")
+        autointervaljob_initial_submit_interval = SecondsParameter(default="1d")
 
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
