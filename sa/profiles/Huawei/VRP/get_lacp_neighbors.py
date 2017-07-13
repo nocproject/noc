@@ -18,27 +18,6 @@ from noc.lib.validators import is_int, is_ipv4
 class Script(BaseScript):
     name = "Huawei.VRP.get_lacp_neighbors"
     interface = IGetLACPNeighbors
-    
-      System ID      : 32768, 0018-826f-9366
-  Admin Key      : 1
-
-  Received LACPDU: 46394027
-  Illegal LACPDU : 0
-  Sent LACPDU    : 24934877
-Actor
-    Port-priority: 16384
-    Oper-key     : 1
-    Flag         : 3F
-    Type         : Master port
-    Role         : SELECTED
-    Status       : C&D
-Partner
-    System ID    : 127, ac4b-c849-8ff0
-    Port Number  : 12
-    Port-priority: 127
-    Oper-key     : 3
-    Flag         : 3F
-
     split_re = re.compile(r"(\S+)'s state information is:", re.IGNORECASE)
 
     def execute(self):
