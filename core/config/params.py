@@ -169,7 +169,7 @@ class ServiceItem(object):
         return "<ServiceItem %s:%s>" % (self.host, self.port)
 
     def __contains__(self, item):
-        return item in "%s:%s"
+        return item in "%s:%s" % (self.host, self.port)
 
 class ServiceParameter(BaseParameter):
     """
