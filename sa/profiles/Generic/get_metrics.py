@@ -415,7 +415,7 @@ class Script(BaseScript):
                         oid
                     )
                     continue
-            elif callable(batch[oid]["scale"]):
+            elif callable(batch[oid].scale):
                 # Multiple oids and calculated value
                 v = []
                 for o in oid:

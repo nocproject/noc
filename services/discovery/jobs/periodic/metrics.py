@@ -663,8 +663,13 @@ class MetricsCheck(DiscoveryCheck):
             # Sorted list of fields
             f = sorted(values)
             record_fields = "%s.%s" % (fields, ".".join(f))
+            if isinstance(record_fields, unicode):
+                record_fields = record_fields.encode("utf-8")
+            record = "%s\t%s" % (pk, "\t".join(str(values[fn]) for fn in f))
+            if isinstance(record, unicode):
+                record = record.encode("utf-8")
             chains[record_fields] += [
-                "%s\t%s" % (pk, "\t".join(str(values[fn]) for fn in f))
+                record
             ]
         # Spool data
         for f in chains:
