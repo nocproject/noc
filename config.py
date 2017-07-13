@@ -91,12 +91,17 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter(default="default")
         password = SecretParameter()
+        request_timeout = IntParameter(default=3600)
+        connect_timeout = IntParameter(default=10)
+        default_merge_tree_granularity = IntParameter(default=8192)
 
     class influxdb(ConfigSection):
         addresses = ServiceParameter(service="influxdb", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
         password = SecretParameter()
+        request_timeout = SecondsParameter(default=600)
+        connect_timeout = SecondsParameter(default=10)
 
     class nsqlookupd(ConfigSection):
         addresses = ServiceParameter(service="nsqlookupd", wait=True)
@@ -104,6 +109,8 @@ class Config(BaseConfig):
     class nsqd(ConfigSection):
         addresses = ServiceParameter(service="nsqd",
                                      wait=True, near=True)
+        nsq_pub_retry_delay = FloatParameter(default=0.1)
+        ch_chunk_size = IntParameter(default=4000)
 
     class memcached(ConfigSection):
         addresses = ServiceParameter(service="memcached", wait=True)
@@ -170,6 +177,9 @@ class Config(BaseConfig):
         smidump = StringParameter()
         dig = StringParameter()
         backup_dir = StringParameter(default="/var/backup")
+        etl_import = StringParameter(default="var/import")
+        ssh_key_prefix = StringParameter(default="var/etc/ssh")
+        beef_prefix = StringParameter(default="var/beef/sa")
 
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
@@ -195,6 +205,10 @@ class Config(BaseConfig):
             min=0, max=255,
             default=0
         )
+        # Recommended send buffer size, 4M by default
+        send_buffer = IntParameter(default=4 * 1048576)
+        # Recommended receive buffer size, 4M by default
+        receive_buffer = IntParameter(default=4 * 1048576)
 
     class activator(ConfigSection):
         tos = IntParameter(
@@ -202,6 +216,9 @@ class Config(BaseConfig):
             default=0
         )
         script_threads = IntParameter(default=10)
+        buffer_size = IntParameter(default=1048576)
+        connect_retries = IntParameter(default=3, help="retries on immediate disconnect")
+        connect_timeout = IntParameter(default=3, help="timeout after immediate disconnect")
 
     class sync(ConfigSection):
         config_ttl = SecondsParameter(default="1d")
@@ -239,6 +256,10 @@ class Config(BaseConfig):
 
     class scheduler(ConfigSection):
         max_threads = IntParameter(default=20)
+        submit_threshold_factor = IntParameter(default=10)
+        max_chunk_factor = IntParameter(default=1)
+        updates_per_check = IntParameter(default=4)
+        cache_default_ttl = SecondsParameter(default=7 * 24 * 3600)
 
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
@@ -279,6 +300,12 @@ class Config(BaseConfig):
     class bi(ConfigSection):
         language = StringParameter(default="en")
         query_threads = IntParameter(default=10)
+        extract_delay_alarms = SecondsParameter(default=3600)
+        clean_delay_alarms = SecondsParameter(default=86400)
+        reboot_interval = SecondsParameter(default=60)
+        extract_delay_reboots = SecondsParameter(default=3600)
+        clean_delay_reboots = SecondsParameter(default=86400)
+        chunk_size = IntParameter(default=4000)
 
     class card(ConfigSection):
         language = StringParameter(default="en")
@@ -294,6 +321,45 @@ class Config(BaseConfig):
 
     class consul(ConfigSection):
         token = SecretParameter()
+        connect_timeout = SecondsParameter(default=5)
+        request_timeout = SecondsParameter(default=3600)
+        near_retry_timeout = IntParameter(default=1)
+        host = StringParameter(default="consul")
+        port = IntParameter(default=8500)
+        check_interval = SecondsParameter(default=1)
+        check_timeout = SecondsParameter(default=1)
+        release = SecondsParameter(default=60)
+        session_ttl = SecondsParameter(default=10)
+        lock_delay = SecondsParameter(default=1)
+        retry_timeout = SecondsParameter(default=1)
+        keepalive_attempts = IntParameter(default=5)
+        base = StringParameter(default="noc", help="kv lookup base")
+
+    class features(ConfigSection):
+        use_uvlib = BooleanParameter(default=False)
+
+    class dcs(ConfigSection):
+        resolution_timeout = SecondsParameter(default=300)
+
+    class http_client(ConfigSection):
+        connect_timeout = SecondsParameter(default=10)
+        request_timeout = SecondsParameter(default=3600)
+        user_agent = StringParameter(default="noc")
+        buffer_size = IntParameter(default=128 * 1024)
+        max_redirects = IntParameter(default=5)
+
+        ns_cache_size = IntParameter(default=1000)
+        resolver_ttl = SecondsParameter(default=3)
+
+        http_port = IntParameter(default=80)
+        https_port = IntParameter(default=443)
+        validate_certs = BooleanParameter(default=False, help="Have to be set as True")
+
+    class script(ConfigSection):
+        timeout = SecondsParameter(default=120, help="default script timeout")
+        session_idle_timeout = SecondsParameter(default=60, help="defeault session timeout")
+        caller_timeout = SecondsParameter(default=60)
+        calling_service = StringParameter(default="MTManager")
 
     def __init__(self):
         self.setup_logging()

@@ -18,10 +18,11 @@ import _libssh2
 # NOC modules
 from .base import CLI
 from .error import CLIAuthFailed, CLISSHProtocolError
+from noc.config import config
 
 
 class SSHIOStream(IOStream):
-    SSH_KEY_PREFIX = os.path.join("var", "etc", "ssh")
+    SSH_KEY_PREFIX = config.path.ssh_key_prefix
 
     def __init__(self, sock, cli, *args, **kwargs):
         super(SSHIOStream, self).__init__(sock, *args, **kwargs)

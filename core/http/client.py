@@ -23,25 +23,26 @@ import cachetools
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_CONNECT_TIMEOUT = 10
-DEFAULT_REQUEST_TIMEOUT = 3600
-DEFAULT_USER_AGENT = "NOC"
-DEFAULT_BUFFER_SIZE = 128 * 1024
-DEFAULT_MAX_REDIRECTS = 5
+DEFAULT_CONNECT_TIMEOUT = config.http_client.connect_timeout
+DEFAULT_REQUEST_TIMEOUT = config.http_client.request_timeout
+DEFAULT_USER_AGENT = config.http_client.user_agent
+DEFAULT_BUFFER_SIZE = config.http_client.buffer_size
+DEFAULT_MAX_REDIRECTS = config.http_client.max_redirects
 
 ERR_TIMEOUT = 599
 ERR_READ_TIMEOUT = 598
 ERR_PARSE_ERROR = 597
 
-NS_CACHE_SIZE = 1000
-RESOLVER_TTL = 3
+NS_CACHE_SIZE = config.http_client.ns_cache_size
+RESOLVER_TTL = config.http_client.resolver_ttl
 
 DEFAULT_PORTS = {
-    "http": 80,
-    "https": 443
+    "http": config.http_client.http_port,
+    "https": config.http_client.https_port
 }
 
 # Methods require Content-Length header
@@ -81,7 +82,7 @@ def fetch(url, method="GET",
           max_buffer_size=DEFAULT_BUFFER_SIZE,
           follow_redirects=False,
           max_redirects=DEFAULT_MAX_REDIRECTS,
-          validate_cert=False,
+          validate_cert=config.http_client.validate_certs,
           allow_proxy=False,
           proxies=None,
           user=None,
@@ -337,7 +338,7 @@ def fetch_sync(url, method="GET",
                max_buffer_size=DEFAULT_BUFFER_SIZE,
                follow_redirects=False,
                max_redirects=DEFAULT_MAX_REDIRECTS,
-               validate_cert=False,
+               validate_cert=config.http_client.validate_certs,
                allow_proxy=False,
                proxies=None,
                user=None,

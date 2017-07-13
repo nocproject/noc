@@ -38,7 +38,7 @@ class MemcachedCache(BaseCache):
         )
         logger.debug(
             "Starting memcached pool: hosts=%s, pool size=%d",
-            ", ".join(config.memcached_hosts),
+            ", ".join(config.memcached.addresses.as_list()),
             config.memcached.pool_size
         )
         self.pool = pylibmc.pools.ClientPool()

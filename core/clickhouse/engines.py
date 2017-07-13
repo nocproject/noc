@@ -6,7 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-DEFAULT_MERGE_TREE_GRANULARITY = 8192
+from noc.config import config
+DEFAULT_MERGE_TREE_GRANULARITY = config.clickhouse.default_merge_tree_granularity
 
 
 class BaseEngine(object):

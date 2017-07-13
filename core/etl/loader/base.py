@@ -22,6 +22,7 @@ import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fileutils import safe_rewrite
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +65,7 @@ class BaseLoader(object):
     # List of tags to add to the created records
     tags = []
 
-    PREFIX = "var/import"
+    PREFIX = config.path.etl_import
     rx_archive = re.compile(
             "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
