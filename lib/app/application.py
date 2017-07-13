@@ -125,7 +125,7 @@ class Application(object):
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
-    config = settings.config
+    config = settings.config # @fixme remove
 
     TZ = get_current_timezone()
 
