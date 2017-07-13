@@ -124,9 +124,9 @@ class Script(BaseScript):
             platform = "ES3528M"
         elif "ES3526S" in platform:
             pass
-        elif "ES4100-28T" in platform:
+        elif "ECS4100-28T" in platform:
             pass
-        elif "ES4100-52T" in platform:
+        elif "ECS4100-52T" in platform:
             pass
         elif "MR2228N" in platform:
             vendor = "MRV"
