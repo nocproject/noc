@@ -240,13 +240,13 @@ class Service(object):
                 if isinstance(h, logging.StreamHandler):
                     h.stream = sys.stdout
                 h.setFormatter(fmt)
-            logging.root.setLevel(self.LOG_LEVELS[loglevel])
+            logging.root.setLevel(config.loglevel)
         else:
             # Initialize logger
             logging.basicConfig(
                 stream=sys.stdout,
                 format=self.LOG_FORMAT,
-                level=self.LOG_LEVELS[loglevel]
+                level=config.loglevel
             )
         self.logger = logging.getLogger(self.name)
         logging.captureWarnings(True)
@@ -658,7 +658,7 @@ class Service(object):
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer([config.nsqd.addresses])
+            self.nsq_writer = nsq.Writer([str(a) for a in config.nsqlookupd.addresses])
         return self.nsq_writer
 
     def pub(self, topic, data):
