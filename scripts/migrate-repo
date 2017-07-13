@@ -20,8 +20,8 @@ from noc.config import config
 from noc.core.gridvcs.manager import GridVCS
 
 
-HG = config.cm.vcs_path
-REPO = config.cm.repo
+HG = config.path.vcs_path
+REPO = config.path.repo
 
 
 def get_hg_revisions(path):

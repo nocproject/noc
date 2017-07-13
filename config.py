@@ -67,8 +67,6 @@ class Config(BaseConfig):
 
     node = socket.gethostname()
 
-    cp
-
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
@@ -123,8 +121,7 @@ class Config(BaseConfig):
         default_ttl = SecondsParameter(default="1d")
 
     class cm(ConfigSection):
-        vcs_path = StringParameter(default="/usr/local/bin/hg")
-        repo = StringParameter(default="/var/repo")
+        vcs_type = StringParameter(default="gridvcs", choises="hg, CVS, gridvcs")
 
     class customization(ConfigSection):
         favicon_url = StringParameter(
@@ -181,18 +178,24 @@ class Config(BaseConfig):
         log_api_calls = BooleanParameter(default=False)
         log_sql_statements = BooleanParameter(default=False)
 
-    class gridvcs(ConfigSection):
-        config_mirror_path = StringParameter("")
-
     class path(ConfigSection):
         smilint = StringParameter()
         smidump = StringParameter()
         dig = StringParameter()
+        vcs_path = StringParameter(default="/usr/local/bin/hg")
+        repo = StringParameter(default="/var/repo")
+        config_mirror_path = StringParameter("")
         backup_dir = StringParameter(default="/var/backup")
         etl_import = StringParameter(default="var/import")
         ssh_key_prefix = StringParameter(default="var/etc/ssh")
         beef_prefix = StringParameter(default="var/beef/sa")
         cp_new = StringParameter(default="var/cp/crashinfo/new")
+        bi_data_prefix = StringParameter(default="var/bi")
+        bi_dict_xml_prefix = StringParameter(default="var/bi-dict")
+        bi_dict_data_prefix = StringParameter(default="var/bi-dict-data")
+        babel_cfg = StringParameter(default="etc/babel.cfg")
+        babel = StringParameter(default="./bin/pybabel")
+        pojson = StringParameter(default="./bin/pojson")
 
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
@@ -319,6 +322,7 @@ class Config(BaseConfig):
         extract_delay_reboots = SecondsParameter(default="1h")
         clean_delay_reboots = SecondsParameter(default="1d")
         chunk_size = IntParameter(default=4000)
+        extract_window = SecondsParameter(default="1d")
 
     class card(ConfigSection):
         language = StringParameter(default="en")

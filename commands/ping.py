@@ -17,6 +17,7 @@ import tornado.queues
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
 from noc.core.ioloop.ping import Ping
+from noc.config import config
 
 
 class Command(BaseCommand):
@@ -59,7 +60,7 @@ class Command(BaseCommand):
                 except OSError as e:
                     self.die("Cannot read file %s: %s\n" % (fn, e))
         # Ping
-        if os.environ.get("NOC_LIBUV"):
+        if config.features.use_uvlib:
             from tornaduv import UVLoop
             self.stderr.write("Using libuv\n")
             tornado.ioloop.IOLoop.configure(UVLoop)

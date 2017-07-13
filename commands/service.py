@@ -19,13 +19,6 @@ from noc.lib.text import format_table
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "--config",
-            action="store",
-            dest="config",
-            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Configuration path"
-        )
-        parser.add_argument(
             "services",
             nargs=argparse.REMAINDER,
             help="Service names"

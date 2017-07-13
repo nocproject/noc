@@ -18,13 +18,6 @@ from noc.core.service.client import open_sync_rpc, RPCError
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "--config",
-            action="store",
-            dest="config",
-            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Configuration path"
-        )
-        parser.add_argument(
             "--pretty",
             action="store_true",
             dest="pretty",

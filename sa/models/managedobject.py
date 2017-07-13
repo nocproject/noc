@@ -202,7 +202,7 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     # CM
-    config = GridVCSField("config", mirror=config.gridvcs.config_mirror_path)
+    config = GridVCSField("config", mirror=config.path.config_mirror_path)
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                             blank=True, null=True)
@@ -642,7 +642,7 @@ class ManagedObject(Model):
     def is_router(self):
         """
         Returns True if Managed Object presents in more than one networks
-        :return: 
+        :return:
         """
         # @todo: Rewrite
         return self.address_set.count() > 1
@@ -650,9 +650,9 @@ class ManagedObject(Model):
     def get_attr(self, name, default=None):
         """
         Return attribute as string
-        :param name: 
-        :param default: 
-        :return: 
+        :param name:
+        :param default:
+        :return:
         """
         try:
             return self.managedobjectattribute_set.get(key=name).value
@@ -662,9 +662,9 @@ class ManagedObject(Model):
     def get_attr_bool(self, name, default=False):
         """
         Return attribute as bool
-        :param name: 
-        :param default: 
-        :return: 
+        :param name:
+        :param default:
+        :return:
         """
         v = self.get_attr(name)
         if v is None:
@@ -677,9 +677,9 @@ class ManagedObject(Model):
     def get_attr_int(self, name, default=0):
         """
         Return attribute as integer
-        :param name: 
-        :param default: 
-        :return: 
+        :param name:
+        :param default:
+        :return:
         """
         v = self.get_attr(name)
         if v is None:
@@ -692,9 +692,9 @@ class ManagedObject(Model):
     def set_attr(self, name, value):
         """
         Set attribute
-        :param name: 
-        :param value: 
-        :return: 
+        :param name:
+        :param value:
+        :return:
         """
         value = unicode(value)
         try:
@@ -1089,7 +1089,7 @@ class ManagedObject(Model):
     def can_escalate(self):
         """
         Check alarm can be escalated
-        :return: 
+        :return:
         """
         if not self.tt_system or not self.tt_system_id:
             return False
