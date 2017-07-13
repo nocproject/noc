@@ -100,7 +100,7 @@ class Service(object):
         "debug": logging.DEBUG
     }
 
-    NSQ_PUB_RETRY_DELAY = config.nsqd.nsq_pub_retry_delay
+    NSQ_PUB_RETRY_DELAY = config.nsqd.pub_retry_delay
     CH_CHUNK_SIZE = config.nsqd.ch_chunk_size
 
     class RegistrationError(Exception):
