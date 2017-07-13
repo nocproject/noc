@@ -9,6 +9,7 @@
 # Python modules
 import os
 import csv
+from noc.config import config
 
 
 class Stencil(object):
@@ -37,7 +38,7 @@ class Stencil(object):
 
 
 class StencilRegistry:
-    prefix = "static/shape/"
+    prefix = config.path.shapes_path
     manifest = "MANIFEST"
 
     COLOR_MAP = {

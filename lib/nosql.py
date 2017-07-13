@@ -24,8 +24,8 @@ from noc.models import get_model
 logger = logging.getLogger(__name__)
 
 # Connect to the database
-RETRIES = 20
-TIMEOUT = 3
+RETRIES = config.mongo.retries
+TIMEOUT = config.mongo.timeout
 
 for i in range(RETRIES):
     try:

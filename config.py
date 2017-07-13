@@ -77,6 +77,8 @@ class Config(BaseConfig):
         user = StringParameter()
         password = SecretParameter()
         rs = StringParameter()
+        retries = IntParameter(default=20)
+        timeout = SecondsParameter(default="3s")
 
     class pg(ConfigSection):
         addresses = ServiceParameter(
@@ -200,6 +202,7 @@ class Config(BaseConfig):
         babel = StringParameter(default="./bin/pybabel")
         pojson = StringParameter(default="./bin/pojson")
         collection_fm_mibs = StringParameter(default="collections/fm.mibs/")
+        shapes_path = StringParameter(default="static/shape/")
 
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
