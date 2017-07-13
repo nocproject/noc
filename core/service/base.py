@@ -658,7 +658,7 @@ class Service(object):
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer([str(a) for a in config.nsqlookupd.addresses])
+            self.nsq_writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
         return self.nsq_writer
 
     def pub(self, topic, data):

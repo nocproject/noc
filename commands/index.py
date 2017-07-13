@@ -16,13 +16,6 @@ from models import FTS_MODELS, get_model
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--config",
-            action="store",
-            dest="config",
-            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Configuration path"
-        )
         subparsers = parser.add_subparsers(
             dest="cmd",
             help="sub-commands help"
