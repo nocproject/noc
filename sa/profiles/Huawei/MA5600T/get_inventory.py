@@ -5,7 +5,7 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
- 
+
 # Python modules
 import re
 # NOC modules

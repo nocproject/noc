@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -103,6 +103,26 @@ class Script(BaseScript):
         stp_ports = self.get_stp()
         display_pvc = False
         display_service_port = False
+        # Get portchannels
+        portchannel_members = {}
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
+            iface = {
+                "name": pc["interface"],
+                "type": "aggregated",
+                "admin_status": True,
+                "oper_status": True,
+                "subinterfaces": [{
+                    "name": pc["interface"],
+                    "admin_status": True,
+                    "oper_status": True,
+                    "enabled_afi": ["BRIDGE"]
+                }]
+            }
+            interfaces += [iface]
         ports = self.profile.fill_ports(self)
         for i in range(len(ports)):
             if ports[i]["t"] in ["10GE", "GE", "FE"]:
@@ -128,6 +148,10 @@ class Script(BaseScript):
                     }
                     if ifname in stp_ports:
                         iface["enabled_protocols"] += ["STP"]
+                    if ifname in portchannel_members:
+                        ai, is_lacp = portchannel_members[ifname]
+                        iface["aggregated_interface"] = ai
+                        iface["enabled_protocols"] += ["LACP"]
                     v = self.cli("display port vlan %s" % ifname)
                     m = self.rx_vlan.search(v)
                     if m:
