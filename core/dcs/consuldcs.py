@@ -117,7 +117,7 @@ class ConsulDCS(DCSBase):
     DEFAULT_CONSUL_PORT = config.consul.port
     DEFAULT_CONSUL_CHECK_INTERVAL = config.consul.check_interval
     DEFAULT_CONSUL_CHECK_TIMEOUT = config.consul.connect_timeout
-    DEFAULT_CONSUL_RELEASE = "".join([config.consul.release, "s"])
+    DEFAULT_CONSUL_RELEASE = "".join([str(config.consul.release), "s"])
     DEFAULT_CONSUL_SESSION_TTL = config.consul.session_ttl
     DEFAULT_CONSUL_LOCK_DELAY = config.consul.lock_delay
     DEFAULT_CONSUL_RETRY_TIMEOUT = config.consul.retry_timeout
