@@ -77,7 +77,7 @@ class AlarmEscalation(Document):
     pre_reasons = ListField(EmbeddedDocumentField(PreReasonItem))
     escalations = ListField(EmbeddedDocumentField(EscalationItem))
     global_limit = IntField()
-    max_escalation_retries = IntField(default=30)
+    max_escalation_retries = IntField(default=30) #@fixme make it configurable
 
     _ac_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
 

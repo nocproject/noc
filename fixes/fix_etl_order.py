@@ -12,10 +12,11 @@ import shutil
 import glob
 import gzip
 import csv
+from noc.config import config
 
 PATTERNS = [
-    "var/import/*/*/import.csv.gz",
-    "var/import/*/*/archive/*.csv.gz",
+    "%s/*/*/import.csv.gz" % config.path.etl_import,
+    "%s/*/*/archive/*.csv.gz" % config.path.etl_import,
 ]
 
 
