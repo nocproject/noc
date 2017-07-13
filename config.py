@@ -91,8 +91,8 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter(default="default")
         password = SecretParameter()
-        request_timeout = IntParameter(default=3600)
-        connect_timeout = IntParameter(default=10)
+        request_timeout = SecondsParameter(default="1h")
+        connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
 
     class influxdb(ConfigSection):
@@ -100,8 +100,8 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter()
         password = SecretParameter()
-        request_timeout = SecondsParameter(default=600)
-        connect_timeout = SecondsParameter(default=10)
+        request_timeout = SecondsParameter(default="10m")
+        connect_timeout = SecondsParameter(default="10s")
 
     class nsqlookupd(ConfigSection):
         addresses = ServiceParameter(service="nsqlookupd", wait=True)
@@ -115,7 +115,7 @@ class Config(BaseConfig):
     class memcached(ConfigSection):
         addresses = ServiceParameter(service="memcached", wait=True)
         pool_size = IntParameter(default=8)
-        default_ttl = IntParameter(default=86400)
+        default_ttl = StringParameter(default="1d")
 
     class cm(ConfigSection):
         vcs_path = StringParameter(default="/usr/local/bin/hg")
@@ -236,7 +236,7 @@ class Config(BaseConfig):
         batch_size = IntParameter(default=50000)
         records_buffer = IntParameter(default=1000000)
         batch_delay_ms = IntParameter(default=1000)
-        channel_expire_interval = IntParameter(default=300)
+        channel_expire_interval = SecondsParameter(default="5m")
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
