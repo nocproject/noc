@@ -67,6 +67,9 @@ class Config(BaseConfig):
 
     node = socket.gethostname()
 
+    cp
+
+
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
 
@@ -109,8 +112,10 @@ class Config(BaseConfig):
     class nsqd(ConfigSection):
         addresses = ServiceParameter(service="nsqd",
                                      wait=True, near=True)
-        nsq_pub_retry_delay = FloatParameter(default=0.1)
+        pub_retry_delay = FloatParameter(default=0.1)
         ch_chunk_size = IntParameter(default=4000)
+        connect_timeout = SecondsParameter(default="3s")
+        request_timeout = SecondsParameter(default="30s")
 
     class memcached(ConfigSection):
         addresses = ServiceParameter(service="memcached", wait=True)
@@ -141,6 +146,13 @@ class Config(BaseConfig):
         retry_timeout = StringParameter(
             default="0.1,0.5,1,3,10,30"
         )
+        sync_connect_timeout = SecondsParameter(default="20s")
+        sync_request_timeout = SecondsParameter(default="1h")
+        sync_retry_timeout = FloatParameter(default=1.0)
+        sync_retry_delta = FloatParameter(default=2.0)
+        sync_retries = IntParameter(default=5)
+        async_connect_timeout = SecondsParameter(default="20s")
+        async_request_timeout = SecondsParameter(default="1h")
 
     class gis(ConfigSection):
         ellipsoid = StringParameter(default="ПЗ-90")
@@ -180,6 +192,7 @@ class Config(BaseConfig):
         etl_import = StringParameter(default="var/import")
         ssh_key_prefix = StringParameter(default="var/etc/ssh")
         beef_prefix = StringParameter(default="var/beef/sa")
+        cp_new = StringParameter(default="var/cp/crashinfo/new")
 
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
@@ -337,6 +350,8 @@ class Config(BaseConfig):
 
     class features(ConfigSection):
         use_uvlib = BooleanParameter(default=False)
+        cp = BooleanParameter(default=True)
+        sentry = BooleanParameter(default=False)
 
     class dcs(ConfigSection):
         resolution_timeout = SecondsParameter(default="5m")
@@ -360,6 +375,10 @@ class Config(BaseConfig):
         session_idle_timeout = SecondsParameter(default="1m", help="defeault session timeout")
         caller_timeout = SecondsParameter(default="1m")
         calling_service = StringParameter(default="MTManager")
+
+    class threadpool(ConfigSection):
+        idle_timeout = SecondsParameter(default="30s")
+        shutdown_timeout = SecondsParameter(default="1m")
 
     def __init__(self):
         self.setup_logging()

@@ -15,10 +15,12 @@ import tornado.httpclient
 import consul.base
 import consul.tornado
 
+from noc.config import config
 
-CONSUL_CONNECT_TIMEOUT = 5
-CONSUL_REQUEST_TIMEOUT = 3600
-CONSUL_NEAR_RETRY_TIMEOUT = 1
+
+CONSUL_CONNECT_TIMEOUT = config.consul.connect_timeout
+CONSUL_REQUEST_TIMEOUT = config.consul.request_timeout
+CONSUL_NEAR_RETRY_TIMEOUT = config.consul.near_retry_timeout
 
 ConsulRepeatableErrors = consul.base.Timeout
 

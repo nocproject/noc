@@ -30,14 +30,14 @@ if not logger.handlers:
 
 
 # CP error reporting
-ENABLE_CP = True
-CP_NEW = "var/cp/crashinfo/new"
+ENABLE_CP = config.features.cp
+CP_NEW = config.path.cp_new
 CP_SET_UID = None
 
 SERVICE_NAME = os.path.relpath(sys.argv[0] or sys.executable)
 
 # Sentry error reporting
-if config.sentry.url:
+if config.features.sentry:
     from raven import Client as RavenClient
 
     raven_client = RavenClient(
