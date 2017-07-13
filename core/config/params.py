@@ -123,6 +123,9 @@ class HandlerParameter(BaseParameter):
 class SecondsParameter(BaseParameter):
     def clean(self, v):
         m = 1
+        if v.endswith("s"):
+            v = v[:-1]
+            m = 1
         if v.endswith("h"):
             v = v[:-1]
             m = 3600
