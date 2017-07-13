@@ -43,6 +43,7 @@ from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
+from noc.config import config
 
 
 class Service(object):
@@ -89,7 +90,7 @@ class Service(object):
     # i.e. PathPrefix:/api/<name>
     traefik_frontend_rule = None
 
-    LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
+    LOG_FORMAT = config.log_format
 
     LOG_LEVELS = {
         "critical": logging.CRITICAL,
@@ -99,8 +100,8 @@ class Service(object):
         "debug": logging.DEBUG
     }
 
-    NSQ_PUB_RETRY_DELAY = 0.1
-    CH_CHUNK_SIZE = 4000
+    NSQ_PUB_RETRY_DELAY = config.nsqd.nsq_pub_retry_delay
+    CH_CHUNK_SIZE = config.nsqd.ch_chunk_size
 
     class RegistrationError(Exception):
         pass
@@ -162,7 +163,7 @@ class Service(object):
             "--node",
             action="store",
             dest="node",
-            default=os.environ.get("NOC_NODE", ""),
+            default=config.node,
             help="NOC node name"
         )
         parser.add_argument(
@@ -170,7 +171,7 @@ class Service(object):
             action="store",
             choices=list(self.LOG_LEVELS),
             dest="loglevel",
-            default=os.environ.get("NOC_LOGLEVEL", "info"),
+            default=config.loglevel,
             help="Logging level"
         )
         parser.add_argument(
@@ -178,7 +179,7 @@ class Service(object):
             action="store",
             dest="instance",
             type=int,
-            default=0,
+            default=config.instance,
             help="Instance number"
         )
         parser.add_argument(
@@ -208,7 +209,7 @@ class Service(object):
                 "--pool",
                 action="store",
                 dest="pool",
-                default=os.environ.get("NOC_POOL", ""),
+                default=config.pool,
                 help="NOC pool name"
             )
 
@@ -320,7 +321,7 @@ class Service(object):
                 "Running service %s", self.name
             )
         try:
-            if os.environ.get("NOC_LIBUV"):
+            if config.features.use_uvlib:
                 from tornaduv import UVLoop
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
@@ -405,7 +406,7 @@ class Service(object):
         """
         return {
             "template_path": os.getcwd(),
-            "cookie_secret": "12345",
+            "cookie_secret": config.secret_key,
             "log_function": self.log_request
         }
 
@@ -469,7 +470,7 @@ class Service(object):
         self.is_active = False
         self.logger.info("Deactivating")
         # Shutdown API
-        self.logger.info("Shopping API")
+        self.logger.info("Stopping API")
         self.server.stop()
         # Release registration
         if self.dcs:
@@ -657,7 +658,7 @@ class Service(object):
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
+            self.nsq_writer = nsq.Writer([config.nsqd.addresses])
         return self.nsq_writer
 
     def pub(self, topic, data):

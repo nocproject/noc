@@ -20,7 +20,7 @@ from noc.config import config
 
 class SAEService(Service):
     name = "sae"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
     api = [SAEAPI]
 
     def __init__(self):

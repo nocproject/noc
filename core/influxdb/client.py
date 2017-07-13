@@ -14,11 +14,12 @@ import six
 # NOC modules
 from noc.config import config
 from noc.core.http.client import fetch_sync
+from noc.config import config
 
 
 class InfluxDBClient(object):
-    REQUEST_TIMEOUT = 600
-    CONNECT_TIMEOUT = 10
+    REQUEST_TIMEOUT = config.influxdb.request_timeout
+    CONNECT_TIMEOUT = config.influxdb.connect_timeout
 
     def __init__(self):
         pass

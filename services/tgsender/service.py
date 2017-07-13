@@ -23,7 +23,7 @@ from noc.config import config
 
 class TgSenderService(Service):
     name = "tgsender"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
 
     def on_activate(self):
         self.subscribe(

@@ -80,7 +80,7 @@ class ClassifierService(Service):
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
     pooled = True
-    process_name = "noc-%(name).10s-%(pool).3s"
+    process_name = "noc-%(name).10s-%(pool).2s"
 
     DEFAULT_RULE = "Unknown | Default"
 

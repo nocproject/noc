@@ -12,10 +12,11 @@ import ujson
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.http.client import fetch_sync
 
+from noc.config import config
 
 class HTTP(object):
-    CONNECT_TIMEOUT = 10
-    REQUEST_TIMEOUT = 300
+    CONNECT_TIMEOUT = config.http_client.connect_timeout
+    REQUEST_TIMEOUT = config.http_client.request_timeout
 
     class HTTPError(Exception):
         pass

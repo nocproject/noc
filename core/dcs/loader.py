@@ -11,8 +11,9 @@ from threading import Lock
 import os
 # NOC modules
 from noc.core.handler import get_handler
+from noc.config import config
 
-DEFAULT_DCS = os.environ.get("NOC_DCS", "consul://consul/noc")
+DEFAULT_DCS = "consul://%s:%s/%s" % (config.consul.host, config.consul.port, config.consul.base)
 
 DCS_HANDLERS = {
     "consul": "noc.core.dcs.consuldcs.ConsulDCS"
@@ -40,8 +41,8 @@ def get_dcs_class(url=None):
 def get_dcs(url=None, ioloop=None):
     """
     Return initialized DCS instance
-    :param url: 
-    :return: 
+    :param url:
+    :return:
     """
     url = get_dcs_url(url)
     with _lock:

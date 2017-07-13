@@ -18,7 +18,7 @@ from noc.config import config
 
 class LoginService(UIService):
     name = "login"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
     api = [
         LoginAPI
     ]

@@ -13,6 +13,7 @@ import urllib
 import six
 # NOC modules
 from noc.core.http.client import fetch_sync
+from noc.config import config
 
 
 class ClickhouseError(Exception):
@@ -22,9 +23,9 @@ class ClickhouseError(Exception):
 class ClickhouseClient(object):
     HOST = os.environ.get("NOC_CLICKHOUSE_HOST", "clickhouse")
     PORT = os.environ.get("NOC_CLICKHOUSE_PORT", 8123)
-    DB = os.environ.get("NOC_CLICKHOUSE_DB", "noc")
-    REQUEST_TIMEOUT = 3600
-    CONNECT_TIMEOUT = 10
+    DB = config.clickhouse.db
+    REQUEST_TIMEOUT = config.clickhouse.request_timeout
+    CONNECT_TIMEOUT = config.clickhouse.connect_timeout
 
     def __init__(self):
         pass

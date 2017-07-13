@@ -18,15 +18,16 @@ from noc.core.service.base import Service
 from noc.core.http.client import fetch
 from channel import Channel
 from noc.core.perf import metrics
+from noc.config import config
 
 
 class CHWriterService(Service):
     name = "chwriter"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s"
 
     HOST = os.environ.get("NOC_CLICKHOUSE_HOST", "clickhouse")
     PORT = os.environ.get("NOC_CLICKHOUSE_PORT", 8123)
-    DB = os.environ.get("NOC_CLICKHOUSE_DB", "noc")
+    DB = config.clickhouse.db
 
     def __init__(self):
         super(CHWriterService, self).__init__()

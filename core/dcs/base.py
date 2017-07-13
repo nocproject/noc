@@ -24,10 +24,11 @@ import six
 # Python modules
 from .error import ResolutionError
 from noc.core.perf import metrics
+from noc.config import config
 
 
 class DCSBase(object):
-    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = datetime.timedelta(seconds=300)
+    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = config.dcs.resolution_timeout
     # Resolver class
     resolver_cls = None
 
