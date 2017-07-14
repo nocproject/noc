@@ -21,7 +21,7 @@ TYPES = {
 class Migration:
     def forwards(self):
         pass
-        repo_root = config.cm.repo
+        repo_root = config.path.repo
         for ot in TYPES:
             db.add_column("cm_%s" % ot, "last_modified",
                           models.DateTimeField("Last Modified",
