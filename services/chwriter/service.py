@@ -106,8 +106,8 @@ class CHWriterService(Service):
             del self.channels[x]
         metrics["channels_active"] = len(self.channels)
         for c in list(self.channels):
-            channel = self.channels[c]
-            if channel.is_ready():
+            channel = self.channels.get(c)
+            if channel and channel.is_ready():
                 yield self.flush_channel(channel)
 
     @tornado.gen.coroutine
