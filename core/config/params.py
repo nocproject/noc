@@ -123,6 +123,8 @@ class HandlerParameter(BaseParameter):
 class SecondsParameter(BaseParameter):
     def clean(self, v):
         m = 1
+        if isinstance(v, six.integer_types):
+            return v
         if v.endswith("s"):
             v = v[:-1]
             m = 1
