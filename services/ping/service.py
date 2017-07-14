@@ -267,19 +267,28 @@ class PingService(Service):
             )
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
-        # Send RTT metrics
-        if rtt is not None and ps.report_rtt:
-            self.register_metrics([
-                "Ping\\ |\\ RTT,object=%s value=%s %s" % (
-                    q(ps.name), rtt, int(time.time())
-                )
-            ])
-        if ps.report_attempts:
-            self.register_metrics([
-                "Ping\\ |\\ Attempts,object=%s value=%s %s" % (
-                    q(ps.name), attempts, int(time.time())
-                )
-            ])
+        # Send RTT and attrpmts metrics
+        to_report_rtt = rtt is not None and ps.report_rtt
+        if (to_report_rtt or ps.report_attempts) and ps.bi_id:
+            lt = time.localtime(t0)
+            fields = ["ping", "date", "ts", "managed_object"]
+            values = [
+                time.strftime("%Y-%m-%d", lt),
+                time.strftime("%Y-%m-%d %H:%M:%S", lt),
+                str(ps.bi_id)
+            ]
+            if to_report_rtt:
+                fields += ["rtt"]
+                values += [str(int(rtt * 1000000))]
+            if ps.report_attempts:
+                fields += ["attempts"]
+                values += [str(attempts)]
+            self.register_metrics(
+                ".".join(fields),
+                [
+                    "\t".join(values)
+                ]
+            )
 
 
 if __name__ == "__main__":
