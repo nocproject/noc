@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,8 +16,10 @@ class Script(BaseScript):
     name = "Huawei.MA5600T.get_version"
     cache = True
     interface = IGetVersion
+
     rx_ver1 = re.compile(
-        r"^\s*(?P<platform>[UM]A\S+)(?P<version>V\d+R\d+\S*)\s+",
+        r"^\s*(?P<platform>[UM]A\S+)(?P<version>V\d+R\d+\S*)\s*.+\n"
+        r"(^\s*PRODUCT (?P<platform1>MA\S+)\s*\n)?",
         re.MULTILINE)
     rx_ver2 = re.compile(
         r"^\s*VERSION\s*:\s*MA\S+(?P<version>V\d+R\d+\S+)\s*\n"
@@ -32,9 +34,13 @@ class Script(BaseScript):
         v = self.cli("display version\n")
         match = self.rx_ver1.search(v)
         if match:
+            platform = match.group("platform")
+            platform1 = match.group("platform1")
+            if platform1 and platform1 != platform:
+                platform = platform1
             return {
                 "vendor": "Huawei",
-                "platform": match.group("platform"),
+                "platform": platform,
                 "version": match.group("version")
             }
         else:
