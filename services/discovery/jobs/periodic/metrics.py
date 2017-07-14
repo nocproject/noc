@@ -307,13 +307,13 @@ class MetricsCheck(DiscoveryCheck):
             "tests": 1
         }, read_preference=ReadPreference.SECONDARY_PREFERRED):
             if not p.get("profile"):
-                self.logger.debug("Probe %s has no profile. Skipping", p.name)
+                self.logger.debug("Probe %s has no profile. Skipping", p["name"])
                 continue
             pm = self.get_slaprofile_metrics(p["profile"])
             if not pm:
                 self.logger.debug(
                     "Probe %s has profile '%s' with no configured metrics. "
-                    "Skipping", p.name, p.profile.name
+                    "Skipping", p["name"], p.profile.name
                 )
                 continue
             for metric in pm:
@@ -582,7 +582,7 @@ class MetricsCheck(DiscoveryCheck):
         w_value = self.get_window_function(m, cfg)
         alarms = []
         # Check thresholds
-        path = m.name
+        path = m.metric
         if m.path:
             path += " | ".join(m.path)
         if cfg.low_error is not None and w_value <= cfg.low_error:
@@ -592,7 +592,7 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.low_error_severity,
                 "vars": {
                     "path": path,
-                    "metric": m["name"],
+                    "metric": m.metric,
                     "value": w_value,
                     "threshold": cfg.low_error,
                     "window_type": cfg.window_type,
@@ -607,7 +607,7 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.low_warn_severity,
                 "vars": {
                     "path": path,
-                    "metric": m["name"],
+                    "metric": m.metric,
                     "value": w_value,
                     "threshold": cfg.low_warn,
                     "window_type": cfg.window_type,
@@ -622,7 +622,7 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.high_error_severity,
                 "vars": {
                     "path": path,
-                    "metric": m["name"],
+                    "metric": m.metric,
                     "value": w_value,
                     "threshold": cfg.high_error,
                     "window_type": cfg.window_type,
@@ -637,7 +637,7 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.high_warn_severity,
                 "vars": {
                     "path": path,
-                    "metric": m["name"],
+                    "metric": m.metric,
                     "value": w_value,
                     "threshold": cfg.high_warn,
                     "window_type": cfg.window_type,
