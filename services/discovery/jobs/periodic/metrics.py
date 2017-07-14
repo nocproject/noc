@@ -508,6 +508,15 @@ class MetricsCheck(DiscoveryCheck):
         :param cfg: MetricConfig
         :return: Value or None
         """
+        # Build window state key
+        if m.path:
+            key = "%x|%s" % (
+                cfg.metric_type.get_bi_id(),
+                "|".join(str(p) for p in m.path)
+            )
+        else:
+            key = "%x" % cfg.metric_type.get_bi_id()
+        #
         states = self.job.context["metric_windows"]
         value = m.abs_value
         ts = m.ts // 1000000000
@@ -517,10 +526,10 @@ class MetricsCheck(DiscoveryCheck):
         if drop_window:
             window = [(ts, value)]
             window_full = True
-            if m.key in states:
-                del states[m.key]
+            if key in states:
+                del states[key]
         else:
-            window = states.get(m.key, [])
+            window = states.get(key, [])
             window += [(ts, value)]
             # Trim window according to policy
             if cfg.window_type == WT_MEASURES:
@@ -539,7 +548,7 @@ class MetricsCheck(DiscoveryCheck):
                 )
                 return None
             # Store back to context
-            states[m.key] = window
+            states[key] = window
         if not window_full:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): Window is not filled",
@@ -574,15 +583,8 @@ class MetricsCheck(DiscoveryCheck):
         alarms = []
         # Check thresholds
         path = m.name
-        # @todo:
-        if "interface" in m["tags"]:
-            scope = m["tags"]["interface"]
-        elif "probe" in m["tags"]:
-            scope = m["tags"]["probe"]
-        else:
-            scope = ""
-        if scope:
-            path += " | %s" % scope
+        if m.path:
+            path += " | ".join(m.path)
         if cfg.low_error is not None and w_value <= cfg.low_error:
             alarms += [{
                 "alarm_class": self.AC_PM_LOW_ERROR,
@@ -591,7 +593,6 @@ class MetricsCheck(DiscoveryCheck):
                 "vars": {
                     "path": path,
                     "metric": m["name"],
-                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.low_error,
                     "window_type": cfg.window_type,
@@ -607,7 +608,6 @@ class MetricsCheck(DiscoveryCheck):
                 "vars": {
                     "path": path,
                     "metric": m["name"],
-                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.low_warn,
                     "window_type": cfg.window_type,
@@ -623,7 +623,6 @@ class MetricsCheck(DiscoveryCheck):
                 "vars": {
                     "path": path,
                     "metric": m["name"],
-                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.high_error,
                     "window_type": cfg.window_type,
@@ -639,7 +638,6 @@ class MetricsCheck(DiscoveryCheck):
                 "vars": {
                     "path": path,
                     "metric": m["name"],
-                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.high_warn,
                     "window_type": cfg.window_type,
