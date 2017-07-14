@@ -125,7 +125,7 @@ class Config(BaseConfig):
         default_ttl = SecondsParameter(default="1d")
 
     class cm(ConfigSection):
-        vcs_type = StringParameter(default="gridvcs", choises="hg, CVS, gridvcs")
+        vcs_type = StringParameter(default="gridvcs", choices="hg, CVS, gridvcs")
 
     class customization(ConfigSection):
         favicon_url = StringParameter(
