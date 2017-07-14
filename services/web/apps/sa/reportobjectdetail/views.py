@@ -251,7 +251,46 @@ class ReportObjectIfacesStatusStat(object):
 class ReportObjectAttributes(object):
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
-        self.attr_list = ["vendor", "version", "platform", "Serial Number", "HW version"]
+        self.attr_list = ["Serial Number", "HW version"]
+        self.out = self.load(self.attr_list)
+
+    @staticmethod
+    def load(attr_list):
+        """
+        :param ids:
+        :param attr_list:
+        :return: Dict tuple MO attributes mo_id -> (attrs_list)
+        :rtype: dict
+        """
+        mo_attrs = {}
+        cursor = connection.cursor()
+
+        base_select = "select %s "
+        base_select += "from (select distinct managed_object_id from sa_managedobjectattribute) as saa "
+
+        value_select = "LEFT JOIN (select managed_object_id,value from sa_managedobjectattribute where key='%s') "
+        value_select += "as %s on %s.managed_object_id=saa.managed_object_id"
+
+        s = ["saa.managed_object_id"]
+        s.extend([".".join([al.replace(" ", "_"), "value"]) for al in attr_list])
+
+        query1 = base_select % ", ".join(tuple(s))
+        query2 = " ".join([value_select % tuple([al, al.replace(" ", "_"), al.replace(" ", "_")]) for al in attr_list])
+        query = query1 + query2
+        cursor.execute(query)
+        mo_attrs.update(dict([(c[0], c[1:6]) for c in cursor]))
+        # print mo_attrs
+
+        return mo_attrs
+
+    def __getitem__(self, item):
+        return self.out.get(item, ["", ""])
+
+
+class ReportAttrResolver(object):
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.attr_list = ["profile", "vendor", "version", "platform"]
         self.out = self.load(self.attr_list)
 
     @staticmethod
@@ -267,7 +306,7 @@ class ReportObjectAttributes(object):
         version = {str(p["_id"]): p["version"] for p in Firmware.objects.all().as_pymongo().scalar("id", "version")}
         profile = {str(p["_id"]): p["name"] for p in Profile.objects.all().as_pymongo().scalar("id", "name")}
 
-        mo_attrs = {}
+        mo_attrs_resolv = {}
         cursor = connection.cursor()
 
         base_select = "select id, profile, vendor, platform, version from sa_managedobject"
@@ -276,18 +315,17 @@ class ReportObjectAttributes(object):
 
         query = query1
         cursor.execute(query)
-        mo_attrs.update(dict([(c[0], [vendor.get(c[2], ""),
-                                      version.get(c[4], ""),
-                                      platform.get(c[3], ""),
-                                      "",
-                                      "",
-                                      profile.get(c[1], "")])
-                              for c in cursor]))
+        mo_attrs_resolv.update(dict([(c[0], [profile.get(c[1], ""),
+                                             vendor.get(c[2], ""),
+                                             platform.get(c[3], ""),
+                                             version.get(c[4], "")
+                                             ])
+                                     for c in cursor]))
 
-        return mo_attrs
+        return mo_attrs_resolv
 
     def __getitem__(self, item):
-        return self.out.get(item, ["", "", "", "", "", ""])
+        return self.out.get(item, ["", "", "", ""])
 
 
 class ReportObjects(object):
@@ -471,6 +509,7 @@ class ReportObjectDetailApplication(ExtApplication):
         avail = {}
         segment_lookup = {}
         attr = {}
+        attr_resolv = {}
         moss = []
         iface_count = {}
         link_count = {}
@@ -488,9 +527,9 @@ class ReportObjectDetailApplication(ExtApplication):
             link_count = ReportObjectLinkCount([])
         if len(mos_id) < 70000:
             # @todo Warning - too many objects
-            if "object_vendor" in columns.split(",") or "object_platform" in columns.split(",") \
-                    or "object_version" in columns.split(",") or "object_serial" in columns.split(","):
+            if "object_serial" in columns.split(","):
                 attr = ReportObjectAttributes([])
+            attr_resolv = ReportAttrResolver([])
             moss = ReportObjects([])
         # @todo mo_attributes_lookup
         # @todo segment_name lookup
@@ -504,11 +543,14 @@ class ReportObjectDetailApplication(ExtApplication):
                 moss[1],
                 "managed" if moss[2] else "unmanaged",
                 moss[3],
-                moss[4],
-                attr[mo][0] if attr else "",
-                attr[mo][2] if attr else "",
-                attr[mo][1] if attr else "",
-                attr[mo][3] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
+                # Profile
+                attr_resolv[mo][0],
+                # Vendor, Platform, Version
+                attr_resolv[mo][1] if attr else "",
+                attr_resolv[mo][2] if attr else "",
+                attr_resolv[mo][3] if attr else "",
+                # Serial
+                attr[mo][0] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
                 _("Yes") if avail.get(mo, None) else _("No"),
                 moss[5],
                 container_lookup[mo].get("text", ""),

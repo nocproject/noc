@@ -27,6 +27,7 @@ from noc.sa.models.objectpath import ObjectPath
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -173,6 +174,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         mos_id = list(mos.values_list("id", flat=True))
         container_lookup = ReportContainer(mos_id)
         attr = ReportObjectAttributes([])
+        attr_res = ReportAttrResolver([])
         if source in ["archive", "both"]:
             # Archived Alarms
             for a in ArchivedAlarm._get_collection().find(q).sort(
@@ -212,8 +214,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     mo.name,
                     mo.address,
                     mo.profile.name,
-                    attr[mo.id][2] if attr else "",
-                    attr[mo.id][1] if attr else "",
+                    attr_res[mo.id][2] if attr else "",
+                    attr_res[mo.id][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
@@ -261,8 +263,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     mo.name,
                     mo.address,
                     mo.profile.name,
-                    attr[mo.id][2] if attr else "",
-                    attr[mo.id][1] if attr else "",
+                    attr_res[mo.id][2] if attr else "",
+                    attr_res[mo.id][3] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
