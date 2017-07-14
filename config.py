@@ -67,6 +67,8 @@ class Config(BaseConfig):
 
     node = socket.gethostname()
 
+    brand = StringParameter(default="NOC")
+
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
@@ -400,6 +402,13 @@ class Config(BaseConfig):
     class threadpool(ConfigSection):
         idle_timeout = SecondsParameter(default="30s")
         shutdown_timeout = SecondsParameter(default="1m")
+
+    class backup(ConfigSection):
+        keep_days = SecondsParameter(default="14d")
+        keep_weeks = SecondsParameter(default="12w")
+        keep_day_of_week = IntParameter(default="6")
+        keep_months = IntParameter(default="12")
+        keep_day_of_month = IntParameter(default="1")
 
     def __init__(self):
         self.setup_logging()

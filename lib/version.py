@@ -14,7 +14,7 @@ import platform
 # NOC modules
 from noc.config import config
 
-DEFAULT_BRAND = "NOC"
+DEFAULT_BRAND = config.brand
 BRAND_PATH = "custom/BRAND"
 
 # Version cache

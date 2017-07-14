@@ -31,7 +31,7 @@ class Task(PeriodicTask):
         """
         self.info("Checking paths")
         # Check backup dir is writable
-        b_dir = config.get("path", "backup_dir")
+        b_dir = config.path.backup_dir
         if not os.access(b_dir, os.W_OK):
             self.error("%s is not writable" % b_dir)
             return False
@@ -51,12 +51,12 @@ class Task(PeriodicTask):
         """
         Cleanup obsolete backups
         """
-        backup_dir = config.get("path", "backup_dir")
-        keep_days = config.getint("backup", "keep_days")
-        keep_weeks = config.getint("backup", "keep_weeks")
-        keep_day_of_week = config.getint("backup", "keep_day_of_week")
-        keep_months = config.getint("backup", "keep_months")
-        keep_day_of_month = config.getint("backup", "keep_day_of_month")
+        backup_dir = config.path.backup_dir
+        keep_days = config.backup.keep_days
+        keep_weeks = config.backup.keep_weeks
+        keep_day_of_week = config.backup.keep_day_of_week
+        keep_months = config.backup.keep_months
+        keep_day_of_month = config.backup.keep_day_of_month
 
         now = datetime.datetime.now()
         if not os.path.isdir(backup_dir):
