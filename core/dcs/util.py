@@ -47,8 +47,11 @@ def resolve(name, hint=None, wait=True, timeout=None,
     io_loop = tornado.ioloop.IOLoop()
     result = []
     error = []
-    dcs = get_dcs_class()(url, ioloop=io_loop)
-    io_loop.run_sync(_resolve)
+    try:
+        dcs = get_dcs_class()(url, ioloop=io_loop)
+        io_loop.run_sync(_resolve)
+    finally:
+        io_loop.close(all_fds=True)
     if error:
         six.reraise(*error[0])
     else:
