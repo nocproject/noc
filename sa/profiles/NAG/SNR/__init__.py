@@ -13,3 +13,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "NAG.SNR"
+    username_submit = "\r"
+    password_submit = "\r"
+    command_submit = "\r"

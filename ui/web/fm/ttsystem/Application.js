@@ -22,6 +22,12 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     width: 100
                 },
                 {
+                    text: __("Active"),
+                    dataIndex: "is_active",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: __("Handler"),
                     dataIndex: "handler",
                     flex: 1
@@ -33,6 +39,12 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
+                    allowBlank: false
+                },
+                {
+                    name: "is_active",
+                    xtype: "checkbox",
+                    fieldLabel: __("Active"),
                     allowBlank: false
                 },
                 {
@@ -52,6 +64,22 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Connection"),
                     allowBlank: false
+                },
+                {
+                    name: "shard_name",
+                    xtype: "textfield",
+                    fieldLabel: __("Shard"),
+                    regex: /^[0-9a-zA-z]{1,16}$/,
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "max_threads",
+                    xtype: "numberfield",
+                    fieldLabel: __("Max. Threads"),
+                    allowBlank: false,
+                    min: 0,
+                    uiStyle: "small"
                 },
                 {
                     name: "failure_cooldown",

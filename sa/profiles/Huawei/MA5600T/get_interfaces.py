@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.MA5600T.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
     TIMEOUT = 240
 
-    rx_if = re.compile(
+    rx_if1 = re.compile(
         r"^\s*(?P<ifname>[a-zA-Z]+)(?P<ifnum>\d+) current state :\s*(?P<admin_status>UP|DOWN)\s*\n"
         r"^\s*Line protocol current state :\s*(?P<oper_status>UP|UP \(spoofing\)|DOWN)\s*\n"
         r"^\s*Description :\s*(?P<descr>.*)\n"
@@ -27,13 +27,23 @@ class Script(BaseScript):
         r"(^\s*Internet Address is (?P<ip>\S+)\s*\n)?"
         r"(^\s*IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is (?P<mac>\S+)\s*\n)?",
         re.MULTILINE)
+    rx_if2 = re.compile(
+        r"^Description : (?P<descr>HUAWEI, SmartAX Series), (?P<ifname>[a-zA-Z]+)(?P<ifnum>\d+) Interface\s*\n"
+        r"^The Maximum Transmit Unit is (?P<mtu>\d+) bytes\s*\n"
+        r"(^Internet Address is (?P<ip>\S+)\s*\n)?"
+        r"(^IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is (?P<mac>\S+)\s*\n)?"
+        r"(^MEth port is (?P<ifparent>\S+)\s*\n)?",
+        re.MULTILINE)
     rx_vlan = re.compile(
         r"^\s*\-+\s*\n"
         r"(?P<tagged>.+)"
         r"^\s*\-+\s*\n"
         r"^\s*Total:\s+\d+\s+Native VLAN:\s+(?P<untagged>\d+)\s*\n",
         re.MULTILINE | re.DOTALL)
-    rx_tagged = re.compile("(?P<tagged>\d+)", re.MULTILINE)
+    rx_vlan2 = re.compile(
+        r"^\s+\d+\s+eth\s+(?:down|up)\s+(?P<ifname>\d+/\s*\d+/\s*\d+)\s+"
+        r"vlan\s+(?P<type>\S+)\s*\n",
+        re.MULTILINE)
     rx_ether = re.compile(
         r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E\s+(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
         r"\S+\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
@@ -103,6 +113,27 @@ class Script(BaseScript):
         stp_ports = self.get_stp()
         display_pvc = False
         display_service_port = False
+        vlans_found = False
+        # Get portchannels
+        portchannel_members = {}
+        for pc in self.scripts.get_portchannel():
+            i = pc["interface"]
+            t = pc["type"] == "L"
+            for m in pc["members"]:
+                portchannel_members[m] = (i, t)
+            iface = {
+                "name": pc["interface"],
+                "type": "aggregated",
+                "admin_status": True,
+                "oper_status": True,
+                "subinterfaces": [{
+                    "name": pc["interface"],
+                    "admin_status": True,
+                    "oper_status": True,
+                    "enabled_afi": ["BRIDGE"]
+                }]
+            }
+            interfaces += [iface]
         ports = self.profile.fill_ports(self)
         for i in range(len(ports)):
             if ports[i]["t"] in ["10GE", "GE", "FE"]:
@@ -128,9 +159,14 @@ class Script(BaseScript):
                     }
                     if ifname in stp_ports:
                         iface["enabled_protocols"] += ["STP"]
+                    if ifname in portchannel_members:
+                        ai, is_lacp = portchannel_members[ifname]
+                        iface["aggregated_interface"] = ai
+                        iface["enabled_protocols"] += ["LACP"]
                     v = self.cli("display port vlan %s" % ifname)
                     m = self.rx_vlan.search(v)
                     if m:
+                        vlans_found = True
                         tagged = []
                         untagged = int(m.group("untagged"))
                         for t in self.rx_tagged.finditer(m.group("tagged")):
@@ -208,7 +244,8 @@ class Script(BaseScript):
                                 break
                         interfaces += [iface]
         v = self.cli("display interface\n")
-        for match in self.rx_if.finditer(v):
+        rx = self.find_re([self.rx_if1, self.rx_if2], v)
+        for match in rx.finditer(v):
             ifname = "%s%s" % (match.group("ifname"), match.group("ifnum"))
             iftype = {
                 "meth": "management",
@@ -219,25 +256,55 @@ class Script(BaseScript):
             iface = {
                 "name": ifname,
                 "type": iftype,
-                "admin_status": match.group("admin_status") != "DOWN",
-                "oper_status": match.group("oper_status") != "DOWN",
-                "subinterfaces": [{
-                    "name": ifname,
-                    "admin_status": match.group("admin_status") != "DOWN",
-                    "oper_status": match.group("oper_status") != "DOWN",
-                    "mtu": int(match.group("mtu"))
-                }]
+                "subinterfaces": []
             }
+            sub = {
+                "name": ifname,
+                "mtu": int(match.group("mtu"))
+            }
+            if "admin_status" in match.groupdict():
+                iface["admin_status"] = match.group("admin_status") != "DOWN"
+                sub["admin_status"] = match.group("admin_status") != "DOWN"
+            if "oper_status"  in match.groupdict():
+                iface["oper_status"] = match.group("oper_status") != "DOWN"
+                sub["oper_status"] = match.group("oper_status") != "DOWN"
             if match.group("descr"):
-                iface["description"] = match.group("descr")
-                iface["subinterfaces"][0]["description"] = match.group("descr")
+                if match.group("descr") != 'HUAWEI, SmartAX Series':
+                    iface["description"] = match.group("descr")
+                    sub["description"] = match.group("descr")
             if match.group("ip"):
-                iface["subinterfaces"][0]["ipv4_addresses"] = [match.group("ip")]
-                iface["subinterfaces"][0]["enabled_afi"] = ['IPv4']
+                sub["ipv4_addresses"] = [match.group("ip")]
+                sub["enabled_afi"] = ['IPv4']
             if match.group("mac"):
                 iface["mac"] = match.group("mac")
-                iface["subinterfaces"][0]["mac"] = match.group("mac")
+                sub["mac"] = match.group("mac")
             if match.group("ifname") == "vlanif":
-                iface["subinterfaces"][0]["vlan_ids"] = int(match.group("ifnum"))
-            interfaces += [iface]
+                sub["vlan_ids"] = int(match.group("ifnum"))
+            if "ifparent" in match.groupdict() and match.group("ifparent"):
+                for i in interfaces:
+                    if i["name"] == match.group("ifparent"):
+                        i["subinterfaces"] += [sub]
+                        break
+            else:
+                iface["subinterfaces"] += [sub]
+                interfaces += [iface]
+        if not vlans_found:
+            for vlan in self.scripts.get_vlans():
+                for match in self.rx_vlan2.finditer(
+                    self.cli("display vlan %s\n" % vlan["vlan_id"])
+                ):
+                    ifname = match.group("ifname").replace(" ", "")
+                    for i in interfaces:
+                        if ifname == i["name"]:
+                            if match.group("type") == "untag":
+                                i["subinterfaces"][0]["untagged_vlan"] = \
+                                    vlan["vlan_id"]
+                            else:
+                                if "tagged_vlans" in i["subinterfaces"][0]:
+                                    i["subinterfaces"][0]["tagged_vlans"] += \
+                                        [vlan["vlan_id"]]
+                                else:
+                                    i["subinterfaces"][0]["tagged_vlans"] = \
+                                        [vlan["vlan_id"]]
+                            break
         return [{"interfaces": interfaces}]

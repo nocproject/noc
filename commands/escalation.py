@@ -102,6 +102,7 @@ class Command(BaseCommand):
                 call_later(
                     "noc.services.escalator.escalation.notify_close",
                     scheduler="escalator",
+                    pool=alarm.managed_object.escalator_shard,
                     alarm_id=alarm.id,
                     tt_id=alarm.escalation_tt,
                     subject="Closed",
