@@ -9,17 +9,25 @@
 # Python modules
 import datetime
 import zlib
+import threading
+import operator
+from collections import defaultdict
 # Third-party modules
 import ujson
 from mongoengine.queryset import Q
+import cachetools
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
+from noc.pm.models.metricscope import MetricScope
+from noc.pm.models.metrictype import MetricType
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.core.translation import ugettext as _
+
+ds_lock = threading.Lock()
 
 
 class BIAPI(API):
@@ -34,14 +42,92 @@ class BIAPI(API):
         Alarms
     ]
 
-    def iter_datasources(self):
-        """
-        @todo: Dynamic loading
-        @todo: Load from custom/
-        :return:
-        """
-        for ds in self.datasources:
-            yield ds
+    _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
+
+    ref_dict = {
+        "sa.ManagedObject": "managedobject"
+    }
+
+    @classmethod
+    def get_pm_datasources(cls):
+        result = []
+        # Collect fields
+        scope_fields = defaultdict(list)
+        for mt in MetricType.objects.all().order_by("field_name"):
+            scope_fields[mt.scope.table_name] += [{
+                "name": mt.field_name,
+                "description": mt.description,
+                "type": mt.field_type,
+                "dict": None
+            }]
+        # Attach scopes as datasources
+        for ms in MetricScope.objects.all().order_by("table_name"):
+            r = {
+                "name": ms.table_name,
+                "description": ms.description,
+                "tags": [],
+                "fields": [
+                    {
+                        "name": "date",
+                        "description": "Date",
+                        "type": "Date",
+                        "dict": None
+                    },
+                    {
+                        "name": "ts",
+                        "description": "Timestamp",
+                        "type": "DateTime",
+                        "dict": None
+                    }
+                ]
+            }
+            for k in ms.key_fields:
+                r["fields"] += [{
+                    "name": k.field_name,
+                    "description": k.field_name,
+                    "type": "UInt64",
+                    "dict": cls.ref_dict.get(k.model, None)
+                }]
+            if ms.path:
+                r["fields"] = [{
+                    "name": "path",
+                    "description": "Metric path",
+                    "type": "Array(String)",
+                    "dict": None
+                }]
+            r["fields"] += scope_fields[ms.table_name]
+            result += [r]
+        return result
+
+    @classmethod
+    def get_bi_datasources(cls):
+        result = []
+        for model in cls.datasources:
+            r = {
+                "name": model._meta.db_table,
+                "description": model._meta.description,
+                "tags": model._meta.tags,
+                "fields": []
+            }
+            for fn in model._fields_order:
+                f = model._fields[fn]
+                d = getattr(f, "dict_type", None)
+                if d:
+                    d = d._meta.name
+                r["fields"] += [{
+                    "name": f.name,
+                    "description": _(f.description),
+                    "type": f.db_type,
+                    "dict": d
+                }]
+            result += [r]
+        return result
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_ds_cache"),
+                             lock=lambda _: ds_lock)
+    def get_datasources(cls):
+        return cls.get_bi_datasources() + cls.get_pm_datasources()
 
     @api
     def list_datasources(self):
@@ -55,11 +141,11 @@ class BIAPI(API):
         """
         return [
             {
-                "name": ds._meta.db_table,
-                "decscription": ds._meta.description,
-                "tags": ds._meta.tags
-            } for ds in self.iter_datasources()
-            ]
+                "name": ds["name"],
+                "decscription": ds["description"],
+                "tags": ds["tags"]
+            } for ds in self.get_datasources()
+        ]
 
     @api
     def get_datasource_info(self, name):
@@ -75,27 +161,10 @@ class BIAPI(API):
         :param name:
         :return:
         """
-        model = Model.get_model_class(name)
-        if not model:
-            raise APIError("Invalid datasource")
-        r = {
-            "name": model._meta.db_table,
-            "description": model._meta.description,
-            "tags": model._meta.tags,
-            "fields": []
-        }
-        for fn in model._fields_order:
-            f = model._fields[fn]
-            d = getattr(f, "dict_type", None)
-            if d:
-                d = d._meta.name
-            r["fields"] += [{
-                "name": f.name,
-                "description": _(f.description),
-                "type": f.db_type,
-                "dict": d
-            }]
-        return r
+        for ds in self.get_datasources():
+            if ds.name == name:
+                return ds
+        raise APIError("Invalid datasource")
 
     @executor("query")
     @api
