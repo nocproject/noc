@@ -54,4 +54,4 @@ noc_prefix: /usr/local
 noc_root: "{{noc_prefix}}/noc"
 
 pgbouncer_path_pid: /var/run/pgbouncer
-nsd_log_dir: /var/log/nsq/
+nsd_log_dir: /var/log/nsq
