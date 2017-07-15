@@ -105,7 +105,7 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter()
         password = SecretParameter()
-        request_timeout = SecondsParameter(default="10m")
+        request_timeout = SecondsParameter(default="10M")
         connect_timeout = SecondsParameter(default="10s")
 
     class nsqlookupd(ConfigSection):
@@ -261,7 +261,7 @@ class Config(BaseConfig):
         batch_size = IntParameter(default=50000)
         records_buffer = IntParameter(default=1000000)
         batch_delay_ms = IntParameter(default=1000)
-        channel_expire_interval = SecondsParameter(default="5m")
+        channel_expire_interval = SecondsParameter(default="5M")
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
@@ -303,7 +303,7 @@ class Config(BaseConfig):
         max_threads = IntParameter(default=20)
         topology_rca_window = IntParameter(default=0)
         oo_close_delay = SecondsParameter(default="20s")
-        discovery_delay = SecondsParameter(default="10m")
+        discovery_delay = SecondsParameter(default="10M")
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")
@@ -337,7 +337,7 @@ class Config(BaseConfig):
         query_threads = IntParameter(default=10)
         extract_delay_alarms = SecondsParameter(default="1h")
         clean_delay_alarms = SecondsParameter(default="1d")
-        reboot_interval = SecondsParameter(default="1m")
+        reboot_interval = SecondsParameter(default="1M")
         extract_delay_reboots = SecondsParameter(default="1h")
         clean_delay_reboots = SecondsParameter(default="1d")
         chunk_size = IntParameter(default=4000)
@@ -364,7 +364,7 @@ class Config(BaseConfig):
         port = IntParameter(default=8500)
         check_interval = SecondsParameter(default="1s")
         check_timeout = SecondsParameter(default="1s")
-        release = SecondsParameter(default="1m")
+        release = SecondsParameter(default="1M")
         session_ttl = SecondsParameter(default="10s")
         lock_delay = SecondsParameter(default="1s")
         retry_timeout = SecondsParameter(default="1s")
@@ -377,7 +377,7 @@ class Config(BaseConfig):
         sentry = BooleanParameter(default=False)
 
     class dcs(ConfigSection):
-        resolution_timeout = SecondsParameter(default="5m")
+        resolution_timeout = SecondsParameter(default="5M")
 
     class http_client(ConfigSection):
         connect_timeout = SecondsParameter(default="10s")
@@ -394,14 +394,14 @@ class Config(BaseConfig):
         validate_certs = BooleanParameter(default=False, help="Have to be set as True")
 
     class script(ConfigSection):
-        timeout = SecondsParameter(default="2m", help="default script timeout")
-        session_idle_timeout = SecondsParameter(default="1m", help="defeault session timeout")
-        caller_timeout = SecondsParameter(default="1m")
+        timeout = SecondsParameter(default="2M", help="default script timeout")
+        session_idle_timeout = SecondsParameter(default="1M", help="defeault session timeout")
+        caller_timeout = SecondsParameter(default="1M")
         calling_service = StringParameter(default="MTManager")
 
     class threadpool(ConfigSection):
         idle_timeout = SecondsParameter(default="30s")
-        shutdown_timeout = SecondsParameter(default="1m")
+        shutdown_timeout = SecondsParameter(default="1M")
 
     class backup(ConfigSection):
         keep_days = SecondsParameter(default="14d")

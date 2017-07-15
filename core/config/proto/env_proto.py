@@ -33,7 +33,7 @@ class EnvProtocol(BaseProtocol):
                 self.config.set_parameter(v, ev)
 
     def dump(self):
-        prefix = self.parsed_url[1:]
+        prefix = self.parsed_url.path[1:]
         for v in self.config:
             env_name = "%s_%s" % (
                 prefix,
