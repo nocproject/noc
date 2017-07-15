@@ -26,7 +26,7 @@ command="{{ noc_root }}/bin/${name}"
 required_files="${nsqlookupd_config}"
 start_precmd=nsqlookupd_prestart
 
-command_args="-config ${nsqlookupd_config} > {{ noc_root }}/var/log/nsq/nsqlookupd.log 2>&1 &"
+command_args="-config ${nsqlookupd_config} > {{ nsd_log_dir }}/nsqlookupd.log 2>&1 &"
 
 nsqlookupd_prestart() {
 # Have to empty rc_flags so they don't get passed to daemon(8)
