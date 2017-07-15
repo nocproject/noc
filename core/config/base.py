@@ -16,7 +16,7 @@ import six
 # NOC modules
 from .params import BaseParameter
 
-DEFAULT_CONFIG = "legacy:///,env:///NOC"
+DEFAULT_CONFIG = "legacy:///,yaml:///opt/noc/etc/settings.yml,env:///NOC"
 
 
 class ConfigSectionBase(type):
