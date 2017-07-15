@@ -128,6 +128,9 @@ class SecondsParameter(BaseParameter):
         if v.endswith("s"):
             v = v[:-1]
             m = 1
+        if v.endswith("M"):
+            v = v[:-1]
+            m = 1 * 60
         if v.endswith("h"):
             v = v[:-1]
             m = 3600
