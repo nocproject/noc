@@ -16,7 +16,7 @@ import six
 # NOC modules
 from .params import BaseParameter
 
-DEFAULT_CONFIG = "legacy:///"
+DEFAULT_CONFIG = "legacy:///,env:///NOC"
 
 
 class ConfigSectionBase(type):
