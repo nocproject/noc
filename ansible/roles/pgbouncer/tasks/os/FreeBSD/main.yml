@@ -1,4 +1,9 @@
 ---
+- name: Install pgbouncer
+  pkgng: name="pgbouncer" state=present
+  tags:
+    - requirements
+
 - name: Create pgbouncer directories
   file:
     path: "{{ item }}"
@@ -9,11 +14,6 @@
     - /var/log/pgbouncer/
     - /var/run/pgbouncer/
     - /usr/local/etc/pgbouncer/
-
-- name: Install pgbouncer
-  pkgng: name="pgbouncer" state=present
-  tags:
-    - requirements
 
 - name: Install pgbouncer config
   template:
