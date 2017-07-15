@@ -95,7 +95,7 @@ def build(node):
                 for o in config.options(pn):
                     v = config.get(pn, o)
                     out.set(sn, o, v)
-                numprocs = jcfg["config"][j].get("n_instances", "1")+jcfg["config"][j].get("n_backup_instances", "1")
+                numprocs = jcfg["config"][j].get("n_instances", 1)+jcfg["config"][j].get("n_backup_instances", 0)
                 out.set(sn, "environment", format_env(pe))
                 out.set(sn, "autostart", "true")
                 out.set(sn, "numprocs", numprocs)
