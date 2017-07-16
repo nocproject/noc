@@ -136,9 +136,10 @@ class MetricScope(Document):
         Get CREATE TABLE SQL statement
         :return:
         """
-        pk = ["ts"] + [f.field_name for f in self.key_fields]
+        pk = [f.field_name for f in self.key_fields]
         if self.path:
             pk += ["path"]
+        pk += ["ts"]
         r = [
             "CREATE TABLE IF NOT EXISTS %s (" % self.table_name,
             ",\n".join("  %s %s" % (n, t) for n, t in self.iter_fields()),
