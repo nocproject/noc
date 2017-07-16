@@ -146,20 +146,6 @@ class Service(object):
         Apply additional parser arguments
         """
         parser.add_argument(
-            "--env",
-            action="store",
-            dest="env",
-            default=os.environ.get("NOC_ENV", ""),
-            help="NOC environment name"
-        )
-        parser.add_argument(
-            "--dc",
-            action="store",
-            dest="dc",
-            default=os.environ.get("NOC_DC", ""),
-            help="NOC datacenter name"
-        )
-        parser.add_argument(
             "--node",
             action="store",
             dest="node",
@@ -181,14 +167,6 @@ class Service(object):
             type=int,
             default=config.instance,
             help="Instance number"
-        )
-        parser.add_argument(
-            "--numprocs",
-            action="store",
-            dest="numprocs",
-            type=int,
-            default=os.environ.get("NOC_NUMPROCS", "1"),
-            help="Total instances"
         )
         parser.add_argument(
             "--debug",
@@ -377,9 +355,9 @@ class Service(object):
             addr, port = "auto", 0
             port_tracker = 0
         if addr == "auto":
-            addr = os.environ.get("HOSTNAME", socket.gethostname())
+            addr = config.node
             self.logger.info("Autodetecting address: auto -> %s", addr)
-        addr = socket.gethostbyname(addr)
+        addr = config.node
         port = int(port) + port_tracker
         return addr, port
 

@@ -30,7 +30,7 @@ class MemcachedCache(BaseCache):
     def __init__(self):
         super(BaseCache, self).__init__()
         self.tpl_client = pylibmc.Client(
-            [str(a) for a in config.nsqlookupd.addresses],
+            [str(a) for a in config.memcached.addresses],
             binary=True,
             behaviors={
                 "tcp_nodelay": True
@@ -38,7 +38,7 @@ class MemcachedCache(BaseCache):
         )
         logger.debug(
             "Starting memcached pool: hosts=%s, pool size=%d",
-            ", ".join([str(a) for a in config.nsqlookupd.addresses]),
+            ", ".join([str(a) for a in config.memcached.addresses]),
             config.memcached.pool_size
         )
         self.pool = pylibmc.pools.ClientPool()

@@ -21,6 +21,7 @@ class ClickhouseError(Exception):
 
 
 class ClickhouseClient(object):
+    # @fixme took better one from config with shard settings
     HOST = os.environ.get("NOC_CLICKHOUSE_HOST", "clickhouse")
     PORT = os.environ.get("NOC_CLICKHOUSE_PORT", 8123)
     DB = config.clickhouse.db

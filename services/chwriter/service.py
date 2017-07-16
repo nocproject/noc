@@ -24,7 +24,7 @@ from noc.config import config
 class CHWriterService(Service):
     name = "chwriter"
     process_name = "noc-%(name).10s"
-
+    # @fixme took better one from config with shard settings
     HOST = os.environ.get("NOC_CLICKHOUSE_HOST", "clickhouse")
     PORT = os.environ.get("NOC_CLICKHOUSE_PORT", 8123)
     DB = config.clickhouse.db
