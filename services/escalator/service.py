@@ -22,9 +22,12 @@ class EscalatorService(Service):
     name = "escalator"
     leader_lock_name = "escalator"
 
+    def __init__(self, *args, **kwargs):
+        super(EscalatorService, self).__init__(*args, **kwargs)
+        self.shards = {}
+
     @tornado.gen.coroutine
     def on_activate(self):
-        self.shards = {}
         self.apply_shards()
 
     @tornado.gen.coroutine
