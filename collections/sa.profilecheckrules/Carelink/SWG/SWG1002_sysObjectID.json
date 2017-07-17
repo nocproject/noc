@@ -1,0 +1,13 @@
+{
+    "name": "Carelink | SWG | SWG1002 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "37ba5e21-715f-4b8f-8e99-5974f117f43c",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.655.100.10.1",
+    "action": "match",
+    "profile": "Carelink.SWG"
+}
