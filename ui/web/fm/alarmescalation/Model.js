@@ -38,6 +38,10 @@ Ext.define("NOC.fm.alarmescalation.Model", {
         {
             name: "pre_reasons",
             type: "auto"
+        },
+        {
+            name: "max_escalation_retries",
+            type: "integer"
         }
     ]
 });
