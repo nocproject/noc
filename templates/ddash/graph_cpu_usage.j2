@@ -36,47 +36,18 @@
   "steppedLine": false,
   "targets": [
     {
-      "alias": "CPU | Usage",
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "CPU | Usage",
-      "policy": "default",
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "formattedQuery": "<font color=\"darkorange\">SELECT</font> <font color=\"darkcyan\">$timeSeries</font> <font color=\"darkorange\">as</font> t, <font color=\"navajowhite\">avg</font>(usage) <font color=\"darkorange\">as</font> <font color=\"lightgreen\">`Cpu | Usage`</font><font color=\"darkorange\">FROM</font> <font color=\"darkcyan\">$table</font> <font color=\"darkorange\">WHERE</font> managed_object<font color=\"yellow\">=</font><font color=\"darkcyan\">$bi_id</font> <font color=\"yellow\">and</font> <font color=\"darkcyan\">$timeFilter</font> <font color=\"darkorange\">GROUP BY</font> t <font color=\"darkorange\">ORDER BY</font> t",
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "cpu",
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(usage) as `Cpu | Usage`FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
-      "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        }
-      ]
+      "resultFormat": "time_series"
     }
   ],
   "timeFrom": null,

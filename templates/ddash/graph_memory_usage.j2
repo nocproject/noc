@@ -36,47 +36,20 @@
   "steppedLine": false,
   "targets": [
     {
-      "alias": "Memory | Usage",
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "Memory | Usage",
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "formattedQuery": "<font color=\"darkorange\">SELECT</font> <font color=\"darkcyan\">$timeSeries</font> <font color=\"darkorange\">as</font> t, <font color=\"navajowhite\">avg</font>(usage) <font color=\"lightgreen\">`Memory | Usage`</font> <font color=\"darkorange\">FROM</font> <font color=\"darkcyan\">$table</font> <font color=\"darkorange\">WHERE</font> managed_object<font color=\"yellow\">=</font><font color=\"darkcyan\">$bi_id</font> <font color=\"yellow\">and</font> <font color=\"darkcyan\">$timeFilter</font> <font color=\"darkorange\">GROUP BY</font> t <font color=\"darkorange\">ORDER BY</font> t",
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "intervalFactor": 1,
+      "table": "memory",
       "policy": "default",
+      "query": "SELECT $timeSeries as t, avg(usage) `Memory | Usage` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        }
-      ]
+      "rawQuery": "SELECT (intDiv(toUInt32(ts), 30) * 30) * 1000 as t, avg(usage) `Memory | Usage` FROM noc.memory WHERE managed_object=208136039151454140 and date >= toDate(1500310550) AND ts >= toDateTime(1500310550) GROUP BY t ORDER BY t"
     }
   ],
   "timeFrom": null,
@@ -95,12 +68,12 @@
   "y-axis": true,
   "yaxes": [
     {
-      "format": "percent",
-      "label": null,
       "logBase": 1,
-      "max": null,
-      "min": null,
-      "show": true
+      "show": true,
+      "max": "100",
+      "format": "percent",
+      "min": "0",
+      "label": null
     },
     {
       "format": "short",

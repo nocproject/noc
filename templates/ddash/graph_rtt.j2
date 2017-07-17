@@ -1,169 +1,92 @@
 {
-  "title": "Ping | RTT",
-  "aliasColors": {
-    "Ping | Attempts": "#BF1B00"
-  },
   "bars": false,
-  "dashLength": 10,
-  "dashes": false,
-  "datasource": null,
-  "fill": 1,
-  "grid": {},
+  "timeFrom": null,
+  "links": [],
+  "thresholds": [],
+  "spaceLength": 10,
+  "nullPointMode": "connected",
+  "renderer": "flot",
+  "linewidth": 2,
+  "steppedLine": false,
   "id": "c406b161-14be-411b-8455-91c1c155e5bd",
+  "fill": 1,
+  "span": 6,
+  "title": "Ping | RTT",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
   "legend": {
-    "alignAsTable": true,
-    "avg": true,
-    "current": true,
+    "total": false,
+    "show": true,
     "max": true,
     "min": true,
-    "show": true,
-    "sortDesc": true,
-    "total": false,
-    "values": true
+    "current": true,
+    "values": true,
+    "alignAsTable": true,
+    "avg": true,
+    "sortDesc": true
   },
-  "lines": true,
-  "linewidth": 2,
-  "links": [],
-  "nullPointMode": "connected",
-  "percentage": false,
-  "pointradius": 5,
-  "points": false,
-  "renderer": "flot",
+  "targets": [
+    {
+      "query": "SELECT $timeSeries as t, avg(rtt) `Ping | RTT`,  avg(attempts) `Ping | Attempts` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "formattedQuery": "<font color=\"darkorange\">SELECT</font> <font color=\"darkcyan\">$timeSeries</font> <font color=\"darkorange\">as</font> t, <font color=\"navajowhite\">avg</font>(rtt) <font color=\"lightgreen\">`Ping | RTT`</font>,  <font color=\"navajowhite\">avg</font>(attempts) <font color=\"lightgreen\">`Ping | Attempts`</font> <font color=\"darkorange\">FROM</font> <font color=\"darkcyan\">$table</font> <font color=\"darkorange\">WHERE</font> managed_object<font color=\"yellow\">=</font><font color=\"darkcyan\">$bi_id</font> <font color=\"yellow\">and</font> <font color=\"darkcyan\">$timeFilter</font> <font color=\"darkorange\">GROUP BY</font> t <font color=\"darkorange\">ORDER BY</font> t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "ping",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts",
+    }
+  ],
+  "yaxes": [
+    {
+      "logBase": 1,
+      "show": true,
+      "max": null,
+      "format": "µs",
+      "min": null,
+      "label": null
+    },
+    {
+      "logBase": 1,
+      "show": true,
+      "max": "5",
+      "format": "short",
+      "min": null,
+      "label": null
+    }
+  ],
+  "xaxis": {
+    "buckets": null,
+    "show": true,
+    "values": [],
+    "mode": "time",
+    "name": null
+  },
   "seriesOverrides": [
     {
       "alias": "Ping | Attempts",
       "yaxis": 2
     }
   ],
-  "spaceLength": 10,
-  "span": 6,
-  "stack": false,
-  "steppedLine": false,
-  "targets": [
-    {
-      "alias": "Ping | RTT",
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$ping_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "Ping | RTT",
-      "orderByTime": "ASC",
-      "policy": "default",
-      "refId": "A",
-      "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        }
-      ]
-    },
-    {
-      "alias": "Ping | Attempts",
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$ping_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "Ping | Attempts",
-      "orderByTime": "ASC",
-      "policy": "default",
-      "refId": "B",
-      "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        }
-      ]
-    }
-  ],
-  "thresholds": [],
-  "timeFrom": null,
-  "timeShift": null,
-  "tooltip": {
-    "msResolution": false,
-    "shared": true,
-    "sort": 0,
-    "value_type": "cumulative"
-  },
+  "percentage": false,
   "type": "graph",
+  "dashes": false,
   "x-axis": true,
-  "xaxis": {
-    "buckets": null,
-    "mode": "time",
-    "name": null,
-    "show": true,
-    "values": []
-  },
+  "grid": {},
+  "dashLength": 10,
+  "stack": false,
   "y-axis": true,
-  "yaxes": [
-    {
-      "format": "s",
-      "label": null,
-      "logBase": 1,
-      "max": null,
-      "min": null,
-      "show": true
-    },
-    {
-      "format": "short",
-      "label": null,
-      "logBase": 1,
-      "max": "5",
-      "min": null,
-      "show": true
-    }
-  ]
+  "timeShift": null,
+  "aliasColors": {
+    "Ping | Attempts": "#BF1B00"
+  },
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5
 }
