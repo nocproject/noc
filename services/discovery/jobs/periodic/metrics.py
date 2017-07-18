@@ -324,7 +324,7 @@ class MetricsCheck(DiscoveryCheck):
                     "path": [p["name"]],
                     "sla_tests": [{
                         "name": t["name"],
-                        "type": t["type"]
+                        "types": t["type"]
                     } for t in p["tests"]]
                 }]
                 self.id_metrics[m_id] = pm[metric]
@@ -544,7 +544,7 @@ class MetricsCheck(DiscoveryCheck):
             else:
                 self.logger.error(
                     "Cannot calculate thresholds for %s (%s): Invalid window type '%s'",
-                    m.name, m.tags, cfg.window_type
+                    m.metric, m.path, cfg.window_type
                 )
                 return None
             # Store back to context
@@ -552,7 +552,7 @@ class MetricsCheck(DiscoveryCheck):
         if not window_full:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): Window is not filled",
-                m.name, m.tags
+                m.metric, m.path
             )
             return None
         # Process window function
@@ -560,7 +560,7 @@ class MetricsCheck(DiscoveryCheck):
         if not wf:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): Invalid window function %s",
-                m.name, m.tags, cfg.window_function
+                m.metric, m.path, cfg.window_function
             )
             return None
         try:
@@ -568,7 +568,7 @@ class MetricsCheck(DiscoveryCheck):
         except ValueError as e:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): %s",
-                m.name, m.tags, e
+                m.metric, m.path, e
             )
             return None
 
