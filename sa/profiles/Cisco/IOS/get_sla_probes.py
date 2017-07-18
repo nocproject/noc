@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_sla_probes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,8 @@ class Script(BaseScript):
         "icmp-echo": "icmp-echo",
         "path-jitter": "path-jitter",
         "icmp-jitter": "icmp-echo",
-        "echo": "icmp-echo"
+        "echo": "icmp-echo",
+        "udp-echo": "udp-echo"
     }
 
     def execute(self, **kwargs):
