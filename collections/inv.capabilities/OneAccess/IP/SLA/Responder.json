@@ -1,0 +1,8 @@
+{
+  "name": "OneAccess | IP | SLA | Responder",
+  "$collection": "inv.capabilities",
+  "uuid": "c4e5bad9-4b11-4c0a-bedb-1f8aa3c30ee5",
+  "description": "Configured IP SLA responder",
+  "type": "bool",
+  "card_template": null
+}
