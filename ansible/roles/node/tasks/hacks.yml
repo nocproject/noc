@@ -36,3 +36,13 @@
   tags:
     - config
   when: "'Linux' in ansible_system"
+
+- name: patch supervisord for oomkiller
+  patch:
+    basedir: "{{noc_root}}"
+    src: oom_score_adj.patch
+    strip: 1
+  tags:
+    - config
+  when: "'Linux' in ansible_system and 'prod' in noc_env_type"
+
