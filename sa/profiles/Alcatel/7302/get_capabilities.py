@@ -16,6 +16,23 @@ class Script(BaseScript):
     name = "Alcatel.7302.get_capabilities"
 
     @false_on_cli_error
+    def has_stp(self):
+        try:
+            # MSTP Check
+            mstp = self.cli("show mstp port-instance")
+            if "instance count : 0" in mstp or "port-instance count : 0" in mstp:
+                print("False")
+                return False
+            print("True")
+            return True
+        except self.CLISyntaxError:
+            pass
+        # RSTP Check
+        rstp = self.cli("show rstp port-info")
+        r = "port-info count : 0" not in rstp
+        return r
+
+    @false_on_cli_error
     def has_stack(self):
         """
         Check stack members
