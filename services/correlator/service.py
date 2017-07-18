@@ -218,6 +218,10 @@ class CorrelatorService(Service):
         if not managed_object:
             self.logger.info("Empty managed object, ignoring")
             return
+        # @todo: Make configurable
+        if not managed_object.is_managed:
+            self.logger.info("Managed object is not managed. Do not raise alarm")
+            return
         if e.managed_object.id != managed_object.id:
             self.perf_metrics["alarm_change_mo"] += 1
             self.logger.info(
