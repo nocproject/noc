@@ -16,6 +16,7 @@ from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 class Script(BaseScript):
     name = "OneAccess.TDRE.get_sla_probes"
     interface = IGetSLAProbes
+    cache = True
 
     rx_probe = re.compile(
         r"^\s+name = (?P<name>\S+)\s*\n"
@@ -39,14 +40,17 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        c = self.cli("SELGRP \"Edit Configuration\"")
-        c = self.cli("GET ip/router/qualityMonitor/destinations[]")
+        self.cli("SELGRP \"Edit Configuration\"")
+        c = self.cli(
+            "GET ip/router/qualityMonitor/destinations[]/", cached=True
+        )
         for match in self.rx_probe.finditer(c):
-            if not match.group("type") in ["icmp", "udpEcho"]:
+            probe_type = match.group("type")
+            if not probe_type in ["icmp", "udpEcho"]:
                 continue
             test = {
                 "name": match.group("name"),
-                "type": self.TEST_TYPES[match.group("type")],
+                "type": self.TEST_TYPES[probe_type],
                 "target": match.group("target"),
             }
             r += [{"name": match.group("name"), "tests": [test]}]
