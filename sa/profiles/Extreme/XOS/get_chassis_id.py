@@ -20,7 +20,6 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-
     def execute(self):
         # Fallback to CLI
         match = rx_mac.search(self.cli("show switch", cached=True))

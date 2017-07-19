@@ -57,6 +57,7 @@ class STPCheck(TopologyDiscoveryCheck):
                             iface["designated_port_id"]
                         )
                     ))
+        self.logger.debug("Roots ports: %s" % roots)
         return roots
 
     def get_designated_ports(self, ro):
@@ -77,6 +78,7 @@ class STPCheck(TopologyDiscoveryCheck):
                 if iface["role"] == "designated":
                     pi = self.convert_port_id(iface["port_id"])
                     dmap[pi] = iface["interface"]
+        self.logger.debug("Designate port map %s" % dmap)
         return dmap
 
     get_neighbor = TopologyDiscoveryCheck.get_neighbor_by_mac

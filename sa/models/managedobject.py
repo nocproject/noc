@@ -37,7 +37,7 @@ from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.networksegment import NetworkSegment
-from noc.fm.models.ttsystem import TTSystem
+from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
 from noc.lib.db import SQL
@@ -744,7 +744,13 @@ class ManagedObject(Model):
         return ObjectStatus.get_last_status(self)
 
     def set_status(self, status, ts=None):
-        ObjectStatus.set_status(self, status, ts=ts)
+        """
+        Update managed object status
+        :param status: new status
+        :param ts: status change time
+        :return: False if out-of-order update, True otherwise
+        """
+        return ObjectStatus.set_status(self, status, ts=ts)
 
     def get_inventory(self):
         """
@@ -1136,6 +1142,17 @@ class ManagedObject(Model):
             return self.segment.multicast_vlan
         else:
             return self.segment.profile.multicast_vlan
+
+    @property
+    def escalator_shard(self):
+        """
+        Returns escalator shard name
+        :return:
+        """
+        if self.tt_system:
+            return self.tt_system.shard_name
+        else:
+            return DEFAULT_TTSYSTEM_SHARD
 
 @on_save
 class ManagedObjectAttribute(Model):

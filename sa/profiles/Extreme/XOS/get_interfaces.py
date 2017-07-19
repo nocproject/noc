@@ -25,13 +25,14 @@ class Script(BaseScript):
     name = "Extreme.XOS.get_interfaces"
     interface = IGetInterfaces
 
-    rx_ifidx_phys = re.compile("^X\S+\s+Port\s+(?P<port>\d+)", re.IGNORECASE)
+    rx_ifidx_phys = re.compile(
+        "^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE)
     rx_ifidx_vlan = re.compile(
         "^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.IGNORECASE)
 
     rx_status = re.compile(
-        r"^(?P<interface>\d+)\s+(\S+)?(\s+\S+)?(\s+)?(?P<admin_status>\S)\s+"
-        r"(?P<oper_status>\S)(\s+\S+)?(\s+\S+)?$",
+        r"^(?P<interface>\d+(\:\d+)?)\s+(\S+)?(\s+\S+)?(\s+)?"
+        r"(?P<admin_status>\S)\s+(?P<oper_status>\S)(\s+\S+)?(\s+\S+)?$",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_sh_ipcfg = re.compile(
         r"^(?P<interface>\S+)\s+(?P<ipaddr>\S+)\s+(?P<ipmask>\S+)\s+"

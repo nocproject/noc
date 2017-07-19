@@ -25,6 +25,8 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 
+ALARM_CLOSE_RETRIES = 5
+
 
 class ActiveAlarm(nosql.Document):
     meta = {
@@ -201,6 +203,7 @@ class ActiveAlarm(nosql.Document):
                 call_later(
                     "noc.services.escalator.wait_tt.wait_tt",
                     scheduler="escalator",
+                    pool=self.managed_object.escalator_shard,
                     alarm_id=self.id
                 )
             return
@@ -269,6 +272,8 @@ class ActiveAlarm(nosql.Document):
             call_later(
                 "noc.services.escalator.escalation.notify_close",
                 scheduler="escalator",
+                pool=self.managed_object.escalator_shard,
+                max_runs=ALARM_CLOSE_RETRIES,
                 alarm_id=self.id,
                 tt_id=self.escalation_tt,
                 subject=subject,
@@ -477,7 +482,8 @@ class ActiveAlarm(nosql.Document):
             "$set": {
                 "escalation_tt": self.escalation_tt,
                 "escalation_ts": self.escalation_ts,
-                "close_tt": self.close_tt
+                "close_tt": self.close_tt,
+                "escalation_error": None
             }
         })
         if r.get("nModified", 0) == 0:
@@ -488,7 +494,8 @@ class ActiveAlarm(nosql.Document):
                 "$set": {
                     "escalation_tt": self.escalation_tt,
                     "escalation_ts": self.escalation_ts,
-                    "close_tt": self.close_tt
+                    "close_tt": self.close_tt,
+                    "escalation_error": None
                 }
             })
         # self.save(save_condition={

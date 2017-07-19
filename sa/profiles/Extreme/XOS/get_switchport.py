@@ -24,10 +24,11 @@ class Script(BaseScript):
     rx_line = re.compile(r"\n+Port:\s+", re.MULTILINE)
 
     rx_descr_if = re.compile(
-        r"^(?P<interface>\d+)(\s+)?(?P<description>\S+)?(\s+\S+)?")
+        r"^(?P<interface>\d+(\:\d+)?)(\s+)?(?P<description>\S+)?(\s+\S+)?")
     rx_snmp_name_eth = re.compile(
-        r"^X\S+\s+Port\s+(?P<port>\d+)", re.IGNORECASE | re.DOTALL)
-    rx_body_port = re.compile(r"^(?P<interface>\d+)(\S+)?", re.IGNORECASE)
+        r"^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE | re.DOTALL)
+    rx_body_port = re.compile(
+        r"^(?P<interface>\d+(\:\d+)?)(\S+)?", re.IGNORECASE)
     rx_body_untagvl = re.compile(
         r"^\s+Name:\s+\S+\s+Internal\s+Tag\s+=\s+(?P<avlan>\d+).+",
         re.IGNORECASE | re.DOTALL)
@@ -41,9 +42,9 @@ class Script(BaseScript):
         r = []
         if self.has_snmp():
             try:
-                for pr in self.snmp.get_tables([
-                    "1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.31.1.1.1.18"
-                    ], bulk=True):  # 1.3.6.1.2.1.31.1.1.1.1
+                for pr in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.31.1.1.1.18"]
+                ):  # 1.3.6.1.2.1.31.1.1.1.1
                     if (int(pr[0]) >= 1000000):
                         continue
                     match = self.rx_snmp_name_eth.search(pr[1])

@@ -23,9 +23,11 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
     cache = True
 
-    rx_snmp_name_eth = re.compile(r"^X\S+\s+Port\s+(?P<port>\d+)", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_snmp_name_eth = re.compile(
+        r"^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_port = re.compile(
-        r"^\s*(?P<port>\d+)(?P<descr>.*)\n", re.MULTILINE)
+        r"^\s*(?P<port>\d+(\:\d+)?)(?P<descr>.*)\n", re.MULTILINE)
     rx_port_status = re.compile(
         r"^\s*(?P<port>\S+)\s+[ED]\S+\s+(?P<state>\S+)", re.MULTILINE)
 
@@ -37,8 +39,8 @@ class Script(BaseScript):
                 # IF-MIB::ifName, IF-MIB::ifOperStatus, IF-MIB::ifAlias, IF-MIB::ifPhysAddress
                 for i, n, s, d, m in self.join_four_tables(self.snmp,
                     "1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.2.2.1.8",
-                    "1.3.6.1.2.1.31.1.1.1.18", "1.3.6.1.2.1.2.2.1.6",
-                    bulk=True):
+                    "1.3.6.1.2.1.31.1.1.1.18", "1.3.6.1.2.1.2.2.1.6"
+                ):
                     match = self.rx_snmp_name_eth.search(n)
                     if (i >= 1000000):
                        continue
@@ -72,15 +74,15 @@ class Script(BaseScript):
     ## Generator returning a rows of 4 snmp tables joined by index
     ##
     def join_four_tables(self, snmp, oid1, oid2, oid3, oid4,
-        community_suffix=None, bulk=False, min_index=None, max_index=None,
+        community_suffix=None, min_index=None, max_index=None,
         cached=False):
-        t1 = snmp.get_table(oid1, community_suffix=community_suffix, bulk=bulk,
+        t1 = snmp.get_table(oid1, community_suffix=community_suffix,
             min_index=min_index, max_index=max_index, cached=cached)
-        t2 = snmp.get_table(oid2, community_suffix=community_suffix, bulk=bulk,
+        t2 = snmp.get_table(oid2, community_suffix=community_suffix,
             min_index=min_index, max_index=max_index, cached=cached)
-        t3 = snmp.get_table(oid3, community_suffix=community_suffix, bulk=bulk,
+        t3 = snmp.get_table(oid3, community_suffix=community_suffix,
             min_index=min_index, max_index=max_index, cached=cached)
-        t4 = snmp.get_table(oid4, community_suffix=community_suffix, bulk=bulk,
+        t4 = snmp.get_table(oid4, community_suffix=community_suffix,
             min_index=min_index, max_index=max_index, cached=cached)
         for k1, v1 in t1.items():
             try:

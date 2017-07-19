@@ -15,7 +15,6 @@ from noc.core.ip import IPv4
 from noc.core.mib import mib
 
 
-
 class Script(BaseScript):
     name = "Zhone.Bitstorm.get_interfaces"
     interface = IGetInterfaces

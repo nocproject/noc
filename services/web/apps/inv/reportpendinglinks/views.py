@@ -19,6 +19,8 @@ from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobject import ManagedObjectProfile
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.pool import Pool
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -36,24 +38,26 @@ class ReportForm(forms.Form):
 
 
 class ReportPendingLinks(object):
-    def __init__(self, ids, cache_key=None):
+    def __init__(self, ids, cache_key=None, ignore_profiles=None):
         self.ids = ids
+        self.ignore_profiles = ignore_profiles
         if cache_key:
             self.out = cache.get(key=cache_key)
             if not self.out:
-                self.out = self.load(self.ids)
+                self.out = self.load(self.ids, self.ignore_profiles)
                 cache.set(cache_key, self.out, ttl=28800)
         else:
-            self.out = self.load(self.ids)
+            self.out = self.load(self.ids, self.ignore_profiles)
 
     @staticmethod
-    def load(ids):
+    def load(ids, ignore_profiles=None):
         problems = defaultdict(dict)  # id -> problem
         rg = re.compile("Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
                         re.IGNORECASE)
 
         mos_job = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id for mo_id in ids]
         n = 0
+        ignored_ifaces = []
         while mos_job[(0 + n):(10000 + n)]:
             job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"$and": [
                 {"_id": {"$in": mos_job[(0 + n):(10000 + n)]}},
@@ -66,10 +70,17 @@ class ReportPendingLinks(object):
                                 "Unhandled exception" in discovery["problems"]["lldp"]:
                     continue
                 mo_id = discovery["_id"].split("-")[2]
+                mo = ManagedObject.get_by_id(mo_id)
                 # log.debug("%s", discovery["problems"]["lldp"])
                 # print(discovery["problems"]["lldp"])
+                if ignore_profiles:
+                    ignored_ifaces += [(mo_id, iface.name) for iface in
+                                       Interface.objects.filter(managed_object=mo,
+                                                                # name__in=discovery["problems"]["lldp"].keys(),
+                                                                profile__in=ignore_profiles)]
                 for iface in discovery["problems"]["lldp"]:
-
+                    if (mo_id, iface) in ignored_ifaces:
+                        continue
                     # print iface
                     if "is not found" in discovery["problems"]["lldp"][iface]:
                         problems[mo_id] = {iface: {
@@ -79,7 +90,6 @@ class ReportPendingLinks(object):
                         pend_str = rg.match(discovery["problems"]["lldp"][iface])
                         rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
                         # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
-                        mo = ManagedObject.get_by_id(mo_id)
                         problems[mo_id][iface] = {
                             "problem": "Not found iface on remote",
                             "remote_id": "%s; %s ;%s" % (rmo.name, rmo.profile_name, pend_str.group("remote_iface")),
@@ -100,7 +110,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
     title = _("Pending Links")
     form = ReportForm
 
-    def get_data(self, request, pool, obj_profile=None, **kwargs):
+    def get_data(self, request, pool, obj_profile=None, filter_ignore_iface=True, **kwargs):
 
         rn = re.compile("'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
                         re.IGNORECASE)
@@ -121,7 +131,8 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
             mos = mos.filter(object_profile=obj_profile)
 
         mos_id = dict((mo.id, mo) for mo in mos)
-        report = ReportPendingLinks(mos_id.keys())
+        report = ReportPendingLinks(mos_id.keys(),
+                                    ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")))
 
         problems = report.out
         for mo_id in problems:

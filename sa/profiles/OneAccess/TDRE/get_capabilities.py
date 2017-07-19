@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # OneAccess.TDRE.get_capabilities_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,4 +19,4 @@ class Script(BaseScript):
 
     def execute_platform(self, caps):
         np = len(self.scripts.get_sla_probes())
-        caps["OpenAccess | IP | qualityMonitor | Probes"] = np
+        caps["OneAccess | IP | SLA | Probes"] = np

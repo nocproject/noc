@@ -87,12 +87,14 @@ class Maintainance(Document):
                     "noc.services.escalator.maintenance.start_maintenance",
                     delay=self.start - datetime.datetime.now(),
                     scheduler="escalator",
+                    pool=self.escalate_managed_object.escalator_shard,
                     maintenance_id=self.id
                 )
             else:
                 call_later(
                     "noc.services.escalator.maintenance.close_maintenance",
                     scheduler="escalator",
+                    pool=self.escalate_managed_object.escalator_shard,
                     maintenance_id=self.id
                 )
 

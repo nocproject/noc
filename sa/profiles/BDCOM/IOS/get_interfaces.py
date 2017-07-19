@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # BDCOM.IOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import parse_table
@@ -81,16 +81,22 @@ class Script(BaseScript):
             ifname = self.profile.convert_interface_name(match.group("ifname"))
             for i in interfaces:
                 if ifname == i["name"]:
-                    i["subinterfaces"][0]["untagged_vlan"] = match.group("vlan_id")
+                    i["subinterfaces"][0]["untagged_vlan"] = \
+                        match.group("vlan_id")
                     break
-        for r in parse_table(self.cli("show vlan"), allow_wrap=True, n_row_delim=", "):
+        c = self.cli("show vlan")
+        for r in parse_table(c, allow_wrap=True, n_row_delim=", "):
             if not r[3]:
                 continue
             vlan_id = int(r[0])
-            ports = r[3].split(", ")
-            """
-            if vlan_id == 4090:
-                print "%s\n" % ports
-                quit()
-            """
+            #ports = r[3].split(", ")
+            for p in r[3].split(", "):
+                p = self.profile.convert_interface_name(p)
+                for i in interfaces:
+                    if p == i["name"]:
+                        if "tagged_vlans" in i["subinterfaces"][0]:
+                            i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
+                        else:
+                            i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
+                        break
         return [{"interfaces": interfaces}]
