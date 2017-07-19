@@ -23,6 +23,7 @@ from tornado.util import errno_from_exception
 ## NOC modules
 from noc.speedup.ip import build_icmp_echo_request
 from noc.core.perf import metrics
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -48,10 +49,8 @@ class PingSocket(object):
     """
     ECHO_TYPE = None
     HEADER_SIZE = None
-    # Recommended send buffer size, 4M by default
-    SNDBUF = 4 * 1048576
-    # Recommended receive buffer size, 4M by default
-    RCVBUF = 4 * 1048576
+    SNDBUF = config.ping.send_buffer
+    RCVBUF = config.ping.receive_buffer
 
     def __init__(self, io_loop=None, tos=None):
         self.io_loop = io_loop or IOLoop.current()

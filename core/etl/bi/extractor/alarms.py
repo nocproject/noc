@@ -18,19 +18,15 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.alarms import Alarms
 from noc.core.etl.bi.stream import Stream
 from noc.lib.dateutils import total_seconds
+from noc.config import config
+
 
 
 class AlarmsExtractor(BaseExtractor):
     name = "alarms"
-    extract_delay = int(os.environ.get(
-        "NOC_BI_EXTRACT_DELAY_ALARMS", 3600
-    ))
-    clean_delay = int(os.environ.get(
-        "NOC_BI_CLEAN_DELAY_ALARMS", 86400
-    ))
-    reboot_interval = datetime.timedelta(seconds=int(os.environ.get(
-        "NOC_BI_REBOOT_INTERVAL", 60
-    )))
+    extract_delay = config.bi.extract_delay_alarms
+    clean_delay = config.bi.clean_delay_alarms
+    reboot_interval = config.bi.reboot_interval
 
     def __init__(self, prefix, start, stop):
         super(AlarmsExtractor, self).__init__(prefix, start, stop)

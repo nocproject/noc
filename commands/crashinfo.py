@@ -18,10 +18,11 @@ import re
 import ujson
 ## NOC modules
 from noc.core.management.base import BaseCommand
+from noc.config import config
 
 
 class Command(BaseCommand):
-    PREFIX = "var/cp/crashinfo/new"
+    PREFIX = config.path.cp_new
 
     rx_xtype = re.compile(r"^<(?:type|class) '(?P<xtype>[^']+)'>\s+")
 

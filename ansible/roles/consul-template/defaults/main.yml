@@ -12,6 +12,7 @@ consul_template_pkg: "consul-template_{{ consul_template_version }}_{{ consul_te
 consul_template_zip_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/{{consul_template_pkg}}"
 consul_template_checksum_file_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version}}_SHA256SUMS"
 consul_template_temp_file: "{{tower_dist_dir}}/{{consul_template_pkg}}"
+consul_template_temp_unarchive: "/tmp/consul-template/{{ consul_template_version }}"
 consul_template_temp_file_checksum: "{{tower_dist_dir}}/{{ consul_template_version }}_SHA256SUMS"
 
 
@@ -19,7 +20,7 @@ consul_template_binary: consul-template
 consul_template_config_file_template: consul-template.cfg.j2
 consul_template_config_file: consul-template.cfg
 consul_template_log_file: /var/log/consul-template
-consul_template_log_level: "INFO"
+consul_template_log_level: "WARN"
 consul_template_consul_server: "consul"
 consul_template_consul_port: "8500"
 consul_template_bin_path: "/usr/bin"

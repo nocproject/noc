@@ -134,3 +134,8 @@
   fail:
     msg: "keepalived have to be installed on atleast two nodes"
   when: groups['svc-keepalived'] | length == 1
+
+- name: Proxy url set correctly
+  fail:
+    msg: "Proxy server have to be in defined with scheme for example http://admin:password@192.168.1.1:3128. currently it is: '{{http_proxy}}'"
+  when: "'http://' not in http_proxy and 'https://' not in http_proxy and proxy is defined"

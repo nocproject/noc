@@ -12,11 +12,10 @@ import datetime
 import itertools
 import gzip
 import shutil
-
+from noc.config import config
 
 class Stream(object):
-    # @todo: Make configurable
-    CHUNK_SIZE = 4000
+    CHUNK_SIZE = config.bi.chunk_size
 
     def __init__(self, model, prefix, date=None):
         self.prefix = prefix

@@ -25,13 +25,14 @@ from .client import (RPCError, RPCNoService, RPCHTTPError,
                      RPCException, RPCRemoteError)
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
 # Connection time
-CONNECT_TIMEOUT = 20
+CONNECT_TIMEOUT = config.rpc.async_connect_timeout
 # Total request time
-REQUEST_TIMEOUT = 3600
+REQUEST_TIMEOUT = config.rpc.async_request_timeout
 
 
 class RPCProxy(object):

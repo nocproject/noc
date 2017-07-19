@@ -8,7 +8,7 @@
     - config
 
 - name: Check replica set is initialized
-  shell: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ inventory_hostname }} --eval 1"
+  shell: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ ansible_hostname }} --eval 1"
   register: rs_status
   changed_when: rs_status.rc != 0
   failed_when: False
