@@ -766,6 +766,8 @@ class Service(object):
             self.perf_metrics["mon_requests"] += 1
         elif status == 200 and uri.startswith("/health/") and method == "GET":
             pass
+        elif status == 200 and uri == ("/metrics") and method == "GET":
+            pass
         else:
             self.logger.info(
                 "%s %s (%s) %.2fms",
