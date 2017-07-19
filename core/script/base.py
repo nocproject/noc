@@ -108,8 +108,8 @@ class BaseScript(object):
                  name=None, collect_beef=False,
                  session=None, session_idle_timeout=None):
         self.service = service
-        self.tos = self.service.config.tos
-        self.pool = self.service.config.pool
+        self.tos = config.activator.tos
+        self.pool = config.pool
         self.parent = parent
         self._motd = None
         name = name or self.name

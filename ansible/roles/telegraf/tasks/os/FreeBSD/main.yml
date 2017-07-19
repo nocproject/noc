@@ -7,7 +7,7 @@
     dest=/usr/local/etc/rc.d/telegraf
     regexp=^extra_commands=
     insertafter=^command_args=
-    line="extra_commands=\"reload\" ; reload_cmd=\":\""
+    line="extra_commands=\"reload\""
 
 - name: Create telegraf directories
   file: path={{item}} state=directory mode=0755

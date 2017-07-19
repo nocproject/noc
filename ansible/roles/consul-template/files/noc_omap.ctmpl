@@ -8,9 +8,7 @@ pattern = "noc-omap"
   {{ with node -}}
     {{range .Services -}}
         {{ if eq .Service "omap" -}}
-            {{range $service:= service (printf "%s~_agent|any" .Service) -}}
-                "http://{{$service.Address}}:{{$service.Port}}/mon/",
-            {{- end}}
+            "http://{{.Address}}:{{.Port}}/mon/",
         {{- end}}
      {{- end}}
   {{- end}}

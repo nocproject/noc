@@ -9,7 +9,7 @@
 - name: add nsqd user
   user:
     name: nsq
-    shell: /bin/false
+    shell: "{{fake_shell}}"
 
 - name: create path for on-disk queue files
   file:
