@@ -63,7 +63,7 @@ class Command(BaseCommand):
             help="Arguments passed to script"
         )
 
-    def handle(self, config, script, object_name, arguments, pretty,
+    def handle(self, script, object_name, arguments, pretty,
                yaml, use_snmp, beef,
                *args, **options):
         # Get object
