@@ -50,7 +50,10 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        self.cli("environment inhibit-alarms mode batch terminal-timeout timeout:360")
+        try:
+            self.cli("environment inhibit-alarms mode batch terminal-timeout timeout:360")
+        except self.CLISyntaxError:
+            pass
         v = self.cli("show interface port detail")
         for p in v.split("----\nport\n----"):
             match = self.rx_ifname.search(p)

@@ -483,7 +483,8 @@ class ActiveAlarm(nosql.Document):
             "$set": {
                 "escalation_tt": self.escalation_tt,
                 "escalation_ts": self.escalation_ts,
-                "close_tt": self.close_tt
+                "close_tt": self.close_tt,
+                "escalation_error": None
             }
         })
         if r.get("nModified", 0) == 0:
@@ -494,7 +495,8 @@ class ActiveAlarm(nosql.Document):
                 "$set": {
                     "escalation_tt": self.escalation_tt,
                     "escalation_ts": self.escalation_ts,
-                    "close_tt": self.close_tt
+                    "close_tt": self.close_tt,
+                    "escalation_error": None
                 }
             })
         # self.save(save_condition={
