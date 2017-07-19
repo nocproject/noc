@@ -43,7 +43,6 @@ from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
-from noc.config import config
 
 
 class Service(object):
@@ -741,6 +740,8 @@ class Service(object):
             self.logger.debug("Monitoring request (%s)", remote_ip)
             self.perf_metrics["mon_requests"] += 1
         elif status == 200 and uri.startswith("/health/") and method == "GET":
+            pass
+        elif status == 200 and uri == ("/metrics") and method == "GET":
             pass
         else:
             self.logger.info(

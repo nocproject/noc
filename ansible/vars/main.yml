@@ -136,3 +136,5 @@ noc_services_file: "{{noc_etc}}/noc_services.conf"
 
 mongo_dir: "{{etc_prefix}}/mongod"
 mongo_conf: "{{ etc_prefix }}/mongod.conf"
+
+fake_shell: /bin/false

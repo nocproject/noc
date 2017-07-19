@@ -17,6 +17,7 @@ from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 from noc.core.http.client import fetch
+from noc.config import config
 
 
 class ActivatorAPI(API):
@@ -95,7 +96,7 @@ class ActivatorAPI(API):
                 oids=oid,
                 community=community,
                 version=SNMP_v1,
-                tos=self.service.config.tos,
+                tos=config.activator.tos,
                 ioloop=self.service.ioloop
             )
             self.logger.debug("SNMP GET %s %s returns %s",
@@ -123,7 +124,7 @@ class ActivatorAPI(API):
                 oids=oid,
                 community=community,
                 version=SNMP_v2c,
-                tos=self.service.config.tos,
+                tos=config.activator.tos,
                 ioloop=self.service.ioloop
             )
             self.logger.debug("SNMP GET %s %s returns %s",
