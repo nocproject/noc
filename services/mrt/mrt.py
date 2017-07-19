@@ -18,6 +18,7 @@ from noc.core.perf import metrics
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
 from noc.core.debug import error_report
+from noc.config import config
 
 
 logger = logging.getLogger(__name__)
@@ -92,7 +93,7 @@ class MRTRequestHandler(AuthRequestHandler):
                     "error": "Access denied"
                 })
                 metrics["mrt_access_denied"] += 1
-            if len(futures) >= self.service.config.max_concurrency:
+            if len(futures) >= config.mrt.max_concurrency:
                 wi = tornado.gen.WaitIterator(*futures)
                 r = yield wi.next()
                 yield self.write_chunk(r)
