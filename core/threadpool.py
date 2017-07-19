@@ -18,14 +18,12 @@ from collections import deque
 # Third-party modules
 from concurrent.futures import Future
 from tornado.gen import with_timeout
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_IDLE_TIMEOUT = 30
-DEFAULT_SHUTDOWN_TIMEOUT = int(os.environ.get(
-    "NOC_SHUTDOWN_TIMEOUT",
-    60
-))
+DEFAULT_IDLE_TIMEOUT = config.threadpool.idle_timeout
+DEFAULT_SHUTDOWN_TIMEOUT = config.threadpool.shutdown_timeout
 
 
 class ThreadPoolExecutor(object):

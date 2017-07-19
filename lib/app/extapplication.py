@@ -16,6 +16,7 @@ from application import Application, view
 from access import HasPerm, PermitLogged
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
+from noc.config import config
 
 
 class ExtApplication(Application):
@@ -50,7 +51,7 @@ class ExtApplication(Application):
     def __init__(self, *args, **kwargs):
         super(ExtApplication, self).__init__(*args, **kwargs)
         self.document_root = os.path.join("services", "web", "apps", self.module, self.app)
-        self.row_limit = self.config.getint("main", "json_row_limit")
+        self.row_limit = config.web.api_row_limit
         self.pk = "id"
 
     @property

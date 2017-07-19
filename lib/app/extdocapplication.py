@@ -18,6 +18,7 @@ from mongoengine.fields import (StringField, BooleanField, ListField,
                                 BinaryField)
 from mongoengine.errors import ValidationError
 # NOC modules
+from noc.config import config
 from .extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
                            PlainReferenceField, Q)
@@ -90,7 +91,7 @@ class ExtDocApplication(ExtApplication):
                 self._api_to_json,
                 url="^(?P<id>[0-9a-f]{24})/json/$",
                 method=["GET"], access="read", api=True)
-            if self.json_collection and self.config.getboolean("develop", "install_collection"):
+            if self.json_collection and config.web.install_collection:
                 self.add_view(
                     "api_install_json",
                     self._api_install_json,
@@ -417,9 +418,9 @@ class ExtDocApplication(ExtApplication):
         validator = DictParameter(attrs={
             "ids": ListOfParameter(
                 element=DocumentParameter(self.model),
-                convert=True)
-            }
-        )
+                convert=True
+            )
+        })
         rv = self.deserialize(request.raw_post_data)
         try:
             v = validator.clean(rv)

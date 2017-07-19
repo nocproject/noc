@@ -14,7 +14,7 @@ from api.omap import OMapAPI
 
 class OMapService(Service):
     name = "omap"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
 
     api = Service.api + [
         OMapAPI

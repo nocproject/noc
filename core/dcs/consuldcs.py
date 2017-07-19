@@ -22,13 +22,14 @@ import ujson
 from .base import DCSBase, ResolverBase
 from noc.core.perf import metrics
 from noc.core.http.client import fetch
+from noc.config import config
 
 ConsulRepearableCodes = set([500, 598, 599])
 ConsulRepeatableErrors = consul.base.Timeout
 
-CONSUL_CONNECT_TIMEOUT = 5
-CONSUL_REQUEST_TIMEOUT = 3600
-CONSUL_NEAR_RETRY_TIMEOUT = 1
+CONSUL_CONNECT_TIMEOUT = config.consul.connect_timeout
+CONSUL_REQUEST_TIMEOUT = config.consul.request_timeout
+CONSUL_NEAR_RETRY_TIMEOUT = config.consul.near_retry_timeout
 
 
 class ConsulHTTPClient(consul.tornado.HTTPClient):
@@ -112,15 +113,15 @@ class ConsulDCS(DCSBase):
     URL format:
     consul://<address>[:<port>]/<kv root>?token=<token>&check_interval=<...>&check_timeout=<...>&release_after=<...>
     """
-    DEFAULT_CONSUL_HOST = "consul"
-    DEFAULT_CONSUL_PORT = 8500
-    DEFAULT_CONSUL_CHECK_INTERVAL = 1
-    DEFAULT_CONSUL_CHECK_TIMEOUT = 1
-    DEFAULT_CONSUL_RELEASE = "1m"
-    DEFAULT_CONSUL_SESSION_TTL = 10
-    DEFAULT_CONSUL_LOCK_DELAY = 1
-    DEFAULT_CONSUL_RETRY_TIMEOUT = 1
-    DEFAULT_CONSUL_KEEPALIVE_ATTEMPTS = 5
+    DEFAULT_CONSUL_HOST = config.consul.host
+    DEFAULT_CONSUL_PORT = config.consul.port
+    DEFAULT_CONSUL_CHECK_INTERVAL = config.consul.check_interval
+    DEFAULT_CONSUL_CHECK_TIMEOUT = config.consul.connect_timeout
+    DEFAULT_CONSUL_RELEASE = "".join([str(config.consul.release), "s"])
+    DEFAULT_CONSUL_SESSION_TTL = config.consul.session_ttl
+    DEFAULT_CONSUL_LOCK_DELAY = config.consul.lock_delay
+    DEFAULT_CONSUL_RETRY_TIMEOUT = config.consul.retry_timeout
+    DEFAULT_CONSUL_KEEPALIVE_ATTEMPTS = config.consul.keepalive_attempts
     EMPTY_HOLDER = ""
 
     resolver_cls = ConsulResolver
@@ -130,7 +131,7 @@ class ConsulDCS(DCSBase):
         self.consul_host = self.DEFAULT_CONSUL_HOST
         self.consul_port = self.DEFAULT_CONSUL_PORT
         self.consul_prefix = "/"
-        self.consul_token = None
+        self.consul_token = config.consul.token
         self.check_interval = self.DEFAULT_CONSUL_CHECK_INTERVAL
         self.check_timeout = self.DEFAULT_CONSUL_CHECK_TIMEOUT
         self.release_after = self.DEFAULT_CONSUL_RELEASE

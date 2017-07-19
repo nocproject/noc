@@ -2,9 +2,9 @@
   "service": {
     "check": {
       "interval": "10s",
-      "script": "/etc/consul.d/scripts/mongodb.sh"
+      "script": "{{consul_scripts_path}}/mongodb.sh"
     },
-    "name": "mongodb-master",
+    "name": "mongo",
     "port": 27017,
     "tags": [
       "mongodb",

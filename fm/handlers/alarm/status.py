@@ -12,9 +12,10 @@ import logging
 from noc.core.perf import metrics
 from noc.core.defer import call_later
 from noc.fm.models.utils import get_alarm
+from noc.config import config
 
 # Delay to close out-of-ordered event
-OO_CLOSE_DELAY = 20
+OO_CLOSE_DELAY = config.correlator.oo_close_delay
 
 logger = logging.getLogger(__name__)
 

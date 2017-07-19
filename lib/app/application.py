@@ -125,7 +125,7 @@ class Application(object):
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
-    config = settings.config
+    config = settings.config # @fixme remove
 
     TZ = get_current_timezone()
 
@@ -628,25 +628,6 @@ class Application(object):
             mc["map_script"], map_params,
             mc.get("timeout", 0)
         )
-        if mc["map_script"] == "commands" and settings.LOG_MRT_COMMAND:
-            # Log commands
-            now = datetime.datetime.now()
-            safe_append(
-                os.path.join(
-                    settings.LOG_MRT_COMMAND,
-                    "commands",
-                    "%04d" % now.year,
-                    "%02d" % now.month,
-                    "%02d.log" % now.day
-                ),
-                "%s\nDate: %s\nObjects: %s\nUser: %s\nCommands:\n%s\n" % (
-                    "-" * 72,
-                    now.isoformat(),
-                    ",".join(str(o) for o in objects),
-                    request.user.username,
-                    "    " + "\n".join(map_params["commands"]).replace("\n", "\n    ")
-                )
-            )
         return task.id
 
     @view(url="^mrt/(?P<name>[^/]+)/(?P<task>\d+)/$", method=["GET"],

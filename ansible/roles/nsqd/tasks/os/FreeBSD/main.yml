@@ -3,7 +3,7 @@
   get_url:
     url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz
     dest: /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz
-    validate_certs: no
+    validate_certs: yes
   environment:
     https_proxy: "{{http_proxy}}"
 

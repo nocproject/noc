@@ -12,6 +12,7 @@ import sys
 import argparse
 # NOC modules
 from noc.core.debug import error_report
+from noc.config import config
 
 
 class CommandError(Exception):
@@ -19,7 +20,7 @@ class CommandError(Exception):
 
 
 class BaseCommand(object):
-    LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
+    LOG_FORMAT = config.log_format
 
     def __init__(self, stdout=sys.stdout, stderr=sys.stderr):
         self.verbose_level = 0

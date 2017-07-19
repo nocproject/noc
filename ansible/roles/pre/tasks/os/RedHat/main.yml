@@ -6,7 +6,7 @@
   lineinfile:
     dest: /etc/yum.conf
     regexp: "^proxy=.*"
-    line: "proxy=http://{{ http_proxy }}"
+    line: "proxy={{ http_proxy }}"
   when: "http_proxy is defined and http_proxy"
   tags:
     - config

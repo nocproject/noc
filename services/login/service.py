@@ -3,22 +3,22 @@
 # ---------------------------------------------------------------------
 # Login service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.service.ui import UIService
-from auth import AuthRequestHandler
-from logout import LogoutRequestHandler
-from api.login import LoginAPI
-from noc.core.handler import get_handler
+from noc.services.login.auth import AuthRequestHandler
+from noc.services.login.logout import LogoutRequestHandler
+from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
+from noc.config import config
 
 
 class LoginService(UIService):
     name = "login"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
     api = [
         LoginAPI
     ]
@@ -41,7 +41,7 @@ class LoginService(UIService):
     ]
 
     def iter_methods(self):
-        for m in self.config.methods.split(","):
+        for m in config.login.methods.split(","):
             yield m.strip()
 
     def authenticate(self, handler, credentials):
@@ -74,7 +74,7 @@ class LoginService(UIService):
             handler.set_secure_cookie(
                 "noc_user",
                 user,
-                expires_days=self.config.session_ttl
+                expires_days=config.login.session_ttl
             )
             return True
         self.logger.error("Login failed for %s: %s", c, le)
@@ -108,6 +108,7 @@ class LoginService(UIService):
                 )
             self.logger.info("Changed user credentials: %s", c)
         return r
+
 
 if __name__ == "__main__":
     LoginService().start()

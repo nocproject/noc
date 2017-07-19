@@ -14,7 +14,7 @@ import new
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.lib.datasource import datasource_registry
-from exception import InvalidPatternException
+from noc.services.classifier.exception import InvalidPatternException
 from noc.lib.escape import fm_unescape
 
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
@@ -99,7 +99,7 @@ class Rule(object):
             else:
                 try:
                     rx_key = re.compile(self.unhex_re(x.key_re), re.MULTILINE | re.DOTALL)
-                except Exception, why:
+                except Exception as why:
                     raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
             # Process value pattern
             if self.is_exact(x.value_re):
@@ -107,7 +107,7 @@ class Rule(object):
             else:
                 try:
                     rx_value = re.compile(self.unhex_re(x.value_re), re.MULTILINE | re.DOTALL)
-                except Exception, why:
+                except Exception as why:
                     raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
             # Save patterns
             if x_key:

@@ -13,6 +13,7 @@ from collections import defaultdict
 import tornado.ioloop
 import tornado.gen
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
@@ -56,7 +57,7 @@ class EscalatorService(Service):
                 "escalator",
                 pool=sn,
                 reset_running=True,
-                max_threads=shard_threads[sn],
+                max_threads=config.escalator.max_threads,
                 ioloop=self.ioloop,
                 service=self
             )

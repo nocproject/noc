@@ -20,9 +20,6 @@ from noc.lib.periodic import periodic_registry
 
 # Register periodics
 periodic_registry.register_all()
-from audittrail import AuditTrail
-AuditTrail.install()
-
 from customfieldenumgroup import CustomFieldEnumGroup
 from customfieldenumvalue import CustomFieldEnumValue
 from customfield import CustomField

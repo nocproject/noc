@@ -4,7 +4,7 @@
   get_url:
     url: "{{ consul_checksum_file_url }}"
     dest: "{{ consul_temp_file_checksum }}"
-    validate_certs: no
+    validate_certs: yes
   delegate_to: 127.0.0.1
   become: no
   run_once: yes
@@ -29,7 +29,7 @@
     dest: "{{consul_temp_file}}"
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
-    validate_certs: no
+    validate_certs: yes
   delegate_to: 127.0.0.1
   become: no
   run_once: yes

@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # mailsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,19 +18,20 @@ from email.header import Header
 # Third-party modules
 import pytz
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 
 
 class MailSenderService(Service):
     name = "mailsender"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
 
     def __init__(self, *args, **kwargs):
         super(MailSenderService, self).__init__(*args, **kwargs)
         self.tz = None
 
     def on_activate(self):
-        self.tz = pytz.timezone(self.config.timezone)
+        self.tz = pytz.timezone(config.timezone)
         self.subscribe(
             topic=self.name,
             channel="sender",
@@ -61,7 +62,7 @@ class MailSenderService(Service):
         attachments = attachments or []
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
-        from_address = self.config.from_address
+        from_address = config.from_address
         message = MIMEMultipart()
         message["From"] = from_address
         message["To"] = address
@@ -86,33 +87,34 @@ class MailSenderService(Service):
         self.logger.debug(
             "[%s] Connecting %s:%s",
             message_id,
-            self.config.smtp_server, self.config.smtp_port
+            config.mailsender.smtp_server, config.mailsender.smtp_port
         )
         try:
-            smtp.connect(self.config.smtp_server, self.config.smtp_port)
+            smtp.connect(config.mailsender.smtp_server,
+                         config.mailsender.smtp_port)
         except socket.error as e:
             self.logger.error("[%s] SMTP error: %s", message_id, e)
             return False
-        smtp.ehlo(self.config.helo_hostname)
+        smtp.ehlo(config.mailsender.helo_hostname)
         # Enforce TLS when required
-        if self.config.use_tls:
+        if config.mailsender.use_tls:
             try:
                 smtp.starttls()
             except smtplib.SMTPException as e:
                 self.logger.error("[%s] STARTTLS failed: %s", message_id, e)
                 return False
-            smtp.ehlo(self.config.helo_hostname)
+            smtp.ehlo(config.mailsender.helo_hostname)
         # Authenticate when necessary
-        if self.config.smtp_user and self.config.smtp_password:
+        if config.mailsender.smtp_user and config.mailsender.smtp_password:
             self.logger.debug(
                 "[%s] Authenticating as %s",
                 message_id,
-                self.config.smtp_user
+                config.mailsender.smtp_user
             )
             try:
                 smtp.login(
-                    self.config.smtp_user,
-                    self.config.smtp_password
+                    config.mailsender.smtp_user,
+                    config.mailsender.smtp_password
                 )
             except smtplib.SMTPAuthenticationError as e:
                 self.logger.error(

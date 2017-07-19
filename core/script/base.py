@@ -31,7 +31,7 @@ from noc.core.mac import MAC
 from .beef import Beef
 from .error import (ScriptError, CLISyntaxError, CLIOperationError,
                     NotSupportedError, UnexpectedResultError)
-
+from noc.config import config
 
 class BaseScript(object):
     """
@@ -52,9 +52,9 @@ class BaseScript(object):
     # Script name in form of <vendor>.<system>.<name>
     name = None
     # Default script timeout
-    TIMEOUT = 120
+    TIMEOUT = config.script.timeout
     # Defeault session timeout
-    SESSION_IDLE_TIMEOUT = 60
+    SESSION_IDLE_TIMEOUT = config.script.session_idle_timeout
     # Enable call cache
     # If True, script result will be cached and reused
     # during lifetime of parent script

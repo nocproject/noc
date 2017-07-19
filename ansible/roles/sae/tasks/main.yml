@@ -1,11 +1,2 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
-
-- name: Install sae monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-sae.conf.j2"
-    dest: "{{ telegraf_confd_path }}/noc-sae.conf"
-  notify: reload telegraf
-  tags:
-    - config
-    - telegraf

@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # pmwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,13 +13,14 @@ import time
 import tornado.ioloop
 import tornado.gen
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.http.client import fetch
 
 
 class PMWriterService(Service):
     name = "pmwriter"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
 
     MAX_DELAY = 1.0
 
@@ -57,18 +58,7 @@ class PMWriterService(Service):
         Returns influx service, channel name
         """
         # Influx affinity
-        node_addr = self.config.listen.split(":")[0]
-        influx = None
-        channel = "pmwriter-%s" % node_addr
-        for s in self.config.get_service("influxdb"):
-            if s.split(":")[0] == node_addr:
-                influx = s
-                break
-        if not influx:
-            # Fallback to default
-            influx = self.resolve_service("influxdb", 1)[0]
-            channel = "pmwriter"
-        return influx, channel
+        return config.pmwriter.write_to, config.pmwriter.read_from
 
     def on_metric(self, message, metrics, *args, **kwargs):
         """
@@ -78,7 +68,7 @@ class PMWriterService(Service):
         data = metrics.splitlines()
         ld = len(data)
         self.perf_metrics["metrics_received"] += ld
-        if l < self.config.metrics_buffer:
+        if l < config.pmwriter.metrics_buffer:
             if self.overrun_start:
                 dt = time.time() - self.overrun_start
                 self.logger.info(
@@ -93,7 +83,7 @@ class PMWriterService(Service):
                 self.logger.info(
                     "Temporary buffer overrun. "
                     "Suspending message reading (%s/%s)",
-                    l, self.config.metrics_buffer
+                    l, config.pmwriter.metrics_buffer
                 )
                 self.overrun_start = time.time()
             self.perf_metrics["metrics_deferred"] += ld
@@ -103,10 +93,10 @@ class PMWriterService(Service):
     def write_metrics(self):
         self.logger.info(
             "Starting message sender. Batch size %d. Metrics buffer %d",
-            self.config.batch_size,
-            self.config.metrics_buffer
+            config.pmwriter.batch_size,
+            config.pmwriter.metrics_buffer
         )
-        bs = self.config.batch_size
+        bs = config.pmwriter.batch_size
         while True:
             if not self.buffer:
                 self.perf_metrics["slept_time"] += int(self.MAX_DELAY)
@@ -125,28 +115,39 @@ class PMWriterService(Service):
             while True:
                 t0 = self.ioloop.time()
                 self.logger.debug("Sending %d metrics", len(batch))
-                code, headers, body = yield fetch(
-                    "http://%s/write?db=%s&precision=s" % (
-                        self.influx,
-                        self.config.influx_db
-                    ),
-                    method="POST",
-                    body=data
-                )
-                # @todo: Check for 204
-                if code == 204:
-                    self.logger.info(
-                        "%d metrics sent in %.2fms",
-                        len(batch), (self.ioloop.time() - t0) * 1000
+                client = tornado.httpclient.AsyncHTTPClient()
+                try:
+                    response = yield client.fetch(
+                        # Configurable database name
+                        "http://%s/write?db=%s&precision=s" % (
+                            self.influx,
+                            config.pmwriter.influx_db
+                        ),
+                        method="POST",
+                        body=body
                     )
-                    self.perf_metrics["metrics_written"] += len(batch)
-                    break
-                else:
-                    self.logger.info(
-                        "Failed to write metrics: %s",
-                        body
+                    # @todo: Check for 204
+                    if response.code == 204:
+                        self.logger.info(
+                            "%d metrics sent in %.2fms",
+                            len(batch), (self.ioloop.time() - t0) * 1000
+                        )
+                        self.perf_metrics["metrics_written"] += len(batch)
+                        break
+                    else:
+                        self.logger.info(
+                            "Failed to write metrics: %s",
+                            response.body
+                        )
+                        self.perf_metrics["metrics_spool_failed"] += 1
+                except tornado.httpclient.HTTPError as e:
+                    self.logger.error("Failed to spool %d metrics: %s",
+                                      len(batch), e)
+                except Exception as e:
+                    self.logger.error(
+                        "Failed to spool %d metrics due to unknown error: %s",
+                        len(batch), e
                     )
-                    self.perf_metrics["metrics_spool_failed"] += 1
                 timeout = 1.0
                 self.logger.info(
                     "InfluxDB is getting ill. "

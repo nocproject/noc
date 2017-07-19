@@ -15,7 +15,7 @@ from search import SearchRequestHandler
 
 class CardService(UIService):
     name = "card"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
 
     use_translation = True
     use_jinja = True
