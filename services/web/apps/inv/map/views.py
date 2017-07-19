@@ -8,8 +8,6 @@
 
 # Python modules
 from collections import defaultdict
-import urllib
-import json
 import datetime
 import threading
 # Third-party modules
@@ -31,8 +29,6 @@ from noc.maintainance.models.maintainance import Maintainance
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
-from noc.core.influxdb.client import InfluxDBClient
-from noc.core.config.base import config
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
 from noc.core.influxdb.client import InfluxDBClient
@@ -153,7 +149,7 @@ class MapApplication(ExtApplication):
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["POST"],
           access="write", api=True)
     def api_save(self, request, id):
-        segment = self.get_object_or_404(NetworkSegment, id=id)
+        self.get_object_or_404(NetworkSegment, id=id)
         data = self.deserialize(request.raw_post_data)
         data["id"] = id
         MapSettings.load_json(data, request.user.username)

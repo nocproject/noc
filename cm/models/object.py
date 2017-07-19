@@ -13,7 +13,7 @@ import datetime
 from django.db import models
 from django.db.models import Q
 # NOC modules
-from noc.settings import config
+from noc.config import config
 from noc.core.fileutils import rewrite_when_differ, read_file, in_dir
 from noc.cm.vcs import vcs_registry
 from noc.lib.validators import is_int

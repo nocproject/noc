@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MIB model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ import datetime
 import os
 # NOC modules
 import noc.lib.nosql as nosql
-from noc.settings import config
+from noc.config import config
 from noc.core.fileutils import temporary_file, safe_rewrite
 from error import (MIBNotFoundException, MIBRequiredException,
                    OIDCollision)
@@ -116,7 +116,7 @@ class MIB(nosql.Document):
             raise ValueError("File not found: %s" % path)
         # Pass MIB through smilint to detect missed modules
         f = subprocess.Popen(
-            [config.get("path", "smilint"), "-m", path],
+            [config.path.smilint, "-m", path],
             stderr=subprocess.PIPE,
             env={"SMIPATH": ":".join(cls.MIB_PATH)}).stderr
         for l in f:
@@ -127,7 +127,7 @@ class MIB(nosql.Document):
         # Convert MIB to python module and load
         with temporary_file() as p:
             subprocess.check_call(
-                [config.get("path", "smidump"), "-k", "-q",
+                [config.path.smidump, "-k", "-q",
                  "-f", "python", "-o", p, path],
                 env={"SMIPATH": ":".join(cls.MIB_PATH)})
             # Add coding string

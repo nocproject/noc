@@ -17,7 +17,7 @@ from django.utils.dateformat import DateFormat
 # NOC modules
 from reportapplication import *
 from noc.core.translation import ugettext as _
-from noc import settings
+from noc.config import config
 from noc.lib.widgets import tags_list
 
 
@@ -331,7 +331,7 @@ class TableColumn(ReportNode):
         :param f:
         :return:
         """
-        return DateFormat(f).format(settings.DATE_FORMAT)
+        return DateFormat(f).format(config.date_format)
 
     def f_time(self, f):
         """
@@ -339,7 +339,7 @@ class TableColumn(ReportNode):
         :param f:
         :return:
         """
-        return DateFormat(f).format(settings.TIME_FORMAT)
+        return DateFormat(f).format(config.time_format)
 
     def f_datetime(self, f):
         """
@@ -347,7 +347,7 @@ class TableColumn(ReportNode):
         :param f:
         :return:
         """
-        return DateFormat(f).format(settings.DATETIME_FORMAT)
+        return DateFormat(f).format(config.datetime_format)
 
     def f_size(self, f):
         """

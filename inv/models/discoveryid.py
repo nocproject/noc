@@ -25,6 +25,7 @@ from noc.core.perf import metrics
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.mac import MAC
+from noc.core.model.decorator import on_delete
 
 mac_lock = Lock()
 
@@ -40,6 +41,7 @@ class MACRange(EmbeddedDocument):
         return u"%s - %s" % (self.first_mac, self.last_mac)
 
 
+@on_delete
 class DiscoveryID(Document):
     """
     Managed Object's discovery identity
@@ -239,3 +241,16 @@ class DiscoveryID(Document):
         c_macs.update(si_macs)
 
         return c_macs
+
+    def on_delete(self):
+        # Reset cache
+        macs = set(m.first_mac for m in self.chassis_mac)
+        if macs:
+            cache.delete_many(["discoveryid-mac-%s" % m for m in macs])
+
+    @classmethod
+    def clean_for_object(cls, mo):
+        if hasattr(mo, "id"):
+            mo = mo.id
+        for d in DiscoveryID.objects.filter(object=mo):
+            d.delete()

@@ -24,8 +24,9 @@ from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
 from noc.core.debug import error_report
+from noc.config import config
 
-ALARM_CLOSE_RETRIES = 5
+ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 
 
 class ActiveAlarm(nosql.Document):

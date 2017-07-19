@@ -20,7 +20,7 @@
   get_url:
     url: https://bitbucket.org/nocproject/noc/get/feature/microservices.tar.bz2
     dest: "{{tower_path}}/var/tower/data/{{noc_env}}/microservices.tar.bz2"
-    validate_certs: no
+    validate_certs: yes
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"

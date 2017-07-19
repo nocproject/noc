@@ -18,6 +18,7 @@ from django.core.management.base import BaseCommand, CommandError
 import ujson
 # NOC modules
 from noc.fm.models.mib import MIB
+from noc.config import config
 
 
 class Command(BaseCommand):
@@ -31,7 +32,7 @@ class Command(BaseCommand):
     rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
                                  re.MULTILINE)
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
-    PREFIX = "collections/fm.mibs/"
+    PREFIX = config.path.collection_fm_mibs
 
     def handle(self, *args, **options):
         print "Synchronizing MIBs"

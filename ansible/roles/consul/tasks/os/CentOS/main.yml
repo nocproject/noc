@@ -59,6 +59,6 @@
 
 - name: Expose consul_bind_address as fact
   set_fact:
-    consul_bind_address: "{{ hostvars[inventory_hostname]['ansible_'+ consul_iface ]['ipv4']['address'] }}"
+    consul_bind_address: "{{ hostvars[ansible_nodename]['ansible_'+ consul_iface ]['ipv4']['address'] }}"
   tags:
     - config

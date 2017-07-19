@@ -18,6 +18,7 @@ import os
 import tornado.ioloop
 import tornado.gen
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
@@ -29,7 +30,7 @@ class PingService(Service):
     #
     leader_group_name = "ping-%(pool)s"
     pooled = True
-    process_name = "noc-%(name).10s-%(pool).3s"
+    process_name = "noc-%(name).10s-%(pool).3s-%(instance).2s"
     require_nsq_writer = True
 
     def __init__(self):
@@ -66,7 +67,7 @@ class PingService(Service):
         #
         self.perf_metrics["down_objects"] = 0
         # Open ping sockets
-        self.ping = Ping(self.ioloop, tos=self.config.tos)
+        self.ping = Ping(self.ioloop, tos=config.ping.tos)
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
         # Set event listeners
@@ -126,9 +127,7 @@ class PingService(Service):
 
         self.logger.info("Requesting object mappings")
         try:
-            sm = yield self.omap.get_ping_mappings(
-                self.config.pool
-            )
+            sm = yield self.omap.get_ping_mappings(config.pool)
         except self.omap.RPCError as e:
             self.logger.error("Failed to get object mappings: %s", e)
             return
@@ -225,14 +224,14 @@ class PingService(Service):
                 self.perf_metrics["down_objects"] -= 1
             else:
                 self.perf_metrics["down_objects"] += 1
-            if self.config.throttle_threshold:
+            if config.ping.throttle_threshold:
                 # Process throttling
                 down_ratio = (
                     float(self.perf_metrics["down_objects"]) * 100.0 /
                     float(self.perf_metrics["ping_objects"])
                 )
                 if self.is_throttled:
-                    restore_ratio = self.config.restore_threshold or self.config.throttle_threshold
+                    restore_ratio = config.ping.restore_threshold or config.ping.throttle_threshold
                     if down_ratio <= restore_ratio:
                         self.logger.info(
                             "Leaving throttling mode (%s%% <= %s%%)",
@@ -240,10 +239,10 @@ class PingService(Service):
                         )
                         self.is_throttled = False
                         # @todo: Send unthrottling message
-                elif down_ratio > self.config.throttle_threshold:
+                elif down_ratio > config.ping.throttle_threshold:
                     self.logger.info(
                         "Entering throttling mode (%s%% > %s%%)",
-                        down_ratio, self.config.throttle_threshold
+                        down_ratio, config.ping.throttle_threshold
                     )
                     self.is_throttled = True
                     # @todo: Send throttling message

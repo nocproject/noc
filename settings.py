@@ -2,60 +2,32 @@
 # ---------------------------------------------------------------------
 # Django settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-import ConfigParser
+
+# Python modules
 import sys
 import os
-from noc.core.config.base import config as cfg
+import logging
+from noc.config import config
 
-# Check when started from notebook
-if not os.path.isfile("etc/noc.defaults") and os.path.isfile("../etc/noc.defaults"):
-    os.chdir("..")
-
-# Load config
-config = ConfigParser.SafeConfigParser()
-config.read(["etc/noc.defaults", "etc/noc.conf"])
-if not config.sections():
-    # Called from autodoc
-    # @todo: Remove?
-    config.read(["../../../../etc/noc.defaults", "../../../../etc/noc.conf"])
-# Load solutions's config
-if config.has_section("solutions"):
-    for sn in config.options("solutions"):
-        if config.getboolean("solutions", sn):
-            v, s = sn.split(".")
-            scfg = os.path.join("solutions", v, s, "etc", "noc.")
-            config.read([scfg + "defaults", scfg + "conf"])
-
-DEBUG = config.getboolean("main", "debug")
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
-
-# Set up admins
-# @todo: remove
 ADMINS = []
-for a in config.get("main", "admin_emails").split(","):
-    a = a.strip()
-    if not a:
-        continue
-    n, d = a.split("@")
-    ADMINS.append((n, a))
-
 MANAGERS = ADMINS
-
-SERVER_EMAIL = config.get("main", "server_email")
+SERVER_EMAIL = None
 
 # RDBMS settings
 DATABASES = {
     "default": {
         "ENGINE": "noc.core.model.db",
-        "NAME": cfg.pg_connection_args["database"],
-        "USER": cfg.pg_user,
-        "PASSWORD": cfg.pg_password,
-        "HOST": cfg.pg_connection_args["host"],
-        "PORT": cfg.pg_connection_args["port"],
-        "TEST_NAME": "test_" + cfg.pg_db,
+        "NAME": config.pg.db,
+        "USER": config.pg.user,
+        "PASSWORD": config.pg.password,
+        "HOST": config.pg.addresses[0].host,
+        "PORT": config.pg.addresses[0].port,
+        "TEST_NAME": "test_" + config.pg.db,
         "OPTIONS": {
             "autocommit": True
         }
@@ -66,14 +38,14 @@ SOUTH_DATABASE_ADAPTERS = {
     "default": "south.db.postgresql_psycopg2"
 }
 
-TIME_ZONE = config.get("main", "timezone")
-LANGUAGE_CODE = config.get("main", "language_code")
+TIME_ZONE = config.timezone
+LANGUAGE_CODE = config.language_code
 # Set up date and time formats
-DATE_FORMAT = config.get("main", "date_format")
-TIME_FORMAT = config.get("main", "time_format")
-MONTH_DAY_FORMAT = config.get("main", "month_day_format")
-YEAR_MONTH_FORMAT = config.get("main", "year_month_format")
-DATETIME_FORMAT = config.get("main", "datetime_format")
+DATE_FORMAT = config.date_format
+TIME_FORMAT = config.time_format
+MONTH_DAY_FORMAT = config.month_day_format
+YEAR_MONTH_FORMAT = config.year_month_format
+DATETIME_FORMAT = config.datetime_format
 
 SITE_ID = 1
 
@@ -95,7 +67,7 @@ MEDIA_URL = ""
 STATIC_URL = "/media/"
 
 # Make this unique, and don"t share it with anybody.
-SECRET_KEY = config.get("main", "secret_key")
+SECRET_KEY = config.secret_key
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = [
@@ -170,10 +142,6 @@ INSTALLED_APPS = [
     "noc.sla",
     "noc.phone"
 ]
-# Populate list of locally-installed apps
-apps = config.get("main", "installed_apps").strip()
-if apps:
-    INSTALLED_APPS += [app.strip() for app in apps.split(",")]
 
 FORCE_SCRIPT_NAME = ""
 
@@ -204,31 +172,9 @@ FORCE_LOWERCASE_TAGS = False
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 # Store sessions in mongodb
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-# X-Forwarded-Proto
-if config.get("main", "x_forwarded_proto"):
-    h = config.get("main", "x_forwarded_proto").upper().replace("-", "_")
-    SECURE_PROXY_SSL_HEADER = ("HTTP_%s" % h, "https")
-# Set up crashinfo limit
-CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
-# Traceback order
-TRACEBACK_REVERSE = config.get("main", "traceback_order") == "reverse"
 # Fixed beefs directory
 # Set up by test runner
 TEST_FIXED_BEEF_BASE = None
 
-LOG_MRT_COMMAND = None
-if config.get("audit", "log_mrt_commands"):
-    lmc = config.get("audit", "log_mrt_commands")
-    if os.access(lmc, os.W_OK):
-        LOG_MRT_COMMAND = lmc
-    else:
-        import sys
-        sys.stderr.write(
-            "Cannot write to '%s'. MRT command logging disabled\n" % lmc
-        )
-# Set up logging
 # Disable SQL statement logging
-import logging
-
 logging.getLogger("django.db.backends").setLevel(logging.ERROR)
-SENTRY_URL = config.get("main", "sentry_url")

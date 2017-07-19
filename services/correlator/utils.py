@@ -21,11 +21,14 @@ def linked_object(object, interface):
     """
     try:
         cn = object.profile.convert_interface_name(interface)
-    except Exception, why:
+    except Exception as e:
         logger.error("Cannot convert interface name '%s': %s",
-                     interface, why)
+                     interface, e)
         return None
-    iface = Interface.objects.filter(managed_object=object.id, name=cn).first()
+    iface = Interface.objects.filter(
+        managed_object=object.id,
+        name=cn
+    ).first()
     if not iface:
         logger.debug("Interface %s@%s is not found",
                      object.name, cn)

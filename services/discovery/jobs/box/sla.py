@@ -28,6 +28,9 @@ class SLACheck(DiscoveryCheck):
         "Juniper.JUNOS": set([
             "Juniper | RPM | Probes"
         ]),
+        "OneAccess.TDRE": set([
+            "OneAccess | IP | SLA | Probes"
+        ]),
         # Fallback
         "Generic.Host": set()
     }

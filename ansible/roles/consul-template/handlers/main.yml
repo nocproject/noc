@@ -1,4 +1,6 @@
 ---
+# File: main.yml - Handlers for Consul template
+
 - name: restart consul-template
   become: yes
   service:
@@ -11,7 +13,21 @@
     name: consul-template
     state: reloaded
 
+- name: start consul-template
+  become: yes
+  service:
+    name: consul-template
+    enabled: yes
+    state: started
+
+- name: reload telegraf
+  become: yes
+  service:
+    name: telegraf
+    state: reloaded
+
 - name: reload systemd
+  become: yes
   systemd:
     name: consul-template
     daemon_reload: yes

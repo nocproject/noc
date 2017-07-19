@@ -10,7 +10,7 @@
 import datetime
 # NOC modules
 from noc.sa.models.interactionlog import InteractionLog
-from noc.settings import config
+from noc.config import config
 
 
 def get_seconds(section, option):
@@ -38,10 +38,10 @@ def get_seconds(section, option):
     return v * m
 
 # Expiration settings
-TTL_COMMAND = get_seconds("audit", "command_ttl")
-TTL_LOGIN = get_seconds("audit", "login_ttl")
-TTL_REBOOT = get_seconds("audit", "reboot_ttl")
-TTL_CONFIG = get_seconds("audit", "config_changed_ttl")
+TTL_COMMAND = config.audit.command_ttl
+TTL_LOGIN = config.audit.login_ttl
+TTL_REBOOT = config.audit.reboot_ttl
+TTL_CONFIG = config.audit.config_changed_ttl
 
 
 def log_cmd(event):

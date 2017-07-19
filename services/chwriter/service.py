@@ -13,19 +13,21 @@ import os
 import tornado.ioloop
 import tornado.gen
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.http.client import fetch
 from channel import Channel
 from noc.core.perf import metrics
+from noc.config import config
 
 
 class CHWriterService(Service):
     name = "chwriter"
-    process_name = "noc-%(name).10s-%(instance).3s"
-
+    process_name = "noc-%(name).10s"
+    # @fixme took better one from config with shard settings
     HOST = os.environ.get("NOC_CLICKHOUSE_HOST", "clickhouse")
     PORT = os.environ.get("NOC_CLICKHOUSE_PORT", 8123)
-    DB = os.environ.get("NOC_CLICKHOUSE_DB", "noc")
+    DB = config.clickhouse.db
 
     def __init__(self):
         super(CHWriterService, self).__init__()
@@ -42,7 +44,8 @@ class CHWriterService(Service):
         )
         report_callback.start()
         check_callback = tornado.ioloop.PeriodicCallback(
-            self.check_channels, self.config.batch_delay_ms, self.ioloop
+            self.check_channels, config.chwriter.batch_delay_ms,
+            self.ioloop
         )
         check_callback.start()
         self.subscribe(
@@ -68,11 +71,11 @@ class CHWriterService(Service):
         ...
         <v1>\t...\t<vN>\n
         """
-        if metrics["records_buffered"].value > self.config.records_buffer:
+        if metrics["records_buffered"].value > config.chwriter.records_buffer:
             self.logger.info(
                 "Input buffer is full (%s/%s). Deferring message",
                 metrics["records_buffered"].value,
-                self.config.records_buffer
+                config.chwriter.records_buffer
             )
             metrics["deferred_messages"] += 1
             return False
@@ -120,7 +123,7 @@ class CHWriterService(Service):
             self.logger.debug("[%s] Sending %s records", channel.name, n)
             written = False
             try:
-                code, headers, body = yield fetch(
+                response = yield client.fetch(
                     "http://%s:%s/?database=%s&query=%s" % (
                         self.HOST, self.PORT, self.DB,
                         channel.get_encoded_insert_sql()),

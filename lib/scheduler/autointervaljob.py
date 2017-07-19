@@ -8,12 +8,13 @@
 
 # NOC modules
 from intervaljob import IntervalJob
+from noc.config import config
 
 
 class AutoIntervalJob(IntervalJob):
-    interval = 86400
+    interval = config.scheduler.autointervaljob_interval
     randomize = False
-    initial_submit_interval = 86400
+    initial_submit_interval = config.scheduler.autointervaljob_initial_submit_interval
 
     @classmethod
     def initial_submit(cls, scheduler, keys):

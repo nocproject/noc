@@ -14,7 +14,8 @@ import Queue
 import time
 import datetime
 # NOC modules
-from noc.settings import config, IS_TEST
+from noc.settings import IS_TEST
+from noc.config import config
 from noc.gis.models import TileCache, Area
 from noc.gis.mapxml import map_to_xml
 from noc.gis.geo import xy_to_ll, ll_to_xy, TS, MIN_ZOOM, MAX_ZOOM
@@ -27,7 +28,7 @@ except ImportError, why:
 
 
 # Render additional N tiles around areas
-PAD_TILES = config.getint("gis", "tilecache_padding")
+PAD_TILES = config.gis.tilecache_padding
 
 
 class TileWorker(object):

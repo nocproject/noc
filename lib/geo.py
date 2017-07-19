@@ -13,20 +13,19 @@ import geojson
 from geopy.point import Point as GPoint
 from geopy.distance import vincenty, great_circle, ELLIPSOIDS
 # NOC settings
-from noc.settings import config
+from noc.config import config
 
 # major, minor, flattening=(major-minor)/major
 ELLIPSOIDS["Krass"] = (6378.245, 6356.863019, 1 / 298.3000031662238)
 ELLIPSOIDS["ПЗ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
 
-ELLIPSOID = config.get("gis", "ellipsoid")
+ELLIPSOID = config.gis.ellipsoid
 
 
 def _get_point(p):
     """
     Convert to geopy Point
     """
-    print "_get_point", p
     if isinstance(p, GPoint):
         return p
     elif isinstance(p, list):

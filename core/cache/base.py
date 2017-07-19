@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BaseCache
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# BaseCache
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
-from noc.core.config.base import config
+# NOC modules
+from noc.config import config
 from noc.core.handler import get_handler
 
 logger = logging.getLogger(__name__)
@@ -86,14 +86,13 @@ class BaseCache(object):
 
     @classmethod
     def get_cache(cls):
-        h = config.cache_class
-        logger.info("Using cache backend: %s", h)
-        c = get_handler(h)
+        logger.info("Using cache backend: %s", config.cache.cache_class)
+        c = get_handler(config.cache.cache_class)
         if c:
             return c()
         else:
             logger.error("Cannot load cache backend: Fallback to dummy")
             return BaseCache()
 
-## cache singleton
+# cache singleton
 cache = BaseCache.get_cache()

@@ -1,0 +1,54 @@
+- name: Get Consul-template package checksum file
+  get_url:
+    url: "{{ consul_template_checksum_file_url }}"
+    dest: "{{ consul_template_temp_file_checksum }}"
+    validate_certs: yes
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: Get Consul-template package checksum
+  shell: "grep {{ consul_template_pkg }} {{ consul_template_temp_file_checksum }}"
+  register: consul_sha256
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: yes
+  changed_when: false
+
+- name: Download Consul-template
+  get_url:
+    url: "{{ consul_template_zip_url }}"
+    dest: "{{consul_template_temp_file}}"
+    checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
+    timeout: 42
+    validate_certs: yes
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: create consul-template tmp dir
+  file:
+    dest: "{{ consul_template_temp_unarchive }}"
+    state: directory
+
+- name: Unarchive Consul-template and install binary
+  unarchive:
+    src: "{{consul_template_temp_file}}"
+    dest: "{{ consul_template_temp_unarchive }}"
+    owner: "{{ consul_template_user }}"
+    group: "{{ consul_template_group }}"
+    mode: 0755
+    creates: "{{ consul_template_temp_unarchive }}/{{consul_template_binary}}"
+
+- name: Overwrite Consul-template binary if needed
+  copy:
+    src: "{{ consul_template_temp_unarchive }}/{{consul_template_binary}}"
+    dest : "{{ consul_template_bin_path }}/{{consul_template_binary}}"
+    remote_src: yes
+    mode: 0755
+  notify:
+    - restart consul-template

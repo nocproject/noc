@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Geoconding cache
+# Geocoding cache
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
@@ -18,7 +18,7 @@ from mongoengine.fields import (StringField, FloatField, ListField,
                                 DateTimeField)
 # NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
-from noc.core.config.base import config
+from noc.config import config
 from noc.core.handler import get_handler
 
 
@@ -67,7 +67,7 @@ class GeocoderCache(Document):
     @classmethod
     def iter_geocoders(cls):
         if not cls.geocoders:
-            for gc in config.geocoding_order.split(","):
+            for gc in config.geocoding.order.split(","):
                 gc = gc.strip()
                 if gc in cls.gcls:
                     h = get_handler(cls.gcls[gc])

@@ -26,7 +26,7 @@ command="{{ noc_root }}/bin/${name}"
 required_files="${nsqadmin_config}"
 start_precmd=nsqadmin_prestart
 
-command_args="-config ${nsqadmin_config} > {{ noc_root }}/var/log/nsq/nsqadmin.log 2>&1 &"
+command_args="-config ${nsqadmin_config} > {{ nsd_log_dir }}/nsqadmin.log 2>&1 &"
 
 nsqadmin_prestart() {
 # Have to empty rc_flags so they don't get passed to daemon(8)

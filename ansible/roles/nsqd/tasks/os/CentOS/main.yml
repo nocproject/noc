@@ -3,7 +3,7 @@
   get_url:
     url: "{{nsq_url}}"
     dest: "{{nsq_temp_file}}"
-    validate_certs: no
+    validate_certs: yes
   delegate_to: 127.0.0.1
   become: no
   run_once: true

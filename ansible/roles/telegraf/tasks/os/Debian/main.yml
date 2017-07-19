@@ -1,7 +1,7 @@
 - name: Add InfluxDB apt key
   apt_key:
     url: https://repos.influxdata.com/influxdb.key
-    validate_certs: no
+    validate_certs: yes
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

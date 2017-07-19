@@ -8,24 +8,11 @@
 import os
 import tempfile
 import hashlib
-import urllib2
 import gzip
 # Third-party modules
 import six
 # NOC modules
 from noc.lib.version import get_version
-from noc.settings import config
-
-# Setup proxy
-PROXY = {}
-for proto in ["http", "https", "ftp"]:
-    p = config.get("proxy", "%s_proxy" % proto)
-    if p:
-        PROXY[proto] = p
-if PROXY:
-    ph = urllib2.ProxyHandler(PROXY)
-    opener = urllib2.build_opener(ph)
-    urllib2.install_opener(opener)
 
 
 def safe_rewrite(path, text, mode=None):
@@ -152,7 +139,10 @@ def urlopen(url, auto_deflate=False):
     """
     urlopen wrapper
     """
-    global PROXY
+    import urllib2
+    from noc.core.http.proxy import setup_urllib_proxies
+
+    setup_urllib_proxies()
 
     if url.startswith("http://") or url.startswith("https://"):
         r = urllib2.Request(
