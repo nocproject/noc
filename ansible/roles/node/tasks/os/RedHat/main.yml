@@ -1,28 +1,11 @@
-- name: set proxy for yum
-  lineinfile:
-    dest: /etc/yum.conf
-    regexp: "^proxy=.*"
-    line: "proxy=http://{{http_proxy}}"
-  when: "http_proxy is defined and http_proxy"
-  tags:
-    - config
-
-- name: Disable selinux
-  selinux:
-    policy: targeted
-    state: permissive
-
 - name: Add EPEL Repo
-  yum_repository:
-    name: epel
-    description: EPEL Repo
-    baseurl: http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
-    gpgcheck: yes
-    gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
-    enabled: yes
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: present
+    validate_certs: yes
   environment:
-    http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
   tags:
     - repo
 
@@ -35,8 +18,6 @@
     http_proxy: "{{http_proxy}}"
   tags:
     - repo
-
-- debug: var=postgresql_version
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
@@ -79,7 +60,6 @@
    - libffi
    - libffi-devel
    - libmemcached
-   - libmemcached-devel
    - zlib-devel
   environment:
     https_proxy: "{{http_proxy}}"
@@ -94,6 +74,7 @@
   with_items:
    - quilt
    - jemalloc
+   - libmemcached-devel
   environment:
     http_proxy: "{{http_proxy}}"
 

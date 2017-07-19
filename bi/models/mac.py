@@ -76,7 +76,7 @@ class MAC(Model):
         :param mos: list(int)
         :return: Dict {mo_a: {iface1: [mo1, mo2], iface2: [mo3, mo4], ...}, mo_b: ...}
         """
-        if not macs or not mos:
+        if not macs and not mos:
             return
         neighbors = defaultdict(dict)
         fields = [{"expr": "max(ts)", "alias": "timestamp", "order": 0},

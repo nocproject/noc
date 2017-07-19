@@ -14,6 +14,7 @@ import csv
 import time
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class BaseExtractor(object):
     *iter_data* method
     """
     name = None
-    PREFIX = "var/import"
+    PREFIX = config.path.etl_import
     REPORT_INTERVAL = 1000
     # List of rows to be used as constant data
     data = []

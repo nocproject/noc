@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import signal
 import os
@@ -21,15 +22,13 @@ import tornado.ioloop
 from six.moves.urllib.parse import urlparse
 import six
 # Python modules
+from .error import ResolutionError
 from noc.core.perf import metrics
-
-
-class ResolutionError(Exception):
-    pass
+from noc.config import config
 
 
 class DCSBase(object):
-    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = datetime.timedelta(seconds=300)
+    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = config.dcs.resolution_timeout
     # Resolver class
     resolver_cls = None
 
@@ -132,6 +131,7 @@ class DCSBase(object):
         instance,
         :param name:
         :param hint:
+        :param full_result:
         :return:
         """
         @tornado.gen.coroutine

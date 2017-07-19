@@ -9,7 +9,7 @@
 - name: add nsqd user
   user:
     name: nsq
-    shell: /bin/false
+    shell: "{{fake_shell}}"
 
 - name: create path for on-disk queue files
   file:
@@ -21,6 +21,17 @@
   with_items:
     - "{{nsqd_db_dir}}"
     - "{{nsqd_config_dir}}"
+
+- name: create nsqd log dif
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  when: "'FreeBSD' in ansible_system"
+  with_items:
+    - "{{nsd_log_dir}}"
 
 - name: check if nsq already exists
   stat:

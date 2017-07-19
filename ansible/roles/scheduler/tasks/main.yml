@@ -1,11 +1,2 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
-
-- name: Install scheduler monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-scheduler.conf.j2"
-    dest: "{{ telegraf_confd_path }}/noc-scheduler.conf"
-  notify: reload telegraf
-  tags:
-    - config
-    - telegraf
