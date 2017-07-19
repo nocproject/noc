@@ -15,12 +15,12 @@ from psycopg2.pool import ThreadedConnectionPool
 from noc.core.service.base import Service
 from noc.main.models.pool import Pool
 from api.sae import SAEAPI
-from noc.core.config.base import config
+from noc.config import config
 
 
 class SAEService(Service):
     name = "sae"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
     api = [SAEAPI]
 
     def __init__(self):
@@ -38,7 +38,7 @@ class SAEService(Service):
         self.load_pools()
         self.pg_pool = ThreadedConnectionPool(
             1,
-            self.config.db_threads,
+            config.sae.db_threads,
             **config.pg_connection_args
         )
 

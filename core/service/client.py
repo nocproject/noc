@@ -13,19 +13,19 @@ import errno
 from .loader import get_service
 from .error import (RPCError, RPCHTTPError, RPCException, RPCNoService,
                     RPCRemoteError)
-
+from noc.config import config
 
 # Connection time
-CONNECT_TIMEOUT = 20
+CONNECT_TIMEOUT = config.rpc.sync_connect_timeout
 # Total request time
-REQUEST_TIMEOUT = 3600
+REQUEST_TIMEOUT = config.rpc.sync_request_timeout
 #
-RETRY_TIMEOUT = 1.0
-RETRY_DELTA = 2.0
+RETRY_TIMEOUT = config.rpc.sync_retry_timeout
+RETRY_DELTA = config.rpc.sync_retry_delta
 #
 CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
 #
-RETRIES = 5
+RETRIES = config.rpc.sync_retries
 #
 RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN,
                        errno.EHOSTUNREACH, errno.ENETUNREACH)

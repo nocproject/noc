@@ -15,7 +15,7 @@ from annotations import AnnotationsHandler
 
 class GrafanaDSService(UIService):
     name = "grafanads"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
 
     def get_handlers(self):
         return super(GrafanaDSService, self).get_handlers() + [

@@ -65,7 +65,7 @@ c.JupyterApp.answer_yes = True
 # c.NotebookApp.jinja_environment_options = traitlets.Undefined
 
 # The IP address the notebook server will listen on.
-c.NotebookApp.ip = '{{ hostvars[inventory_hostname].ansible_host }}'
+c.NotebookApp.ip = '{{ hostvars[ansible_nodename].ansible_host }}'
 
 # DEPRECATED use base_url
 # c.NotebookApp.base_project_url = '/'

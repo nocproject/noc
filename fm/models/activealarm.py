@@ -24,8 +24,9 @@ from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
 from noc.core.debug import error_report
+from noc.config import config
 
-ALARM_CLOSE_RETRIES = 5
+ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 
 
 class ActiveAlarm(nosql.Document):
@@ -482,7 +483,8 @@ class ActiveAlarm(nosql.Document):
             "$set": {
                 "escalation_tt": self.escalation_tt,
                 "escalation_ts": self.escalation_ts,
-                "close_tt": self.close_tt
+                "close_tt": self.close_tt,
+                "escalation_error": None
             }
         })
         if r.get("nModified", 0) == 0:
@@ -493,7 +495,8 @@ class ActiveAlarm(nosql.Document):
                 "$set": {
                     "escalation_tt": self.escalation_tt,
                     "escalation_ts": self.escalation_ts,
-                    "close_tt": self.close_tt
+                    "close_tt": self.close_tt,
+                    "escalation_error": None
                 }
             })
         # self.save(save_condition={

@@ -14,14 +14,14 @@ import re
 from collections import defaultdict
 from threading import Lock
 # Third-party modules
-import tornado.gen
 from mongoengine.queryset import Q
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
-from rule import Rule
-from rcacondition import RCACondition
-from trigger import Trigger
+from services.correlator.rule import Rule
+from services.correlator.rcacondition import RCACondition
+from services.correlator.trigger import Trigger
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm
@@ -34,7 +34,7 @@ from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
-import utils
+from services.correlator import utils
 from noc.lib.dateutils import total_seconds
 
 
@@ -42,7 +42,7 @@ class CorrelatorService(Service):
     name = "correlator"
     pooled = True
     leader_lock_name = "correlator-%(pool)s"
-    process_name = "noc-%(name).10s-%(pool).3s"
+    process_name = "noc-%(name).10s-%(pool).2s"
 
     def __init__(self):
         super(CorrelatorService, self).__init__()
@@ -59,19 +59,19 @@ class CorrelatorService(Service):
     def on_activate(self):
         self.scheduler = Scheduler(
             self.name,
-            pool=self.config.pool,
+            pool=config.pool,
             reset_running=True,
-            max_threads=self.config.max_threads,
+            max_threads=config.correlator.max_threads,
             ioloop=self.ioloop,
             submit_threshold=100,
             max_chunk=100
         )
         self.scheduler.correlator = self
         self.subscribe(
-            "correlator.dispose.%s" % self.config.pool,
+            "correlator.dispose.%s" % config.pool,
             "dispose",
             self.on_dispose_event,
-            max_in_flight=self.config.max_threads
+            max_in_flight=config.correlator.max_threads
         )
         self.scheduler.run()
 
@@ -179,7 +179,7 @@ class CorrelatorService(Service):
             if root:
                 # Root cause found
                 self.logger.info("%s is root cause for %s (Rule: %s)",
-                    root.id, a.id, rc.name)
+                                 root.id, a.id, rc.name)
                 self.perf_metrics["alarm_correlated_rule"] += 1
                 a.set_root(root)
                 return True
@@ -217,6 +217,10 @@ class CorrelatorService(Service):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
             self.logger.info("Empty managed object, ignoring")
+            return
+        # @todo: Make configurable
+        if not managed_object.is_managed:
+            self.logger.info("Managed object is not managed. Do not raise alarm")
             return
         if e.managed_object.id != managed_object.id:
             self.perf_metrics["alarm_change_mo"] += 1
@@ -533,8 +537,8 @@ class CorrelatorService(Service):
     def topology_rca(self, alarm, seen=None):
         def can_correlate(a1, a2):
             return (
-                not self.config.topology_rca_window or
-                total_seconds(a1.timestamp - a2.timestamp) <= self.config.topology_rca_window
+                not config.correlator.topology_rca_window or
+                total_seconds(a1.timestamp - a2.timestamp) <= config.correlator.topology_rca_window
             )
 
         self.logger.debug("[%s] Topology RCA", alarm.id)

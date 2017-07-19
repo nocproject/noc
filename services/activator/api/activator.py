@@ -145,6 +145,7 @@ class ActivatorAPI(API):
         self.logger.debug("HTTP GET %s", url)
         code, header, body = yield fetch(
             url,
+            request_timeout=20,
             follow_redirects=True,
             validate_cert=False
         )

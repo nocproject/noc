@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from exception import InvalidPatternException
+from noc.services.classifier.exception import InvalidPatternException
 
 
 class CloningRule(object):
@@ -26,22 +26,22 @@ class CloningRule(object):
         self.name = rule.name
         try:
             self.re = re.compile(rule.re)
-        except Exception, why:
+        except Exception as why:
             raise InvalidPatternException(
                 "Error in '%s': %s" % (rule.re, why))
         try:
             self.key_re = re.compile(rule.key_re)
-        except Exception, why:
+        except Exception as why:
             raise InvalidPatternException(
                 "Error in '%s': %s" % (rule.key_re, why))
         try:
             self.value_re = re.compile(rule.value_re)
-        except Exception, why:
+        except Exception as why:
             raise InvalidPatternException(
                 "Error in '%s': %s" % (rule.value_re, why))
         try:
             self.rewrite_from = re.compile(rule.rewrite_from)
-        except Exception, why:
+        except Exception as why:
             raise InvalidPatternException(
                 "Error in '%s': %s" % (rule.rewrite_from, why))
         self.rewrite_to = rule.rewrite_to

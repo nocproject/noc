@@ -16,7 +16,7 @@ import cachetools
 import esm
 from pyparsing import *
 # NOC modules
-from rulelookup import RuleLookup
+from noc.services.classifier.rulelookup import RuleLookup
 
 
 logger = logging.getLogger(__name__)

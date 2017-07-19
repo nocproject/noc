@@ -8,12 +8,11 @@
 
 # NOC modules
 import datetime
-import os
 # Django modules
 from django.http import HttpResponse
 from django.contrib.auth.models import Group
 # NOC modules
-from noc.settings import config
+from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged
@@ -34,13 +33,10 @@ class DesktopApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         # Login restrictions
-        self.restrict_to_group = self.get_group(
-            config.get("authentication", "restrict_to_group"))
-        self.single_session_group = self.get_group(
-            config.get("authentication", "single_session_group"))
-        self.mutual_exclusive_group = self.get_group(
-            config.get("authentication", "mutual_exclusive_group"))
-        self.idle_timeout = config.getint("authentication", "idle_timeout")
+        self.restrict_to_group = self.get_group(config.login.restrict_to_group)
+        self.single_session_group = self.get_group(config.login.single_session_group)
+        self.mutual_exclusive_group = self.get_group(config.login.mutual_exclusive_group)
+        self.idle_timeout = config.login.idle_timeout
 
     def get_group(self, name):
         """
@@ -61,7 +57,7 @@ class DesktopApplication(ExtApplication):
         Get theme for request
         """
         user = request.user
-        language = self.service.config.language
+        language = config.language
         if user.is_authenticated:
             try:
                 profile = user.get_profile()
@@ -77,12 +73,14 @@ class DesktopApplication(ExtApplication):
         Render application root template
         """
         cp = CPClient()
-        ext_apps = [a for a in self.site.apps
-                    if isinstance(self.site.apps[a], ExtApplication) or\
-                    isinstance(self.site.apps[a], ModelApplication)]
+        ext_apps = [
+            a for a in self.site.apps
+            if isinstance(self.site.apps[a],
+                          (ExtApplication, ModelApplication))
+        ]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings
-        favicon_url = config.get("customization", "favicon_url")
+        favicon_url = config.customization.favicon_url
         if favicon_url.endswith(".png"):
             favicon_mime = "image/png"
         elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
@@ -95,22 +93,21 @@ class DesktopApplication(ExtApplication):
             enable_search = False
         setup = {
             "system_uuid": cp.system_uuid,
-            "installation_name": config.get("customization",
-                                            "installation_name"),
-            "logo_url": config.get("customization", "logo_url"),
-            "logo_width": config.get("customization", "logo_width"),
-            "logo_height": config.get("customization", "logo_height"),
+            "installation_name": config.installation_name,
+            "logo_url": config.customization.logo_url,
+            "logo_width": config.customization.logo_width,
+            "logo_height": config.customization.logo_height,
             "brand": get_brand(),
-            "branding_color": config.get("customization", "branding_color"),
-            "branding_background_color": config.get("customization", "branding_background_color"),
+            "branding_color": config.customization.branding_color,
+            "branding_background_color": config.customization.branding_background_color,
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
-            "debug_js": config.getboolean("main", "debug_js"),
-            "install_collection": config.getboolean("develop", "install_collection"),
-            "enable_gis_base_osm": config.getboolean("gis", "enable_osm"),
-            "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
-            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
-            "trace_extjs_events": config.getboolean("main", "trace_extjs_events"),
+            "debug_js": False,
+            "install_collection": config.web.install_collection,
+            "enable_gis_base_osm": config.gis.enable_osm,
+            "enable_gis_base_google_sat": config.gis.enable_google_sat,
+            "enable_gis_base_google_roadmap": config.gis.enable_google_roadmap,
+            "trace_extjs_events": False,
             "preview_theme": "midnight",
             "enable_search": enable_search
         }
@@ -288,7 +285,7 @@ class DesktopApplication(ExtApplication):
         """
         uid = request.user.id
         r = dict((r.key, r.value)
-            for r in UserState.objects.filter(user_id=uid))
+                 for r in UserState.objects.filter(user_id=uid))
         return r
 
     @view(method=["DELETE"], url="^state/(?P<name>.+)/$",
@@ -324,12 +321,12 @@ class DesktopApplication(ExtApplication):
             if s:
                 s.value = value
             else:
-                s = UserState(user_id=uid, key=name, value = value)
+                s = UserState(user_id=uid, key=name, value=value)
             s.save()
         return True
 
     @view(url="^favapps/$", method=["GET"],
-        access=PermitLogged(), api=True)
+          access=PermitLogged(), api=True)
     def api_favapps(self, request):
         favapps = [f.app for f in
                    Favorites.objects.filter(
@@ -348,8 +345,7 @@ class DesktopApplication(ExtApplication):
         cp = CPClient()
         return {
             "version": get_version(),
-            "installation": config.get("customization",
-                                       "installation_name"),
+            "installation": config.installation_name,
             "system_id": cp.system_uuid,
             "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
         }

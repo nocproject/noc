@@ -3,21 +3,20 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
-from optparse import make_option
 import socket
 from collections import defaultdict
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
-from syslogserver import SyslogServer
+from noc.services.syslogcollector.syslogserver import SyslogServer
 
 
 class SyslogCollectorService(Service):
@@ -42,13 +41,13 @@ class SyslogCollectorService(Service):
     def on_activate(self):
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
-        self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
+        self.fmwriter = self.open_rpc("fmwriter", pool=config.pool)
         # Set event listeners
         # self.subscribe("objmapchange.%(pool)s",
         #                self.on_object_map_change)
         # Listen sockets
         server = SyslogServer(service=self)
-        for l in [self.config.listen_syslog]:
+        for l in config.syslogcollector.listen.split(","):
             if ":" in l:
                 addr, port = l.split(":")
             else:
@@ -57,10 +56,10 @@ class SyslogCollectorService(Service):
                              addr, port)
             try:
                 server.listen(port, addr)
-            except socket.error, why:
+            except socket.error as e:
                 self.logger.error(
                     "Failed to start syslog server at %s:%s: %s",
-                    addr, port, why
+                    addr, port, e
                 )
         server.start()
         # Send spooled messages every 250ms
@@ -113,7 +112,7 @@ class SyslogCollectorService(Service):
             "object": object,
             "data": {
                 "source": "syslog",
-                "collector": self.config.pool,
+                "collector": config.pool,
                 "message": message
             }
         }]
@@ -133,9 +132,7 @@ class SyslogCollectorService(Service):
         Periodic task to request object mappings
         """
         self.logger.debug("Requesting object mappings")
-        sm = yield self.omap.get_syslog_mappings(
-            self.config.pool
-        )
+        sm = yield self.omap.get_syslog_mappings(config.pool)
         if sm != self.source_map:
             self.logger.debug("Setting object mappings to: %s", sm)
             self.source_map = sm
@@ -154,27 +151,12 @@ class SyslogCollectorService(Service):
             ", ".join("%s: %s" % (s, self.invalid_sources[s])
                       for s in self.invalid_sources)
         )
-        # Generate invalid event source events
-        # t = int(time.time())
-        # for s in self.invalid_sources:
-        #     self.messages += [{
-        #         "ts": t,
-        #         "object": 0,  # @todo: Pass proper id
-        #         "data": {
-        #             "source": "system",
-        #             "component": "noc-activator",
-        #             "activator": self.config.pool,
-        #             "collector": self.config.pool,
-        #             "type": "Invalid Event Source",
-        #             "ip": s,
-        #             "count": self.invalid_sources[s]
-        #         }
-        #     }]
         self.invalid_sources = defaultdict(int)
 
     def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
         self.ioloop.add_callback(self.get_object_mappings)
+
 
 if __name__ == "__main__":
     SyslogCollectorService().start()

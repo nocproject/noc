@@ -12,7 +12,7 @@ import subprocess
 # NOC modules
 from noc.lib.registry import Registry
 from noc.core.fileutils import copy_file
-from noc.settings import config
+from noc.config import config
 
 
 class VCSRegistry(Registry):
@@ -24,7 +24,7 @@ class VCSRegistry(Registry):
     classname = "VCS"
 
     def get(self, repo):
-        return self[config.get("cm", "vcs_type")](repo)
+        return self[config.cm.vcs_type](repo)
 
 
 vcs_registry = VCSRegistry()

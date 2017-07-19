@@ -88,7 +88,8 @@ class MODiscoveryJob(PeriodicJob):
         }, upsert=True)
 
     def can_run(self):
-        return self.object.is_managed
+        # @todo: Make configurable
+        return self.object.is_managed and self.object.get_status()
 
     @contextlib.contextmanager
     def check_timer(self, name):

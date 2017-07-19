@@ -21,13 +21,6 @@ from noc.core.script.loader import loader
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--config",
-            action="store",
-            dest="config",
-            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Configuration path"
-        )
         # Output options
         out_group = parser.add_mutually_exclusive_group()
         out_group.add_argument(
@@ -70,7 +63,7 @@ class Command(BaseCommand):
             help="Arguments passed to script"
         )
 
-    def handle(self, config, script, object_name, arguments, pretty,
+    def handle(self, script, object_name, arguments, pretty,
                yaml, use_snmp, beef,
                *args, **options):
         # Get object

@@ -8,8 +8,9 @@
 
 # Python module
 import math
+from noc.config import config
 
-TS = 256  # Tile size 256x256
+TS = config.gis.tile_size
 MIN_ZOOM = 0
 MAX_ZOOM = 18
 PI = math.pi

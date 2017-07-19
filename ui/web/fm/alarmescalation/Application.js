@@ -51,6 +51,14 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                     uiStyle: "small"
                 },
                 {
+                    name: "max_escalation_retries",
+                    xtype: "numberfield",
+                    fieldLabel: __("Escalation Retries"),
+                    allowBlank: false,
+                    min: 0,
+                    uiStyle: "small"
+                },
+                {
                     name: "alarm_classes",
                     xtype: "gridfield",
                     fieldLabel: __("Alarm Classes"),

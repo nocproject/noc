@@ -20,12 +20,15 @@ def linked_object(object, interface):
     Returns managed object linked to object:interface or None
     """
     try:
-        cn = object.profile().convert_interface_name(interface)
-    except Exception, why:
+        cn = object.profile.convert_interface_name(interface)
+    except Exception as e:
         logger.error("Cannot convert interface name '%s': %s",
-                     interface, why)
+                     interface, e)
         return None
-    iface = Interface.objects.filter(managed_object=object.id, name=cn).first()
+    iface = Interface.objects.filter(
+        managed_object=object.id,
+        name=cn
+    ).first()
     if not iface:
         logger.debug("Interface %s@%s is not found",
                      object.name, cn)

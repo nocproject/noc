@@ -14,9 +14,10 @@ import itertools
 from noc.core.service.client import open_sync_rpc
 from noc.core.script.loader import loader
 from noc.core.service.loader import get_dcs
+from noc.config import config
 
-CALLING_SERVICE = "MTManager"
-DEFAULT_IDLE_TIMEOUT = 60
+CALLING_SERVICE = config.script.calling_service
+DEFAULT_IDLE_TIMEOUT = config.script.caller_timeout
 
 
 class Session(object):

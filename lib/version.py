@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NOC components versions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,9 +12,9 @@ import sys
 import subprocess
 import platform
 # NOC modules
-from noc.core.config.base import config
+from noc.config import config
 
-DEFAULT_BRAND = "NOC"
+DEFAULT_BRAND = config.brand
 BRAND_PATH = "custom/BRAND"
 
 # Version cache

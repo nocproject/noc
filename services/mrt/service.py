@@ -14,7 +14,7 @@ from mrt import MRTRequestHandler
 
 class MRTService(Service):
     name = "mrt"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
     traefik_backend = "mrt"
     traefik_frontend_rule = "PathPrefix:/api/mrt"
 

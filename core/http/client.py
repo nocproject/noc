@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
+from __future__ import absolute_import
 import socket
 import urlparse
 import threading
@@ -22,28 +22,28 @@ import cachetools
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
+from .proxy import SYSTEM_PROXIES
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_CONNECT_TIMEOUT = 10
-DEFAULT_REQUEST_TIMEOUT = 3600
-DEFAULT_USER_AGENT = "NOC"
-DEFAULT_BUFFER_SIZE = 128 * 1024
-DEFAULT_MAX_REDIRECTS = 5
+DEFAULT_CONNECT_TIMEOUT = config.http_client.connect_timeout
+DEFAULT_REQUEST_TIMEOUT = config.http_client.request_timeout
+DEFAULT_USER_AGENT = config.http_client.user_agent
+DEFAULT_BUFFER_SIZE = config.http_client.buffer_size
+DEFAULT_MAX_REDIRECTS = config.http_client.max_redirects
 
 ERR_TIMEOUT = 599
 ERR_READ_TIMEOUT = 598
 ERR_PARSE_ERROR = 597
 
-NS_CACHE_SIZE = 1000
-RESOLVER_TTL = 3
+NS_CACHE_SIZE = config.http_client.ns_cache_size
+RESOLVER_TTL = config.http_client.resolver_ttl
 
 DEFAULT_PORTS = {
-    "http": 80,
-    "https": 443
+    "http": config.http_client.http_port,
+    "https": config.http_client.https_port
 }
-
-SYSTEM_PROXIES = {}
 
 # Methods require Content-Length header
 REQUIRE_LENGTH_METHODS = set(["POST", "PUT"])
@@ -82,7 +82,7 @@ def fetch(url, method="GET",
           max_buffer_size=DEFAULT_BUFFER_SIZE,
           follow_redirects=False,
           max_redirects=DEFAULT_MAX_REDIRECTS,
-          validate_cert=False,
+          validate_cert=config.http_client.validate_certs,
           allow_proxy=False,
           proxies=None,
           user=None,
@@ -338,7 +338,7 @@ def fetch_sync(url, method="GET",
                max_buffer_size=DEFAULT_BUFFER_SIZE,
                follow_redirects=False,
                max_redirects=DEFAULT_MAX_REDIRECTS,
-               validate_cert=False,
+               validate_cert=config.http_client.validate_certs,
                allow_proxy=False,
                proxies=None,
                user=None,
@@ -368,28 +368,3 @@ def fetch_sync(url, method="GET",
     ioloop = tornado.ioloop.IOLoop()
     ioloop.run_sync(_fetch)
     return r[0]
-
-
-def setup_proxies():
-    def get_addr(a):
-        aa = a.split("://", 1)[1]
-        if aa.endswith("/"):
-            aa = aa[:-1]
-        host, port = aa.split(":")
-        return host, int(port)
-
-    http_proxy = os.environ.get("http_proxy")
-    if http_proxy:
-        SYSTEM_PROXIES["http"] = get_addr(http_proxy)
-    https_proxy = os.environ.get("https_proxy")
-    if https_proxy:
-        SYSTEM_PROXIES["https"] = get_addr(https_proxy)
-    if not SYSTEM_PROXIES:
-        logger.debug("No proxy servers configures")
-    else:
-        logger.debug("Using proxy servers: %s",
-                     ", ".join("%s = %s" % (
-                         k, SYSTEM_PROXIES[k]
-                     ) for k in sorted(SYSTEM_PROXIES)))
-
-setup_proxies()

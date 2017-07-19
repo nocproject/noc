@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MongoDB wrappers
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,14 +18,14 @@ import mongoengine
 import six
 import bson
 # NOC modules
-from noc.core.config.base import config
+from noc.config import config
 from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 
 # Connect to the database
-RETRIES = 20
-TIMEOUT = 3
+RETRIES = config.mongo.retries
+TIMEOUT = config.mongo.timeout
 
 for i in range(RETRIES):
     try:
@@ -261,10 +261,9 @@ class RawDictField(DictField):
                                   "RawDictField")
 
     def to_python(self, value):
-        return dict([(k.replace(ESC1, ".").replace(ESC2, "$").replace(u"\uff0e", "."), v)
-            for k, v in value.items()])
+        return dict((k.replace(ESC1, ".").replace(ESC2, "$").replace(u"\uff0e", "."), v)
+                    for k, v in value.items())
 
     def to_mongo(self, value):
-        return dict([(k.replace(".", ESC1).replace("$", ESC2), v)
-            for k, v in value.items()])
-
+        return dict((k.replace(".", ESC1).replace("$", ESC2), v)
+                    for k, v in value.items())

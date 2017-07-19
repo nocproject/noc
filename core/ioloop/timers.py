@@ -11,9 +11,10 @@ import os
 import random
 ## Third-party modules
 from tornado.ioloop import IOLoop, PeriodicCallback
+from noc.config import config
 
 
-if os.environ.get("NOC_LIBUV"):
+if config.features.use_uvlib:
     import pyuv
 
     class PeriodicOffsetCallback(object):

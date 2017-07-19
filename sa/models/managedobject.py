@@ -70,7 +70,6 @@ MANAGEDOBJECT_CACHE_VERSION = 2
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
-CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 
@@ -218,7 +217,7 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     # CM
-    config = GridVCSField("config", mirror=CONFIG_MIRROR)
+    config = GridVCSField("config", mirror=config.path.config_mirror_path)
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                      blank=True, null=True)
@@ -563,7 +562,7 @@ class ManagedObject(Model):
         cache.delete("managedobject-id-%s" % self.id,
                      version=MANAGEDOBJECT_CACHE_VERSION)
         cache.delete_many(deleted_cache_keys)
-        # Clear alarm when necessary
+        # Handle became unmanaged
         if (
             not self.initial_data["id"] is None and
             "is_managed" in self.changed_fields and
@@ -573,10 +572,16 @@ class ManagedObject(Model):
             from noc.fm.models.activealarm import ActiveAlarm
             for aa in ActiveAlarm.objects.filter(managed_object=self.id):
                 aa.clear_alarm("Management is disabled")
+            # Clear discovery id
+            from noc.inv.models.discoveryid import DiscoveryID
+            DiscoveryID.clean_for_object(self)
 
     def on_delete(self):
         # Rebuild selector cache
         SelectorCache.refresh()
+        # Reset discovery cache
+        from noc.inv.models.discoveryid import DiscoveryID
+        DiscoveryID.clean_for_object(self)
 
     def sync_ipam(self):
         """

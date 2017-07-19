@@ -18,7 +18,7 @@ from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.lib.forms import *
-from noc.settings import config
+from noc.config import config
 from noc.core.translation import ugettext as _
 
 
@@ -157,7 +157,7 @@ class ToolsAppplication(Application):
                 if form.cleaned_data["source_address"]:
                     opts += ["-b", form.cleaned_data["source_address"]]
                 pipe = subprocess.Popen(
-                    [config.get("path", "dig")] + opts + [
+                    [config.path.dig] + opts + [
                         "axfr", "@%s" % form.cleaned_data["ns"], form.cleaned_data["zone"]],
                     shell=False, stdout=subprocess.PIPE).stdout
                 data = pipe.read()

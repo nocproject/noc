@@ -10,14 +10,16 @@
 import urllib
 # Third-party modules
 import ujson
+import six
 # NOC modules
-from noc.core.config.base import config
+from noc.config import config
 from noc.core.http.client import fetch_sync
+from noc.config import config
 
 
 class InfluxDBClient(object):
-    REQUEST_TIMEOUT = 600
-    CONNECT_TIMEOUT = 10
+    REQUEST_TIMEOUT = config.influxdb.request_timeout
+    CONNECT_TIMEOUT = config.influxdb.connect_timeout
 
     def __init__(self):
         pass
@@ -27,7 +29,7 @@ class InfluxDBClient(object):
         Perform queries and return result
         :param query: String or list of queries
         """
-        if not isinstance(query, basestring):
+        if not isinstance(query, six.string_types):
             query = ";".join(query)
         if isinstance(query, unicode):
             query = query.encode("utf-8")

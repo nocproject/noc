@@ -14,16 +14,13 @@ from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.reboots import Reboots
 from noc.core.etl.bi.stream import Stream
+from noc.config import config
 
 
 class RebootsExtractor(BaseExtractor):
     name = "reboots"
-    extract_delay = int(os.environ.get(
-        "NOC_BI_EXTRACT_DELAY_REBOOTS", 3600
-    ))
-    clean_delay = int(os.environ.get(
-        "NOC_BI_CLEAN_DELAY_REBOOTS", 86400
-    ))
+    extract_delay = config.bi.extract_delay_reboots
+    clean_delay = config.bi.clean_delay_reboots
 
     def __init__(self, prefix, start, stop):
         super(RebootsExtractor, self).__init__(prefix, start, stop)

@@ -10,7 +10,7 @@
 import datetime
 # NOC modules
 from noc.lib.scheduler.autointervaljob import AutoIntervalJob
-from noc.settings import config
+from noc.config import config
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
@@ -24,9 +24,9 @@ class ArchiveJob(AutoIntervalJob):
     transaction = True
 
     def handler(self):
-        w = config.getint("fm", "active_window")
-        woa = config.getint("fm", "keep_events_wo_alarm")
-        wa = config.getint("fm", "keep_events_with_alarm")
+        w = config.fm.active_window
+        woa = config.fm.keep_events_wo_alarm
+        wa = config.fm.keep_events_with_alarm
         border = datetime.datetime.now() - datetime.timedelta(seconds=w)
         # Drop all events with event class action L
         to_drop = [c.id for c in EventClass.objects.filter(action="L")]
