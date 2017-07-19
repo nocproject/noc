@@ -255,7 +255,7 @@ class Config(BaseConfig):
         batch_size = IntParameter(default=2500)
         metrics_buffer = IntParameter(default=50000)
         read_from = StringParameter(default="pmwriter")
-        write_to = StringParameter(default="influxdb")
+        write_to = ServiceParameter(service="influxdb", wait=True)
 
     class chwriter(ConfigSection):
         batch_size = IntParameter(default=50000)
