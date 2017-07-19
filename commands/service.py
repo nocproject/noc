@@ -24,7 +24,7 @@ class Command(BaseCommand):
             help="Service names"
         )
 
-    def handle(self, config, services=None, *args, **options):
+    def handle(self, services=None, *args, **options):
         service = get_service()
 
         out = [["Service", "ID", "Address"]]

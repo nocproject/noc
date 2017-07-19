@@ -41,7 +41,7 @@ class Command(BaseCommand):
             help="Arguments passed to RPC calls"
         )
 
-    def handle(self, config, rpc, arguments, pretty, hints,
+    def handle(self, rpc, arguments, pretty, hints,
                *args, **options):
         service, method = rpc[0].split(".", 1)
         try:
