@@ -18,7 +18,6 @@ command="{{ consul_template_bin_path }}/consul-template"
 command_args="-config {{consul_template_config_dir}}/ -pid-file=${consul_template_pidfile} -dedup -kill-signal=SIGTERM &"
 start_precmd="${name}_prestart"
 extra_commands="reload"
-reload_cmd=":"
 
 consul_template_prestart()
 {

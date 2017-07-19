@@ -16,6 +16,7 @@ load_rc_config $name
 restart_cmd=consul_restart
 start_cmd=consul_start
 stop_cmd=consul_stop
+extra_commands="reload"
 
 consul_start() {
     echo "Starting ${name}."
