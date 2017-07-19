@@ -8,9 +8,7 @@ pattern = "noc-activator"
   {{ with node -}}
     {{range .Services -}}
         {{ if .Service | contains "activator" -}}
-            {{range $service:= service (printf "%s~_agent|any" .Service) -}}
-                "http://{{$service.Address}}:{{$service.Port}}/mon/",
-            {{- end}}
+                "http://{{.Address}}:{{.Port}}/mon/",
         {{- end}}
      {{- end}}
   {{- end}}

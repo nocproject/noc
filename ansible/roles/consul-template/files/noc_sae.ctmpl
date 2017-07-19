@@ -8,9 +8,7 @@ pattern = "noc-sae"
   {{ with node -}}
     {{range .Services -}}
         {{ if eq .Service "sae" -}}
-            {{range $service:= service (printf "%s~_agent|any" .Service) -}}
-                "http://{{$service.Address}}:{{$service.Port}}/mon/",
-            {{- end}}
+            "http://{{$service.Address}}:{{$service.Port}}/mon/",
         {{- end}}
      {{- end}}
   {{- end}}
