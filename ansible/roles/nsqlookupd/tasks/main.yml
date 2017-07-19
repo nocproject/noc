@@ -19,6 +19,17 @@
   tags:
     - config
 
+- name: create nsqd log dif
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  when: "'FreeBSD' in ansible_system"
+  with_items:
+    - "{{nsd_log_dir}}"
+
 - name: Enable nsqlookupd system service
   service:
     name: "nsqlookupd"

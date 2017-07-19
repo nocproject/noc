@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Clickhouse Dictionaries
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Clickhouse Dictionaries
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import operator
 import itertools
 import os
-## Third-party modules
+# Third-party modules
 import six
 import cachetools
-## NOC modules
-from fields import BaseField
-from noc.core.config.base import config
+# NOC modules
+from .fields import BaseField
 
 __all__ = ["Dictionary"]
 
@@ -65,7 +65,7 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
     def iter_cls(cls):
         """
         Generator yielding all known dictionaries
-        :return: 
+        :return:
         """
         for f in os.listdir("core/bi/dictionaries"):
             if not f.endswith(".py") or f.startswith("_"):
@@ -165,7 +165,7 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
                 current = d["id"] + 1
             cls._seq = itertools.count(current)
         # Insert
-        record["id"] = cls._seq.next()
+        record["id"] = next(cls._seq)
         c.insert(record)
         return record["id"]
 

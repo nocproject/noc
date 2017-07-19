@@ -24,16 +24,16 @@ from noc.lib.nosql import get_db
 from noc.core.handler import get_handler
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.perf import metrics
-
+from noc.config import config
 
 class Scheduler(object):
     COLLECTION_BASE = "noc.schedules."
 
-    SUBMIT_THRESHOLD_FACTOR = 10
-    MAX_CHUNK_FACTOR = 1
-    UPDATES_PER_CHECK = 4
+    SUBMIT_THRESHOLD_FACTOR = config.scheduler.submit_threshold_factor
+    MAX_CHUNK_FACTOR = config.scheduler.max_chunk_factor
+    UPDATES_PER_CHECK = config.scheduler.updates_per_check
 
-    CACHE_DEFAULT_TTL = 7 * 24 * 3600
+    CACHE_DEFAULT_TTL = config.scheduler.cache_default_ttl
 
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,

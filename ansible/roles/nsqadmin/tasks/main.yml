@@ -11,6 +11,17 @@
     - config
     - telegraf
 
+- name: create nsqd log dif
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  when: "'FreeBSD' in ansible_system"
+  with_items:
+    - "{{nsd_log_dir}}"
+
 - name: install nsqadmin config
   template:
     src: etc/config/nsqadmin.conf.j2

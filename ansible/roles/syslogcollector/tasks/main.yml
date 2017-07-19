@@ -1,11 +1,2 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
-
-- name: Install syslogcollector monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-syslogcollector.conf.j2"
-    dest: "{{ telegraf_confd_path }}/noc-syslogcollector.conf"
-  notify: reload telegraf
-  tags:
-    - config
-    - telegraf

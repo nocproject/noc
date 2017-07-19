@@ -13,16 +13,17 @@ import logging
 import ujson
 # NOC modules
 from noc.core.http.client import fetch_sync
+from noc.config import config
 
 
 logger = logging.getLogger(__name__)
 
-NSQD_URL = "http://127.0.0.1:4151/"
+NSQD_URL = "http://%s:%s/" % (config.nsqd.addresses[0].host, config.nsqd.addresses[0].port)
 NSQD_PUB_URL = NSQD_URL + "pub"
 NSQD_MPUB_URL = NSQD_URL + "mpub"
 
-NSQD_CONNECT_TIMEOUT = 3
-NSQD_REQUEST_TIMEOUT = 30
+NSQD_CONNECT_TIMEOUT = config.nsqd.connect_timeout
+NSQD_REQUEST_TIMEOUT = config.nsqd.request_timeout
 
 
 def pub(topic, data):

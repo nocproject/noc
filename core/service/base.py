@@ -13,7 +13,6 @@ import sys
 import logging
 import signal
 import uuid
-import random
 import argparse
 import functools
 import socket
@@ -29,8 +28,8 @@ import nsq
 import ujson
 import threading
 # NOC modules
+from noc.config import config
 from noc.core.debug import excepthook, error_report
-from .config import Config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -44,6 +43,7 @@ from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
+from noc.config import config
 
 
 class Service(object):
@@ -90,7 +90,7 @@ class Service(object):
     # i.e. PathPrefix:/api/<name>
     traefik_frontend_rule = None
 
-    LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
+    LOG_FORMAT = config.log_format
 
     LOG_LEVELS = {
         "critical": logging.CRITICAL,
@@ -100,8 +100,8 @@ class Service(object):
         "debug": logging.DEBUG
     }
 
-    NSQ_PUB_RETRY_DELAY = 0.1
-    CH_CHUNK_SIZE = 4000
+    NSQ_PUB_RETRY_DELAY = config.nsqd.pub_retry_delay
+    CH_CHUNK_SIZE = config.nsqd.ch_chunk_size
 
     class RegistrationError(Exception):
         pass
@@ -113,7 +113,6 @@ class Service(object):
         tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
         self.ioloop = None
         self.logger = None
-        self.config = None
         self.service_id = str(uuid.uuid4())
         self.perf_metrics = metrics
         self.executors = {}
@@ -145,24 +144,10 @@ class Service(object):
         Apply additional parser arguments
         """
         parser.add_argument(
-            "--env",
-            action="store",
-            dest="env",
-            default=os.environ.get("NOC_ENV", ""),
-            help="NOC environment name"
-        )
-        parser.add_argument(
-            "--dc",
-            action="store",
-            dest="dc",
-            default=os.environ.get("NOC_DC", ""),
-            help="NOC datacenter name"
-        )
-        parser.add_argument(
             "--node",
             action="store",
             dest="node",
-            default=os.environ.get("NOC_NODE", ""),
+            default=config.node,
             help="NOC node name"
         )
         parser.add_argument(
@@ -170,7 +155,7 @@ class Service(object):
             action="store",
             choices=list(self.LOG_LEVELS),
             dest="loglevel",
-            default=os.environ.get("NOC_LOGLEVEL", "info"),
+            default=config.loglevel,
             help="Logging level"
         )
         parser.add_argument(
@@ -178,16 +163,8 @@ class Service(object):
             action="store",
             dest="instance",
             type=int,
-            default=0,
+            default=config.instance,
             help="Instance number"
-        )
-        parser.add_argument(
-            "--numprocs",
-            action="store",
-            dest="numprocs",
-            type=int,
-            default=os.environ.get("NOC_NUMPROCS", "1"),
-            help="Total instances"
         )
         parser.add_argument(
             "--debug",
@@ -197,31 +174,18 @@ class Service(object):
             help="Dump additional debugging info"
         )
         parser.add_argument(
-            "--config",
-            action="store",
-            dest="config",
-            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Configuration path"
-        )
-        parser.add_argument(
             "--dcs",
             action="store",
             dest="dcs",
             default=DEFAULT_DCS,
             help="Distributed Coordinated Storage URL"
         )
-        parser.add_argument(
-            "--listen",
-            action="store",
-            dest="listen",
-            help="Listen on that address and port"
-        )
         if self.pooled:
             parser.add_argument(
                 "--pool",
                 action="store",
                 dest="pool",
-                default=os.environ.get("NOC_POOL", ""),
+                default=config.pool,
                 help="NOC pool name"
             )
 
@@ -243,7 +207,7 @@ class Service(object):
         Create new or setup existing logger
         """
         if not loglevel:
-            loglevel = self.config.loglevel
+            loglevel = config.loglevel
         logger = logging.getLogger()
         if len(logger.handlers):
             # Logger is already initialized
@@ -252,13 +216,13 @@ class Service(object):
                 if isinstance(h, logging.StreamHandler):
                     h.stream = sys.stdout
                 h.setFormatter(fmt)
-            logging.root.setLevel(self.LOG_LEVELS[loglevel])
+            logging.root.setLevel(config.loglevel)
         else:
             # Initialize logger
             logging.basicConfig(
                 stream=sys.stdout,
                 format=self.LOG_FORMAT,
-                level=self.LOG_LEVELS[loglevel]
+                level=config.loglevel
             )
         self.logger = logging.getLogger(self.name)
         logging.captureWarnings(True)
@@ -266,7 +230,7 @@ class Service(object):
     def setup_translation(self):
         from noc.core.translation import set_translation, ugettext
 
-        set_translation(self.name, self.config.language)
+        set_translation(self.name, config.language)
         if self.use_jinja:
             from jinja2.defaults import DEFAULT_NAMESPACE
             if "_" not in DEFAULT_NAMESPACE:
@@ -296,13 +260,12 @@ class Service(object):
         """
         Set process title
         """
-        vars = {
+        v = {
             "name": self.name,
-            "instance": self.config.instance or "",
-            "pool": self.config.pool or ""
+            "instance": config.instance or "",
+            "pool": config.pool or ""
         }
-        vars.update(self.config._conf)
-        title = self.process_name % vars
+        title = self.process_name % v
         self.logger.debug("Setting process title to: %s", title)
         setproctitle.setproctitle(title)
 
@@ -315,13 +278,9 @@ class Service(object):
         options = parser.parse_args(sys.argv[1:])
         cmd_options = vars(options)
         args = cmd_options.pop("args", ())
-        self.listen = cmd_options["listen"]
         # Bootstrap logging with --loglevel
         self.setup_logging(cmd_options["loglevel"])
         self.log_separator()
-        # Read
-        self.config = Config(self, **cmd_options)
-        self.load_config()
         # Setup title
         self.set_proc_title()
         # Setup signal handlers
@@ -331,23 +290,22 @@ class Service(object):
         if self.pooled:
             self.logger.warn(
                 "Running service %s (pool: %s)",
-                self.name, self.config.pool
+                self.name, config.pool
             )
         else:
             self.logger.warn(
                 "Running service %s", self.name
             )
         try:
-            if os.environ.get("NOC_LIBUV"):
+            if config.features.use_uvlib:
                 from tornaduv import UVLoop
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
             # Initialize DCS
-            self.dcs = get_dcs(cmd_options["dcs"])
+            self.dcs = get_dcs(cmd_options["dcs"], self.ioloop)
             # Activate service
-            self.logger.warn("Activating service")
-            self.activate()
+            self.ioloop.add_callback(self.activate)
             self.logger.warn("Starting IOLoop")
             self.ioloop.start()
         except KeyboardInterrupt:
@@ -362,14 +320,11 @@ class Service(object):
         for cb, args, kwargs in self.close_callbacks:
             cb(*args, **kwargs)
         self.logger.warn("Service %s has been terminated", self.name)
-        self.die("")
 
     def load_config(self):
         """
         Reload config
         """
-        self.config.load(self.config.config)
-        self.setup_logging()
         if self.use_translation:
             self.setup_translation()
 
@@ -391,19 +346,16 @@ class Service(object):
         """
         if self.address and self.port:
             return self.address, self.port
-        if self.config.listen and not self.listen:
-            addr, port = self.config.listen.split(":")
-            port_tracker = self.config.instance
-        elif self.listen:
-            addr, port = self.listen.split(":")
-            port_tracker = 0
+        if config.listen:
+            addr, port = config.listen.split(":")
+            port_tracker = config.instance
         else:
             addr, port = "auto", 0
             port_tracker = 0
         if addr == "auto":
-            addr = os.environ.get("HOSTNAME", socket.gethostname())
+            addr = config.node
             self.logger.info("Autodetecting address: auto -> %s", addr)
-        addr = socket.gethostbyname(addr)
+        addr = config.node
         port = int(port) + port_tracker
         return addr, port
 
@@ -430,7 +382,7 @@ class Service(object):
         """
         return {
             "template_path": os.getcwd(),
-            "cookie_secret": "12345",
+            "cookie_secret": config.secret_key,
             "log_function": self.log_request
         }
 
@@ -438,6 +390,7 @@ class Service(object):
         """
         Initialize services before run
         """
+        self.logger.warn("Activating service")
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
             (r"^/metrics$", MetricsHandler, {"service": self}),
@@ -493,7 +446,7 @@ class Service(object):
         self.is_active = False
         self.logger.info("Deactivating")
         # Shutdown API
-        self.logger.info("Shopping API")
+        self.logger.info("Stopping API")
         self.server.stop()
         # Release registration
         if self.dcs:
@@ -551,7 +504,7 @@ class Service(object):
         addr, port = self.get_service_address()
         r = yield self.dcs.register(
             self.name, addr, port,
-            pool=self.config.pool or None,
+            pool=config.pool or None,
             lock=self.get_leader_lock_name(),
             tags=self.get_register_tags()
         )
@@ -572,12 +525,12 @@ class Service(object):
     @tornado.gen.coroutine
     def acquire_slot(self):
         if self.pooled:
-            name = "%s-%s" % (self.name, self.config.pool)
+            name = "%s-%s" % (self.name, config.pool)
         else:
             name = self.name
         slot_number, total_slots = yield self.dcs.acquire_slot(
             name,
-            self.config.global_n_instances
+            config.global_n_instances
         )
         raise tornado.gen.Return((slot_number, total_slots))
 
@@ -605,39 +558,25 @@ class Service(object):
         r = {
             "status": self.get_mon_status(),
             "service": self.name,
-            "instance": str(self.config.instance),
-            "node": self.config.node,
-            "dc": self.config.dc,
+            "instance": str(config.instance),
+            "node": config.node,
             "pid": self.pid,
             # Current process uptime
             "uptime": time.time() - self.start_time
         }
         if self.pooled:
-            r["pool"] = self.config.pool
+            r["pool"] = config.pool
         if self.executors:
             for x in self.executors:
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
         return r
 
-    def resolve_service(self, service, n=None):
-        """
-        Resolve service
-        Returns n randomly selected choices
-        @todo: Datacenter affinity
-        """
-        n = n or self.config.rpc_choose_services
-        candidates = self.config.get_service(service)
-        if not candidates:
-            return []
-        else:
-            return random.sample(candidates, min(n, len(candidates)))
-
     def iter_rpc_retry_timeout(self):
         """
         Yield timeout to wait after unsuccessful RPC connection
         """
-        for t in self.config.rpc_retry_timeout.split(","):
+        for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
     def subscribe(self, topic, channel, handler, raw=False, **kwargs):
@@ -683,7 +622,7 @@ class Service(object):
         metric_decode_fail = "nsq_msg_decode_fail_%s" % t
         metric_processed = "nsq_msg_processed_%s" % t
         metric_deferred = "nsq_msg_deferred_%s" % t
-        lookupd = self.config.get_service("nsqlookupd")
+        lookupd = [str(a) for a in config.nsqlookupd.addresses]
         self.logger.info("Subscribing to %s/%s (lookupd: %s)",
                          topic, channel, ", ".join(lookupd))
         self.nsq_readers[handler] = NSQReader(
@@ -697,7 +636,7 @@ class Service(object):
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
+            self.nsq_writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
         return self.nsq_writer
 
     def pub(self, topic, data):
@@ -748,8 +687,13 @@ class Service(object):
         """
         executor = self.executors.get(name)
         if not executor:
-            xt = "%s_threads" % name
-            executor = ThreadPoolExecutor(self.config[xt], name=name)
+            xt = "%s.%s_threads" % (self.name, name)
+            max_threads = config.get_parameter(xt)
+            self.logger.info(
+                "Starting threadpool executor %s (up to %d threads)",
+                name, max_threads
+            )
+            executor = ThreadPoolExecutor(max_threads, name=name)
             self.executors[name] = executor
         return executor
 
@@ -810,7 +754,7 @@ class Service(object):
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:
-            return self.leader_lock_name % self.config
+            return self.leader_lock_name % {"pool": config.pool}
         else:
             return None
 

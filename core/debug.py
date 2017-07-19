@@ -19,7 +19,7 @@ import uuid
 # Third-party modules
 import ujson
 # NOC modules
-from noc.settings import TRACEBACK_REVERSE, SENTRY_URL
+from noc.config import config
 from noc.lib.version import get_branch, get_tip
 from noc.core.fileutils import safe_rewrite
 from noc.core.perf import metrics
@@ -30,18 +30,18 @@ if not logger.handlers:
 
 
 # CP error reporting
-ENABLE_CP = True
-CP_NEW = "var/cp/crashinfo/new"
+ENABLE_CP = config.features.cp
+CP_NEW = config.path.cp_new
 CP_SET_UID = None
 
 SERVICE_NAME = os.path.relpath(sys.argv[0] or sys.executable)
 
 # Sentry error reporting
-if SENTRY_URL:
+if config.features.sentry:
     from raven import Client as RavenClient
 
     raven_client = RavenClient(
-        SENTRY_URL,
+        config.sentry.url,
         processors=(
             'raven.processors.SanitizePasswordsProcessor',
         ),
@@ -168,7 +168,7 @@ def get_execution_frames(frame):
     return frames
 
 
-def format_frames(frames, reverse=TRACEBACK_REVERSE):
+def format_frames(frames, reverse=config.traceback.reverse):
     def format_source(lineno, lines):
         r = []
         for l in lines:
@@ -225,7 +225,7 @@ def check_fatal_errors(t, v):
         die("Improperly configured: %s", v)
 
 
-def get_traceback(reverse=TRACEBACK_REVERSE, fp=None):
+def get_traceback(reverse=config.traceback.reverse, fp=None):
     t, v, tb = sys.exc_info()
     try:
         check_fatal_errors(t, v)
@@ -273,12 +273,12 @@ def excepthook(t, v, tb):
     sys.stdout.flush()
 
 
-def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
+def error_report(reverse=config.traceback.reverse, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
     metrics["errors"] += 1
-    if SENTRY_URL:
+    if config.sentry.url:
         try:
             raven_client.captureException(
                 fingerprint=[fp]

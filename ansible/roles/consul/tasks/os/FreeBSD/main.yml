@@ -9,4 +9,4 @@
 
 - name: set consul bind_address
   set_fact:
-    consul_bind_address: "{{ lookup('env','CONSUL_BIND_ADDRESS') | default(hostvars[inventory_hostname]['ansible_'+ consul_iface ]['ipv4'][0]['address'], true) }}"
+    consul_bind_address: "{{ lookup('env','CONSUL_BIND_ADDRESS') | default(hostvars[ansible_nodename]['ansible_'+ consul_iface ]['ipv4'][0]['address'], true) }}"

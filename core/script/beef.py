@@ -15,6 +15,7 @@ import glob
 import datetime
 # NOC modules
 from noc.core.fileutils import safe_rewrite
+from noc.config import config
 
 
 class Beef(object):
@@ -25,7 +26,7 @@ class Beef(object):
         "date", "private", "guid", "type"]
 
     type_signature = "script::beef"
-    BEEF_ROOT = "var/beef/sa"
+    BEEF_ROOT = config.path.beef_prefix
 
     def __init__(self, script=None):
         self.guid = str(uuid.uuid4())

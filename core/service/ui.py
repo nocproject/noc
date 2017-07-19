@@ -15,6 +15,7 @@ import logging
 import tornado.web
 # NOC modules
 from .base import Service
+from noc.config import config
 
 logger = logging.getLogger("ui")
 
@@ -32,7 +33,7 @@ class UIHandler(tornado.web.RequestHandler):
                                   self.name, "index.html")
         self.set_header("Cache-Control", "no-cache; must-revalidate")
         self.set_header("Expires", "0")
-        language = self.service.config.language
+        language = config.login.language
         return self.render(
             index_path,
             hashed=self.hashed,

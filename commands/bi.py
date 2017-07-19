@@ -18,16 +18,17 @@ from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.clickhouse.dictionary import Dictionary
+from noc.config import config
 
 
 class Command(BaseCommand):
-    DATA_PREFIX = "var/bi"
-    DICT_XML_PREFIX = "var/bi-dict"
-    DICT_DATA_PREFIX = "var/bi-dict-data"
+    DATA_PREFIX = config.path.bi_data_prefix
+    DICT_XML_PREFIX = config.path.bi_dict_xml_prefix
+    DICT_DATA_PREFIX = config.path.bi_dict_data_prefix
 
     TOPIC = "chwriter"
-    NSQ_CONNECT_TIMEOUT = 0.5
-    NSQ_PUB_RETRY_DELAY = 0.1
+    NSQ_CONNECT_TIMEOUT = config.nsqd.connect_timeout
+    NSQ_PUB_RETRY_DELAY = config.nsqd.pub_retry_delay
 
     EXTRACTORS = [
         RebootsExtractor,
@@ -35,7 +36,7 @@ class Command(BaseCommand):
     ]
 
     # Extract by 1-day chunks
-    EXTRACT_WINDOW = 86400
+    EXTRACT_WINDOW = config.bi.extract_window
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -177,7 +178,7 @@ class Command(BaseCommand):
                 continue
             files += [os.path.join(self.DATA_PREFIX, f)]
         # Stream to NSQ
-        writer = nsq.Writer(["127.0.0.1:4150"])
+        writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
         writer.io_loop.add_callback(on_connect)
         nsq.run()
 

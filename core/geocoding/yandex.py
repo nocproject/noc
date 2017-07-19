@@ -7,29 +7,28 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import urllib
 # Third-party modules
 import ujson
 # NOC modules
-from base import (BaseGeocoder, GeoCoderError, GeoCoderLimitExceeded,
+from .base import (BaseGeocoder, GeoCoderError, GeoCoderLimitExceeded,
                   GeoCoderResult)
-from noc.core.config.base import config
+from noc.config import config
 
 
 class YandexGeocoder(BaseGeocoder):
     name = "yandex"
 
-    def __init__(self, key=config.geocoding_yandex_key,
-                 apikey=None, *args, **kwargs):
+    def __init__(self, key=None, apikey=None, *args, **kwargs):
         super(BaseGeocoder, self).__init__(*args, **kwargs)
-        self.key = key
+        self.key = key or config.geocoding.yandex_key
         self.apikey = apikey
 
     def forward(self, query, bounds=None, region=None):
         url = [
             "https://geocode-maps.yandex.ru/1.x/?",
             "format=json",
-
         ]
         if region:
             url += ["&region=%s" % region]

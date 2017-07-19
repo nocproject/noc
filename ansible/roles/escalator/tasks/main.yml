@@ -1,11 +1,2 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
-
-- name: Install escalator monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-escalator.conf.j2"
-    dest: "{{ telegraf_confd_path }}/noc-escalator.conf"
-  notify: reload telegraf
-  tags:
-    - config
-    - telegraf

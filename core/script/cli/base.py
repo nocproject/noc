@@ -23,20 +23,21 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.lib.text import replace_re_group
 from .error import (CLIError, CLIAuthFailed, CLINoSuperCommand,
                     CLILowPrivileges, CLIConnectionRefused)
+from noc.config import config
 
 
 class CLI(object):
     name = "cli"
     default_port = None
     iostream_class = None
-    BUFFER_SIZE = 1048576
+    BUFFER_SIZE = config.activator.buffer_size
     MATCH_TAIL = 256
     # Buffer to check missed ECMA control characters
     MATCH_MISSED_CONTROL_TAIL = 8
     # Retries on immediate disconnect
-    CONNECT_RETRIES = 3
+    CONNECT_RETRIES = config.activator.connect_retries
     # Timeout after immediate disconnect
-    CONNECT_TIMEOUT = 3
+    CONNECT_TIMEOUT = config.activator.connect_timeout
     # compiled capabilities
     HAS_TCP_KEEPALIVE = hasattr(socket, "SO_KEEPALIVE")
     HAS_TCP_KEEPIDLE = hasattr(socket, "TCP_KEEPIDLE")
