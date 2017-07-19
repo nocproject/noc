@@ -8,7 +8,7 @@ pattern = "noc-activator"
   {{ with node -}}
     {{range .Services -}}
         {{ if .Service | contains "activator" -}}
-                "http://{{.Address}}:{{.Port}}/mon/",
+            "http://{{.Address}}:{{.Port}}/mon/",
         {{- end}}
      {{- end}}
   {{- end}}
