@@ -43,7 +43,6 @@ from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
-from noc.config import config
 
 
 class Service(object):
