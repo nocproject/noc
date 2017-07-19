@@ -34,7 +34,11 @@ class EscalatorService(Service):
     def on_deactivate(self):
         for s in self.shards:
             self.logger.info("Shutting down shard %s", s)
-            yield self.shards[s].shutdown()
+            try:
+                yield self.shards[s].shutdown()
+                self.logger.info("Shard %s is down", s)
+            except tornado.gen.TimeoutError:
+                self.logger.info("Cannot shutdown shard %s cleanly: Timeout", s)
 
     def apply_shards(self):
         # Get shards settings
