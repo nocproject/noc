@@ -37,7 +37,7 @@ class MetricsHandler(tornado.web.RequestHandler):
             if isinstance(mdata[key], six.string_types) or isinstance(mdata[key], bool):
                 continue
             qm = q(key)
-            out += ["# TYPE %s untyped" % qm]
-            out += ["%s{%s} %s" % (qm, labels, mdata[key])]
+            out += ["# TYPE %s untyped" % qm.lower()]
+            out += ["%s{%s} %s" % (qm.lower(), labels.lower(), mdata[key])]
         self.add_header("Content-Type", "text/plain; version=0.0.4")
         self.write("\n".join(out)+"\n")
