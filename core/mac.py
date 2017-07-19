@@ -32,7 +32,7 @@ rx_mac_address_solid = re.compile(r"^[0-9A-F]{12}$")
 class MAC(str):
     """
     MAC address validation and conversion class
-    
+
     >>> MAC("1234.5678.9ABC")
     '12:34:56:78:9A:BC'
     >>> MAC("1234.5678.9abc")
@@ -93,7 +93,7 @@ class MAC(str):
 
         if len(mac) == 6:
             return ":".join(["%02X" % ord(c) for c in mac])
-        
+
         value = mac
         value = value.upper()
         match = rx_mac_address_solid.match(value)

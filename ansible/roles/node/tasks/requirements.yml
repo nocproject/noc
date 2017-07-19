@@ -14,6 +14,7 @@
     https_proxy: "{{http_proxy}}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
     CFLAGS: "{{ pip_cflags | default('') }}"
+    LDFLAGS: "{{ pip_ldflags | default('') }}"
   tags:
     - requirements
 
@@ -27,6 +28,7 @@
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
     CFLAGS: "{{ pip_cflags | default('') }}"
+    LDFLAGS: "{{ pip_ldflags | default('') }}"
   when: "'prod' in noc_env_type"
   tags:
     - requirements
@@ -41,6 +43,7 @@
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
     CFLAGS: "{{ pip_cflags | default('') }}"
+    LDFLAGS: "{{ pip_ldflags | default('') }}"
   when: "ansible_python_version.startswith('2.6')"
   tags:
     - requirements
