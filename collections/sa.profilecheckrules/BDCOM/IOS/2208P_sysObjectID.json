@@ -1,13 +1,13 @@
 {
-    "name": "Iskratel | ESCOM | SI3000 sysObjectID",
+    "name": "BDCOM | IOS | 2208P sysObjectID",
     "$collection": "sa.profilecheckrules",
-    "uuid": "b5f4503c-ffcf-4e6b-be6b-e551309b3cf8",
+    "uuid": "6027b418-2dbe-4390-b0df-ee8b6467abe5",
     "description": null,
     "preference": 10,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
     "match_method": "eq",
-    "value": "1.3.6.1.4.1.1332.1.24.3",
+    "value": "1.3.6.1.4.1.3320.1.347.0",
     "action": "match",
-    "profile": "Iskratel.ESCOM"
+    "profile": "BDCOM.IOS"
 }
