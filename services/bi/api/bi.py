@@ -44,6 +44,7 @@ I_VALID = DictListParameter(attrs={
 })
 
 ds_lock = threading.Lock()
+model_lock = threading.Lock()
 
 
 class BIAPI(API):
@@ -59,6 +60,7 @@ class BIAPI(API):
     ]
 
     _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
+    _model_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
 
     ref_dict = {
         "sa.ManagedObject": "managedobject"
@@ -145,6 +147,17 @@ class BIAPI(API):
     def get_datasources(cls):
         return cls.get_bi_datasources() + cls.get_pm_datasources()
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_model_cache"),
+                             lock=lambda _: model_lock)
+    def get_model(cls, name):
+        # Static datasource
+        model = Model.get_model_class(name)
+        if model:
+            return model
+        # Dynamic datasource
+        return Model.wrap_table(name)
+
     def iter_datasources(self):
         """
         @todo: Dynamic loading
@@ -203,7 +216,7 @@ class BIAPI(API):
         """
         if "datasource" not in query:
             raise APIError("No datasource")
-        model = Model.get_model_class(query["datasource"])
+        model = self.get_model(query["datasource"])
         if not model:
             raise APIError("Invalid datasource")
         return model.query(query, self.handler.current_user)
