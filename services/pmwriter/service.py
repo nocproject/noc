@@ -121,7 +121,7 @@ class PMWriterService(Service):
                         # Configurable database name
                         "http://%s/write?db=%s&precision=s" % (
                             self.influx,
-                            config.pmwriter.influx_db
+                            config.pmwriter.write_to
                         ),
                         method="POST",
                         body=body
