@@ -7,13 +7,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import time
 import hashlib
 # Third-party modules
 import six
 # NOC modules
-from fields import BaseField
-from noc.core.clickhouse.connect import connection
+from .fields import BaseField
+from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
 
 __all__ = ["Model"]
@@ -64,9 +65,11 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def wrap_table(cls, table_name):
-        m = cls()
-        m._meta.db_table = table_name
-        return m
+        class WrapClass(Model):
+            class Meta:
+                db_table = table_name
+
+        return WrapClass
 
     @classmethod
     def get_create_sql(cls):
