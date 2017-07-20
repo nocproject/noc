@@ -29,9 +29,6 @@
 - name: Create dirs
   include: "dirs.yml"
 
-- name: Include post install
-  include: "post_install.yml"
-
 - name: Generate configs
   include: "config.yml"
 
