@@ -19,7 +19,7 @@
   tags:
     - config
 
-- name: create nsqd log dif
+- name: create nsqd log dir
   file:
     path: "{{ item }}"
     state: directory
