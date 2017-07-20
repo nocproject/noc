@@ -1,0 +1,18 @@
+- name: Compile bytecode
+  command: ./scripts/deploy/compile-bytecode
+  args:
+    chdir: "{{noc_root}}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
+  failed_when: "'ERROR' in result.stdout"
+
+- name: Compiling binary modules
+  command: ./scripts/deploy/cythonize
+  args:
+    chdir: "{{noc_root}}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
+  failed_when: "'ERROR' in result.stdout"
+  tags:
+    - requirements
+    - mercurial
