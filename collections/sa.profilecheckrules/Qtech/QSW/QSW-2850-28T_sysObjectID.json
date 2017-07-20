@@ -1,0 +1,13 @@
+{
+    "name": "Qtech | QSW | QSW-2850-28T sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "10934dd4-0641-44ce-ac52-ca9deea95864",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.27514.6.212",
+    "action": "match",
+    "profile": "Raisecom.ROS"
+}
