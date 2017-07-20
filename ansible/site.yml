@@ -82,19 +82,6 @@
         - consul-template
         - external
 
-- name: Install NOC
-  hosts: all
-  become: yes
-  any_errors_fatal: false
-  gather_facts: True
-  tags:
-    - node
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: node
-
 - name: Install and configure patroni
   hosts: svc-patroni
   become: yes
@@ -240,6 +227,20 @@
     - "vars/main.yml"
   roles:
     - role: memcached
+
+- name: Install NOC
+  hosts: all
+  become: yes
+  any_errors_fatal: false
+  gather_facts: True
+  tags:
+    - node
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: node
+
 
 - name: Install and upgrade NOC
   hosts: svc-login
