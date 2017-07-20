@@ -91,7 +91,7 @@
 
 - name: Display all variables/facts known for a host
   debug:
-    var: hostvars[ansible_nodename]
+    var: hostvars[inventory_hostname]
     verbosity: 8
   tags:
     - always
@@ -149,7 +149,7 @@
     - restart
 
 - name: Setup hostname
-  hostname: name="{{ ansible_nodename }}"
+  hostname: name="{{ inventory_hostname }}"
   when: "'Linux' in ansible_system"
   become: true
   register: hname
