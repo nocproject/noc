@@ -13,7 +13,6 @@ import os
 import tornado.ioloop
 import tornado.gen
 # NOC modules
-from noc.config import config
 from noc.core.service.base import Service
 from noc.core.http.client import fetch
 from channel import Channel
@@ -123,7 +122,7 @@ class CHWriterService(Service):
             self.logger.debug("[%s] Sending %s records", channel.name, n)
             written = False
             try:
-                response = yield client.fetch(
+                code, headers, body = yield fetch(
                     "http://%s:%s/?database=%s&query=%s" % (
                         self.HOST, self.PORT, self.DB,
                         channel.get_encoded_insert_sql()),
