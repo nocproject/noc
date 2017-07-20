@@ -59,8 +59,18 @@ class Model(six.with_metaclass(ModelBase)):
         self.values = kwargs
 
     @classmethod
+    def _get_db_table(cls):
+        return cls._meta.db_table
+
+    @classmethod
+    def wrap_table(cls, table_name):
+        m = cls()
+        m._meta.db_table = table_name
+        return m
+
+    @classmethod
     def get_create_sql(cls):
-        r = ["CREATE TABLE IF NOT EXISTS %s (" % cls._meta.db_table]
+        r = ["CREATE TABLE IF NOT EXISTS %s (" % cls._get_db_table()]
         r += [",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)]
         r += [") ENGINE = %s;" % cls._meta.engine.get_create_sql()]
         return "\n".join(r)
@@ -73,14 +83,14 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def get_fingerprint(cls):
-        return "%s.%s" % (cls._meta.db_table,
+        return "%s.%s" % (cls._get_db_table(),
                           ".".join(cls._fields_order))
 
     @classmethod
     def get_short_fingerprint(cls):
         seed = ".".join(cls._fields_order)
         h = hashlib.sha256(seed).hexdigest()[:8]
-        return "%s.%s" % (cls._meta.db_table, h)
+        return "%s.%s" % (cls._get_db_table(), h)
 
     @classmethod
     def ensure_table(cls):
@@ -90,7 +100,7 @@ class Model(six.with_metaclass(ModelBase)):
         """
         changed = False
         ch = connection()
-        if not ch.has_table(cls._meta.db_table):
+        if not ch.has_table(cls._get_db_table()):
             # Create new table
             ch.execute(post=cls.get_create_sql())
             changed = True
@@ -105,7 +115,7 @@ class Model(six.with_metaclass(ModelBase)):
                   database=%s
                   AND table=%s
                 """,
-                [ch.DB, cls._meta.db_table]
+                [ch.DB, cls._get_db_table()]
             ):
                 existing[name] = type
             after = None
@@ -113,7 +123,7 @@ class Model(six.with_metaclass(ModelBase)):
                 if f not in existing:
                     ch.execute(
                         post="ALTER TABLE %s ADD COLUMN %s AFTER %s" % (
-                            cls._meta.db_table,
+                            cls._get_db_table(),
                             cls._fields[f].get_create_sql(),
                             after)
                     )
@@ -198,14 +208,14 @@ class Model(six.with_metaclass(ModelBase)):
             # Access denied
             r = []
             dt = 0.0
-            sql = ["SELECT %s FROM %s WHERE 0 = 1" % (", ".join(fields_x), cls._meta.db_table)]
+            sql = ["SELECT %s FROM %s WHERE 0 = 1" % (", ".join(fields_x), cls._get_db_table())]
         else:
             # Get where expressions
             filter_x = to_sql(transformed_query.get("filter", {}))
             # Generate SQL
             sql = ["SELECT "]
             sql += [", ".join(fields_x)]
-            sql += ["FROM %s" % cls._meta.db_table]
+            sql += ["FROM %s" % cls._get_db_table()]
             sample = query.get("sample")
             if sample:
                 sql += ["SAMPLE %s" % float(sample)]
