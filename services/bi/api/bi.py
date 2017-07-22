@@ -104,7 +104,8 @@ class BIAPI(API):
                     "name": k.field_name,
                     "description": k.field_name,
                     "type": "UInt64",
-                    "dict": cls.ref_dict.get(k.model, None)
+                    "dict": cls.ref_dict.get(k.model, None),
+                    "model": k.model
                 }]
             if ms.path:
                 r["fields"] = [{
