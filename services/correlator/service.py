@@ -75,11 +75,11 @@ class CorrelatorService(Service):
         )
         self.scheduler.run()
 
-    def load_config(self):
+    def on_start(self):
         """
         Load rules from database just after loading config
         """
-        super(CorrelatorService, self).load_config()
+        super(CorrelatorService, self).on_start()
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
