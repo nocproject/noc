@@ -31,7 +31,11 @@ class LegacyProtocol(BaseProtocol):
         ("noc.mongo_db", "mongo.db"),
         ("noc.pg_db", "pg.db"),
         ("noc.pg_password", "pg.password"),
-        ("pg_user", "pg.user"),
+        ("noc.pg_user", "pg.user"),
+        ("noc.influx_db", "influxdb.db"),
+        ("noc.influx_password", "influxdb.password"),
+        ("noc.influx_user", "influxdb.user"),
+
         # Activator
         ("activator.script_threads", "activator.script_threads"),
         ("activator-%(pool)s-%(node)s.script_threads", "activator.script_threads"),
