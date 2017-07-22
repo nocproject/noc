@@ -26,40 +26,40 @@ class Script(BaseScript):
         re.IGNORECASE
     )
     rx_pvid = re.compile("PVID : (?P<pvid>\d+)")
-    rx_mtu = re.compile("The Maximum Transmit Unit is (?P<mtu>\d+) bytes")
+    rx_mtu = re.compile("The Maximum Transmit Unit is (?P<mtu>\d+)( bytes)?")
     rx_mac = re.compile(
         "Hardware [Aa]ddress(?::| is) (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
     )
     rx_ipv4 = re.compile(
-        r"Internet Address is (?P<ip>\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1,2}/\d{1,2})",
+        r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})",
         re.IGNORECASE
     )
-
+    rx_ipv4_unnumb = re.compile(
+        r"Internet Address is unnumbered, using address of "
+        r"(?P<iface>\S+\d+)\("
+        r"(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2})"
+        r"\)",
+        re.IGNORECASE
+    )
     rx_iftype = re.compile(r"^(\S+?)\d+.*$")
-
     rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
-
     rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-
     rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
-
     rx_ndp = re.compile(
         r"^\s*Interface: (?P<name>\S+)\s*\n"
         r"^\s*Status: Enabled", re.MULTILINE)
-
     rx_ifindex = re.compile(
         r"^Name: (?P<name>\S+)\s*\n"
         r"^Physical IF Info:\s*\n"
         r"^\s*IfnetIndex: 0x(?P<ifindex>[0-9A-F]+)\s*\n", re.MULTILINE)
-
     rx_lldp = re.compile(
         r"\n^\s*Interface\s(?P<name>\S+):"
         r"\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
     )
 
     types = {
-        "Aux": "physical",
-        "Cellular": "physical",
+        "Aux": "tunnel",
+        "Cellular": "tunnel",
         "Eth-Trunk": "aggregated",
         "Ip-Trunk": "aggregated",
         "XGigabitEthernet": "physical",
@@ -76,7 +76,9 @@ class Script(BaseScript):
         "Ring-if": "physical",
         "Tunnel": "tunnel",
         "Virtual-Ethernet": None,
-        "Virtual-Template": None,
+        "Virtual-Template": "template",
+        "Bridge-Template": "template",
+        "Bridge-template": "template",
         "Vlanif": "SVI",
         "Vlan-interface": "SVI",
         "NULL": "null",
@@ -270,6 +272,12 @@ class Script(BaseScript):
                 match = self.rx_mtu.search(l)
                 if match:
                     sub["mtu"] = int(match.group("mtu"))
+                    continue
+                # IP Unnumbered
+                match = self.rx_ipv4_unnumb.search(l)
+                if match:
+                    sub["ip_unnumbered_subinterface"] = match.group("iface")
+                    sub["enabled_afi"] = ['IPv4']
                     continue
             if "." not in ifname:
                 if o_stat is None:

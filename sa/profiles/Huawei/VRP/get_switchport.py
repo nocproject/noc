@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -80,7 +80,13 @@ class Script(BaseScript):
                re.MULTILINE | re.DOTALL | re.VERBOSE)
             v = self.cli("display interface")
         else:
-            v = self.cli("display port vlan")
+            try:
+                v = self.cli("display port vlan")
+            except self.CLISyntaxError:
+                v = "%s\n%s" % (
+                    self.cli("display port trunk"),
+                    self.cli("display port hybrid")
+                )
 
         for match in rx_line.finditer(v):
             port = {}

@@ -9,6 +9,6 @@
 	weekly
 	rotate 5
 	postrotate
-		/bin/kill -HUP `cat /var/run/postgresql/pgbouncer.pid  2>/dev/null` 2> /dev/null || true
+		/bin/kill -HUP `cat {{pgbouncer_path_pid}}/pgbouncer.pid  2>/dev/null` 2> /dev/null || true
 	endscript
 }

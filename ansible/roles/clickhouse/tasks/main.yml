@@ -20,3 +20,11 @@
   with_items:
     - "config.xml"
     - "users.xml"
+
+- name: copy clickhouse consul templates
+  template:
+    src: clickhouse.json.j2
+    dest: "{{consul_configd_path}}/clickhouse.json"
+  notify: reload consul
+  tags:
+    - consul

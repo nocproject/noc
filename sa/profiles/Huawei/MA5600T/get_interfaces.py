@@ -44,6 +44,7 @@ class Script(BaseScript):
         r"^\s+\d+\s+eth\s+(?:down|up)\s+(?P<ifname>\d+/\s*\d+/\s*\d+)\s+"
         r"vlan\s+(?P<type>\S+)\s*\n",
         re.MULTILINE)
+    rx_tagged = re.compile("(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
         r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E\s+(\S+\s+)?(\d+\s+)?(\S+\s+)?\S+\s+\S+\s+\S+\s+"
         r"\S+\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",

@@ -241,6 +241,7 @@
   roles:
     - role: memcached
 
+
 - name: Install and upgrade NOC
   hosts: svc-login
   become: yes

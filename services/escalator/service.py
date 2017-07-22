@@ -44,7 +44,7 @@ class EscalatorService(Service):
     def apply_shards(self):
         # Get shards settings
         shard_threads = defaultdict(int)
-        shard_threads[DEFAULT_TTSYSTEM_SHARD] = self.config.max_threads
+        shard_threads[DEFAULT_TTSYSTEM_SHARD] = config.escalator.max_threads
         for s in TTSystem.objects.all():
             if not s.is_active:
                 continue
@@ -57,7 +57,7 @@ class EscalatorService(Service):
                 "escalator",
                 pool=sn,
                 reset_running=True,
-                max_threads=config.escalator.max_threads,
+                max_threads=shard_threads[sn],
                 ioloop=self.ioloop,
                 service=self
             )
