@@ -28,7 +28,7 @@ from noc.config import config
 
 
 class DCSBase(object):
-    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = config.dcs.resolution_timeout
+    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = datetime.timedelta(seconds=config.dcs.resolution_timeout)
     # Resolver class
     resolver_cls = None
 
