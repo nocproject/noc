@@ -12,6 +12,7 @@ from pyrad.client import Client
 from pyrad.dictionary import Dictionary
 # NOC modules
 from base import BaseAuthBackend
+from noc.config import config
 
 
 class RADIUSBackend(BaseAuthBackend):
@@ -20,8 +21,8 @@ class RADIUSBackend(BaseAuthBackend):
     )
 
     def authenticate(self, user=None, password=None, **kwargs):
-        radius_server = self.service.config.radius_server
-        radius_secret = self.service.config.radius_secret
+        radius_server = config.login.radius_server
+        radius_secret = config.login.radius_secret
 
         client = Client(
             server=radius_server,

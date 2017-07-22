@@ -13,19 +13,11 @@
   with_items:
     - /var/log/pgbouncer/
     - /var/run/pgbouncer/
-    - /usr/local/etc/pgbouncer/
 
 - name: Install pgbouncer config
   template:
     src: "etc/pgbouncer/pgbouncer.ini.j2"
-    dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
+    dest: "{{etc_prefix}}/pgbouncer.ini"
   notify: reload pgbouncer
   tags:
     - config
-
-- name: Setting pgbouncer flags
-  lineinfile: dest=/etc/rc.conf regexp=^pgbouncer_conf= line="pgbouncer_conf=\"{{etc_prefix}}/pgbouncer/pgbouncer.ini\""
-  tags:
-    - config
-
-

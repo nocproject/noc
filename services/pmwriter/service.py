@@ -41,7 +41,8 @@ class PMWriterService(Service):
         )
         report_callback.start()
         self.ioloop.add_callback(self.write_metrics)
-        self.influx, channel = self.get_topic()
+        self.influx = "%s:%s" % (config.pmwriter.write_to, config.pmwriter.write_to_port)
+        channel = config.pmwriter.read_from
         self.logger.info("Listening metrics/%s. Writing to %s",
                          channel, self.influx)
         self.subscribe(
@@ -52,13 +53,6 @@ class PMWriterService(Service):
             max_backoff_duration=3
         )
         self.ioloop.spawn_callback(self.send_metrics)
-
-    def get_topic(self):
-        """
-        Returns influx service, channel name
-        """
-        # Influx affinity
-        return config.pmwriter.write_to, config.pmwriter.read_from
 
     def on_metric(self, message, metrics, *args, **kwargs):
         """
@@ -111,7 +105,7 @@ class PMWriterService(Service):
                 self.perf_metrics["slept_time"] += sleep_time
                 yield tornado.gen.sleep(sleep_time)
             batch, self.buffer = self.buffer[:bs], self.buffer[bs:]
-            data = "\n".join(batch)
+            body = "\n".join(batch)
             while True:
                 t0 = self.ioloop.time()
                 self.logger.debug("Sending %d metrics", len(batch))
@@ -121,7 +115,7 @@ class PMWriterService(Service):
                         # Configurable database name
                         "http://%s/write?db=%s&precision=s" % (
                             self.influx,
-                            config.pmwriter.influx_db
+                            config.influxdb.db
                         ),
                         method="POST",
                         body=body

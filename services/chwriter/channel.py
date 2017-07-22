@@ -10,13 +10,13 @@
 # Python modules
 import time
 import urllib
-
+from noc.config import config
 
 class Channel(object):
     def __init__(self, service, fields):
-        """        
-        :param fields: <table>.<field1>. .. .<fieldN> 
-        :return: 
+        """
+        :param fields: <table>.<field1>. .. .<fieldN>
+        :return:
         """
         self.name = fields
         self.service = service
@@ -41,15 +41,15 @@ class Channel(object):
         t = time.time()
         if self.data or self.flushing:
             return False
-        return t - self.last_updated > self.service.config.channel_expire_interval
+        return t - self.last_updated > config.chwriter.channel_expire_interval
 
     def is_ready(self):
         if not self.n:
             return False
-        if self.n >= self.service.config.batch_size:
+        if self.n >= config.chwriter.batch_size:
             return True
         t = time.time()
-        return (t - self.last_flushed) * 1000 >= self.service.config.batch_delay_ms
+        return (t - self.last_flushed) * 1000 >= config.chwriter.batch_delay_ms
 
     def get_data(self):
         self.n = 0

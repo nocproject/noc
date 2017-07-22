@@ -256,6 +256,7 @@ class Config(BaseConfig):
         metrics_buffer = IntParameter(default=50000)
         read_from = StringParameter(default="pmwriter")
         write_to = StringParameter(default="influxdb")
+        write_to_port = IntParameter(default=8086)
 
     class chwriter(ConfigSection):
         batch_size = IntParameter(default=50000)
