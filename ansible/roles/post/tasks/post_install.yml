@@ -1,0 +1,10 @@
+---
+- name: Cleanup hanging .pyc files
+  command: ./scripts/deploy/cleanup-pyc
+  args:
+    chdir: "{{noc_root}}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
+  failed_when: "'ERROR' in result.stdout"
+  tags:
+    - mercurial

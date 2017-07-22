@@ -215,13 +215,13 @@ class Service(object):
                 if isinstance(h, logging.StreamHandler):
                     h.stream = sys.stdout
                 h.setFormatter(fmt)
-            logging.root.setLevel(config.loglevel)
+            logging.root.setLevel(loglevel)
         else:
             # Initialize logger
             logging.basicConfig(
                 stream=sys.stdout,
                 format=self.LOG_FORMAT,
-                level=config.loglevel
+                level=loglevel
             )
         self.logger = logging.getLogger(self.name)
         logging.captureWarnings(True)
@@ -284,6 +284,8 @@ class Service(object):
         self.set_proc_title()
         # Setup signal handlers
         self.setup_signal_handlers()
+        #
+        self.on_start()
         # Starting IOLoop
         self.is_active = True
         if self.pooled:
@@ -320,7 +322,7 @@ class Service(object):
             cb(*args, **kwargs)
         self.logger.warn("Service %s has been terminated", self.name)
 
-    def load_config(self):
+    def on_start(self):
         """
         Reload config
         """
@@ -332,8 +334,9 @@ class Service(object):
         self.ioloop.add_callback(self.deactivate)
 
     def on_SIGHUP(self, signo, frame):
-        self.logger.warn("SIGHUP caught, rereading config")
-        self.ioloop.add_callback(self.load_config)
+        # self.logger.warn("SIGHUP caught, rereading config")
+        # self.ioloop.add_callback(self.load_config)
+        pass
 
     def on_SIGTERM(self, signo, frame):
         self.logger.warn("SIGTERM caught, Stopping")
