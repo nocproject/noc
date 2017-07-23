@@ -33,12 +33,14 @@ class UIHandler(tornado.web.RequestHandler):
                                   self.name, "index.html")
         self.set_header("Cache-Control", "no-cache; must-revalidate")
         self.set_header("Expires", "0")
-        language = config.login.language
+        language = config.card.language
         return self.render(
             index_path,
             hashed=self.hashed,
             request=self.request,
             language=language,
+            brand=config.brand,
+            installation_name=config.installation_name,
             name=self.name,
             service=self.service
         )
