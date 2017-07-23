@@ -1163,7 +1163,7 @@ class ManagedObject(Model):
     def get_bi_selector(cls, cfg):
         qs = {}
         if "administrative_domain":
-            d = AdministrativeDomain.get_by_id(cfg["administative_domain"])
+            d = AdministrativeDomain.get_by_id(cfg["administrative_domain"])
             if d:
                 qs["administrative_domain__in"] = d.get_nested()
         return [
