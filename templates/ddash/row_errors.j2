@@ -39,116 +39,31 @@
       "steppedLine": false,
       "targets": [
         {
-          "alias": "Errors on $tag_interface",
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$discovery_interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "interface"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "0"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "Interface | Errors | In",
-          "policy": "default",
-          "rawQuery": false,
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "object",
-              "operator": "=~",
-              "value": "/^$device$/"
-            },
-            {
-              "condition": "AND",
-              "key": "value",
-              "operator": ">",
-              "value": "0"
-            }
-          ]
-        },
-        {
-          "alias": "Discards on $tag_interface",
-          "dsType": "influxdb",
-          "groupBy": [
-            {
-              "params": [
-                "$discovery_interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "interface"
-              ],
-              "type": "tag"
-            },
-            {
-              "params": [
-                "0"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "Interface | Discards | Out",
-          "policy": "default",
-          "rawQuery": false,
+          "database": "noc",
+          "dateColDataType": "date",
+          "dateLoading": false,
+          "dateTimeColDataType": "ts",
+          "datetimeLoading": false,
+          "intervalFactor": 1,
+          "query": "SELECT \n\tt, \n\tgroupArray((concat('Discars ',path[4]), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t(intDiv(toUInt32(ts), 300) * 300) * 1000 as t, \n\t\tpath[4], \n\t\tavg(discards_out) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
           "refId": "A",
           "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "object",
-              "operator": "=~",
-              "value": "/^$device$/"
-            },
-            {
-              "condition": "AND",
-              "key": "value",
-              "operator": ">",
-              "value": "0"
-            }
-          ]
+          "table": "interface",
+          "tableLoading": false
+        },
+        {
+          "database": "noc",
+          "dateColDataType": "date",
+          "dateLoading": false,
+          "dateTimeColDataType": "ts",
+          "datetimeLoading": false,
+          "hide": false,
+          "intervalFactor": 1,
+          "query": "SELECT \n\tt, \n\tgroupArray((concat('Errors ',path[4]), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t(intDiv(toUInt32(ts), 300) * 300) * 1000 as t, \n\t\tpath[4], \n\t\tavg(errors_in) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "table": "interface",
+          "tableLoading": false
         }
       ],
       "thresholds": [],

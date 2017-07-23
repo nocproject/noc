@@ -1,149 +1,4 @@
 {
-  "id": 60935,
-  "title": "Errors and Discards",
-  "span": 6,
-  "type": "table",
-  "targets": [
-    {
-      "policy": "default",
-      "dsType": "influxdb",
-      "resultFormat": "time_series",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        },
-        {
-          "condition": "AND",
-          "key": "value",
-          "operator": ">",
-          "value": "0"
-        }
-      ],
-      "groupBy": [
-        {
-          "type": "time",
-          "params": [
-            "$discovery_interval"
-          ]
-        },
-        {
-          "type": "tag",
-          "params": [
-            "interface"
-          ]
-        },
-        {
-          "type": "fill",
-          "params": [
-            "0"
-          ]
-        }
-      ],
-      "select": [
-        [
-          {
-            "type": "field",
-            "params": [
-              "value"
-            ]
-          },
-          {
-            "type": "mean",
-            "params": []
-          }
-        ]
-      ],
-      "refId": "A",
-      "rawQuery": false,
-      "alias": "Errors on $tag_interface",
-      "measurement": "Interface | Errors | In"
-    },
-    {
-      "policy": "default",
-      "dsType": "influxdb",
-      "resultFormat": "time_series",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        },
-        {
-          "condition": "AND",
-          "key": "value",
-          "operator": ">",
-          "value": "0"
-        }
-      ],
-      "groupBy": [
-        {
-          "type": "time",
-          "params": [
-            "$discovery_interval"
-          ]
-        },
-        {
-          "type": "tag",
-          "params": [
-            "interface"
-          ]
-        },
-        {
-          "type": "fill",
-          "params": [
-            "0"
-          ]
-        }
-      ],
-      "select": [
-        [
-          {
-            "type": "field",
-            "params": [
-              "value"
-            ]
-          },
-          {
-            "type": "mean",
-            "params": []
-          }
-        ]
-      ],
-      "refId": "B",
-      "rawQuery": false,
-      "alias": "Dis on $tag_interface",
-      "measurement": "Interface | Discards | Out"
-    }
-  ],
-  "styles": [
-    {
-      "type": "hidden",
-      "pattern": "Time",
-      "dateFormat": "YYYY-MM-DD HH:mm:ss"
-    },
-    {
-      "unit": "short",
-      "type": "number",
-      "decimals": 2,
-      "colors": [
-        "rgba(50, 172, 45, 0.97)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(245, 54, 54, 0.9)"
-      ],
-      "colorMode": null,
-      "pattern": "/.*/",
-      "thresholds": [
-        "0",
-        "0.01",
-        "0.2"
-      ]
-    }
-  ],
-  "transform": "timeseries_aggregations",
-  "pageSize": null,
-  "showHeader": true,
   "columns": [
     {
       "text": "Avg",
@@ -154,11 +9,70 @@
       "value": "count"
     }
   ],
-  "scroll": true,
   "fontSize": "100%",
+  "id": 60935,
+  "links": [],
+  "pageSize": null,
+  "scroll": true,
+  "showHeader": true,
   "sort": {
-    "col": 0,
+    "col": 1,
     "desc": true
   },
-  "links": []
+  "span": 6,
+  "styles": [
+    {
+      "dateFormat": "YYYY-MM-DD HH:mm:ss",
+      "pattern": "Time",
+      "type": "hidden"
+    },
+    {
+      "colorMode": null,
+      "colors": [
+        "rgba(50, 172, 45, 0.97)",
+        "rgba(237, 129, 40, 0.89)",
+        "rgba(245, 54, 54, 0.9)"
+      ],
+      "decimals": 2,
+      "pattern": "/.*/",
+      "thresholds": [
+        "0",
+        "0.01",
+        "0.2"
+      ],
+      "type": "number",
+      "unit": "short"
+    }
+  ],
+  "targets": [
+    {
+      "database": "noc",
+      "dateColDataType": "date",
+      "dateLoading": false,
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "intervalFactor": 1,
+      "query": "SELECT \n\tt, \n\tgroupArray((concat('Discards ',path[4]), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t(intDiv(toUInt32(ts), 300) * 300) * 1000 as t, \n\t\tpath[4], \n\t\tavg(discards_out) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "table": "interface",
+      "tableLoading": false
+    },
+    {
+      "database": "noc",
+      "dateColDataType": "date",
+      "dateLoading": false,
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "intervalFactor": 1,
+      "query": "SELECT \n\tt, \n\tgroupArray((concat('Errors ',path[4]), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t(intDiv(toUInt32(ts), 300) * 300) * 1000 as t, \n\t\tpath[4], \n\t\tavg(errors_in) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
+      "refId": "B",
+      "resultFormat": "time_series",
+      "table": "interface",
+      "tableLoading": false
+    }
+  ],
+  "title": "Errors and Discards",
+  "transform": "timeseries_aggregations",
+  "type": "table"
 }
