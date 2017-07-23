@@ -262,7 +262,8 @@ class BIAPI(API):
         user = self.handler.current_user
         d = Dashboard.objects.filter(id=id).first()
         if not d:
-            return None
+            self.logger.warning("Dashboard is not exist, ID: %s" % id)
+            raise APIError("Dashboard not found")
         if d.owner == user:
             return d
         # @todo: Filter by groups
@@ -270,7 +271,7 @@ class BIAPI(API):
             if i.user == user and i.level >= access_level:
                 return d
         # No access
-        return None
+        raise APIError("User have no permission to access dashboard")
 
     @executor("query")
     @api
@@ -507,7 +508,7 @@ class BIAPI(API):
         d = self._get_dashboard(id)
         if not d:
             self.logger.error("Dashboards not find %s", id)
-            raise APIError("No dashboard")
+            raise APIError("Dashboard not found")
         if d.get_user_access(self.handler.current_user) < DAL_ADMIN:
             self.logger.error("Access for user Dashboards %s", self.handler.current_user)
             raise APIError("User no permission for set rights")
