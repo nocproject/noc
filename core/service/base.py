@@ -567,7 +567,7 @@ class Service(object):
         r = {
             "status": self.get_mon_status(),
             "service": self.name,
-            "instance": str(config.instance),
+            "instance": str(self.service_id),
             "node": config.node,
             "pid": self.pid,
             # Current process uptime
