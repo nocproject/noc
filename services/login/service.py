@@ -23,8 +23,9 @@ class LoginService(UIService):
         LoginAPI
     ]
     use_translation = True
-    traefik_backend = "login"
-    traefik_frontend_rule = "PathPrefix:/api/login,/api/auth/auth"
+    if config.features.traefik:
+        traefik_backend = "login"
+        traefik_frontend_rule = "PathPrefix:/api/login,/api/auth/auth"
 
     def get_handlers(self):
         return super(LoginService, self).get_handlers() + [

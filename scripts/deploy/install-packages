@@ -14,10 +14,11 @@ import tempfile
 import urllib2
 import json
 import shutil
+from noc.config import config
 
 
 class NPkg(object):
-    VAR = "var/pkg"
+    VAR = config.path.npkg_root
 
     def __init__(self, config):
         self.config = config

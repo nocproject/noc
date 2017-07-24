@@ -10,9 +10,11 @@
 from noc.lib.app.extapplication import ExtApplication
 from noc.core.translation import ugettext as _
 
+from noc.config import config
+
 
 class OutageApplication(ExtApplication):
     title = _("Outages")
     menu = _("Outages")
     glyph = "bolt"
-    link = "/api/card/view/outage/1/?refresh=60"
+    link = "/api/card/view/outage/1/?refresh=%s" % config.fm.outage_refresh

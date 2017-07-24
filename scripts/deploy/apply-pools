@@ -11,8 +11,9 @@
 import yaml
 # NOC modules
 from noc.main.models.pool import Pool
+from noc.config import config
 
-CONFIG = "etc/noc.yml"
+CONFIG = config.path.legacy_config
 
 def update_if_changed(pool, values):
     changed = False

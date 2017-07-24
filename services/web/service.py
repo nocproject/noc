@@ -23,10 +23,10 @@ from noc.core.perf import metrics
 class WebService(Service):
     name = "web"
     api = []
-    process_name = "noc-%(name).10s-%(instance).2s"
     use_translation = True
-    traefik_backend = "web"
-    traefik_frontend_rule = "PathPrefix:/"
+    if config.features.traefik:
+        traefik_backend = "web"
+        traefik_frontend_rule = "PathPrefix:/"
 
     def __init__(self):
         super(WebService, self).__init__()

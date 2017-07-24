@@ -17,6 +17,7 @@ from noc.main.models.permission import Permission
 #
 class AccessWidget(forms.Widget):
     def render(self,name,value,attrs=None):
+        # %fixme rewrite
         r=["""<style>
         .module-name {
             margin:     0;

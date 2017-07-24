@@ -19,6 +19,8 @@ class SuggestSNMPCheck(DiscoveryCheck):
     """
     name = "suggest_snmp"
 
+    # %fixme have to be configured ?
+
     CHECK_OIDS = [
         mib["SNMPv2-MIB::sysObjectID.0"],
         mib["SNMPv2-MIB::sysUpTime.0"],

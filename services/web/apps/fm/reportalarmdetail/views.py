@@ -36,6 +36,7 @@ class ReportAlarmDetailApplication(ExtApplication):
     menu = _("Reports") + "|" + _("Alarm Detail")
     title = _("Alarm Detail")
 
+    # %fixme make configurable ?
     SEGMENT_PATH_DEPTH = 7
     CONTAINER_PATH_DEPTH = 7
 

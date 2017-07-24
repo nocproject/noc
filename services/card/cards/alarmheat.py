@@ -19,6 +19,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.maintainance.models.maintainance import Maintainance
+from noc.config import config
 
 
 class AlarmHeatCard(BaseCard):
@@ -36,7 +37,7 @@ class AlarmHeatCard(BaseCard):
     default_template_name = "alarmheat"
 
     _layer_cache = {}
-    TOOLTIP_LIMIT = 5
+    TOOLTIP_LIMIT = config.card.alarmheat_tooltip_limit
 
     def get_data(self):
         p = self.current_user.get_profile()

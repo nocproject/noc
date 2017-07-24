@@ -15,7 +15,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
-
+from noc.config import config
 
 class SAEAPI(API):
     """
@@ -23,8 +23,8 @@ class SAEAPI(API):
     """
     name = "sae"
 
-    ACTIVATOR_RESOLUTION_RETRIES = 5
-    ACTIVATOR_RESOLUTION_TIMEOUT = 2
+    ACTIVATOR_RESOLUTION_RETRIES = config.sae.activator_resolution_retries
+    ACTIVATOR_RESOLUTION_TIMEOUT = config.sae.activator_resolution_timeout
 
     RUN_SQL = """
         SELECT

@@ -6,15 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-import os
+import json
+
+from jinja2 import Environment, FileSystemLoader
+from noc.config import config
+from noc.inv.models.interface import Interface
 # NOC modules
 from noc.lib.text import split_alnum
-from noc.sa.models.managedobject import ManagedObject
-from base import BaseDashboard
-from noc.inv.models.interface import Interface
 from noc.pm.models.metrictype import MetricType
-from jinja2 import Environment, FileSystemLoader
-import json
+from noc.sa.models.managedobject import ManagedObject
+
+from base import BaseDashboard
 
 
 class MODashboard(BaseDashboard):
@@ -99,8 +101,7 @@ class MODashboard(BaseDashboard):
             "discovery_interval": self.object.object_profile.periodic_discovery_interval
         }
         self.logger.info("Context with data: %s" % context)
-        PM_TEMPLATE_PATH = "templates/ddash/"
-        j2_env = Environment(loader=FileSystemLoader(PM_TEMPLATE_PATH))
+        j2_env = Environment(loader=FileSystemLoader(config.path.pm_templates))
         tmpl = j2_env.get_template("dash_mo.j2")
         data = tmpl.render(context)
 

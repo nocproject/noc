@@ -21,13 +21,14 @@ from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
 from noc.core.debug import error_report
 from noc.main.models import User
+from noc.config import config
 
 user_lock = Lock()
 
 
 class CardRequestHandler(UIHandler):
     CARDS = None
-    CARD_TEMPLATE_PATH = "services/card/templates/card.html.j2"
+    CARD_TEMPLATE_PATH = config.path.card_template_path
     CARD_TEMPLATE = None
 
     _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

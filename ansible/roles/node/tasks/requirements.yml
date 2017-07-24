@@ -48,6 +48,12 @@
   tags:
     - requirements
 
+- name: Install noc.pth
+  template:
+    src: "lib/python/site-packages/noc.pth.j2"
+    dest: "{{noc_root}}/lib/python/site-packages/noc.pth"
+
+
 - name: Apply local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches"
   args:
