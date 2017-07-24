@@ -32,8 +32,9 @@ from noc.core.scheduler.job import Job
 
 logger = logging.getLogger(__name__)
 
-RETRY_TIMEOUT = 60
-RETRY_DELTA = 60 / max(config.tt_escalation_limit - 1, 1)
+RETRY_TIMEOUT = config.escalator.retry_timeout
+# @fixme have to be checked
+RETRY_DELTA = 60 / max(config.escalator.tt_escalation_limit - 1, 1)
 
 retry_lock = threading.Lock()
 next_retry = datetime.datetime.now()
@@ -105,7 +106,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         # Check global limits
         # @todo: Move into escalator service
         # @todo: Process per-ttsystem limits
-        ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
+        ets = datetime.datetime.now() - datetime.timedelta(seconds=config.escalator.ets)
         ae = ActiveAlarm._get_collection().find({
             "escalation_ts": {
                 "$gte": ets
@@ -116,15 +117,15 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 "$gte": ets
             }
         }).count()
-        if ae >= config.escalation.global_limit:
+        if ae >= config.escalator.global_limit:
             logger.error(
                 "Escalation limit exceeded (%s/%s). Skipping",
-                ae, config.escalation.global_limit
+                ae, config.escalator.global_limit
             )
             metrics["escalation_throttled"] += 1
             alarm.set_escalation_error(
                 "Escalation limit exceeded (%s/%s). Skipping" % (
-                    ae, config.escalation.global_limit))
+                    ae, config.escalator.global_limit))
             return
         # Check whether consequences has escalations
         cons_escalated = sorted(alarm.iter_escalated(),

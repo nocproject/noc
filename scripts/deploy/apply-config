@@ -16,10 +16,11 @@ import os
 # Third party modules
 import six
 import yaml
+from noc.config import config
 
 
-SUPERVISORD_CFG = "etc/noc_services.conf"
-NOC_CFG = "etc/noc.yml"
+SUPERVISORD_CFG = config.path.supervisor_cfg
+NOC_CFG = config.path.legacy_config
 
 ENV_MAP = {
     "loglevel": "NOC_LOGLEVEL"
@@ -120,4 +121,8 @@ def build(node):
         print "CHANGED"
 
 if __name__ == "__main__":
-    build(sys.argv[1])
+    if len(sys.argv) > 1:
+        build(sys.argv[1])
+    else:
+        build(config.node)
+

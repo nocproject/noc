@@ -53,9 +53,6 @@ class Service(object):
     """
     # Service name
     name = None
-    # Format string to set process name
-    # config variables can be expanded as %(name)s
-    process_name = "noc-%(name).10s"
     # Leader lock name
     # Only one active instace per leader lock can be active
     # at given moment
@@ -72,6 +69,13 @@ class Service(object):
     # May be used in conjunction with leader_group_name
     # to allow only one instance of services per node or datacenter
     pooled = False
+
+    # Format string to set process name
+    # config variables can be expanded as %(name)s
+    if pooled:
+        process_name = "noc-%(name).10s-%(pool).5s"
+    else:
+        process_name = "noc-%(name).10s"
 
     # Run NSQ writer on service startup
     require_nsq_writer = False
@@ -488,17 +492,20 @@ class Service(object):
 
     def get_register_tags(self):
         tags = []
-        if self.traefik_backend and self.traefik_frontend_rule:
-            tags += [
-                "traefik.backend=%s" % self.traefik_backend,
-                "traefik.frontend.rule=%s" % self.traefik_frontend_rule
-            ]
-            weight = self.get_backend_weight()
-            if weight:
-                tags += ["traefik.backend.weight=%s" % weight]
-            limit = self.get_backend_limit()
-            if limit:
-                tags += ["traefik.backend.maxconn.amount=%s" % limit]
+        if config.features.traefik:
+            if self.traefik_backend and self.traefik_frontend_rule:
+                tags += [
+                    "traefik.tags=backend",
+                    "traefik.backend=%s" % self.traefik_backend,
+                    "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
+                    "traefik.backend.load-balancing=wrr"
+                ]
+                weight = self.get_backend_weight()
+                if weight:
+                    tags += ["traefik.backend.weight=%s" % weight]
+                limit = self.get_backend_limit()
+                if limit:
+                    tags += ["traefik.backend.maxconn.amount=%s" % limit]
         return tags
 
     @tornado.gen.coroutine

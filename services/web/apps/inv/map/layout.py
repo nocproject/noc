@@ -14,6 +14,7 @@ import networkx as nx
 
 
 class Layout(object):
+    #@ fixme have to be configured ?
     SCALE_FACTOR = 130
     LINK_SPACING = 10
 

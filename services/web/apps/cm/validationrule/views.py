@@ -47,6 +47,7 @@ class ValidationRuleApplication(ExtDocApplication):
         """
         Static file server
         """
+        # @fixme remove solutions
         if not path.startswith("cm/validators/") and not path.startswith("solutions/"):
             return self.response_not_found()
         return self.render_static(request, path, document_root=".")

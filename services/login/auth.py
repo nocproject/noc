@@ -10,11 +10,12 @@
 import base64
 # Third-party modules
 import tornado.web
+from noc.config import config
 
 
 class AuthRequestHandler(tornado.web.RequestHandler):
     USER_COOKIE = "noc_user"
-    USER_COOKIE_TTL = 1  # 1 day
+    USER_COOKIE_TTL = config.login.user_cookie_ttl # % fixme probably unused
 
     def initialize(self, service):
         self.service = service

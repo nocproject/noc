@@ -23,10 +23,8 @@ from noc.config import config
 
 class CHWriterService(Service):
     name = "chwriter"
-    process_name = "noc-%(name).10s"
     # @fixme took better one from config with shard settings
-    HOST = os.environ.get("NOC_CLICKHOUSE_HOST", "clickhouse")
-    PORT = os.environ.get("NOC_CLICKHOUSE_PORT", 8123)
+    address = config.clickhouse.addresses
     DB = config.clickhouse.db
 
     def __init__(self):
@@ -124,8 +122,8 @@ class CHWriterService(Service):
             written = False
             try:
                 response = yield client.fetch(
-                    "http://%s:%s/?database=%s&query=%s" % (
-                        self.HOST, self.PORT, self.DB,
+                    "http://%s/?database=%s&query=%s" % (
+                        self.address, self.DB,
                         channel.get_encoded_insert_sql()),
                     method="POST",
                     body=data

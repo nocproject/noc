@@ -10,13 +10,14 @@
 # NOC modules
 from noc.core.service.base import Service
 from mrt import MRTRequestHandler
-
+from noc.config import config
 
 class MRTService(Service):
     name = "mrt"
-    process_name = "noc-%(name).10s-%(instance).2s"
-    traefik_backend = "mrt"
-    traefik_frontend_rule = "PathPrefix:/api/mrt"
+
+    if config.features.traefik:
+        traefik_backend = "mrt"
+        traefik_frontend_rule = "PathPrefix:/api/mrt"
 
     def on_activate(self):
         self.sae = self.open_rpc("sae")

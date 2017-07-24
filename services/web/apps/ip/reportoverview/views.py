@@ -17,6 +17,7 @@ from noc.core.ip import IP
 prefix_fields = [f for f in CustomField.table_fields("ip_prefix")
                  if not f.is_hidden]
 
+#% fixme rewrite to separate file
 CSS = """
 <style>
 TABLE {

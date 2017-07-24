@@ -21,7 +21,7 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.lib.text import split_alnum
 from noc.core.translation import ugettext as _
-
+from noc.config import config
 
 class InterfaceAppplication(ExtApplication):
     """
@@ -33,7 +33,7 @@ class InterfaceAppplication(ExtApplication):
     mrt_config = {
         "get_mac": {
             "map_script": "get_mac_address_table",
-            "timeout": 120,
+            "timeout": config.script.timeout,
             "access": "get_mac"
         }
     }

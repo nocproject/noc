@@ -38,7 +38,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             hidden: true,
             menu: [
                 {
-                    text: __("About NOC ..."),
+                    text: __("About system ..."),
                     glyph: NOC.glyph.question_circle,
                     scope: me.app,
                     handler: me.app.onAbout

@@ -21,6 +21,7 @@ from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParamete
     IntParameter, StringParameter
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
+from noc.config import config
 
 
 class VCApplication(ExtModelApplication):
@@ -42,12 +43,12 @@ class VCApplication(ExtModelApplication):
     mrt_config = {
         "get_vlans": {
             "map_script": "get_vlans",
-            "timeout": 120,
+            "timeout": config.script.timeout,
             "access": "import"
         },
         "set_switchport": {
             "map_script": "set_switchport",
-            "timeout": 120,
+            "timeout": config.script.timeout,
             "access": "set_untagged"
         }
     }

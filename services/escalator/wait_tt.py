@@ -13,11 +13,12 @@ import datetime
 from noc.fm.models.utils import get_alarm
 from escalation import tt_system_cache
 from noc.core.scheduler.job import Job
+from noc.config import config
 
 
 logger = logging.getLogger(__name__)
 
-CHECK_INTERVAL = 60
+CHECK_INTERVAL = config.escalator.wait_tt_check_interval
 
 
 def wait_tt(alarm_id):

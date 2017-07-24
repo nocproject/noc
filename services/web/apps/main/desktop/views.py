@@ -108,7 +108,7 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_google_sat": config.gis.enable_google_sat,
             "enable_gis_base_google_roadmap": config.gis.enable_google_roadmap,
             "trace_extjs_events": False,
-            "preview_theme": "midnight",
+            "preview_theme": config.customization.preview_theme,
             "enable_search": enable_search
         }
         return self.render(
@@ -342,10 +342,21 @@ class DesktopApplication(ExtApplication):
 
     @view(url="^about/", method=["GET"], access=True, api=True)
     def api_about(self, request):
-        cp = CPClient()
-        return {
-            "version": get_version(),
-            "installation": config.installation_name,
-            "system_id": cp.system_uuid,
-            "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
-        }
+        if config.features.cpclient:
+            cp = CPClient()
+            return {
+                "logo_url": config.customization.logo_url,
+                "brand": config.brand,
+                "version": get_version(),
+                "installation": config.installation_name,
+                "system_id": cp.system_uuid,
+                "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
+            }
+        else:
+            return {
+                "logo_url": config.customization.logo_url,
+                "brand": config.brand,
+                "version": get_version(),
+                "installation": config.installation_name,
+                "copyright": "2007-%d, %s" % (datetime.date.today().year, config.brand)
+            }

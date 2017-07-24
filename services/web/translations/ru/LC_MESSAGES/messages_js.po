@@ -3878,7 +3878,7 @@ msgid "By Active"
 msgstr ""
 
 #: ui/web/main/desktop/About.js:11
-msgid "About NOC"
+msgid "About system"
 msgstr ""
 
 #: ui/web/fm/alarm/Application.js:182 ui/web/fm/alarm/Application.js:200
@@ -3931,7 +3931,7 @@ msgid "Anonymous"
 msgstr "Анонимный"
 
 #: ui/web/main/desktop/HeaderPanel.js:41
-msgid "About NOC ..."
+msgid "About system ..."
 msgstr "О программе ..."
 
 #: ui/web/main/desktop/HeaderPanel.js:48

@@ -64,6 +64,7 @@ class ReportFilterApplication(SimpleReport):
         avail = {}
         mos = ManagedObject.objects.filter(is_managed=True)
 
+        # % fixme remove.
         if not pool and request.user.is_superuser:
             pool = Pool.get_by_name("STAGEMO")
         if pool:

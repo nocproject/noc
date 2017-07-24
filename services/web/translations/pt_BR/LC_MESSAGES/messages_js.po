@@ -2630,8 +2630,8 @@ msgid "Anonymous"
 msgstr "Anônimo"
 
 #: ui/web/main/desktop/HeaderPanel.js:41
-msgid "About NOC ..."
-msgstr "Sobre o NOC ..."
+msgid "About system ..."
+msgstr "Sobre o sistema ..."
 
 #: ui/web/main/desktop/HeaderPanel.js:48
 msgid "User profile ..."

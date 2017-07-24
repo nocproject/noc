@@ -26,7 +26,8 @@ class ActivatorAPI(API):
     """
     name = "activator"
 
-    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=20, request_timeout=30)
+    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=config.activator.http_connect_timeout,
+                                request_timeout=config.activator.http_request_timeout)
 
     @api
     @executor("script")
@@ -146,9 +147,9 @@ class ActivatorAPI(API):
         self.logger.debug("HTTP GET %s", url)
         code, header, body = yield fetch(
             url,
-            request_timeout=20,
+            request_timeout=config.activator.http_request_timeout,
             follow_redirects=True,
-            validate_cert=False
+            validate_cert=config.activator.http_validate_cert
         )
         if 200 <= code <= 299:
             raise tornado.gen.Return(body)
