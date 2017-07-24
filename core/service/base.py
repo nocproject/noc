@@ -72,10 +72,7 @@ class Service(object):
 
     # Format string to set process name
     # config variables can be expanded as %(name)s
-    if pooled:
-        process_name = "noc-%(name).10s-%(pool).5s"
-    else:
-        process_name = "noc-%(name).10s"
+    process_name = "noc-%(name).10s"
 
     # Run NSQ writer on service startup
     require_nsq_writer = False

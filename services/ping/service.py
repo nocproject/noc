@@ -31,6 +31,7 @@ class PingService(Service):
     leader_group_name = "ping-%(pool)s"
     pooled = True
     require_nsq_writer = True
+    process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
         super(PingService, self).__init__()
