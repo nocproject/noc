@@ -10,6 +10,7 @@
 from __future__ import print_function
 import itertools
 import os
+import six
 # Third-party modules
 import yaml
 # NOC modules
@@ -57,10 +58,12 @@ class YAMLProtocol(BaseProtocol):
                 for pp in prefix[len(current):]:
                     r += ["%s%s:" % (self.INDENT * len(current), pp)]
                     current += [pp]
+            if isinstance(v, six.string_types) and v.startswith("%"):
+                v = "\\" + v
             r += ["%s%s: %s" % (self.INDENT * len(current), p[-1], v)]
         r = "\n".join(r)
         if self.path:
             with open(self.path, "w") as f:
                 f.write(r)
         else:
-            print(r)
+            print(yaml.dump(yaml.load(r), default_flow_style=False))
