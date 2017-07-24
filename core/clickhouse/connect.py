@@ -45,12 +45,15 @@ class ClickhouseClient(object):
         if sql:
             if args:
                 sql = sql % tuple(q(v) for v in args)
-            qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
+            if post:
+                qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
+            else:
+                post = sql.encode('utf8')
         url = "http://%s:%s/?%s" % (self.HOST, self.PORT, "&".join(qs))
         code, headers, body = fetch_sync(
             url,
-            method="POST" if post else "GET",
-            body=post if post else None,
+            method="POST",
+            body=post,
             connect_timeout=self.CONNECT_TIMEOUT,
             request_timeout=self.REQUEST_TIMEOUT
         )
