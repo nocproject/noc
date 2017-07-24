@@ -53,9 +53,6 @@ class Service(object):
     """
     # Service name
     name = None
-    # Format string to set process name
-    # config variables can be expanded as %(name)s
-    process_name = "noc-%(name).10s"
     # Leader lock name
     # Only one active instace per leader lock can be active
     # at given moment
@@ -72,6 +69,13 @@ class Service(object):
     # May be used in conjunction with leader_group_name
     # to allow only one instance of services per node or datacenter
     pooled = False
+
+    # Format string to set process name
+    # config variables can be expanded as %(name)s
+    if pooled:
+        process_name = "noc-%(name).10s-%(pool).5s"
+    else:
+        process_name = "noc-%(name).10s"
 
     # Run NSQ writer on service startup
     require_nsq_writer = False
@@ -486,7 +490,7 @@ class Service(object):
 
     def get_register_tags(self):
         tags = []
-        if self.traefik_backend and self.traefik_frontend_rule:
+        if config.features.traefik:
             tags += [
                 "traefik.tags=backend",
                 "traefik.backend=%s" % self.traefik_backend,
