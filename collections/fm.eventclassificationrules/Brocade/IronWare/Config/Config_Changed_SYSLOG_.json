@@ -1,5 +1,6 @@
 {
     "name": "Brocade | IronWare | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bcb9bb2a-671e-41c3-9298-701890b2b671",
     "description": "Aug 9 09:23:01 AkrasRoot System: Running-config was changed by user USER from telnet client 10.200.202.199",
     "event_class__name": "Config | Config Changed",

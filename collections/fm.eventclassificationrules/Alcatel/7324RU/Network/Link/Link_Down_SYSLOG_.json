@@ -1,5 +1,6 @@
 {
     "name": "Alcatel | 7324RU | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fd13c2ff-8ea6-4b9a-ad60-5731aa26b81b",
     "description": "DSLAM-10:MINOR,+LINE_DOWN:The line is down",
     "event_class__name": "Network | Link | Link Down",
