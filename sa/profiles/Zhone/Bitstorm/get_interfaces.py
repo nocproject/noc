@@ -19,47 +19,124 @@ class Script(BaseScript):
     name = "Zhone.Bitstorm.get_interfaces"
     interface = IGetInterfaces
 
+    rx_eth = re.compile(
+        r"^\s*Port (?P<port>eth\d+) Configuration\s*\n"
+        r"^\s*\n"
+        r"(^\s*state \(admin status\)\s+(?P<admin_status>up|down)\s*\n)?"
+        r"^\s*connector\s+\S+\s*\n"
+        r"^\s*mode\s+\S+\s*\n"
+        r"^\s*rate\s+\S+\s*\n"
+        r"^\s*flow-control\s+\S+\s*\n"
+        r"^\s*xover\s+\S+\s*\n"
+        r"^\s*pvid\s+(?P<vlan_id>\d+)\s*\n",
+        re.MULTILINE
+    )
+    rx_inband = re.compile(
+        r"^Inband Management Address (?P<ifnum>\d+):\s*\n"
+        r"^\s*ip address\s+(?P<ip>\S+)( \(dhcp\))?\s*\n"
+        r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
+        r"^\s*Vlan ID\s+(?P<vlan_id>\d+)\s*\n"
+        r"^\s*port status\s+(?P<admin_status>enable|disable)\s*\n"
+        r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n",
+        re.MULTILINE
+    )
+    rx_inband2 = re.compile(
+        r"^\s*ip address\s+(?P<ip>\S+)( \(dhcp\))?\s*\n"
+        r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
+        r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n",
+        re.MULTILINE
+    )
+    rx_outband = re.compile(
+        r"^\s*ip address\s+(?P<ip>\S+)( \(dhcp\))?\s*\n"
+        r"^\s*subnet mask\s+(?P<mask>\S+)\s*\n"
+        r"^\s*MAC Address\s+(?P<mac>\S+)\s*\n"
+        r"(^\s*Port Status\s+(?P<admin_status>enable|disable)\s*\n)?",
+        re.MULTILINE
+    )
+
     def execute(self):
-        v = self.cli("show interface ethernet all configuration", cached=True)
-        v = v.split("\n\n\n")
-
-        result = {'null': 'null'}
         interfaces = []
-
-        for k in v:
-            x = re.split(r'\s{2,20}', k)
-
-            i = len(x) - 1
-            while x.count('') > 0:
-                if x[i].strip() == '':
-                    x.pop(i)
-                i -= 1
-
-            key = x[0].strip().split(r' ')[0]
-            value = x[0].strip().split(r' ')[1]
-            x.pop(0)
-            x.insert(0, value)
-            x.insert(0, key)
-
-            for i in range(0, len(x) - 1, 2):
-                result[x[i]] = x[i + 1]
-
+        v = self.cli("show interface ethernet all configuration")
+        for match in self.rx_eth.finditer(v):
             iface = {
-                "name": result.get('Port'),
+                "name": match.group('port'),
                 "type": "physical",
-                "admin_status": result.get('state (admin status)'),
-                "oper_status": result.get('state (admin status)'),
                 "subinterfaces": [{
-                    "name": result.get('Port'),
-                    "admin_status": result.get('state (admin status)'),
-                    "oper_status": result.get('state (admin status)'),
-                    "vlan_ids": int(result.get('pvid')),
-                    "tagged_vlans": [int(result.get('pvid'))]
+                    "name": match.group('port'),
+                    "enabled_afi": ["BRIDGE"],
+                    "untagged_vlan": int(match.group('vlan_id'))
                 }]
             }
-
+            if "admin_status" in match.groupdict():
+                iface["admin_status"] = match.group("admin_status") == "up"
+                iface["subinterfaces"][0]["admin_status"] = \
+                    match.group("admin_status") == "up"
             interfaces += [iface]
 
-            # print [{"interfaces": interfaces}]
+        v = self.cli("show management inband")
+        for match in self.rx_inband.finditer(v):
+            iface = {
+                "name": "inband" + match.group('ifnum'),
+                "admin_status": match.group("admin_status") == "enable",
+                "type": "SVI",
+                "mac": match.group("mac"),
+                "subinterfaces": [{
+                    "name": "inband" + match.group('ifnum'),
+                    "admin_status": match.group("admin_status") == "enable",
+                    "mac": match.group("mac")
+                }]
+            }
+            if match.group("ip") != "0.0.0.0":
+                ip = match.group("ip")
+                mask = match.group("mask")
+                ip_address = "%s/%s" % (ip, IPv4.netmask_to_len(mask))
+                iface["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
+                iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
+            if match.group("vlan_id") != "0":
+                iface["subinterfaces"][0]["vlan_ids"] = \
+                  [match.group("vlan_id")]
+            interfaces += [iface]
+
+        match = self.rx_inband2.search(v)
+        if match:
+            iface = {
+                "name": "inband",
+                "type": "SVI",
+                "mac": match.group("mac"),
+                "subinterfaces": [{
+                    "name": "inband",
+                    "mac": match.group("mac")
+                }]
+            }
+            if match.group("ip") != "0.0.0.0":
+                ip = match.group("ip")
+                mask = match.group("mask")
+                ip_address = "%s/%s" % (ip, IPv4.netmask_to_len(mask))
+                iface["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
+                iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
+            interfaces += [iface]
+
+        v = self.cli("show management out-of-band")
+        match = self.rx_outband.search(v)
+        iface = {
+            "name": "outband",
+            "type": "SVI",
+            "mac": match.group("mac"),
+            "subinterfaces": [{
+                "name": "outband",
+                "mac": match.group("mac")
+            }]
+        }
+        if "admin_status" in match.groupdict():
+            iface["admin_status"] = match.group("admin_status") == "enable"
+            iface["subinterfaces"][0]["admin_status"] = \
+                match.group("admin_status") == "enable"
+        if match.group("ip") != "0.0.0.0":
+            ip = match.group("ip")
+            mask = match.group("mask")
+            ip_address = "%s/%s" % (ip, IPv4.netmask_to_len(mask))
+            iface["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
+            iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
+        interfaces += [iface]
 
         return [{"interfaces": interfaces}]

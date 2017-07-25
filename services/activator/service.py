@@ -17,7 +17,7 @@ class ActivatorService(Service):
     api = [
         ActivatorAPI
     ]
-
+    process_name = "noc-%(name).10s-%(pool).5s"
     def __init__(self):
         super(ActivatorService, self).__init__()
 
