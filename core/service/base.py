@@ -43,6 +43,7 @@ from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
+from noc.core.span import get_spans, SPAN_FIELDS
 
 
 class Service(object):
@@ -488,18 +489,19 @@ class Service(object):
     def get_register_tags(self):
         tags = []
         if config.features.traefik:
-            tags += [
-                "traefik.tags=backend",
-                "traefik.backend=%s" % self.traefik_backend,
-                "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
-                "traefik.backend.load-balancing=wrr"
-            ]
-            weight = self.get_backend_weight()
-            if weight:
-                tags += ["traefik.backend.weight=%s" % weight]
-            limit = self.get_backend_limit()
-            if limit:
-                tags += ["traefik.backend.maxconn.amount=%s" % limit]
+            if self.traefik_backend and self.traefik_frontend_rule:
+                tags += [
+                    "traefik.tags=backend",
+                    "traefik.backend=%s" % self.traefik_backend,
+                    "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
+                    "traefik.backend.load-balancing=wrr"
+                ]
+                weight = self.get_backend_weight()
+                if weight:
+                    tags += ["traefik.backend.weight=%s" % weight]
+                limit = self.get_backend_limit()
+                if limit:
+                    tags += ["traefik.backend.maxconn.amount=%s" % limit]
         return tags
 
     @tornado.gen.coroutine
@@ -717,6 +719,11 @@ class Service(object):
 
     @tornado.gen.coroutine
     def send_metrics(self):
+        # Inject spans
+        spans = get_spans()
+        if spans:
+            self.register_metrics(SPAN_FIELDS, spans)
+        #
         if not self._metrics:
             return
         w = self.get_nsq_writer()

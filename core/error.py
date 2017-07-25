@@ -10,7 +10,8 @@
 from noc.core.perf import metrics
 
 # Unknown error
-ERR_UNKNOWN = 0
+NO_ERROR = 0
+ERR_UNKNOWN = 1
 
 #
 # RPC Errors - 9000-9999
