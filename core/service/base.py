@@ -85,6 +85,8 @@ class Service(object):
     use_translation = False
     # Initialize jinja2 templating engine
     use_jinja = False
+    # Collect and send spans
+    use_telemetry = False
     # Register traefik backend if not None
     traefik_backend = None
     # Traefik frontend rule
@@ -287,6 +289,9 @@ class Service(object):
         # Setup signal handlers
         self.setup_signal_handlers()
         #
+        if self.use_telemetry:
+            # Start sender callback
+            self.register_metrics(None, [])
         self.on_start()
         # Starting IOLoop
         self.is_active = True
@@ -715,7 +720,8 @@ class Service(object):
                     self.send_metrics, 250, self.ioloop
                 )
                 self.metrics_callback.start()
-            self._metrics[fields] += metrics
+            if fields:
+                self._metrics[fields] += metrics
 
     @tornado.gen.coroutine
     def send_metrics(self):
