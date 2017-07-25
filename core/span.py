@@ -79,6 +79,7 @@ class Span(object):
             tls.span_context = self.span_context
         tls.span_parent = self.span_id
         self.start = time.time()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         global spans

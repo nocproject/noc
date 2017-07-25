@@ -43,6 +43,7 @@ from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
+from noc.core.span import get_spans, SPAN_FIELDS
 
 
 class Service(object):
@@ -744,6 +745,11 @@ class Service(object):
 
     @tornado.gen.coroutine
     def send_ch_metrics(self):
+        # Inject spans
+        spans = get_spans()
+        if spans:
+            self.register_ch_metrics(SPAN_FIELDS, spans)
+        #
         if not self._ch_metrics:
             return
         w = self.get_nsq_writer()
