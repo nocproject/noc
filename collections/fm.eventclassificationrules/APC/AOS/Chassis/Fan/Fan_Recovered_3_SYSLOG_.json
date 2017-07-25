@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Chassis | Fan | Fan Recovered #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d76e39ac-639a-47ed-b526-f4020dcbbca7",
     "description": "UPS: System level fan fault no longer exists. 0x021E",
     "event_class__name": "Chassis | Fan | Fan Recovered",

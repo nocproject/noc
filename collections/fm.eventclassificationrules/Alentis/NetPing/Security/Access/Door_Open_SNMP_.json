@@ -1,5 +1,6 @@
 {
     "name": "Alentis | NetPing | Security | Access | Door Open (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a81ac448-9ed1-44cb-95e4-752ecbd176c7",
     "description": "Sensor Opened Door",
     "event_class__name": "Security | Access | Door Open",

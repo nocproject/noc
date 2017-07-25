@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Chassis | Fan | Fan Failed #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "168b25e8-d6b5-415f-aef5-3a26a2b09f5d",
     "description": "UPS: A base module fan fault exists. 0x0120",
     "event_class__name": "Chassis | Fan | Fan Failed",

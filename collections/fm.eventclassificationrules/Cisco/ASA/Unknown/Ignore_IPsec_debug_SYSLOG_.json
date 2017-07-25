@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASA | Unknown | Ignore IPsec debug (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4006c606-a936-4a73-9049-f4932365d8a4",
     "description": "PIX-7-715xxx debug messages",
     "event_class__name": "Unknown | Ignore",

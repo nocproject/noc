@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0b2dcce3-1a32-4f82-bd0a-b0c392d0ba06",
     "description": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",

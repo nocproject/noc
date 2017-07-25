@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Security | Authentication | Login (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "905e00bb-435f-489f-b468-964cd70825aa",
     "description": "System: Console user 'admin' logged in from 192.168.220.54. 0x0014",
     "event_class__name": "Security | Authentication | Login",

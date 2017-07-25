@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | Temperature Out of Range #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "77e03e2b-833c-4858-b190-f705b3b5dbe5",
     "description": "UPS: The internal UPS temperature exceeds the critical threshold. 0x0152",
     "event_class__name": "Environment | Temperature Out of Range",

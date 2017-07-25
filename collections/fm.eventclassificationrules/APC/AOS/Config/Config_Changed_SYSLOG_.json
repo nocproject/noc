@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f8215b4d-dfc4-4e11-adbb-82d14466a37c",
     "description": "System: SNMP configuration change. 0x0003",
     "event_class__name": "Config | Config Changed",

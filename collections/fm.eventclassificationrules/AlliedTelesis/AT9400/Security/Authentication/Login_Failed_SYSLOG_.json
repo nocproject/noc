@@ -1,5 +1,6 @@
 {
     "name": "AlliedTelesis | AT9400 | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "071b737c-983e-4d50-85ea-2b710808adf7",
     "description": "system: Login failure for admin from serial port",
     "event_class__name": "Security | Authentication | Login Failed",

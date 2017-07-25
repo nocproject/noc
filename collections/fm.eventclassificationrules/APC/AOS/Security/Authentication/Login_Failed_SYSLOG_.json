@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c02b186e-0a28-4eca-b9db-1c9ebab35395",
     "description": "System: Detected an unauthorized user attempting to access the Web interface from 10.111.0.18. 0x0006",
     "event_class__name": "Security | Authentication | Login Failed",

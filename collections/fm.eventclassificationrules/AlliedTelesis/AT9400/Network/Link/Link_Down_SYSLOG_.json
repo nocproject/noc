@@ -1,5 +1,6 @@
 {
     "name": "AlliedTelesis | AT9400 | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "51ae7a44-ea91-4232-b423-8984e575cbb8",
     "description": "pcfg: Link DOWN on port 20",
     "event_class__name": "Network | Link | Link Down",
