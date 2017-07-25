@@ -38,6 +38,8 @@ NS = 1000000000.0
 
 MT_COUNTER = "counter"
 MT_BOOL = "bool"
+MT_DELTA = "delta"
+MT_COUNTER_DELTA = set([MT_COUNTER, MT_DELTA])
 
 WT_MEASURES = "m"
 WT_TIME = "t"
@@ -354,7 +356,7 @@ class MetricsCheck(DiscoveryCheck):
         for m in result:
             path = m.path
             cfg = self.id_metrics.get(m.id)
-            if m.type == MT_COUNTER:
+            if m.type in MT_COUNTER_DELTA:
                 # Counter type
                 if path:
                     key = "%x|%s" % (
@@ -379,7 +381,10 @@ class MetricsCheck(DiscoveryCheck):
                     "[%s] Old value: %s@%s, new value: %s@%s.",
                     m.label, r[1], r[0], m.value, m.ts
                 )
-                cv = self.convert_counter(m, r)
+                if m.type == MT_COUNTER:
+                    cv = self.convert_counter(m, r)
+                else:
+                    cv = self.convert_delta(m, r)
                 if cv is None:
                     # Counter stepback or other errors
                     # Remove broken value
@@ -464,13 +469,12 @@ class MetricsCheck(DiscoveryCheck):
             alarms
         )
 
-    def convert_counter(self, m, r):
+    def convert_delta(self, m, r):
         """
-        Calculate value from counter, gently handling overflows
+        Calculate value from delta, gently handling overflows
         :param m: MData
         :param r: Old state (ts, value)
         """
-        dt = (float(m.ts) - float(r[0])) / NS
         if m.value < r[1]:
             # Counter decreased, either due wrap or stepback
             if r[1] <= MAX31:
@@ -497,9 +501,21 @@ class MetricsCheck(DiscoveryCheck):
                     "[%s] Counter wrap: %s -> %s",
                     m.label, r[1], m.value
                 )
-                return float(d_wrap) / dt
+                return d_wrap
         else:
-            return (float(m.value) - float(r[1])) / dt
+            return m.value - r[1]
+
+    def convert_counter(self, m, r):
+        """
+        Calculate value from counter, gently handling overflows
+        :param m: MData
+        :param r: Old state (ts, value)
+        """
+        dt = (float(m.ts) - float(r[0])) / NS
+        delta = self.convert_delta(m, r)
+        if delta is None:
+            return delta
+        return float(delta) / dt
 
     def get_window_function(self, m, cfg):
         """

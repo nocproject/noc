@@ -47,7 +47,7 @@ class IGetMetrics(BaseInterface):
         "value": FloatParameter(),
         # Measurement type
         "type": StringParameter(
-            choices=["gauge", "counter", "bool"]
+            choices=["gauge", "counter", "bool", "delta"]
         ),
         # Measurement scale
         "scale": IntParameter(default=1)
