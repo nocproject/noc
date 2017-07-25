@@ -288,10 +288,6 @@ class Service(object):
         self.set_proc_title()
         # Setup signal handlers
         self.setup_signal_handlers()
-        #
-        if self.use_telemetry:
-            # Start sender callback
-            self.register_metrics(None, [])
         self.on_start()
         # Starting IOLoop
         self.is_active = True
@@ -310,6 +306,10 @@ class Service(object):
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
+            #
+            if self.use_telemetry:
+                # Start sender callback
+                self.register_metrics(None, [])
             # Initialize DCS
             self.dcs = get_dcs(cmd_options["dcs"], self.ioloop)
             # Activate service
