@@ -48,7 +48,6 @@
       "query": "SELECT $timeSeries as t, avg(usage) `Memory | Usage` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "rawQuery": "SELECT (intDiv(toUInt32(ts), 30) * 30) * 1000 as t, avg(usage) `Memory | Usage` FROM noc.memory WHERE managed_object=208136039151454140 and date >= toDate(1500310550) AND ts >= toDateTime(1500310550) GROUP BY t ORDER BY t"
     }
   ],
   "timeFrom": null,
