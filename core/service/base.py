@@ -444,7 +444,7 @@ class Service(object):
                 a.name, self.address, self.port, a.name
             )
         #
-        if self.require_nsq_writer:
+        if self.require_nsq_writer or self.use_telemetry:
             self.get_nsq_writer()
         self.ioloop.add_callback(self.on_register)
 
