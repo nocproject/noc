@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | NTP | System Clock Synchronized (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "89081ec7-3c13-40d7-873e-9d88a8546c6e",
     "description": "%NTP-5-PEERSYNC: NTP synced to peer 192.168.100.253",
     "event_class__name": "Network | NTP | System Clock Synchronized",

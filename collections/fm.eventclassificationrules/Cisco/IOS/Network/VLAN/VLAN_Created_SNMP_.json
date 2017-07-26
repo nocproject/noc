@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | VLAN | VLAN Created (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fcca2a1d-3446-4d31-9489-223af2ab4ba0",
     "description": "CISCO-VTP-MIB::vtpVlanCreated",
     "event_class__name": "Network | VLAN | VLAN Created",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Config | Config Synced #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a5d7437c-08a6-4926-b3df-96a0cbe1e897",
     "description": "%PFINIT-SP-5-CONFIG_SYNC: Sync'ing the startup configuration to the standby Router.",
     "event_class__name": "Config | Config Synced",

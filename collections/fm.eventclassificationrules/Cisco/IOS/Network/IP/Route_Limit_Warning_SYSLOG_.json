@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | IP | Route Limit Warning (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4c0b5344-fa07-4463-99cf-24693dc7c535",
     "description": "%IPRT-3-ROUTELIMITWARNING: IP routing table limit warning - 1010:6699",
     "event_class__name": "Network | IP | Route Limit Warning",

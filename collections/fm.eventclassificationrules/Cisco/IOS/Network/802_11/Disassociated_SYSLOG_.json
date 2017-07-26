@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | 802.11 | Disassociated (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0d8935ed-2dc8-4625-9728-7ffdb1bc518d",
     "description": "2399: Aug 11 08:26:29.852 UTC: %DOT11-6-DISASSOC: Interface Dot11Radio0, Deauthenticating Station dc2b.6101.bcf8 Reason: Sending station has left the BSS",
     "event_class__name": "Network | 802.11 | Disassociated",

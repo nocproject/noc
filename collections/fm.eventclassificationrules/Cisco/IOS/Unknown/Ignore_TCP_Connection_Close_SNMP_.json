@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Unknown | Ignore TCP Connection Close (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9c7349de-83e0-401e-8747-b9e18c803bc6",
     "description": "CISCOTRAP-MIB::tcpConnectionClose",
     "event_class__name": "Unknown | Ignore",

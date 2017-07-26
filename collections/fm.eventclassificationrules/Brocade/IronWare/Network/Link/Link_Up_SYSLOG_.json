@@ -1,5 +1,6 @@
 {
     "name": "Brocade | IronWare | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c9f0fff4-dcfb-4f0d-9002-0fbffea0f3b4",
     "description": "Aug 8 21:34:39 Foudry-Core System: Interface ethernet 7/3, state up",
     "event_class__name": "Network | Link | Link Up",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | DOCSIS | Invalid DOCSIS Message #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2291aa74-b3ee-4829-93a0-e9e85be7f1eb",
     "description": "First fragment is lost or discarded.  Discard fragment.  SID = 50",
     "event_class__name": "Network | DOCSIS | Invalid DOCSIS Message",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | Link Up #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "eeda4346-8ee7-42b0-a940-5e279d7a00fd",
     "description": "CISCO-PRODUCTS-MIB::catalyst2950t24",
     "event_class__name": "Network | Link | Link Up",

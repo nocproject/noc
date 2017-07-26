@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | MPLS | LDP Neighbor Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0ab989e6-b4f0-4047-89aa-27c19c967ec5",
     "description": "%LDP-5-NBRCHG: LDP Neighbor 172.16.0.1:0 is UP",
     "event_class__name": "Network | MPLS | LDP Neighbor Up",

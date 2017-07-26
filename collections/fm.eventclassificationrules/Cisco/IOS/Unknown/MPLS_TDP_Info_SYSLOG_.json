@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Unknown | MPLS TDP Info (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7718c09b-c437-4c94-9d2b-7156f0c18b67",
     "description": "%TDP-5-INFO: Default-IP-Routing-Table: TDP ID removed",
     "event_class__name": "Unknown | Ignore",

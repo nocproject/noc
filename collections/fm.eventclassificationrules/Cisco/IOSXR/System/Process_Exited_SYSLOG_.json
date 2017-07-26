@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | System | Process Exited (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "67d21892-18d9-4e63-b837-37865be972b1",
     "description": "%OS-DUMPER-4-CRASH_INFO : Crashed pid = 471175 (pkg/bin/l2fib_mgr)",
     "event_class__name": "System | Process Exited",

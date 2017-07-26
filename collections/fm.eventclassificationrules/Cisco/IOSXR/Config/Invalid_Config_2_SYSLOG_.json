@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Config | Invalid Config #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c87bbfcd-7b67-4784-996a-34f6ed89b7d2",
     "description": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is incompatible with the bundle operational state; link is not using LACP but bundle is running mLACP",
     "event_class__name": "Config | Invalid Config",

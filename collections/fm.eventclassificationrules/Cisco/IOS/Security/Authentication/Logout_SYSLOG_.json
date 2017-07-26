@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Authentication | Logout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1c4c0a70-254c-4bc2-a34e-943f98998173",
     "description": "%SYS-6-EXIT_CONFIG: User has exited tty ",
     "event_class__name": "Security | Authentication | Logout",

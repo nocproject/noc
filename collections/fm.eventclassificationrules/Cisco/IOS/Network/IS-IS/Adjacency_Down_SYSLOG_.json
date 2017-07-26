@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | IS-IS | Adjacency Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "df270065-62a8-49ed-aa13-16fa629866b9",
     "description": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (GigabitEthernet1/9) Down, hold time expired",
     "event_class__name": "Network | IS-IS | Adjacency Down",

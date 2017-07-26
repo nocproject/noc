@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Unknown | Ignore BGP Notification #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3a965a56-8842-4532-8ba2-2ba1d5a6b721",
     "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
     "event_class__name": "Unknown | Ignore",

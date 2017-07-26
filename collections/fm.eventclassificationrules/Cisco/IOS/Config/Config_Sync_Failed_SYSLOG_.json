@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Config | Config Sync Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "391d2d69-3bae-4c5c-bcc8-ad70faf7bc6f",
     "description": "%PFINIT-SP-1-CONFIG_SYNC_FAIL: Sync'ing the startup configuration to the standby Router FAILED",
     "event_class__name": "Config | Config Synced",

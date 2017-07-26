@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "648c7cc3-f405-4a28-bd00-603ed795f08c",
     "description": "%OIR-SP-6-INSCARD: Card inserted in slot 3, interfaces are now online",
     "event_class__name": "Chassis | Hardware | Module | Module Inserted",

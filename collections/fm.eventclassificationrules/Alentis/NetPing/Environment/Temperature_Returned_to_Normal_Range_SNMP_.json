@@ -1,5 +1,6 @@
 {
     "name": "Alentis | NetPing | Environment | Temperature Returned to Normal Range (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a422d9a2-f64f-4149-b7bc-7e1092048060",
     "description": "Alentis NetPing Temperature Return To Normal",
     "event_class__name": "Environment | Temperature Returned to Normal Range",

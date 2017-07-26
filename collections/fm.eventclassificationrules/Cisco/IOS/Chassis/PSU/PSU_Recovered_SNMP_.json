@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Recovered (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "78410a7b-7a9b-4b25-bdad-ff4ee6327562",
     "description": "CISCO-ENVMON-MIB::ciscoEnvMonSuppStatusChangeNotif",
     "event_class__name": "Chassis | PSU | PSU Recovered",

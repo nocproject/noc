@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | OAM | Enter Session (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "95c98d3c-5c68-457d-89f6-3fb047102264",
     "description": "%ETHERNET_OAM-6-ENTER_SESSION: The client on interface Gi0/1 has entered the OAM session.",
     "event_class__name": "Network | OAM | Enter Session",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Audit | Command #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "595b5c77-0af9-4dbb-b1dd-9e4138dc70b2",
     "description": "%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down",
     "event_class__name": "Security | Audit | Command",

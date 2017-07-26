@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | PIM | Invalid RP #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4a712c8a-8299-4627-bf6e-6dacb93fe9f0",
     "description": "%PIM-1-INVALID_RP_REG: Received Register from router 150.1.13.3 for group 225.1.1.1, 150.1.4.4 not willing to be RP",
     "event_class__name": "Network | PIM | Invalid RP",

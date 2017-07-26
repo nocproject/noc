@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | MSDP | Peer Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9a04a681-fb7d-4813-9a3c-923e864198cf",
     "description": "%MSDP-5-PEER_UPDOWN: Session to peer 10.225.205.12 going up",
     "event_class__name": "Network | MSDP | Peer Up",

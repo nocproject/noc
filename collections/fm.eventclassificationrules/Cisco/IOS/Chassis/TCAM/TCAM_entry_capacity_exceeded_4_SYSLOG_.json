@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | TCAM | TCAM entry capacity exceeded #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "eb8e3b12-0fd4-40a7-826a-070a76d5750a",
     "description": "%MLSCEF-DFC8-4-FIB_EXCEPTION_THRESHOLD: Hardware CEF entry usage is at 95% capacity for IPv4 unicast protocol.",
     "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",

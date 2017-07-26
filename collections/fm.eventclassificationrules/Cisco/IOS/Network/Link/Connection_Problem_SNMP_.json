@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | Connection Problem (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5cc91d44-b361-4e52-924f-5ec28269d3c1",
     "description": "SNMPv2-MIB::snmpTraps",
     "event_class__name": "Network | Link | Connection Problem",

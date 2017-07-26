@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Supervisor | Supervisor Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3d85f6f8-4665-4c51-ab65-28c611c45ffe",
     "description": "%C4K_REDUNDANCY-6-DUPLEX_MODE: The peer Supervisor has beendetected",
     "event_class__name": "Chassis | Supervisor | Supervisor Up",

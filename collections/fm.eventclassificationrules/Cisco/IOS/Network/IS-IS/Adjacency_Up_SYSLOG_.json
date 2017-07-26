@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | IS-IS | Adjacency Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ef2d0003-cd5f-4a5d-8d36-c4f9387b7a66",
     "description": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (TenGigabitEthernet8/2) Up, new adjacency",
     "event_class__name": "Network | IS-IS | Adjacency Up",

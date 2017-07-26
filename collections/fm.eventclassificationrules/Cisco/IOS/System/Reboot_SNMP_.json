@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | System | Reboot (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1acccb88-f6bb-4e35-a96a-82169a1e9cc7",
     "description": "CISCOTRAP-MIB::reload",
     "event_class__name": "System | Reboot",

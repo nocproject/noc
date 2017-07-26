@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Fan | Fan Failed #10 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2ed1849e-431a-4c84-9bd0-7b067310d92f",
     "description": "%PLATFORM_ENV-1-FAN: Faulty fan detected",
     "event_class__name": "Chassis | Fan | Fan Failed",

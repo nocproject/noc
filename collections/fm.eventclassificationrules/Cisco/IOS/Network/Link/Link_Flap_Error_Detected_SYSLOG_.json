@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | Link Flap Error Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "8bcec903-efa2-46f1-8510-cc3ac8d9c8c0",
     "description": "%PM-4-ERR_DISABLE: link-flap error detected on Te1/6, putting Te1/6 in err-disable state",
     "event_class__name": "Network | Link | Link Flap Error Detected",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9f0489dd-c4a5-42a5-b4dc-797d77681745",
     "description": "%DIAG-SP-3-MINOR_HW: Module 1: Online Diagnostics detected Minor Hardware Error",
     "event_class__name": "Chassis | Hardware | Module | Module Error",

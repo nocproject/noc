@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | LAG | Bundle (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "58427f64-de1e-4b51-bbc8-9bc825d9f4b6",
     "description": "%EC-5-BUNDLE: Interface Gi1/0/1 joined port-channel Po1.",
     "event_class__name": "Network | LAG | Bundle",

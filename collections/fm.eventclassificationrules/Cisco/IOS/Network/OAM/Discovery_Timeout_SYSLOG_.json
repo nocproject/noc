@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | OAM | Discovery Timeout (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "70805b74-3c94-490e-8da1-fe5ee4050afa",
     "description": "%ETHERNET_OAM-6-LINK_TIMEOUT: The client on interface Gi0/1 has timed out and exited the OAM session.",
     "event_class__name": "Network | OAM | Discovery Timeout",

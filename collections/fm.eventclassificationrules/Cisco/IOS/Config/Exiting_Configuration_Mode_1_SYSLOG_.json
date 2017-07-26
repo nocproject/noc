@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Config | Exiting Configuration Mode #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "030fc768-818a-4023-8cb9-1818693bff36",
     "description": "%SYS-5-CONFIG_I: Configured from console by vty0 (172.17.1.51)",
     "event_class__name": "Config | Exiting Configuration Mode",

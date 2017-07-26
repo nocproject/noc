@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Environment | Temperature Returned to Normal Range (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "92ef0705-594c-43a6-9e4c-9ff24929efdc",
     "description": "%PLATFORM-ENVMON-2-TEMP_CLEAR : Hotpoint temp sensor(slot 19) temperature has returned to a normal level at 65(C)",
     "event_class__name": "Environment | Temperature Returned to Normal Range",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Unknown | Ignore PLATFORM-ENVMON-2-ENV_CONDITION #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "87dbc36b-555c-4620-bcf3-cd7a00cf7947",
     "description": "%PLATFORM-ENVMON-2-ENV_CONDITION : Outstanding environmental condition exists in the chassis",
     "event_class__name": "Unknown | Ignore",

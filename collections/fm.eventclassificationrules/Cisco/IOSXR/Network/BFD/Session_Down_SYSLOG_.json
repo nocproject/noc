@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | BFD | Session Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5cc5c237-9568-446c-bf35-fb57e25a9e51",
     "description": "%L2-BFD-6-SESSION_STATE_DOWN : BFD session to neighbor 192.168.1.1 on interface GigabitEthernet0/1/0/19 has gone down. Reason: Echo function failed",
     "event_class__name": "Network | BFD | Session Down",

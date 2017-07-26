@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Supervisor | Supervisor Down #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2f42b49d-fda5-47b9-a185-80c8ca00c65f",
     "description": "%REDUNDANCY-3-STANDBY_LOST: Standby processor fault (PEER_DOWN_INTERRUPT)",
     "event_class__name": "Chassis | Supervisor | Supervisor Down",

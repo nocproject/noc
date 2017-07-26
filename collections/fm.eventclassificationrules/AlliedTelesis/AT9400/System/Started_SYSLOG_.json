@@ -1,5 +1,6 @@
 {
     "name": "AlliedTelesis | AT9400 | System | Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b3e38d9c-93fc-4cb9-bdf7-59ef0a60999f",
     "description": "system: System initialization complete",
     "event_class__name": "System | Started",

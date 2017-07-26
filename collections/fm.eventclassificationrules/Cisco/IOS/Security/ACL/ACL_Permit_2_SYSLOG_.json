@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | ACL | ACL Permit #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5b9ff85e-77f2-4a8d-b95f-c78baebb6006",
     "description": "%SEC-6-IPACCESSLOGP: list ins_ban permitted udp 3.1.2.1(500) (GigabitEthernet0/1.3321 001f.9d60.741b) -> 7.2.2.6(500), 24 packets",
     "event_class__name": "Security | ACL | ACL Permit",

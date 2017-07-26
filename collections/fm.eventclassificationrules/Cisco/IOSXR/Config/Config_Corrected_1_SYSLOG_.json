@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Config | Config Corrected #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "893fcb32-c83c-4226-b63f-ef9faedc8adf",
     "description": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Misconfiguration cleared, re-enabling Node 195.98.32.93 in IG 1.",
     "event_class__name": "Config | Config Corrected",

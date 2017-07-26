@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Chassis | PSU | PSU Failed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f019eac5-70dc-4a62-ab44-7be6c4591855",
     "description": "UPS: A logic power supply fault exists. 0x0169",
     "event_class__name": "Chassis | PSU | PSU Failed",

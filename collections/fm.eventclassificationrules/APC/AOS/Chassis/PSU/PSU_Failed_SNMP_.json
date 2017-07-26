@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Chassis | PSU | PSU Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5aecfb26-7bd1-4648-bffa-d0c80260ec8b",
     "description": "PowerNet-MIB::apc",
     "event_class__name": "Chassis | PSU | PSU Failed",
