@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f56bb955-44d5-44b6-ba39-3c0ee7fa3022",
     "description": "RP/0/RSP0/CPU0:Oct 19 20:29:37.103 : config[65891]: %MGBL-CONFIG-6-DB_COMMIT : Configuration committed by user 'cisco'. Use 'show configuration commit changes 1000000783' to view the changes.",
     "event_class__name": "Config | Config Changed",

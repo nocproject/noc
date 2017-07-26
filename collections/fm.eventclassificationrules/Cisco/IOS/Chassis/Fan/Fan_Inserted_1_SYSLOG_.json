@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Fan | Fan Inserted #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "30d1515b-de2e-453d-8061-cc50a0fd84df",
     "description": "%C7600_ENV-SP-4-FANCOUNTOK: Required number of fan trays is present",
     "event_class__name": "Chassis | Fan | Fan Inserted",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c80d1e81-247a-4d47-8efe-f4bbabc98649",
     "description": "%SYS-2-SUP_TEMPOK: Supervisor in slot 5 EARL temperature OK",
     "event_class__name": "Environment | Temperature Returned to Normal Range",

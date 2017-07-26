@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Clock | Clock Failed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "017906a5-8f01-4bcd-9077-d0209ed93ad0",
     "description": "%UBR7200-6-HOLDOVER: Cable clock in Holdover mode",
     "event_class__name": "Chassis | Clock | Clock Failed",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | SCOS | Vendor | Cisco | SCOS | Security | Attack | Attack Detected #2",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e7606651-bdd1-4005-9417-cb4d6ca00e88",
     "description": "PCUBE-SE-MIB::moduleAttackFilterActivatedTrap",
     "event_class__name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",

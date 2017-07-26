@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | MAC | MAC Moved (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "44c33bbb-6ca0-4d26-93d6-aeb791f963b6",
     "description": "%L2-L2FIB-5-SECURITY_MAC_SECURE_VIOLATION_AC : MAC secure in AC GigabitEthernet0_1_0_19.29 detected violated packet - source MAC: 0025.5cdf.4060, destination MAC: 0100.5e00.0009; action: none",
     "event_class__name": "Network | MAC | MAC Moved",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded #2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f99b97ea-dbf7-40ef-b530-7247f629856f",
     "description": "CISCO-SLB-MIB::ciscoSlbMIBNotificationPrefix",
     "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | MAC | Duplicate MAC (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2a3fad74-728d-4a80-aeae-3adec67d8734",
     "description": "%UBR7200-4-DUPLICATEMAC: Cable modem 0017.0e82.0850 is online on both interface Cable1/0 and interface Cable2/0.",
     "event_class__name": "Network | MAC | Duplicate MAC",

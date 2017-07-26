@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | System | Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "453eb5ce-2b55-48bd-80fe-2ae0988a2b3c",
     "description": "%SYS-5-RESTART: System restarted --",
     "event_class__name": "System | Started",

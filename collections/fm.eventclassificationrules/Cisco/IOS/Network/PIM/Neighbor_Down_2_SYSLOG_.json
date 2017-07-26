@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | PIM | Neighbor Down #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e1d91bf7-3b79-4d30-abd9-c1ce7835a59e",
     "description": "%PIM-5-NBRCHG: VRF shpd: neighbor 172.18.228.154 DOWN on interface Vlan884 DR",
     "event_class__name": "Network | PIM | Neighbor Down",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #7 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "310c9f2f-9df0-494f-a3d9-75016e5c7825",
     "description": "%PS-3-PSOK: Power System is now normal",
     "event_class__name": "Chassis | PSU | PSU Recovered",

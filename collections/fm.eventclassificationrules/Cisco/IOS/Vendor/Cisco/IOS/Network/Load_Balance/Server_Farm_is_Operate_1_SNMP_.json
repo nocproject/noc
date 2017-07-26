@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate #1 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e54263dd-c4ed-4cac-935b-dfc0234d8f84",
     "description": "CISCO-SLB-MIB::ciscoSlbMIBNotificationPrefix",
     "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | DOCSIS | Maximum Capacity Reached (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b497cac2-0b47-4957-a42b-fb4cd5470437",
     "description": "%UBR7200-5-OVERLIMIT: Interface Cable1/0 Current total reservation of 20000 bps on Port U0, exceeds its maximum configured reservation limit of 19000 bps",
     "event_class__name": "Network | DOCSIS | Maximum Capacity Reached",

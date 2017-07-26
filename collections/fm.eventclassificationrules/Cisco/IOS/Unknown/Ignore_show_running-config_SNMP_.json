@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Unknown | Ignore show running-config (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d8b99aba-c88d-49ec-b37b-be6d2e10b1b1",
     "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent",
     "event_class__name": "Unknown | Ignore",

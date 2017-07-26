@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | STP | Root Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2a889d00-1192-4f8e-b021-f3b6bbeee32c",
     "description": "%SPANTREE-5-ROOTCHANGE: Root Changed for instance 1: New Root Port is GigabitEthernet0/48. New Root Mac Address is 0000.0032.0087",
     "event_class__name": "Network | STP | Root Changed",

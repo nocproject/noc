@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | DNS | Bad Query (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0910f46e-1db4-436c-a6d4-97f3bb3098bf",
     "description": "%DNSSERVER-3-BADQUERY: Bad DNS query from 7.2.1.2",
     "event_class__name": "Network | DNS | Bad Query",

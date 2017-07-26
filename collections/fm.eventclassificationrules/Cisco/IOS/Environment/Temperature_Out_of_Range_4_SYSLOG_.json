@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9a117e9f-7d46-4c5d-a9d4-9f97dcc84172",
     "description": "%SYS-0-MOD_THERMALSHUTDOWN: Module 2 'shutdown' temperature threshold exceeded on CPU 1",
     "event_class__name": "Environment | Temperature Out of Range",

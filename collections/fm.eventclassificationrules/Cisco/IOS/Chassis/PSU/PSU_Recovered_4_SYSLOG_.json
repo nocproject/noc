@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "885f95b4-421c-409c-b381-06fa93292a24",
     "description": "%ENVMON-5-48V_STATUS: -48V supply OK",
     "event_class__name": "Chassis | PSU | PSU Recovered",

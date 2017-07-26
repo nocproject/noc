@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Authentication | SNMP Authentication Failure (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "24e71548-bf7b-48af-ac09-00046ed60d7d",
     "description": "Security | Authentication | SNMP Authentication Failure",
     "event_class__name": "Security | Authentication | SNMP Authentication Failure",

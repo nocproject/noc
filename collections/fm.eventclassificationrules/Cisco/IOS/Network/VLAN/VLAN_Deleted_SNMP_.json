@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | VLAN | VLAN Deleted (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0e96bb00-29a1-4b82-833b-5953ce84c1af",
     "description": "CISCO-VTP-MIB::vtpVlanDeleted",
     "event_class__name": "Network | VLAN | VLAN Deleted",

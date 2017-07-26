@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Security | Audit | Clearing Counters (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e596f642-213c-416d-b5b1-ce79d9e5707d",
     "description": "%MGBL-IFSTATS-6-CLEAR_COUNTERS : Clear counters on TenGigE0/0/1/2",
     "event_class__name": "Security | Audit | Clearing Counters",

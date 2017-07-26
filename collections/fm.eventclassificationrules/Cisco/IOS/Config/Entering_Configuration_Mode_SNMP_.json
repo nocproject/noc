@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Config | Entering Configuration Mode (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "11da5f5e-f56b-487a-92f1-2b3e4c2b17cd",
     "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent",
     "event_class__name": "Config | Entering Configuration Mode",

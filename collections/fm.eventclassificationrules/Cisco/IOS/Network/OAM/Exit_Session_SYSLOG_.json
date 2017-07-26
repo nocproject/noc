@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | OAM | Exit Session (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "68f09b95-d764-4edc-aa4f-f93ddedc606a",
     "description": "%ETHERNET_OAM-6-EXIT_SESSION: The client on interface Gi0/1 has left the OAM session.",
     "event_class__name": "Network | OAM | Exit Session",

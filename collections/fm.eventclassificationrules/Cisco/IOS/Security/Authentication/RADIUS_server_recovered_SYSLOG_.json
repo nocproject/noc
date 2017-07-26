@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Authentication | RADIUS server recovered (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a9f8e1f8-3868-473b-a09b-c1e71b706afc",
     "description": "%RADIUS-4-RADIUS_ALIVE: RADIUS server 192.168.167.124:1812,1813 is being marked alive.",
     "event_class__name": "Security | Authentication | RADIUS server recovered",

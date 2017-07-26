@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ac5788a2-d0ad-44f5-a4d5-34ed16ee5c48",
     "description": "%C4K_IOSINTF-5-TRANSCEIVERREMOVED: Slot=1 Port=3: Transceiver has been removed",
     "event_class__name": "Chassis | Hardware | Module | Module Removed",

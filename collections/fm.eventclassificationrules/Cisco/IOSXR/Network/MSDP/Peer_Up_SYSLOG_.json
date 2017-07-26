@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | MSDP | Peer Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "9e5a0d6d-39a6-43a7-b444-187a561fe36b",
     "description": "%ROUTING-MSDP-5-INIT_PEER_UP_DOWN : MSDP peer up:  1.1.1.1",
     "event_class__name": "Network | MSDP | Peer Up",

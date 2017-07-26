@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | Link | DOM | Warning: Out of Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "45407c80-6a57-4d99-9ccb-61cc9510858b",
     "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_WARNING : Set|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
     "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",

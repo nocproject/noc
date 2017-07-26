@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Unknown | Ignore BGP Notification #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2e49e12b-43e4-49be-9fe0-77b502f3a7d9",
     "description": "%BGP-3-NOTIFICATION: received from neighbor 10.110.0.11 6/5 (cease) 0 bytes",
     "event_class__name": "Unknown | Ignore",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | TCAM | TCAM entry capacity exceeded #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f9128d99-7eba-4d33-ba80-e21ba1a9cea7",
     "description": "%PLATFORM_UCAST-4-PREFIX: One or more, more specific prefixes could not be programmed into TCAM and are being covered by a less specific prefix, and the packets may be software forwarded",
     "event_class__name": "Chassis | TCAM | TCAM Entry Capacity Exceeded",
