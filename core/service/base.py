@@ -306,10 +306,6 @@ class Service(object):
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
-            #
-            if self.use_telemetry:
-                # Start sender callback
-                self.register_metrics(None, [])
             # Initialize DCS
             self.dcs = get_dcs(cmd_options["dcs"], self.ioloop)
             # Activate service
@@ -446,6 +442,9 @@ class Service(object):
         #
         if self.require_nsq_writer or self.use_telemetry:
             self.get_nsq_writer()
+        if self.use_telemetry:
+            # Start sender callback
+            self.register_metrics(None, [])
         self.ioloop.add_callback(self.on_register)
 
     @tornado.gen.coroutine
@@ -728,7 +727,7 @@ class Service(object):
         # Inject spans
         spans = get_spans()
         if spans:
-            self.register_metrics("span.%s" % SPAN_FIELDS, spans)
+            self.register_metrics(SPAN_FIELDS, spans)
         #
         if not self._metrics:
             return
