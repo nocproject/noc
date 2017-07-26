@@ -1,3 +1,9 @@
+- name: reload systemd
+  become: yes
+  systemd:
+    name: influxdb
+    daemon_reload: yes
+
 - name: restart influxdb
   debug:
     msg: "Influxdb configuration changed. it is recommended to restart it"

@@ -1,5 +1,9 @@
 ---
-# File: main.yml - Handlers for Consul
+- name: reload systemd
+  become: yes
+  systemd:
+    name: consul
+    daemon_reload: yes
 
 - name: restart consul
   become: yes
@@ -26,8 +30,3 @@
     name: telegraf
     state: reloaded
 
-- name: reload systemd
-  become: yes
-  systemd:
-    name: consul
-    daemon_reload: yes

@@ -42,3 +42,6 @@
     dest: "/etc/systemd/system/telegraf.service.d/noc.conf"
   tags:
     - config
+  notify:
+    - reload systemd
+    - restart telegraf
