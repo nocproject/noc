@@ -728,7 +728,7 @@ class Service(object):
         # Inject spans
         spans = get_spans()
         if spans:
-            self.register_metrics(SPAN_FIELDS, spans)
+            self.register_metrics("span.%s" % SPAN_FIELDS, spans)
         #
         if not self._metrics:
             return
