@@ -292,4 +292,16 @@
     notify: reload consul-template
   when: ansible_nodename in groups['svc-web'] and telegraf_influxdb_enabled
 
+- block:
+  - name: install noc_tgsender template
+    copy:
+      src: noc_tgsender.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_tgsender.ctmpl"
+    notify: reload consul-template
 
+  - name: install noc_tgsender config for template
+    template:
+      src: services/noc_tgsender.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_tgsender.conf"
+    notify: reload consul-template
+  when: ansible_nodename in groups['svc-tgsender'] and telegraf_influxdb_enabled

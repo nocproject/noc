@@ -18,7 +18,7 @@ from noc.config import config
 
 logger = logging.getLogger(__name__)
 
-NSQD_URL = "http://%s:%s/" % (config.nsqd.addresses[0].host, config.nsqd.addresses[0].port)
+NSQD_URL = "http://%s:%s/" % (config.nsqd.http_addresses[0].host, config.nsqd.http_addresses[0].port)
 NSQD_PUB_URL = NSQD_URL + "pub"
 NSQD_MPUB_URL = NSQD_URL + "mpub"
 

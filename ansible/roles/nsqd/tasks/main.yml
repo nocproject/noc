@@ -73,8 +73,11 @@
 
 - name: copy nsqd consul templates
   template:
-    src: nsqd.json
-    dest: "{{consul_configd_path}}"
+    src: "{{item}}"
+    dest: "{{consul_configd_path}}/"
   notify: reload consul
+  with_items:
+    - nsqd.json
+    - nsqdhttp.json
   tags:
     - consul

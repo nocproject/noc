@@ -292,6 +292,8 @@ class Config(BaseConfig):
     class nsqd(ConfigSection):
         addresses = ServiceParameter(service="nsqd",
                                      wait=True, near=True)
+        http_addresses = ServiceParameter(service="nsqdhttp",
+                                     wait=True, near=True)
         pub_retry_delay = FloatParameter(default=0.1)
         ch_chunk_size = IntParameter(default=4000)
         connect_timeout = SecondsParameter(default="3s")
