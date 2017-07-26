@@ -115,7 +115,7 @@ class ReportTraffic(SimpleReport):
         aa = datetime.date(int(a[0]), int(a[1]), int(a[2]))
         bb = datetime.date(int(b[0]), int(b[1]), int(b[2]))
         cc = aa - bb
-        dd = str(cc)
+        dd = str(cc + datetime.timedelta(days=1))
         interval = (dd.split()[0])
         # Load managed objects
         f = []
@@ -123,7 +123,7 @@ class ReportTraffic(SimpleReport):
         out_p = []
         columns = []
         if not request.user.is_superuser:
-            mos = mos.filter(
+            mos = ManagedObject.objects.filter(
                 administrative_domain__in=UserAccess.get_domains(request.user))
         if selectors:
             mos = selectors.managed_objects
