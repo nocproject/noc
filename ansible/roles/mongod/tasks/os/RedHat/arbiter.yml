@@ -3,7 +3,9 @@
   template:
     src: "os/RedHat/etc/sysconfig/mongod-arbiter.j2"
     dest: "/etc/sysconfig/mongod-arbiter"
-  notify: restart mongod-arbiter
+  notify:
+    - restart mongod-arbiter
+    - reload systemd
   tags:
     - config
 

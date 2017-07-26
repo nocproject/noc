@@ -1,4 +1,10 @@
 ---
+- name: reload systemd
+  become: yes
+  systemd:
+    name: pgbouncer
+    daemon_reload: yes
+
 - name: reload telegraf
   become: yes
   service:
@@ -11,11 +17,11 @@
     name: pgbouncer
     state: reloaded
 
-- name: reload systemd
+- name: restart pgbouncer
   become: yes
-  systemd:
+  service:
     name: pgbouncer
-    daemon_reload: yes
+    state: restarted
 
 - name: reload consul
   become: yes

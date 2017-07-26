@@ -64,6 +64,9 @@
     state: directory
   tags:
     - config
+  notify:
+    - reload systemd
+    - restart pgbouncer
 
 #https://www.freedesktop.org/software/systemd/man/systemd.unit.html#id-1.11.3
 #
@@ -79,7 +82,9 @@
   template:
     src: "etc/override.conf.j2"
     dest: "/etc/systemd/system/pgbouncer.service.d/noc.conf"
-  notify: reload systemd
+  notify:
+    - reload systemd
+    - restart pgbouncer
   tags:
     - config
 

@@ -1,4 +1,10 @@
 ---
+- name: reload systemd
+  become: yes
+  systemd:
+    name: keepalived
+    daemon_reload: yes
+
 - name: reload keepalived
   become: yes
   service:

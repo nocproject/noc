@@ -3,9 +3,6 @@
   template:
     src: etc/systemd/system/mongod-arbiter.service.j2
     dest: /etc/systemd/system/mongod-arbiter.service
-  register: arbiter_service
-  notify: restart mongod-arbiter
-
-- name: Reload systemd daemon
-  command: /usr/bin/systemctl daemon-reload
-  when: arbiter_service.changed
+  notify:
+    - restart mongod-arbiter
+    - reload systemd
