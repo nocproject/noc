@@ -321,7 +321,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             sclass, node;
 
         sclass = me.shapeRegistry.getShape(data.shape);
-        var name = joint.util.breakText(data.name.split("#")[0], {width: data.shape_width * 1.5});
+        var tokens = data.name.split("#");
+        tokens.pop();
+        var name = joint.util.breakText(tokens.join('#'), {width: data.shape_width * 1.5});
         node = new sclass({
             id: data.type + ":" + data.id,
             external: data.external,
