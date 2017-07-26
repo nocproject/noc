@@ -22,6 +22,7 @@ from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 class EscalatorService(Service):
     name = "escalator"
     leader_lock_name = "escalator"
+    use_telemetry = True
 
     def __init__(self, *args, **kwargs):
         super(EscalatorService, self).__init__(*args, **kwargs)
