@@ -28,6 +28,8 @@
     state: directory
   tags:
     - config
+  notify:
+    - reload systemd
 
 #https://www.freedesktop.org/software/systemd/man/systemd.unit.html#id-1.11.3
 #
@@ -45,6 +47,8 @@
     dest: "/etc/systemd/system/memcached.service.d/noc.conf"
   tags:
     - config
+  notify:
+    - reload systemd
 
 - name: start memcached
   service:

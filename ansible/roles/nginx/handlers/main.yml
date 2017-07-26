@@ -1,4 +1,10 @@
 ---
+- name: reload systemd
+  become: yes
+  systemd:
+    name: nginx
+    daemon_reload: yes
+
 - name: reload nginx
   become: yes
   service:

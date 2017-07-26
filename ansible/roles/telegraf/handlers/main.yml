@@ -1,4 +1,10 @@
 ---
+- name: reload systemd
+  become: yes
+  systemd:
+    name: telegraf
+    daemon_reload: yes
+
 - name: reload telegraf
   become: yes
   service:
