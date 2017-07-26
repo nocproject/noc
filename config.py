@@ -175,6 +175,7 @@ class Config(BaseConfig):
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
+        telemetry = BooleanParameter(default=False, help="Enable internal telemetry export to Clickhouse")
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")
