@@ -7,6 +7,8 @@
   with_items:
     - "{{ mongo_dir }}"
 
+- debug: var=mongo_logging_driver
+
 - name: Setting mongod config
   template:
     src: mongod.conf.j2

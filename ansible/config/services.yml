@@ -198,15 +198,12 @@ config:
       label: "memcached max memory"
       type: int
   mongod:
-    mongod_data_directory:
-      default: "/var/lib/mongo/"
-      description: "<strong> <a href=https://docs.mongodb.com/manual/ target=_blank> https://docs.mongodb.com/manual/ </a> </strong>"
-      label: "Mongo data directory"
+    mongod_logging_destination:
+      default: "file"
+      label: "Mongo logging driver"
+      description: "Valid options are: syslog, file. <strong>Use syslog if you can</strong>. File option is for backward compatibility only."
       type: str
-    mongod_journal_directory:
-      default: "/var/lib/mongo/journal"
-      label: "Mongo journal directory"
-      type: str
+
   mrt:
     max_concurrency:
       default: 50
