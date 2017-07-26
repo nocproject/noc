@@ -19,8 +19,9 @@ from noc.core.perf import metrics
 span_lock = threading.Lock()
 
 # Collected spans, protected by lock
-SPAN_FIELDS = "date.ts.ctx.id.parent.server.service.client.duration" \
-              ".error_code.error_text.sample.in_label.out_label"
+SPAN_FIELDS = "span.date.ts.ctx.id.parent.server.service.client" \
+              ".duration.error_code.error_text.sample" \
+              ".in_label.out_label"
 tls = threading.local()
 spans = []
 
