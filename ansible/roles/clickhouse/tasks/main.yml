@@ -35,3 +35,10 @@
     enabled: yes
     state: started
   when: ansible_distribution == "Ubuntu"
+
+- name: Start clickhouse service
+  service:
+    name: "clickhouse"
+    enabled: yes
+    state: started
+  when: ansible_distribution == "FreeBSD"
