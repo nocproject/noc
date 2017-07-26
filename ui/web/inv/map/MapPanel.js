@@ -15,7 +15,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     autoScroll: true,
     app: null,
     readOnly: false,
-    pollingInterval: 20000,
+    pollingInterval: 180000,
 
     svgFilters: {
         // Asbestos, #7f8c8d
