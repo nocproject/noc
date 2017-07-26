@@ -14,5 +14,5 @@ pattern = "noc-ping"
   {{- end}}
   ]
   method = "GET"
-  tag_keys = ["service", "instance"]
+  tag_keys = ["service", "instance", "pool"]
   tagexclude = ["server"]

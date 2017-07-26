@@ -108,6 +108,8 @@ class Profile(BaseProfile):
                 )
         if il.startswith("virtual-template"):
             return "Vi %s" % il[16:].strip()
+        if il.startswith("service-engine"):
+            return "Service-Engine %s" % il[14:].strip()
         # Serial0/1/0:15-Signaling -> Serial0/1/0:15
         if il.startswith("se") and "-" in interface:
             interface = interface.split("-")[0]
