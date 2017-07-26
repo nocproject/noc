@@ -75,6 +75,7 @@ class CLI(object):
         self.current_timeout = None
         self.is_closed = False
         self.close_timeout = None
+        self.setup_complete = False
 
     def close(self):
         if self.script.session:
@@ -184,7 +185,7 @@ class CLI(object):
             yield self.iostream.startup()
         # Perform all necessary login procedures
         if not self.is_started:
-            self.on_start()
+            yield self.on_start()
             self.motd = yield self.read_until_prompt()
             self.script.set_motd(self.motd)
             self.is_started = True
@@ -280,9 +281,9 @@ class CLI(object):
                     matched = self.buffer[:match.start()]
                     self.buffer = self.buffer[match.end():]
                     if isinstance(handler, tuple):
-                        r = handler[0](matched, match, *handler[1:])
+                        r = yield handler[0](matched, match, *handler[1:])
                     else:
-                        r = handler(matched, match)
+                        r = yield handler(matched, match)
                     if r is not None:
                         raise tornado.gen.Return(r)
 
@@ -388,16 +389,23 @@ class CLI(object):
             self.pattern_table[rx] = patterns[pattern_name]
         self.set_timeout(timeout)
 
+    @tornado.gen.coroutine
     def on_start(self, data=None, match=None):
         self.logger.debug("State: <START>")
-        self.expect({
-            "username": self.on_username,
-            "password": self.on_password,
-            "unprivileged_prompt": self.on_unprivileged_prompt,
-            "prompt": self.on_prompt,
-            "pager": self.send_pager_reply
-        }, self.profile.cli_timeout_start)
+        if self.profile.setup_sequence and not self.setup_complete:
+            self.expect({
+                "setup": self.on_setup_sequence
+            }, self.profile.cli_timeout_setup)
+        else:
+            self.expect({
+                "username": self.on_username,
+                "password": self.on_password,
+                "unprivileged_prompt": self.on_unprivileged_prompt,
+                "prompt": self.on_prompt,
+                "pager": self.send_pager_reply
+            }, self.profile.cli_timeout_start)
 
+    @tornado.gen.coroutine
     def on_username(self, data, match):
         self.logger.debug("State: <USERNAME>")
         self.send(
@@ -411,6 +419,7 @@ class CLI(object):
             "prompt": self.on_prompt
         }, self.profile.cli_timeout_user)
 
+    @tornado.gen.coroutine
     def on_password(self, data, match):
         self.logger.debug("State: <PASSWORD>")
         self.send(
@@ -425,6 +434,7 @@ class CLI(object):
             "pager": self.send_pager_reply
         }, self.profile.cli_timeout_password)
 
+    @tornado.gen.coroutine
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
         if not self.profile.command_super:
@@ -447,11 +457,13 @@ class CLI(object):
             "pager": self.send_pager_reply
         }, self.profile.cli_timeout_super)
 
+    @tornado.gen.coroutine
     def on_failure(self, data, match, error_cls=None):
         self.logger.debug("State: <FAILURE>")
         error_cls = error_cls or CLIError
         raise error_cls(self.buffer or data or None)
 
+    @tornado.gen.coroutine
     def on_prompt(self, data, match):
         self.logger.debug("State: <PROMT>")
         if not self.is_started:
@@ -464,6 +476,7 @@ class CLI(object):
         })
         return d
 
+    @tornado.gen.coroutine
     def on_super_username(self, data, match):
         self.logger.debug("State: SUPER_USERNAME")
         self.send(
@@ -478,6 +491,7 @@ class CLI(object):
             "pager": self.send_pager_reply
         }, self.profile.cli_timeout_user)
 
+    @tornado.gen.coroutine
     def on_super_password(self, data, match):
         self.send(
             (self.script.credentials.get("super_password", "") or "") +
@@ -489,6 +503,29 @@ class CLI(object):
             "pager": self.send_pager_reply,
             "unprivileged_prompt": (self.on_failure, CLILowPrivileges)
         }, self.profile.cli_timeout_password)
+
+    @tornado.gen.coroutine
+    def on_setup_sequence(self, data, match):
+        self.logger.debug("State: <SETUP>")
+        self.logger.debug(
+            "Performing setup sequence: %s",
+            self.profile.setup_sequence
+        )
+        lseq = len(self.profile.setup_sequence)
+        for i, c in enumerate(self.profile.setup_sequence):
+            cmd = c % self.script.credentials
+            yield self.send(cmd)
+            # Waiting for response and drop it
+            if i < lseq - 1:
+                resp = yield tornado.gen.with_timeout(
+                    self.ioloop.time() + 30,
+                    future=self.iostream.read_bytes(4096, partial=True),
+                    io_loop=self.ioloop
+                )
+                self.logger.debug("Receiving: %r", resp)
+        self.logger.debug("Setup sequence complete")
+        self.setup_complete = True
+        yield self.on_start(data, match)
 
     def build_patterns(self):
         """
@@ -516,6 +553,11 @@ class CLI(object):
             # .more_patterns is a list of (pattern, command)
             more_patterns = [x[0] for x in self.profile.pattern_more]
             self.more_commands = [x[1] for x in self.profile.pattern_more]
+        if self.profile.pattern_start_setup:
+            patterns["setup"] = re.compile(
+                self.profile.pattern_start_setup,
+                re.DOTALL | re.MULTILINE
+            )
         # Merge pager patterns
         patterns["pager"] = re.compile(
             "|".join([r"(%s)" % p for p in more_patterns]),
