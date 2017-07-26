@@ -320,7 +320,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this,
             sclass, node;
         var dataName = data.name;
-        if(dataName.indexOf('#')) {
+        if(dataName.indexOf('#') > 0) {
             var tokens = data.name.split("#");
             tokens.pop();
             dataName = tokens.join('#');
