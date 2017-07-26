@@ -85,6 +85,8 @@ class Service(object):
     use_translation = False
     # Initialize jinja2 templating engine
     use_jinja = False
+    # Collect and send spans
+    use_telemetry = False
     # Register traefik backend if not None
     traefik_backend = None
     # Traefik frontend rule
@@ -441,8 +443,11 @@ class Service(object):
                 a.name, self.address, self.port, a.name
             )
         #
-        if self.require_nsq_writer:
+        if self.require_nsq_writer or self.use_telemetry:
             self.get_nsq_writer()
+        if self.use_telemetry:
+            # Start sender callback
+            self.register_ch_metrics(None, [])
         self.ioloop.add_callback(self.on_register)
 
     @tornado.gen.coroutine
@@ -732,7 +737,8 @@ class Service(object):
                     self.send_ch_metrics, 250, self.ioloop
                 )
                 self.ch_metrics_callback.start()
-            self._ch_metrics[fields] += metrics
+            if fields:
+                self._ch_metrics[fields] += metrics
 
     @tornado.gen.coroutine
     def send_metrics(self):
