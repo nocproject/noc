@@ -87,7 +87,7 @@ class Span(object):
             return
         if exc_type:
             self.error_code = ERR_UNKNOWN
-            self.error_code = str(exc_val)
+            self.error_text = str(exc_val).strip("\t").replace("\t", " ")
         self.duration = int((time.time() - self.start) * US)
         lt = time.localtime(self.start)
         row = "\t".join(str(x) for x in [
