@@ -1,4 +1,11 @@
 ---
+
+- name: reload systemd
+  become: yes
+  systemd:
+    name: grafana-server
+    daemon_reload: yes
+
 - name: restart grafana
   become: yes
   service:
