@@ -29,7 +29,18 @@
 - name: Install Grafana simple datasource plugin
   shell: "grafana-cli plugins install grafana-simple-json-datasource"
   args:
-    creates: "{{ noc_root }}/var/db/grafana_plugins/grafana-simple-json-datasource/src/datasource.js"
+    creates: "{{grafana_plugins_dir}}/grafana-simple-json-datasource/src/datasource.js"
+  notify: restart grafana
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
+- name: Install Grafana clickhouse datasource plugin
+  shell: "grafana-cli plugins install vertamedia-clickhouse-datasource"
+  args:
+    creates: "{{grafana_plugins_dir}}/vertamedia-clickhouse-datasource/datasource.js"
   notify: restart grafana
   environment:
     http_proxy: "{{http_proxy}}"
