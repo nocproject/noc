@@ -60,3 +60,5 @@
   tags:
     - config
     - noc_config
+  environment:
+    NOC_CONFIG: "{{config_order}}"
