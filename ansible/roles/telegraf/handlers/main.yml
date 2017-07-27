@@ -9,6 +9,12 @@
   become: yes
   service:
     name: telegraf
+    state: reloaded
+
+- name: restart telegraf
+  become: yes
+  service:
+    name: telegraf
     state: restarted
 
 - name: reload consul
