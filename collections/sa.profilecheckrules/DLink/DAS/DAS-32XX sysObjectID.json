@@ -1,0 +1,13 @@
+{
+    "name": "DLink | DAS | DAS-32XX sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "b082e70e-9a50-472e-8214-6f3cb87ef1c6",
+    "description": "",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.3646.1300",
+    "action": "match",
+    "profile": "DLink.DAS"
+}
