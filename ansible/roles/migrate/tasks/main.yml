@@ -1,6 +1,28 @@
 # Migrate database schema
 ---
 
+- name: restart consul on freebsd
+  service:
+    name: consul
+    state: restarted
+  when: "'FreeBSD' in ansible_system"
+
+- name: pause for 10 sec on freebsd. wait for consul
+  pause:
+    seconds: 12
+  when: "'FreeBSD' in ansible_system"
+
+- name: restart consul-template on freebsd
+  service:
+    name: consul-template
+    state: restarted
+  when: "'FreeBSD' in ansible_system"
+
+- name: pause for 5 sec on freebsd. wait for consul-template
+  pause:
+    seconds: 5
+  when: "'FreeBSD' in ansible_system"
+
 - name: Migrate
   command: ./noc migrate
   args:
