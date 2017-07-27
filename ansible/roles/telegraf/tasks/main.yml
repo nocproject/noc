@@ -18,7 +18,7 @@
   template:
     src: "telegraf/basic_inputs.conf.j2"
     dest: "{{ telegraf_confd_path }}/basic_inputs.conf"
-  notify: restart telegraf
+  notify: reload telegraf
   tags:
     - config
 
@@ -27,7 +27,7 @@
     src: "telegraf/prom.conf.j2"
     dest: "{{ telegraf_confd_path }}/prom.conf"
   when: telegraf_prometheus_enabled
-  notify: restart telegraf
+  notify: reload telegraf
   tags:
     - config
 
@@ -36,7 +36,7 @@
     src: "telegraf/influx.conf.j2"
     dest: "{{ telegraf_confd_path }}/influx.conf"
   when: telegraf_influxdb_enabled
-  notify: restart telegraf
+  notify: reload telegraf
   tags:
     - config
 
@@ -45,14 +45,14 @@
     state: absent
     path: "{{ telegraf_confd_path }}/influx.conf"
   when: not telegraf_influxdb_enabled
-  notify: restart telegraf
+  notify: reload telegraf
 
 - name: remove prom output if disabled
   file:
     state: absent
     path: "{{ telegraf_confd_path }}/prom.conf"
   when: not telegraf_prometheus_enabled
-  notify: restart telegraf
+  notify: reload telegraf
 
 - name: Enable telegraf system service
   service:
