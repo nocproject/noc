@@ -53,7 +53,8 @@ def build(node):
         "NOC_DC": jcfg["nodes"][node]["datacenter"],
         "NOC_NODE": node,
         "NOC_USER": jcfg["config"]["noc"]["user"],
-        "NOC_ROOT": os.getcwd()
+        "NOC_ROOT": os.getcwd(),
+        "NOC_CONFIG": os.environ.get("NOC_CONFIG")
     }
     #search for jemalloc
     for path in JEMALLOC_LOCATION:
