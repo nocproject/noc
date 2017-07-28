@@ -42,7 +42,7 @@ class MemcachedCache(BaseCache):
             config.memcached.pool_size
         )
         self.pool = pylibmc.pools.ClientPool()
-        self.pool.fill(self.tpl_client, config.memcached_pool_size)
+        self.pool.fill(self.tpl_client, config.memcached.pool_size)
 
     def get(self, key, default=None, version=None):
         """
