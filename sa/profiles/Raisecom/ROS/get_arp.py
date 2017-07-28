@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_arp
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -19,8 +19,8 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_line = re.compile(
-        r"^\s*(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+\S+\s+"
-        r"(?P<interface>\d+)\s*\n", re.MULTILINE)
+        r"^\s*(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+(\S+\s+)?"
+        r"(?P<interface>\d+)(\s+dynamic\s+\d+)?\s*\n", re.MULTILINE)
 
     def execute(self):
         r = []

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
-        r"(?P<interface>(?:P|PC)?\d+)\s+"
+        r"(?P<interface>(?:P|PC|port)?\d+)\s+"
         r"(?P<vlan_id>\d+)\s*(?P<type>Hit|Static|dynamic)",
         re.MULTILINE | re.IGNORECASE)
 
