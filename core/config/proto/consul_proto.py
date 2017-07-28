@@ -49,7 +49,9 @@ class ConsulProtocol(BaseProtocol):
         else:
             pl = len(self.path) + 1
         index, kv_data = yield consul.kv.get(self.path, recurse=True, token=self.token)
-        for i in kv_data and kv_data:
+        if not kv_data:
+            return
+        for i in kv_data:
             k = i["Key"][pl:]
             v = i["Value"]
             c = k.count("/")
