@@ -456,7 +456,7 @@ class AssetCheck(DiscoveryCheck):
         """
         Get vendor instance or None
         """
-        if v is None or v == "OEM":
+        if v is None or v.startswith("OEM") or v == "None" or:
             v = "NONAME"
         v = v.upper()
         if v in self.vendors:
@@ -464,8 +464,10 @@ class AssetCheck(DiscoveryCheck):
         # Temporary fix
         if v == "D-LINK":
             v = "DLINK"
-        if v == "Intel Corp":
+        if "INTEL" in v:
             v = "INTEL"
+        if "FINISAR" in v:
+            v = "FINISAR"
         o = Vendor.objects.filter(code=v).first()
         if o:
             self.vendors[v] = o
