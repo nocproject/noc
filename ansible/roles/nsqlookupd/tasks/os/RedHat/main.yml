@@ -1,4 +1,22 @@
 ---
+- name: download nsq daemon
+  get_url:
+    url: "{{nsq_url}}"
+    dest: "{{nsq_temp_file}}"
+    validate_certs: yes
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: true
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: unanchive nsqd
+  unarchive:
+    src: "{{nsq_temp_file}}"
+    dest: "{{ noc_root }}"
+    extra_opts: ['--strip-components=1']
+    creates: "{{ noc_root }}/bin/nsqlookupd"
+
 - name: install nsqlookupd.service file
   template:
      src: etc/systemd/system/nsqlookupd.service
