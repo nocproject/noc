@@ -25,6 +25,7 @@ load_rc_config $name
 command="{{ noc_root }}/bin/${name}"
 required_files="${nsqd_config}"
 start_precmd=nsqd_prestart
+extra_commands="reload"
 
 command_args="-config ${nsqd_config} > {{ nsd_log_dir }}/nsqd.log 2>&1 &"
 
