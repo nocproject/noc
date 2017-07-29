@@ -334,7 +334,7 @@ class Config(BaseConfig):
     class pg(ConfigSection):
         addresses = ServiceParameter(
             service=["pgbouncer", "postgres"],
-            wait=True
+            wait=True, near=True
         )
         db = StringParameter(default="noc")
         user = StringParameter()
