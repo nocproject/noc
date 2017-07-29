@@ -26,7 +26,7 @@ class AlarmsExtractor(BaseExtractor):
     name = "alarms"
     extract_delay = config.bi.extract_delay_alarms
     clean_delay = config.bi.clean_delay_alarms
-    reboot_interval = config.bi.reboot_interval
+    reboot_interval = datetime.timedelta(config.bi.reboot_interval)
 
     def __init__(self, prefix, start, stop):
         super(AlarmsExtractor, self).__init__(prefix, start, stop)

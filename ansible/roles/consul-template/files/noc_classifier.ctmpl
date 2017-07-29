@@ -13,5 +13,5 @@ pattern = "noc-classifier"
      {{- end}}
   {{- end}}  ]
   method = "GET"
-  tag_keys = ["service", "instance"]
+  tag_keys = ["service", "instance", "pool"]
   tagexclude = ["server"]

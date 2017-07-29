@@ -1,3 +1,9 @@
+- name: reload systemd
+  become: yes
+  systemd:
+    name: "{{ mongod_system_service }}"
+    daemon_reload: yes
+
 - name: restart mongod
   become: yes
   service:
@@ -16,11 +22,6 @@
     name: telegraf
     state: reloaded
 
-- name: reload systemd
-  become: yes
-  systemd:
-    name: "{{ mongod_system_service }}"
-    daemon_reload: yes
 
 - name: reload consul
   become: yes

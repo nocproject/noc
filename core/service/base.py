@@ -43,6 +43,7 @@ from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
+from noc.core.span import get_spans, SPAN_FIELDS
 
 
 class Service(object):
@@ -53,9 +54,6 @@ class Service(object):
     """
     # Service name
     name = None
-    # Format string to set process name
-    # config variables can be expanded as %(name)s
-    process_name = "noc-%(name).10s"
     # Leader lock name
     # Only one active instace per leader lock can be active
     # at given moment
@@ -73,6 +71,10 @@ class Service(object):
     # to allow only one instance of services per node or datacenter
     pooled = False
 
+    # Format string to set process name
+    # config variables can be expanded as %(name)s
+    process_name = "noc-%(name).10s"
+
     # Run NSQ writer on service startup
     require_nsq_writer = False
     # List of API instances
@@ -83,6 +85,8 @@ class Service(object):
     use_translation = False
     # Initialize jinja2 templating engine
     use_jinja = False
+    # Collect and send spans
+    use_telemetry = False
     # Register traefik backend if not None
     traefik_backend = None
     # Traefik frontend rule
@@ -439,8 +443,11 @@ class Service(object):
                 a.name, self.address, self.port, a.name
             )
         #
-        if self.require_nsq_writer:
+        if self.require_nsq_writer or self.use_telemetry:
             self.get_nsq_writer()
+        if self.use_telemetry:
+            # Start sender callback
+            self.register_ch_metrics(None, [])
         self.ioloop.add_callback(self.on_register)
 
     @tornado.gen.coroutine
@@ -488,19 +495,20 @@ class Service(object):
 
     def get_register_tags(self):
         tags = []
-        if self.traefik_backend and self.traefik_frontend_rule:
-            tags += [
-                "traefik.tags=backend",
-                "traefik.backend=%s" % self.traefik_backend,
-                "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
-                "traefik.backend.load-balancing=wrr"
-            ]
-            weight = self.get_backend_weight()
-            if weight:
-                tags += ["traefik.backend.weight=%s" % weight]
-            limit = self.get_backend_limit()
-            if limit:
-                tags += ["traefik.backend.maxconn.amount=%s" % limit]
+        if config.features.traefik:
+            if self.traefik_backend and self.traefik_frontend_rule:
+                tags += [
+                    "traefik.tags=backend",
+                    "traefik.backend=%s" % self.traefik_backend,
+                    "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
+                    "traefik.backend.load-balancing=wrr"
+                ]
+                weight = self.get_backend_weight()
+                if weight:
+                    tags += ["traefik.backend.weight=%s" % weight]
+                limit = self.get_backend_limit()
+                if limit:
+                    tags += ["traefik.backend.maxconn.amount=%s" % limit]
         return tags
 
     @tornado.gen.coroutine
@@ -562,7 +570,7 @@ class Service(object):
         r = {
             "status": self.get_mon_status(),
             "service": self.name,
-            "instance": str(config.instance),
+            "instance": str(self.service_id),
             "node": config.node,
             "pid": self.pid,
             # Current process uptime
@@ -626,7 +634,7 @@ class Service(object):
         metric_decode_fail = "nsq_msg_decode_fail_%s" % t
         metric_processed = "nsq_msg_processed_%s" % t
         metric_deferred = "nsq_msg_deferred_%s" % t
-        lookupd = [str(a) for a in config.nsqlookupd.addresses]
+        lookupd = [str(a) for a in config.nsqlookupd.http_addresses]
         self.logger.info("Subscribing to %s/%s (lookupd: %s)",
                          topic, channel, ", ".join(lookupd))
         self.nsq_readers[handler] = NSQReader(
@@ -729,7 +737,8 @@ class Service(object):
                     self.send_ch_metrics, 250, self.ioloop
                 )
                 self.ch_metrics_callback.start()
-            self._ch_metrics[fields] += metrics
+            if fields:
+                self._ch_metrics[fields] += metrics
 
     @tornado.gen.coroutine
     def send_metrics(self):
@@ -742,6 +751,11 @@ class Service(object):
 
     @tornado.gen.coroutine
     def send_ch_metrics(self):
+        # Inject spans
+        spans = get_spans()
+        if spans:
+            self.register_ch_metrics(SPAN_FIELDS, spans)
+        #
         if not self._ch_metrics:
             return
         w = self.get_nsq_writer()

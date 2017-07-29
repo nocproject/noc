@@ -11,6 +11,15 @@ config:
       default: 0
       label: "IP ToS mark"
       type: int
+  zz_alerta:
+    url:
+      label: "Url"
+      description: "Alerta api url"
+      type: str
+    token:
+      label: "Token"
+      description: "Api token with write access"
+      type: str
   bi:
     language:
       default: en
@@ -198,15 +207,12 @@ config:
       label: "memcached max memory"
       type: int
   mongod:
-    mongod_data_directory:
-      default: "/var/lib/mongo/"
-      description: "<strong> <a href=https://docs.mongodb.com/manual/ target=_blank> https://docs.mongodb.com/manual/ </a> </strong>"
-      label: "Mongo data directory"
+    mongod_logging_destination:
+      default: "file"
+      label: "Mongo logging driver"
+      description: "Valid options are: syslog, file. <strong>Use syslog if you can</strong>. File option is for backward compatibility only."
       type: str
-    mongod_journal_directory:
-      default: "/var/lib/mongo/journal"
-      label: "Mongo journal directory"
-      type: str
+
   mrt:
     max_concurrency:
       default: 50
@@ -371,12 +377,21 @@ services:
   activator:
     description: >
       <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: Activator service" <br/>
+      <strong>Short description</strong>: Activator service <br/>
       <strong>Long description</strong>: Responsible for the collecting and processing data from network equipment.<br/>
       <strong>Scale Recommendations</strong>: At least two per core on node. <br/>
       <strong>docs</strong>: To be done<br/>
       <strong>Placement constraint</strong>: On separate node<br/>
     level: pool
+  zz_alerta:
+    description: >
+      <strong>Service type</strong>: Not a service <br/>
+      <strong>Short description</strong>: Configuration menu for alerta <br/>
+      <strong>Long description</strong>: If configured will be used for notifications about deploys. On Productions install only<br/>
+      <strong>Scale Recommendations</strong>: None<br/>
+      <strong>docs</strong>: http://docs.alerta.io/en/latest/ <br/>
+      <strong>Placement constraint</strong>:  Will not be placed. just to have config for it. <br/>
+    level: global
   bi:
     description: >
       <strong>Service type</strong>: Internal <br/>

@@ -1,4 +1,9 @@
 ---
+- name: reload systemd
+  systemd:
+    name: nsqlookupd
+    daemon_reload: yes
+
 - name: restart nsqlookupd
   become: yes
   service:
@@ -16,8 +21,3 @@
   service:
     name: consul
     state: reloaded
-
-- name: reload systemd
-  systemd:
-    name: nsqlookupd
-    daemon_reload: yes

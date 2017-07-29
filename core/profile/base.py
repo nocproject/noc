@@ -59,6 +59,9 @@ class BaseProfile(object):
     # If CLI output matches pattern_syntax_error and not matches
     # pattern_syntax_error, then CLIOperationError exception raised
     pattern_operation_error = None
+    # Reqular expression to start setup sequence
+    # defined in setup_sequence list
+    pattern_start_setup = None
     # Device can strip long hostname in various modes
     # i.e
     # my.very.long.hostname# converts to
@@ -116,6 +119,12 @@ class BaseProfile(object):
     telnet_slow_send_password = False
     # Telnet NAWS negotiation
     telnet_naws = "\x00\x80\x00\x80"
+    # List of strings containing setup sequence
+    # Setup sequence is initialized on pattern_start_setup during
+    # startup phase
+    # Strings sending one-by-one, waiting for response after
+    # each string, excluding last one
+    setup_sequence = None
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False
@@ -134,6 +143,8 @@ class BaseProfile(object):
     cli_timeout_password = 30
     # Timeout after submitting *command_super*
     cli_timeout_super = 10
+    # Timeout waiting next setup sequence response
+    cli_timeout_setup = 10
     # Aggregate up to *snmp_metrics_get_chunk* oids
     # to one SNMP GET request
     snmp_metrics_get_chunk = 15

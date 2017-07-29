@@ -41,11 +41,11 @@ SOUTH_DATABASE_ADAPTERS = {
 TIME_ZONE = config.timezone
 LANGUAGE_CODE = config.language_code
 # Set up date and time formats
-DATE_FORMAT = config.date_format
-TIME_FORMAT = config.time_format
-MONTH_DAY_FORMAT = config.month_day_format
-YEAR_MONTH_FORMAT = config.year_month_format
-DATETIME_FORMAT = config.datetime_format
+DATE_FORMAT = config.date_time_formats.date_format
+TIME_FORMAT = config.date_time_formats.time_format
+MONTH_DAY_FORMAT = config.date_time_formats.month_day_format
+YEAR_MONTH_FORMAT = config.date_time_formats.year_month_format
+DATETIME_FORMAT = config.date_time_formats.datetime_format
 
 SITE_ID = 1
 

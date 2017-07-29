@@ -8,6 +8,7 @@
 - name: Create Grafana directories
   file: path={{item}} state=directory owner={{grafana_user}} mode=0755
   with_items:
+    - "{{ grafana_plugins_dir }}"
     - /var/log/grafana
     - "{{ etc_prefix }}/grafana"
   notify: restart grafana

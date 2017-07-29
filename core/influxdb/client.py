@@ -33,12 +33,12 @@ class InfluxDBClient(object):
             query = ";".join(query)
         if isinstance(query, unicode):
             query = query.encode("utf-8")
-        svc = config.get_service("influxdb", limit=1)
+        svc = [str(a) for a in config.influxdb.addresses]
         if not svc:
             raise ValueError("No service configured")
         url = "http://%s/query?db=%s&q=%s" % (
             svc[0],
-            config.influx_db,
+            config.influxdb.db,
             urllib.quote(query)
         )
         code, headers, body = fetch_sync(

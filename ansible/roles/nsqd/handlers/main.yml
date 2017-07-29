@@ -1,9 +1,20 @@
 ---
+- name: reload systemd
+  systemd:
+    name: nsqd
+    daemon_reload: yes
+
 - name: restart nsqd
   become: yes
   service:
     name: nsqd
     state: restarted
+
+- name: reload nsqd
+  become: yes
+  service:
+    name: nsqd
+    state: reloaded
 
 - name: reload consul
   become: yes
@@ -17,7 +28,3 @@
     name: telegraf
     state: reloaded
 
-- name: reload systemd
-  systemd:
-    name: nsqd
-    daemon_reload: yes
