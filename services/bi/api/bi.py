@@ -20,6 +20,7 @@ from noc.core.clickhouse.model import Model
 from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
+from noc.bi.models.span import Span
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.sa.interfaces.base import (DictListParameter, DictParameter, IntParameter, StringParameter)
 from noc.core.translation import ugettext as _
@@ -47,7 +48,8 @@ class BIAPI(API):
     # @todo: Replace with dynamic loading
     datasources = [
         Reboots,
-        Alarms
+        Alarms,
+        Span
     ]
 
     def iter_datasources(self):
