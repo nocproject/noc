@@ -1,0 +1,2 @@
+nsq_url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.linux-amd64.go1.6.2.tar.gz
+nsq_temp_file: "{{tower_dist_dir}}/nsq-{{nsq_version}}.linux-amd64.go1.6.tar.gz"

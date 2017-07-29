@@ -15,7 +15,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     autoScroll: true,
     app: null,
     readOnly: false,
-    pollingInterval: 20000,
+    pollingInterval: 180000,
 
     svgFilters: {
         // Asbestos, #7f8c8d
@@ -319,9 +319,14 @@ Ext.define("NOC.inv.map.MapPanel", {
     createNode: function(data) {
         var me = this,
             sclass, node;
-
+        var dataName = data.name;
+        if(dataName.indexOf('#') > 0) {
+            var tokens = data.name.split("#");
+            tokens.pop();
+            dataName = tokens.join('#');
+        }
+        var name = joint.util.breakText(dataName, {width: data.shape_width * 1.5});
         sclass = me.shapeRegistry.getShape(data.shape);
-        var name = joint.util.breakText(data.name.split("#")[0], {width: data.shape_width * 1.5});
         node = new sclass({
             id: data.type + ":" + data.id,
             external: data.external,

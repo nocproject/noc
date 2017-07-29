@@ -30,8 +30,8 @@ class PingService(Service):
     #
     leader_group_name = "ping-%(pool)s"
     pooled = True
-    process_name = "noc-%(name).10s-%(pool).3s-%(instance).2s"
     require_nsq_writer = True
+    process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
         super(PingService, self).__init__()
@@ -77,6 +77,7 @@ class PingService(Service):
         self.logger.debug("Stating message sender task")
         self.send_callback = tornado.ioloop.PeriodicCallback(
             self.send_messages,
+            # @fixme have to be configured
             250,
             self.ioloop
         )
@@ -85,6 +86,7 @@ class PingService(Service):
         self.logger.debug("Stating object mapping task")
         self.mappings_callback = tornado.ioloop.PeriodicCallback(
             self.get_object_mappings,
+            # @fixme have to be configured
             300000,
             self.ioloop
         )

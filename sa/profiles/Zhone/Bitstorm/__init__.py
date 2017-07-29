@@ -3,7 +3,7 @@
 # Vendor: Zhone
 # OS:     Bitstorm
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ class Profile(BaseProfile):
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
+    command_disable_pager = "paging disable"
     pattern_password = r"Password>"
     # pattern_prompt = r"^(?P<hostname>\S+)\s*[#>]"
     # pattern_prompt = r"^(?P<hostname>\S+)(?<!Login)(?<!Password)\s*[#>]"

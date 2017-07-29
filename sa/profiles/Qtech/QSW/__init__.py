@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_username = r"^(Username\(1-32 chars\)|[Ll]ogin):"
     pattern_password = r"^Password(\(1-16 chars\)|):"
     pattern_more = [
-        (r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
+        (r"\n^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
             r"to next page\.\.\.\.", "\n"),
         (r"^Startup config in flash will be updated, are you sure\(y/n\)\? "
             r"\[n\]", "y"),
@@ -38,6 +38,7 @@ class Profile(BaseProfile):
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"
+    command_exit = "quit"
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
 

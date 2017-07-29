@@ -3,4 +3,6 @@
   template:
      src: "etc/systemd/nsqadmin.service"
      dest: "/etc/systemd/system/nsqadmin.service"
-  notify: reload systemd
+  notify:
+    - reload systemd
+    - restart nsqadmin

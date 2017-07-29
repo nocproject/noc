@@ -12,7 +12,7 @@ import os
 import yaml
 # NOC modules
 from base import BaseProtocol
-
+from noc.config import config
 
 class LegacyProtocol(BaseProtocol):
     """
@@ -21,7 +21,7 @@ class LegacyProtocol(BaseProtocol):
 
     legacy:///
     """
-    PATH = "etc/noc.yml"
+    PATH = config.path.legacy_config
     NOC_MAPPINGS = [
         ("noc.installation_name", "installation_name"),
         ("noc.language", "language"),
@@ -127,6 +127,9 @@ class LegacyProtocol(BaseProtocol):
         # SyslogCollector
         ("syslogcollector.listen_syslog", "syslogcollector.listen"),
         ("syslogcollector-%(pool)s-%(node)s.listen_syslog", "syslogcollector.listen"),
+        #TgSender
+        ("tgsender.token", "tgsender.token"),
+        ("tgsender-global-%(node)s.token", "tgsender.token"),
         # TrapCollector
         ("trapcollector.listen_traps", "trapcollector.listen"),
         ("trapcollector-%(pool)s-%(node)s.listen_traps", "trapcollector.listen"),

@@ -23,8 +23,8 @@ class SyslogCollectorService(Service):
     name = "syslogcollector"    #
     leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
-    process_name = "noc-%(name).10s-%(pool).3s"
     require_nsq_writer = True
+    process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
         super(SyslogCollectorService, self).__init__()

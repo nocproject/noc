@@ -57,14 +57,6 @@
     - config
     - telegraf
 
-- name: install nsqd config
-  template:
-    src: etc/config/nsqd.conf.j2
-    dest: "{{nsqd_config_dir}}/nsqd.conf"
-  notify: restart nsqd
-  tags:
-    - config
-
 - name: Enable nsq system service
   service:
     name: "nsqd"
@@ -73,8 +65,11 @@
 
 - name: copy nsqd consul templates
   template:
-    src: nsqd.json
-    dest: "{{consul_configd_path}}"
+    src: "{{item}}"
+    dest: "{{consul_configd_path}}/"
   notify: reload consul
+  with_items:
+    - nsqd.json
+    - nsqdhttp.json
   tags:
     - consul

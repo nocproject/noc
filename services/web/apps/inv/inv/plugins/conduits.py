@@ -25,6 +25,7 @@ class ConduitsPlugin(InvPlugin):
     name = "conduits"
     js = "NOC.inv.inv.plugins.conduits.ConduitsPanel"
 
+    # %fixme have to be configured ?
     MAX_CONDUIT_LENGTH = 1000
     SINGLE_CONNECTION_MODELS = set(["Ducts | Cable Entry"])
     CONDUITS_MODEL = "Ducts | Conduits"

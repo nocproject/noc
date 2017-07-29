@@ -7,19 +7,19 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import sys
-import glob
 import ConfigParser
-import sys
+# Python modules
+import glob
 import os
+import sys
+
 # Third party modules
 import six
 import yaml
+from noc.config import config
 
-
-SUPERVISORD_CFG = "etc/noc_services.conf"
-NOC_CFG = "etc/noc.yml"
+SUPERVISORD_CFG = config.path.supervisor_cfg
+NOC_CFG = config.path.legacy_config
 
 ENV_MAP = {
     "loglevel": "NOC_LOGLEVEL"
@@ -30,12 +30,15 @@ JEMALLOC_LOCATION = [
     '/usr/lib64/libjemalloc.so.1',
 ]
 
+
 def format_env(env):
     """
     Build environment string
     """
+
     def q(s):
         return str(s).replace("%", "%%")
+
     return ",".join("%s=\"%s\"" % (k, q(env[k])) for k in env)
 
 
@@ -52,9 +55,10 @@ def build(node):
         "NOC_DC": jcfg["nodes"][node]["datacenter"],
         "NOC_NODE": node,
         "NOC_USER": jcfg["config"]["noc"]["user"],
-        "NOC_ROOT": os.getcwd()
+        "NOC_ROOT": os.getcwd(),
+        "NOC_CONFIG": os.environ.get("NOC_CONFIG") or "legacy:///,yaml:///opt/noc/etc/settings.yml,env:///NOC"
     }
-    #search for jemalloc
+    # search for jemalloc
     for path in JEMALLOC_LOCATION:
         if os.path.exists(path):
             ne['LD_PRELOAD'] = path
@@ -95,11 +99,10 @@ def build(node):
                 for o in config.options(pn):
                     v = config.get(pn, o)
                     out.set(sn, o, v)
-                numprocs = jcfg["config"][j].get("n_instances", 1)+jcfg["config"][j].get("n_backup_instances", 0)
+                numprocs = jcfg["config"][j].get("n_instances", 1) + jcfg["config"][j].get("n_backup_instances", 0)
                 out.set(sn, "environment", format_env(pe))
                 out.set(sn, "autostart", "true")
                 out.set(sn, "numprocs", numprocs)
-
 
     # Convert to .ini format
     buffer = six.StringIO()
@@ -119,5 +122,9 @@ def build(node):
             f.write(cfg)
         print "CHANGED"
 
+
 if __name__ == "__main__":
-    build(sys.argv[1])
+    if len(sys.argv) > 1:
+        build(sys.argv[1])
+    else:
+        build(config.node)

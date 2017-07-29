@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.core.ip import IPv4
 from noc.lib.validators import is_int
 from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
+from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3620
 from noc.sa.profiles.DLink.DxS import DES3x2x
 
@@ -237,7 +238,7 @@ class Script(BaseScript):
             c = self.cli("show lldp")
             lldp_enable = self.rx_lldp_gs.search(c) is not None
             try:
-                c = self.cli("show lldp local_ports")
+                c = self.cli("show lldp local_ports mode brief")
                 for match in self.rx_lldp1.finditer(c):
                     macs[match.group("port")] = match.group("mac")
             except self.CLISyntaxError:
@@ -580,7 +581,8 @@ class Script(BaseScript):
             interfaces += [i]
             ipif_found = True
 
-        if self.match_version(DGS3620):
+        if self.match_version(DGS3420) \
+        or self.match_version(DGS3620):
             match = self.rx_ipmgmt.search(ipif)
             if match:
                 admin_status = match.group("admin_state") == "Enabled"

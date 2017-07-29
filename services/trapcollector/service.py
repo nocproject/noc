@@ -23,8 +23,8 @@ class TrapCollectorService(Service):
     name = "trapcollector"
     leader_group_name = "trapcollector-%(dc)s-%(node)s"
     pooled = True
-    process_name = "noc-%(name).10s-%(pool).2s"
     require_nsq_writer = True
+    process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
         super(TrapCollectorService, self).__init__()

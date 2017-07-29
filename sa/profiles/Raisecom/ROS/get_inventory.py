@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -28,7 +28,7 @@ class Script(BaseScript):
         }]
         v = self.cli("show interface port transceiver information")
         for port in v.split("Port "):
-            if not port or "Wait" in port:
+            if not port or "Wait" in port or "Error" in port:
                 # Wait message after commands
                 continue
             num = int(port.splitlines()[0].strip(":"))

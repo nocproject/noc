@@ -87,7 +87,7 @@ class Profile(BaseProfile):
         """
         Ports in CLI like 1:1-24,2:1-24
         """
-        platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100')
+        platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100', "DGS-3420")
         match = self.rx_interface_name.match(s)
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
@@ -200,6 +200,7 @@ class Profile(BaseProfile):
             ) or script.match_version(DES3200, version__gte="4.38.B000") or
             script.match_version(DES3028, version__gte="2.90.B10") or
             script.match_version(DGS3120, version__gte="3.00.B022") or
+            script.match_version(DGS3420, version__gte="1.73.R008") or
             script.match_version(DGS3620, version__gte="2.50.017")
         ) and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []

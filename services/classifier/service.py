@@ -80,9 +80,8 @@ class ClassifierService(Service):
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
     pooled = True
-    process_name = "noc-%(name).10s-%(pool).2s"
-
-    DEFAULT_RULE = "Unknown | Default"
+    DEFAULT_RULE = config.classifier.default_rule
+    process_name = "noc-%(name).10s-%(pool).5s"
 
     # SNMP OID pattern
     rx_oid = re.compile(r"^(\d+\.){6,}")

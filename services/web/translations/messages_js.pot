@@ -2629,7 +2629,7 @@ msgid "Anonymous"
 msgstr ""
 
 #: ui/web/main/desktop/HeaderPanel.js:41
-msgid "About NOC ..."
+msgid "About system ..."
 msgstr ""
 
 #: ui/web/main/desktop/HeaderPanel.js:48

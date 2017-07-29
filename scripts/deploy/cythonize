@@ -10,8 +10,9 @@
 import os
 import subprocess
 import stat
+from noc.config import config
 
-CYTHONIZE = "./bin/cythonize"
+CYTHONIZE = config.path.cythonize
 
 
 def main():

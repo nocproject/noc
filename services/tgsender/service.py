@@ -23,7 +23,6 @@ from noc.config import config
 
 class TgSenderService(Service):
     name = "tgsender"
-    process_name = "noc-%(name).10s-%(instance).2s"
 
     def on_activate(self):
         self.subscribe(
@@ -50,11 +49,11 @@ class TgSenderService(Service):
         return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
     def send_tb(self, messages, address, subject, body):
-        RETRY_TIME = 2.0
+        RETRY_TIME = config.tgsender.retry_timeout
         TOKEN = config.tgsender.token
         API = 'https://api.telegram.org/bot'
         URL = API + TOKEN
-        proxy_addres = config.tgsender.proxy_addres
+        proxy_addres = config.proxy.https_proxy
         sendMessage = {
             'chat_id': address,
             'text': '*' + self.escape_markdown(subject) + '*\n' + self.escape_markdown(body),

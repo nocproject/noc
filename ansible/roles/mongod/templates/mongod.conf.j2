@@ -12,9 +12,13 @@ storage:
 
 systemLog:
   verbosity: 0
+{% if mongo_logging_driver == "syslog" %}
+  destination: syslog
+{% else %}
   destination: file
   logAppend: true
   path: {{ mongo_log_path }}
+{% endif %}
 
 net:
   port: 27017

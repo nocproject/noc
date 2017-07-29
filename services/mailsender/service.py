@@ -24,7 +24,6 @@ from noc.core.service.base import Service
 
 class MailSenderService(Service):
     name = "mailsender"
-    process_name = "noc-%(name).10s-%(instance).2s"
 
     def __init__(self, *args, **kwargs):
         super(MailSenderService, self).__init__(*args, **kwargs)
@@ -62,7 +61,7 @@ class MailSenderService(Service):
         attachments = attachments or []
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
-        from_address = config.from_address
+        from_address = config.mailsender.from_address
         message = MIMEMultipart()
         message["From"] = from_address
         message["To"] = address

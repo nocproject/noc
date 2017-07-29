@@ -20,9 +20,8 @@ from noc.core.http.client import fetch
 
 class PMWriterService(Service):
     name = "pmwriter"
-    process_name = "noc-%(name).10s-%(instance).2s"
 
-    MAX_DELAY = 1.0
+    MAX_DELAY = config.pmwriter.max_delay
 
     def __init__(self):
         super(PMWriterService, self).__init__()

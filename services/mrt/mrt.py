@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class MRTRequestHandler(AuthRequestHandler):
-    CONCURRENCY = 50
+    CONCURRENCY = config.mrt.max_concurrency
 
     @tornado.gen.coroutine
     def write_chunk(self, obj):

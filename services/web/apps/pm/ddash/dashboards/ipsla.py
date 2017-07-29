@@ -8,13 +8,15 @@
 # ---------------------------------------------------------------------
 """
 
-import string
+import json
+
+from jinja2 import Environment, FileSystemLoader
+from noc.config import config
+from noc.sa.models.managedobject import ManagedObject
+
 # NOC modules
 from base import BaseDashboard
 from sla.models.slaprobe import SLAProbe
-from noc.sa.models.managedobject import ManagedObject
-from jinja2 import Environment, FileSystemLoader
-import json
 
 
 class IPSLADashboard(BaseDashboard):
@@ -36,8 +38,7 @@ class IPSLADashboard(BaseDashboard):
                        probe in SLAProbe.objects.filter(managed_object=self.object.id)]
         }
         self.logger.info("Context with data: %s" % context)
-        PM_TEMPLATE_PATH = "templates/ddash/"
-        j2_env = Environment(loader=FileSystemLoader(PM_TEMPLATE_PATH))
+        j2_env = Environment(loader=FileSystemLoader(config.path.pm_templates))
         tmpl = j2_env.get_template("dash_ipsla.j2")
         data = tmpl.render(context)
 

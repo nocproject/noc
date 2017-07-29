@@ -1,0 +1,3 @@
+---
+grafana_dashboard_dir: /var/lib/grafana/dashboards
+grafana_plugins_dir: /var/lib/grafana/plugins

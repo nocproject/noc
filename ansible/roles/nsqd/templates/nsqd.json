@@ -1,12 +1,12 @@
 {
   "service": {
-    "name": "nsqd",
-    "tags": [ ],
-    "port": 4150,
-    "enableTagOverride": false,
     "check": {
-        "http": "http://127.0.0.1:4151/ping",
-        "interval": "10s"
-    }
+      "tcp": "127.0.0.1:4150",
+      "interval": "10s"
+    },
+    "enableTagOverride": false,
+    "name": "nsqd",
+    "port": 4150,
+    "tags": []
   }
 }

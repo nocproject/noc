@@ -40,7 +40,7 @@ class Script(BaseScript):
         re.DOTALL|re.MULTILINE)
 
     rx_status = re.compile(
-        r"^\s*Ethernet\s+(?P<interface>\S+)\s+is\s+(?P<admin_status>(enabled|disabled)),\s+port+\s+link+\s+is\s+(?P<oper_status>(up|down))",
+        r"^\s*(?:Fast|Gigabit)?\s*Ethernet\s+(?P<interface>\S+)\s+(?:is|current state:)\s+(?P<admin_status>(enabled|disabled)),\s+port+\s+link+\s+is\s+(?P<oper_status>(up|down))",
         re.MULTILINE)
 
     types = {

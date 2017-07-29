@@ -42,7 +42,7 @@ class CorrelatorService(Service):
     name = "correlator"
     pooled = True
     leader_lock_name = "correlator-%(pool)s"
-    process_name = "noc-%(name).10s-%(pool).2s"
+    process_name = "noc-%(name).10s-%(pool).5s"
 
     def __init__(self):
         super(CorrelatorService, self).__init__()
@@ -63,6 +63,7 @@ class CorrelatorService(Service):
             reset_running=True,
             max_threads=config.correlator.max_threads,
             ioloop=self.ioloop,
+            # @fixme have to be configured ?
             submit_threshold=100,
             max_chunk=100
         )

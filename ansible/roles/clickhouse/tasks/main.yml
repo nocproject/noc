@@ -28,3 +28,17 @@
   notify: reload consul
   tags:
     - consul
+
+- name: Start clickhouse service
+  service:
+    name: "clickhouse-server"
+    enabled: yes
+    state: started
+  when: ansible_distribution == "Ubuntu"
+
+- name: Start clickhouse service
+  service:
+    name: "clickhouse"
+    enabled: yes
+    state: started
+  when: ansible_distribution == "FreeBSD"
