@@ -56,14 +56,12 @@ class ConsulProtocol(BaseProtocol):
             v = i["Value"]
             c = k.count("/")
             if not c:
-                data[k.replace("/", ".")] = v
+                data[k] = v
             elif c == 1:
                 d = k.split("/")
-                data.update({
-                    d[0]: {
-                        d[1]: v
-                    }
-                })
+                if d[0] not in data:
+                    data[d[0]] = {}
+                data[d[0]][d[1]] = v
         # Upload
         self.config.update(data)
 
