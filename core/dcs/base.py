@@ -159,7 +159,9 @@ class DCSBase(object):
         else:
             return result[0]
 
-    def resolve_near(self, name):
+    @tornado.gen.coroutine
+    def resolve_near(self, name, hint=None, wait=True, timeout=None,
+                     full_result=False):
         """
         Synchronous call to resolve nearby service
         Commonly used for external services like databases

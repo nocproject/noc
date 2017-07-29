@@ -176,6 +176,7 @@ class ServiceItem(object):
     def __contains__(self, item):
         return item in "%s:%s" % (self.host, self.port)
 
+
 class ServiceParameter(BaseParameter):
     """
     Resolve external service location to a list of ServiceItem.
@@ -222,7 +223,8 @@ class ServiceParameter(BaseParameter):
                         svc,
                         wait=self.wait,
                         timeout=self.DEFAULT_RESOLUTION_TIMEOUT,
-                        full_result=True
+                        full_result=True,
+                        near=self.near
                     )
                     self.value = [ServiceItem(*i.rsplit(":", 1))
                                   for i in items]
