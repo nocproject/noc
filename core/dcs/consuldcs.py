@@ -459,24 +459,25 @@ class ConsulDCS(DCSBase):
                 raise tornado.gen.Return((slot_number, total_slots))
             self.logger.info("Cannot acquire slot: CAS changed, retry")
 
-    def resolve_near(self, name):
+    @tornado.gen.coroutine
+    def resolve_near(self, name, hint=None, wait=True, timeout=None,
+                     full_result=False):
         """
         Synchronous call to resolve nearby service
         Commonly used for external services like databases
         :param name: Service name
+        :param wait:
+        :param timeout:
+        :param full_result:
+        :param hint:
         :return: address:port
         """
         self.logger.info("Resolve near service %s", name)
-        client = consul.base.Consul(
-            host=self.consul_host,
-            port=self.consul_port,
-            token=self.consul_token
-        )
         index = 0
         while True:
             try:
-                index, services = client.catalog.service(
-                    service=self.name,
+                index, services = yield self.consul.catalog.service(
+                    service=name,
                     index=index,
                     near="_agent",
                     token=self.consul_token
@@ -485,10 +486,14 @@ class ConsulDCS(DCSBase):
                 self.logger.info("Consul error: %s", e)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
-            if not services:
+            if not services and wait:
                 self.logger.info("No active service %s. Waiting", name)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
+            r = []
             for svc in services:
-                return "%s:%s" % (str(svc["ServiceAddress"]),
-                                  str(svc["ServicePort"]))
+                r += ["%s:%s" % (str(svc["ServiceAddress"] or svc["Address"]),
+                                 str(svc["ServicePort"]))]
+                if not full_result:
+                    break
+            raise tornado.gen.Return(r)
