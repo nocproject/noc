@@ -22,14 +22,6 @@
   with_items:
     - "{{nsd_log_dir}}"
 
-- name: install nsqadmin config
-  template:
-    src: etc/config/nsqadmin.conf.j2
-    dest: "{{nsqd_config_dir}}/nsqadmin.conf"
-  notify: restart nsqadmin
-  tags:
-    - config
-
 - name: Enable nsqadmin system service
   service:
     name: "nsqadmin"

@@ -58,7 +58,7 @@ class YAMLProtocol(BaseProtocol):
                 for pp in prefix[len(current):]:
                     r += ["%s%s:" % (self.INDENT * len(current), pp)]
                     current += [pp]
-            if isinstance(v, six.string_types) and v.startswith("%"):
+            if isinstance(v, six.string_types) and (v.startswith("%") or v.startswith("@")):
                 v = "\\" + v
             r += ["%s%s: %s" % (self.INDENT * len(current), p[-1], v)]
         r = "\n".join(r)

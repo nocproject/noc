@@ -1,3 +1,4 @@
+#jinja2:variable_start_string:'[%', variable_end_string:'%]', trim_blocks: False
 ## enable verbose logging
 verbose = false
 
@@ -18,22 +19,15 @@ http_address = "0.0.0.0:4151"
 
 ## cluster of nsqlookupd TCP addresses
 nsqlookupd_tcp_addresses = [
-{% for service in noc_config.services -%}
-    {% if "nsqlookupd" in service -%}
-        {% for host in noc_config.services[service] -%}
-     "{{host[:-5]}}:4160",
-        {%- endfor %}
-    {%- endif %}
-{%- endfor %}
-
+   {{range service "nsqlookupd"}}"{{.Address}}:{{.Port}}", {{end}}
 ]
 
 
 ## path to store disk-backed messages
-data_path = "{{nsqd_db_dir}}"
+data_path = "[%nsqd_db_dir%]"
 
 ## number of messages to keep in memory (per topic/channel)
-mem_queue_size = {{nsq_max_messages_in_memory}}
+mem_queue_size = [%nsq_max_messages_in_memory%]
 
 ## number of bytes per diskqueue file before rolling
 max_bytes_per_file = 104857600

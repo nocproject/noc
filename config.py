@@ -301,7 +301,9 @@ class Config(BaseConfig):
         request_timeout = SecondsParameter(default="30s")
 
     class nsqlookupd(ConfigSection):
-        addresses = ServiceParameter(service="nsqlookupd", wait=True)
+        addresses = ServiceParameter(service="nsqlookupd",
+                                     wait=True, near=True)
+        http_addresses = ServiceParameter(service="nsqlookupdhttp", wait=True)
 
     class path(ConfigSection):
         smilint = StringParameter()

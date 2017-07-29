@@ -24,6 +24,7 @@ from noc.core.clickhouse.model import Model
 from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
+from noc.bi.models.span import Span
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
@@ -56,7 +57,8 @@ class BIAPI(API):
     # @todo: Replace with dynamic loading
     datasources = [
         Reboots,
-        Alarms
+        Alarms,
+        Span
     ]
 
     _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)

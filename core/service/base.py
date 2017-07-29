@@ -15,7 +15,6 @@ import signal
 import uuid
 import argparse
 import functools
-import socket
 from collections import defaultdict
 # Third-party modules
 import tornado.ioloop
@@ -631,7 +630,7 @@ class Service(object):
         metric_decode_fail = "nsq_msg_decode_fail_%s" % t
         metric_processed = "nsq_msg_processed_%s" % t
         metric_deferred = "nsq_msg_deferred_%s" % t
-        lookupd = [str(a) for a in config.nsqlookupd.addresses]
+        lookupd = [str(a) for a in config.nsqlookupd.http_addresses]
         self.logger.info("Subscribing to %s/%s (lookupd: %s)",
                          topic, channel, ", ".join(lookupd))
         self.nsq_readers[handler] = NSQReader(

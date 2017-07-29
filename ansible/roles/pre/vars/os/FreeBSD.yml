@@ -33,6 +33,9 @@ nginx_user: www
 
 telegraf_reload_command: "service telegraf reload"
 
+nsqd_reload_command: "service nsqd reload"
+nsqadmin_reload_command: "service nsqadmin reload"
+
 postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql
@@ -56,6 +59,10 @@ noc_root: "{{noc_prefix}}/noc"
 pgbouncer_path_pid: /var/run/pgbouncer
 nsd_log_dir: /var/log/nsq
 
+ch_log_dir: /var/log/clickhouse
+ch_data_dir: /var/db/clickhouse
+
 fake_shell: /sbin/nologin
 
 grafana_dashboard_dir: /var/db/grafana/dashboards
+grafana_plugins_dir: /var/db/grafana/plugins

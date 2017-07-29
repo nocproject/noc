@@ -3,7 +3,7 @@
 # Vendor: Raisecom
 # OS:     ROS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -70,6 +70,18 @@ class Profile(BaseProfile):
         r"Serial number\s*:\s*(?P<serial>\S+)\s*",
         re.MULTILINE | re.IGNORECASE)
 
+    # Version start  ROS_5.1.1.420 (Compiled May 15 2015, 12:36:24)
+    rx_ver_2015 = re.compile(
+        r"Product name: (?P<platform>\S+)\s*\n"
+        r"(ROS|QOS)\s+Version(:|)\s*(?P<version>\S+)(\.|)\s*\(Compiled.+\)\s*\n"
+        r"Product Version: \S+\s*\n"
+        r"BOOT Room Version\s*(:|)\s*(?P<bootstrap>\S+)\s*\n"
+        r"CPLD Version: \S+\s*\n"
+        r"Hardware\s*\S*\s*Version(\sRev\.|:)?\s*(?P<hw_rev>\S+)\s*\n\n"
+        r"System MacAddress( is)?\s*:\s*(?P<mac>\S+)\s*\n"
+        r"Serial number\s*:\s*(?P<serial>\S+)\s*",
+        re.MULTILINE | re.IGNORECASE)
+
     def get_version(self, script):
         c = script.cli("show version", cached=True)
         if "Support ipv6" in c:
@@ -84,7 +96,11 @@ class Profile(BaseProfile):
             return match.groupdict()
         else:
             match = self.rx_ver_2016.search(c)
+        if match:
             return match.groupdict()
+        else:
+           match = self.rx_ver_2015.search(c)
+           return match.groupdict()
 
     def get_interface_names(self, name):
         r = []
