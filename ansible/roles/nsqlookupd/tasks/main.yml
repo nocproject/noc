@@ -38,8 +38,11 @@
 
 - name: copy nsqlookupd consul templates
   template:
-    src: nsqlookupd.json
-    dest: "{{consul_configd_path}}"
+    src: "{{item}}"
+    dest: "{{consul_configd_path}}/"
   notify: reload consul
+  with_items:
+    - nsqlookupd.json
+    - nsqlookupdhttp.json
   tags:
     - consul

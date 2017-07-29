@@ -10,6 +10,12 @@
     name: nsqd
     state: restarted
 
+- name: reload nsqd
+  become: yes
+  service:
+    name: nsqd
+    state: reloaded
+
 - name: reload consul
   become: yes
   service:
