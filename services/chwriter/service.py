@@ -126,7 +126,8 @@ class CHWriterService(Service):
                 code, headers, body = yield fetch(
                     channel.url,
                     method="POST",
-                    body=data
+                    body=data,
+                    content_encoding=config.clickhouse.encoding
                 )
                 if code == 200:
                     self.logger.info(

@@ -102,6 +102,10 @@ class Config(BaseConfig):
         request_timeout = SecondsParameter(default="1h")
         connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
+        encoding = StringParameter(default="none", choices=[
+            "",
+            "deflate"
+        ])
 
     class cm(ConfigSection):
         vcs_type = StringParameter(default="gridvcs", choices="hg, CVS, gridvcs")
