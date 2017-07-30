@@ -385,9 +385,13 @@ class DiscoveryCheck(object):
                 self.logger.error(
                     "RPC Remote error (%s): %s",
                     e.remote_code, e)
+                if e.remote_code:
+                    message = "Remote error code %s" % e.remote_code
+                else:
+                    message = "Remote error code %s, message: %s" % (e.remote_code, e)
                 self.set_problem(
                     alarm_class=self.error_map.get(e.remote_code),
-                    message="Remote error code %s" % e.remote_code,
+                    message=message,
                     fatal=e.remote_code in self.fatal_errors
                 )
             except RPCError as e:
