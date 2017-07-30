@@ -13,6 +13,7 @@ import urlparse
 import threading
 import ssl
 import logging
+import zlib
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -51,6 +52,8 @@ REQUIRE_LENGTH_METHODS = set(["POST", "PUT"])
 ns_lock = threading.Lock()
 ns_cache = cachetools.TTLCache(NS_CACHE_SIZE, ttl=RESOLVER_TTL)
 
+CE_DEFLATE = "deflate"
+
 
 @tornado.gen.coroutine
 def resolve(host):
@@ -86,7 +89,8 @@ def fetch(url, method="GET",
           allow_proxy=False,
           proxies=None,
           user=None,
-          password=None
+          password=None,
+          content_encoding=None
     ):
     """
 
@@ -105,6 +109,7 @@ def fetch(url, method="GET",
     :param user:
     :param password:
     :param max_buffer_size:
+    :param content_encoding:
     :return: code, headers, body
     """
     def get_ssl_options():
@@ -240,6 +245,18 @@ def fetch(url, method="GET",
             "Connection": "close",
             "User-Agent": DEFAULT_USER_AGENT
         }
+        if body and content_encoding:
+            if content_encoding == CE_DEFLATE:
+                # Deflate compression
+                h["Content-Encoding"] = CE_DEFLATE
+                compress = zlib.compressobj(
+                    zlib.Z_DEFAULT_COMPRESSION,
+                    zlib.DEFLATED,
+                    -zlib.MAX_WBITS,
+                    zlib.DEF_MEM_LEVEL,
+                    zlib.Z_DEFAULT_STRATEGY
+                )
+                body = compress.compress(body) + compress.flush()
         if method in REQUIRE_LENGTH_METHODS:
             h["Content-Length"] = str(len(body))
             h["Content-Type"] = "application/binary"
@@ -342,8 +359,8 @@ def fetch_sync(url, method="GET",
                allow_proxy=False,
                proxies=None,
                user=None,
-               password=None
-               ):
+               password=None,
+               content_encoding=None):
 
     @tornado.gen.coroutine
     def _fetch():
@@ -360,7 +377,8 @@ def fetch_sync(url, method="GET",
             allow_proxy=allow_proxy,
             proxies=proxies,
             user=user,
-            password=password
+            password=password,
+            content_encoding=content_encoding
         )
         r.append(result)
 
