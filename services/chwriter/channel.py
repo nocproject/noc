@@ -12,14 +12,17 @@ import time
 import urllib
 from noc.config import config
 
+
 class Channel(object):
-    def __init__(self, service, fields):
+    def __init__(self, service, fields, address, db):
         """
         :param fields: <table>.<field1>. .. .<fieldN>
         :return:
         """
         self.name = fields
         self.service = service
+        self.address = address
+        self.db = db
         parts = tuple(fields.split("."))
         self.sql = "INSERT INTO %s(%s) FORMAT TabSeparated" % (parts[0], ",".join(parts[1:]))
         self.encoded_sql = urllib.quote(self.sql.encode('utf8'))
@@ -28,6 +31,11 @@ class Channel(object):
         self.last_updated = time.time()
         self.last_flushed = time.time()
         self.flushing = False
+        self.url = "http://%s/?database=%s&query=%s" % (
+            address,
+            db,
+            self.encoded_sql
+        )
 
     def feed(self, data):
         n = data.count("\n")

@@ -22,9 +22,6 @@ from noc.config import config
 
 class CHWriterService(Service):
     name = "chwriter"
-    # @fixme took better one from config with shard settings
-    address = config.clickhouse.addresses
-    DB = config.clickhouse.db
 
     def __init__(self):
         super(CHWriterService, self).__init__()
@@ -33,6 +30,7 @@ class CHWriterService(Service):
         self.last_metrics = 0
         self.table_fields = {}  # table name -> fields
         self.last_columns = 0
+        self.is_sharded = False
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -55,7 +53,12 @@ class CHWriterService(Service):
 
     def get_channel(self, fields):
         if fields not in self.channels:
-            self.channels[fields] = Channel(self, fields)
+            self.channels[fields] = Channel(
+                self,
+                fields,
+                config.clickhouse.addresses[0],
+                config.clickhouse.db
+            )
             metrics["channels_active"] += 1
         return self.channels[fields]
 
@@ -121,10 +124,7 @@ class CHWriterService(Service):
             written = False
             try:
                 code, headers, body = yield fetch(
-                    "http://%s/?database=%s&query=%s" % (
-                        config.clickhouse.addresses[0],
-                        self.DB,
-                        channel.get_encoded_insert_sql()),
+                    channel.url,
                     method="POST",
                     body=data
                 )
