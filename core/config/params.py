@@ -192,7 +192,7 @@ class ServiceParameter(BaseParameter):
     DEFAULT_RESOLUTION_TIMEOUT = 1
 
     def __init__(self, service, near=False, wait=True, help=None,
-                 full_result=False):
+                 full_result=True):
         if isinstance(service, six.string_types):
             self.services = [service]
         else:
@@ -228,6 +228,8 @@ class ServiceParameter(BaseParameter):
                         full_result=self.full_result,
                         near=self.near
                     )
+                    if not isinstance(items, list):
+                        items = [items]
                     self.value = [ServiceItem(*i.rsplit(":", 1))
                                   for i in items]
                     break
