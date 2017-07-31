@@ -73,11 +73,13 @@ class Profile(BaseProfile):
         if not match:
             return s
         return "%s%s" % ({
+            "Loop": "LoopBack",
             "Ten-GigabitEthernet": "XGigabitEthernet",
             "XGE": "XGigabitEthernet",
             "GE": "GigabitEthernet",
             "Eth": "Ethernet",
             "MEth": "M-Ethernet",
+            "VE": "Virtual-Ethernet"
             # "Vlanif": "Vlan-interface" - need testing
         }[match.group("type")], match.group("number"))
 
