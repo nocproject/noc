@@ -53,7 +53,7 @@ class Profile(BaseProfile):
             [p % x.replace("/", " ") for x in pl])
 
     rx_interface_name = re.compile(
-        r"^(?P<type>XGE|Ten-GigabitEthernet|GE|Eth|MEth)"
+        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)"
         r"(?P<number>[\d/]+(\.\d+)?)$")
 
     def convert_interface_name(self, s):
