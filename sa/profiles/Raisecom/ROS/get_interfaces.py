@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,12 +35,28 @@ class Script(BaseScript):
         \s*Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n
         \s*Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)
         """, re.VERBOSE)
+    rx_vlan2 = re.compile(
+        r"^VLAN ID:\s+(?P<vlan_id>\d+)\s*\n"
+        r"^Name:\s+\S+\s*\n"
+        r"^State:\s+active\s*\n"
+        r"^Status:\s+static\s*\n"
+        r"^Member-Port:\s+port-list(?P<ports>\S+)\s*\n"
+        r"^Untag-Ports:(\s+port-list(?P<untagged>\S+))?\s*\n",
+        re.MULTILINE)
+
+    rx_vlans_ip = re.compile(
+        r"^\s*(?P<iface>\d+)\s+(?P<vlan_id>\d+|none)", re.MULTILINE)
     rx_iface = re.compile(
         r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
         r"(?P<vid>\d+)\s+(?P<oper_status>\S+)\s*\n", re.MULTILINE)
+    rx_iface2 = re.compile(
+        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
+        r"assigned\s+primary\s*\n", re.MULTILINE)
     rx_lldp = re.compile(
         "LLDP enable status:\s+enable.+\n"
         "LLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE)
+    rx_descr = re.compile(
+        r"^\s*(?P<port>port\d+)\s+(?P<descr>.+)\n", re.MULTILINE)
 
     def parse_vlans(self, section):
         r = {}
@@ -117,6 +133,47 @@ class Script(BaseScript):
                 "description": str(line[9:])
             }
             if_descr.append(i)
+
+        if not l3:
+            v = self.cli("show interface description")
+            for match in self.rx_descr.finditer(v):
+                i = {
+                    "name": match.group("port"),
+                    "type": "physical",
+                    "description": match.group("descr").strip(),
+                    "enabled_protocols": [],
+                    "subinterfaces": [{
+                        "name": match.group("port"),
+                        "description": match.group("descr").strip()
+                    }]
+                }
+                l3 += [i]
+            v = self.cli("show vlan detail")
+            for match in self.rx_vlan2.finditer(v):
+                vlan_id = int(match.group("vlan_id"))
+                ports = ranges_to_list(match.group("ports"))
+                if match.group("untagged"):
+                    untagged = ranges_to_list(match.group("untagged"))
+                else:
+                    untagged = []
+                for i in l3:
+                    for p in ports:
+                        if i["name"] == "port%s" % p:
+                            if p not in untagged:
+                                if "tagged_vlans" in i["subinterfaces"][0]:
+                                    i["subinterfaces"][0][
+                                        "tagged_vlans"
+                                    ] += [vlan_id]
+                                else:
+                                    i["subinterfaces"][0][
+                                        "tagged_vlans"
+                                    ] = [vlan_id]
+                            else:
+                                i["subinterfaces"][0][
+                                    "untagged_vlan"
+                                ] = vlan_id
+
+
         v = self.profile.get_version(self)
         mac = v["mac"]
         """
@@ -153,6 +210,40 @@ class Script(BaseScript):
             l3 += [i]
             # parse only "0" interface
             break
+
+        try:
+            v = self.cli("show ip interface brief")
+        except self.CLISyntaxError:
+            return [{"interfaces": l3}]
+
+        for match in self.rx_iface2.finditer(v):
+            ifname = match.group("iface")
+            i = {
+                "name": "ip%s" % ifname,
+                "type": "SVI",
+                "mac": mac,
+                "enabled_protocols": [],
+                "subinterfaces": [{
+                    "name": "ip%s" % ifname,
+                    "mac": mac,
+                    "enabled_afi": ['IPv4']
+                }]
+            }
+            addr = match.group("ip")
+            mask = match.group("mask")
+            ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
+            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            l3 += [i]
+        v = self.cli("show interface ip vlan")
+        for match in self.rx_vlans_ip.finditer(v):
+            vlan_id = match.group("vlan_id")
+            if vlan_id == "none":
+                continue
+            ifname = "ip%s" % match.group("iface")
+            for i in l3:
+                if i["name"] == ifname:
+                    i["subinterfaces"][0]["vlan_ids"] = vlan_id
+                    break
 
         return [{"interfaces": l3}]
 
