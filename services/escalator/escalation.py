@@ -117,15 +117,15 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 "$gte": ets
             }
         }).count()
-        if ae >= config.escalator.global_limit:
+        if ae >= config.escalator.tt_escalation_limit:
             logger.error(
                 "Escalation limit exceeded (%s/%s). Skipping",
-                ae, config.escalator.global_limit
+                ae, config.escalator.tt_escalation_limit
             )
             metrics["escalation_throttled"] += 1
             alarm.set_escalation_error(
                 "Escalation limit exceeded (%s/%s). Skipping" % (
-                    ae, config.escalator.global_limit))
+                    ae, config.escalator.tt_escalation_limit))
             return
         # Check whether consequences has escalations
         cons_escalated = sorted(alarm.iter_escalated(),

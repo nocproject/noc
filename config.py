@@ -162,7 +162,6 @@ class Config(BaseConfig):
         warn_before_expired = SecondsParameter(default="30d")
 
     class escalator(ConfigSection):
-        global_limit = IntParameter(default=50)
         max_threads = IntParameter(default=10)
         retry_timeout = SecondsParameter(default="60s")
         tt_escalation_limit = IntParameter(default=10)
