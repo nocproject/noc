@@ -83,7 +83,8 @@ class Script(BaseScript):
         "Vlan-interface": "SVI",
         "NULL": "null",
         "RprPos": "unknown",
-        "Rpr": "unknown"
+        "Rpr": "unknown",
+        "100GE": "physical"
     }
 
     def get_ospfint(self):
