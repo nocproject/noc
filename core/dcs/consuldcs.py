@@ -496,4 +496,5 @@ class ConsulDCS(DCSBase):
                                  str(svc["ServicePort"]))]
                 if not full_result:
                     break
+            self.logger.info("Resolved near service %s to %s", name, r)
             raise tornado.gen.Return(r)
