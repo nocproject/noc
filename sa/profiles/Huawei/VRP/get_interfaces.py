@@ -84,7 +84,9 @@ class Script(BaseScript):
         "NULL": "null",
         "RprPos": "unknown",
         "Rpr": "unknown",
-        "100GE": "physical"
+        "100GE": "physical",
+        "Serial": None,
+        "Pos": None
     }
 
     def get_ospfint(self):
