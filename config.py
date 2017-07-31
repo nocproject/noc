@@ -270,7 +270,7 @@ class Config(BaseConfig):
         smtp_password = SecretParameter()
 
     class memcached(ConfigSection):
-        addresses = ServiceParameter(service="memcached", wait=True)
+        addresses = ServiceParameter(service="memcached", wait=True, full_result=True)
         pool_size = IntParameter(default=8)
         default_ttl = SecondsParameter(default="1d")
 
@@ -291,9 +291,11 @@ class Config(BaseConfig):
 
     class nsqd(ConfigSection):
         addresses = ServiceParameter(service="nsqd",
-                                     wait=True, near=True)
+                                     wait=True, near=True,
+                                     full_result=False)
         http_addresses = ServiceParameter(service="nsqdhttp",
-                                     wait=True, near=True)
+                                     wait=True, near=True,
+                                          full_result=False)
         pub_retry_delay = FloatParameter(default=0.1)
         ch_chunk_size = IntParameter(default=4000)
         connect_timeout = SecondsParameter(default="3s")
@@ -301,8 +303,8 @@ class Config(BaseConfig):
 
     class nsqlookupd(ConfigSection):
         addresses = ServiceParameter(service="nsqlookupd",
-                                     wait=True, near=True)
-        http_addresses = ServiceParameter(service="nsqlookupdhttp", wait=True)
+                                     wait=True, near=True, full_result=False)
+        http_addresses = ServiceParameter(service="nsqlookupdhttp", wait=True, full_result=False)
 
     class path(ConfigSection):
         smilint = StringParameter()
@@ -334,7 +336,7 @@ class Config(BaseConfig):
     class pg(ConfigSection):
         addresses = ServiceParameter(
             service=["pgbouncer", "postgres"],
-            wait=True, near=True
+            wait=True, near=True, full_result=False
         )
         db = StringParameter(default="noc")
         user = StringParameter()
@@ -395,7 +397,7 @@ class Config(BaseConfig):
         autointervaljob_initial_submit_interval = SecondsParameter(default="1d")
 
     class script(ConfigSection):
-        timeout = SecondsParameter(default="2M", help="default script timeout")
+        timeout = SecondsParameter(default="2M", help="default sa script script timeout")
         session_idle_timeout = SecondsParameter(default="1M", help="defeault session timeout")
         caller_timeout = SecondsParameter(default="1M")
         calling_service = StringParameter(default="MTManager")
