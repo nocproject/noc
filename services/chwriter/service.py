@@ -7,8 +7,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import os
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -31,6 +29,14 @@ class CHWriterService(Service):
         self.table_fields = {}  # table name -> fields
         self.last_columns = 0
         self.is_sharded = False
+        if config.clickhouse.cluster and config.chwriter.write_to:
+            # Distributed configuration
+            self.topic = "chwriter-%s" % (config.chwriter.write_to.replace(":", "-"))
+            self.ch_address = config.chwriter.write_to
+        else:
+            # Standalone configuration
+            self.topic = "chwriter"
+            self.ch_address = config.clickhouse.addresses[0]
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -44,7 +50,7 @@ class CHWriterService(Service):
         )
         check_callback.start()
         self.subscribe(
-            "chwriter",
+            self.topic,
             "chwriter",
             self.on_data,
             raw=True,
@@ -56,7 +62,7 @@ class CHWriterService(Service):
             self.channels[fields] = Channel(
                 self,
                 fields,
-                config.clickhouse.addresses[0],
+                self.ch_address,
                 config.clickhouse.db
             )
             metrics["channels_active"] += 1
