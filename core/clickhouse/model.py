@@ -134,7 +134,7 @@ class Model(six.with_metaclass(ModelBase)):
             m = __import__("noc.bi.models.%s" % mname, {}, {}, "*")
         except ImportError:
             return None
-         for a in dir(m):
+        for a in dir(m):
              o = getattr(m, a)
         for a in dir(m):
             o = getattr(m, a)
