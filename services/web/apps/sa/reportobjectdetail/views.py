@@ -10,7 +10,7 @@
 import datetime
 import csv
 import tempfile
-from collections import defaultdict
+from collections import (defaultdict, namedtuple)
 # Third-party modules
 from django.db import connection
 from django.http import HttpResponse
@@ -22,6 +22,8 @@ from noc.lib.nosql import get_db
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.inv.models.capability import Capability
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
@@ -31,6 +33,48 @@ from noc.inv.models.networksegment import NetworkSegment
 
 # @todo ThreadingCount
 # @todo ReportDiscovery Problem
+
+
+class ReportObjectCaps(object):
+    """
+    Report caps for MO
+    Query: db.noc.sa.objectcapabilities.aggregate([{$unwind: "$caps"},
+    {$match: {"caps.source" : "caps"}},
+    {$project: {key: "$caps.capability", value: "$caps.value"} },
+    {$group: {"_id": "$_id", "cap": {$push: { item: "$key", quantity: "$value" } }}}])
+    """
+
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.caps = dict([("c_%s" % str(key), value) for key, value in
+                          Capability.objects.filter().scalar("id", "name")])
+        self.out = self.load(mo_ids)
+
+    def load(self, mo_ids):
+        # Namedtuple caps, for save
+        Caps = namedtuple("Caps", self.caps.keys())
+        Caps.__new__.__defaults__ = ("",) * len(Caps._fields)
+
+        i = 0
+        d = {}
+        while mo_ids[0+i:10000+i]:
+            match = {"_id": {"$in": mo_ids}}
+            value = get_db()["noc.sa.objectcapabilities"].aggregate([
+                {"$match": match},
+                {"$unwind": "$caps"},
+                {"$match": {"caps.source": "caps"}},
+                {"$project": {"key": "$caps.capability", "value": "$caps.value"}},
+                {"$group": {"_id": "$_id", "cap": {"$push": {"item": "$key", "val": "$value"}}}}
+            ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+
+            for v in value["result"]:
+                r = dict(("c_%s" % str(l["item"]), l["val"]) for l in v["cap"])
+                d[v["_id"]] = Caps(**r)
+            i += 10000
+        return d
+
+    def __getitem__(self, item):
+        return self.out.get(item, [])
 
 
 class ReportObjectDetailLinks(object):
@@ -361,14 +405,15 @@ class ReportObjectDetailApplication(ExtApplication):
           validate={
               "administrative_domain": StringParameter(required=False),
               "segment": StringParameter(required=False),
+              "selector": StringParameter(required=False),
               "is_managed": BooleanParameter(required=False),
               "avail_status": BooleanParameter(required=False),
               "columns": StringParameter(required=False),
               "format": StringParameter(choices=["csv", "xlsx"])
           })
     def api_report(self, request, format, is_managed=None,
-                   administrative_domain=None, avail_status=False,
-                   segment=None, columns=None):
+                   administrative_domain=None, selector=None, segment=None,
+                   avail_status=False, columns=None):
         def row(row):
             def qe(v):
                 if v is None:
@@ -405,7 +450,8 @@ class ReportObjectDetailApplication(ExtApplication):
             "container",
             "segment",
             "phys_interface_count",
-            "link_count"
+            "link_count",
+            # "object_caps"
             # "interface_type_count"
         ]
 
@@ -425,7 +471,8 @@ class ReportObjectDetailApplication(ExtApplication):
          "CONTAINER",
          "SEGMENT",
          "PHYS_INTERFACE_COUNT",
-         "LINK_COUNT"
+         "LINK_COUNT",
+         # "OBJECT_CAPS"
          # "INTERFACE_TYPE_COUNT"
         ]
 
@@ -443,14 +490,14 @@ class ReportObjectDetailApplication(ExtApplication):
         if "interface_type_count" in columns.split(","):
             r[-1].extend(type_columns)
 
-        self.logger.info(r)
-        self.logger.info("---------------------------------")
-        print("-----------%s------------%s" % (administrative_domain, columns))
+        # self.logger.info(r)
+        # self.logger.info("---------------------------------")
+        # print("-----------%s------------%s" % (administrative_domain, columns))
 
         p = Pool.get_by_name("default")
         # for a in ArchivedAlarm._get_collection().find(q).sort(
         mos = ManagedObject.objects.filter()
-        if request.user.is_superuser and not administrative_domain:
+        if request.user.is_superuser and not administrative_domain and not selector:
             mos = ManagedObject.objects.filter(pool=p)
         if is_managed is not None:
             mos = ManagedObject.objects.filter(is_managed=is_managed)
@@ -459,6 +506,9 @@ class ReportObjectDetailApplication(ExtApplication):
         if administrative_domain:
             ads = AdministrativeDomain.get_nested_ids(int(administrative_domain))
             mos = mos.filter(administrative_domain__in=ads)
+        if selector:
+            selector = ManagedObjectSelector.objects.get(name=selector)
+            mos = mos.filter(selector.Q)
         # discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         mos_id = list(mos.values_list("id", flat=True))
         avail = {}
@@ -468,6 +518,7 @@ class ReportObjectDetailApplication(ExtApplication):
         iface_count = {}
         link_count = {}
         iface_type_count = {}
+        object_caps = {}
         container_lookup = ReportContainer(mos_id)
         if "segment" in columns.split(","):
             segment_lookup = dict(NetworkSegment.objects.all().values_list("id", "name"))
@@ -479,6 +530,11 @@ class ReportObjectDetailApplication(ExtApplication):
             iface_type_count = ReportObjectIfacesStatusStat(mos_id, columns=type_columns)
         if "link_count" in columns.split(","):
             link_count = ReportObjectLinkCount([])
+        if "object_caps" in columns.split(","):
+            object_caps = ReportObjectCaps(mos_id)
+            caps_columns = object_caps.caps.values()
+            r[-1].extend(caps_columns)
+
         if len(mos_id) < 70000:
             # @todo Warning - too many objects
             if "object_vendor" in columns.split(",") or "object_platform" in columns.split(",") \
@@ -512,6 +568,9 @@ class ReportObjectDetailApplication(ExtApplication):
             ]), cmap)]
             if "interface_type_count" in columns.split(","):
                 r[-1].extend(iface_type_count[mo] if iface_type_count else ["", "", "", ""])
+            if "object_caps" in columns.split(","):
+                r[-1].extend(object_caps[mo][:])
+
             pass
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
