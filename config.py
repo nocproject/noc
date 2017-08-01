@@ -87,6 +87,8 @@ class Config(BaseConfig):
         records_buffer = IntParameter(default=1000000)
         batch_delay_ms = IntParameter(default=1000)
         channel_expire_interval = SecondsParameter(default="5M")
+        # <address:port> of ClickHouse server to write
+        write_to = StringParameter()
 
     class classifier(ConfigSection):
         lookup_handler = HandlerParameter(
@@ -106,6 +108,8 @@ class Config(BaseConfig):
             "",
             "deflate"
         ])
+        # Cluster name for sharded/replicated configuration
+        cluster = StringParameter()
 
     class cm(ConfigSection):
         vcs_type = StringParameter(default="gridvcs", choices="hg, CVS, gridvcs")
