@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IGetSLAProbe
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,7 +34,9 @@ class IGetSLAProbes(BaseInterface):
                 "http-get",
                 "dns",
                 "ftp",
-                "dhcp"
+                "dhcp",
+                "owamp",  # One-Way Active Measurement Protocol (RFC4656)
+                "twamp"   # Two-Way Active Measurement Protocol (RFC5357)
             ]),
             "target": StringParameter(),
             "hw_timestamp": BooleanParameter(default=False)
