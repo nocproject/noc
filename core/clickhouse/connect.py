@@ -7,17 +7,14 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
+from __future__ import absolute_import
 import urllib
 # Third-party modules
 import six
 # NOC modules
 from noc.core.http.client import fetch_sync
 from noc.config import config
-
-
-class ClickhouseError(Exception):
-    pass
+from .error import ClickhouseError
 
 
 class ClickhouseClient(object):
