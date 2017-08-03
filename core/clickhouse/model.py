@@ -94,7 +94,7 @@ class Model(six.with_metaclass(ModelBase)):
         """
         return "CREATE TABLE IF NOT EXISTS %s " \
                "AS %s " \
-               "ENGINE Distributed(%s, %s, %s)" % (
+               "ENGINE = Distributed('%s', '%s', '%s')" % (
                    cls._meta.db_table,
                    cls._get_raw_db_table(),
                    config.clickhouse.cluster,
