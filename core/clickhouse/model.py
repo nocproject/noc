@@ -16,6 +16,7 @@ import six
 from .fields import BaseField
 from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
+from noc.config import config
 
 __all__ = ["Model"]
 
@@ -64,6 +65,13 @@ class Model(six.with_metaclass(ModelBase)):
         return cls._meta.db_table
 
     @classmethod
+    def _get_raw_db_table(cls):
+        if config.clickhouse.cluster:
+            return "raw_%s" % cls._meta.db_table
+        else:
+            return cls._meta.db_table
+
+    @classmethod
     def wrap_table(cls, table_name):
         class WrapClass(Model):
             class Meta:
@@ -73,10 +81,25 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def get_create_sql(cls):
-        r = ["CREATE TABLE IF NOT EXISTS %s (" % cls._get_db_table()]
+        r = ["CREATE TABLE IF NOT EXISTS %s (" % cls._get_raw_db_table()]
         r += [",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)]
         r += [") ENGINE = %s;" % cls._meta.engine.get_create_sql()]
         return "\n".join(r)
+
+    @classmethod
+    def get_create_distributed_sql(cls):
+        """
+        Get CREATE TABLE for Distributed engine
+        :return:
+        """
+        return "CREATE TABLE IF NOT EXISTS %s " \
+               "AS %s " \
+               "ENGINE Distributed(%s, %s, %s)" % (
+                   cls._meta.db_table,
+                   cls._get_raw_db_table(),
+                   config.clickhouse.cluster,
+                   config.clickhouse.db, cls._get_raw_db_table()
+               )
 
     @classmethod
     def to_tsv(cls, **kwargs):
@@ -96,16 +119,20 @@ class Model(six.with_metaclass(ModelBase)):
         return "%s.%s" % (cls._get_db_table(), h)
 
     @classmethod
-    def ensure_table(cls):
+    def ensure_table(cls, connect=None):
         """
         Check table is exists
+        :param connect:
         :return: True, if table has been altered, False otherwise
         """
         changed = False
-        ch = connection()
-        if not ch.has_table(cls._get_db_table()):
+        ch = connect or connection()
+        if not ch.has_table(cls._get_raw_db_table()):
             # Create new table
             ch.execute(post=cls.get_create_sql())
+            if config.clickhouse.cluster:
+                # Create distributed
+                ch.execute(post=cls.get_create_sql())
             changed = True
         else:
             # Alter when necessary
@@ -118,7 +145,7 @@ class Model(six.with_metaclass(ModelBase)):
                   database=%s
                   AND table=%s
                 """,
-                [ch.DB, cls._get_db_table()]
+                [ch.DB, cls._get_raw_db_table()]
             ):
                 existing[name] = type
             after = None
@@ -126,12 +153,16 @@ class Model(six.with_metaclass(ModelBase)):
                 if f not in existing:
                     ch.execute(
                         post="ALTER TABLE %s ADD COLUMN %s AFTER %s" % (
-                            cls._get_db_table(),
+                            cls._get_raw_db_table(),
                             cls._fields[f].get_create_sql(),
                             after)
                     )
                     changed = True
                 after = f
+        # Check for distributed table
+        if config.clickhouse.cluster and not ch.has_table(cls._meta.db_table):
+            ch.execute(post=cls.get_create_distributed_sql())
+            changed = True
         return changed
 
     @classmethod

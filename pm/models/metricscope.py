@@ -17,6 +17,7 @@ from mongoengine.fields import (
     BooleanField)
 import cachetools
 # NOC Modules
+from noc.config import config
 from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 
@@ -141,13 +142,33 @@ class MetricScope(Document):
             pk += ["path"]
         pk += ["ts"]
         r = [
-            "CREATE TABLE IF NOT EXISTS %s (" % self.table_name,
+            "CREATE TABLE IF NOT EXISTS %s (" % self._get_raw_db_table(),
             ",\n".join("  %s %s" % (n, t) for n, t in self.iter_fields()),
             ") ENGINE = MergeTree(date, (%s), 8192)" % ", ".join(pk)
         ]
         return "\n".join(r)
 
-    def ensure_table(self):
+    def get_create_distributed_sql(self):
+        """
+        Get CREATE TABLE for Distributed engine
+        :return:
+        """
+        return "CREATE TABLE IF NOT EXISTS %s " \
+               "AS %s " \
+               "ENGINE Distributed(%s, %s, %s)" % (
+                   self.table_name,
+                   self._get_raw_db_table(),
+                   config.clickhouse.cluster,
+                   config.clickhouse.db, self._get_raw_db_table()
+               )
+
+    def _get_raw_db_table(self):
+        if config.clickhouse.cluster:
+            return "raw_%s" % self.table_name
+        else:
+            return self.table_name
+
+    def ensure_table(self, connect=None):
         """
         Ensure table is exists
         :return: True, if table has been changed
@@ -155,8 +176,8 @@ class MetricScope(Document):
         from noc.core.clickhouse.connect import connection
 
         changed = False
-        ch = connection()
-        if not ch.has_table(self.table_name):
+        ch = connect or connection()
+        if not ch.has_table(self._get_raw_db_table()):
             # Create new table
             ch.execute(post=self.get_create_sql())
             changed = True
@@ -171,7 +192,7 @@ class MetricScope(Document):
                   database=%s
                   AND table=%s
                 """,
-                [ch.DB, self.table_name]
+                [ch.DB, self._get_raw_db_table()]
             ):
                 existing[name] = type
             after = None
@@ -179,10 +200,14 @@ class MetricScope(Document):
                 if f not in existing:
                     ch.execute(
                         post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s" % (
-                            self.table_name,
+                            self._get_raw_db_table(),
                             f, t,
                             after)
                     )
                     changed = True
                 after = f
+        # Check for distributed table
+        if config.clickhouse.cluster and not ch.has_table(self.table_name):
+            ch.execute(post=self.get_create_distributed_sql())
+            changed = True
         return changed
