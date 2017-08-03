@@ -17,12 +17,12 @@ from noc.core.clickhouse.ensure import ensure_bi_models, ensure_pm_scopes
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
-            "-h", "--host",
+            "--host",
             dest="host",
             help="ClickHouse address"
         )
         parser.add_argument(
-            "-p", "--port",
+            "--port",
             dest="port",
             type=int,
             help="ClickHouse port"
@@ -33,8 +33,8 @@ class Command(BaseCommand):
         self.port = port or None
         self.connect()
         self.ensure_db()
-        changed = ensure_bi_models(connection=self.connection)
-        changed |= ensure_pm_scopes(connection=self.connection)
+        changed = ensure_bi_models(connect=self.connect)
+        changed |= ensure_pm_scopes(connect=self.connect)
         if changed:
             self.print("CHANGED")
         else:

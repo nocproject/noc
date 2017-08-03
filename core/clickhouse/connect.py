@@ -43,13 +43,13 @@ class ClickhouseClient(object):
                 qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
             else:
                 post = sql.encode('utf8')
-        url = "http://%s:%s/?%s" % (self.HOST, self.PORT, "&".join(qs))
+        url = "http://%s:%s/?%s" % (self.host, self.port, "&".join(qs))
         code, headers, body = fetch_sync(
             url,
             method="POST",
             body=post,
-            connect_timeout=self.config.clickhouse.connect_timeout,
-            request_timeout=self.config.clickhouse.request_timeout
+            connect_timeout=config.clickhouse.connect_timeout,
+            request_timeout=config.clickhouse.request_timeout
         )
         if code != 200:
             raise ClickhouseError("%s: %s" % (code, body))
@@ -75,4 +75,4 @@ class ClickhouseClient(object):
 
 
 def connection(host=None, port=None):
-    return ClickhouseClient(host=port, port=port)
+    return ClickhouseClient(host=host, port=port)

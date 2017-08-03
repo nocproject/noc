@@ -13,7 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def ensure_bi_models(connection=None):
+def ensure_bi_models(connect=None):
     from noc.core.clickhouse.model import Model
 
     logger.info("Ensuring BI models:")
@@ -30,15 +30,15 @@ def ensure_bi_models(connection=None):
     changed = False
     for model in models:
         logger.info("Ensure table %s" % model._meta.db_table)
-        changed |= model.ensure_table(connect=connection)
+        changed |= model.ensure_table(connect=connect)
     return changed
 
 
-def ensure_pm_scopes(connection=None):
+def ensure_pm_scopes(connect=None):
     from noc.pm.models.metricscope import MetricScope
     logger.info("Ensuring PM scopes")
     changed = False
     for s in MetricScope.objects.all():
         logger.info("Ensure scope %s" % s.table_name)
-        changed |= s.ensure_table(connect=connection)
+        changed |= s.ensure_table(connect=connect)
     return changed

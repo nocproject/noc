@@ -145,7 +145,7 @@ class Model(six.with_metaclass(ModelBase)):
                   database=%s
                   AND table=%s
                 """,
-                [ch.DB, cls._get_raw_db_table()]
+                [config.clickhouse.db, cls._get_raw_db_table()]
             ):
                 existing[name] = type
             after = None
