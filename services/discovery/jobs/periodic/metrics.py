@@ -406,6 +406,8 @@ class MetricsCheck(DiscoveryCheck):
         states = self.job.context["metric_windows"]
         #
         alarms = []
+        if not w_value:
+            return alarms
         value = m["abs_value"]
         ts = m["ts"] // 1000000000
         # Do not store single-value windows

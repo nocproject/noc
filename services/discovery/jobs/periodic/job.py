@@ -48,7 +48,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     def init_context(self):
         if "counters" not in self.context:
             self.context["counters"] = {}
-        if "metrics_window" not in self.context:
+        if "metric_windows" not in self.context:
             self.context["metric_windows"] = {}
 
     def can_run(self):
