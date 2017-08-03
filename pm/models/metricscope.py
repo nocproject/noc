@@ -192,7 +192,7 @@ class MetricScope(Document):
                   database=%s
                   AND table=%s
                 """,
-                [ch.DB, self._get_raw_db_table()]
+                [config.clickhouse.db, self._get_raw_db_table()]
             ):
                 existing[name] = type
             after = None
