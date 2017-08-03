@@ -155,7 +155,7 @@ class MetricScope(Document):
         """
         return "CREATE TABLE IF NOT EXISTS %s " \
                "AS %s " \
-               "ENGINE Distributed(%s, %s, %s)" % (
+               "ENGINE = Distributed(%s, %s, %s)" % (
                    self.table_name,
                    self._get_raw_db_table(),
                    config.clickhouse.cluster,
