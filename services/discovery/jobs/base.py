@@ -182,30 +182,33 @@ class MODiscoveryJob(PeriodicJob):
             )
             umbrella.change_severity(severity=u_sev)
         # Get existing details for umbrella
-        active_details = {}  # path -> alarm
+        active_details = {}  # (alarm class, path) -> alarm
         if umbrella:
             for da in ActiveAlarm.objects.filter(root=umbrella.id):
                 d_path = da.vars.get("path", "")
-                active_details[d_path] = da
+                active_details[da.alarm_class, d_path] = da
         # Synchronize details
+        self.logger.info("Active details: %s" % active_details)
         seen = set()
         for d in details:
             d_path = d.get("path", "")
+            d_key = (d["alarm_class"], d_path)
             d_sev = d.get("severity", 0)
-            seen.add(d_path)
-            if d_path in active_details and active_details[d_path].severity != d_sev:
+            # Key for seen details
+            seen.add(d_key)
+            if d_key in active_details and active_details[d_key].severity != d_sev:
                 # Change severity
                 self.logger.info(
                     "Change detail alarm %s severity %s -> %s",
-                    active_details[d_path].id,
-                    active_details[d_path].severity,
+                    active_details[d_key].id,
+                    active_details[d_key].severity,
                     d_sev
                 )
-                active_details[d_path].change_severity(severity=d_sev)
-            elif d_path not in active_details:
+                active_details[d_key].change_severity(severity=d_sev)
+            elif d_key not in active_details:
                 # Create alarm
                 self.logger.info("Create detail alarm to path %s",
-                                 d_path)
+                                 d_key)
                 v = d.get("vars", {})
                 v["path"] = d_path
                 da = ActiveAlarm(
