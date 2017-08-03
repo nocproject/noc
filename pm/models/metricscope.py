@@ -175,13 +175,8 @@ class MetricScope(Document):
         """
         from noc.core.clickhouse.connect import connection
 
-        changed = False
-        ch = connect or connection()
-        if not ch.has_table(self._get_raw_db_table()):
-            # Create new table
-            ch.execute(post=self.get_create_sql())
-            changed = True
-        else:
+        def ensure_columns(table_name):
+            c = False
             # Alter when necessary
             existing = {}
             for name, type in ch.execute(
@@ -192,7 +187,7 @@ class MetricScope(Document):
                   database=%s
                   AND table=%s
                 """,
-                [config.clickhouse.db, self._get_raw_db_table()]
+                [config.clickhouse.db, table_name]
             ):
                 existing[name] = type
             after = None
@@ -200,14 +195,27 @@ class MetricScope(Document):
                 if f not in existing:
                     ch.execute(
                         post="ALTER TABLE %s ADD COLUMN %s %s AFTER %s" % (
-                            self._get_raw_db_table(),
+                            table_name,
                             f, t,
                             after)
                     )
-                    changed = True
+                    c = True
                 after = f
-        # Check for distributed table
-        if config.clickhouse.cluster and not ch.has_table(self.table_name):
-            ch.execute(post=self.get_create_distributed_sql())
+            return c
+
+        changed = False
+        ch = connect or connection()
+        if not ch.has_table(self._get_raw_db_table()):
+            # Create new table
+            ch.execute(post=self.get_create_sql())
             changed = True
+        else:
+            changed |= ensure_columns(self._get_raw_db_table())
+        # Check for distributed table
+        if config.clickhouse.cluster:
+            if not ch.has_table(self.table_name):
+                ch.execute(post=self.get_create_distributed_sql())
+                changed = True
+            else:
+                changed |= ensure_columns(self.table_name)
         return changed
