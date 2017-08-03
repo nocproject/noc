@@ -9,6 +9,8 @@
 # Python modules
 import os
 import logging
+# NOC modules
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -42,3 +44,17 @@ def ensure_pm_scopes(connect=None):
         logger.info("Ensure scope %s" % s.table_name)
         changed |= s.ensure_table(connect=connect)
     return changed
+
+
+def ensure_all_pm_scopes():
+    from noc.core.clickhouse.connect import connection
+
+    if not config.clickhouse.cluster:
+        # Standalone configuration
+        ensure_pm_scopes()
+        return
+    # Replicated configuration
+    ch = connection()
+    for host, port in ch.execute("SELECT host_address, port FROM system.clusters WHERE cluster = %s", args=[config.clickhouse.cluster]):
+        c = connection(host=host, port=port)
+        ensure_pm_scopes(c)

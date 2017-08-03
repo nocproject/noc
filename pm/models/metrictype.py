@@ -118,7 +118,7 @@ class MetricType(Document):
 
     def on_save(self):
         call_later(
-            "noc.core.clickhouse.ensure.ensure_pm_scopes",
+            "noc.core.clickhouse.ensure.ensure_all_pm_scopes",
             scheduler="scheduler",
             delay=30
         )
