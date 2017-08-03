@@ -89,7 +89,10 @@ class MODiscoveryJob(PeriodicJob):
 
     def can_run(self):
         # @todo: Make configurable
-        return self.object.is_managed and self.object.get_status()
+        os = self.object.get_status()
+        if not os:
+            self.logger.info("Object ping Fail, Job will not run")
+        return self.object.is_managed and os
 
     @contextlib.contextmanager
     def check_timer(self, name):

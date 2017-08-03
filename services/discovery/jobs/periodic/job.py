@@ -52,11 +52,10 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             self.context["metric_windows"] = {}
 
     def can_run(self):
-        return (
-            self.object.is_managed and
-            self.object.object_profile.enable_periodic_discovery and
-            self.object.object_profile.periodic_discovery_interval
-        )
+        return (super(PeriodicDiscoveryJob, self).can_run() and
+                self.object.object_profile.enable_periodic_discovery and
+                self.object.object_profile.periodic_discovery_interval
+                )
 
     def get_interval(self):
         if self.object:
