@@ -62,3 +62,13 @@
     - noc_config
   environment:
     NOC_CONFIG: "{{config_order}}"
+
+- name: install .env file
+  template:
+    src: "env.j2"
+    dest: "{{noc_root}}/.env"
+    owner: "{{noc_user}}"
+    mode: "0644"
+  tags:
+    - config
+    - noc_config
