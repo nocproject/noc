@@ -125,16 +125,8 @@ class Model(six.with_metaclass(ModelBase)):
         :param connect:
         :return: True, if table has been altered, False otherwise
         """
-        changed = False
-        ch = connect or connection()
-        if not ch.has_table(cls._get_raw_db_table()):
-            # Create new table
-            ch.execute(post=cls.get_create_sql())
-            if config.clickhouse.cluster:
-                # Create distributed
-                ch.execute(post=cls.get_create_sql())
-            changed = True
-        else:
+        def ensure_columns(table_name):
+            c = False
             # Alter when necessary
             existing = {}
             for name, type in ch.execute(
@@ -145,7 +137,7 @@ class Model(six.with_metaclass(ModelBase)):
                   database=%s
                   AND table=%s
                 """,
-                [config.clickhouse.db, cls._get_raw_db_table()]
+                [config.clickhouse.db, table_name]
             ):
                 existing[name] = type
             after = None
@@ -153,16 +145,32 @@ class Model(six.with_metaclass(ModelBase)):
                 if f not in existing:
                     ch.execute(
                         post="ALTER TABLE %s ADD COLUMN %s AFTER %s" % (
-                            cls._get_raw_db_table(),
+                            table_name,
                             cls._fields[f].get_create_sql(),
                             after)
                     )
-                    changed = True
+                    c = True
                 after = f
-        # Check for distributed table
-        if config.clickhouse.cluster and not ch.has_table(cls._meta.db_table):
-            ch.execute(post=cls.get_create_distributed_sql())
+            return c
+
+        changed = False
+        ch = connect or connection()
+        if not ch.has_table(cls._get_raw_db_table()):
+            # Create new table
+            ch.execute(post=cls.get_create_sql())
+            if config.clickhouse.cluster:
+                # Create distributed
+                ch.execute(post=cls.get_create_sql())
             changed = True
+        else:
+            changed |= ensure_columns(cls._get_raw_db_table())
+        # Check for distributed table
+        if config.clickhouse.cluster:
+            if not ch.has_table(cls._meta.db_table):
+                ch.execute(post=cls.get_create_distributed_sql())
+                changed = True
+            else:
+                changed |= ensure_columns(cls._meta.db_table)
         return changed
 
     @classmethod
