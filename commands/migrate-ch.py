@@ -15,11 +15,26 @@ from noc.core.clickhouse.ensure import ensure_bi_models, ensure_pm_scopes
 
 
 class Command(BaseCommand):
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "-h", "--host",
+            dest="host",
+            help="ClickHouse address"
+        )
+        parser.add_argument(
+            "-p", "--port",
+            dest="port",
+            type=int,
+            help="ClickHouse port"
+        )
+
+    def handle(self, host=None, port=None, *args, **options):
+        self.host = host or None
+        self.port = port or None
         self.connect()
         self.ensure_db()
-        changed = ensure_bi_models()
-        changed |= ensure_pm_scopes()
+        changed = ensure_bi_models(connection=self.connection)
+        changed |= ensure_pm_scopes(connection=self.connection)
         if changed:
             self.print("CHANGED")
         else:
@@ -30,7 +45,7 @@ class Command(BaseCommand):
         Connect to database
         :return:
         """
-        self.connect = connection()
+        self.connect = connection(host=self.host, port=self.port)
 
     def ensure_db(self):
         """
