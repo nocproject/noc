@@ -56,7 +56,8 @@ class DiscoveryService(Service):
             max_threads=config.discovery.max_threads,
             ioloop=self.ioloop,
             filter=ifilter,
-            service=self
+            service=self,
+            sample=config.discovery.sample
         )
         self.scheduler.run()
 
