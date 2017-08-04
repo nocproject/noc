@@ -83,9 +83,9 @@ class ReportTTSystemStatApplication(SimpleReport):
         ts_to_date = time.mktime(to_date.timetuple())
         # Manged Object block
 
-        q1 = """select server, service, count(), round(quantile(0.75)(duration), 0)/1000 as q1, 
+        q1 = """select server, service, count(), round(quantile(0.25)(duration), 0)/1000 as q1, 
                                         round(quantile(0.5)(duration), 0)/1000 as q2, 
-                                        round(quantile(0.25)(duration), 0)/1000 as q3, 
+                                        round(quantile(0.75)(duration), 0)/1000 as q3, 
                                         round(quantile(0.95)(duration),0)/1000 as p95 from span where %s 
                                         group by server, service"""
 
