@@ -31,11 +31,9 @@ class CHWriterService(Service):
         self.is_sharded = False
         if config.clickhouse.cluster and config.chwriter.write_to:
             # Distributed configuration
-            self.topic = "chwriter-%s" % (config.chwriter.write_to.replace(":", "-"))
             self.ch_address = config.chwriter.write_to
         else:
             # Standalone configuration
-            self.topic = "chwriter"
             self.ch_address = config.clickhouse.addresses[0]
 
     @tornado.gen.coroutine
@@ -50,12 +48,13 @@ class CHWriterService(Service):
         )
         check_callback.start()
         self.subscribe(
-            self.topic,
+            config.chwriter.topic,
             "chwriter",
             self.on_data,
             raw=True,
             max_backoff_duration=3
         )
+        self.logger.info("Sending records to %s" % self.ch_address)
 
     def get_channel(self, fields):
         if fields not in self.channels:
