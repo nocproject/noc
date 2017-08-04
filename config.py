@@ -87,6 +87,8 @@ class Config(BaseConfig):
         records_buffer = IntParameter(default=1000000)
         batch_delay_ms = IntParameter(default=1000)
         channel_expire_interval = SecondsParameter(default="5M")
+        # Topic to listen
+        topic = StringParameter(default="chwriter")
         # <address:port> of ClickHouse server to write
         write_to = StringParameter()
 
