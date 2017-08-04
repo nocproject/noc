@@ -22,10 +22,12 @@ class NetworkSegmentLoader(BaseLoader):
         "id",
         "parent",
         "name",
-        "sibling"
+        "sibling",
+        "profile"
     ]
 
     mapped_fields = {
         "parent": "networksegment",
-        "sibling": "networksegment"
+        "sibling": "networksegment",
+        "profile": "networksegmentprofile"
     }
