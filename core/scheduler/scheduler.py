@@ -38,7 +38,7 @@ class Scheduler(object):
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
                  submit_threshold=None, max_chunk=None,
-                 filter=None, service=None):
+                 filter=None, service=None, sample=0):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -54,6 +54,9 @@ class Scheduler(object):
             when submitting of next chunk is allowed
         :param filter: Additional filter to be applied to
             pending jobs
+        :param tracing_sample: Tracing sample rate. 0 - do not sample,
+           1 - sample every job
+           N > 1 - sample very Nth job
         """
         self.logger = logging.getLogger("scheduler.%s" % name)
         self.name = name
@@ -101,6 +104,7 @@ class Scheduler(object):
                 self.service.address, self.service.port)
         else:
             self.scheduler_id = "standalone scheduler"
+        self.sample = sample
 
     def get_cache(self):
         with self.cache_lock:
@@ -238,6 +242,7 @@ class Scheduler(object):
         })).limit(limit).sort(Job.ATTR_TS)
         try:
             for job in qs:
+                job[Job.ATTR_SAMPLE] = self.sample
                 try:
                     jcls = get_handler(job[Job.ATTR_CLASS])
                     yield jcls(self, job)

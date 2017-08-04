@@ -157,6 +157,7 @@ class Config(BaseConfig):
 
     class discovery(ConfigSection):
         max_threads = IntParameter(default=20)
+        sample = IntParameter(default=0)
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")
@@ -167,6 +168,7 @@ class Config(BaseConfig):
         tt_escalation_limit = IntParameter(default=10)
         ets = SecondsParameter(default="60s")
         wait_tt_check_interval = SecondsParameter(default="60s")
+        sample = IntParameter(default=0)
 
     class features(ConfigSection):
         use_uvlib = BooleanParameter(default=False)
