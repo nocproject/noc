@@ -507,7 +507,7 @@ class ReportObjectDetailApplication(ExtApplication):
             ads = AdministrativeDomain.get_nested_ids(int(administrative_domain))
             mos = mos.filter(administrative_domain__in=ads)
         if selector:
-            selector = ManagedObjectSelector.objects.get(name=selector)
+            selector = ManagedObjectSelector.get_by_id(int(selector))
             mos = mos.filter(selector.Q)
         # discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         mos_id = list(mos.values_list("id", flat=True))
