@@ -135,8 +135,6 @@ class Model(six.with_metaclass(ModelBase)):
         except ImportError:
             return None
         for a in dir(m):
-             o = getattr(m, a)
-        for a in dir(m):
             o = getattr(m, a)
             if not hasattr(o, "_meta"):
                 continue
