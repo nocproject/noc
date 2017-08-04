@@ -36,7 +36,6 @@ Ext.define("NOC.main.remotesystem.Model", {
             name: "enable_admdiv",
             type: "boolean"
         },
-
         {
             name: "enable_administrativedomain",
             type: "boolean"
@@ -65,6 +64,11 @@ Ext.define("NOC.main.remotesystem.Model", {
             name: "enable_networksegment",
             type: "boolean"
         },
+        {
+            name: "enable_networksegmentprofile",
+            type: "boolean"
+        },
+
         {
             name: "enable_service",
             type: "boolean"
