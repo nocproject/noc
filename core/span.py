@@ -29,6 +29,7 @@ DEFAULT_CLIENT = "NOC"
 DEFAULT_SERVER = "NOC"
 DEFAULT_SERVICE = "unknown"
 DEFAULT_SAMPLE_RATE = 1
+PARENT_SAMPLE = -1
 DEFAULT_ERROR_TEXT = ""
 DEFAULT_LABEL = ""
 DEFAULT_ID = 0
@@ -45,8 +46,10 @@ class Span(object):
         self.sample = sample
         if not sample:
             self.is_sampled = False
-        if sample == DEFAULT_SAMPLE_RATE:
+        elif sample == DEFAULT_SAMPLE_RATE:
             self.is_sampled = True
+        elif sample == PARENT_SAMPLE:
+            self.is_sampled = hasattr(tls, "span_context")
         else:
             self.is_sampled = random.randint(0, sample - 1) == 0
         self.start = None
@@ -128,3 +131,12 @@ def get_spans():
         r = spans
         spans = []
     return r
+
+
+def get_current_span():
+    """
+    Get current span if active
+
+    :return: Current context, span or None, None
+    """
+    return getattr(tls, "span_context", None), getattr(tls, "span_parent", None)
