@@ -597,6 +597,8 @@ class MetricsCheck(DiscoveryCheck):
         """
         w_value = self.get_window_function(m, cfg)
         alarms = []
+        if w_value is None:
+            return alarms
         # Check thresholds
         path = m.metric
         if m.path:
