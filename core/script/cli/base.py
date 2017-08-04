@@ -24,7 +24,7 @@ from noc.lib.text import replace_re_group
 from .error import (CLIError, CLIAuthFailed, CLINoSuperCommand,
                     CLILowPrivileges, CLIConnectionRefused)
 from noc.config import config
-from noc.core.span import Span, PARENT_SAMPLE
+from noc.core.span import Span
 
 
 class CLI(object):
@@ -161,8 +161,7 @@ class CLI(object):
         else:
             parser = self.read_until_prompt
         with Span(server=self.script.credentials.get("address"),
-                  service=self.name, in_label=cmd,
-                  sample=PARENT_SAMPLE) as s:
+                  service=self.name, in_label=cmd) as s:
             self.ioloop.run_sync(functools.partial(self.submit, parser))
             if self.error:
                 s.error_text = str(self.error)

@@ -18,7 +18,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
 from noc.lib.dateutils import total_seconds
 from .error import RetryAfter
-from noc.core.span import Span, PARENT_SAMPLE
+from noc.core.span import Span
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +139,7 @@ class Job(object):
             # Run handler
             status = self.E_EXCEPTION
             delay = None
-            with Span(service="job.dereference", sample=PARENT_SAMPLE):
+            with Span(service="job.dereference"):
                 try:
                     ds = self.dereference()
                     can_run = self.can_run()
@@ -149,7 +149,7 @@ class Job(object):
                     can_run = False
 
             if ds:
-                with Span(service="job.run", sample=PARENT_SAMPLE):
+                with Span(service="job.run"):
                     if can_run:
                         try:
                             data = self.attrs.get(self.ATTR_DATA) or {}
@@ -179,10 +179,10 @@ class Job(object):
                              self.duration * 1000)
             # Schedule next run
             if delay is None:
-                with Span(service="job.schedule_next", sample=PARENT_SAMPLE):
+                with Span(service="job.schedule_next"):
                     self.schedule_next(status)
             else:
-                with Span(service="job.schedule_retry", sample=PARENT_SAMPLE):
+                with Span(service="job.schedule_retry"):
                     # Retry
                     if self.context_version:
                         ctx = self.context or None
