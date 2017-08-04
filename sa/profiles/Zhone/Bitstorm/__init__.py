@@ -23,7 +23,7 @@ class Profile(BaseProfile):
     # pattern_prompt = r"^(?P<hostname>\S+)\s*[#>]"
     # pattern_prompt = r"^(?P<hostname>\S+)(?<!Login)(?<!Password)\s*[#>]"
     pattern_prompt = \
-        r"^(?P<hostname>\S+)(?<!Login)(?<!Password)\s*(\(\S+\)){0,4}[#>]"
+        r"^\s*(?P<hostname>\S+)(?<!Login)(?<!Password)\s*(\(\S+\)){0,4}(]|)[#>]"
     pattern_syntax_error = r"ERROR: Permission denied."
     pattern_more = \
         "<SPACE> for next page, <CR> for next line, A for all, Q to quit"

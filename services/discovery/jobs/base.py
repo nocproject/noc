@@ -90,7 +90,10 @@ class MODiscoveryJob(PeriodicJob):
 
     def can_run(self):
         # @todo: Make configurable
-        return self.object.is_managed and self.object.get_status()
+        os = self.object.get_status()
+        if not os:
+            self.logger.info("Object ping Fail, Job will not run")
+        return self.object.is_managed and os
 
     @contextlib.contextmanager
     def check_timer(self, name):
@@ -183,30 +186,33 @@ class MODiscoveryJob(PeriodicJob):
             )
             umbrella.change_severity(severity=u_sev)
         # Get existing details for umbrella
-        active_details = {}  # path -> alarm
+        active_details = {}  # (alarm class, path) -> alarm
         if umbrella:
             for da in ActiveAlarm.objects.filter(root=umbrella.id):
                 d_path = da.vars.get("path", "")
-                active_details[d_path] = da
+                active_details[da.alarm_class, d_path] = da
         # Synchronize details
+        self.logger.info("Active details: %s" % active_details)
         seen = set()
         for d in details:
             d_path = d.get("path", "")
+            d_key = (d["alarm_class"], d_path)
             d_sev = d.get("severity", 0)
-            seen.add(d_path)
-            if d_path in active_details and active_details[d_path].severity != d_sev:
+            # Key for seen details
+            seen.add(d_key)
+            if d_key in active_details and active_details[d_key].severity != d_sev:
                 # Change severity
                 self.logger.info(
                     "Change detail alarm %s severity %s -> %s",
-                    active_details[d_path].id,
-                    active_details[d_path].severity,
+                    active_details[d_key].id,
+                    active_details[d_key].severity,
                     d_sev
                 )
-                active_details[d_path].change_severity(severity=d_sev)
-            elif d_path not in active_details:
+                active_details[d_key].change_severity(severity=d_sev)
+            elif d_key not in active_details:
                 # Create alarm
                 self.logger.info("Create detail alarm to path %s",
-                                 d_path)
+                                 d_key)
                 v = d.get("vars", {})
                 v["path"] = d_path
                 da = ActiveAlarm(
@@ -386,9 +392,13 @@ class DiscoveryCheck(object):
                 self.logger.error(
                     "RPC Remote error (%s): %s",
                     e.remote_code, e)
+                if e.remote_code:
+                    message = "Remote error code %s" % e.remote_code
+                else:
+                    message = "Remote error code %s, message: %s" % (e.remote_code, e)
                 self.set_problem(
                     alarm_class=self.error_map.get(e.remote_code),
-                    message="Remote error code %s" % e.remote_code,
+                    message=message,
                     fatal=e.remote_code in self.fatal_errors
                 )
             except RPCError as e:

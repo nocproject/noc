@@ -242,6 +242,8 @@ class BIAPI(API):
         user = self.handler.current_user
         groups = user.groups.values_list("id", flat=True)
         aq = Q(owner=user.id) | Q(access__user=user.id) | Q(access__group__in=groups)
+        if user.is_superuser:
+            aq = Q(owner__exists=True)
         if query and "query" in query:
             aq &= Q(title__icontains=query["query"])
         return [{
@@ -496,6 +498,8 @@ class BIAPI(API):
         d = self._get_dashboard(id["id"])
         if not d:
             return None
+        if self.handler.current_user.is_superuser:
+            return DAL_ADMIN
         return d.get_user_access(self.handler.current_user)
 
     def _set_dashboard_access(self, id, items, acc_limit=""):

@@ -52,7 +52,7 @@ class Script(BaseScript):
     ]
 
     # Match mx, ex and qfx
-    @BaseScript.match(platform__regex="[em]x|qfx")
+    @BaseScript.match(platform__regex="[em]x|qfx|acx")
     def execute_ex(self):
         r = []
         # Collect data

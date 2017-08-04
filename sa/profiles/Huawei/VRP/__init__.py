@@ -53,7 +53,7 @@ class Profile(BaseProfile):
             [p % x.replace("/", " ") for x in pl])
 
     rx_interface_name = re.compile(
-        r"^(?P<type>XGE|Ten-GigabitEthernet|GE|Eth|MEth)"
+        r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)"
         r"(?P<number>[\d/]+(\.\d+)?)$")
 
     def convert_interface_name(self, s):
@@ -73,11 +73,13 @@ class Profile(BaseProfile):
         if not match:
             return s
         return "%s%s" % ({
+            "Loop": "LoopBack",
             "Ten-GigabitEthernet": "XGigabitEthernet",
             "XGE": "XGigabitEthernet",
             "GE": "GigabitEthernet",
             "Eth": "Ethernet",
             "MEth": "M-Ethernet",
+            "VE": "Virtual-Ethernet"
             # "Vlanif": "Vlan-interface" - need testing
         }[match.group("type")], match.group("number"))
 

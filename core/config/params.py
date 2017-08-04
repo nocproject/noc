@@ -176,6 +176,7 @@ class ServiceItem(object):
     def __contains__(self, item):
         return item in "%s:%s" % (self.host, self.port)
 
+
 class ServiceParameter(BaseParameter):
     """
     Resolve external service location to a list of ServiceItem.
@@ -190,13 +191,15 @@ class ServiceParameter(BaseParameter):
     """
     DEFAULT_RESOLUTION_TIMEOUT = 1
 
-    def __init__(self, service, near=False, wait=True, help=None):
+    def __init__(self, service, near=False, wait=True, help=None,
+                 full_result=True):
         if isinstance(service, six.string_types):
             self.services = [service]
         else:
             self.services = service
         self.near = near
         self.wait = wait
+        self.full_result = full_result
         super(ServiceParameter, self).__init__(default=[], help=help)
 
     def __get__(self, instance, owner):
@@ -222,8 +225,11 @@ class ServiceParameter(BaseParameter):
                         svc,
                         wait=self.wait,
                         timeout=self.DEFAULT_RESOLUTION_TIMEOUT,
-                        full_result=True
+                        full_result=self.full_result,
+                        near=self.near
                     )
+                    if not isinstance(items, list):
+                        items = [items]
                     self.value = [ServiceItem(*i.rsplit(":", 1))
                                   for i in items]
                     break

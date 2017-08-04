@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -133,7 +133,6 @@ class Script(BaseScript):
                 iv[int(instance)] = vlans
             else:
                 iv[int(instance)] += row[14:]
-        iv[int(instance)] = vlans
         for x in iv:
             iv[x] = iv[x].replace(" to ", "-")
 

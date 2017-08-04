@@ -24,7 +24,8 @@ class Script(BaseScript):
         r"^Port ID : (?P<port>\S+)\s*\n"
         r"^-+\s*\n"
         r"^Remote Entities Count : [1-9]+\s*\n"
-        r"(?P<entities>.+?)\n\n", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"(?P<entities>.+?): \d+\s*\n\n",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_entity = re.compile(
         r"^Entity \d+\s*\n"
         r"^\s+Chassis ID Subtype\s+:(?P<chassis_id_subtype>.+)\s*\n"

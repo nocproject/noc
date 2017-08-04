@@ -59,14 +59,13 @@ class Reader(BaseReader):
                            self.name, lookupd_url, e)
             return
 
-        if lookup_data["status_code"] != 200:
-            logger.warning("[%s] lookupd %s responded with %d",
-                           self.name, lookupd_url,
-                           lookup_data["status_code"])
-            return
-
-        for producer in lookup_data["data"]["producers"]:
-            # TODO: this can be dropped for 1.0
+        if "data" in lookup_data:
+            # Pre 1.0.0-compat
+            producers = lookup_data["data"]["producers"]
+        else:
+            # 1.0.0-compat
+            producers = lookup_data["producers"]
+        for producer in producers:
             address = producer.get("broadcast_address", producer.get("address"))
             assert address
             self.connect_to_nsqd(address, producer["tcp_port"])

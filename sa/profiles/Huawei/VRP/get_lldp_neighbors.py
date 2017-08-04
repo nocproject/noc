@@ -18,14 +18,6 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    @BaseScript.match(version__startswith="3.")
-    def execute_vrp3(self):
-        """
-        No LLDP on VRP3
-        :return:
-        """
-        raise self.NotSupportedError()
-
     rx_iface_sep = re.compile(
         r"^(\S+)\s+has\s+\d+\s+neighbors?", re.MULTILINE
     )
@@ -77,10 +69,16 @@ class Script(BaseScript):
         :return:
         """
         r = []
-        try:
-            v = self.cli("display lldp neighbor")
-        except self.CLISyntaxError:
-            raise self.NotSupportedError()
+        if self.match_version(version__startswith=r"3."):
+            try:
+                v = self.cli("display lldp neighbor-information")
+            except self.CLISyntaxError:
+                raise self.NotSupportedError()
+        else:
+            try:
+                v = self.cli("display lldp neighbor")
+            except self.CLISyntaxError:
+                raise self.NotSupportedError
         il = self.rx_iface_sep.split(v)[1:]
         if not il:
             il = self.rx_iface3_sep.split(v)[1:]
