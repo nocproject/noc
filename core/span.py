@@ -38,8 +38,9 @@ US = 1000000.0
 
 class Span(object):
     def __init__(self, client=DEFAULT_CLIENT, server=DEFAULT_SERVER,
-                 service=DEFAULT_SERVICE, sample=DEFAULT_SAMPLE_RATE,
-                 in_label=DEFAULT_LABEL, parent=DEFAULT_ID):
+                 service=DEFAULT_SERVICE, sample=PARENT_SAMPLE,
+                 in_label=DEFAULT_LABEL, parent=DEFAULT_ID,
+                 context=DEFAULT_ID):
         self.client = client
         self.server = server
         self.service = service
@@ -59,6 +60,7 @@ class Span(object):
         self.in_label = in_label
         self.out_label = DEFAULT_LABEL
         self.parent = parent
+        self.context = context
         self.span_id = DEFAULT_ID
         self.span_context = DEFAULT_ID
         self.span_parent = DEFAULT_ID
@@ -79,7 +81,7 @@ class Span(object):
             except AttributeError:
                 pass
         except AttributeError:
-            self.span_context = self.span_id
+            self.span_context = self.context if self.context else self.span_id
             tls.span_context = self.span_context
         tls.span_parent = self.span_id
         self.start = time.time()
@@ -107,8 +109,8 @@ class Span(object):
             self.error_code,
             self.error_text,
             self.sample,
-            self.in_label,
-            self.out_label
+            str(self.in_label).encode("string_escape"),
+            str(self.out_label).encode("string_escape")
         ])
         with span_lock:
             spans += [row]

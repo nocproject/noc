@@ -32,7 +32,7 @@ from .beef import Beef
 from .error import (ScriptError, CLISyntaxError, CLIOperationError,
                     NotSupportedError, UnexpectedResultError)
 from noc.config import config
-from noc.core.span import Span, PARENT_SAMPLE
+from noc.core.span import Span
 
 
 class BaseScript(object):
@@ -194,7 +194,6 @@ class BaseScript(object):
         Run script
         """
         with Span(server="activator", service=self.name,
-                  sample=PARENT_SAMPLE,
                   in_label=self.credentials.get("address")):
             self.start_time = time.time()
             self.logger.debug("Running. Input arguments: %s, timeout %s",
