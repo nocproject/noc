@@ -491,7 +491,7 @@ class Service(object):
         m = {}
         apply_metrics(m)
         self.logger.info("Post-mortem metrics: %s", m)
-        self.die()
+        self.die("")
 
     def get_register_tags(self):
         tags = []
