@@ -575,7 +575,7 @@ class ReportObjectDetailApplication(ExtApplication):
             if "object_caps" in columns.split(","):
                 r[-1].extend(object_caps[mo][:])
             if "object_tags" in columns.split(","):
-                r[-1].extend(moss[7].split(";"))
+                r[-1].extend(moss[7].split(";") if moss else [])
             pass
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
