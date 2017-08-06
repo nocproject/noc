@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 template {
   source = "{{ consul_template_templates_dir }}/noc_trapcollector.ctmpl"
   destination = "{{ telegraf_confd_path }}/noc-trapcollector.conf"

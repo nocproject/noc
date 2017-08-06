@@ -60,7 +60,8 @@ class EscalatorService(Service):
                 reset_running=True,
                 max_threads=shard_threads[sn],
                 ioloop=self.ioloop,
-                service=self
+                service=self,
+                sample=config.escalator.sample
             )
             self.shards[sn].run()
 

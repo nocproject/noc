@@ -26,7 +26,7 @@ tower_ip: 127.0.0.1
 tower_path: /opt/tower
 tower_dist_dir: "{{tower_path}}/var/tower/data/src_dist"
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
-tower_minimum_version: "0.1a66"
+tower_minimum_version: "0.1a72"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
 
 grafana_group: grafana

@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 template {
   source = "{{ consul_template_templates_dir }}/noc_discovery.ctmpl"
   destination = "{{ telegraf_confd_path }}/noc-discovery.conf"

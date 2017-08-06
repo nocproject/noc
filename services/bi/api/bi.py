@@ -264,6 +264,7 @@ class BIAPI(API):
         :return:
         """
         user = self.handler.current_user
+        groups = user.groups.values_list("id", flat=True)
         d = Dashboard.objects.filter(id=id).first()
         if not d:
             self.logger.warning("Dashboard is not exist, ID: %s" % id)
@@ -273,6 +274,8 @@ class BIAPI(API):
         # @todo: Filter by groups
         for i in d.access:
             if i.user == user and i.level >= access_level:
+                return d
+            elif i.group and i.group.id in groups and i.level >= access_level:
                 return d
         # No access
         raise APIError("User have no permission to access dashboard")

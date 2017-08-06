@@ -9,7 +9,7 @@
 # NOC modules
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
-    DateField, DateTimeField, UInt64Field, UInt32Field, StringField)
+    DateField, DateTimeField, UInt64Field, Int32Field, UInt32Field, StringField)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.translation import ugettext as _
 
@@ -28,7 +28,7 @@ class Span(Model):
     service = StringField(description=_("Called function"))
     client = StringField(description=_("Caller service"))
     duration = UInt64Field(description=_("Duration (us)"))
-    sample = UInt32Field(description=_("Sampling rate"))
+    sample = Int32Field(description=_("Sampling rate"))
     error_code = UInt32Field(description=_("Error code"))
     error_text = StringField(description=_("Error text"))
     in_label = StringField(description=_("Input arguments"))

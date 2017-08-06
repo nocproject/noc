@@ -25,7 +25,7 @@ class IDCheck(DiscoveryCheck):
         if cm:
             cm = ", ".join(
                 "%s - %s" % (m["first_chassis_mac"], m["last_chassis_mac"])
-                for m in cm
+                for m in cm if "first_chassis_mac" in m and "last_chassis_mac" in m
             )
         self.logger.info(
             "Identity found: "

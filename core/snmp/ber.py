@@ -152,7 +152,18 @@ class BERDecoder(object):
         >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
         "1.3.6.1.2.1.1.5.0"
         """
-        return parse_p_oid(msg)
+        self.last_oid = parse_p_oid(msg)
+        return self.last_oid
+
+    def parse_compressed_oid(self, msg):
+        """
+        :param msg:
+        :return:
+        """
+        pos = ord(msg[0]) - 1
+        parts = self.last_oid.split(".")[:pos] + [str(ord(d)) for d in msg[1:]]
+        self.last_oid = ".".join(parts)
+        return self.last_oid
 
     def parse_sequence(self, msg):
         r = []
@@ -248,7 +259,13 @@ class BERDecoder(object):
                 2: parse_int,  # Gauge32
                 3: parse_int,  # TimeTicks
                 4: parse_p_octetstring,  # Opaque
-                6: parse_int   # Counter64
+                # 5: NsapAddress
+                6: parse_int,   # Counter64
+                # 7: UInteger32
+                # 14: Uncompressed delta identifier
+                14: parse_p_oid,
+                # 15: Compressed delta identifier
+                15: parse_compressed_oid
             },
             False: {}
         }

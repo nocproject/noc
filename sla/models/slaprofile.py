@@ -72,8 +72,7 @@ class SLAProfileMetrics(EmbeddedDocument):
     # Window function configuration
     window_config = StringField()
     # Convert window function result to percents of interface bandwidth
-    # Always false
-    window_related = False
+    window_related = BooleanField(default=False)
     # Threshold settings
     # Raise error if window_function result is below *low_error*
     low_error = FloatField(required=False)

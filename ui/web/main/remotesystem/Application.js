@@ -99,7 +99,7 @@ Ext.define("NOC.main.remotesystem.Application", {
                         {
                             name: "enable_networksegmentprofile",
                             xtype: "checkbox",
-                            boxLabel: __("Network Segment")
+                            boxLabel: __("Network Segment Profile")
                         },
                         {
                             name: "enable_service",

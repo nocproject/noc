@@ -28,6 +28,7 @@ class Script(BaseScript):
     @BaseScript.match(platform__contains="3528")
     @BaseScript.match(platform__contains="3552")
     @BaseScript.match(platform__contains="ECS4210")
+    @BaseScript.match(platform__contains="ECS4100")
     def execute_3526(self):
         status = self.cli("show interface status")
         r = []
