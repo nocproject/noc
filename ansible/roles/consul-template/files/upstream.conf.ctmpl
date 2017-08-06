@@ -1,3 +1,7 @@
+# That file is managed by consul-template.
+#
+# Please do not edit.
+
 upstream noc-web {
    {{range service "web"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/web/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
    {{else}}server 127.0.0.1:65535; # check consul for web service{{end}}

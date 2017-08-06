@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 template {
   source = "{{ consul_template_templates_dir }}/upstream.conf.ctmpl"
   destination = "{{nginx_conf_upstream_path}}"

@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 template {
   source = "{{ consul_template_templates_dir }}/noc_bi.ctmpl"
   destination = "{{ telegraf_confd_path }}/noc-bi.conf"
