@@ -1,8 +1,8 @@
+#jinja2:variable_start_string:'[%', variable_end_string:'%]', trim_blocks: False
 # That file is managed by consul-template.
 #
 # Please do not edit.
 
-#jinja2:variable_start_string:'[%', variable_end_string:'%]', trim_blocks: False
 ## enable verbose logging
 verbose = false
 
