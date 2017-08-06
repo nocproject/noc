@@ -100,7 +100,7 @@ class Script(BaseScript):
                 # Not supported at all
                 raise self.NotSupportedError()
         for match in self.rx_line.finditer(v):
-            interfaces = match.group("interfaces")
+            interfaces = "e" + match.group("interfaces")
             if interfaces == '0' \
                     or interfaces.lower() == 'cpu':
                 continue
