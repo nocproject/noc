@@ -424,15 +424,6 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     level: global
-  chreplicator:
-    description: >
-      <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: Clickhouse replication service <br/>
-      <strong>Long description</strong>: This service replicates incoming data to several Clickhouse replica/partitions<br/>
-      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
-      <strong>docs</strong>: "To be done"<br/>
-      <strong>Placement constraint</strong>: None<br/>
-    level: global
   classifier:
     description: >
       <strong>Service type</strong>: Internal <br/>

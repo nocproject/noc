@@ -16,6 +16,7 @@ import uuid
 import argparse
 import functools
 from collections import defaultdict
+import random
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -27,7 +28,7 @@ import nsq
 import ujson
 import threading
 # NOC modules
-from noc.config import config
+from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 from noc.core.debug import excepthook, error_report
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
@@ -43,6 +44,8 @@ from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, SPAN_FIELDS
+
+CHWRITER = "chwriter"
 
 
 class Service(object):
@@ -102,8 +105,11 @@ class Service(object):
         "debug": logging.DEBUG
     }
 
-    NSQ_PUB_RETRY_DELAY = config.nsqd.pub_retry_delay
-    CH_CHUNK_SIZE = config.nsqd.ch_chunk_size
+    DEFAULT_SHARDING_KEY = "managed_object"
+
+    SHARDING_KEYS = {
+        "span": "ctx"
+    }
 
     class RegistrationError(Exception):
         pass
@@ -122,6 +128,7 @@ class Service(object):
         self.pid = os.getpid()
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
+        # channel, fields -> data
         self._metrics = defaultdict(list)
         self.metrics_lock = threading.Lock()
         self.metrics_callback = None
@@ -134,6 +141,19 @@ class Service(object):
         self.close_callbacks = []
         # Can be initialized in subclasses
         self.scheduler = None
+        # Depends on config
+        topo = config.get_ch_topology_type()
+        if topo == CH_UNCLUSTERED:
+            self.register_metrics = self.register_unclustered_metrics
+        elif topo == CH_REPLICATED:
+            self.register_metrics = self.register_replicated_metrics
+        elif topo == CH_SHARDED:
+            self.register_metrics = self.register_sharded_metrics
+            self.total_weight = 0
+            self.get_shard = self.get_sharding_function()
+        else:
+            self.die("Invalid ClickHouse cluster topology")
+        self.register_metrics = None
 
     def create_parser(self):
         """
@@ -196,7 +216,7 @@ class Service(object):
         error_report()
 
     @classmethod
-    def die(cls, msg):
+    def die(cls, msg=""):
         """
         Dump message to stdout and terminate process with error code
         """
@@ -208,6 +228,7 @@ class Service(object):
         """
         Create new or setup existing logger
         """
+        # @todo: Duplicates config.setup_logging
         if not loglevel:
             loglevel = config.loglevel
         logger = logging.getLogger()
@@ -443,7 +464,8 @@ class Service(object):
             self.get_nsq_writer()
         if self.use_telemetry:
             # Start sender callback
-            self.register_metrics(None, [])
+            with self.metrics_lock:
+                self._ensure_metrics_sender()
         self.ioloop.add_callback(self.on_register)
 
     @tornado.gen.coroutine
@@ -658,7 +680,7 @@ class Service(object):
                     topic
                 )
                 w.io_loop.call_later(
-                    self.NSQ_PUB_RETRY_DELAY,
+                    config.nsqd.pub_retry_delay,
                     functools.partial(
                         w.pub, topic, msg, callback=finish_pub
                     )
@@ -679,7 +701,7 @@ class Service(object):
                     topic, data
                 )
                 w.io_loop.call_later(
-                    self.NSQ_PUB_RETRY_DELAY,
+                    config.nsqd.pub_retry_delay,
                     functools.partial(
                         w.mpub, topic, msg, callback=finish_pub
                     )
@@ -705,21 +727,104 @@ class Service(object):
             self.executors[name] = executor
         return executor
 
-    def register_metrics(self, fields, metrics):
+    def _ensure_metrics_sender(self):
         """
-        Register metrics to send
+        Run metrics sender when necessary.
+        Must be called with metrics_lock held
+        :return:
+        """
+        if not self.metrics_callback:
+            self.metrics_callback = tornado.ioloop.PeriodicCallback(
+                self.send_metrics, 250, self.ioloop
+            )
+            self.metrics_callback.start()
+
+    def register_unclustered_metrics(self, fields, metrics):
+        """
+        Register metrics to send in non-clustered configuration
         :param fields: String containing "<table>.<field1>...<fieldN>"
         :param metrics: list of tab-separated strings with values
         :return:
         """
         with self.metrics_lock:
-            if not self.metrics_callback:
-                self.metrics_callback = tornado.ioloop.PeriodicCallback(
-                    self.send_metrics, 250, self.ioloop
-                )
-                self.metrics_callback.start()
-            if fields:
-                self._metrics[fields] += metrics
+            self._ensure_metrics_sender()
+            self._metrics[CHWRITER, fields] += metrics
+
+    def register_replicated_metrics(self, fields, metrics):
+        """
+        Register metrics to send in non-sharded replicated configuration
+        :param fields: String containing "<table>.<field1>...<fieldN>"
+        :param metrics: list of tab-separated strings with values
+        :return:
+        """
+        replicas = config.ch_cluster_topology[0].replicas
+        with self.metrics_lock:
+            self._ensure_metrics_sender()
+            for nr in range(replicas):
+                self._metrics["chwriter-1-%s" % (nr + 1), fields] += metrics
+
+    def register_sharded_metrics(self, fields, metrics):
+        """
+        Register metrics to send in sharded replicated configuration
+        :param fields: String containing "<table>.<field1>...<fieldN>"
+        :param metrics: list of tab-separated strings with values
+        :return:
+        """
+        # Get sharding key
+        f_parts = fields.split(".")
+        key = self.SHARDING_KEYS.get(f_parts[0], self.DEFAULT_SHARDING_KEY)
+        try:
+            fn = f_parts.index(key)
+            tw = self.total_weight
+
+            def sf(x):
+                return int(x.split("\t")[fn]) % tw
+
+        except AttributeError:
+            # No sharding key, random sharding
+            def sf(x):
+                return random.randint(0, tw - 1)
+
+        sx = self.get_shard
+        data = defaultdict(list)
+        # Shard and replicate
+        for m in metrics:
+            sk = sf(m)
+            # Distribute to channels
+            for c in eval(sx, {"k": sk}):
+                data[c, fields] += [m]
+        with self.metrics_lock:
+            self._ensure_metrics_sender()
+            for k in data:
+                self._metrics[k] += data[k]
+
+    def get_sharding_function(self):
+        """
+        Returns expression to be evaluated for sharding
+        Build expression like
+        [1, 2] if k < 2 else [3, 4]
+        [1, 2] if k < 2 else [3, 4] if k < 3 else [5, 6]
+        [1, 2] if k < 2 else [3, 4] if k < 3 else [5, 6] if k < 4 else [7, 8]
+        :return:
+        """
+        topo = config.ch_cluster_topology
+        self.total_weight = 0
+        w = 0
+        f = ""
+        tl = len(topo) - 1
+        for sn, shard in enumerate(topo):
+            channels = ["chwriter-%s-%s" % (sn + 1, r + 1)
+                        for r in range(shard.replicas)]
+            self.total_weight += shard.weight
+            w += shard.weight
+            if not f:
+                f = "%r if k < %d" % (channels, w)
+            elif sn < tl:
+                f = "%s else %r if k < %d" % (f, channels, w)
+            else:
+                f = "%s else %r" % (f, channels)
+        self.logger.info("Sharding expression: %s", f)
+        return compile(f, "<string>", "eval")
 
     @tornado.gen.coroutine
     def send_metrics(self):
@@ -734,12 +839,14 @@ class Service(object):
         with self.metrics_lock:
             data = self._metrics
             self._metrics = defaultdict(list)
-        for fields in data:
-            to_send = data[fields]
+        for channel, fields in data:
+            to_send = data[channel, fields]
             while to_send:
-                chunk, to_send = to_send[:self.CH_CHUNK_SIZE], to_send[self.CH_CHUNK_SIZE:]
-                w.pub("chwriter", "%s\n%s\n" % (
-                    fields, "\n".join(chunk)))
+                chunk, to_send = to_send[:config.nsqd.ch_chunk_size], to_send[config.nsqd.ch_chunk_size:]
+                w.pub(
+                    channel,
+                    "%s\n%s\n" % (fields, "\n".join(chunk))
+                )
 
     def log_request(self, handler):
         """
