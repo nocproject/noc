@@ -26,6 +26,7 @@ from .client import (RPCError, RPCNoService, RPCHTTPError,
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 from noc.config import config
+from noc.core.span import Span, get_current_span
 
 logger = logging.getLogger(__name__)
 
@@ -91,36 +92,44 @@ class RPCProxy(object):
     def _call(self, method, *args, **kwargs):
         @tornado.gen.coroutine
         def make_call(url, body, limit=3):
-            code, headers, data = yield fetch(
-                url,
-                method="POST",
-                headers={
-                    "X-NOC-Calling-Service": self._service.name,
-                    "Content-Type": "text/json"
-                },
-                body=body,
-                connect_timeout=CONNECT_TIMEOUT,
-                request_timeout=REQUEST_TIMEOUT
-            )
-            # Process response
-            if code == 200:
-                raise tornado.gen.Return(data)
-            elif code == 307:
-                # Process redirect
-                if not limit:
-                    raise RPCException("Redirects limit exceeded")
-                url = headers.get("location")
-                self._logger.debug("Redirecting to %s", url)
-                r = yield make_call(url, data, limit - 1)
-                raise tornado.gen.Return(r)
-            elif code in (598, 599):
-                self._logger.debug("Timed out")
-                raise tornado.gen.Return(None)
-            else:
-                raise RPCHTTPError(
-                    "HTTP Error %s: %s" % (
-                        code, body
-                    ))
+            req_headers = {
+                "X-NOC-Calling-Service": self._service.name,
+                "Content-Type": "text/json"
+            }
+            ctx, span_id = get_current_span()
+            sample = 1 if ctx and span_id else 0
+            with Span(server=self._service_name, service=method,
+                      sample=sample) as span:
+                if sample:
+                    req_headers["X-NOC-Span-Ctx"] = span.span_context
+                    req_headers["X-NOC-Span"] = span.span_id
+                code, headers, data = yield fetch(
+                    url,
+                    method="POST",
+                    headers=req_headers,
+                    body=body,
+                    connect_timeout=CONNECT_TIMEOUT,
+                    request_timeout=REQUEST_TIMEOUT
+                )
+                # Process response
+                if code == 200:
+                    raise tornado.gen.Return(data)
+                elif code == 307:
+                    # Process redirect
+                    if not limit:
+                        raise RPCException("Redirects limit exceeded")
+                    url = headers.get("location")
+                    self._logger.debug("Redirecting to %s", url)
+                    r = yield make_call(url, data, limit - 1)
+                    raise tornado.gen.Return(r)
+                elif code in (598, 599):
+                    self._logger.debug("Timed out")
+                    raise tornado.gen.Return(None)
+                else:
+                    raise RPCHTTPError(
+                        "HTTP Error %s: %s" % (
+                            code, body
+                        ))
 
         t0 = time.time()
         self._logger.debug(
