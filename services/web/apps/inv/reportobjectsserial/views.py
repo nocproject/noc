@@ -36,7 +36,8 @@ class ReportFilterApplication(SimpleReport):
         # Get all managed objects by selector
         mos_list = qs.filter(sel.Q)
 
-        columns = [_("Managed Objects"), _("Address"), _("Vendor"), _("Platform"), _("SW Version"), _("Serial")]
+        columns = [_("Managed Objects"), _("Address"), _("Vendor"), _("Platform"),
+                   _("HW Revision"), _("SW Version"), _("Serial")]
         data = []
 
         for mo in mos_list:
@@ -46,6 +47,7 @@ class ReportFilterApplication(SimpleReport):
                           mo.address,
                           mo.vendor or None,
                           mo.get_attr("platform") or None,
+                          mo.get_attr("HW version") or None,
                           mo.get_attr("version") or None,
                           mo.get_attr("Serial Number") or None,
                           None
@@ -56,6 +58,7 @@ class ReportFilterApplication(SimpleReport):
                               mo.address,
                               mo.vendor or None,
                               mo.get_attr("platform") or None,
+                              mo.get_attr("HW version") or None,
                               mo.get_attr("version") or None,
                               x["data"]["asset"]["serial"]
                               ]]
