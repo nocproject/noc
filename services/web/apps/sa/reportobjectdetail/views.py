@@ -68,7 +68,7 @@ class ReportObjectCaps(object):
             ], read_preference=ReadPreference.SECONDARY_PREFERRED)
 
             for v in value["result"]:
-                r = dict(("c_%s" % str(l["item"]), l["val"]) for l in v["cap"])
+                r = dict(("c_%s" % str(l["item"]), l["val"]) for l in v["cap"] if "c_%s" % str(l["item"]) in self.caps)
                 d[v["_id"]] = Caps(**r)
             i += 10000
         return d

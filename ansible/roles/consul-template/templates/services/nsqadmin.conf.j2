@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 template {
   source = "{{ consul_template_templates_dir }}/nsqadmin.conf.ctmpl"
   destination = "{{nsqd_config_dir}}/nsqadmin.conf"
