@@ -18,6 +18,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
 from noc.lib.dateutils import total_seconds
 from .error import RetryAfter
+from noc.core.span import Span
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +58,7 @@ class Job(object):
     ATTR_MAX_RUNS = "mruns"  # Maximum allowed number of runs
     ATTR_FAULTS = "f"  # Amount of sequental faults
     ATTR_OFFSET = "o"  # Random offset [0 .. 1]
+    ATTR_SAMPLE = "sample"  # Span sample
 
     # Job states
     S_WAIT = "W"  # Waiting to run
@@ -116,79 +118,87 @@ class Job(object):
 
     @tornado.gen.coroutine
     def run(self):
-        self.start_time = time.time()
-        if self.is_retries_exceeded():
-            self.logger.info("[%s|%s] Retries exceeded. Remove job",
-                             self.name, self.attrs[Job.ATTR_ID])
-            self.remove_job()
-            return
-        self.logger.info(
-            "[%s] Starting at %s (Lag %.2fms)",
-            self.name,
-            self.scheduler.scheduler_id,
-            total_seconds(
-                datetime.datetime.now() - self.attrs[self.ATTR_TS]
-            ) * 1000.0
-        )
-        # Run handler
-        status = self.E_EXCEPTION
-        delay = None
-        try:
-            ds = self.dereference()
-            can_run = self.can_run()
-        except Exception as e:
-            self.logger.error("Unknown error during dereference: %s", e)
-            ds = None
-            can_run = False
-
-        if ds:
-            if can_run:
-                try:
-                    data = self.attrs.get(self.ATTR_DATA) or {}
-                    result = self.handler(**data)
-                    if tornado.gen.is_future(result):
-                        # Wait for future
-                        result = yield result
-                    status = self.E_SUCCESS
-                except RetryAfter as e:
-                    self.logger.info("Retry after %ss: %s", e.delay, e)
-                    status = self.E_RETRY
-                    delay = e.delay
-                except self.failed_exceptions:
-                    status = self.E_FAILED
-                except Exception:
-                    error_report()
-                    status = self.E_EXCEPTION
-            else:
-                self.logger.info("Deferred")
-                status = self.E_DEFERRED
-        elif ds is not None:
-            self.logger.info("Cannot dereference")
-            status = self.E_DEREFERENCE
-        self.duration = time.time() - self.start_time
-        self.logger.info("Completed. Status: %s (%.2fms)",
-                         self.STATUS_MAP.get(status, status),
-                         self.duration * 1000)
-        # Schedule next run
-        if delay is None:
-            self.schedule_next(status)
-        else:
-            # Retry
-            if self.context_version:
-                ctx = self.context or None
-                ctx_key = self.get_context_cache_key()
-            else:
-                ctx = None
-                ctx_key = None
-            self.scheduler.set_next_run(
-                self.attrs[self.ATTR_ID],
-                status=status,
-                ts=datetime.datetime.now() + datetime.timedelta(seconds=delay),
-                duration=self.duration,
-                context_version=self.context_version,
-                context=ctx,
-                context_key=ctx_key
+        with Span(server=self.scheduler.name,
+                  service=self.attrs[self.ATTR_CLASS],
+                  sample=self.attrs.get(self.ATTR_SAMPLE, 0),
+                  in_label=self.attrs.get(self.ATTR_KEY, "")):
+            self.start_time = time.time()
+            if self.is_retries_exceeded():
+                self.logger.info("[%s|%s] Retries exceeded. Remove job",
+                                 self.name, self.attrs[Job.ATTR_ID])
+                self.remove_job()
+                return
+            self.logger.info(
+                "[%s] Starting at %s (Lag %.2fms)",
+                self.name,
+                self.scheduler.scheduler_id,
+                total_seconds(
+                    datetime.datetime.now() - self.attrs[self.ATTR_TS]
+                ) * 1000.0
             )
+            # Run handler
+            status = self.E_EXCEPTION
+            delay = None
+            with Span(service="job.dereference"):
+                try:
+                    ds = self.dereference()
+                    can_run = self.can_run()
+                except Exception as e:
+                    self.logger.error("Unknown error during dereference: %s", e)
+                    ds = None
+                    can_run = False
+
+            if ds:
+                with Span(service="job.run"):
+                    if can_run:
+                        try:
+                            data = self.attrs.get(self.ATTR_DATA) or {}
+                            result = self.handler(**data)
+                            if tornado.gen.is_future(result):
+                                # Wait for future
+                                result = yield result
+                            status = self.E_SUCCESS
+                        except RetryAfter as e:
+                            self.logger.info("Retry after %ss: %s", e.delay, e)
+                            status = self.E_RETRY
+                            delay = e.delay
+                        except self.failed_exceptions:
+                            status = self.E_FAILED
+                        except Exception:
+                            error_report()
+                            status = self.E_EXCEPTION
+                    else:
+                        self.logger.info("Deferred")
+                        status = self.E_DEFERRED
+            elif ds is not None:
+                self.logger.info("Cannot dereference")
+                status = self.E_DEREFERENCE
+            self.duration = time.time() - self.start_time
+            self.logger.info("Completed. Status: %s (%.2fms)",
+                             self.STATUS_MAP.get(status, status),
+                             self.duration * 1000)
+            # Schedule next run
+            if delay is None:
+                with Span(service="job.schedule_next"):
+                    self.schedule_next(status)
+            else:
+                with Span(service="job.schedule_retry"):
+                    # Retry
+                    if self.context_version:
+                        ctx = self.context or None
+                        ctx_key = self.get_context_cache_key()
+                    else:
+                        ctx = None
+                        ctx_key = None
+                    self.scheduler.set_next_run(
+                        self.attrs[self.ATTR_ID],
+                        status=status,
+                        ts=datetime.datetime.now() + datetime.timedelta(seconds=delay),
+                        duration=self.duration,
+                        context_version=self.context_version,
+                        context=ctx,
+                        context_key=ctx_key
+                    )
 
     def handler(self, **kwargs):
         """
