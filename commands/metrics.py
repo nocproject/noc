@@ -79,7 +79,7 @@ class Command(BaseCommand):
                 self.metrics["chwriter-1-%s" % (r + 1)] = records
         else:
             # Sharded configuration
-        raise NotImplementedError()
+            raise NotImplementedError()
         # Stream to NSQ
         writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
         writer.io_loop.add_callback(on_connect)
