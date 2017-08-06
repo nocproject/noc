@@ -164,7 +164,8 @@ class CLI(object):
                   service=self.name, in_label=cmd) as s:
             self.ioloop.run_sync(functools.partial(self.submit, parser))
             if self.error:
-                s.error_text = str(self.error)
+                if s:
+                    s.error_text = str(self.error)
                 raise self.error
             else:
                 return self.result
