@@ -285,7 +285,7 @@ class ReportObjectIfacesStatusStat(object):
         return str(speed)
 
     def __getitem__(self, item):
-        return self.out.get(item, ["", "", "", ""])
+        return self.out.get(item, [""] * len(self.columns))
 
 
 class ReportObjectAttributes(object):
