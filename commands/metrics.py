@@ -12,13 +12,11 @@ from __future__ import print_function
 import nsq
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.config import config
+from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
 
 
 class Command(BaseCommand):
     TOPIC = "chwriter"
-    NSQ_CONNECT_TIMEOUT = config.nsqd.connect_timeout
-    NSQ_PUB_RETRY_DELAY = config.nsqd.pub_retry_delay
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -35,7 +33,7 @@ class Command(BaseCommand):
         load_parser.add_argument(
             "--chunk",
             type=int,
-            default=10000,
+            default=config.nsqd.ch_chunk_size,
             help="Size on chunk"
         )
 
@@ -63,12 +61,25 @@ class Command(BaseCommand):
                 writer.io_loop.add_callback(publish)
             else:
                 self.stdout.write("Waiting for NSQ connection\n")
-                writer.io_loop.call_later(self.NSQ_CONNECT_TIMEOUT,
+                writer.io_loop.call_later(config.nsqd.connect_timeout,
                                           on_connect)
 
         # Read data
         with open(input) as f:
-            self.items = f.read().splitlines()
+            records = f.read().splitlines()
+        # Shard incoming data when necessary
+        tt = config.get_ch_topology_type()
+        if tt == CH_UNCLUSTERED:
+            # Unclustered configuration
+            self.metrics["chwriter"] = records
+        elif tt == CH_REPLICATED:
+            # Clustered configuration
+            self.metrics = {}
+            for r in range(config.ch_cluster_topology[0].replicas):
+                self.metrics["chwriter-1-%s" % (r + 1)] = records
+        else:
+            # Sharded configuration
+        raise NotImplementedError()
         # Stream to NSQ
         writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
         writer.io_loop.add_callback(on_connect)
