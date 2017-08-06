@@ -74,7 +74,7 @@ class ReportObjectCaps(object):
         return d
 
     def __getitem__(self, item):
-        return self.out.get(item, [""] * (len(self.caps) + 1))
+        return self.out.get(item, [""] * len(self.caps))
 
 
 class ReportObjectDetailLinks(object):
