@@ -543,10 +543,14 @@ class CLI(object):
     def get_patterns(self):
         with self.patterns_lock:
             pc = self.patterns_cache.get(self.profile.name)
-            if not pc:
+            if pc:
+                # Can be changed by session setup
+                # and adaptive pattern prompts
+                return pc.copy()
+            else:
                 pc = self.build_patterns()
                 self.patterns_cache[self.profile.name] = pc
-            return pc
+                return pc
 
     def build_patterns(self):
         """
