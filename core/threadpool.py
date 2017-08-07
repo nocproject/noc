@@ -44,6 +44,7 @@ class ThreadPoolExecutor(object):
         self.done_future = None
         self.started = time.time()
         self.waiters = []
+        threading.stack_size(config.thread_stack_size)
 
     def _put(self, item):
         with self.mutex:
