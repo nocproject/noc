@@ -16,6 +16,7 @@ from django.contrib.auth.models import Group
 import cachetools
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
+from noc.core.model.decorator import on_save
 
 id_lock = Lock()
 
@@ -38,6 +39,7 @@ class AuthLDAPGroup(EmbeddedDocument):
     group = ForeignKeyField(Group)
 
 
+@on_save
 class AuthLDAPDomain(Document):
     meta = {
         "collection": "noc.authldapdomain"
@@ -45,6 +47,7 @@ class AuthLDAPDomain(Document):
 
     name = StringField(unique=True)
     is_active = BooleanField()
+    is_default = BooleanField()
     description = StringField()
     type = StringField(
         choices=[
@@ -109,10 +112,9 @@ class AuthLDAPDomain(Document):
         }
     }
 
-    DEFAULT_DOMAIN = "default"
-
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -128,6 +130,29 @@ class AuthLDAPDomain(Document):
                              lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return AuthLDAPDomain.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"),
+                             lock=lambda _: id_lock)
+    def get_default_domain(cls):
+        return AuthLDAPDomain.objects.filter(is_default=True).first()
+
+    def on_save(self):
+        if self.is_default and (
+                not hasattr(self, "_changed_fields") or
+                "is_default" in self._changed_fields
+        ):
+            # Only one default domain permitted
+            AuthLDAPDomain._get_collection().update({
+                "is_default": True,
+                "_id": {
+                    "$ne": self.id
+                }
+            }, {
+                "$set": {
+                    "is_default": False
+                }
+            }, multi=True)
 
     def get_user_search_filter(self):
         if self.user_search_filter:
