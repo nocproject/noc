@@ -547,9 +547,9 @@ class Config(BaseConfig):
                 else:
                     weight, replicas = 1, s
                 shards += [CHClusterShard(int(replicas), int(weight))]
+            self._ch_cluster_topology = shards
         return self._ch_cluster_topology
 
-    @property
     def get_ch_topology_type(self):
         """
         Detect ClickHouse topology type
