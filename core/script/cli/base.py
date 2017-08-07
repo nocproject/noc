@@ -388,7 +388,7 @@ class CLI(object):
         """
         self.pattern_table = {}
         for pattern_name in patterns:
-            rx = self.patterns[pattern_name]
+            rx = self.patterns.get(pattern_name)
             if not rx:
                 continue
             self.pattern_table[rx] = patterns[pattern_name]
@@ -435,6 +435,7 @@ class CLI(object):
             "username": (self.on_failure, CLIAuthFailed),
             "password": (self.on_failure, CLIAuthFailed),
             "unprivileged_prompt": self.on_unprivileged_prompt,
+            "super_password": self.on_super_password,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
         }, self.profile.cli_timeout_password)
@@ -505,6 +506,7 @@ class CLI(object):
         self.expect({
             "prompt": self.on_prompt,
             "password": (self.on_failure, CLILowPrivileges),
+            "super_password": (self.on_failure, CLILowPrivileges),
             "pager": self.send_pager_reply,
             "unprivileged_prompt": (self.on_failure, CLILowPrivileges)
         }, self.profile.cli_timeout_password)
@@ -551,6 +553,11 @@ class CLI(object):
             )
         else:
             patterns["unprivileged_prompt"] = None
+        if self.profile.pattern_super_password:
+            patterns["super_password"] = re.compile(
+                self.profile.pattern_super_password,
+                re.DOTALL | re.MULTILINE
+            )
         if isinstance(self.profile.pattern_more, six.string_types):
             more_patterns = [self.profile.pattern_more]
             self.more_commands = [self.profile.command_more]
