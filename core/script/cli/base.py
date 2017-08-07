@@ -13,6 +13,7 @@ import re
 import functools
 import datetime
 from functools import reduce
+from threading import Lock
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -50,6 +51,10 @@ class CLI(object):
     KEEP_INTVL = 10
     # Terminate connection after N keepalive failures
     KEEP_CNT = 3
+    # Patterns lock
+    patterns_lock = Lock()
+    # profile name -> patterns
+    patterns_cache = {}
 
     class InvalidPagerPattern(Exception):
         pass
@@ -65,7 +70,7 @@ class CLI(object):
         self.more_patterns = []
         self.more_commands = []
         self.prompt_stack = []
-        self.patterns = self.build_patterns()
+        self.patterns = self.get_patterns()
         self.buffer = ""
         self.is_started = False
         self.result = None
@@ -533,6 +538,14 @@ class CLI(object):
         self.logger.debug("Setup sequence complete")
         self.setup_complete = True
         yield self.on_start(data, match)
+
+    def get_patterns(self):
+        with self.patterns_lock:
+            pc = self.patterns_cache.get(self.profile.name)
+            if not pc:
+                pc = self.build_patterns()
+                self.patterns_cache[self.profile.name] = pc
+            return pc
 
     def build_patterns(self):
         """
