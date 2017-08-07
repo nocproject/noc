@@ -20,6 +20,7 @@ from noc.config import config
 
 class CHWriterService(Service):
     name = "chwriter"
+    require_nsq_writer = True
 
     def __init__(self):
         super(CHWriterService, self).__init__()
@@ -172,8 +173,16 @@ class CHWriterService(Service):
             )
             metrics["slept_time"] += int(timeout)
             yield tornado.gen.sleep(timeout)
+        # Return data to the queue
         self.logger.info("[%s] Recovering records", channel.name)
-        channel.recover(n, data)
+        w = self.get_nsq_writer()
+        w.pub(
+            config.chwriter.topic,
+            "%s\n%s\n" % (
+                channel.name,
+                "\n".join(data)
+            )
+        )
         channel.stop_flushing()
 
 

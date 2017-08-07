@@ -77,7 +77,3 @@ class Channel(object):
 
     def get_encoded_insert_sql(self):
         return self.encoded_sql
-
-    def recover(self, n, data):
-        self.n += n
-        self.data = [data] + self.data
