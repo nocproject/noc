@@ -39,6 +39,9 @@ class BaseProfile(object):
     # Regulal expression to catch password prompt
     # (Telnet/SSH sessions)
     pattern_password = "[Pp]ass[Ww]ord: ?"
+    # Regular expression to catch implicit super password prompt
+    # (Telnet/SSH sessions)
+    pattern_super_password = None
     # Regular expression to catch command prompt
     # (CLI Sessions)
     pattern_prompt = r"^\S*[>#]"
