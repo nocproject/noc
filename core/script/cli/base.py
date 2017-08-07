@@ -525,6 +525,9 @@ class CLI(object):
         )
         lseq = len(self.profile.setup_sequence)
         for i, c in enumerate(self.profile.setup_sequence):
+            if isinstance(c, six.integer_types) or isinstance(c, float):
+                yield tornado.gen.sleep(c)
+                continue
             cmd = c % self.script.credentials
             yield self.send(cmd)
             # Waiting for response and drop it
