@@ -757,6 +757,7 @@ class Service(object):
         :param metrics: list of tab-separated strings with values
         :return:
         """
+        fields = "raw_%s" % fields
         replicas = config.ch_cluster_topology[0].replicas
         with self.metrics_lock:
             self._ensure_metrics_sender()
@@ -770,6 +771,7 @@ class Service(object):
         :param metrics: list of tab-separated strings with values
         :return:
         """
+        fields = "raw_%s" % fields
         # Get sharding key
         f_parts = fields.split(".")
         key = self.SHARDING_KEYS.get(f_parts[0], self.DEFAULT_SHARDING_KEY)
