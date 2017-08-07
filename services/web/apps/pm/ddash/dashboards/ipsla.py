@@ -33,6 +33,7 @@ class IPSLADashboard(BaseDashboard):
             "device": self.object.name.replace('\"', ''),
             "ip": self.object.address,
             "device_id": self.object.id,
+            "bi_id": self.object.get_bi_id(),
             "segment": self.object.segment.id,
             "probes": [{"name": probe.name.replace('\"', ''), "value": probe.tests[0].target} for
                        probe in SLAProbe.objects.filter(managed_object=self.object.id)]
