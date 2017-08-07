@@ -541,12 +541,13 @@ class CLI(object):
         yield self.on_start(data, match)
 
     def get_patterns(self):
-        with self.patterns_lock:
-            pc = self.patterns_cache.get(self.profile.name)
-            if not pc:
-                pc = self.build_patterns()
-                self.patterns_cache[self.profile.name] = pc
-            return pc.copy()
+        return self.build_patterns()
+        # with self.patterns_lock:
+        #     pc = self.patterns_cache.get(self.profile.name)
+        #     if not pc:
+        #         pc = self.build_patterns()
+        #         self.patterns_cache[self.profile.name] = pc
+        #     return pc.copy()
 
     def build_patterns(self):
         """
