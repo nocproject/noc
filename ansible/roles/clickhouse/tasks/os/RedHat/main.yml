@@ -1,1 +1,24 @@
 ---
+- name: Add Red Soft repository
+  yum_repository:
+    name: clickhouse
+    description: Red Soft repository
+    baseurl: http://repo.red-soft.biz/repos/clickhouse/stable/el{{ ansible_distribution_major_version }}
+    gpgcheck: no
+    enabled: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
+- name: Install CH
+  yum:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - clickhouse-client
+    - clickhouse-server-common
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"

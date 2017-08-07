@@ -1,1 +1,32 @@
----
+- name: Add CH apt key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: E0C56BD4
+  environment:
+    https_proxy: "{ {http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add CH repository
+  apt_repository:
+    repo: "deb http://repo.yandex.ru/clickhouse/trusty stable main"
+    state: present
+    update_cache: yes
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install CH
+  apt:
+    name: "{{item}}"
+    state: present
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  with_items:
+    - clickhouse-client
+    - clickhouse-server-common
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
