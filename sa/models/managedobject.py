@@ -295,7 +295,8 @@ class ManagedObject(Model):
         choices=[
             ("E", "Enable"),
             ("D", "Disable"),
-            ("P", "From Profile")
+            ("P", "From Profile"),
+            ("R", "Escalate as depended")
         ],
         default="P"
     )
@@ -1092,7 +1093,7 @@ class ManagedObject(Model):
     def open_session(self, idle_timeout=None):
         return SessionContext(self, idle_timeout)
 
-    def can_escalate(self):
+    def can_escalate(self, depended=False):
         """
         Check alarm can be escalated
         :return:
@@ -1102,7 +1103,9 @@ class ManagedObject(Model):
         if self.escalation_policy == "E":
             return True
         elif self.escalation_policy == "P":
-            return self.object_profile.can_escalate()
+            return self.object_profile.can_escalate(depended)
+        elif self.escalation_policy == "R":
+            return bool(depended)
         else:
             return False
 

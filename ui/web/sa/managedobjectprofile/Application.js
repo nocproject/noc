@@ -1141,7 +1141,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     uiStyle: "medium",
                                     store: [
                                         ["E", __("Enable")],
-                                        ["D", __("Disable")]
+                                        ["D", __("Disable")],
+                                        ["R", __("As Depended")]
                                     ],
                                     value: "E"
                                 }

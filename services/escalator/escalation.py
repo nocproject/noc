@@ -212,7 +212,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                             )
                             # Append affected objects
                             for ao in alarm.iter_affected():
-                                if ao.can_escalate():
+                                if ao.can_escalate(True):
                                     if ao.tt_system == mo.tt_system:
                                         log(
                                             "Appending object %s to group tt %s",
