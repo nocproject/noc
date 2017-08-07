@@ -176,7 +176,7 @@ class BIAPI(API):
         d = Dashboard.objects.filter(id=id).first()
         if not d:
             return None
-        if d.owner == user:
+        if d.owner == user or user.is_superuser:
             return d
         # @todo: Filter by groups
         for i in d.access:
