@@ -67,8 +67,6 @@ class CLI(object):
         self.motd = ""
         self.ioloop = None
         self.command = None
-        self.more_patterns = []
-        self.more_commands = []
         self.prompt_stack = []
         self.patterns = self.get_patterns()
         self.buffer = ""
@@ -380,7 +378,7 @@ class CLI(object):
         Send proper pager reply
         """
         pg = match.group(0)
-        for p, c in zip(self.more_patterns, self.more_commands):
+        for p, c in self.patterns["more_patterns_commands"]:
             if p.search(pg):
                 self.collected_data += [data]
                 self.send(c)
@@ -567,8 +565,6 @@ class CLI(object):
                 self.profile.pattern_unpriveleged_prompt,
                 re.DOTALL | re.MULTILINE
             )
-        else:
-            patterns["unprivileged_prompt"] = None
         if self.profile.pattern_super_password:
             patterns["super_password"] = re.compile(
                 self.profile.pattern_super_password,
@@ -576,11 +572,11 @@ class CLI(object):
             )
         if isinstance(self.profile.pattern_more, six.string_types):
             more_patterns = [self.profile.pattern_more]
-            self.more_commands = [self.profile.command_more]
+            patterns["more_commands"] = [self.profile.command_more]
         else:
             # .more_patterns is a list of (pattern, command)
             more_patterns = [x[0] for x in self.profile.pattern_more]
-            self.more_commands = [x[1] for x in self.profile.pattern_more]
+            patterns["more_commands"] = [x[1] for x in self.profile.pattern_more]
         if self.profile.pattern_start_setup:
             patterns["setup"] = re.compile(
                 self.profile.pattern_start_setup,
@@ -591,8 +587,13 @@ class CLI(object):
             "|".join([r"(%s)" % p for p in more_patterns]),
             re.DOTALL | re.MULTILINE
         )
-        self.more_patterns = [re.compile(p, re.MULTILINE | re.DOTALL)
-                              for p in more_patterns]
+        patterns["more_patterns"] = [
+            re.compile(p, re.MULTILINE | re.DOTALL)
+            for p in more_patterns]
+        patterns["more_patterns_commands"] = list(zip(
+            patterns["more_patterns"],
+            patterns["more_commands"]
+        ))
         return patterns
 
     def resolve_pattern_prompt(self, match):
