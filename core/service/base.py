@@ -775,7 +775,7 @@ class Service(object):
         f_parts = fields.split(".")
         key = self.SHARDING_KEYS.get(f_parts[0], self.DEFAULT_SHARDING_KEY)
         try:
-            fn = f_parts.index(key)
+            fn = f_parts[1:].index(key)
             tw = self.total_weight
 
             def sf(x):
