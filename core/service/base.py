@@ -771,7 +771,6 @@ class Service(object):
         :param metrics: list of tab-separated strings with values
         :return:
         """
-        fields = "raw_%s" % fields
         # Get sharding key
         f_parts = fields.split(".")
         key = self.SHARDING_KEYS.get(f_parts[0], self.DEFAULT_SHARDING_KEY)
@@ -787,6 +786,8 @@ class Service(object):
             def sf(x):
                 return random.randint(0, tw - 1)
 
+        # Shards begins with raw_XXX
+        fields = "raw_%s" % fields
         sx = self.get_shard
         data = defaultdict(list)
         # Shard and replicate
@@ -825,7 +826,6 @@ class Service(object):
                 f = "%s else %r if k < %d" % (f, channels, w)
             else:
                 f = "%s else %r" % (f, channels)
-        self.logger.info("Sharding expression: %s", f)
         return compile(f, "<string>", "eval")
 
     @tornado.gen.coroutine
