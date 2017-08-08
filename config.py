@@ -128,7 +128,7 @@ class Config(BaseConfig):
         cluster_topology = StringParameter(default="1")
 
     class cm(ConfigSection):
-        vcs_type = StringParameter(default="gridvcs", choices="hg, CVS, gridvcs")
+        vcs_type = StringParameter(default="gridvcs", choices=["hg", "CVS", "gridvcs"])
 
     class consul(ConfigSection):
         token = SecretParameter()
@@ -267,6 +267,8 @@ class Config(BaseConfig):
     log_format = StringParameter(
         default="%(asctime)s [%(name)s] %(message)s"
     )
+
+    thread_stack_size = IntParameter(default=0)
 
     class logging(ConfigSection):
         log_api_calls = BooleanParameter(default=False)
