@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Base card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 import datetime
-import operator
 # Third-party modules
 from jinja2 import Template, Environment
 # NOC modules
@@ -172,9 +171,11 @@ class BaseCard(object):
         def get_summary(d, profile):
             v = []
             if hasattr(profile, "show_in_summary"):
-                show_in_summary = lambda p: p.show_in_summary
+                def show_in_summary(p):
+                    return p.show_in_summary
             else:
-                show_in_summary = lambda p: True
+                def show_in_summary(p):
+                    return True
             for p, c in sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):

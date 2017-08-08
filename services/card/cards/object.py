@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Object card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import operator
 # NOC modules
 from base import BaseCard
 from noc.inv.models.object import Object

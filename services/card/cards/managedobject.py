@@ -9,7 +9,6 @@
 # Python modules
 import datetime
 import operator
-import re
 # Third-party modules
 from django.db.models import Q
 # NOC modules
@@ -22,7 +21,6 @@ from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.sa.models.objectdata import ObjectData
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary

@@ -2,15 +2,13 @@
 # ---------------------------------------------------------------------
 # Alarm card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 import operator
-# Third-party modules
-from jinja2 import Template
 # NOC modules
 from base import BaseCard
 from noc.fm.models.utils import get_alarm
@@ -79,7 +77,7 @@ class AlarmCard(BaseCard):
             is_completed=False,
             start__lte=datetime.datetime.now(),
             affected_objects__in=[
-               MaintainanceObject(object=self.object.managed_object)
+                MaintainanceObject(object=self.object.managed_object)
             ]
         )
         mo = self.object.managed_object
