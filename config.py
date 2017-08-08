@@ -243,7 +243,7 @@ class Config(BaseConfig):
         default="%(asctime)s [%(name)s] %(message)s"
     )
 
-    thread_stack_size = IntParameter(default=524288)
+    thread_stack_size = IntParameter(default=0)
 
     class logging(ConfigSection):
         log_api_calls = BooleanParameter(default=False)
