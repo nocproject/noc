@@ -74,7 +74,7 @@ class ReportObjectCaps(object):
         return d
 
     def __getitem__(self, item):
-        return self.out.get(item, [])
+        return self.out.get(item, [""] * len(self.caps))
 
 
 class ReportObjectDetailLinks(object):
@@ -285,7 +285,7 @@ class ReportObjectIfacesStatusStat(object):
         return str(speed)
 
     def __getitem__(self, item):
-        return self.out.get(item, ["", "", "", ""])
+        return self.out.get(item, [""] * len(self.columns))
 
 
 class ReportObjectAttributes(object):
@@ -336,8 +336,8 @@ class ReportObjects(object):
 
     @staticmethod
     def load(mos_id):
-        query = "select sa.id,sa.name,sa.address, sa.is_managed, "
-        query += "profile_name, op.name as object_profile, ad.name as  administrative_domain, sa.segment "
+        query = "select sa.id, sa.name, sa.address, sa.is_managed, profile_name, op.name as object_profile,"
+        query += "ad.name as administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         query += "WHERE op.id = sa.object_profile_id and ad.id = sa.administrative_domain_id "
         # query += "LIMIT 20"
@@ -451,6 +451,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "segment",
             "phys_interface_count",
             "link_count",
+            # "object_tags"
             # "object_caps"
             # "interface_type_count"
         ]
@@ -472,6 +473,7 @@ class ReportObjectDetailApplication(ExtApplication):
          "SEGMENT",
          "PHYS_INTERFACE_COUNT",
          "LINK_COUNT",
+         # "OBJECT_TAGS"
          # "OBJECT_CAPS"
          # "INTERFACE_TYPE_COUNT"
         ]
@@ -534,6 +536,8 @@ class ReportObjectDetailApplication(ExtApplication):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.caps.values()
             r[-1].extend(caps_columns)
+        # if "object_tags" in columns.split(","):
+        #    r[-1].extend(["tags"])
 
         if len(mos_id) < 70000:
             # @todo Warning - too many objects
@@ -555,7 +559,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 moss[3],
                 moss[4],
                 attr[mo][0] if attr else "",
-                attr[mo][2] if attr else "",
+                "%s;(%s)" % (attr[mo][2], attr[mo][4]) if attr else "",
                 attr[mo][1] if attr else "",
                 attr[mo][3] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
                 _("Yes") if avail.get(mo, None) else _("No"),
@@ -570,7 +574,8 @@ class ReportObjectDetailApplication(ExtApplication):
                 r[-1].extend(iface_type_count[mo] if iface_type_count else ["", "", "", ""])
             if "object_caps" in columns.split(","):
                 r[-1].extend(object_caps[mo][:])
-
+            if "object_tags" in columns.split(","):
+                r[-1].extend(sorted(moss[7].split(";") if moss[7] else []))
             pass
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")

@@ -267,8 +267,7 @@ class BIAPI(API):
         groups = user.groups.values_list("id", flat=True)
         d = Dashboard.objects.filter(id=id).first()
         if not d:
-            self.logger.warning("Dashboard is not exist, ID: %s" % id)
-            raise APIError("Dashboard not found")
+            return None
         if d.owner == user:
             return d
         # @todo: Filter by groups

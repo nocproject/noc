@@ -40,7 +40,8 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["phys_interface_count", __("Physical Iface Count"), false],
                 ["link_count", __("Link Count"), false],
                 ["interface_type_count", __("Interface count by type"), false],
-                ["object_caps", __("Object capabilities"), false]
+                ["object_caps", __("Object capabilities"), false],
+                ["object_tags", __("Object Tags"), false]
             ]
         });
 

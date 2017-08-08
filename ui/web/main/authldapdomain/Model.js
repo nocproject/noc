@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.authldapdomain Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.authldapdomain.Model");
@@ -37,6 +37,10 @@ Ext.define("NOC.main.authldapdomain.Model", {
         },
         {
             name: "is_active",
+            type: "boolean"
+        },
+        {
+            name: "is_default",
             type: "boolean"
         },
         {

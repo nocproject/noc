@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,17 +18,17 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_ver = re.compile(r"^\s*(?P<platform>\S+) Device.+"
-                        r"\s*SoftWare(?: Package)? Version (?P<version>\S+)\n"
-                        r"\s*BootRom Version (?P<bootprom>\S+)\n"
-                        r"\s*HardWare Version (?P<hardware>\S+).+"
-                        r"\s*(?:Device serial number |Serial No.:)"
-                        r"(?P<serial>\S+)\n",
-                        re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(
+        r"^\s*(?:Device: )?(?P<platform>\S+)(?: Device|, sysLocation\:).+\n"
+        r"^\s*SoftWare(?: Package)? Version\s+(?P<version>\S+?)(?:\(\S+\))?\n"
+        r"^\s*BootRom Version\s+(?P<bootprom>\S+)\n"
+        r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
+        r"^\s*(?:Device serial number |Serial No.:)(?P<serial>\S+)\n",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         ver = self.cli("show version", cached=True)
-        match = self.rx_ver.match(ver)
+        match = self.rx_ver.search(ver)
         if match:
             platform = match.group("platform")
             version = match.group("version")

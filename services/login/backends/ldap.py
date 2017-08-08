@@ -17,15 +17,23 @@ class LdapBackend(BaseAuthBackend):
     def authenticate(self, user=None, password=None, **kwargs):
         # Get domain
         domain, user = self.split_user_domain(user)
-        ldap_domain = AuthLDAPDomain.get_by_name(domain)
-        if not ldap_domain:
-            self.logger.error(
-                "LDAP Auth domain '%s' is not configured",
-                domain
-            )
-            raise self.LoginError(
-                "Invalid LDAP domain '%s'" % domain
-            )
+        if domain:
+            ldap_domain = AuthLDAPDomain.get_by_name(domain)
+            if not ldap_domain:
+                self.logger.error(
+                    "LDAP Auth domain '%s' is not configured",
+                    domain
+                )
+                raise self.LoginError(
+                    "Invalid LDAP domain '%s'" % domain
+                )
+        else:
+            ldap_domain = AuthLDAPDomain.get_default_domain()
+            if not ldap_domain:
+                self.logger.error(
+                    "Default LDAP Auth domain is not configured"
+                )
+                raise self.LoginError("Default LDAP domain is not configured")
         if not ldap_domain.is_active:
             self.logger.error(
                 "LDAP Auth domain '%s' is disabled",
@@ -146,7 +154,7 @@ class LdapBackend(BaseAuthBackend):
         if "@" in user:
             u, d = user.rsplit("@", 1)
             return d, u
-        return AuthLDAPDomain.DEFAULT_DOMAIN, user
+        return None, user
 
     def get_server_pool(self, ldap_domain):
         servers = []

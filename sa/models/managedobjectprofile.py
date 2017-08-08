@@ -263,7 +263,8 @@ class ManagedObjectProfile(models.Model):
         max_length=1,
         choices=[
             ("E", "Enable"),
-            ("D", "Disable")
+            ("D", "Disable"),
+            ("R", "Escalate as Depended")
         ],
         default="E"
     )
@@ -367,12 +368,15 @@ class ManagedObjectProfile(models.Model):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
 
-    def can_escalate(self):
+    def can_escalate(self, depended=False):
         """
         Check alarms on objects within profile can be escalated
         :return: 
         """
-        return self.escalation_policy == "E"
+        if self.escalation_policy == "R":
+            return bool(depended)
+        else:
+            return self.escalation_policy == "E"
 
     def can_create_box_alarms(self):
         return self.box_discovery_alarm_policy == "E"

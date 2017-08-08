@@ -88,7 +88,10 @@ class ReportPendingLinks(object):
                             "remote_id": discovery["problems"]["lldp"][iface]}}
                     if "Pending link:" in discovery["problems"]["lldp"][iface]:
                         pend_str = rg.match(discovery["problems"]["lldp"][iface])
-                        rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
+                        try:
+                            rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
+                        except ManagedObject.DoesNotExist:
+                            continue
                         # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
                         problems[mo_id][iface] = {
                             "problem": "Not found iface on remote",
