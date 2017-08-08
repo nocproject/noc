@@ -33,6 +33,16 @@
     - "config.xml"
     - "users.xml"
 
+- name: install config overrides
+  template:
+    src: "noc.xml"
+    dest: "{{ ch_etc_path }}/noc.xml"
+    force: no
+  no_log: true
+  notify: reload clickhouse-server
+  tags:
+    - config
+
 - name: copy clickhouse consul templates
   template:
     src: clickhouse.json.j2
