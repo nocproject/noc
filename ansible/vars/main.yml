@@ -74,6 +74,7 @@ nginx_reload_command: "systemctl reload nginx"
 telegraf_reload_command: "systemctl reload telegraf"
 nsqd_reload_command: "systemctl reload nsqd"
 nsqadmin_reload_command: "systemctl reload nsqadmin"
+zookeeper_reload_command: "systemctl reload zookeeper"
 
 #Memtune
 kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
@@ -140,3 +141,5 @@ mongo_dir: "{{etc_prefix}}/mongod"
 mongo_conf: "{{ etc_prefix }}/mongod.conf"
 
 fake_shell: /bin/false
+
+zookeeper_config_dir: "{{etc_prefix}}/zookeeper/conf"

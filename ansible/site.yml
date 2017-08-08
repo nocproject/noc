@@ -176,6 +176,19 @@
   roles:
     - role: mongod
 
+- name: zookeeper tasks
+  hosts: svc-zookeeper
+  become: yes
+  any_errors_fatal: false
+  gather_facts: True
+  tags:
+    - zookeeper
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: zookeeper
+
 - name: clickhouse tasks
   hosts: svc-clickhouse
   become: yes
