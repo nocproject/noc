@@ -774,9 +774,9 @@ class Service(object):
         # Get sharding key
         f_parts = fields.split(".")
         key = self.SHARDING_KEYS.get(f_parts[0], self.DEFAULT_SHARDING_KEY)
+        tw = self.total_weight
         try:
             fn = f_parts[1:].index(key)
-            tw = self.total_weight
 
             def sf(x):
                 return int(x.split("\t")[fn]) % tw
