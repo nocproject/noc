@@ -754,3 +754,12 @@ services:
     required_assets:
       - web
       - mib
+  zookeeper:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Distributed KV <br/>
+      <strong>Long description</strong>: Used for clickhouse sharded mode<br/>
+      <strong>Scale Recommendations</strong>: Quorum based. have to be at least 3 <br/>
+      <strong>docs</strong>: https://clickhouse.yandex/docs/ru/single/ <br/>
+      <strong>Placement constraint</strong>: Please do not install until you understands what it for.<br/>
+    level: global
