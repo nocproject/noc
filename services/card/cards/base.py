@@ -36,6 +36,7 @@ class BaseCard(object):
 
     def __init__(self, handler, id):
         self.handler = handler
+        self.id = id
         self.object = self.dereference(id)
 
     @property
@@ -115,6 +116,7 @@ class BaseCard(object):
                     })
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
+
         return self.template_cache[name]
 
     def render(self):
