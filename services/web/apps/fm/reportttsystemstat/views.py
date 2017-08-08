@@ -120,7 +120,7 @@ class ReportTTSystemStatApplication(SimpleReport):
         r = []
         r += [SectionRow(name="Report from %s to %s" % (from_date.strftime("%d.%m.%Y %H:%M"),
                                                         to_date.strftime("%d.%m.%Y %H:%M")))]
-        for l in sorted(tt_s):
+        for l in sorted(tt_s, key=lambda x: x[0]):
             data = list(l)
             data += tt_s[l]
             data[5] = round((float(data[3])/float(data[2]))*100.0, 2)
