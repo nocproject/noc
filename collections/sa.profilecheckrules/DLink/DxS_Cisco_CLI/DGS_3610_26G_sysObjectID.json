@@ -1,0 +1,13 @@
+{
+    "name": "DLink | DGS-3610-26G sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "faac6af7-00c8-47ee-9b8f-847f7cd9a411",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.171.10.97.1.9",
+    "action": "match",
+    "profile": "DLink.DxS_Cisco_CLI"
+}
