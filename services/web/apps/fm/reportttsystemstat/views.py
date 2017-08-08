@@ -15,6 +15,7 @@ from django.contrib.admin.widgets import AdminDateWidget
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.core.clickhouse.connect import connection
+from noc.fm.models.ttsystem import TTSystem
 from noc.core.translation import ugettext as _
 
 
@@ -78,21 +79,24 @@ class ReportTTSystemStatApplication(SimpleReport):
 
         columns = [_("Server"), _("Service"), _("Request count"), _("Success request count"),
                    _("Failed request count"), _("Success request (%)"),
-                   _("Q1 (ms)"), _("Q2 (ms)"), _("Q3 (ms)"), _("p95")]
+                   _("Q1 (ms)"), _("Q2 (ms)"), _("Q3 (ms)"), _("p95 (ms)"), _("max (ms)")]
         ts_from_date = time.mktime(from_date.timetuple())
         ts_to_date = time.mktime(to_date.timetuple())
+
+        tt_systems = TTSystem.objects.filter().scalar("name")
         # Manged Object block
 
         q1 = """select server, service, count(), round(quantile(0.25)(duration), 0)/1000 as q1, 
                                         round(quantile(0.5)(duration), 0)/1000 as q2, 
                                         round(quantile(0.75)(duration), 0)/1000 as q3, 
-                                        round(quantile(0.95)(duration),0)/1000 as p95 from span where %s 
+                                        round(quantile(0.95)(duration),0)/1000 as p95, 
+                                        round(max(duration),0)/1000 as max from span where %s
                                         group by server, service"""
 
         q2 = """select server, service, error_code, count(), avg(duration) 
                 from span where %s group by server, service, error_code"""
 
-        q_where = []
+        q_where = ["server IN ('%s')" % "', '".join(tt_systems)]
         # q_where = ["managed_object IN (%s)" % ", ".join(mo_bi_dict.keys())]
         q_where += ["(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" % (ts_from_date,
                                                                                                   ts_from_date,
