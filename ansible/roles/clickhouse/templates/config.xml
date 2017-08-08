@@ -16,6 +16,7 @@
 	<!-- Port for communication between replicas. Used for data exchange. -->
 	<interserver_http_port>9009</interserver_http_port>
     <listen_host>0.0.0.0</listen_host>
+    <include_from>{{ ch_etc_path }}/noc.xml</include_from>
 
 	<max_connections>4096</max_connections>
 	<keep_alive_timeout>3</keep_alive_timeout>
