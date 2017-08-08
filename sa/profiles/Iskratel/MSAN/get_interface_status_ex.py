@@ -91,7 +91,7 @@ class Script(BaseScript):
                 s = s_templ_table.get(ifindex)
                 if s is not None:
                     r[ifindex]["in_speed"] = int(s_templ.get(s + "DOWN", 0)) // 1000
-                    r[ifindex]["out_speed"] = int(s_templ.get(s + "UP"), 0) // 1000
+                    r[ifindex]["out_speed"] = int(s_templ.get(s + "UP", 0)) // 1000
         # Refer to ifHighSpeed if necessary
         if highspeed:
             hs_table = self.get_iftable("IF-MIB::ifHighSpeed")
