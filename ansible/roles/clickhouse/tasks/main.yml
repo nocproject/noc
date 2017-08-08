@@ -17,6 +17,7 @@
     src: "{{item}}"
     dest: "{{ch_etc_path}}/"
   no_log: true
+  notify: reload clickhouse-server
   with_items:
     - "config.xml"
     - "users.xml"
