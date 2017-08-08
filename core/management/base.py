@@ -59,10 +59,11 @@ class BaseCommand(object):
         try:
             return self.handle(*args, **cmd_options) or 0
         except CommandError as e:
-            self.stderr.write(str(e))
-            self.stderr.write("\n")
-            self.stderr.flush()
+            self.print(str(e))
             return 1
+        except KeyboardInterrupt:
+            self.print("Ctrl+C")
+            return 3
         except Exception:
             error_report()
             return 2

@@ -10,6 +10,7 @@
 from __future__ import print_function
 import random
 from collections import defaultdict
+import time
 # Third-party modules
 import nsq
 # NOC modules
@@ -26,7 +27,6 @@ class Command(BaseCommand):
     SHARDING_KEYS = {
         "span": "ctx"
     }
-
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -79,11 +79,15 @@ class Command(BaseCommand):
                                           on_connect)
 
         # Read data
+        self.print("Reading file %s" % input)
         with open(input) as f:
-            records = f.read().splitlines()
+            records = f.read().replace("\r", "").splitlines()
+        self.print("%d records read" % len(records))
+        self.print("Processing")
         # Shard incoming data when necessary
         self.fields = fields
         tt = config.get_ch_topology_type()
+        t0 = time.time()
         if tt == CH_UNCLUSTERED:
             self.process_unclustered(records)
         elif tt == CH_REPLICATED:
@@ -92,6 +96,13 @@ class Command(BaseCommand):
             self.process_sharded(records)
         else:
             raise NotImplementedError()
+        dt = time.time() - t0
+        for c in sorted(self.records):
+            rr = len(self.records[c])
+            self.print("  Channel %s: %d records" % (c, rr))
+        if len(records):
+            self.print("%.2fms (%drecords/s)" % (dt * 1000, len(records) // dt))
+        self.print("Publishing")
         # Stream to NSQ
         writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
         writer.io_loop.add_callback(on_connect)
@@ -112,9 +123,10 @@ class Command(BaseCommand):
         # Get sharding key
         f_parts = self.fields.split(".")
         key = self.SHARDING_KEYS.get(f_parts[0], self.DEFAULT_SHARDING_KEY)
+        tw = self.total_weight
+
         try:
             fn = f_parts[1:].index(key)
-            tw = self.total_weight
 
             def sf(x):
                 return int(x.split("\t")[fn]) % tw
@@ -129,6 +141,8 @@ class Command(BaseCommand):
         self.records = defaultdict(list)
         # Shard and replicate
         for m in records:
+            if not m:
+                continue
             sk = sf(m)
             # Distribute to channels
             for c in eval(sx, {"k": sk}):
