@@ -16,5 +16,5 @@ dataLogDir=/var/lib/zookeeper
 
 standaloneEnabled=false
 
-{{range service "zookeeper" "any"}}
-server.{{.ID}}={{.Address}}:2888:3888{{end}}
+{{range $i, $e := service "zookeeper" "any"}}
+server.{{add $i 1}}={{$e.Address}}:2888:3888{{end}}
