@@ -18,6 +18,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
+    rx_descr = re.compile(r"Description\s+: (?P<platform>\S+)")
     rx_ver = re.compile(
         r"^Object-id\s+: (?P<sys_oid>\S+)\s*\n"
         r"^Up Time\(HH:MM:SS\)\s+: .+\n"
@@ -29,18 +30,29 @@ class Script(BaseScript):
     )
 
     OID_TABLE = {
-        "1.3.6.1.4.1.171.10.65.1": "DAS-32xx"
+        "1.3.6.1.4.1.171.10.65.1": "DAS-32xx",
+        "1.3.6.1.4.1.3646.1300.11": "DAS-3248-DC",
+        "1.3.6.1.4.1.3646.1300.12": "DAS-3248",
+        "1.3.6.1.4.1.3646.1300.13": "DAS-3224-DC",
+        "1.3.6.1.4.1.3646.1300.14": "DAS-3224",
+        "1.3.6.1.4.1.3646.1300.15": "DAS-3216-DC",
+        "1.3.6.1.4.1.3646.1300.16": "DAS-3216",
+        "1.3.6.1.4.1.3646.1300.19": "DAS-3248/E",
+        "1.3.6.1.4.1.3646.1300.202": "DAS-3224/E",
     }
 
     def execute(self):
         v = self.cli("get system info")
+        match = self.rx_descr.search(v)
+        platform = match.group("platform")
         match = self.rx_ver.search(v)
-        r = {
+        if not platform.startswith("DAS-"):
+            platform = self.OID_TABLE[match.group("sys_oid")]
+        return {
             "vendor": "DLink",
-            "platform": self.OID_TABLE[match.group("sys_oid")],
+            "platform": platform,
             "version": match.group("version"),
             "attributes": {
                 "HW version": match.group("hardware"),
             }
         }
-        return r
