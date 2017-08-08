@@ -115,7 +115,6 @@ class Command(BaseCommand):
         try:
             fn = f_parts[1:].index(key)
             tw = self.total_weight
-            self.print(f_parts, fn)
 
             def sf(x):
                 return int(x.split("\t")[fn]) % tw
