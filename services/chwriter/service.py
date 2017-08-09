@@ -124,61 +124,55 @@ class CHWriterService(Service):
         channel.start_flushing()
         n = channel.n
         data = channel.get_data()
-        for i in range(10):
-            t0 = self.ioloop.time()
-            self.logger.debug("[%s] Sending %s records", channel.name, n)
-            written = False
-            try:
-                code, headers, body = yield fetch(
-                    channel.url,
-                    method="POST",
-                    body=data,
-                    content_encoding=config.clickhouse.encoding
-                )
-                if code == 200:
-                    self.logger.info(
-                        "[%s] %d records sent in %.2fms",
-                        channel.name,
-                        n, (self.ioloop.time() - t0) * 1000
-                    )
-                    metrics["records_written"] += n
-                    metrics["records_buffered"] -= n
-                    channel.stop_flushing()
-                    written = True
-                elif code in (598, 599):
-                    self.logger.info(
-                        "[%s] Timed out: %s",
-                        channel.name, body
-                    )
-                    metrics["records_spool_timeouts"] += 1
-                else:
-                    self.logger.info(
-                        "[%s] Failed to write records: %s %s",
-                        channel.name,
-                        code, body
-                    )
-                    metrics["records_spool_failed"] += 1
-            except Exception as e:
-                self.logger.error(
-                    "[%s] Failed to spool %d records due to unknown error: %s",
-                    channel.name, n, e
-                )
-            if written:
-                raise tornado.gen.Return()
-            timeout = 1.0
-            self.logger.info(
-                "Clickhouse is getting ill. "
-                "Giving chance to recover. Waiting for %.2fms",
-                timeout * 1000
+        t0 = self.ioloop.time()
+        self.logger.debug("[%s] Sending %s records", channel.name, n)
+        written = False
+        try:
+            code, headers, body = yield fetch(
+                channel.url,
+                method="POST",
+                body=data,
+                content_encoding=config.clickhouse.encoding
             )
-            metrics["slept_time"] += int(timeout)
-            yield tornado.gen.sleep(timeout)
+            if code == 200:
+                self.logger.info(
+                    "[%s] %d records sent in %.2fms",
+                    channel.name,
+                    n, (self.ioloop.time() - t0) * 1000
+                )
+                metrics["records_written"] += n
+                metrics["records_buffered"] -= n
+                written = True
+            elif code in (598, 599):
+                self.logger.info(
+                    "[%s] Timed out: %s",
+                    channel.name, body
+                )
+                metrics["records_spool_timeouts"] += 1
+            else:
+                self.logger.info(
+                    "[%s] Failed to write records: %s %s",
+                    channel.name,
+                    code, body
+                )
+                metrics["records_spool_failed"] += 1
+        except Exception as e:
+            self.logger.error(
+                "[%s] Failed to spool %d records due to unknown error: %s",
+                channel.name, n, e
+            )
+        if written:
+            channel.stop_flushing()
+            raise tornado.gen.Return()
         # Return data to the queue
         self.logger.info("[%s] Recovering records", channel.name)
         w = self.get_nsq_writer()
         data = data.splitlines()
+        self.logger.info("Requeueing %d records to topic %s",
+                         len(data), config.chwriter.topic)
         while data:
             chunk, data = data[:config.nsqd.ch_chunk_size], data[config.nsqd.ch_chunk_size:]
+            cl = len(chunk)
             w.pub(
                 config.chwriter.topic,
                 "%s\n%s\n" % (
@@ -186,7 +180,9 @@ class CHWriterService(Service):
                     "\n".join(chunk)
                 )
             )
-            metrics["records_requeued"] += len(chunk)
+            metrics["records_requeued"] += cl
+            metrics["records_buffered"] -= cl
+        yield tornado.gen.sleep(1.0)
         channel.stop_flushing()
 
 

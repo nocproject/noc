@@ -52,7 +52,7 @@ class Channel(object):
         return t - self.last_updated > config.chwriter.channel_expire_interval
 
     def is_ready(self):
-        if not self.n:
+        if not self.data or self.flushing:
             return False
         if self.n >= config.chwriter.batch_size:
             return True
