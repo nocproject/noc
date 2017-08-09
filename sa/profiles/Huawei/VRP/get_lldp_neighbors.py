@@ -47,6 +47,8 @@ class Script(BaseScript):
     PORT_TYPES = {
         "interfacealias": 1,
         "interface alias": 1,
+        "portcomponent": 2,
+        "port component": 2,
         "macaddress": 3,
         "mac address": 3,
         "interfacename": 5,
