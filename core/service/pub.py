@@ -18,14 +18,14 @@ from noc.config import config
 logger = logging.getLogger(__name__)
 
 
-def pub(topic, data):
+def pub(topic, data, raw=False):
     logger.debug("Publish to topic %s", topic)
     url = "http://%s:%s/pub" % (config.nsqd.http_addresses[0].host,
                              config.nsqd.http_addresses[0].port)
     code, headers, body = fetch_sync(
             "%s?topic=%s" % (url, topic),
             method="POST",
-            body=ujson.dumps(data),
+            body=data if raw else ujson.dumps(data),
             connect_timeout=config.nsqd.connect_timeout,
             request_timeout=config.nsqd.request_timeout
     )
