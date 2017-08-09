@@ -38,6 +38,17 @@ class Script(BaseScript):
         r"^Admin Status\s+: (?P<admin_status>\S+)\s+Operational Status : (?P<oper_status>\S+)\s*\n",
         re.MULTILINE
     )
+    rx_port_id = re.compile(
+        r"^Port Id\s+: (?P<id>\d+)\s+IfName\s+: (?P<name>\S+)\s*\n",
+        re.MULTILINE
+    )
+    rx_vlan = re.compile(
+        r"^VLAN Index\s+: (?P<vlan_id>\d+)\s*\n"
+        r"^VLAN Status.+\n"
+        r"^Egress Ports\s+: (?P<ports>.+)\n"
+        r"^Untagged Ports\s+: (?P<untagged>.+)\n",
+        re.MULTILINE
+    )
     IF_TYPES = {
         "ETHERNET": "physical",
         "EOA": "unknown",
@@ -49,7 +60,6 @@ class Script(BaseScript):
     }
     def execute(self):
         interfaces = []
-        #v = self.cli("get ethernet intf")
         v = self.cli("get interface stats")
         for match in self.rx_stats.finditer(v):
             i = {
@@ -77,8 +87,6 @@ class Script(BaseScript):
                 i["subinterfaces"][0]["description"] = descr
             if match.group("type") == "ATM":
                 i["subinterfaces"][0]["enabled_afi"] += ["ATM"]
-            if match.group("type") == "ETHERNET":
-                i["subinterfaces"][0]["enabled_afi"] = []
             interfaces += [i]
         v = self.cli("get ethernet intf")
         for match in self.rx_eth.finditer(v):
@@ -91,9 +99,35 @@ class Script(BaseScript):
             for i in interfaces:
                 if i["name"] == ifname:
                     i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
-                    i["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
+                    i["subinterfaces"][0]["enabled_afi"] += ["IPv4"]
                     if match.group("vlan_id") != "-":
                         i["subinterfaces"][0]["vlan_ids"] = [match.group("vlan_id")]
                     break
+        port_ids = {}
+        v = self.cli("get bridge port intf")
+        for match in self.rx_port_id.finditer(v):
+            port_ids[match.group("id")] = match.group("name")
+        v = self.cli("get vlan curr info")
+        for match in self.rx_vlan.finditer(v):
+            vlan_id = match.group("vlan_id")
+            ports = match.group("ports").strip()
+            if ports == "None":
+                continue
+            untagged = match.group("untagged").strip()
+            bridge_ids = ports.split()
+            for port_id in bridge_ids:
+                if port_ids.get(port_id) == "":
+                    continue
+                ifname = port_ids.get(port_id)
+                for i in interfaces:
+                    if i["name"] == ifname:
+                        if (port_id == untagged) and (untagged != "None"):
+                            i["subinterfaces"][0]["untagged_vlan"] = vlan_id
+                        else:
+                            if "tagged_vlans" in i["subinterfaces"][0]:
+                                i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
+                            else:
+                                i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
+                        break
 
         return [{"interfaces": interfaces}]
