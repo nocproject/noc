@@ -14,6 +14,8 @@ import threading
 import ssl
 import logging
 import zlib
+import time
+import struct
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -53,6 +55,7 @@ ns_lock = threading.Lock()
 ns_cache = cachetools.TTLCache(NS_CACHE_SIZE, ttl=RESOLVER_TTL)
 
 CE_DEFLATE = "deflate"
+CE_GZIP = "gzip"
 
 
 @tornado.gen.coroutine
@@ -100,7 +103,8 @@ def fetch(url, method="GET",
     :param body: Request body for POST and PUT request
     :param connect_timeout:
     :param request_timeout:
-    :param ioloop:
+    :param io_loop:
+    :param resolver:
     :param follow_redirects:
     :param max_redirects:
     :param validate_cert:
@@ -257,6 +261,24 @@ def fetch(url, method="GET",
                     zlib.Z_DEFAULT_STRATEGY
                 )
                 body = compress.compress(body) + compress.flush()
+            elif content_encoding == CE_GZIP:
+                # gzip compression
+                h["Content-Encoding"] = CE_GZIP
+                compress = zlib.compressobj(
+                    6,
+                    zlib.DEFLATED,
+                    -zlib.MAX_WBITS,
+                    zlib.DEF_MEM_LEVEL,
+                    0
+                )
+                crc = zlib.crc32(body, 0) & 0xffffffff
+                body = "\x1f\x8b\x08\x00%s\x02\xff%s%s%s%s" % (
+                    to32u(int(time.time())),
+                    compress.compress(body),
+                    compress.flush(),
+                    to32u(crc),
+                    to32u(len(body))
+                )
         if method in REQUIRE_LENGTH_METHODS:
             h["Content-Length"] = str(len(body))
             h["Content-Type"] = "application/binary"
@@ -335,6 +357,7 @@ def fetch(url, method="GET",
                 raise tornado.gen.Return((code, parsed_headers, response_body))
             else:
                 raise tornado.gen.Return((404, {}, "Redirect limit exceeded"))
+        # @todo: Process gzip and deflate Content-Encoding
         raise tornado.gen.Return((
             code,
             parsed_headers,
@@ -386,3 +409,7 @@ def fetch_sync(url, method="GET",
     ioloop = tornado.ioloop.IOLoop()
     ioloop.run_sync(_fetch)
     return r[0]
+
+
+def to32u(n):
+    return struct.pack("<L", n)
