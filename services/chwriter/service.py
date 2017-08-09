@@ -176,13 +176,16 @@ class CHWriterService(Service):
         # Return data to the queue
         self.logger.info("[%s] Recovering records", channel.name)
         w = self.get_nsq_writer()
-        w.pub(
-            config.chwriter.topic,
-            "%s\n%s\n" % (
-                channel.name,
-                "\n".join(data)
+        data = data.splitlines()
+        while data:
+            chunk, data = data[:config.nsqd.ch_chunk_size], data[config.nsqd.ch_chunk_size:]
+            w.pub(
+                config.chwriter.topic,
+                "%s\n%s\n" % (
+                    channel.name,
+                    "\n".join(chunk)
+                )
             )
-        )
         channel.stop_flushing()
 
 
