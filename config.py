@@ -326,6 +326,12 @@ class Config(BaseConfig):
         ch_chunk_size = IntParameter(default=4000)
         connect_timeout = SecondsParameter(default="3s")
         request_timeout = SecondsParameter(default="30s")
+        reconnect_interval = IntParameter(default=15)
+        compression = StringParameter(
+            choices=["", "deflate", "snappy"],
+            default=""
+        )
+        compression_level = IntParameter(default=6)
 
     class nsqlookupd(ConfigSection):
         addresses = ServiceParameter(service="nsqlookupd",

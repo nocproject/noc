@@ -660,13 +660,22 @@ class Service(object):
             topic=topic,
             channel=channel,
             lookupd_http_addresses=lookupd,
+            snappy=config.nsqd.compression == "snappy",
+            deflate=config.nsqd.compression == "deflate",
+            deflate_level=config.nsqd.compression_level if config.nsqd.compression == "deflate" else 6,
             **kwargs
         )
 
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
+            self.nsq_writer = nsq.Writer(
+                [str(a) for a in config.nsqd.addresses],
+                reconnect_interval=config.nsqd.reconnect_interval,
+                snappy=config.nsqd.compression == "snappy",
+                deflate=config.nsqd.compression == "deflate",
+                deflate_level=config.nsqd.compression_level if config.nsqd.compression == "deflate" else 6
+            )
         return self.nsq_writer
 
     def pub(self, topic, data):
