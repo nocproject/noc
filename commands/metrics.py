@@ -9,10 +9,10 @@
 # Python modules
 from __future__ import print_function
 import argparse
+import gzip
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
-from noc.core.service.pub import pub
 from noc.core.service.shard import Sharder
 
 
@@ -51,8 +51,12 @@ class Command(BaseCommand):
         for fn in input:
             # Read data
             self.print("Reading file %s" % fn)
-            with open(fn) as f:
-                records = f.read().replace("\r", "").splitlines()
+            if fn.endswith(".gz"):
+                with gzip.GzipFile(fn) as f:
+                    records = f.read().replace("\r", "").splitlines()
+            else:
+                with open(fn) as f:
+                    records = f.read().replace("\r", "").splitlines()
             sharder.feed(records)
             self.print("    Publishing %d records" % len(records))
             sharder.pub()
