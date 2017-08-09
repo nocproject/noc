@@ -186,6 +186,7 @@ class CHWriterService(Service):
                     "\n".join(chunk)
                 )
             )
+            metrics["records_requeued"] += len(chunk)
         channel.stop_flushing()
 
 
