@@ -108,7 +108,8 @@ class Config(BaseConfig):
         default_merge_tree_granularity = IntParameter(default=8192)
         encoding = StringParameter(default="", choices=[
             "",
-            "deflate"
+            "deflate",
+            "gzip"
         ])
         # Cluster name for sharded/replicated configuration
         # Matches appropriative <remote_servers> part
