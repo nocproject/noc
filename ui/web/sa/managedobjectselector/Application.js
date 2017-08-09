@@ -63,7 +63,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "medium",
+                    uiStyle: "large",
                     labelWidth: 170
                 },
                 {
@@ -81,145 +81,189 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     labelWidth: 170
                 },
                 {
-                    name: "filter_id",
-                    xtype: "numberfield",
-                    fieldLabel: __("Filter by ID"),
-                    allowBlank: true,
-                    hideTrigger: true,
-                    uiStyle: "small",
-                    labelWidth: 170
+                    xtype: "fieldset",
+                    title: __("Filter by Main Attributes"),
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "filter_id",
+                            xtype: "numberfield",
+                            fieldLabel: __("ID"),
+                            allowBlank: true,
+                            hideTrigger: true,
+                            uiStyle: "small",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_name",
+                            xtype: "textfield",
+                            fieldLabel: __("Name (REGEXP)"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_description",
+                            xtype: "textfield",
+                            fieldLabel: __("Filter by Description (REGEXP)"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_managed",
+                            xtype: "combobox",
+                            fieldLabel: __("Is Managed"),
+                            store: [
+                                [null, "-"],
+                                [true, "Yes"],
+                                [false, "No"]
+                            ],
+                            allowBlank: true,
+                            uiStyle: "small",
+                            labelWidth: 170
+                        }
+                    ]
                 },
                 {
-                    name: "filter_name",
-                    xtype: "textfield",
-                    fieldLabel: __("Filter by Name (REGEXP)"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
+                    xtype: "fieldset",
+                    title: __("Filter by Object Attributes"),
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "filter_profile",
+                            xtype: "main.ref.profile.LookupField",
+                            fieldLabel: __("Profile"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_object_profile",
+                            xtype: "sa.managedobjectprofile.LookupField",
+                            fieldLabel: __("Object Profile"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_administrative_domain",
+                            xtype: "sa.administrativedomain.LookupField",
+                            fieldLabel: __("Administrative Domain"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_pool",
+                            xtype: "main.pool.LookupField",
+                            fieldLabel: __("Pool"),
+                            allowBlank: true,
+                            labelWidth: 170
+                        }
+                    ]
                 },
                 {
-                    name: "filter_managed",
-                    xtype: "combobox",
-                    fieldLabel: __("Filter by Is Managed"),
-                    store: [
-                        [null, "-"],
-                        [true, "Yes"],
-                        [false, "No"]
-                    ],
-                    allowBlank: true,
-                    uiStyle: "small",
-                    labelWidth: 170
+                    xtype: "fieldset",
+                    title: __("Filter by Network Attributes"),
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "filter_termination_group",
+                            xtype: "sa.terminationgroup.LookupField",
+                            fieldLabel: __("Termination group"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_service_terminator",
+                            xtype: "sa.terminationgroup.LookupField",
+                            fieldLabel: __("Service terminator"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_vrf",
+                            xtype: "ip.vrf.LookupField",
+                            fieldLabel: __("VRF"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_vc_domain",
+                            xtype: "vc.vcdomain.LookupField",
+                            fieldLabel: __("VC Domain"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_address",
+                            xtype: "textfield",
+                            fieldLabel: __("Address (REGEXP)"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_prefix",
+                            xtype: "main.prefixtable.LookupField",
+                            fieldLabel: __("Prefix Table"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        }
+                    ]
                 },
                 {
-                    name: "filter_pool",
-                    xtype: "main.pool.LookupField",
-                    fieldLabel: __("Filter by Pool"),
-                    allowBlank: true,
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_profile",
-                    xtype: "main.ref.profile.LookupField",
-                    fieldLabel: __("Filter by Profile"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_object_profile",
-                    xtype: "sa.managedobjectprofile.LookupField",
-                    fieldLabel: __("Filter by Object Profile"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_address",
-                    xtype: "textfield",
-                    fieldLabel: __("Filter by Address (REGEXP)"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_prefix",
-                    xtype: "main.prefixtable.LookupField",
-                    fieldLabel: __("Filter by Prefix Table"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_administrative_domain",
-                    xtype: "sa.administrativedomain.LookupField",
-                    fieldLabel: __("Filter by Administrative Domain"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_vrf",
-                    xtype: "ip.vrf.LookupField",
-                    fieldLabel: __("Filter by VRF"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_vc_domain",
-                    xtype: "vc.vcdomain.LookupField",
-                    fieldLabel: __("Filter by VC Domain"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_termination_group",
-                    xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: __("Filter by termination group"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_service_terminator",
-                    xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: __("Filter by service terminator"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_user",
-                    xtype: "textfield",
-                    fieldLabel: __("Filter by User (REGEXP)"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_remote_path",
-                    xtype: "textfield",
-                    fieldLabel: __("Filter by Remote Path (REGEXP)"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_description",
-                    xtype: "textfield",
-                    fieldLabel: __("Filter by Description (REGEXP)"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_tags",
-                    xtype: "textfield",
-                    fieldLabel: __("Filter By Tags"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
+                    xtype: "fieldset",
+                    title: __("Filter by Other"),
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "filter_user",
+                            xtype: "textfield",
+                            fieldLabel: __("User (REGEXP)"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_remote_path",
+                            xtype: "textfield",
+                            fieldLabel: __("Path (REGEXP)"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_tags",
+                            xtype: "textfield",
+                            fieldLabel: __("Filter By Tags"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        }
+                    ]
                 },
                 {
                     name: "source_combine_method",
