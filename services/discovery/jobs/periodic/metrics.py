@@ -322,7 +322,7 @@ class MetricsCheck(DiscoveryCheck):
             else:
                 m["abs_value"] = m["value"] * m["scale"]
             self.logger.debug(
-                "[%s] Measured value: %s. Scale: %s. Resuling value: %s",
+                "[%s] Measured value: %s. Scale: %s. Resulting value: %s",
                 key, m["value"], m["scale"], m["abs_value"]
             )
             # Schedule batch
