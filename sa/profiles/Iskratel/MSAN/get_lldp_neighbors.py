@@ -73,6 +73,7 @@ class Script(BaseScript):
                     caps |= {
                         "repeater": 2,
                         "bridge": 4,
+                        "router": 16,
                     }[c]
                 n["remote_capabilities"] = caps
                 r += [{
