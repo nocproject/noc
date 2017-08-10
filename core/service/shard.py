@@ -36,7 +36,7 @@ class BaseSharder(object):
             while data:
                 chunk, data = data[:self.chunk], data[self.chunk:]
                 yield topic, "%s\n%s\n" % (self.fields, "\n".join(chunk))
-        self.records = {}
+        self.records = defaultdict(list)
 
     def pub(self):
         for topic, msg in self.iter_msg():
