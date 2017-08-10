@@ -67,7 +67,7 @@ class Span(object):
 
     def __enter__(self):
         if not self.is_sampled:
-            return
+            return self
         # Generate span ID
         self.span_id = struct.unpack("!Q", os.urandom(8))[0]
         # Get span context
