@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.lib.text import parse_kv
 
 
 class Script(BaseScript):
@@ -67,6 +68,23 @@ class Script(BaseScript):
         r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n", re.MULTILINE)
 
     unit = False
+
+    def part_parse_s8500(self, item_type, number, part_no, content):
+        self.logger.info("Use S85XX parse function")
+        r = {
+            "type": item_type,
+            "number": number,
+            "vendor": "Huawei",
+            "description": "",
+            "part_no": [part_no],
+            "revision": None,
+            "mfg_date": ""
+        }
+        r.update(parse_kv({"board_serial_number": "serial",
+                           "device_serial_number": "serial",
+                           "manufacturing_date": "mfg_date",
+                           "vendor_name": "vendor"}, content))
+        return [r]
 
     def parse_item_content(self, item, number, item_type):
         """Parse display elabel block"""
@@ -155,12 +173,17 @@ class Script(BaseScript):
         s = self.parse_table(v)
         chassis = False
         for i in s:
-            i_type = i["Type"]
+            if "BrdType" in i:
+                i_type = i["BrdType"]
+            else:
+                i_type = i.get("Type")
             # Detect slot number
             if "Slot" in i:
                 i_slot = i["Slot"]
             elif "Unit#" in i:
                 i_slot = i["Unit#"]
+            elif "SlotNo." in i:
+                i_slot = i["SlotNo."]
             else:
                 i_slot = 0
 
@@ -169,11 +192,26 @@ class Script(BaseScript):
                 i_sub = i["Sub"]
             elif "SubCard#" in i:
                 i_sub = i["SubCard#"]
+            elif "SubslotNum" in i:
+                i_sub = i["SubslotNum"]
             else:
                 i_sub = None
             if i_sub == "-":
                 i_sub = ""
             i_type, number, part_no = self.get_type(i_slot, i_sub, i_type)
+
+            if number is None:
+                self.logger.info("Number is None, skipping...")
+                continue
+
+            if self.match_version(platform__regex="^(S85.+)$"):
+                # S85XX series
+                # @todo Use "display device manuinfo"
+                # @todo ToDo "display tracnsiever"
+                # @todo Revision for card
+                v = self.cli("display device manuinfo slot %s" % number)
+                inv.extend(self.part_parse_s8500(i_type, number, part_no, v))
+                continue
 
             if i_slot != "-":
                 self.logger.info("Slot Number constant")
@@ -269,6 +307,7 @@ class Script(BaseScript):
     @staticmethod
     def normalize_date(date):
         """Normalize date in input to YYYY-MM-DD"""
+        # @todo use datetime.strftime()
         d = re.compile("\d+")
         result = date
         need_edit = False
@@ -316,7 +355,14 @@ class Script(BaseScript):
             except ValueError:
                 self.logger.warning("Sub have unknown text format...")
 
-        if slot == 0 and not sub:
+        if part_no.startswith("LSB"):
+            # Huawei S8500
+            self.logger.debug("IS Huawei S8500 linecard")
+            return "LSB", slot, part_no
+        elif slot == 0 and not sub:
+            # 5XXX Series
+            # @todo move to end if block
+            self.logger.debug("Huawei 5XXX series, slot 0 is CHASSIS TYPE")
             return "CHASSIS", 0, part_no
         elif slot == 0 and sub == 0:
             return "CHASSIS", 0, part_no
@@ -352,7 +398,6 @@ class Script(BaseScript):
             return "FAN", slot, None
         elif not sub and "PWR" in part_no:
             return "PWR", slot, None
-
         else:
             self.logger.info("Not response number place")
             return None, None, None

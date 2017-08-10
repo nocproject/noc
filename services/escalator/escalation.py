@@ -80,7 +80,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
             escalation_id)
         metrics["escalation_not_found"] += 1
         return
-
+    alarm.set_escalation_context()
     # Evaluate escalation chain
     mo = alarm.managed_object
     for a in escalation.escalations:
@@ -219,10 +219,15 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                                             ao.name,
                                             gtt
                                         )
-                                        tts.add_to_group_tt(
-                                            gtt,
-                                            ao.tt_system_id
-                                        )
+                                        try:
+                                            tts.add_to_group_tt(
+                                                gtt,
+                                                ao.tt_system_id
+                                            )
+                                        except TTError as e:
+                                            alarm.set_escalation_error(
+                                                "[%s] %s" % (mo.tt_system.name, e)
+                                            )
                                     else:
                                         log(
                                             "Cannot append object %s to group tt %s: Belongs to other TT system",
@@ -315,6 +320,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
 
     if tt_id:
         alarm = get_alarm(alarm_id)
+        alarm.set_escalation_close_context()
         if alarm and (alarm.escalation_close_ts or alarm.escalation_close_error):
             log("Alarm is already deescalated")
             metrics["escalation_already_deescalated"] += 1

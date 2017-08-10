@@ -34,6 +34,8 @@ from noc.core.error import (
     ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR,
     ERR_CLI_CONNECTION_REFUSED
 )
+from noc.core.span import Span
+from noc.core.error import ERR_UNKNOWN
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -376,7 +378,7 @@ class DiscoveryCheck(object):
         if self.has_fatal_error():
             self.logger.info("Check is disabled due to previous fatal error. Skipping")
             return
-        with self.job.check_timer(self.name):
+        with Span(server="discovery", service=self.name) as span, self.job.check_timer(self.name):
             # Check required scripts
             if not self.has_required_script():
                 self.logger.info("%s script is not supported. Skipping",
@@ -401,6 +403,8 @@ class DiscoveryCheck(object):
                     message=message,
                     fatal=e.remote_code in self.fatal_errors
                 )
+                span.error_code = e.remote_code
+                span.error_text = str(e)
             except RPCError as e:
                 self.set_problem(
                     alarm_class=self.error_map.get(e.default_code),
@@ -408,12 +412,16 @@ class DiscoveryCheck(object):
                     fatal=e.default_code in self.fatal_errors
                 )
                 self.logger.error("Terminated due RPC error: %s", e)
+                span.error_code = e.default_code
+                span.error_text = str(e)
             except Exception as e:
                 self.set_problem(
                     alarm_class="Discovery | Error | Unhandled Exception",
                     message="Unhandled exception: %s" % e
                 )
                 error_report(logger=self.logger)
+                span.error_code = ERR_UNKNOWN
+                span.error_text = str(e)
 
     def handler(self):
         pass

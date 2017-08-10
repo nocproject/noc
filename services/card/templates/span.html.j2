@@ -1,0 +1,57 @@
+<style>
+    .graph {
+        width: {{ graph_width }}px;
+    }
+    .span-item {
+        border: 1px solid midnightblue;
+        background: blue;
+        display: block;
+        height: 14px;
+        position: relative;
+    }
+    .span-composite {
+        border-left: 1px solid midnightblue;
+        border-right: 1px solid midnightblue;
+        border-top: 5px solid midnightblue;
+        display: block;
+        height: 14px;
+        position: relative;
+    }
+    .right {
+        text-align: right;
+    }
+</style>
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="8">
+            Span Context: {{ context }}
+            <span style="float: right">
+                {{ root.duration }}us({{ root.ts | timestamp }})
+            </span>
+        </th>
+    </tr>
+    <tr>
+        <th>Server</th>
+        <th>Service</th>
+        <th>Time</th>
+        <th>Duration (us)</th>
+        <th>Sample</th>
+        <th>Label</th>
+        <th>Error</th>
+        <th class="graph">Graph</th>
+    </tr>
+    {% for span in spans %}
+        <tr>
+            <td>{{ "&nbsp;&nbsp;&nbsp;&nbsp" * span.level }}{{ span.server }}</td>
+            <td>{{ span.service }}</td>
+            <td>{{ span.ts | timestamp }}</td>
+            <td class="right">{{ span.duration }}</td>
+            <td class="right">{{ span.sample }}</td>
+            <td>{{ span.in_label }}</td>
+            <td>{% if span.error_text %}{{ span.error_text }}{% else %}{{ span.error_code }}{% endif %}</td>
+            <td><div class="{% if span.children %}span-composite{% else %}span-item{% endif %}" style="left:{{ span.left }}px;width:{{ span.width }}px"></div></td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>

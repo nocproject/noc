@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Script loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Script loader
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import glob
 import logging
@@ -17,7 +17,7 @@ import os
 import re
 
 
-## NOC modules
+# NOC modules
 from base import BaseScript
 
 logger = logging.getLogger(__name__)
@@ -130,9 +130,9 @@ class ScriptLoader(object):
         for path in glob.glob("custom/sa/profiles/*/*/*.py"):
             vendor, system, name = path.split(os.sep)[-3:]
             name = name[:-3]
-            if name != "__init__":           
+            if name != "__init__":
                 ns.add("%s.%s.%s" % (vendor, system, name))
-                profiles.add("%s.%s" % (vendor, system))   
+                profiles.add("%s.%s" % (vendor, system))
         # Load common scripts
         profiles = set()
         for path in glob.glob("sa/profiles/*/*/*.py"):

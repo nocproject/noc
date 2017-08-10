@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Card handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -116,7 +116,8 @@ class CardRequestHandler(UIHandler):
                     m = __import__(mn, {}, {}, "*")
                     for d in dir(m):
                         c = getattr(m, d)
-                        if (inspect.isclass(c) and
+                        if (
+                            inspect.isclass(c) and
                             issubclass(c, BaseCard) and
                             c.__module__ == m.__name__ and
                             getattr(c, "name", None)

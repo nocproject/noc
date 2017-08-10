@@ -222,6 +222,33 @@
     </td>
 <td>
 {% endif %}
+{% if inventory %}
+<tr>
+    <th scope="row">{{ _("Inventory") }}</th>
+    <td>
+        <table class="table table-condensed">
+            <thead>
+                <th>{{ _("Name") }}</th>
+                <th>{{ _("Model") }}</th>
+                <th>{{ _("Revision") }}</th>
+                <th>{{ _("Serial") }}</th>
+                <th>{{ _("Description") }}</th>
+            </thead>
+            <tbody>
+                {% for i in inventory %}
+                <tr>
+                    <td>{{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * i["level"]) }}{{ i["name"] }}</td>
+                    <td>{{ i["model"] }}</td>
+                    <td>{{ i["revision"] }}</td>
+                    <td>{{ i["serial"] }}</td>
+                    <td>{{ i["description"] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </td>
+</tr>
+{% endif %}
 </tbody>
 </table>
 <table class="table table-condensed table-hover">

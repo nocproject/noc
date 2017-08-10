@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Segment Alarm card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
 from collections import defaultdict
 # NOC modules
 from base import BaseCard
@@ -72,12 +71,11 @@ class SegmentAlarmCard(BaseCard):
                 update_dict(services, c["summary"]["service"])
                 update_dict(subscribers, c["summary"]["subscriber"])
 
-        now = datetime.datetime.now()
         # Get alarms in all nested segments
         aseg = defaultdict(list)
         seen_seg = set()
         for a in ActiveAlarm.objects.filter(segment_path=self.object.id):
-            seen_seg.update(a.segment_path )
+            seen_seg.update(a.segment_path)
             aseg[a.segment_path[-1]] += [a]
         #
         tree = {

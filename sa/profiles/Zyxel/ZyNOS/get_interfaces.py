@@ -46,14 +46,14 @@ class Script(BaseScript):
 
     # @todo: vlan trunking, STP, LLDP (fw >= 3.90)
 
-    def get_admin_status(self, iface):
+    def get_admin_status(self, iface, ifindex=None):
         """
         Returns admin status of the interface
         """
-        if self.has_snmp():
+        if self.has_snmp() and ifindex:
             try:
                 # IF-MIB::ifAdminStatus
-                s = self.snmp.get(mib["IF-MIB::ifAdminStatus", int(iface)])
+                s = self.snmp.get(mib["IF-MIB::ifAdminStatus", int(ifindex[iface])])
                 return int(s) == 1
             except self.snmp.TimeOutError:
                 pass  # Fallback to CLI
@@ -107,7 +107,7 @@ class Script(BaseScript):
                     portchannel_members[m] = (i, t)
         # Get portchannel members' details
         for m in portchannel_members:
-            admin = self.get_admin_status(m)
+            admin = self.get_admin_status(m, ifindexes)
             oper = self.scripts.get_interface_status(interface=m)[0]["status"]
             iface = {
                 "name": m,
@@ -155,8 +155,7 @@ class Script(BaseScript):
             name = swp["interface"]
             iface = {
                 "name": name,
-                "type": "aggregated" if len(swp["members"]) > 0
-                    else "physical",
+                "type": "aggregated" if len(swp["members"]) > 0 else "physical",
                 "admin_status": admin,
                 "oper_status": swp["status"],
                 "mac": mac,

@@ -9,7 +9,6 @@
 # Python modules
 import datetime
 import operator
-import re
 # Third-party modules
 from django.db.models import Q
 # NOC modules
@@ -22,7 +21,6 @@ from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.sa.models.objectdata import ObjectData
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
@@ -204,6 +202,12 @@ class ManagedObjectCard(BaseCard):
                 "stop": m.stop,
                 "in_progress": m.start <= now
             }]
+        # Get Inventory
+        inv = []
+        for p in self.object.get_inventory():
+            c = self.get_nested_inventory(p)
+            c["name"] = p.name or self.object.name
+            inv += [c]
         # Build result
         r = {
             "id": self.object.id,
@@ -234,7 +238,8 @@ class ManagedObjectCard(BaseCard):
             "alarms": alarm_list,
             "interfaces": interfaces,
             "maintainance": maintainance,
-            "redundancy": redundancy
+            "redundancy": redundancy,
+            "inventory": self.flatten_inventory(inv)
         }
         return r
 
@@ -265,4 +270,55 @@ class ManagedObjectCard(BaseCard):
                 "id": mo.id,
                 "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform)
             }]
+        return r
+
+    def get_nested_inventory(self, o):
+        rev = o.get_data("asset", "revision")
+        if rev == "None":
+            rev = ""
+        r = {
+            "id": str(o.id),
+            "serial": o.get_data("asset", "serial"),
+            "revision": rev or "",
+            "description": o.model.description,
+            "model": o.model.name,
+            "children": []
+        }
+        for n in o.model.connections:
+            if n.direction == "i":
+                c, r_object, _ = o.get_p2p_connection(n.name)
+                if c is None:
+                    r["children"] += [{
+                        "id": "",
+                        "name": n.name,
+                        "serial": "",
+                        "description": "--- EMPTY ---",
+                        "model": ""
+                    }]
+                else:
+                    cc = self.get_nested_inventory(r_object)
+                    cc["name"] = n.name
+                    r["children"] += [cc]
+            elif n.direction == "s":
+                r["children"] += [{
+                    "id": "",
+                    "name": n.name,
+                    "serial": "",
+                    "description": n.description,
+                    "model": ", ".join(n.protocols)
+                }]
+        return r
+
+    def flatten_inventory(self, inv, level=0):
+        r = []
+        if not isinstance(inv, list):
+            inv = [inv]
+        for o in inv:
+            r += [o]
+            o["level"] = level
+            children = o.get("children", [])
+            if children:
+                for c in children:
+                    r += self.flatten_inventory(c, level + 1)
+                del o["children"]
         return r

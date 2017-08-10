@@ -2,15 +2,13 @@
 # ---------------------------------------------------------------------
 # Alarm card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import datetime
 import operator
-# Third-party modules
-from jinja2 import Template
 # NOC modules
 from base import BaseCard
 from noc.fm.models.utils import get_alarm
@@ -79,7 +77,7 @@ class AlarmCard(BaseCard):
             is_completed=False,
             start__lte=datetime.datetime.now(),
             affected_objects__in=[
-               MaintainanceObject(object=self.object.managed_object)
+                MaintainanceObject(object=self.object.managed_object)
             ]
         )
         mo = self.object.managed_object
@@ -106,7 +104,9 @@ class AlarmCard(BaseCard):
             "tt_system_failed": (self.object.status == "A" and
                                  not self.object.escalation_tt and
                                  self.object.managed_object.tt_system and
-                                 self.object.managed_object.tt_system.is_failed())
+                                 self.object.managed_object.tt_system.is_failed()),
+            "escalation_ctx": self.object.escalation_ctx,
+            "escalation_close_ctx": getattr(self.object, "escalation_close_ctx")
         }
         return r
 
