@@ -124,6 +124,8 @@ class Command(BaseCommand):
         for o in self.get_objects(moo):
             self.stdout.write("%s (%s):\n" % (o.name, o.get_attr("platform") if o.get_attr("platform") else o.profile_name))
             ifaces = self.get_interfaces(o)
+            if not ifaces:
+                return
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
                 v = "Unknown"
