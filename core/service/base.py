@@ -153,7 +153,6 @@ class Service(object):
             self.get_shard = self.get_sharding_function()
         else:
             self.die("Invalid ClickHouse cluster topology")
-        self.register_metrics = None
 
     def create_parser(self):
         """
