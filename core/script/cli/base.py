@@ -294,6 +294,8 @@ class CLI(object):
                         r = yield handler(matched, match)
                     if r is not None:
                         raise tornado.gen.Return(r)
+                    else:
+                        break  # This state is processed
 
     @tornado.gen.coroutine
     def parse_object_stream(self, parser=None,
