@@ -22,6 +22,7 @@ class Script(BaseScript):
         r"\s+:(?P<status>(1[02]+[MG]/[FH]\s*(Copper|SFP)?)|Down)",
         re.MULTILINE | re.IGNORECASE
     )
+    cache = True
 
     def execute(self, interface=None):
         if self.has_snmp():
@@ -41,14 +42,16 @@ class Script(BaseScript):
                             "interface": n,
                             "status": s == 1
                         }]
-                    return r
+                    if r:
+                        return r
                 else:
                     # Get single interface
                     n = self.snmp.get(mib["IF-MIB::ifName", int(interface)])
                     s = self.snmp.get(mib["IF-MIB::ifOperStatus", int(interface)])
-                    return [{"interface":n, "status": s == 1}]
+                    return [{"interface": n, "status": s == 1}]
             except self.snmp.TimeOutError:
                 pass
+        self.logger.info("Nothing get on SNMP, go to CLI")
         # Fallback to CLI
         if interface is None:
             interface = "*"
@@ -60,7 +63,7 @@ class Script(BaseScript):
         r = []
         for match in self.rx_link.finditer(s):
             r += [{
-            "interface": match.group("interface"),
-            "status": match.group("status").lower() != "down"
-         }]
+                "interface": match.group("interface"),
+                "status": match.group("status").lower() != "down"
+            }]
         return r
