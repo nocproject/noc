@@ -28,10 +28,6 @@ class Command(BaseCommand):
             help="Data fields: <table>.<field1>.<fieldN>"
         )
         load_parser.add_argument(
-            "--input",
-            help="Input file path"
-        )
-        load_parser.add_argument(
             "--chunk",
             type=int,
             default=config.nsqd.ch_chunk_size,
