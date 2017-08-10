@@ -94,13 +94,12 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                     for i in range(index + 1, len(columns)):
                         v = columns.pop(i)
                         columns.insert(i, (v[0] + shift, v[1] + shift))
-                    print("Too many: %s" % s)
+                    # print("Too many: %s" % s)
             if allow_wrap:
                 row = [l[f:t] for f, t in columns]
                 if row[0].startswith(" ") and r:
                     for i, x in enumerate(row):
                         r[-1][i] += x if not x.strip() else "%s%s" % (n_row_delim, x)
-                        print "'" + x + "'"
                 else:
                     r += [row]
             else:
