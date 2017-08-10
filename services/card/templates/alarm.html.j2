@@ -74,6 +74,19 @@
         </tr>
         {% endif %}
     {% endif %}
+    {% if escalation_ctx or escalation_close_ctx %}
+    <tr>
+        <th scope="row">{{ _("Escalation trace") }}</tr>
+        <tr>
+            {% if escalation_ctx %}
+            <a href="/api/card/view/span/{{ escalation_ctx }}/">{{ _("Escalation trace") }}</a>
+            {% endif %}
+            {% if escalation_close_ctx %}
+            <a href="/api/card/view/span/{{ escalation_close_ctx }}/">{{ _("Deescalation trace") }}</a>
+            {% endif %}
+        <tr>
+    </tr>
+    {% endif %}
     <tr>
         <th scope="row">{{ _("Body") }}</th>
         <td><pre>{{ body }}</pre></td>
