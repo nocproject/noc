@@ -6,7 +6,6 @@
     state: reloaded
 
 - name: reload clickhouse-server
-  become: yes
-  service:
-    name: clickhouse-server
-    state: reloaded
+  become: no
+  debug:
+    msg: Clickhouse consiguration was changed. hope it will reload it automaticaly

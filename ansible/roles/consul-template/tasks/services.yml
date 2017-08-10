@@ -342,4 +342,4 @@
       src: services/zookeeper.conf.j2
       dest: "{{consul_template_config_dir}}/zookeeper.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-zookeeper']
+  when: "'svc-zookeeper' in groups and groups['svc-zookeeper'] | count > 0 and ansible_nodename in groups['svc-zookeeper']"
