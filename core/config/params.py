@@ -217,7 +217,9 @@ class ServiceParameter(BaseParameter):
     def resolve(self):
         from noc.core.dcs.util import resolve
         from noc.core.dcs.error import ResolutionError
-
+        if ":" in self.services:
+            self.value = self.services
+            return
         while True:
             for svc in self.services:
                 try:
