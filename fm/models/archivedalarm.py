@@ -17,6 +17,7 @@ from alarmclass import AlarmClass
 from alarmlog import AlarmLog
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
+from noc.core.span import get_current_span
 
 
 class ArchivedAlarm(nosql.Document):
@@ -59,8 +60,10 @@ class ArchivedAlarm(nosql.Document):
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
     escalation_error = nosql.StringField(required=False)
+    escalation_ctx = nosql.LongField(required=False)
     escalation_close_ts = nosql.DateTimeField(required=False)
     escalation_close_error = nosql.StringField(required=False)
+    escalation_close_ctx = nosql.LongField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
@@ -153,6 +156,7 @@ class ArchivedAlarm(nosql.Document):
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
             escalation_error=self.escalation_error,
+            escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             discriminator=self.discriminator,
             reopens=reopens + 1,
@@ -223,6 +227,17 @@ class ArchivedAlarm(nosql.Document):
                 "escalation_close_ts": now
             }}
         )
+
+    def set_escalation_close_ctx(self):
+        current_context, current_span = get_current_span()
+        if current_context or self.escalation_close_ctx:
+            self.escalation_close_ctx = current_context
+            self._get_collection().update(
+                {"_id": self.id},
+                {"$set": {
+                    "escalation_close_ctx": current_context
+                }}
+            )
 
 # Avoid circular references
 from activealarm import ActiveAlarm
