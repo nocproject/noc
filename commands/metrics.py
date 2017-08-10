@@ -10,6 +10,7 @@
 from __future__ import print_function
 import argparse
 import gzip
+import os
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
@@ -34,6 +35,11 @@ class Command(BaseCommand):
             help="Size on chunk"
         )
         load_parser.add_argument(
+            "--rm",
+            action="store_true",
+            help="Remove file after uploading"
+        )
+        load_parser.add_argument(
             "input",
             nargs=argparse.REMAINDER,
             help="Input files"
@@ -42,7 +48,7 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_load(self, fields, input, chunk, *args, **kwargs):
+    def handle_load(self, fields, input, chunk, rm, *args, **kwargs):
         sharder = Sharder(fields, chunk=chunk)
         for fn in input:
             # Read data
@@ -56,6 +62,8 @@ class Command(BaseCommand):
             sharder.feed(records)
             self.print("    Publishing %d records" % len(records))
             sharder.pub()
+            if rm:
+                os.unlink(fn)
 
 if __name__ == "__main__":
     Command().run()
