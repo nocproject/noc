@@ -11,6 +11,8 @@ import itertools
 import logging
 # Third-party modules
 import six
+# NOC modules
+from noc.lib.validators import is_int, is_ipv4
 
 logger = logging.getLogger(__name__)
 
@@ -222,6 +224,9 @@ class ServiceParameter(BaseParameter):
             return
         while True:
             for svc in self.services:
+                if ServiceParameter.is_static(svc):
+                    self.value = [ServiceItem(*svc.split(":"))]
+                    break
                 try:
                     items = resolve(
                         svc,
@@ -251,3 +256,12 @@ class ServiceParameter(BaseParameter):
             return self.services[0]
         else:
             return self.services
+
+    @staticmethod
+    def is_static(svc):
+        if ":" not in svc:
+            return False
+        p = svc.split(":")
+        if len(p) != 2:
+            return False
+        return is_ipv4(p[0]) and is_int(p[1])

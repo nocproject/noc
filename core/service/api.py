@@ -100,9 +100,8 @@ class APIRequestHandler(tornado.web.RequestHandler):
                         "result": result
                     }))
             except NOCError as e:
-                if span:
-                    span.error_code = e.code
-                    span.error_text = str(e)
+                span.error_code = e.code
+                span.error_text = str(e)
                 self.api_error(
                     "Failed: %s" % e,
                     id=id,
@@ -110,9 +109,8 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 )
             except Exception as e:
                 error_report()
-                if span:
-                    span.error_code = ERR_UNKNOWN
-                    span.error_text = str(e)
+                span.error_code = ERR_UNKNOWN
+                span.error_text = str(e)
                 self.api_error(
                     "Failed: %s" % e,
                     id=id

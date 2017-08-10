@@ -12,6 +12,8 @@ import time
 import random
 import os
 import struct
+# Third-party modules
+import tornado.gen
 # NOC modules
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
@@ -67,9 +69,9 @@ class Span(object):
 
     def __enter__(self):
         if not self.is_sampled:
-            return
+            return self
         # Generate span ID
-        self.span_id = struct.unpack("!Q", os.urandom(8))[0]
+        self.span_id = struct.unpack("!Q", os.urandom(8))[0] & 0x7fffffffffffffff
         # Get span context
         try:
             self.span_context = tls.span_context
@@ -91,7 +93,7 @@ class Span(object):
         global spans
         if not self.is_sampled:
             return
-        if exc_type:
+        if exc_type and not self.error_text and not self.is_ignorable_error(exc_type):
             self.error_code = ERR_UNKNOWN
             self.error_text = str(exc_val).strip("\t").replace("\t", " ")
         self.duration = int((time.time() - self.start) * US)
@@ -120,6 +122,10 @@ class Span(object):
         else:
             tls.span_parent = self.span_parent
         metrics["spans"] += 1
+
+    @staticmethod
+    def is_ignorable_error(exc_type):
+        return exc_type == tornado.gen.Return
 
 
 def get_spans():
