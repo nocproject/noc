@@ -71,7 +71,7 @@ class Span(object):
         if not self.is_sampled:
             return self
         # Generate span ID
-        self.span_id = struct.unpack("!Q", os.urandom(8))[0]
+        self.span_id = struct.unpack("!Q", os.urandom(8))[0] & 0x7fffffffffffffff
         # Get span context
         try:
             self.span_context = tls.span_context
