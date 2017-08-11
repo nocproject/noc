@@ -66,7 +66,7 @@
     - soft_restart
     - restart
 
-- name: Add default influx datasource
+- name: Add default CH datasource
   uri:
     url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
     method: POST
@@ -78,22 +78,20 @@
     body_format: json
     validate_certs: no
     body:
-      name: nocdb
-      type: influxdb
-      url: "http://{{ influx_host }}:{{influxdb_port}}"
+      name: nocchdb
+      type: vertamedia-clickhouse-datasource
+      url: "http://{{ ch_host }}:8123"
       access: proxy
       isDefault: True
-      database: "{{ noc_influxdb_db }}"
-      user: "{{noc_influxdb_user}}"
-      password: "{{ noc_influxdb_password }}"
-      jsonData:
-        timeInterval: ">300s"
+      database: "{{ clickhouse_db }}"
+      user: "readonly"
+      password: "{{ clickhouse_ro_password }}"
   ignore_errors: yes
   register: ids
   run_once: true
   changed_when: ids.status != 409
   failed_when: ids.status == 500
-  when: "has_svc_influxdb | default(False)"
+  when: "has_svc_clickhouse | default(False)"
   tags:
     - config
 
