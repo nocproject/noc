@@ -819,6 +819,7 @@ class Service(object):
         :return:
         """
         topo = config.ch_cluster_topology
+        logging.info("Current cluster topology %s" % topo)
         self.total_weight = 0
         w = 0
         f = ""
