@@ -69,8 +69,16 @@ config:
   clickhouse:
     password:
       default: noc
-      description: test
       label: "Password for user default"
+      type: str
+    ro_password:
+      default: noc
+      label: "Password for user readonly"
+      default: noc
+      type: str
+    db:
+      default: noc
+      label: "db name"
       type: str
   consul:
     replication_token:
