@@ -86,6 +86,7 @@ class CHWriterService(Service):
             metrics["deferred_messages"] += 1
             return False
         fields, data = records.split("\n", 1)
+        self.logger.debug("Receiving %s", fields)
         channel = self.get_channel(fields)
         n = channel.feed(data)
         metrics["records_received"] += n
@@ -114,8 +115,11 @@ class CHWriterService(Service):
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
         metrics["channels_active"] = len(self.channels)
+        self.logger.debug("Active channels: %s", ", ".join(self.channels[c].name for c in self.channels))
         for c in list(self.channels):
             channel = self.channels.get(c)
+            if channel:
+                self.logger.debug("Channel %s: ready=%s flushing=%s", channel.name, channel.is_ready(), channel.flushing)
             if channel and channel.is_ready():
                 yield self.flush_channel(channel)
 
