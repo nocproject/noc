@@ -22,8 +22,8 @@
 	<users>
 		<!-- If user name was not specified, 'default' user is used. -->
 		<default>
-			<!-- <password_sha256_hex>{{ clickhouse_password }}</password_sha256_hex> -->
-            <password></password>
+			<password_sha256_hex>{{ clickhouse_password }}</password_sha256_hex>
+            <!-- <password></password> -->
 			<networks incl="networks" replace="replace">
 				<ip>::/0</ip>
 			</networks>
@@ -37,10 +37,10 @@
 
 		<!-- Example of user with readonly access. -->
 		<readonly>
-			<password></password>
+            <password_sha256_hex>{{ clickhouse_ro_password }}</password_sha256_hex>
+			<!-- <password></password> -->
 			<networks incl="networks" replace="replace">
-				<ip>::1</ip>
-				<ip>127.0.0.1</ip>
+				<ip>::/0</ip>
 			</networks>
 			<profile>readonly</profile>
 			<quota>default</quota>
