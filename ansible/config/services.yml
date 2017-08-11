@@ -496,10 +496,10 @@ services:
   influxdb:
     description: >
       <strong>Service type</strong>: External <br/>
-      <strong>Short description</strong>: The Reliable, High Performance TCP/HTTP Load Balancer <br/>
-      <strong>Long description</strong>: InfluxDB is a custom high performance datastore written specifically for timestamped data, including DevOps monitoring, application metrics, IoT sensor data, & real-time analytics.<br/>
-      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
-      <strong>docs</strong>: https://docs.influxdata.com/influxdb/v1.2/<br/>
+      <strong>Short description</strong>: TimeSeriesDatabase for internal self mon.<br/>
+      <strong>Long description</strong>: Used to store metrics discovered by telegraf<br/>
+      <strong>Scale Recommendations</strong>: Optional. <br/>
+      <strong>docs</strong>: https://docs.influxdata.com/influxdb/v1.3/<br/>
       <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     level: system
     port: 8086
