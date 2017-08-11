@@ -71,9 +71,11 @@ config:
       default: noc
       label: "Password for user default"
       type: str
+      description: "RW user password"
     ro_password:
       default: noc
       label: "Password for user readonly"
+      description: "RO user password"
       default: noc
       type: str
     db:
