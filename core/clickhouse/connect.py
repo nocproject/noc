@@ -45,6 +45,8 @@ class ClickhouseClient(object):
             url,
             method="POST",
             body=post,
+            user=config.clickhouse.user,
+            password=config.clickhouse.password,
             connect_timeout=config.clickhouse.connect_timeout,
             request_timeout=config.clickhouse.request_timeout
         )
