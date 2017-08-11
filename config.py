@@ -103,6 +103,8 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter(default="default")
         password = SecretParameter()
+        ro_user = StringParameter(default="readonly")
+        ro_password = StringParameter()
         request_timeout = SecondsParameter(default="1h")
         connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
