@@ -1,0 +1,10 @@
+{
+    "name": "Memory | Load | 1min",
+    "$collection": "pm.metrictypes",
+    "uuid": "3b4d27bc-5e19-461e-9341-86df5bb2e745",
+    "scope__name": "Memory",
+    "field_name": "load_1min",
+    "field_type": "UInt8",
+    "description": "",
+    "measure": "%"
+}

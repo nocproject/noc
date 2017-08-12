@@ -1,0 +1,12 @@
+{
+    "name": "Ping",
+    "$collection": "pm.metricscopes",
+    "uuid": "b74189ad-3b8d-43d3-9d84-06d46f379674",
+    "table_name": "ping",
+    "description": "Ping-related metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": []
+}

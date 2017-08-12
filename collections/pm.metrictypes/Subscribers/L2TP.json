@@ -2,8 +2,9 @@
     "name": "Subscribers | L2TP",
     "$collection": "pm.metrictypes",
     "uuid": "700c1712-4fcf-488f-b5e1-043ee8a3e8de",
+    "scope__name": "Subscriber",
+    "field_name": "l2tp",
+    "field_type": "UInt32",
     "description": "Total active L2TP sessions on the box",
-    "scope": "o",
-    "measure": "sessions",
-    "vector_tag": ""
+    "measure": "sessions"
 }

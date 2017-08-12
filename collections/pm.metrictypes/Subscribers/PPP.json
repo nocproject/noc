@@ -2,8 +2,9 @@
     "name": "Subscribers | PPP",
     "$collection": "pm.metrictypes",
     "uuid": "8f13dc04-0d88-4eb7-b5e1-985b36cb5bb1",
+    "scope__name": "Subscriber",
+    "field_name": "pppoe",
+    "field_type": "UInt32",
     "description": "Total active PPP sessions on the box",
-    "scope": "o",
-    "measure": "sessions",
-    "vector_tag": ""
+    "measure": "sessions"
 }
