@@ -1,3 +1,17 @@
+- name: add clickhouse data to legacy config
+  set_fact:
+    noc_config: "{{noc_config | combine({
+    'config':{
+        'noc':{
+            'ch_db': clickhouse_db,
+            'ch_password': clickhouse_password,
+            'ch_ro_password': clickhouse_ro_password
+        }
+    }}, recursive=True) }}"
+  tags:
+    - config
+    - noc_config
+
 - name: Generate NOC config
   template:
     src: "etc/noc.yml.j2"
