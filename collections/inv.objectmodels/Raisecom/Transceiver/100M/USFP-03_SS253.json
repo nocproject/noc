@@ -1,0 +1,39 @@
+{
+    "name": "Raisecom | Transceiver | 100M | USFP-03/SS253",
+    "$collection": "inv.objectmodels",
+    "uuid": "d07dc81d-1fd5-490b-bb48-73bcb242515d",
+    "vendor__code": "RAISECOM",
+    "description": "Wavelength: 1550TX nm DFB; RX sensitivity:<-36 dBm; TX power: -5 ~ 0 dBm; Distance: 40km;DDMI; RoHS;Bitrate: 155M, LC",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">100BASEFX-1550"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<100BASEFX-1550"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["USFP-03/SS253"]
+        }
+    }
+}
