@@ -219,9 +219,14 @@ class ServiceParameter(BaseParameter):
     def resolve(self):
         from noc.core.dcs.util import resolve
         from noc.core.dcs.error import ResolutionError
-        if ":" in self.services:
+
+        if isinstance(self.services, list) and ":" in self.services[0]:
+            self.value = [ServiceItem(*i.rsplit(":", 1)) for i in self.services]
+            return
+        elif isinstance(self.services, six.string_types) and ":" in self.services:
             self.value = self.services
             return
+
         while True:
             for svc in self.services:
                 if ServiceParameter.is_static(svc):
