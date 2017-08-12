@@ -14,8 +14,8 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.managedobject import ManagedObject
 from noc.lib.text import split_alnum
-from noc.settings import config
 from noc.core.handler import get_handler
 
 
@@ -63,7 +63,10 @@ class Command(BaseCommand):
     def get_objects(exprs):
         objects = set()
         for s in exprs:
-            objects.update(ManagedObjectSelector.resolve_expression(s))
+            try:
+                objects.update(ManagedObjectSelector.resolve_expression(s))
+            except ManagedObject.DoesNotExist:
+                continue
         return sorted(objects, key=lambda x: x.name)
 
     @staticmethod
@@ -125,7 +128,7 @@ class Command(BaseCommand):
             self.stdout.write("%s (%s):\n" % (o.name, o.get_attr("platform") if o.get_attr("platform") else o.profile_name))
             ifaces = self.get_interfaces(o)
             if not ifaces:
-                return
+                continue
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
                 v = "Unknown"
