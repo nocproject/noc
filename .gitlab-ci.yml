@@ -15,11 +15,6 @@ test:empty:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
-  services:
-    - name: registry.getnoc.com/infrastructure/postgres:master
-      alias: postgres 
-    - name: registry.getnoc.com/infrastructure/mongo:master
-      alias: mongo
   script:
     - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
     - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
@@ -40,11 +35,13 @@ test:with data:
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
   services:
-    - registry.getnoc.com/infrastructure/postgres:dev
-    - registry.getnoc.com/infrastructure/mongo:dev
+    - name: registry.getnoc.com/infrastructure/postgres:master
+      alias: postgres 
+    - name: registry.getnoc.com/infrastructure/mongo:master
+      alias: mongo
   script:
-    - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
-    - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | awk -F '=' '{print $2}')
+    - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
+    - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
     - mkdir /opt/noc/collections
     - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
