@@ -8,22 +8,6 @@ stages:
   - build
   - upload
 
-build:
-  stage: build
-  image: python:2.7-alpine
-  script:
-    - mkdir -p dist 
-    - ./build.py package.json
-    - echo ${CI_BUILD_REF} > dist/collections-chmetrics.latest
-  tags:
-    - docker
-  artifacts:
-    paths:
-      - dist/
-    expire_in: 3 min
-  only:
-    - master@noc/collections
-
 test:empty:
   stage: test
   image: registry.getnoc.com/noc/noc-docker:dev
@@ -68,6 +52,23 @@ test:with data:
     - ./noc verify-model
   tags:
     - docker
+
+build:
+  stage: build
+  image: python:2.7-alpine
+  script:
+    - mkdir -p dist 
+    - ./build.py package.json
+    - echo ${CI_BUILD_REF} > dist/collections-chmetrics.latest
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 3 min
+  only:
+    - master@noc/collections
+    - chmetrics@noc/collections
 
 upload:
   stage: upload 
