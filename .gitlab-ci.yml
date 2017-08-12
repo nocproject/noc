@@ -28,7 +28,7 @@ test:empty:
     - ls /opt/noc/collections
     - cd /opt/noc
     - python manage.py migrate
-    - python commands/collection sync
+    - python commands/collection.py sync
   tags:
     - docker
 
@@ -52,7 +52,7 @@ test:with data:
     - ls /opt/noc/collections
     - cd /opt/noc
     - python manage.py migrate
-    - python commands/collection sync
+    - python commands/collection.py sync
   tags:
     - docker
 
