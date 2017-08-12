@@ -19,8 +19,9 @@ test:empty:
     - registry.getnoc.com/infrastructure/postgres:master
     - registry.getnoc.com/infrastructure/mongo:master
   script:
-    - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
-    - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | awk -F '=' '{print $2}')
+    - export NOC_PG_ADDRESSES=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
+    - export NOC_MONGO_ADDRESSES=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | awk -F '=' '{print $2}')
+    - env | sort 
     - mkdir /opt/noc/collections
     - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
