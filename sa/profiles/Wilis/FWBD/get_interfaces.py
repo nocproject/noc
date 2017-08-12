@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_sh_int = re.compile(
-        r"^^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g)\S+):\s<(?P<flags>.*?)>\s+mtu\s+(?P<mtu>\d+).+?\n^\s+link/\S+(?:\s+(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}))?\s+.+?\n(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?",
+        r"^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g)\S+):\s<(?P<flags>.*?)>\s+mtu\s+(?P<mtu>\d+).+?\n^\s+link/\S+(?:\s+(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}))?\s+.+?\n(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?",
         re.MULTILINE | re.DOTALL)
 
     rx_status = re.compile(
@@ -68,4 +68,4 @@ class Script(BaseScript):
                 interfaces += [iface]
 
         return [{"interfaces": interfaces}]
-
+
