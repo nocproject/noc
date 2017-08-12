@@ -10,7 +10,7 @@ stages:
 
 test:empty:
   stage: test
-  image: registry.getnoc.com/noc/nocmc:dev 
+  image: registry.getnoc.com/noc/nocmc/feature_chmetrics:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
@@ -34,7 +34,7 @@ test:empty:
 
 test:with data:
   stage: test
-  image: registry.getnoc.com/noc/nocmc:dev
+  image: registry.getnoc.com/noc/nocmc/feature_chmetrics:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
