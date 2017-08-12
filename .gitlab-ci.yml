@@ -15,6 +15,11 @@ test:empty:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
+  services:
+    - name: registry.getnoc.com/infrastructure/postgres:master
+      alias: postgres 
+    - name: registry.getnoc.com/infrastructure/mongo:master
+      alias: mongo
   script:
     - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
     - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
@@ -35,9 +40,9 @@ test:with data:
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
   services:
-    - name: registry.getnoc.com/infrastructure/postgres:master
+    - name: registry.getnoc.com/infrastructure/postgres:dev
       alias: postgres 
-    - name: registry.getnoc.com/infrastructure/mongo:master
+    - name: registry.getnoc.com/infrastructure/mongo:dev
       alias: mongo
   script:
     - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
