@@ -25,8 +25,8 @@ test:empty:
     - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
     - cd /opt/noc
-    - ./noc migrate
-    - ./noc collection sync
+    - python ./noc migrate
+    - python ./noc collection sync
   tags:
     - docker
 
@@ -47,9 +47,9 @@ test:with data:
     - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
     - cd /opt/noc
-    - ./noc migrate
-    - ./noc collection sync
-    - ./noc verify-model
+    - python ./noc migrate
+    - python ./noc collection sync
+    - python ./noc verify-model
   tags:
     - docker
 
