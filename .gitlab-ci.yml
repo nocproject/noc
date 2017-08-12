@@ -14,7 +14,7 @@ build:
   script:
     - mkdir -p dist 
     - ./build.py package.json
-    - echo ${CI_BUILD_REF} > dist/collections.latest
+    - echo ${CI_BUILD_REF} > dist/collections-chmetrics.latest
   tags:
     - docker
   artifacts:
