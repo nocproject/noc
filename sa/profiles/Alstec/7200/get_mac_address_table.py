@@ -34,10 +34,10 @@ class Script(BaseScript):
         rx_line = self.rx_all
         if interface is not None:
             cmd += " interface %s" % interface
-            rx_line = rx_iface
+            rx_line = self.rx_iface
         if vlan is not None:
             cmd += " vlan %s" % vlan
-            rx_line = rx_vlan
+            rx_line = self.rx_vlan
         if (mac is not None) and (vlan is not None):
             cmd += " %s %s" % (mac, vlan)
             rx_line = self.rx_all
