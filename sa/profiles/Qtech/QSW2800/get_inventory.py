@@ -57,7 +57,7 @@ class Script(BaseScript):
                                                    t.group("wavelength"))
                 r += [{
                     "type": "XCVR",
-                    "numper": num,
+                    "number": num,
                     "vendor": t.group("vendor").strip(),
                     "part_no": part_no,
                     "serial": t.group("serial_number").strip(),
