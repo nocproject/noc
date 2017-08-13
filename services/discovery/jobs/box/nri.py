@@ -271,7 +271,7 @@ class NRICheck(DiscoveryCheck):
                 }
                 p = prof_map.get(i["service"])
                 if p:
-                    op["profile"] = InterfaceProfile.get_default_profile()
+                    op["profile"] = InterfaceProfile.get_default_profile().id
 
                 self.interface_bulk_op(i["_id"], {"$unset": op})
             nmap[i["nri_name"]] = i
