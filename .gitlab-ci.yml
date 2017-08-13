@@ -27,7 +27,7 @@ test:empty:
     - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
     - cd /opt/noc
-    - python manage.py syncdb
+    - python manage.py syncdb --noinput
     - python manage.py migrate
     - python commands/collection.py sync
   tags:
