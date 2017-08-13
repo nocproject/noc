@@ -50,11 +50,18 @@ class Script(BaseScript):
             caps = 0
             for c in i[4].split(","):
                 c = c.strip()
+                """
+                System capability legend:
+                B - Bridge; R - Router; W - Wlan Access Point; T - telephone;
+                D - DOCSIS Cable Device; H - Host; r - Repeater;
+                TP - Two Ports MAC Relay; S - S-VLAN; C - C-VLAN; O - Other
+                """
                 if c:
                     caps |= {
-                        "O": 1, "P": 2, "B": 4,
-                        "W": 8, "R": 16, "T": 32,
-                        "C": 64, "S": 128
+                        "O": 1, "r": 1, "P": 2,
+                        "B": 4, "W": 8, "R": 16,
+                        "T": 32, "C": 64, "D": 64,
+                        "S": 128, "H": 128
                     }[c]
             """
             if "O" in i[4]:
