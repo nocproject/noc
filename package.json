@@ -1,7 +1,7 @@
 {
     "name": "collections-chmetrics",
     "version": "latest",
-    "dst_prefix": "collections-chmetrics",
+    "dst_prefix": "collections",
     "src_prefix": "",
     "files": [
        "**"
