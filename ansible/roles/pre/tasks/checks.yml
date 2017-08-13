@@ -1,6 +1,6 @@
 - name: Check ansible version
   fail:
-    msg: "{{ ansible_version.full }} is not supported by this role. Please use atleast 2.3.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
+    msg: "{{ ansible_version.full }} is not supported by this role. Please use at least 2.3.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
   when: ansible_version is defined and ansible_version.full | version_compare('2.3.0.0', '<')
 
 - name: Check distribution compatibility
@@ -18,10 +18,20 @@
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
   when: ansible_distribution == "Debian" and ansible_distribution_version|version_compare(8.0, '<')
 
+- name: Fail if too new release of Debian
+  fail:
+    msg: "{{ ansible_distribution_version }} currently is not an acceptable version of {{ ansible_distribution }} for this role"
+  when: ansible_distribution == "Debian" and ansible_distribution_version|version_compare(8.0, '>')
+
 - name: Fail for a new release of Ubuntu
   fail:
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
   when: ansible_distribution == "Ubuntu" and ansible_distribution_version|version_compare("16.04", '>')
+
+- name: Fail for a old release of Ubuntu
+  fail:
+    msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version|version_compare("16.04", '<')
 
 - block:
   - name: tower version is too old
@@ -65,7 +75,7 @@
 - name: Ensure tower url
   fail:
     msg: "Please ensure that correct settings has been provided on tower settings page and they was saved."
-  when: noc_repo=="http://example.com/hg/VQ3W6R"
+  when: noc_repo=="http://example.com/hg/VQ3W6R" or noc_repo=="http://example.com/hg/MHBNEJ"
 
 - block:
   - name: Ensure consul setup
