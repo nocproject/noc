@@ -139,3 +139,8 @@
   fail:
     msg: "Proxy server have to be in defined with scheme for example http://admin:password@192.168.1.1:3128. currently it is: '{{http_proxy}}'"
   when: "'http://' not in http_proxy and 'https://' not in http_proxy and proxy is defined"
+
+- name: Pgbouncer connections overprovisioned
+  fail:
+    msg: "Pgbouncer has more connections to postgres that postgres can handle"
+  when: groups['svc-pgbouncer'] | length * pgbouncer_max_db_connection > postgres_max_connections
