@@ -106,6 +106,7 @@ Ext.define("NOC.fm.event.Application", {
             fieldLabel: __("From"),
             labelWidth: 35,
             format: "d.m.Y",
+            startDay: 1,
             width: 130,
             listeners: {
                 scope: me,
@@ -117,6 +118,7 @@ Ext.define("NOC.fm.event.Application", {
             fieldLabel: __("To"),
             labelWidth: 25,
             format: "d.m.Y",
+            startDay: 1,
             width: 120,
             listeners: {
                 scope: me,

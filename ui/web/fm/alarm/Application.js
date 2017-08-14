@@ -153,6 +153,7 @@ Ext.define('NOC.fm.alarm.Application', {
         me.fromDateField = Ext.create('Ext.form.field.Date', {
             tooltip: __('From'),
             format: 'd.m.Y',
+            startDay: 1,
             width: 95,
             listeners: {
                 scope: me,
@@ -163,6 +164,7 @@ Ext.define('NOC.fm.alarm.Application', {
         me.toDateField = Ext.create('Ext.form.field.Date', {
             tooltip: __('To'),
             format: 'd.m.Y',
+            startDay: 1,
             width: 95,
             listeners: {
                 scope: me,
