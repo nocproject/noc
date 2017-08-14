@@ -21,7 +21,7 @@
 - name: Fail if too new release of Debian
   fail:
     msg: "{{ ansible_distribution_version }} currently is not an acceptable version of {{ ansible_distribution }} for this role"
-  when: ansible_distribution == "Debian" and ansible_distribution_version|version_compare(8.0, '>')
+  when: ansible_distribution == "Debian" and ansible_distribution_version|version_compare(9.0, '>=')
 
 - name: Fail for a new release of Ubuntu
   fail:
@@ -109,6 +109,11 @@
   fail:
     msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
   when: groups['svc-patroni'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
+
+- name: fail if patroni enabled and postgres not 9.6
+  fail:
+    msg: "Patroni can be installed only with postgres 9.6"
+  when: groups['svc-patroni'] | length > 0 and postgresql_version|version_compare("9.6", '<')
 
 - name: fail if patroni set for one node
   fail:
