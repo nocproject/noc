@@ -335,6 +335,7 @@ class Config(BaseConfig):
             default=""
         )
         compression_level = IntParameter(default=6)
+        max_in_flight = IntParameter(default=1)
 
     class nsqlookupd(ConfigSection):
         addresses = ServiceParameter(service="nsqlookupd",

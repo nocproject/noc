@@ -659,6 +659,7 @@ class Service(object):
             topic=topic,
             channel=channel,
             lookupd_http_addresses=lookupd,
+            max_in_flight=config.nsqd.max_in_flight,
             snappy=config.nsqd.compression == "snappy",
             deflate=config.nsqd.compression == "deflate",
             deflate_level=config.nsqd.compression_level if config.nsqd.compression == "deflate" else 6,
