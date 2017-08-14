@@ -286,6 +286,11 @@ config:
       description: "<strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>"
       label: "Pgbouncer max clients"
       type: int
+    pgbouncer_max_db_connections:
+      default: 10
+      description: "<strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>"
+      label: "Pgbouncer connections to postgres"
+      type: int
   ping:
     restore_threshold:
       default: 0

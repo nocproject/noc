@@ -38,7 +38,7 @@ nginx_json_logging: "{{noc_config['config'].get('nginx-global-%s' % ansible_node
 nsq_max_messages_in_memory: "{{ noc_config['config'].get('nsqd-global-%s' % ansible_nodename, {}).get('max_messages_in_memory', 10000) }}"
 
 pgbouncer_max_clients: "{{noc_config['config'].get('pgbouncer-global-%s' % ansible_nodename, {}).get('pgbouncer_max_clients', '3000') | int | abs}}"
-pgbouncer_max_db_connection: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_nodename, {}).get('pgbouncer_max_clients /10', '300')| int | abs )}}"
+pgbouncer_max_db_connection: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_nodename, {}).get('pgbouncer_max_db_connections', '10'))}}"
 pgbouncer_max_files: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_nodename, {}).get('pgbouncer_max_clients', 3000) * 1.1 )| int | abs}}"
 
 postgres_master: "{% for n in groups['svc-postgres-master'] %}{{n}}{% endfor %}"
