@@ -139,6 +139,21 @@ config:
       description: "<strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>"
       label: "Mem size for snapshot"
       type: int
+  haproxy:
+    stats:
+      default: false
+      description: "on port 1936"
+      label: "haproxy's stats interface"
+      type: bool
+    user:
+      label: "Stats interface user"
+      type: str
+      default: admin
+    password:
+      label: "Stats interface password"
+      description: "a-z,A-Z,0-9,_-"
+      type: str
+      default: noc
   keepalived:
     nginx_virtual_ip:
       description: "<strong> <a href=http://keepalived.readthedocs.io/en/latest/ target=_blank> http://www.keepalived.org/documentation.html </a> </strong>"
@@ -150,6 +165,9 @@ config:
       type: str
     patroni_virtual_ip:
       label: "Patroni virtual IP"
+      type: str
+    clickhouse_virtual_ip:
+      label: "Clickhouse virtual IP"
       type: str
   login:
     language:

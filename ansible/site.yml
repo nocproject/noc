@@ -24,34 +24,6 @@
     - role: telegraf
 
 
-- name: haproxy tasks
-  hosts: svc-haproxy
-  become: yes
-  any_errors_fatal: True
-  gather_facts: True
-  tags:
-    - haproxy
-    - ha
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: haproxy
-
-
-- name: keepalived tasks
-  hosts: svc-keepalived
-  become: yes
-  any_errors_fatal: True
-  gather_facts: True
-  tags:
-    - keepalived
-    - ha
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: keepalived
-
-
 - name: Consul tasks
   hosts: svc-consul-server
   become: yes
@@ -81,6 +53,33 @@
       tags:
         - consul-template
         - external
+
+- name: haproxy tasks
+  hosts: svc-haproxy
+  become: yes
+  any_errors_fatal: True
+  gather_facts: True
+  tags:
+    - haproxy
+    - ha
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: haproxy
+
+
+- name: keepalived tasks
+  hosts: svc-keepalived
+  become: yes
+  any_errors_fatal: True
+  gather_facts: True
+  tags:
+    - keepalived
+    - ha
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: keepalived
 
 - name: Install NOC
   hosts: all
