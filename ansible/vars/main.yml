@@ -143,3 +143,5 @@ mongo_conf: "{{ etc_prefix }}/mongod.conf"
 fake_shell: /bin/false
 
 zookeeper_config_dir: "{{etc_prefix}}/zookeeper/conf"
+
+haproxy_clickhouse_listen: 8124

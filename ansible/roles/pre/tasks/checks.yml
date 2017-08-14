@@ -122,13 +122,9 @@
 
 - name: fail if haproxy not for debian/rhel
   fail:
-    msg: "Haproxy and patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
-  when: groups['svc-haproxy'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
+    msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
+  when: groups['svc-patroni'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
 
-- name: fail if haproxy set for one node
-  fail:
-    msg: "Haproxy can be installed when node count is more than one."
-  when: play_hosts | length == 1 and groups['svc-haproxy'] | length > 0
 
 - name: fail if keepalived set for one node
   fail:
@@ -140,10 +136,6 @@
     msg: "patroni have to be installed on atleast two nodes"
   when: groups['svc-patroni'] | length == 1
 
-- name: fail if haproxy set only for one node
-  fail:
-    msg: "Haproxy have to be installed on atleast two nodes"
-  when: groups['svc-haproxy'] | length == 1
 
 - name: fail if keepalived set only for one node
   fail:
