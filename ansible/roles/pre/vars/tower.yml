@@ -68,6 +68,7 @@ clickhouse_password: "{{noc_config['config'].get('clickhouse-global-%s' % ansibl
 clickhouse_ro_password: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('ro_password', 'noc') }}"
 
 clickhouse_db: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('db', 'noc')}}"
+clickhouse_max_query_size: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('query_size', 262144)}}"
 
 mongo_logging_driver: "{{noc_config['config'].get('mongod-global-%s' % ansible_nodename, {}).get('mongod_logging_destination', 'file')}}"
 
