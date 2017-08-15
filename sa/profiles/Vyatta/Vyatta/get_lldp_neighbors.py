@@ -22,7 +22,9 @@ class Script(BaseScript):
     }
 
     PORT_SUBTYPE = {
-        "mac": 3
+        "mac": 3,
+        "ifalias": 5,
+        "ifname": 5
     }
 
     def execute(self):
