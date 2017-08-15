@@ -142,5 +142,5 @@
 
 - name: Pgbouncer connections overprovisioned
   fail:
-    msg: "Pgbouncer has more connections to postgres that postgres can handle"
-  when: groups['svc-pgbouncer'] | length > 1 and groups['svc-pgbouncer'] | length * pgbouncer_max_db_connection > postgres_max_connections
+    msg: "Pgbouncer has more connections to postgres that postgres can handle postgres_max_connections={{postgres_max_connections}} is more than pgbouncer_max_cons={{groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int}}"
+  when: groups['svc-pgbouncer'] | length > 1 and groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int > postgres_max_connections
