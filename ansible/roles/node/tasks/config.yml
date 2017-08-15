@@ -4,6 +4,7 @@
     'config':{
         'noc':{
             'ch_db': clickhouse_db,
+            'ch_user': clickhouse_user,
             'ch_password': clickhouse_password,
             'ch_ro_password': clickhouse_ro_password
         }

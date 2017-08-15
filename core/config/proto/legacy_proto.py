@@ -35,6 +35,7 @@ class LegacyProtocol(BaseProtocol):
         ("noc.influx_password", "influxdb.password"),
         ("noc.influx_user", "influxdb.user"),
         ("noc.ch_db", "clickhouse.db"),
+        ("noc.ch_user", "clickhouse.user"),
         ("noc.ch_password", "clickhouse.password"),
         ("noc.ch_ro_password", "clickhouse.ro_password"),
 
