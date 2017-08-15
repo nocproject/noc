@@ -82,6 +82,10 @@ config:
       default: noc
       label: "db name"
       type: str
+    query_size:
+      default: 262144
+      label: "Max query size"
+      type: int
   consul:
     replication_token:
       label: "consul replication token"
