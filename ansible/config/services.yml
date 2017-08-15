@@ -67,6 +67,11 @@ config:
       label: "Lookup solution"
       type: str
   clickhouse:
+    user:
+      default: noc
+      label: "RW user"
+      type: str
+      description: "RW user"
     password:
       default: noc
       label: "Password for user default"
