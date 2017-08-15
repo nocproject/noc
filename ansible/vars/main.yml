@@ -119,10 +119,6 @@ consul_scripts_path: "{{consul_configd_path}}/scripts"
 
 supervisor_sock_path: /var/run/supervisor_noc.sock
 
-bi_export_dir: "{{noc_root}}/var/bi"
-bi_export_dict_dir: "{{noc_root}}/var/bi-dict"
-bi_export_dict_data_dir: "{{noc_root}}/var/bi-dict-data"
-
 noc_logs: /var/log/noc
 noc_var_lib: /var/lib/noc
 noc_var: /var/opt/noc
@@ -130,6 +126,9 @@ noc_etc: "{{noc_root}}/etc"
 noc_reports_dir: "{{noc_var_lib}}/reports"
 noc_crashinfo_dir: "{{noc_root}}/var/cp/crashinfo/new"
 
+bi_export_dir: "{{noc_var_lib}}/bi"
+bi_export_dict_dir: "{{noc_var_lib}}/bi-dict"
+bi_export_dict_data_dir: "{{noc_var_lib}}/bi-dict-data"
 
 nsqd_db_dir: "/var/spool/nsqd"
 nsqd_config_dir: "{{etc_prefix}}/nsq"
