@@ -77,15 +77,20 @@ class Script(BaseScript):
             for match in self.rx_item.finditer(v):
                 vendor, serial = "", ""
                 if match.group("name") in self.IGNORED_NAMES:
+                    self.logger.debug("Part %s in ignored name. Skipping" % match.group("name"))
                     continue
+                self.logger.debug("Get type: %s, %s, %s", match.group("name"), match.group("pid"), match.group("descr"))
                 type, number, part_no = self.get_type(
                     match.group("name"), match.group("pid"),
                     match.group("descr"), len(objects)
                 )
+                self.logger.debug("Return: %s, %s, %s", type, number, part_no)
                 if type == "SLOTID":
+                    self.logger.debug("Type equal slot_id")
                     self.slot_id = number
                     continue
                 if not match.group("pid") and not match.group("vid") and not match.group("serial"):
+                    self.logger.debug("PID, VID, Serial is not match. Continue...")
                     continue
                 serial = match.group("serial")
                 if not part_no:
@@ -234,6 +239,16 @@ class Script(BaseScript):
         Get type, number and part_no
         """
         if pid is None:
+            if ("Motherboard" in name or "motherboard" in name or "Mother board" in name):
+                # Cisco ISR series not have PID for motherboard
+                if "1921" in name:
+                    return "MOTHERBOARD", None, "CISCO1921-MB"
+                elif "2901" in name:
+                    return "MOTHERBOARD", None, "CISCO2901-MB"
+                elif "2911" in name:
+                    return "MOTHERBOARD", None, "CISCO2911-MB"
+                elif "2921" in name:
+                    return "MOTHERBOARD", None, "CISCO2921-MB"
             pid = ""
             match = self.rx_slot_id.search(name)
             if match:
@@ -278,26 +293,28 @@ class Script(BaseScript):
             # Motherboard for Cisco 2800, 2900
             if pid == "CISCO2801":
                 return "MOTHERBOARD", None, "CISCO2801-MB"
+            elif "1921" in name:
+                return "MOTHERBOARD", None, "CISCO1921-MB"
             return "MOTHERBOARD", None, pid
         elif (pid.startswith("WS-X4920") or (pid.startswith("WS-C4900M") and "Linecard" in name)):
             return "LINECARD", self.slot_id, pid
         elif ((lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
               and not pid.startswith("WS-CAC-") and not pid.endswith("-MB")
-              and not "Clock" in descr and not "VTT FRU" in descr
-              and not "C2801 Motherboard " in descr):
+              and "Clock" not in descr and "VTT FRU" not in descr
+              and "C2801 Motherboard " not in descr):
             if pid in ("", "N/A"):
                 if self.rx_7100.search(descr):
                     pid = "CISCO7100"
             return "CHASSIS", self.slot_id, pid
         elif (("SUP" in pid or "S2U" in pid)
-            and "supervisor" in descr):
+              and "supervisor" in descr):
                 # Sup2
                 return "SUP", self.slot_id, pid
         elif name.startswith("module "):
             # Linecards or supervisors
             if (pid.startswith("RSP")
-            or ((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
-            and "Supervisor Engine" in descr)):
+                or ((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
+                    and "Supervisor Engine" in descr)):
                 return "SUP", self.slot_id, pid
             else:
                 if (pid == "N/A" and "Gibraltar,G-20" in descr):
@@ -310,10 +327,11 @@ class Script(BaseScript):
               or pid.startswith("WS-X65")) and "port" in descr):
             return "LINECARD", self.slot_id, pid
         elif (((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
-        and "Supervisor Engine" in descr) or ((pid.startswith("C72")
-        or pid.startswith("NPE") or pid.startswith("uBR7200-NPE")
-        or pid.startswith("7301-NPE") or pid.startswith("7304-NPE"))
-        and "Network Processing Engine" in descr)):
+               and "Supervisor Engine" in descr)
+              or ((pid.startswith("C72")
+                   or pid.startswith("NPE") or pid.startswith("uBR7200-NPE")
+                   or pid.startswith("7301-NPE") or pid.startswith("7304-NPE"))
+                  and "Network Processing Engine" in descr)):
             return "SUP", self.slot_id, pid
         elif "-PFC" in pid:
             # PFC subcard
@@ -339,7 +357,7 @@ class Script(BaseScript):
             # Fan module
             return "FAN", self.slot_id, pid
         elif (pid.startswith("NM-") or pid.startswith("NME-")
-        or pid.startswith("EVM-") or pid.startswith("EM-")):
+              or pid.startswith("EVM-") or pid.startswith("EM-")):
             # Network Module
             return "NM", self.slot_id, pid
         elif pid.startswith("SM-"):
