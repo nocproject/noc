@@ -33,7 +33,7 @@ class Profile(BaseProfile):
     pattern_unpriveleged_prompt = \
         r"^(?P<hostname>[a-zA-Z0-9-_\.\/()]+)(?:-[a-zA-Z0-9/]+)*>$"
     pattern_syntax_error = \
-        r"(% Unknown command, the error locates at \'^\'|  Logged Fail!|"
+        r"(% Unknown command, the error locates at \'^\'|  Logged Fail!|" \
         r"System is busy, please try after a while)"
     rogue_chars = [
         re.compile(r"\n\r\s+Line \d+ operating, attempt of the Line -\d+ denied!\n\r"),
