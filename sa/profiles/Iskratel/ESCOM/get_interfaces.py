@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_port = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
+        r"^(?P<port>(?:Gi|Te|Po|oo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<oper_status>Up|Down|Not Present)",
         re.MULTILINE | re.IGNORECASE)
     rx_port1 = re.compile(
@@ -29,7 +29,7 @@ class Script(BaseScript):
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?P<descr>.+)$",
         re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(
-        r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
+        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
         r"(?P<membership>\S+)\s*\n", re.MULTILINE)
     rx_vlan_ipif = re.compile(
         r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+"
@@ -42,6 +42,11 @@ class Script(BaseScript):
     rx_lldp = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?:Rx|Tx)",
         re.MULTILINE | re.IGNORECASE)
+    rx_iface = re.compile(
+        r"^Port type: ethernet-csmacd, MTU: (?P<mtu>\d+)\s*\n"
+        r"^Physically address: (?P<mac>\S+)\s*\n",
+        re.MULTILINE
+    )
 
     def get_gvrp(self):
         try:
@@ -99,6 +104,8 @@ class Script(BaseScript):
             ifname = match.group("port")
             if ifname.startswith("Po"):
                 iftype = "aggregated"
+            elif ifname.startswith("oob"):
+                iftype = "management"
             else:
                 iftype = "physical"
             for i in adm_status:
@@ -142,6 +149,15 @@ class Script(BaseScript):
                     sub["untagged_vlan"] = int(vlan_id)
                 else:
                     sub["tagged_vlans"] += [int(vlan_id)]
+            try:
+                s = self.cli("show interfaces %s" % ifname)
+                match = self.rx_iface.search(s)
+                if match:
+                    iface["mac"] = match.group("mac")
+                    sub["mac"] = match.group("mac")
+                    sub["mtu"] = match.group("mtu")
+            except self.CLISyntaxError:
+                pass
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
         match = self.re_search(self.rx_mac, self.cli("show system"))
