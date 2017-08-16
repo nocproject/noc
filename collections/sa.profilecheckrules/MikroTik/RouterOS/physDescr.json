@@ -1,0 +1,13 @@
+{
+    "name": "MikroTik | RouterOS | physDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "eeb80544-65fe-4594-9561-6aa4ca864434",
+    "description": "Examples:\nRouterOS 6.38.5 (stable) on RB2011UiAS",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "1.3.6.1.2.1.47.1.1.1.1.2.65536",
+    "match_method": "re",
+    "value": "^RouterOS.*",
+    "action": "match",
+    "profile": "MikroTik.RouterOS"
+}
