@@ -113,7 +113,8 @@ class ObjectMap(Document):
                     "report_rtt": mo.object_profile.report_ping_rtt,
                     "report_attempts": mo.object_profile.report_ping_attempts,
                     "status": None,
-                    "name": mo.name
+                    "name": mo.name,
+                    "bi_id": mo.get_bi_id()
                 }
                 if mo.time_pattern:
                     rr["time_expr"] = TimePattern.get_code(mo.time_pattern.id)

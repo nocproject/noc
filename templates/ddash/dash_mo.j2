@@ -46,6 +46,7 @@
       {% include "template_segment.j2" with context -%},
       {% include "template_firmware_version.j2" with context -%},
       {% include "template_discovery_interval.j2" with context -%},
+      {% include "template_bi_id.j2" with context -%},
       {% include "template_ping_interval.j2" with context -%}
     ]
   },
@@ -119,7 +120,7 @@
         {% for port in port_types -%}
             {{ comma() }}
             {
-              "collapse": true,
+              "collapse": false,
               "editable": false,
               "height": "250px",
               "showTitle": true,
@@ -138,7 +139,7 @@
         {% for lag in lags -%}
 
             {{ comma() }}{
-              "collapse": true,
+              "collapse": false,
               "editable": false,
               "height": "250px",
               "showTitle": true,

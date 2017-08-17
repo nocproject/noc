@@ -7,14 +7,16 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import time
 import hashlib
 # Third-party modules
 import six
 # NOC modules
-from fields import BaseField
-from noc.core.clickhouse.connect import connection
+from .fields import BaseField
+from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
+from noc.config import config
 
 __all__ = ["Model"]
 
@@ -59,11 +61,45 @@ class Model(six.with_metaclass(ModelBase)):
         self.values = kwargs
 
     @classmethod
+    def _get_db_table(cls):
+        return cls._meta.db_table
+
+    @classmethod
+    def _get_raw_db_table(cls):
+        if config.clickhouse.cluster:
+            return "raw_%s" % cls._meta.db_table
+        else:
+            return cls._meta.db_table
+
+    @classmethod
+    def wrap_table(cls, table_name):
+        class WrapClass(Model):
+            class Meta:
+                db_table = table_name
+
+        return WrapClass
+
+    @classmethod
     def get_create_sql(cls):
-        r = ["CREATE TABLE IF NOT EXISTS %s (" % cls._meta.db_table]
+        r = ["CREATE TABLE IF NOT EXISTS %s (" % cls._get_raw_db_table()]
         r += [",\n".join(cls._fields[f].get_create_sql() for f in cls._fields_order)]
         r += [") ENGINE = %s;" % cls._meta.engine.get_create_sql()]
         return "\n".join(r)
+
+    @classmethod
+    def get_create_distributed_sql(cls):
+        """
+        Get CREATE TABLE for Distributed engine
+        :return:
+        """
+        return "CREATE TABLE IF NOT EXISTS %s " \
+               "AS %s " \
+               "ENGINE = Distributed('%s', '%s', '%s')" % (
+                   cls._meta.db_table,
+                   cls._get_raw_db_table(),
+                   config.clickhouse.cluster,
+                   config.clickhouse.db, cls._get_raw_db_table()
+               )
 
     @classmethod
     def to_tsv(cls, **kwargs):
@@ -73,28 +109,24 @@ class Model(six.with_metaclass(ModelBase)):
 
     @classmethod
     def get_fingerprint(cls):
-        return "%s.%s" % (cls._meta.db_table,
+        return "%s.%s" % (cls._get_db_table(),
                           ".".join(cls._fields_order))
 
     @classmethod
     def get_short_fingerprint(cls):
         seed = ".".join(cls._fields_order)
         h = hashlib.sha256(seed).hexdigest()[:8]
-        return "%s.%s" % (cls._meta.db_table, h)
+        return "%s.%s" % (cls._get_db_table(), h)
 
     @classmethod
-    def ensure_table(cls):
+    def ensure_table(cls, connect=None):
         """
         Check table is exists
+        :param connect:
         :return: True, if table has been altered, False otherwise
         """
-        changed = False
-        ch = connection()
-        if not ch.has_table(cls._meta.db_table):
-            # Create new table
-            ch.execute(post=cls.get_create_sql())
-            changed = True
-        else:
+        def ensure_columns(table_name):
+            c = False
             # Alter when necessary
             existing = {}
             for name, type in ch.execute(
@@ -105,7 +137,7 @@ class Model(six.with_metaclass(ModelBase)):
                   database=%s
                   AND table=%s
                 """,
-                [ch.DB, cls._meta.db_table]
+                [config.clickhouse.db, table_name]
             ):
                 existing[name] = type
             after = None
@@ -113,12 +145,32 @@ class Model(six.with_metaclass(ModelBase)):
                 if f not in existing:
                     ch.execute(
                         post="ALTER TABLE %s ADD COLUMN %s AFTER %s" % (
-                            cls._meta.db_table,
+                            table_name,
                             cls._fields[f].get_create_sql(),
                             after)
                     )
-                    changed = True
+                    c = True
                 after = f
+            return c
+
+        changed = False
+        ch = connect or connection()
+        if not ch.has_table(cls._get_raw_db_table()):
+            # Create new table
+            ch.execute(post=cls.get_create_sql())
+            if config.clickhouse.cluster:
+                # Create distributed
+                ch.execute(post=cls.get_create_sql())
+            changed = True
+        else:
+            changed |= ensure_columns(cls._get_raw_db_table())
+        # Check for distributed table
+        if config.clickhouse.cluster:
+            if not ch.has_table(cls._meta.db_table):
+                ch.execute(post=cls.get_create_distributed_sql())
+                changed = True
+            else:
+                changed |= ensure_columns(cls._meta.db_table)
         return changed
 
     @classmethod
@@ -201,14 +253,14 @@ class Model(six.with_metaclass(ModelBase)):
             # Access denied
             r = []
             dt = 0.0
-            sql = ["SELECT %s FROM %s WHERE 0 = 1" % (", ".join(fields_x), cls._meta.db_table)]
+            sql = ["SELECT %s FROM %s WHERE 0 = 1" % (", ".join(fields_x), cls._get_db_table())]
         else:
             # Get where expressions
             filter_x = to_sql(transformed_query.get("filter", {}))
             # Generate SQL
             sql = ["SELECT "]
             sql += [", ".join(fields_x)]
-            sql += ["FROM %s" % cls._meta.db_table]
+            sql += ["FROM %s" % cls._get_db_table()]
             sample = query.get("sample")
             if sample:
                 sql += ["SAMPLE %s" % float(sample)]

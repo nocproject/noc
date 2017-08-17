@@ -13,6 +13,9 @@ import urlparse
 import threading
 import ssl
 import logging
+import zlib
+import time
+import struct
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -51,6 +54,9 @@ REQUIRE_LENGTH_METHODS = set(["POST", "PUT"])
 ns_lock = threading.Lock()
 ns_cache = cachetools.TTLCache(NS_CACHE_SIZE, ttl=RESOLVER_TTL)
 
+CE_DEFLATE = "deflate"
+CE_GZIP = "gzip"
+
 
 @tornado.gen.coroutine
 def resolve(host):
@@ -86,7 +92,8 @@ def fetch(url, method="GET",
           allow_proxy=False,
           proxies=None,
           user=None,
-          password=None
+          password=None,
+          content_encoding=None
     ):
     """
 
@@ -96,7 +103,8 @@ def fetch(url, method="GET",
     :param body: Request body for POST and PUT request
     :param connect_timeout:
     :param request_timeout:
-    :param ioloop:
+    :param io_loop:
+    :param resolver:
     :param follow_redirects:
     :param max_redirects:
     :param validate_cert:
@@ -105,6 +113,7 @@ def fetch(url, method="GET",
     :param user:
     :param password:
     :param max_buffer_size:
+    :param content_encoding:
     :return: code, headers, body
     """
     def get_ssl_options():
@@ -240,6 +249,36 @@ def fetch(url, method="GET",
             "Connection": "close",
             "User-Agent": DEFAULT_USER_AGENT
         }
+        if body and content_encoding:
+            if content_encoding == CE_DEFLATE:
+                # Deflate compression
+                h["Content-Encoding"] = CE_DEFLATE
+                compress = zlib.compressobj(
+                    zlib.Z_DEFAULT_COMPRESSION,
+                    zlib.DEFLATED,
+                    -zlib.MAX_WBITS,
+                    zlib.DEF_MEM_LEVEL,
+                    zlib.Z_DEFAULT_STRATEGY
+                )
+                body = compress.compress(body) + compress.flush()
+            elif content_encoding == CE_GZIP:
+                # gzip compression
+                h["Content-Encoding"] = CE_GZIP
+                compress = zlib.compressobj(
+                    6,
+                    zlib.DEFLATED,
+                    -zlib.MAX_WBITS,
+                    zlib.DEF_MEM_LEVEL,
+                    0
+                )
+                crc = zlib.crc32(body, 0) & 0xffffffff
+                body = "\x1f\x8b\x08\x00%s\x02\xff%s%s%s%s" % (
+                    to32u(int(time.time())),
+                    compress.compress(body),
+                    compress.flush(),
+                    to32u(crc),
+                    to32u(len(body))
+                )
         if method in REQUIRE_LENGTH_METHODS:
             h["Content-Length"] = str(len(body))
             h["Content-Type"] = "application/binary"
@@ -318,6 +357,7 @@ def fetch(url, method="GET",
                 raise tornado.gen.Return((code, parsed_headers, response_body))
             else:
                 raise tornado.gen.Return((404, {}, "Redirect limit exceeded"))
+        # @todo: Process gzip and deflate Content-Encoding
         raise tornado.gen.Return((
             code,
             parsed_headers,
@@ -342,8 +382,8 @@ def fetch_sync(url, method="GET",
                allow_proxy=False,
                proxies=None,
                user=None,
-               password=None
-               ):
+               password=None,
+               content_encoding=None):
 
     @tornado.gen.coroutine
     def _fetch():
@@ -360,7 +400,8 @@ def fetch_sync(url, method="GET",
             allow_proxy=allow_proxy,
             proxies=proxies,
             user=user,
-            password=password
+            password=password,
+            content_encoding=content_encoding
         )
         r.append(result)
 
@@ -368,3 +409,7 @@ def fetch_sync(url, method="GET",
     ioloop = tornado.ioloop.IOLoop()
     ioloop.run_sync(_fetch)
     return r[0]
+
+
+def to32u(n):
+    return struct.pack("<L", n)

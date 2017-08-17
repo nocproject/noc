@@ -57,6 +57,7 @@ class MODiscoveryJob(PeriodicJob):
         self.problems = []
         self.caps = None
         self.has_fatal_error = False
+        self.service = self.scheduler.service
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -311,7 +312,7 @@ class DiscoveryCheck(object):
     }
 
     def __init__(self, job):
-        self.service = get_service()
+        self.service = job.service
         self.job = job
         self.object = self.job.object
         self.logger = self.job.logger.get_logger(

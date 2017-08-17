@@ -1162,6 +1162,19 @@ class ManagedObject(Model):
         else:
             return DEFAULT_TTSYSTEM_SHARD
 
+    @classmethod
+    def get_bi_selector(cls, cfg):
+        qs = {}
+        if "administrative_domain":
+            d = AdministrativeDomain.get_by_id(cfg["administrative_domain"])
+            if d:
+                qs["administrative_domain__in"] = d.get_nested()
+        return [
+            r.get_bi_id()
+            for r in ManagedObject.objects.filter(**qs).only("id", "bi_id")
+        ]
+
+
 @on_save
 class ManagedObjectAttribute(Model):
 

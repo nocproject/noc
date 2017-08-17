@@ -10,10 +10,14 @@
 import datetime
 import zlib
 import itertools
+import threading
+import operator
+from collections import defaultdict
 # Third-party modules
 import bson
 import ujson
 from mongoengine.queryset import Q
+import cachetools
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
@@ -21,6 +25,8 @@ from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
 from noc.bi.models.span import Span
+from noc.pm.models.metricscope import MetricScope
+from noc.pm.models.metrictype import MetricType
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.sa.interfaces.base import (DictListParameter, DictParameter, IntParameter, StringParameter)
 from noc.core.translation import ugettext as _
@@ -38,6 +44,9 @@ I_VALID = DictListParameter(attrs={
     "level": IntParameter(min_value=-1, max_value=3, default=-1)
 })
 
+ds_lock = threading.Lock()
+model_lock = threading.Lock()
+
 
 class BIAPI(API):
     """
@@ -51,6 +60,106 @@ class BIAPI(API):
         Alarms,
         Span
     ]
+
+    _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
+    _model_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
+
+    ref_dict = {
+        "sa.ManagedObject": "managedobject"
+    }
+
+    @classmethod
+    def get_pm_datasources(cls):
+        result = []
+        # Collect fields
+        scope_fields = defaultdict(list)
+        for mt in MetricType.objects.all().order_by("field_name"):
+            scope_fields[mt.scope.table_name] += [{
+                "name": mt.field_name,
+                "description": mt.description,
+                "type": mt.field_type,
+                "dict": None
+            }]
+        # Attach scopes as datasources
+        for ms in MetricScope.objects.all().order_by("table_name"):
+            r = {
+                "name": ms.table_name,
+                "description": ms.description,
+                "tags": [],
+                "fields": [
+                    {
+                        "name": "date",
+                        "description": "Date",
+                        "type": "Date",
+                        "dict": None
+                    },
+                    {
+                        "name": "ts",
+                        "description": "Timestamp",
+                        "type": "DateTime",
+                        "dict": None
+                    }
+                ]
+            }
+            for k in ms.key_fields:
+                r["fields"] += [{
+                    "name": k.field_name,
+                    "description": k.field_name,
+                    "type": "UInt64",
+                    "dict": cls.ref_dict.get(k.model, None),
+                    "model": k.model
+                }]
+            if ms.path:
+                r["fields"] = [{
+                    "name": "path",
+                    "description": "Metric path",
+                    "type": "Array(String)",
+                    "dict": None
+                }]
+            r["fields"] += scope_fields[ms.table_name]
+            result += [r]
+        return result
+
+    @classmethod
+    def get_bi_datasources(cls):
+        result = []
+        for model in cls.datasources:
+            r = {
+                "name": model._meta.db_table,
+                "description": model._meta.description,
+                "tags": model._meta.tags,
+                "fields": []
+            }
+            for fn in model._fields_order:
+                f = model._fields[fn]
+                d = getattr(f, "dict_type", None)
+                if d:
+                    d = d._meta.name
+                r["fields"] += [{
+                    "name": f.name,
+                    "description": _(f.description),
+                    "type": f.db_type,
+                    "dict": d
+                }]
+            result += [r]
+        return result
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_ds_cache"),
+                             lock=lambda _: ds_lock)
+    def get_datasources(cls):
+        return cls.get_bi_datasources() + cls.get_pm_datasources()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_model_cache"),
+                             lock=lambda _: model_lock)
+    def get_model(cls, name):
+        # Static datasource
+        model = Model.get_model_class(name)
+        if model:
+            return model
+        # Dynamic datasource
+        return Model.wrap_table(name)
 
     def iter_datasources(self):
         """
@@ -73,11 +182,11 @@ class BIAPI(API):
         """
         return [
             {
-                "name": ds._meta.db_table,
-                "decscription": ds._meta.description,
-                "tags": ds._meta.tags
-            } for ds in self.iter_datasources()
-            ]
+                "name": ds["name"],
+                "decscription": ds["description"],
+                "tags": ds["tags"]
+            } for ds in self.get_datasources()
+        ]
 
     @api
     def get_datasource_info(self, name):
@@ -93,27 +202,10 @@ class BIAPI(API):
         :param name:
         :return:
         """
-        model = Model.get_model_class(name)
-        if not model:
-            raise APIError("Invalid datasource")
-        r = {
-            "name": model._meta.db_table,
-            "description": model._meta.description,
-            "tags": model._meta.tags,
-            "fields": []
-        }
-        for fn in model._fields_order:
-            f = model._fields[fn]
-            d = getattr(f, "dict_type", None)
-            if d:
-                d = d._meta.name
-            r["fields"] += [{
-                "name": f.name,
-                "description": _(f.description),
-                "type": f.db_type,
-                "dict": d
-            }]
-        return r
+        for ds in self.get_datasources():
+            if ds["name"] == name:
+                return ds
+        raise APIError("Invalid datasource")
 
     @executor("query")
     @api
@@ -127,7 +219,7 @@ class BIAPI(API):
         """
         if "datasource" not in query:
             raise APIError("No datasource")
-        model = Model.get_model_class(query["datasource"])
+        model = self.get_model(query["datasource"])
         if not model:
             raise APIError("Invalid datasource")
         return model.query(query, self.handler.current_user)
@@ -176,7 +268,7 @@ class BIAPI(API):
         d = Dashboard.objects.filter(id=id).first()
         if not d:
             return None
-        if d.owner == user or user.is_superuser:
+        if d.owner == user:
             return d
         # @todo: Filter by groups
         for i in d.access:
@@ -420,17 +512,19 @@ class BIAPI(API):
         :param r_filter: User or Group only set
         :return:
         """
+        self.logger.info("Settings dashboard access")
         d = self._get_dashboard(id)
         if not d:
-            return False
+            self.logger.error("Dashboards not find %s", id)
+            raise APIError("Dashboard not found")
         if d.get_user_access(self.handler.current_user) < DAL_ADMIN:
-            return False
+            self.logger.error("Access for user Dashboards %s", self.handler.current_user)
+            raise APIError("User no permission for set rights")
         access = []
         if acc_limit == "user":
             access = list(itertools.ifilter(lambda x: x.user, d.access))
         elif acc_limit == "group":
             access = list(itertools.ifilter(lambda x: x.group, d.access))
-        print access
         if not items:
             # @todo Clear rights (protect Admin rights?)
             return True
@@ -438,7 +532,7 @@ class BIAPI(API):
             items = I_VALID.clean(items)
         except ValueError as e:
             self.logger.error("Validation items with rights", e)
-            return False
+            raise APIError("Validation error %s" % e)
         for i in items:
             da = DashboardAccess(level=i.get("level", -1))
             if i.get("user"):
@@ -460,7 +554,7 @@ class BIAPI(API):
         :return:
         """
         if not id.get("id"):
-            return False
+            raise APIError("Not id field in JSON")
         return self._set_dashboard_access(id.get("id"), items.get("items"))
 
     @executor("query")

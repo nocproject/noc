@@ -229,10 +229,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 dataIndex: "metric_type",
                                 width: 150,
                                 editor: {
-                                    xtype: "pm.metrictype.LookupField",
-                                    query: {
-                                        scope: "i"
-                                    }
+                                    xtype: "pm.metrictype.LookupField"
                                 },
                                 renderer: NOC.render.Lookup("metric_type")
                             },

@@ -36,6 +36,8 @@ class LinkDashboard(BaseDashboard):
         context = {
             "device_a": mos.interfaces[0].managed_object.name.replace('\"', ''),
             "device_b": mos.interfaces[1].managed_object.name.replace('\"', ''),
+            "bi_id_a": mos.interfaces[0].managed_object.get_bi_id(),
+            "bi_id_b": mos.interfaces[0].managed_object.get_bi_id(),
             "interface_a": {
                 "name": mos.interfaces[0].name,
                 "descr": mos.interfaces[0].description or mos.interfaces[0].name},

@@ -274,7 +274,7 @@ class Command(BaseCommand):
                 fields = []
                 for f in tv["fields"]:
                     ff = [("name", f["name"]), ("type", f["type"])]
-                    if "default" in f:
+                    if "default" in f and f["type"] != "auto":
                         ff += [("defaultValue", f["default"])]
                     if "persist" in f:
                         ff += [("persist", f["persist"])]

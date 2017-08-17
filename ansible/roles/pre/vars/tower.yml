@@ -17,13 +17,22 @@ consul_acl_replication_token: "{{noc_config['config'].get('consul-global-%s' % a
 
 grafana_pg_password: "{{noc_config['config'].get('grafana-global-%s' % ansible_nodename, {}).get('password', 'grafana')}}"
 
-influx_host: "{% for n in groups['svc-influxdb'] %}{{ hostvars[n].ansible_host }}{% endfor %}"
+influx_host: "{% for n in groups['svc-influxdb'] -%}
+  {{ hostvars[n].ansible_host }}
+{%- endfor %}"
 influx_max_cache_memory: "{{noc_config['config'].get('influxdb-global-%s' % ansible_nodename, {}).get('max_cache_memory', 1048576000)}}"
 influx_cache_snapshot_memory_size: "{{noc_config['config'].get('influxdb-global-%s' % ansible_nodename, {}).get('snapshot_memory_size', 26214400)}}"
 
 keepalived_password: "{{noc_config['config'].get('keepalived-global-%s' % ansible_nodename, {}).get('password', 'noc')}}"
-keepalived_nginx_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 %}{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('nginx_virtual_ip', '')}}{%endif%}"
-keepalived_patroni_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 %}{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('patroni_virtual_ip', '')}}{%endif%}"
+keepalived_nginx_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 -%}
+  {{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('nginx_virtual_ip', '')}}
+{%- endif%}"
+keepalived_patroni_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 -%}
+  {{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('patroni_virtual_ip', '')}}
+{%- endif%}"
+keepalived_clickhouse_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 -%}
+  {{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('clickhouse_virtual_ip', '')}}
+{%- endif%}"
 
 memcache_address: "{{ noc_config['config'].get('memcached-global-%s' % ansible_nodename, {}).get('listen', '127.0.0.1:11211')}}"
 memcached_max_clients: "{{noc_config['config'].get('memcached-global-%s' % ansible_nodename, {}).get('max_clients', '1024')| int | abs }}"
@@ -55,7 +64,13 @@ web_ui_language: "{% if noc_config['config'].get('web-global-%s' % groups['svc-w
 
 install_method: hg
 
-clickhouse_password: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('password', 'noc') | hash('sha256')}}"
+clickhouse_user: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('user', 'noc')}}"
+clickhouse_password: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('password', 'noc')}}"
+clickhouse_ro_password: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('ro_password', 'noc') }}"
+
+clickhouse_db: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('db', 'noc')}}"
+clickhouse_max_query_size: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('query_size', 262144)}}"
+
 mongo_logging_driver: "{{noc_config['config'].get('mongod-global-%s' % ansible_nodename, {}).get('mongod_logging_destination', 'file')}}"
 
 alerta_url: "{% if groups['svc-zz_alerta'] | count > 0 -%}
@@ -64,3 +79,7 @@ alerta_url: "{% if groups['svc-zz_alerta'] | count > 0 -%}
 alerta_token: "{% if groups['svc-zz_alerta'] | count > 0 -%}
 {{noc_config.config.get('zz_alerta-global-%s' % groups['svc-zz_alerta'][0]).get('token', '')}}
 {%- endif%}"
+
+haproxy_stats_enabled: "{{noc_config['config'].get('haproxy-global-%s' % ansible_nodename, {}).get('stats', False)}}"
+haproxy_stats_user: "{{noc_config['config'].get('haproxy-global-%s' % ansible_nodename, {}).get('user', 'noc')}}"
+haproxy_stats_password: "{{noc_config['config'].get('haproxy-global-%s' % ansible_nodename, {}).get('password', 'noc')}}"

@@ -36,47 +36,18 @@
   "steppedLine": false,
   "targets": [
     {
-      "alias": "Memory | Usage",
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "Memory | Usage",
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "intervalFactor": 1,
+      "table": "memory",
       "policy": "default",
+      "query": "SELECT $timeSeries as t, avg(usage) `Memory | Usage` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^$device$/"
-        }
-      ]
     }
   ],
   "timeFrom": null,
@@ -95,12 +66,12 @@
   "y-axis": true,
   "yaxes": [
     {
-      "format": "percent",
-      "label": null,
       "logBase": 1,
-      "max": null,
-      "min": null,
-      "show": true
+      "show": true,
+      "max": "100",
+      "format": "percent",
+      "min": "0",
+      "label": null
     },
     {
       "format": "short",

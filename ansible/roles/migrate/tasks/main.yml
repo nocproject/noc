@@ -97,17 +97,3 @@
   become: yes
   register: mibs_out
   changed_when: mibs_out.stdout | length > 5
-
-- name: search for clickhouse
-  getent:
-    database: hosts
-    key: "{{clickhouse_host}}"
-  ignore_errors: True
-  register: ch
-
-- name: migrate ch db
-  command: ./noc migrate-ch
-  args:
-    chdir: "{{ noc_root }}"
-  when: "ch.ansible_facts is defined"
-
