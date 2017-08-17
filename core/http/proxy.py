@@ -18,10 +18,13 @@ SYSTEM_PROXIES = {}
 
 def setup_proxies():
     def get_addr(a):
-        aa = a.split("://", 1)[1]
-        if aa.endswith("/"):
-            aa = aa[:-1]
-        host, port = aa.split(":")
+        if "://" in a:
+            aa = a.split("://", 1)[1]
+            if aa.endswith("/"):
+                aa = aa[:-1]
+            host, port = aa.split(":")
+        else:
+            host, port = a.split(":")
         return host, int(port)
 
     if config.proxy.http_proxy:
@@ -37,6 +40,7 @@ def setup_proxies():
                      ", ".join("%s = %s" % (
                          k, SYSTEM_PROXIES[k]
                      ) for k in sorted(SYSTEM_PROXIES)))
+
 
 _urllib_proxies_installed = False
 

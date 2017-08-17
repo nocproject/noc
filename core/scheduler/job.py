@@ -352,3 +352,25 @@ class Job(object):
         runs = self.attrs.get(Job.ATTR_RUNS, 0)
         max_runs = self.attrs.get(Job.ATTR_MAX_RUNS, 0)
         return max_runs and runs >= max_runs
+
+    @staticmethod
+    def get_next_timestamp(interval, offset=0.0, ts=None):
+        """
+        Calculate next timestamp
+        :param interval:
+        :param offset:
+        :param ts: current timestamp
+        :return: datetime object
+        """
+        if not ts:
+            ts = time.time()
+        if ts and isinstance(ts, datetime):
+            ts = time.mktime(ts.timetuple()) + float(ts.microsecond) / 1000000.0
+        # Get start of current interval
+        si = ts // interval * interval
+        # Shift to offset
+        si += offset * interval
+        # Shift to interval if in the past
+        if si <= ts:
+            si += interval
+        return datetime.datetime.fromtimestamp(si)

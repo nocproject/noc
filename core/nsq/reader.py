@@ -43,6 +43,7 @@ class Reader(BaseReader):
 
         code, headers, body = yield fetch(
             lookupd_url,
+            headers={"Accept": "application/vnd.nsq; version=1.0"},
             connect_timeout=self.lookupd_connect_timeout,
             request_timeout=self.lookupd_request_timeout
         )
