@@ -666,6 +666,24 @@ class Service(object):
             **kwargs
         )
 
+    def suspend_subscription(self, handler):
+        """
+        Suspend subscription for handler
+        :param handler:
+        :return:
+        """
+        self.logger.info("Suspending subscription for handler %s", handler)
+        self.nsq_readers[handler].set_max_in_flight(0)
+
+    def resume_subscription(self, handler):
+        """
+        Resume subscription for handler
+        :param handler:
+        :return:
+        """
+        self.logger.info("Resuming subscription for handler %s", handler)
+        self.nsq_readers[handler].set_max_in_flight(config.nsqd.max_in_flight)
+
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
@@ -674,13 +692,19 @@ class Service(object):
                 reconnect_interval=config.nsqd.reconnect_interval,
                 snappy=config.nsqd.compression == "snappy",
                 deflate=config.nsqd.compression == "deflate",
-                deflate_level=config.nsqd.compression_level if config.nsqd.compression == "deflate" else 6
+                deflate_level=config.nsqd.compression_level if config.nsqd.compression == "deflate" else 6,
+                io_loop=self.ioloop
             )
         return self.nsq_writer
 
-    def pub(self, topic, data):
+    def pub(self, topic, data, raw=False):
         """
         Publish message to topic
+        :param topic: Topic name
+        :param data: Message to send. Message will be automatically
+          converted to JSON if *raw* is False, or passed as-is
+          otherwise
+        :param raw: True - pass message as-is, False - convert to JSON
         """
         def finish_pub(conn, data):
             if isinstance(data, nsq.Error):
@@ -691,13 +715,14 @@ class Service(object):
                 w.io_loop.call_later(
                     config.nsqd.pub_retry_delay,
                     functools.partial(
-                        w.pub, topic, msg, callback=finish_pub
+                        w.pub, topic, data, callback=finish_pub
                     )
                 )
 
         w = self.get_nsq_writer()
-        msg = ujson.dumps(data)
-        w.pub(topic, msg, callback=finish_pub)
+        if not raw:
+            data = ujson.dumps(data)
+        w.pub(topic, data, callback=finish_pub)
 
     def mpub(self, topic, messages):
         """

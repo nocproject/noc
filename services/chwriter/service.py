@@ -22,6 +22,8 @@ class CHWriterService(Service):
     name = "chwriter"
     require_nsq_writer = True
 
+    CH_SUSPEND_ERRORS = set([598, 599])
+
     def __init__(self):
         super(CHWriterService, self).__init__()
         self.channels = {}
@@ -36,6 +38,7 @@ class CHWriterService(Service):
         else:
             # Standalone configuration
             self.ch_address = config.clickhouse.addresses[0]
+        self.restore_timeout = None
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -77,6 +80,9 @@ class CHWriterService(Service):
         ...
         <v1>\t...\t<vN>\n
         """
+        if self.restore_timeout:
+            self.logger.info("ClickHouse is not available, requeueing message")
+            return False
         if metrics["records_buffered"].value > config.chwriter.records_buffer:
             self.logger.info(
                 "Input buffer is full (%s/%s). Deferring message",
@@ -117,6 +123,8 @@ class CHWriterService(Service):
         metrics["channels_active"] = len(self.channels)
         self.logger.debug("Active channels: %s", ", ".join(self.channels[c].name for c in self.channels))
         for c in list(self.channels):
+            if self.restore_timeout:
+                break
             channel = self.channels.get(c)
             if channel:
                 self.logger.debug("Channel %s: ready=%s flushing=%s", channel.name, channel.is_ready(), channel.flushing)
@@ -131,6 +139,7 @@ class CHWriterService(Service):
         t0 = self.ioloop.time()
         self.logger.debug("[%s] Sending %s records", channel.name, n)
         written = False
+        suspended = False
         try:
             code, headers, body = yield fetch(
                 channel.url,
@@ -147,12 +156,13 @@ class CHWriterService(Service):
                 metrics["records_written"] += n
                 metrics["records_buffered"] -= n
                 written = True
-            elif code in (598, 599):
+            elif code in self.CH_SUSPEND_ERRORS:
                 self.logger.info(
                     "[%s] Timed out: %s",
                     channel.name, body
                 )
                 metrics["records_spool_timeouts"] += 1
+                suspended = True
             else:
                 self.logger.info(
                     "[%s] Failed to write records: %s %s",
@@ -165,29 +175,77 @@ class CHWriterService(Service):
                 "[%s] Failed to spool %d records due to unknown error: %s",
                 channel.name, n, e
             )
-        if written:
-            channel.stop_flushing()
-            raise tornado.gen.Return()
-        # Return data to the queue
-        self.logger.info("[%s] Recovering records", channel.name)
-        w = self.get_nsq_writer()
-        data = data.splitlines()
+        channel.stop_flushing()
+        if not written:
+            # Return data back to channel
+            channel.feed(data)
+            if suspended:
+                self.suspend()
+            else:
+                self.requeue_channel(channel)
+
+    def requeue_channel(self, channel):
+        channel.start_flushing()
+        data = channel.get_data().splitlines()
+        if not data:
+            return
         self.logger.info("Requeueing %d records to topic %s",
                          len(data), config.chwriter.topic)
         while data:
             chunk, data = data[:config.nsqd.ch_chunk_size], data[config.nsqd.ch_chunk_size:]
             cl = len(chunk)
-            w.pub(
+            self.pub(
                 config.chwriter.topic,
                 "%s\n%s\n" % (
                     channel.name,
                     "\n".join(chunk)
-                )
+                ),
+                raw=True
             )
             metrics["records_requeued"] += cl
             metrics["records_buffered"] -= cl
-        yield tornado.gen.sleep(1.0)
         channel.stop_flushing()
+
+    def suspend(self):
+        if self.restore_timeout:
+            return
+        self.logger.info("Suspending")
+        self.restore_timeout = self.ioloop.add_timeout(
+            self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
+            self.check_restore
+        )
+        metrics["suspends"] += 1
+        self.suspend_subscription(self.on_data)
+        # Return data to channels
+        for c in list(self.channels):
+            channel = self.channels.get(c)
+            self.requeue_channel(channel)
+
+    def resume(self):
+        self.logger.info("Resuming")
+        self.ioloop.remove_timeout(self.restore_timeout)
+        self.restore_timeout = None
+        metrics["resumes"] += 1
+        self.resume_subscription(self.on_data)
+
+    @tornado.gen.coroutine
+    def check_restore(self):
+        code, headers, body = yield fetch(
+            "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
+                self.ch_address,
+                config.clickhouse.user,
+                config.clickhouse.password,
+                config.clickhouse.db,
+                "SELECT%20dummy%20FROM%20system.one"
+            )
+        )
+        if code == 200:
+            self.resume()
+        else:
+            self.restore_timeout = self.ioloop.add_timeout(
+                self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
+                self.check_restore
+            )
 
 
 if __name__ == "__main__":
