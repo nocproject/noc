@@ -17,11 +17,11 @@ class Script(BaseScript):
     name = "DCN.DCWS.get_version"
     cache = True
     interface = IGetVersion
-    
+
     rx_platform = re.compile(r"\s*(?P<platform>\S+)\s+Device.", re.MULTILINE)
-    rx_ver = re.compile(r"^\s*Software\s+Version\s+(?P<version>\S+)\n", re.MULTILINE)   
-    rx_bver = re.compile(r"^\s*Bootrom\s+Version\s+(?P<bversion>\S+)\n", re.MULTILINE) 
-    rx_hver = re.compile(r"^\s*Hardware\s+Version\s+(?P<hversion>\S+)\n", re.MULTILINE)    
+    rx_ver = re.compile(r"^\s*Software\s+Version\s+(?P<version>\S+)\n", re.MULTILINE)
+    rx_bver = re.compile(r"^\s*Bootrom\s+Version\s+(?P<bversion>\S+)\n", re.MULTILINE)
+    rx_hver = re.compile(r"^\s*Hardware\s+Version\s+(?P<hversion>\S+)\n", re.MULTILINE)
     rx_serial = re.compile(r"^\s*Serial\s+No\s+(?P<serial>\S+)\n", re.MULTILINE)
     def execute(self):
         ver = self.cli("show version", cached=True)

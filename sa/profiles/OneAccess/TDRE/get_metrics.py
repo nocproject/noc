@@ -70,7 +70,7 @@ class Script(GetMetricsScript):
                     ):
                         self.set_metric(
                             name=self.SLA_ICMP_RTT,
-                            value=int(delay * 1000000),
+                            value=float(delay) * 1000000,
                             ts=ts,
                             tags={"probe": name}
                         )
@@ -83,7 +83,7 @@ class Script(GetMetricsScript):
                     ):
                         self.set_metric(
                             name=self.SLA_UDP_RTT,
-                            value=int(delay * 1000000),
+                            value=float(delay) * 1000000,
                             ts=ts,
                             tags={"probe": name}
                         )
@@ -95,9 +95,9 @@ class Script(GetMetricsScript):
                     ):
                         self.set_metric(
                             name=self.SLA_JITTER,
-                            value=int(jitter * 1000000),
+                            value=float(jitter) * 1000000,
                             ts=ts,
                             tags={"probe": name}
                         )
                         break
-                    break
+

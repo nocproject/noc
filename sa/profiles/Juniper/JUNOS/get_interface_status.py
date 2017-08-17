@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -40,7 +40,9 @@ class Script(BaseScript):
                     if not self.profile.valid_interface_name(n, platform):
                         continue
                     r += [{"interface": n, "status": int(s) == 1}]
-                return r
+                # XXX: Sometime snmpwalk return only loX interfaces
+                if len(r) > 10:
+                    return r
             except self.snmp.TimeOutError:
                 pass
         # Fallback to CLI

@@ -3,7 +3,7 @@
 # Vendor: Juniper
 # OS:     JUNOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -103,6 +103,7 @@ class Profile(BaseProfile):
                 ifname, unit = name.split(".")
             except:
                 return True
-            if int(unit) > 4094:
+            # See `logical-interface-unit-range`
+            if int(unit) > 16385:
                 return False
         return True

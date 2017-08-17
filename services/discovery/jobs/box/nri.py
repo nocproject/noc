@@ -13,6 +13,7 @@ import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.extnrilink import ExtNRILink
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.service import Service
@@ -69,7 +70,8 @@ class NRICheck(DiscoveryCheck):
             "_id": 1,
             "name": 1,
             "nri_name": 1,
-            "service": 1
+            "service": 1,
+            "profile": 1
         }):
             self.interfaces[d["_id"]] = d
         # Process tasks
@@ -269,7 +271,7 @@ class NRICheck(DiscoveryCheck):
                 }
                 p = prof_map.get(i["service"])
                 if p:
-                    op["profile"] = ""
+                    op["profile"] = InterfaceProfile.get_default_profile().id
 
                 self.interface_bulk_op(i["_id"], {"$unset": op})
             nmap[i["nri_name"]] = i
@@ -292,5 +294,5 @@ class NRICheck(DiscoveryCheck):
             }
             p = prof_map.get(svc)
             if p:
-                op["profile"] = p.id
+                op["profile"] = p.interface_profile.id
             self.interface_bulk_op(i["_id"], {"$set": op})

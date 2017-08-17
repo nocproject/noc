@@ -21,7 +21,10 @@ class Script(BaseScript):
 
     def execute(self):
         fqdn = ""
-        v = self.cli("show running-config")
+        try:
+            v = self.cli("show startup-config | i hostname", cached=True)
+        except self.CLISyntaxError:
+            v = self.cli("show startup-config", cached=True)
         match = self.rx_hostname.search(v)
         if match:
             fqdn = match.group("hostname")

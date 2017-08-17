@@ -106,7 +106,7 @@ class AlarmCard(BaseCard):
                                  self.object.managed_object.tt_system and
                                  self.object.managed_object.tt_system.is_failed()),
             "escalation_ctx": self.object.escalation_ctx,
-            "escalation_close_ctx": getattr(self.object, "escalation_close_ctx")
+            "escalation_close_ctx": getattr(self.object, "escalation_close_ctx", None)
         }
         return r
 

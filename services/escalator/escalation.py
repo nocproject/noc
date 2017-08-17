@@ -320,8 +320,8 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
 
     if tt_id:
         alarm = get_alarm(alarm_id)
-        alarm.set_escalation_close_context()
-        if alarm and (alarm.escalation_close_ts or alarm.escalation_close_error):
+        alarm.set_escalation_close_ctx()
+        if alarm and alarm.status == "C" and (alarm.escalation_close_ts or alarm.escalation_close_error):
             log("Alarm is already deescalated")
             metrics["escalation_already_deescalated"] += 1
             return

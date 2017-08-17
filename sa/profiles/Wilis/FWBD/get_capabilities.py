@@ -7,7 +7,8 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript, false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
+from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
 
 class Script(BaseScript):
@@ -15,5 +16,5 @@ class Script(BaseScript):
     cache = True
 
     # def execute_platform(self, caps):
-        # if self.match_version(platform__regex="^WILI*"):
-            # caps["CPE | AP"] = True
+    # if self.match_version(platform__regex="^WILI*"):
+    # caps["CPE | AP"] = True

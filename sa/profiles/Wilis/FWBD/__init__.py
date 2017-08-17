@@ -14,6 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Wilis.FWBD"
     pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
+    pattern_syntax_error = r"^\(ERROR\) "
     command_submit = "\r"
     command_exit = "logout"
 

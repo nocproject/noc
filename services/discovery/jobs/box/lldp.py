@@ -108,7 +108,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
                 "using unspecified subtype",
                 remote_object.name, port
             )
-            rp = self.get_interface_by_unspecified(port, remote_object)
+            rp = self.get_interface_by_unspecified(port_id, remote_object)
         if rp:
             rp = rp.name
         return rp
@@ -170,13 +170,14 @@ class LLDPCheck(TopologyDiscoveryCheck):
         )
         return None
 
-    def get_interface_by_unspecified(self, port, object):
+    def get_interface_by_unspecified(self, port_id, object):
         """
         Try to guess remote port from description of undetermined subtype.
         :param object:
         :param port:
         :return:
         """
+        port = port_id["remote_port"]
         self.logger.debug("Searching port by unspecified: %s:%s", object.name, port)
         # Try to find interface with given name.
         try:
@@ -190,7 +191,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         if iface:
             return iface
         # Try to find interface with given description.
-        iface = self.get_interface_by_description(port, object)
+        iface = self.get_interface_by_description(port_id.get("remote_port_description", port), object)
         if iface:
             return iface
         # Use algorithms from get_remote_port_by_local as last resort.
