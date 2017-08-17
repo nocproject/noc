@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "DCN.DCWL.get_interfaces"
     cache = True
     interface = IGetInterfaces
-    
+
     INTERFACE_TYPES = {
 
             "lo": "loopback",  # Loopback
@@ -38,7 +38,7 @@ class Script(BaseScript):
             return c
          c = cls.INTERFACE_TYPES.get(name[:2])
          return c
-        
+
     def execute(self):
         interfaces = []
         r = []
@@ -54,14 +54,14 @@ class Script(BaseScript):
                     )
                     continue
             if r[0] == "mac":
-                mac = r[1].strip()                         
+                mac = r[1].strip()
             if r[0] == "ip":
                 ip_address = r[1].strip()
             if r[0] == "mask":
                 ip_subnet = r[1].strip()
                 #ip address + ip subnet
                 if ip_subnet or ip_address:
-                    ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))  
+                    ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                     interfaces += [{
                         "type": iftype,
                         "name": name,
@@ -73,7 +73,7 @@ class Script(BaseScript):
                             "ipv4_addresses": [ip_address],
                         }]
                     }]
-                #no ip address + ip subnet    
+                #no ip address + ip subnet
                 else:
                     interfaces += [{
                         "type": iftype,
@@ -85,4 +85,4 @@ class Script(BaseScript):
                             "enabled_afi": ["BRIDGE"],
                         }]
                     }]
-        return [{"interfaces": interfaces}]   
+        return [{"interfaces": interfaces}]
