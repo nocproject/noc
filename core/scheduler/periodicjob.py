@@ -8,8 +8,6 @@
 
 # Python modules
 from __future__ import absolute_import
-import time
-import datetime
 # NOC modules
 from .job import Job
 
@@ -32,40 +30,30 @@ class PeriodicJob(Job):
         return self.failed_interval
 
     def schedule_next(self, status):
-        interval = None
         if status in (self.E_SUCCESS, self.E_EXCEPTION):
             interval = self.get_interval()
         elif status in (self.E_FAILED, self.E_DEFERRED):
             interval = self.get_failed_interval()
-        if interval:
-            now = time.mktime(datetime.datetime.now().timetuple())
-            # Select base time
-            if self.use_offset:
-                t0 = now // interval * interval
-                t0 -= interval * self.attrs[self.ATTR_OFFSET]
-            else:
-                t0 = time.mktime(self.attrs[self.ATTR_TS].timetuple())
-            # Skip all fully passed intervals
-            t0 += (now - t0) // interval * interval
-            if t0 < now:
-                # To next interval
-                t0 += interval
-            ts = datetime.datetime.fromtimestamp(t0)
-            if self.context_version:
-                ctx = self.context or None
-                ctx_key = self.get_context_cache_key()
-            else:
-                ctx = None
-                ctx_key = None
-            self.scheduler.set_next_run(
-                self.attrs[self.ATTR_ID],
-                status=status,
-                ts=ts,
-                duration=self.duration,
-                context_version=self.context_version,
-                context=ctx,
-                context_key=ctx_key
-            )
         else:
             # Remove broken job
             self.remove_job()
+            return
+        # Schedule next run
+        ts = self.get_next_timestamp(interval,
+                                     self.attrs[self.ATTR_OFFSET])
+        # Store context
+        if self.context_version:
+            ctx = self.context or None
+            ctx_key = self.get_context_cache_key()
+        else:
+            ctx = None
+            ctx_key = None
+        self.scheduler.set_next_run(
+            self.attrs[self.ATTR_ID],
+            status=status,
+            ts=ts,
+            duration=self.duration,
+            context_version=self.context_version,
+            context=ctx,
+            context_key=ctx_key
+        )
