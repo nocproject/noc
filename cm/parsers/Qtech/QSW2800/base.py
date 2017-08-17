@@ -170,11 +170,11 @@ class BaseQSW2800Parser(BaseParser):
         :param tokens: 
         :return: 
         """
-        if ("-" not in tokens[-1]) and ("database" not in tokens):
+        if "-" not in tokens[-1] and "database" not in tokens:
             self.get_vlan_fact(int(tokens[-1].strip()))
-        if ("-" in tokens[-1]):
+        elif "-" in tokens[-1]:
             for v in ranges_to_list(tokens[-1].strip()):
-                self.get_vlan_fact(v)
+                self.get_vlan_fact(int(v))
 
     def on_vlan_name(self, tokens):
             self.get_current_vlan().name = tokens[-1]
