@@ -305,15 +305,6 @@ config:
       default: 0
       label: "IP ToS mark"
       type: int
-  pmwriter:
-    batch_size:
-      default: 2500
-      label: "Write batch size (metrics)"
-      type: int
-    metrics_buffer:
-      default: 50000
-      label: "Metrics buffer size (metrics)"
-      type: int
   postgres:
     max_clients:
       default: 300
