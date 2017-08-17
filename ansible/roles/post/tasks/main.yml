@@ -66,7 +66,20 @@
     - soft_restart
     - restart
 
-- name: Add default influx datasource
+- name: set ch_host to clickhouse when we have only one clickhouse
+  set_fact:
+    ch_host: "{{ hostvars[groups['svc-clickhouse'][0]].ansible_host}}"
+    ch_port: 8123
+  when: "'svc-clickhouse' in groups and groups['svc-clickhouse'] | length == 1"
+
+- name: set ch_host to virtual_ip when we have complex clickhouse setup
+  set_fact:
+    ch_host: "{{keepalived_clickhouse_virtual_ip}}"
+    ch_port: "{{haproxy_clickhouse_listen}}"
+  when: "'svc-clickhouse' in groups and groups['svc-clickhouse'] | length == 1"
+
+
+- name: Add default CH datasource
   uri:
     url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
     method: POST
@@ -78,22 +91,20 @@
     body_format: json
     validate_certs: no
     body:
-      name: nocdb
-      type: influxdb
-      url: "http://{{ influx_host }}:{{influxdb_port}}"
+      name: nocchdb
+      type: vertamedia-clickhouse-datasource
+      url: "http://{{ ch_host }}:{{ch_port}}"
       access: proxy
       isDefault: True
-      database: "{{ noc_influxdb_db }}"
-      user: "{{noc_influxdb_user}}"
-      password: "{{ noc_influxdb_password }}"
-      jsonData:
-        timeInterval: ">300s"
+      database: "{{ clickhouse_db }}"
+      user: "readonly"
+      password: "{{ clickhouse_ro_password }}"
   ignore_errors: yes
   register: ids
   run_once: true
   changed_when: ids.status != 409
   failed_when: ids.status == 500
-  when: "has_svc_influxdb | default(False)"
+  when: "has_svc_clickhouse | default(False)"
   tags:
     - config
 

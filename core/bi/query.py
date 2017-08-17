@@ -2,13 +2,15 @@
 # ----------------------------------------------------------------------
 # Clickhouse query engine
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 import six
+# Python modules
 from noc.core.clickhouse.dictionary import Dictionary
+from noc.models import get_model
 
 
 class OP(object):
@@ -109,13 +111,35 @@ def f_names(seq):
 
 def f_duration(seq):
     """
-    $names (dict, field)
+    $duration (dict, field)
     :param seq:
     :return:
     """
     return "SUM(arraySum(i -> ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1]) < 0) ? 0 :" \
            " ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1])), [%s]))" \
            % ",".join(seq)
+
+
+def f_selector(seq):
+    """
+    $selector (expr, model, query)
+    :param seq:
+    :return:
+    """
+    expr, model_name, query = seq
+    model = get_model(model_name)
+    if not model:
+        raise ValueError("Invalid model")
+    if not hasattr(model, "get_bi_selector"):
+        raise ValueError("Non-selectable model")
+    ids = model.get_bi_selector(query)
+    if ids:
+        return "(%s IN (%s))" % (
+            to_sql(expr),
+            ",".join(str(i) for i in ids)
+        )
+    else:
+        return "(0 = 1)"
 
 
 OP_MAP = {
@@ -171,7 +195,8 @@ OP_MAP = {
     "$in": OP(min=2, max=3, convert=in_lookup),
     "$hierarchy": OP(min=2, max=2, function="dictGetHierarchy"),
     "$names": OP(min=2, max=2, convert=f_names),
-    "$duration": OP(min=1, convert=f_duration)
+    "$duration": OP(min=1, convert=f_duration),
+    "$selector": OP(min=3, max=3, convert=f_selector)
 }
 
 
@@ -199,7 +224,7 @@ def to_sql(expr):
                 v = [v]
             return op.to_sql(v)
     elif isinstance(expr, six.string_types):
-        return "\'%s\'" % escape_str(expr)
+        return "'%s'" % escape_str(expr)
     elif isinstance(expr, six.integer_types):
         return str(expr)
     elif isinstance(expr, float):

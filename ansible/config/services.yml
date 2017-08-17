@@ -67,11 +67,30 @@ config:
       label: "Lookup solution"
       type: str
   clickhouse:
+    user:
+      default: noc
+      label: "RW user"
+      type: str
+      description: "RW user"
     password:
       default: noc
-      description: test
       label: "Password for user default"
       type: str
+      description: "RW user password"
+    ro_password:
+      default: noc
+      label: "Password for user readonly"
+      description: "RO user password"
+      default: noc
+      type: str
+    db:
+      default: noc
+      label: "db name"
+      type: str
+    query_size:
+      default: 262144
+      label: "Max query size"
+      type: int
   consul:
     replication_token:
       label: "consul replication token"
@@ -129,6 +148,21 @@ config:
       description: "<strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>"
       label: "Mem size for snapshot"
       type: int
+  haproxy:
+    stats:
+      default: false
+      description: "on port 1936"
+      label: "haproxy's stats interface"
+      type: bool
+    user:
+      label: "Stats interface user"
+      type: str
+      default: admin
+    password:
+      label: "Stats interface password"
+      description: "a-z,A-Z,0-9,_-"
+      type: str
+      default: noc
   keepalived:
     nginx_virtual_ip:
       description: "<strong> <a href=http://keepalived.readthedocs.io/en/latest/ target=_blank> http://www.keepalived.org/documentation.html </a> </strong>"
@@ -140,6 +174,9 @@ config:
       type: str
     patroni_virtual_ip:
       label: "Patroni virtual IP"
+      type: str
+    clickhouse_virtual_ip:
+      label: "Clickhouse virtual IP"
       type: str
   login:
     language:
@@ -229,46 +266,10 @@ config:
       label: "Use JSON logging"
       type: bool
   noc:
-    geocoding_google_key:
-      default: null
-      label: "Google API key"
-      type: str
-    geocoding_google_language:
-      default: en
-      label: "Google response language"
-      type: str
-    geocoding_order:
-      default: "yandex,google"
-      label: "List of geocoding methods"
-      type: str
-    geocoding_yandex_key:
-      default: null
-      label: "Yandex API key"
-      type: str
-    installation_name:
-      default: "Unconfigured installation"
-      label: "Installation name"
-      type: str
-    rpc_choose_services:
-      default: 3
-      label: "Choose RPC services"
-      type: int
-    rpc_retry_timeout:
-      default: "0.1,0.5,1,3,10,30"
-      label: "RPC Retry timeout"
-      type: str
-    timezone:
-      default: "Europe/Moscow"
-      label: "Time Zone"
-      type: str
-    topology_rca_window:
-      default: 0
-      label: "Topology-based RCA window (seconds)"
-      type: int
-    tt_escalation_limit:
-      default: 10
-      label: "TT escalation limin (tt/minute)"
-      type: int
+    config:
+      type: text
+      label: "Settings"
+      description: "<strong> <a href=https://kb.nocproject.org/x/8oKYAQ target=_blank> Doc in russian</a> </strong>"
   nsqd:
     max_messages_in_memory:
       default: 10000
@@ -527,10 +528,10 @@ services:
   influxdb:
     description: >
       <strong>Service type</strong>: External <br/>
-      <strong>Short description</strong>: The Reliable, High Performance TCP/HTTP Load Balancer <br/>
-      <strong>Long description</strong>: InfluxDB is a custom high performance datastore written specifically for timestamped data, including DevOps monitoring, application metrics, IoT sensor data, & real-time analytics.<br/>
-      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
-      <strong>docs</strong>: https://docs.influxdata.com/influxdb/v1.2/<br/>
+      <strong>Short description</strong>: TimeSeriesDatabase for internal self mon.<br/>
+      <strong>Long description</strong>: Used to store metrics discovered by telegraf<br/>
+      <strong>Scale Recommendations</strong>: Optional. <br/>
+      <strong>docs</strong>: https://docs.influxdata.com/influxdb/v1.3/<br/>
       <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     level: system
     port: 8086
@@ -606,6 +607,15 @@ services:
       - web
       - card
       - bi
+  noc:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: NOC settings <br/>
+      <strong>Long description</strong> :Write settings.yml. file will not be overwritten once created<br/>
+      <strong>Scale Recommendations</strong>: At one any node <br/>
+      <strong>docs</strong>: <br/>
+      <strong>Placement constraint</strong>: Any <br/>
+    level: global
   notebook:
     description: >
       <strong>Service type</strong>: External <br/>

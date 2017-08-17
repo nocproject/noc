@@ -15,3 +15,4 @@ memcahed_user: memcached
 memcahed_conf: /etc/sysconfig/memcached
 
 pgbouncer_user: pgbouncer
+zookeeper_reload_command: "systemctl reload zookeeper-server"

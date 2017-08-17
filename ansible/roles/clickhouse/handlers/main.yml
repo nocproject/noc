@@ -1,6 +1,11 @@
-
+---
 - name: reload consul
   become: yes
   service:
     name: consul
     state: reloaded
+
+- name: reload clickhouse-server
+  become: no
+  debug:
+    msg: Clickhouse consiguration was changed. hope it will reload it automaticaly
