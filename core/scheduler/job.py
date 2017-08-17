@@ -364,7 +364,7 @@ class Job(object):
         """
         if not ts:
             ts = time.time()
-        if ts and isinstance(ts, datetime):
+        if ts and isinstance(ts, datetime.datetime):
             ts = time.mktime(ts.timetuple()) + float(ts.microsecond) / 1000000.0
         # Get start of current interval
         si = ts // interval * interval
