@@ -188,6 +188,7 @@ class CHWriterService(Service):
         channel.start_flushing()
         data = channel.get_data().splitlines()
         if not data:
+            channel.stop_flushing()
             return
         self.logger.info("Requeueing %d records to topic %s",
                          len(data), config.chwriter.topic)
