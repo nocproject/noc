@@ -3,7 +3,7 @@
 # Vendor: Cisco
 # OS:     IOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -64,6 +64,8 @@ class Profile(BaseProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+        if " point-to-point" in interface:
+            interface = interface.replace(" point-to-point", "")
         if ".ServiceInstance." in interface:
             interface = interface.replace(".ServiceInstance.", ".SI.")
         if ".SI." in interface:
