@@ -330,7 +330,7 @@ class MetricsCheck(DiscoveryCheck):
                     } for t in p["tests"]]
                 }]
                 self.id_metrics[m_id] = pm[metric]
-        if metrics:
+        if not metrics:
             self.logger.info("SLA metrics are not configured. Skipping")
         return metrics
 
