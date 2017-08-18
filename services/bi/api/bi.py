@@ -246,6 +246,8 @@ class BIAPI(API):
             aq = Q(owner__exists=True)
         if query and "query" in query:
             aq &= Q(title__icontains=query["query"])
+        if query and "version" in query:
+            aq &= Q(format=str(query["version"]))
         return [{
             "id": str(d.id),
             "format": str(d.format),
@@ -306,6 +308,9 @@ class BIAPI(API):
             if not d:
                 raise APIError("Dashboard not found")
         else:
+            d = Dashboard.objects.filter(title=config.get("title")).first()
+            if d:
+                raise APIError("Dashboard name exists")
             d = Dashboard(id=str(bson.ObjectId()), owner=self.handler.current_user)
         d.format = config.get("format", 1)
         config["id"] = str(d.id)
