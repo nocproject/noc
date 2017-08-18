@@ -11,6 +11,7 @@ from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.lib.validators import is_ipv4, is_int
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 
 
 class LLDPCheck(TopologyDiscoveryCheck):
@@ -131,6 +132,25 @@ class LLDPCheck(TopologyDiscoveryCheck):
         except:
             return None
 
+    def get_interface_by_ifindex(self, ifindex, object):
+        ifindex = int(ifindex)
+        # Try physical ifindexes
+        i = Interface.objects.filter(
+            managed_object=object.id,
+            ifindex=ifindex
+        ).first()
+        if i:
+            return i
+        # Try subinterface ifindex
+        si = SubInterface.objects.filter(
+            managed_object=object.id,
+            ifindex=ifindex
+        ).fisrt()
+        if si:
+            return si.interface
+        else:
+            return None
+
     def get_interface_by_local(self, port, object):
         """
         Try to guess remote port from free-form description
@@ -141,10 +161,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         self.logger.debug("Searching port by local: %s:%s", object.name, port)
         # Try ifindex
         if is_int(port):
-            i = Interface.objects.filter(
-                managed_object=object.id,
-                ifindex=int(port)
-            ).first()
+            i = self.get_interface_by_ifindex(port, object)
             if i:
                 return i
         # Try interface name
