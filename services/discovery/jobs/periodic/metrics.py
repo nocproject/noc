@@ -175,8 +175,8 @@ class MetricsCheck(DiscoveryCheck):
                 m.get("window_related", False),
                 int(le) if le is not None else None,
                 int(lw) if lw is not None else None,
-                int(he) if he is not None else None,
                 int(hw) if hw is not None else None,
+                int(he) if he is not None else None,
                 lew, lww, hew, hww,
                 le is not None or lw is not None or he is not None or hw is not None
             )
