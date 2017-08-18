@@ -145,7 +145,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         si = SubInterface.objects.filter(
             managed_object=object.id,
             ifindex=ifindex
-        ).fisrt()
+        ).first()
         if si:
             return si.interface
         else:
