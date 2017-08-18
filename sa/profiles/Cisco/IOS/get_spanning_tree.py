@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -62,9 +62,9 @@ class Script(BaseScript):
                 }
         return ports
 
-    ##
-    ## PVST+/rapid-PVST+ Parsing
-    ##
+    #
+    # PVST+/rapid-PVST+ Parsing
+    #
     rx_pvst_bridge = re.compile(
         r"Bridge Identifier has priority (?P<bridge_priority>\d+)(?:, sysid \d+)?, address (?P<bridge_id>\S+).*?"
         r"(Current root has priority (?P<root_priority>\d+), address (?P<root_id>\S+)|We are the root of the spanning tree)",
@@ -104,27 +104,30 @@ class Script(BaseScript):
                     interfaces[instance_id] = []
                 interface = self.profile.convert_interface_name(
                     match.group("interface"))
-                port_attrs = ports[instance_id][interface]
-                interfaces[instance_id] += [{
-                    "interface": interface,
-                    "port_id": match.group("port_id"),
-                    "state": port_attrs["state"],
-                    "role": port_attrs["role"],
-                    "priority": match.group("priority"),
-                    "designated_bridge_id": match.group("designated_bridge_id"),
-                    "designated_bridge_priority": match.group(
-                        "designated_bridge_priority"),
-                    "designated_port_id": match.group("designated_port_id"),
-                    "point_to_point": port_attrs["point_to_point"],
-                    "edge": port_attrs["edge"],
-                    }]
+                try:
+                    port_attrs = ports[instance_id][interface]
+                    interfaces[instance_id] += [{
+                        "interface": interface,
+                        "port_id": match.group("port_id"),
+                        "state": port_attrs["state"],
+                        "role": port_attrs["role"],
+                        "priority": match.group("priority"),
+                        "designated_bridge_id": match.group("designated_bridge_id"),
+                        "designated_bridge_priority": match.group(
+                            "designated_bridge_priority"),
+                        "designated_port_id": match.group("designated_port_id"),
+                        "point_to_point": port_attrs["point_to_point"],
+                        "edge": port_attrs["edge"],
+                        }]
+                except KeyError:
+                    pass
         for I in r["instances"]:
             I["interfaces"] = interfaces[I["id"]]
         return r
 
-    ##
-    ## MSTP Parsing
-    ##
+    #
+    # MSTP Parsing
+    #
     rx_mstp_region = re.compile(
         r"Name\s+\[(?P<region>[^\]]*?)\].+Revision\s+(?P<revision>\d+)",
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
@@ -204,7 +207,7 @@ class Script(BaseScript):
             return self.process_pvst(v, proto="rapid-PVST+")
         elif "Spanning tree enabled protocol mstp" in v:
             return self.process_mstp(v)
-        #elif "No spanning tree instance exists" in v \
-        #or "No spanning tree instances exist" in v:
+        # elif "No spanning tree instance exists" in v \
+        # or "No spanning tree instances exist" in v:
         else:
             return {"mode": "None", "instances": []}
