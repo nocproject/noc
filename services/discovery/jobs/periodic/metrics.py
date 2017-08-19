@@ -177,7 +177,7 @@ class MetricsCheck(DiscoveryCheck):
                 int(lw) if lw is not None else None,
                 int(hw) if hw is not None else None,
                 int(he) if he is not None else None,
-                lew, lww, hew, hww,
+                lew, lww, hww, hew,
                 le is not None or lw is not None or he is not None or hw is not None
             )
         return r
