@@ -126,13 +126,10 @@ class Command(BaseCommand):
             self.print("Spans:")
             self.print("\n".join(spans))
         if scheduler.service.metrics:
-            for m in scheduler.service.metrics:
-                self.print("Collected metric: %s" % m)
-        if scheduler.service.ch_metrics:
             self.print("Collected CH data:")
-            for f in scheduler.service.ch_metrics:
+            for f in scheduler.service.metrics:
                 self.print("Fields: %s", f)
-                self.print("\n".join(scheduler.service.ch_metrics[f]))
+                self.print("\n".join(scheduler.service.metrics[f]))
         if job.context_version and job.context:
             self.print("Saving job context to %s" % ctx_key)
             scheduler.cache_set(
