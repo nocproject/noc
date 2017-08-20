@@ -76,7 +76,7 @@
   set_fact:
     ch_host: "{{keepalived_clickhouse_virtual_ip}}"
     ch_port: "{{haproxy_clickhouse_listen}}"
-  when: "'svc-clickhouse' in groups and groups['svc-clickhouse'] | length == 1"
+  when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1"
 
 
 - name: Add default CH datasource
