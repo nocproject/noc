@@ -56,7 +56,8 @@ class CHWriterService(Service):
             "chwriter",
             self.on_data,
             raw=True,
-            max_backoff_duration=3
+            max_backoff_duration=3,
+            max_in_flight=config.chwriter.max_in_flight
         )
         self.logger.info("Sending records to %s" % self.ch_address)
 
