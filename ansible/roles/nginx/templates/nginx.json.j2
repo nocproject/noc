@@ -7,6 +7,8 @@
     "check": {
         "http": "https://{{ noc_web_host }}/ng_stats",
         "interval": "10s"
-    }
+    }{% if nginx_self_signed_cerificate %},
+    "TLSSkipVerify": true{% endif %}
+
   }
 }

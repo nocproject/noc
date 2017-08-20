@@ -265,6 +265,11 @@ config:
       default: false
       label: "Use JSON logging"
       type: bool
+    certificate:
+      default: true
+      label: "Self-signed certificate"
+      description: "Is provided certificate is trusted by nodes?"
+      type: bool
   noc:
     config:
       type: text

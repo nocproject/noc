@@ -43,6 +43,7 @@ mongo_hosts: "{{ noc_config.services.mongod | join(',')}}"
 
 nginx_http_redirect_enabled: "{{noc_config['config'].get('nginx-global-%s' % ansible_nodename, {}).get('http_redirect')}}"
 nginx_json_logging: "{{noc_config['config'].get('nginx-global-%s' % ansible_nodename, {}).get('logging')}}"
+nginx_self_signed_cerificate: "{{noc_config['config'].get('nginx-global-%s' % ansible_nodename, {}).get('certificate', true)}}"
 
 nsq_max_messages_in_memory: "{{ noc_config['config'].get('nsqd-global-%s' % ansible_nodename, {}).get('max_messages_in_memory', 10000) }}"
 
