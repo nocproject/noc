@@ -387,20 +387,6 @@
     - role: tgsender
 
 - name: Install and upgrade NOC
-  hosts: svc-pmwriter
-  become: no
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - pmwriter
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: pmwriter
-      become: yes
-
-- name: Install and upgrade NOC
   hosts: svc-chwriter
   become: yes
   strategy: free

@@ -54,7 +54,6 @@
     - notifier.conf
     - omap.conf
     - ping.conf
-    - pmwriter.conf
     - sae.conf
     - scheduler.conf
     - sync.conf
