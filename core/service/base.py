@@ -705,11 +705,11 @@ class Service(object):
           otherwise
         :param raw: True - pass message as-is, False - convert to JSON
         """
-        def finish_pub(conn, data):
-            if isinstance(data, nsq.Error):
+        def finish_pub(conn, msg):
+            if isinstance(msg, nsq.Error):
                 self.logger.info(
-                    "Failed to pub to topic '%s'. Retry",
-                    topic
+                    "Failed to pub to topic '%s': %s. Retry",
+                    topic, msg
                 )
                 w.io_loop.call_later(
                     config.nsqd.pub_retry_delay,
