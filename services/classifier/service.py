@@ -50,6 +50,8 @@ from noc.services.classifier.cloningrule import CloningRule
 from noc.services.classifier.rule import Rule
 from noc.core.handler import get_handler
 from noc.core.cache.base import cache
+from noc.core.perf import metrics
+
 
 #
 # Exceptions
@@ -527,8 +529,10 @@ class ClassifierService(Service):
         }
         if event.source == "SNMP Trap":
             # For SNMP traps format values according to MIB definitions
+            metrics["snmp_events"] += 1
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
         elif event.source == "syslog" and not event.log:
+            metrics["syslog_events"] += 1
             # Check for unclassified events flood
             o_id = event.managed_object.id
             if o_id in self.unclassified_codebook:
@@ -554,8 +558,10 @@ class ClassifierService(Service):
                 event.id, event.managed_object.name,
                 event.managed_object.address
             )
+            metrics["dropped_events"] += 1
             return CR_DELETED
         if rule.is_unknown_syslog:
+            metrics["unknown_syslog"] += 1
             # Append codebook
             msg = event.raw_vars.get("message", "")
             cb = self.get_msg_codebook(msg)
@@ -641,6 +647,7 @@ class ClassifierService(Service):
                 de.log_message(
                     "Duplicated event %s has been discarded" % event.id
                 )
+                metrics["deduplicated_events"] += 1
                 return CR_DUPLICATED
         # Suppress repeats
         if event_class.id in self.suppression:
@@ -654,6 +661,7 @@ class ClassifierService(Service):
                 # Update suppressing event
                 nearest.log_suppression(event.timestamp)
                 # Delete suppressed event
+                metrics["suppressed_events"] += 1
                 return CR_SUPPRESSED
         # Activate event
         message = "Classified as '%s' by rule '%s'" % (event_class.name,
@@ -674,6 +682,7 @@ class ClassifierService(Service):
             log=log,
             expires=event.timestamp + datetime.timedelta(seconds=event_class.ttl)
         )
+        metrics["created_events"] += 1
         a_event.save()
         event = a_event
         # Call handlers
@@ -682,6 +691,7 @@ class ClassifierService(Service):
             for h in self.handlers[event_class.id]:
                 try:
                     h(event)
+                    metrics["handlers_run"] += 1
                 except:
                     error_report()
                 if event.to_drop:
@@ -690,6 +700,7 @@ class ClassifierService(Service):
                         event.id, event.managed_object.name,
                         event.managed_object.address
                     )
+                    metrics["dropped_by_handler"] += 1
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
@@ -699,6 +710,7 @@ class ClassifierService(Service):
             for t in self.triggers[event_class.id]:
                 try:
                     t.call(event)
+                    metrics["triggers_run"] += 1
                 except:
                     error_report()
                 if event.to_drop:
@@ -708,6 +720,7 @@ class ClassifierService(Service):
                         event_id, event.managed_object.name,
                         event.managed_object.address, t.name
                     )
+                    metrics["dropped_by_trigger"] += 1
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
@@ -729,6 +742,7 @@ class ClassifierService(Service):
                 "correlator.dispose.%s" % event.managed_object.pool.name,
                 {"event_id": str(event.id)}
             )
+            metrics["disposed_events"] += 1
             return CR_DISPOSED
         elif rule.is_unknown:
             return CR_UNKNOWN
