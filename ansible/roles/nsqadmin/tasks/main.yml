@@ -2,6 +2,15 @@
 - name: include nsqadmin os specific tasks
   include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: add nsqd group
+  group:
+    name: nsq
+
+- name: add nsqd user
+  user:
+    name: nsq
+    shell: "{{fake_shell}}"
+
 - name: Install nsqadmin monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqadmin.conf.j2"
