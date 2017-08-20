@@ -1,6 +1,7 @@
 [[inputs.nginx]]
   ## An array of Nginx stub_status URI to gather stats.
   urls = ["https://{{ noc_web_host }}/ng_stats"]
+  insecure_skip_verify = {% if nginx_self_signed_cerificate %}true{% else %}false{% endif %}
 
 
 [[inputs.procstat]]
