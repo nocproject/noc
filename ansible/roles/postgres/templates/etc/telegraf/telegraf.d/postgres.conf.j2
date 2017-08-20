@@ -11,7 +11,7 @@
   ## connection with the server and doesn't restrict the databases we are trying
   ## to grab metrics for.
   ##
-  address = "host=localhost user={{noc_pg_user}} password={{noc_pg_password}} sslmode=disable"
+  address = "host={{ ansible_host }} user={{noc_pg_user}} password={{noc_pg_password}} sslmode=disable"
 
   ## A list of databases to pull metrics about. If not specified, metrics for all
   ## databases are gathered.
