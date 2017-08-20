@@ -372,7 +372,7 @@ class Config(BaseConfig):
 
     class pg(ConfigSection):
         addresses = ServiceParameter(
-            service=["pgbouncer", "postgres"],
+            service="postgres",
             wait=True, near=True, full_result=False
         )
         db = StringParameter(default="noc")
