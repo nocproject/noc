@@ -92,6 +92,7 @@ class Config(BaseConfig):
         topic = StringParameter(default="chwriter")
         # <address:port> of ClickHouse server to write
         write_to = StringParameter()
+        max_in_flight = IntParameter(default=10)
 
     class classifier(ConfigSection):
         lookup_handler = HandlerParameter(
