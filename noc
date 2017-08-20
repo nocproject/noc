@@ -13,8 +13,8 @@ error_exit ( ) {
     exit 1
 }
 
-if [ -f ".env" ]; then
-    source $PWD/.env
+if [ -f "$PWD/.env" ]; then
+    . "$PWD/.env"
 fi
 
 CMD=$1
