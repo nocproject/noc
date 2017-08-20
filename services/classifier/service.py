@@ -22,7 +22,6 @@ import bson
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
-from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.eventclass import EventClass
@@ -50,29 +49,32 @@ from noc.services.classifier.cloningrule import CloningRule
 from noc.services.classifier.rule import Rule
 from noc.core.handler import get_handler
 from noc.core.cache.base import cache
-from noc.core.perf import metrics
 
-
-#
-# Exceptions
-#
-#
 # Patterns
-#
 rx_oid = re.compile(r"^(\d+\.){6,}$")
 
-CR_FAILED = 0
-CR_DELETED = 1
-CR_SUPPRESSED = 2
-CR_UNKNOWN = 3
-CR_CLASSIFIED = 4
-CR_DISPOSED = 5
-CR_DUPLICATED = 6
-CR_UDUPLICATED = 7
-CR = ["failed", "deleted", "suppressed",
-      "unknown", "classified", "disposed", "duplicated",
-      "unk. duplicated"
-      ]
+CR_FAILED = "events_failed"
+CR_DELETED = "events_deleted"
+CR_SUPPRESSED = "events_suppressed"
+CR_UNKNOWN = "events_unknown"
+CR_CLASSIFIED = "events_classified"
+CR_DISPOSED = "events_disposed"
+CR_DUPLICATED = "events_duplicated"
+CR_UDUPLICATED = "events_unk_duplicated"
+CR_UOBJECT = "events_unk_object"
+CR_PROCESSED = "events_processed"
+
+CR = [
+    CR_FAILED,
+    CR_DELETED,
+    CR_SUPPRESSED,
+    CR_UNKNOWN,
+    CR_CLASSIFIED,
+    CR_DISPOSED,
+    CR_DUPLICATED,
+    CR_UDUPLICATED,
+    CR_UOBJECT
+]
 
 
 class ClassifierService(Service):
@@ -110,7 +112,7 @@ class ClassifierService(Service):
         self.lookup_cls = None
         #
         self.last_ts = None
-        self.stats = defaultdict(int)
+        self.stats = {}
 
     def on_activate(self):
         """
@@ -418,7 +420,7 @@ class ClassifierService(Service):
         Find first matching classification rule
 
         :param event: Event
-        :type event: NewEvent
+        :type event: ActiveEvent
         :param vars: raw and resolved variables
         :type vars: dict
         :returns: Event class and extracted variables
@@ -529,10 +531,8 @@ class ClassifierService(Service):
         }
         if event.source == "SNMP Trap":
             # For SNMP traps format values according to MIB definitions
-            metrics["snmp_events"] += 1
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
         elif event.source == "syslog" and not event.log:
-            metrics["syslog_events"] += 1
             # Check for unclassified events flood
             o_id = event.managed_object.id
             if o_id in self.unclassified_codebook:
@@ -541,7 +541,8 @@ class ClassifierService(Service):
                 for pcb in self.unclassified_codebook[o_id]:
                     if self.is_codebook_match(cb, pcb):
                         # Signature is already seen, suppress
-                        return CR_UDUPLICATED
+                        metrics[CR_UDUPLICATED] += 1
+                        return
         # Find matched event class
         c_vars = event.raw_vars.copy()
         c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
@@ -558,10 +559,9 @@ class ClassifierService(Service):
                 event.id, event.managed_object.name,
                 event.managed_object.address
             )
-            metrics["dropped_events"] += 1
-            return CR_DELETED
+            metrics[CR_DELETED] += 1
+            return
         if rule.is_unknown_syslog:
-            metrics["unknown_syslog"] += 1
             # Append codebook
             msg = event.raw_vars.get("message", "")
             cb = self.get_msg_codebook(msg)
@@ -619,7 +619,8 @@ class ClassifierService(Service):
                         event.id, event.managed_object.name,
                         event.managed_object.address
                     )
-                return CR_DELETED
+                metrics[CR_DELETED] += 1
+                return
             elif action == "L":
                 # Do not dispose
                 if iface:
@@ -647,12 +648,12 @@ class ClassifierService(Service):
                 de.log_message(
                     "Duplicated event %s has been discarded" % event.id
                 )
-                metrics["deduplicated_events"] += 1
-                return CR_DUPLICATED
+                metrics[CR_DUPLICATED] += 1
+                return
         # Suppress repeats
         if event_class.id in self.suppression:
-            suppress, name, nearest = self.to_suppress(event, event_class,
-                                                       vars)
+            suppress, name, nearest = self.to_suppress(
+                event, event_class, vars)
             if suppress:
                 self.logger.info(
                     "[%s|%s|%s] Suppressed by rule %s",
@@ -661,37 +662,26 @@ class ClassifierService(Service):
                 # Update suppressing event
                 nearest.log_suppression(event.timestamp)
                 # Delete suppressed event
-                metrics["suppressed_events"] += 1
-                return CR_SUPPRESSED
+                metrics[CR_SUPPRESSED] += 1
+                return
         # Activate event
         message = "Classified as '%s' by rule '%s'" % (event_class.name,
                                                        rule.name)
         log = event.log + [EventLog(timestamp=datetime.datetime.now(),
                                     from_status="N", to_status="A",
                                     message=message)]
-        a_event = ActiveEvent(
-            id=event.id,
-            timestamp=event.timestamp,
-            managed_object=event.managed_object,
-            event_class=event_class,
-            start_timestamp=event.timestamp,
-            repeats=1,
-            raw_vars=event.raw_vars,
-            resolved_vars=resolved_vars,
-            vars=vars,
-            log=log,
-            expires=event.timestamp + datetime.timedelta(seconds=event_class.ttl)
-        )
-        metrics["created_events"] += 1
-        a_event.save()
-        event = a_event
+        event.event_class=event_class
+        event.resolved_vars = resolved_vars
+        event.vars = vars
+        event.log = log
+        event.expires=event.timestamp + datetime.timedelta(seconds=event_class.ttl)
+        event.save()
         # Call handlers
         if event_class.id in self.handlers:
             event_id = event.id
             for h in self.handlers[event_class.id]:
                 try:
                     h(event)
-                    metrics["handlers_run"] += 1
                 except:
                     error_report()
                 if event.to_drop:
@@ -700,17 +690,16 @@ class ClassifierService(Service):
                         event.id, event.managed_object.name,
                         event.managed_object.address
                     )
-                    metrics["dropped_by_handler"] += 1
                     event.id = event_id  # Restore event id
                     event.delete()
-                    return CR_DELETED
+                    metrics[CR_DELETED] += 1
+                    return
         # Call triggers if necessary
         if event_class.id in self.triggers:
             event_id = event.id
             for t in self.triggers[event_class.id]:
                 try:
                     t.call(event)
-                    metrics["triggers_run"] += 1
                 except:
                     error_report()
                 if event.to_drop:
@@ -720,10 +709,10 @@ class ClassifierService(Service):
                         event_id, event.managed_object.name,
                         event.managed_object.address, t.name
                     )
-                    metrics["dropped_by_trigger"] += 1
                     event.id = event_id  # Restore event id
                     event.delete()
-                    return CR_DELETED
+                    metrics[CR_DELETED] += 1
+                    return
         # Finally dispose event to further processing by correlator
         if disposable and rule.to_dispose:
             self.logger.info(
@@ -742,12 +731,13 @@ class ClassifierService(Service):
                 "correlator.dispose.%s" % event.managed_object.pool.name,
                 {"event_id": str(event.id)}
             )
-            metrics["disposed_events"] += 1
-            return CR_DISPOSED
+            metrics[CR_CLASSIFIED] += 1
+            metrics[CR_DISPOSED] += 1
         elif rule.is_unknown:
-            return CR_UNKNOWN
+            metrics[CR_UNKNOWN] += 1
         else:
-            return CR_CLASSIFIED
+            metrics[CR_CLASSIFIED] += 1
+        return
 
     def find_duplicated_event(self, event, event_class, vars):
         """
@@ -769,29 +759,34 @@ class ClassifierService(Service):
                  *args, **kwargs):
         event_id = bson.ObjectId()
         lag = (time.time() - ts) * 1000
+        metrics["lag_us"] = int(lag * 1000)
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)",
                           event_id, data, lag)
+        metrics[CR_PROCESSED] += 1
         mo = ManagedObject.get_by_id(object)
         if not mo:
             self.logger.info("[%s] Unknown managed object id %s. Skipping",
                              event_id, object)
+            metrics[CR_UOBJECT] += 1
             return True
         self.logger.info("[%s|%s|%s] Managed object found",
                          event_id, mo.name, mo.address)
-        ne = NewEvent(
+        ts = datetime.datetime.fromtimestamp(ts)
+        e = ActiveEvent(
             id=event_id,
-            timestamp=datetime.datetime.fromtimestamp(ts),
+            timestamp=ts,
+            start_timestamp=ts,
             managed_object=mo,
-            raw_vars=data
+            raw_vars=data,
+            repeats=1
         )
         try:
-            s = self.classify_event(ne)
-            self.stats[s] += 1
+            self.classify_event(e)
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s",
                 event_id, mo.name, mo.address, e)
-            self.stats[CR_FAILED] += 1
+            metrics[CR_FAILED] += 1
             return False
         self.logger.info(
             "[%s|%s|%s] Event processed successfully",
@@ -803,23 +798,27 @@ class ClassifierService(Service):
     def report(self):
         t = self.ioloop.time()
         if self.last_ts:
-            total = float(sum(v for v in self.stats.values()))
+            r = []
+            for m in CR:
+                ov = self.stats.get(m, 0)
+                nv = metrics[m].value
+                r += ["%s: %d" % (m[7:], nv - ov)]
+                self.stats[m] = nv
+            nt = metrics[CR_PROCESSED].value
+            ot = self.stats.get(CR_PROCESSED, 0)
+            total = nt - ot
+            self.stats[CR_PROCESSED] = nt
             dt = (t - self.last_ts)
-            speed = total / dt
             if total:
-                r = ", ".join(
-                    "%s: %d" % (t, self.stats[i])
-                    for i, t in enumerate(CR)
-                )
+                speed = total / dt
                 self.logger.info(
                     "REPORT: %d events in %.2fms. %.2fev/s (%s)" % (
                         total,
                         dt * 1000,
                         speed,
-                        r
+                        ", ".join(r)
                     )
                 )
-        self.stats = defaultdict(int)
         self.last_ts = t
 
     rx_non_alpha = re.compile(r"[^a-z]+")
