@@ -565,7 +565,7 @@ services:
       <strong>Short description</strong>: Memcached daemon <br/>
       <strong>Long description</strong>: Database caching. For both Mongodb and Postgres<br/>
       <strong>Scale Recommendations</strong>: Optional. <br/>
-      <strong>docs</strong>: https://github.com/memcached/memcached/wiki <br/>
+      <strong>docs</strong>: <a href="https://kb.nocproject.org/pages/viewpage.action?pageId=26772210#id-КонфигурацияNOC-Сервисыускорения(pgbouncer,memcached)" target="_blank">Docs in russian</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
     port: 11211
@@ -676,8 +676,9 @@ services:
       <strong>Short description</strong>: PGbouncer <br/>
       <strong>Long description</strong>: Used for pool connections to postgres. Optional, but hihgly recommended. <br/>
       <strong>Scale Recommendations</strong>: Can be placed on one node with postgres or on each node. <br/>
-      <strong>docs</strong>: https://pgbouncer.github.io/config.html <br/>
+      <strong>docs</strong>: <a href="https://kb.nocproject.org/pages/viewpage.action?pageId=26772210#id-КонфигурацияNOC-Сервисыускорения(pgbouncer,memcached)" target="_blank">Docs in russian</a><br/>
       <strong>Placement constraint</strong>: On node with postgres <br/>
+      <strong>Config</strong>: Have to be explicitly chosen in config. <br/>
     level: system
     port: 6432
   ping:
