@@ -209,20 +209,6 @@
   when: ansible_nodename in groups['svc-ping'] and telegraf_influxdb_enabled
 
 - block:
-  - name: install noc_pmwriter template
-    copy:
-      src: noc_pmwriter.ctmpl
-      dest: "{{ consul_template_templates_dir }}/noc_pmwriter.ctmpl"
-    notify: reload consul-template
-
-  - name: install noc_pmwriter config for template
-    template:
-      src: services/noc_pmwriter.conf.j2
-      dest: "{{consul_template_config_dir}}/noc_pmwriter.conf"
-    notify: reload consul-template
-  when: ansible_nodename in groups['svc-pmwriter'] and telegraf_influxdb_enabled
-
-- block:
   - name: install noc_sae template
     copy:
       src: noc_sae.ctmpl
