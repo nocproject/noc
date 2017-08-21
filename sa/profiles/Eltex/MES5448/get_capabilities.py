@@ -38,3 +38,14 @@ class Script(BaseScript):
         cmd = self.cli("show spanning-tree active", ignore_errors=True)
         return self.rx_stp_en.search(cmd) is not None
 
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check lacp
+        """
+        r = self.cli("show lacp partner all")
+        return "ACT|AGG" in r
+
+    def execute_platform(self, caps):
+        if self.has_lacp():
+            caps["Network | LACP"] = True
