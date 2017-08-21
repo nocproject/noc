@@ -35,13 +35,13 @@ class Script(BaseScript):
     CAPS_MAP = {
         "repeater": 2,
         "bridge": 4,
-        "router": 16,
+        "router": 16
     }
     CHASSIS_SUBTYPE = {
         "MAC Address": 4
     }
     PORT_SUBTYPE = {
-        "MAC Address": 3
+        "MAC Address": 3,
         "Interface Name": 5,
         "Local": 7
     }
