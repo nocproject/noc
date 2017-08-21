@@ -1,0 +1,13 @@
+{
+    "name": "Huawei | VRP | S5700 sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "81f56f7f-1a78-44a2-99b0-b6f72d283a40",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "1.3.6.1.2.1.1.1.0",
+    "match_method": "re",
+    "value": "^S5700.*",
+    "action": "match",
+    "profile": "Huawei.VRP"
+}
