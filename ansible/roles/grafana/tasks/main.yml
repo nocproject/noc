@@ -13,6 +13,7 @@
 - name: create Grafana dir
   file:
     path: "{{ item }}"
+    mode: 0755
     state: directory
     group: grafana
     owner: grafana
