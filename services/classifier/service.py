@@ -141,7 +141,7 @@ class ClassifierService(Service):
         self.load_link_action()
         self.load_handlers()
         self.subscribe(
-            "events",
+            "events.%s" % config.pool,
             "fmwriter",
             self.on_event
         )

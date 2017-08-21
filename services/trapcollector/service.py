@@ -116,7 +116,7 @@ class TrapCollectorService(Service):
         """
         if self.messages:
             messages, self.messages = self.messages, []
-            self.mpub("events", messages)
+            self.mpub("events.%s" % config.pool, messages)
 
     @tornado.gen.coroutine
     def get_object_mappings(self):
