@@ -23,31 +23,20 @@ import bson
 from noc.config import config
 from noc.core.service.base import Service
 from noc.fm.models.failedevent import FailedEvent
-from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventlog import EventLog
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.mib import MIB
-from noc.fm.models.cloneclassificationrule import CloneClassificationRule
 from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 import noc.inv.models.interface
-from noc.core.profile.loader import loader as profile_loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.version import get_version
 from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
-from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
-                                    IPParameter, IPv4PrefixParameter,
-                                    IPv6PrefixParameter, PrefixParameter,
-                                    MACAddressParameter, InterfaceTypeError)
 from noc.lib.nosql import ObjectId
 from noc.services.classifier.trigger import Trigger
-from noc.services.classifier.exception import InvalidPatternException, EventProcessingFailed
-from noc.services.classifier.cloningrule import CloningRule
-from noc.services.classifier.rule import Rule
-from noc.core.handler import get_handler
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
 
@@ -97,7 +86,6 @@ class ClassifierService(Service):
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
     pooled = True
-    DEFAULT_RULE = config.classifier.default_rule
     process_name = "noc-%(name).10s-%(pool).5s"
 
     # SNMP OID pattern
@@ -108,7 +96,7 @@ class ClassifierService(Service):
     def __init__(self):
         super(ClassifierService, self).__init__()
         self.version = get_version()
-        self.rules = {}  # (profile, chain) -> [rule, ..., rule]
+        self.ruleset = None
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
@@ -118,12 +106,9 @@ class ClassifierService(Service):
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
         self.handlers = {}  # event class id -> [<handler>]
-        self.default_rule = None
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
-        # Lookup solution setup
-        self.lookup_cls = None
-        #
+        # Reporting
         self.last_ts = None
         self.stats = {}
 
@@ -133,9 +118,8 @@ class ClassifierService(Service):
         """
         self.logger.info("Using rule lookup solution: %s",
                          config.classifier.lookup_handler)
-        self.lookup_cls = get_handler(config.classifier.lookup_handler)
         self.load_enumerations()
-        self.load_rules()
+        self.ruleset.load()
         self.load_triggers()
         self.load_suppression()
         self.load_link_action()
@@ -149,66 +133,6 @@ class ClassifierService(Service):
             self.report, 1000, self.ioloop
         )
         report_callback.start()
-
-    def load_rules(self):
-        """
-        Load rules from database
-        """
-        self.logger.info("Loading rules")
-        n = 0
-        cn = 0
-        profiles = list(profile_loader.iter_profiles())
-        rules = defaultdict(list)
-        # Load cloning rules
-        cloning_rules = []
-        for cr in CloneClassificationRule.objects.all():
-            try:
-                cloning_rules += [CloningRule(cr)]
-            except InvalidPatternException as why:
-                self.logger.error("Failed to load cloning rule '%s': Invalid pattern: %s", cr.name, why)
-                continue
-        self.logger.info("%d cloning rules found", len(cloning_rules))
-        # profiles re cache
-        rx_profiles = {}
-        # Initialize rules
-        for r in EventClassificationRule.objects.order_by("preference"):
-            try:
-                rule = Rule(self, r)
-            except InvalidPatternException as e:
-                self.logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, e)
-                continue
-            # Apply cloning rules
-            rs = [rule]
-            for cr in cloning_rules:
-                if cr.match(rule):
-                    try:
-                        rs += [Rule(self, r, cr)]
-                        cn += 1
-                    except InvalidPatternException as e:
-                        self.logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, e)
-                        continue
-            # Build chain
-            for rule in rs:
-                # Find profile restrictions
-                rule_profiles = rx_profiles.get(rule.profile)
-                if not profiles:
-                    rx = re.compile(rule.profile)
-                    rule_profiles = [p for p in profiles if rx.search(p)]
-                    rx_profiles[rule.profile] = rule_profiles
-                # Apply rule to appropriative chain
-                for p in rule_profiles:
-                    rules[p, rule.chain] += [rule]
-                n += 1
-        if cn:
-            self.logger.info("%d rules are cloned", cn)
-        self.default_rule = Rule(
-            self,
-            EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
-        )
-        # Apply lookup solution
-        self.rules = dict((k, self.lookup_cls(rules[k])) for k in rules)
-        self.logger.info("%d rules are loaded in the %d profiles",
-                         n, len(self.rules))
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -375,42 +299,6 @@ class ClassifierService(Service):
             self.logger.error("Failed to load handler '%s'. Ignoring", h)
             return None
 
-    def decode_str(self, event, value):
-        return value
-
-    def decode_int(self, event, value):
-        if value is not None and value.isdigit():
-            return int(value)
-        else:
-            return 0
-
-    def decode_ipv4_address(self, event, value):
-        return IPv4Parameter().clean(value)
-
-    def decode_ipv6_address(self, event, value):
-        return IPv6Parameter().clean(value)
-
-    def decode_ip_address(self, event, value):
-        return IPParameter().clean(value)
-
-    def decode_ipv4_prefix(self, event, value):
-        return IPv4PrefixParameter().clean(value)
-
-    def decode_ipv6_prefix(self, event, value):
-        return IPv6PrefixParameter().clean(value)
-
-    def decode_ip_prefix(self, event, value):
-        return PrefixParameter().clean(value)
-
-    def decode_mac(self, event, value):
-        return MACAddressParameter().clean(value)
-
-    def decode_interface_name(self, event, value):
-        return event.managed_object.profile.convert_interface_name(value)
-
-    def decode_oid(self, event, value):
-        return value
-
     def retry_failed_events(self):
         """
         Return failed events to the unclassified queue if
@@ -427,67 +315,6 @@ class ClassifierService(Service):
         for e in FailedEvent.objects.filter(version__ne=self.version):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             self.logger.debug("Failed event %s has been recovered", e.id)
-
-    def find_matching_rule(self, event, vars):
-        """
-        Find first matching classification rule
-
-        :param event: Event
-        :type event: ActiveEvent
-        :param vars: raw and resolved variables
-        :type vars: dict
-        :returns: Event class and extracted variables
-        :rtype: tuple of (EventClass, dict)
-        """
-        # Get chain
-        src = event.raw_vars.get("source")
-        if src == E_SRC_SYSLOG:
-            chain = "syslog"
-            if "message" not in event.raw_vars:
-                return None, None
-        elif src == E_SRC_SNMP_TRAP:
-            chain = "snmp_trap"
-        else:
-            chain = "other"
-        # Find rules lookup
-        lookup = self.rules.get((event.managed_object.profile_name, chain))
-        if lookup:
-            for r in lookup.lookup_rules(event, vars):
-                # Try to match rule
-                metrics["rules_checked"] += 1
-                v = r.match(event, vars)
-                if v is not None:
-                    self.logger.debug(
-                        "[%s] Matching class for event %s found: %s (Rule: %s)",
-                        event.managed_object.name, event.id, r.event_class_name, r.name
-                    )
-                    return r, v
-        if self.default_rule:
-            return self.default_rule, {}
-        return None, None
-
-    def eval_rule_variables(self, event, event_class, vars):
-        """
-        Evaluate rule variables
-        """
-        r = {}
-        for ecv in event_class.vars:
-            # Check variable is present
-            if ecv.name not in vars:
-                if ecv.required:
-                    raise Exception("Required variable '%s' is not found" % ecv.name)
-                else:
-                    continue
-            # Decode variable
-            v = vars[ecv.name]
-            decoder = getattr(self, "decode_%s" % ecv.type, None)
-            if decoder:
-                try:
-                    v = decoder(event, v)
-                except InterfaceTypeError:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
-            r[ecv.name] = v
-        return r
 
     def to_suppress(self, event, event_class, vars):
         """
@@ -543,7 +370,7 @@ class ClassifierService(Service):
         resolved_vars = {
             "profile": event.managed_object.profile_name
         }
-        metrics[E_SRC_METRICS.get(e.source, E_SRC_OTHER)] += 1
+        metrics[E_SRC_METRICS.get(event.source, E_SRC_OTHER)] += 1
         if event.source == E_SRC_SNMP_TRAP:
             # For SNMP traps format values according to MIB definitions
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
@@ -561,7 +388,7 @@ class ClassifierService(Service):
         # Find matched event class
         c_vars = event.raw_vars.copy()
         c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
-        rule, vars = self.find_matching_rule(event, c_vars)
+        rule, vars = self.ruleset.find_rule(event, c_vars)
         if rule is None:
             # Something goes wrong.
             # No default rule found. Exit immediately
@@ -593,7 +420,7 @@ class ClassifierService(Service):
         )
         event_class = rule.event_class
         # Calculate rule variables
-        vars = self.eval_rule_variables(event, event_class, vars)
+        vars = self.ruleset.eval_vars(event, event_class, vars)
         #
         self.logger.info(
             "[%s|%s|%s] Event class: %s (%s)",
@@ -685,11 +512,11 @@ class ClassifierService(Service):
         log = event.log + [EventLog(timestamp=datetime.datetime.now(),
                                     from_status="N", to_status="A",
                                     message=message)]
-        event.event_class=event_class
+        event.event_class = event_class
         event.resolved_vars = resolved_vars
         event.vars = vars
         event.log = log
-        event.expires=event.timestamp + datetime.timedelta(seconds=event_class.ttl)
+        event.expires = event.timestamp + datetime.timedelta(seconds=event_class.ttl)
         event.save()
         # Call handlers
         if event_class.id in self.handlers:
