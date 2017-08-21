@@ -49,6 +49,7 @@ from noc.services.classifier.cloningrule import CloningRule
 from noc.services.classifier.rule import Rule
 from noc.core.handler import get_handler
 from noc.core.cache.base import cache
+from noc.core.perf import metrics
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
