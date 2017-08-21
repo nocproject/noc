@@ -77,6 +77,18 @@ CR = [
     CR_UOBJECT
 ]
 
+E_SRC_SYSLOG = "syslog"
+E_SRC_SNMP_TRAP = "SNMP Trap"
+E_SRC_SYSTEM = "system"
+E_SRC_OTHER = "other"
+
+E_SRC_METRICS = {
+    E_SRC_SYSLOG: "events_syslog",
+    E_SRC_SNMP_TRAP: "events_snmp_trap",
+    E_SRC_SYSTEM: "events_system",
+    E_SRC_OTHER: "events_other"
+}
+
 
 class ClassifierService(Service):
     """
@@ -429,11 +441,11 @@ class ClassifierService(Service):
         """
         # Get chain
         src = event.raw_vars.get("source")
-        if src == "syslog":
+        if src == E_SRC_SYSLOG:
             chain = "syslog"
             if "message" not in event.raw_vars:
                 return None, None
-        elif src == "SNMP Trap":
+        elif src == E_SRC_SNMP_TRAP:
             chain = "snmp_trap"
         else:
             chain = "other"
@@ -530,10 +542,11 @@ class ClassifierService(Service):
         resolved_vars = {
             "profile": event.managed_object.profile_name
         }
-        if event.source == "SNMP Trap":
+        metrics[E_SRC_METRICS.get(e.source, E_SRC_OTHER)] += 1
+        if event.source == E_SRC_SNMP_TRAP:
             # For SNMP traps format values according to MIB definitions
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
-        elif event.source == "syslog" and not event.log:
+        elif event.source == E_SRC_SYSLOG and not event.log:
             # Check for unclassified events flood
             o_id = event.managed_object.id
             if o_id in self.unclassified_codebook:
