@@ -44,7 +44,6 @@ class RuleSet(object):
         """
         self.lookup_cls = get_handler(config.classifier.lookup_handler)
         self.rules = {}
-        self.lookup_cls = None
         logger.info("Loading rules")
         n = 0
         cn = 0
