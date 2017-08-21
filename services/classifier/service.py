@@ -108,7 +108,7 @@ class ClassifierService(Service):
     def __init__(self):
         super(ClassifierService, self).__init__()
         self.version = get_version()
-        self.rules = {}  # profile -> [rule, ..., rule]
+        self.rules = {}  # (profile, chain) -> [rule, ..., rule]
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
@@ -158,10 +158,7 @@ class ClassifierService(Service):
         n = 0
         cn = 0
         profiles = list(profile_loader.iter_profiles())
-        self.rules = {}
-        # Initialize profiles
-        for p in profiles:
-            self.rules[p] = {}
+        rules = defaultdict(list)
         # Load cloning rules
         cloning_rules = []
         for cr in CloneClassificationRule.objects.all():
@@ -171,12 +168,14 @@ class ClassifierService(Service):
                 self.logger.error("Failed to load cloning rule '%s': Invalid pattern: %s", cr.name, why)
                 continue
         self.logger.info("%d cloning rules found", len(cloning_rules))
+        # profiles re cache
+        rx_profiles = {}
         # Initialize rules
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
                 rule = Rule(self, r)
-            except InvalidPatternException as why:
-                self.logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, why)
+            except InvalidPatternException as e:
+                self.logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, e)
                 continue
             # Apply cloning rules
             rs = [rule]
@@ -185,17 +184,20 @@ class ClassifierService(Service):
                     try:
                         rs += [Rule(self, r, cr)]
                         cn += 1
-                    except InvalidPatternException as why:
-                        self.logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, why)
+                    except InvalidPatternException as e:
+                        self.logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, e)
                         continue
+            # Build chain
             for rule in rs:
-                # Find profile restriction
-                rx = re.compile(rule.profile)
-                for p in profiles:
-                    if rx.search(p):
-                        if rule.chain not in self.rules[p]:
-                            self.rules[p][rule.chain] = []
-                        self.rules[p][rule.chain] += [rule]
+                # Find profile restrictions
+                rule_profiles = rx_profiles.get(rule.profile)
+                if not profiles:
+                    rx = re.compile(rule.profile)
+                    rule_profiles = [p for p in profiles if rx.search(p)]
+                    rx_profiles[rule.profile] = rule_profiles
+                # Apply rule to appropriative chain
+                for p in rule_profiles:
+                    rules[p, rule.chain] += [rule]
                 n += 1
         if cn:
             self.logger.info("%d rules are cloned", cn)
@@ -204,9 +206,7 @@ class ClassifierService(Service):
             EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
         )
         # Apply lookup solution
-        for p in self.rules:
-            for c in self.rules[p]:
-                self.rules[p][c] = self.lookup_cls(self.rules[p][c])
+        self.rules = dict((k, self.lookup_cls(rules[k])) for k in rules)
         self.logger.info("%d rules are loaded in the %d profiles",
                          n, len(self.rules))
 
@@ -450,10 +450,11 @@ class ClassifierService(Service):
         else:
             chain = "other"
         # Find rules lookup
-        lookup = self.rules.get(event.managed_object.profile_name, {}).get(chain)
+        lookup = self.rules.get((event.managed_object.profile_name, chain))
         if lookup:
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
+                metrics["rules_checked"] += 1
                 v = r.match(event, vars)
                 if v is not None:
                     self.logger.debug(
