@@ -82,7 +82,7 @@ class RuleSet(object):
             for rule in rs:
                 # Find profile restrictions
                 rule_profiles = rx_profiles.get(rule.profile)
-                if not profiles:
+                if not rule_profiles:
                     rx = re.compile(rule.profile)
                     rule_profiles = [p for p in profiles if rx.search(p)]
                     rx_profiles[rule.profile] = rule_profiles
