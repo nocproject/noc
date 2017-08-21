@@ -22,7 +22,7 @@
     - "{{nsqd_db_dir}}"
     - "{{nsqd_config_dir}}"
 
-- name: create nsqd log dif
+- name: create nsqd log dir
   file:
     path: "{{ item }}"
     state: directory

@@ -10,6 +10,16 @@
   tags:
     - config
 
+- name: create Grafana dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    group: grafana
+    owner: grafana
+  with_items:
+    - "{{grafana_dashboard_dir}}"
+    - "{{grafana_plugins_dir}}"
+
 - name: Start Grafana service
   service:
     name: "{{ grafana_system_service }}"
