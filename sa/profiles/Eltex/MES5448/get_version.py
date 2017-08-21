@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "Eltex.MES448.get_version"
+    name = "Eltex.MES5448.get_version"
     interface = IGetVersion
     cache = True
 
@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"^Maintenance Level\.+ \S+\s*\n"
         r"^Manufacturer\.+ \S+\s*\n"
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\s*\n"
-        r"^Software Version\.+ (?P<version>\S+)\[\S+\]\s*\n",
+        r"^Software Version\.+ (?P<version>\S+)\s*\n",
         re.MULTILINE
     )
 
