@@ -33,7 +33,7 @@ E_SRC_SNMP_TRAP = "SNMP Trap"
 
 
 class RuleSet(object):
-    def __init__(self, service):
+    def __init__(self):
         self.rules = {}  # (profile, chain) -> [rule, ..., rule]
         self.lookup_cls = None
         self.default_rule = None

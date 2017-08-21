@@ -37,6 +37,7 @@ from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
 from noc.lib.nosql import ObjectId
 from noc.services.classifier.trigger import Trigger
+from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
 
@@ -96,7 +97,7 @@ class ClassifierService(Service):
     def __init__(self):
         super(ClassifierService, self).__init__()
         self.version = get_version()
-        self.ruleset = None
+        self.ruleset = RuleSet()
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
