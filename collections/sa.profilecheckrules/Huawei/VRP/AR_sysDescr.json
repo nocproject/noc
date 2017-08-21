@@ -1,0 +1,13 @@
+{
+    "name": "Huawei | VRP | AR sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "d7dc6062-890d-4be9-ba1c-19a30c461999",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "1.3.6.1.2.1.1.1.0",
+    "match_method": "re",
+    "value": "^Huawei AR.*",
+    "action": "match",
+    "profile": "Huawei.VRP"
+}
