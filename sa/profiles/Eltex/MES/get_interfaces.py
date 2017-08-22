@@ -168,7 +168,6 @@ class Script(BaseScript):
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "description": description.strip(),
-                    "snmp_ifindex": ifindex,
                     "enabled_afi": []
                 }
             if ifindex:
