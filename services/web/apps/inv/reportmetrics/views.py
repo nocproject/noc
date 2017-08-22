@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
-"""
-##----------------------------------------------------------------------
-## fm.reportmetrics
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
+# ----------------------------------------------------------------------
+# inv.reportmetrics
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+
+# Python modules
 import datetime
 import time
-## Django modules
+from collections import defaultdict, namedtuple
+# Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
-from django.utils.safestring import mark_safe, SafeString
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.influxdb.client import InfluxDBClient
 from noc.lib.nosql import get_db
+from noc.core.clickhouse.connect import connection
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.core.translation import ugettext as _
@@ -76,6 +76,10 @@ class ReportForm(forms.Form):
         required=False,
         queryset=InterfaceProfile.objects.order_by("name")
     )
+    allow_archive = forms.BooleanField(
+        label=_("Use archive (InfluxDB) for report"),
+        required=False
+    )
     zero = forms.BooleanField(
         label=_("Exclude 0"),
         required=False
@@ -89,383 +93,254 @@ class ReportForm(forms.Form):
         required=False
     )
 
+
+class ReportMetric(object):
+    CHUNK_SIZE = 10
+
+    def __init__(self, db="ch"):
+        self.rows = []
+        self.get_query = self.get_query_inf
+        self.query_map = ""
+        self.reporttype = "load_interfaces"
+
+    def get_query_inf(self, query_map, from_date, to_date):
+        fd = from_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        td = to_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+        map_table = {"load_interfaces": "/Interface\s\|\sLoad\s\|\s[In|Out]/",
+                     "load_cpu": "/[CPU|Memory]\s\|\sUsage/",
+                     "errors": "/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
+                     "ping": "/Ping\s\|\sRTT/"}
+        def_map = {"q_select": ['percentile(\"value\", 98)'],
+                   "q_from": [], # q_from = "from %s" % map_table[reporttype]
+                   "q_where": ["%s", "time >= '%s'" % fd, "time <= '%s'" % td],
+                   "q_group": ["object"]}
+        # m_r = "(%s)" % " OR ".join(["object = '%s'" % name for name in moss])
+        for e in query_map:
+            if e.startswith("q_"):
+                def_map[e] += query_map[e]
+        query = " ".join(["SELECT %s" % ",".join(def_map["q_select"]),
+                          "FROM %s" % map_table[self.reporttype],
+                          "WHERE %s" % " AND ".join(def_map["q_where"]),
+                          "GROUP BY %s" % ",".join(def_map["q_group"])])
+        return query
+
+    def get_query_ch(self, query_map, from_date, to_date):
+        ts_from_date = time.mktime(from_date.timetuple())
+        ts_to_date = time.mktime(to_date.timetuple())
+        map_table = {"load_interfaces": "interface",
+                     "load_cpu": "cpu",
+                     "errors": "interface",
+                     "ping": "ping"}
+        def_map = {"q_select": ["managed_object"],
+                   "q_from": [], # q_from = "from %s" % map_table[reporttype]
+                   "q_where": ["managed_object IN (%s)",
+                               "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" %
+                               (ts_from_date, ts_from_date, ts_to_date)],
+                   "q_group": ["managed_object"]}
+        for e in query_map:
+            if e.startswith("q_"):
+                def_map[e] += query_map[e]
+        query = " ".join(["select %s" % ",".join(def_map["q_select"]),
+                          "from %s" % map_table[self.reporttype],
+                          "where %s" % " and ".join(def_map["q_where"]),
+                          "group by %s" % ",".join(def_map["q_group"])])
+        return query
+
+    def do_query_ch(self, moss, query_map, f_date, to_date):
+        n = 0
+        client = connection()
+
+        mos_name = moss.keys()
+        query = self.get_query_ch(query_map, f_date, to_date)
+        self.CHUNK_SIZE = 10000
+        while mos_name[n:n + self.CHUNK_SIZE]:
+            m_r = ", ".join(moss.keys())
+            for row in client.execute(query % m_r):
+                yield row[0:2], row[2:]
+            n += self.CHUNK_SIZE
+
+    def do_query(self, moss, query_map, f_date, to_date):
+        n = 0
+        ex_res = defaultdict(list)
+
+        client = InfluxDBClient()
+        mos_name = moss.keys()
+        query = self.get_query(query_map, f_date, to_date)
+        while mos_name[n:n + self.CHUNK_SIZE]:
+            m_r = "(%s)" % " OR ".join(["object = '%s'" % name for name in mos_name[n:n + self.CHUNK_SIZE]])
+            print query % m_r
+
+            for row in client.query(query % m_r):
+                if self.reporttype in ["ping", "load_cpu"]:
+                    ex_res[(row["object"],)] += [row["percentile"]]
+                else:
+                    ex_res[(row["object"], row["interface"])] += [row["percentile"]]
+            n += self.CHUNK_SIZE
+        for ll in ex_res:
+            yield ll, ex_res[ll]
+
+
 class ReportTraffic(SimpleReport):
     title = _("Load Metrics")
     form = ReportForm
 
+    def get_data(self, request, reporttype, from_date=None, to_date=None, object_profile=None, percent=None,
+                 filter_default=None, zero=None, interface_profile=None, managed_object=None,
+                 selectors=None, administrative_domain=None, allow_archive=True, **kwargs):
 
-    def get_data(self, request, reporttype, from_date=None, to_date=None, object_profile=None, percent=None, filter_default=None, zero=None,
-                 interface_profile=None, managed_object=None, selectors=None, administrative_domain=None, **kwargs):
-        now = datetime.datetime.now()
-        nnow = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-        f_d = datetime.datetime.strptime(from_date, "%d.%m.%Y")
-        gfd = time.mktime(f_d.timetuple()) * 1000
-        fd = f_d.strftime("%Y-%m-%dT%H:%M:%SZ")
-        to_date = to_date + ".23:59:59"
-        t_d = datetime.datetime.strptime(to_date, "%d.%m.%Y.%H:%M:%S")
-        td = t_d.strftime("%Y-%m-%dT%H:%M:%SZ")
-        gtd = time.mktime(t_d.timetuple()) * 1000
-        if td.split("T")[0] == nnow.split("T")[0]:
-            td = nnow
-        # Interval days
-        fd1 = td.split('T')
-        td1 = fd.split('T')
-        a = fd1[0].split('-')
-        b = td1[0].split('-')
-        aa = datetime.date(int(a[0]), int(a[1]), int(a[2]))
-        bb = datetime.date(int(b[0]), int(b[1]), int(b[2]))
-        cc = aa - bb
-        dd = str(cc + datetime.timedelta(days=1))
-        interval = (dd.split()[0])
+        map_table = {"load_interfaces": "/Interface\s\|\sLoad\s\|\s[In|Out]/",
+                     "load_cpu": "/[CPU|Memory]\s\|\sUsage/",
+                     "errors": "/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
+                     "ping": "/Ping\s\|\sRTT/"}
+
+        # Date Time Block
+        if not from_date:
+            from_date = datetime.datetime.now() - datetime.timedelta(days=1)
+        else:
+            from_date = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+
+        if not to_date or from_date == to_date:
+            to_date = from_date + datetime.timedelta(days=1)
+        else:
+            to_date = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
+
+        interval = (to_date - from_date).days
+        ts_from_date = time.mktime(from_date.timetuple())
+        ts_to_date = time.mktime(to_date.timetuple())
+
         # Load managed objects
-        f = []
-        in_p = []
-        out_p = []
-        columns = []
+        mos = ManagedObject.objects.filter(is_managed=True)
         if not request.user.is_superuser:
-            mos = ManagedObject.objects.filter(
+            mos = mos.filter(
                 administrative_domain__in=UserAccess.get_domains(request.user))
-        if selectors:
-            mos = selectors.managed_objects
-        if administrative_domain:
-            mos = ManagedObject.objects.filter(is_managed=True, administrative_domain=administrative_domain)
-        if object_profile:
-            mos = ManagedObject.objects.filter(is_managed=True, object_profile=object_profile)
         if managed_object:
-            mos = ManagedObject.objects.filter(is_managed=True, id=managed_object.id)
-        if "load_interfaces" in reporttype:
-            for res in InterfaceProfile.objects.filter():
-                if res.name == "default" and not filter_default:
-                    continue
-                for o in mos:
-                    ifaces = Interface.objects.filter(managed_object=o, type="physical", profile=res)
-                    if interface_profile:
-                        ifaces = Interface.objects.filter(managed_object=o, type="physical", profile=interface_profile)
-                    for j in ifaces:
-                        # print o.name, "," , o.platform  , ",", o.address, ",", j.name, ",", j.in_speed, ",", j.out_speed,",",j.description
-                        # quit()
-                        client = InfluxDBClient()
-                        query1 = [
-                            "SELECT percentile(\"value\", 98) FROM \"Interface | Load | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, fd, td)]
-                        result1 = client.query(query1)
-                        r = list(result1)
-                        if len(r) > 0:
-                            r = r[0]
-                            r1 = r["percentile"]
-                        else:
-                            r1 = 0
-                        query2 = [
-                            "SELECT percentile(\"value\", 98) FROM \"Interface | Load | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, fd, td)]
-                        result2 = client.query(query2)
-                        r = list(result2)
-                        if len(r) > 0:
-                            r = r[0]
-                            r2 = r["percentile"]
-                        else:
-                            r2 = 0
-                        url = "/ui/grafana/dashboard/script/report.js?title=interface&obj=" + o.name.replace("#","%23") + "&iface=" + j.name + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
-                        if j.in_speed and r1 > 0:
-                            in_p = (r1 / 1000.0) / (j.in_speed / 100.0)
-                            in_p = round(in_p, 2)
-                        if j.out_speed and r2 > 0:
-                            out_p = (r2 / 1000.0) / (j.out_speed / 100.0)
-                            out_p = round(out_p, 2)
-                        if percent and zero:
-                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
-                                       TableColumn(_("IN bps"), align="right"),
-                                       TableColumn(_("IN %"), align="right"),
-                                       TableColumn(_("OUT bps"), align="right"),
-                                       TableColumn(_("OUT %"), align="right"),
-                                       TableColumn(_("Graphic"), format="url"),
-                                       TableColumn(_("Interval days"), align="right")
-                                       ]
-                            if r1 != 0 and r2 != 0:
-                                f += [(
-                                    o.name,
-                                    o.address,
-                                    j.name,
-                                    j.description,
-                                    int(r1),
-                                    in_p,
-                                    int(r2),
-                                    out_p,
-                                    url,
-                                    interval
-                                )]
-                        elif zero:
-                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
-                                       TableColumn(_("IN bps"), align="right"),
-                                       TableColumn(_("OUT bps"), align="right"),
-                                       TableColumn(_("Graphic"), format="url"),
-                                       TableColumn(_("Interval days"), align="right")
-                                       ]
-                            if r1 != 0 and r2 != 0:
-                                f += [(
-                                    o.name,
-                                    o.address,
-                                    j.name,
-                                    j.description,
-                                    int(r1),
-                                    int(r2),
-                                    url,
-                                    interval
-                                )]
-                        elif percent:
-                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
-                                       TableColumn(_("IN bps"), align="right"),
-                                       TableColumn(_("IN %"), align="right"),
-                                       TableColumn(_("OUT bps"), align="right"),
-                                       TableColumn(_("OUT %"), align="right"),
-                                       TableColumn(_("Graphic"), format="url"),
-                                       TableColumn(_("Interval days"), align="right")
-                                       ]
-                            f += [(
-                                o.name,
-                                o.address,
-                                j.name,
-                                j.description,
-                                int(r1),
-                                in_p,
-                                int(r2),
-                                out_p,
-                                url,
-                                interval
-                            )]
+            mos = [managed_object]
+        else:
+            if selectors:
+                mos = mos.filter(selectors.Q)
+            if administrative_domain:
+                # @todo fix
+                mos = mos.filter(administrative_domain=administrative_domain)
+            if object_profile:
+                mos = mos.filter(object_profile=object_profile)
 
-                        else:
-                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
-                                       TableColumn(_("IN bps"), align="right"),
-                                       TableColumn(_("OUT bps"), align="right"),
-                                       TableColumn(_("Graphic"), format="url"),
-                                       TableColumn(_("Interval days"), align="right")
-                                       ]
-                            f += [(
-                                o.name,
-                                o.address,
-                                j.name,
-                                j.description,
-                                int(r1),
-                                int(r2),
-                                url,
-                                interval
-                            )]
+        columns = [_("Managed Object"), _("Address")]
+        moss = dict((mo.name, mo) for mo in mos)
+        iface_dict = {}
 
-        if "errors" in reporttype:
-            for res in InterfaceProfile.objects.filter():
-                if res.name == "default" and not filter_default:
-                    continue
-                for o in mos:
-                    ifaces = Interface.objects.filter(managed_object=o, type="physical", profile=res)
-                    if interface_profile:
-                        ifaces = Interface.objects.filter(managed_object=o, type="physical", profile=interface_profile)
-                    for j in ifaces:
-                        client = InfluxDBClient()
-                        query1 = [
-                            "SELECT percentile(\"value\", 98) FROM \"Interface | Errors | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, fd, td)]
-                        result1 = client.query(query1)
-                        r = list(result1)
-                        if len(r) > 0:
-                            r = r[0]
-                            r1 = r["percentile"]
-                        else:
-                            r1 = 0
-                        query2 = [
-                            "SELECT percentile(\"value\", 98) FROM \"Interface | Errors | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, fd, td)]
-                        result2 = client.query(query2)
-                        r = list(result2)
-                        if len(r) > 0:
-                            r = r[0]
-                            r2 = r["percentile"]
-                        else:
-                            r2 = 0
+        d_url = {
+            "path": "/ui/grafana/dashboard/script/report.js",
+            "rname": map_table[reporttype],
+            "from": str(int(ts_from_date*1000)),
+            "to": str(int(ts_to_date*1000)),
+            # o.name.replace("#", "%23")
+            "oname": "",
+            "iname": ""}
 
-                        query11 = [
-                            "SELECT percentile(\"value\", 98) FROM \"Interface | Discards | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, fd, td)]
-                        result11 = client.query(query11)
-                        r = list(result11)
-                        if len(r) > 0:
-                            r = r[0]
-                            r11 = r["percentile"]
-                        else:
-                            r11 = 0
+        report_map = {
+            "load_interfaces": {
+                "url": """%(path)s?title=interface&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
+                "q_group": ["interface"],
+                "columns": [_("Int Name"), _("Int Descr"),
+                            TableColumn(_("IN bps"), align="right"),
+                            TableColumn(_("OUT bps"), align="right"),
+                            ]
+            },
+            "errors": {
+                "url": """%(path)s?title=%(rname)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
+                "columns": [_("Int Name"),
+                            TableColumn(_("Errors IN"), align="right"),
+                            TableColumn(_("Errors OUT"), align="right"),
+                            TableColumn(_("Discards IN"), align="right"),
+                            TableColumn(_("Discards OUT"), align="right")],
+                "q_group": ["interface"]
+            },
+            "load_cpu": {
+                "url": "%(path)s?title=%(rname)s&obj=%(oname)s&from=%(from)s&to=%(to)s",
+                "columns": [TableColumn(_("Memory | Usage %"), align="right"),
+                            TableColumn(_("CPU | Usage %"), align="right")]
+            },
+            "ping": {
+                "columns": [TableColumn(_("Ping | RTT (ms)"), align="right"),
+                            TableColumn(_("Ping | Attempts"), align="right")]
+            }
+        }
+        if not allow_archive:
+            report_map["load_interfaces"].update({
+                "q_select": ["arrayStringConcat(path)",
+                             "round(quantile(0.98)(load_in), 0) as l_in",
+                             "round(quantile(0.98)(load_out), 0) as l_out"],
+                "q_group": ["path"],
+                "q_where": ["(load_in != 0 and load_out != 0)"] if zero else []})
+            report_map["errors"].update({
+                "q_select": ["arrayStringConcat(path)",
+                             "quantile(0.98)(errors_in) as err_in", "quantile(0.98)(errors_out) as err_out",
+                             "quantile(0.98)(discards_in) as dis_in", "quantile(0.98)(discards_out) as dis_out"],
+                "q_group": ["path"],
+                "q_where": ["(errors_in != 0 and errors_out != 0 and discards_in != 0 and discards_out != 0)"] if zero
+                else []})
+            report_map["load_cpu"].update({"q_select": ["arrayStringConcat(path)", "quantile(0.98)(usage) as usage"],
+                                           "q_group": ["path"]})
+            report_map["ping"].update({
+                "q_select": ["managed_object", "round(quantile(0.98)(rtt) / 1000, 2)", "quantile(0.98)(attempts)"]})
+            moss = {str(mo.get_bi_id()): mo for mo in mos}
 
-                        query22 = [
-                            "SELECT percentile(\"value\", 98) FROM \"Interface | Discards | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, fd, td)]
-                        result22 = client.query(query22)
-                        r = list(result22)
-                        if len(r) > 0:
-                            r = r[0]
-                            r22 = r["percentile"]
-                        else:
-                            r22 = 0
-                        url = "/ui/grafana/dashboard/script/report.js?title=error&obj=" + o.name.replace("#","%23") + "&iface=" + j.name + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
-                        if zero:
-                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
-                                       TableColumn(_("Errors IN"), align="right"),
-                                       TableColumn(_("Errors OUT"), align="right"),
-                                       TableColumn(_("Discards IN"), align="right"),
-                                       TableColumn(_("Discards OUT"), align="right"),
-                                       TableColumn(_("Graphic"), format="url"),
-                                       TableColumn(_("Interval days"), align="right")
-                                       ]
-                            if r1 != 0 and r2 != 0:
-                                f += [(
-                                    o.name,
-                                    o.address,
-                                    j.name,
-                                    j.description,
-                                    int(r1),
-                                    int(r2),
-                                    int(r11),
-                                    int(r22),
-                                    url,
-                                    interval
-                                )]
-                        else:
-                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
-                                       TableColumn(_("Errors IN"), align="right"),
-                                       TableColumn(_("Errors OUT"), align="right"),
-                                       TableColumn(_("Discards IN"), align="right"),
-                                       TableColumn(_("Discards OUT"), align="right"),
-                                       TableColumn(_("Graphic"), format="url"),
-                                       TableColumn(_("Interval days"), align="right")
-                                       ]
-                            f += [(
-                                o.name,
-                                o.address,
-                                j.name,
-                                j.description,
-                                int(r1),
-                                int(r2),
-                                int(r11),
-                                int(r22),
-                                url,
-                                interval
-                            )]
+        if reporttype in ["load_interfaces", "errors"]:
+            iface_dict = {(
+                iface.managed_object, iface.name
+            ): (
+                iface.description, iface.in_speed, iface.out_speed
+            ) for iface in Interface.objects.filter(managed_object__in=mos, type="physical")}
 
-        if "load_cpu" in reporttype:
-                for o in mos:
-                    client = InfluxDBClient()
-                    query1 = [
-                        "SELECT percentile(\"value\", 98) FROM \"CPU | Usage\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                            o.name, fd, td)]
-                    result1 = client.query(query1)
-                    r = list(result1)
-                    if len(r) > 0:
-                        r = r[0]
-                        r1 = r["percentile"]
-                    else:
-                        r1 = 0
-                    query2 = [
-                        "SELECT percentile(\"value\", 98) FROM \"Memory | Usage\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                            o.name, fd, td)]
-                    result2 = client.query(query2)
-                    r = list(result2)
-                    if len(r) > 0:
-                        r = r[0]
-                        r2 = r["percentile"]
-                    else:
-                        r2 = 0
-                    url = "/ui/grafana/dashboard/script/report.js?title=cpu&obj=" + o.name.replace("#","%23") + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
-                    if zero:
-                        columns = [_("Managed Object"), _("Address"),
-                                   TableColumn(_("CPU | Usage %"), align="right"),
-                                   TableColumn(_("Memory | Usage %"), align="right"),
-                                   TableColumn(_("Graphic"), format="url"),
-                                   TableColumn(_("Interval days"), align="right")
-                                   ]
-                        if r1 != 0 and r2 != 0:
-                            f += [(
-                                o.name,
-                                o.address,
-                                int(r1),
-                                int(r2),
-                                url,
-                                interval
-                            )]
-                    else:
-                        columns = [_("Managed Object"), _("Address"),
-                                   TableColumn(_("CPU | Usage %"), align="right"),
-                                   TableColumn(_("Memory | Usage %"), align="right"),
-                                   TableColumn(_("Graphic"), format="url"),
-                                   TableColumn(_("Interval days"), align="right")
-                                   ]
-                        f += [(
-                            o.name,
-                            o.address,
-                            int(r1),
-                            int(r2),
-                            url,
-                            interval
-                        )]
+        columns += report_map[reporttype]["columns"]
+        if percent:
+            columns.insert(-1, TableColumn(_("IN %"), align="right"))
+            columns += [TableColumn(_("OUT %"), align="right")]
+        columns += [TableColumn(_("Graphic"), format="url"),
+                    TableColumn(_("Interval days"), align="right")
+                    ]
+        url = report_map[reporttype].get("url", "")
+        rm = ReportMetric()
+        rm.reporttype = reporttype
 
-        if "ping" in reporttype:
-                for o in mos:
-                    client = InfluxDBClient()
-                    query1 = [
-                        "SELECT percentile(\"value\", 98) FROM \"Ping | RTT\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                            o.name, fd, td)]
-                    result1 = client.query(query1)
-                    r = list(result1)
-                    if len(r) > 0:
-                        r = r[0]
-                        rr1 = r["percentile"] * 1000
-                        r1 = round(rr1, 2)
-                    else:
-                        r1 = 0
-                    query2 = [
-                        "SELECT percentile(\"value\", 98) FROM \"Ping | Attempts\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                            o.name, fd, td)]
-                    result2 = client.query(query2)
-                    r = list(result2)
-                    if len(r) > 0:
-                        r = r[0]
-                        rr2 = r["percentile"] * 1000
-                        r2 = round(rr2, 2)
-                    else:
-                        r2 = 0
-                    url = "/ui/grafana/dashboard/script/report.js?title=ping&obj=" + o.name.replace("#","%23") + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
-                    if zero:
-                        columns = [_("Managed Object"), _("Address"),
-                                   TableColumn(_("Ping | RTT (ms)"), align="right"),
-                                   TableColumn(_("Ping | Attempts"), align="right"),
-                                   TableColumn(_("Graphic"), format="url"),
-                                   TableColumn(_("Interval days"), align="right")
-                                   ]
-                        if r1 != 0 and r2 != 0:
-                            f += [(
-                                o.name,
-                                o.address,
-                                r1,
-                                r2,
-                                url,
-                                interval
-                            )]
-                    else:
-                        columns = [_("Managed Object"), _("Address"),
-                                   TableColumn(_("Ping | RTT (ms)"), align="right"),
-                                   TableColumn(_("Ping | Attempts"), align="right"),
-                                   TableColumn(_("Graphic"), format="url"),
-                                   TableColumn(_("Interval days"), align="right")
-                                   ]
-                        f += [(
-                            o.name,
-                            o.address,
-                            r1,
-                            r2,
-                            url,
-                            interval
-                        )]
+        r = []
+        if allow_archive:
+            rm_data = rm.do_query(moss, report_map[reporttype], from_date, to_date)
+        else:
+            rm_data = rm.do_query_ch(moss, report_map[reporttype], from_date, to_date)
+
+        for l, data in rm_data:
+            if not l:
+                continue
+            mo = moss[l[0]]
+            d_url["oname"] = mo.name.replace("#", "%23")
+            if zero and allow_archive and not sum(data):
+                # For InfluxDB query
+                continue
+            if reporttype in ["load_interfaces", "errors"]:
+                d_url["iname"] = l[1]
+                res = [mo.name, mo.address, l[1]]
+                res += data
+                if "load_interfaces" in reporttype:
+                    i_d = iface_dict.get((mo, l[1]), ["", "", ""])
+                    res.insert(1, i_d[0])
+                    if percent:
+                        in_p = float(data[0])
+                        in_p = round((in_p / 1000.0) / (i_d[1] / 100.0), 2) if i_d[1] and in_p > 0 else 0
+                        # in
+                        res.insert(-1, in_p)
+                        # out
+                        out_p = float(data[1])
+                        res += [round((out_p / 1000.0) / (i_d[2] / 100.0), 2) if i_d[2] and out_p > 0 else 0]
+            else:
+                res = [mo.name, mo.address]
+                res += data
+            res += [url % d_url, interval]
+            r += [res]
 
         return self.from_dataset(
             title=self.title,
             columns=columns,
-            data=f,
+            data=r,
             enumerate=True
         )
