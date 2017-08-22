@@ -34,6 +34,7 @@ Ext.define("NOC.sa.managedobject.scripts.TablePreview", {
 
         me.grid = Ext.create("Ext.grid.Panel", {
             store: me.store,
+            features: [{ftype: 'grouping'}],
             columns: me.columns
         });
 
