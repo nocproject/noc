@@ -85,7 +85,7 @@ class RuleSet(object):
                     rx = re.compile(rule.profile)
                     rule_profiles = [p for p in profiles if rx.search(p)]
                     rx_profiles[rule.profile] = rule_profiles
-                # Apply rule to appropriative chain
+                # Apply rules to appropriative chains
                 for p in rule_profiles:
                     rules[p, rule.chain] += [rule]
                 n += 1
@@ -99,7 +99,7 @@ class RuleSet(object):
         )
         # Apply lookup solution
         self.rules = dict((k, self.lookup_cls(rules[k])) for k in rules)
-        logger.info("%d rules are loaded in the %d profiles",
+        logger.info("%d rules are loaded in the %d chains",
                     n, len(self.rules))
 
     def find_rule(self, event, vars):
