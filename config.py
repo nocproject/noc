@@ -478,6 +478,11 @@ class Config(BaseConfig):
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
 
+    class tests(ConfigSection):
+        enable_coverage = BooleanParameter(default=False)
+        events_path = StringParameter(default="collections/test.events")
+        profilecheck_path = StringParameter(default="collections/test.profilecheck")
+
     def __init__(self):
         self.setup_logging()
 
