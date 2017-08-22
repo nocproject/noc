@@ -127,10 +127,10 @@ class Script(BaseScript):
             i = self.rx_sh_int_des2.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
 
         interfaces = []
-        mac = None
-        ifindex = []
         mtu = []
         for res in i:
+            mac = None
+            ifindex = 0
             name = res[0].strip()
             if (
                 self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
@@ -171,6 +171,8 @@ class Script(BaseScript):
                     "snmp_ifindex": ifindex,
                     "enabled_afi": []
                 }
+            if ifindex:
+                sub["snmp_ifindex"] = ifindex
             if mac:
                 sub["mac"] = mac
             iface = {
@@ -179,10 +181,11 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat,
                 "description": description.strip(),
-                "snmp_ifindex": ifindex,
                 "enabled_protocols": [],
                 "subinterfaces": [sub]
             }
+            if ifindex:
+                iface["snmp_ifindex"] = ifindex
             if mac:
                 iface["mac"] = mac
 
