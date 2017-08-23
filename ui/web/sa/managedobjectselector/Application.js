@@ -132,9 +132,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 {
                     xtype: "fieldset",
                     title: __("Filter by Object Attributes"),
-                    layout: "hbox",
                     defaults: {
-                        labelAlign: "top",
+                        labelAlign: "left",
                         padding: 4
                     },
                     items: [
@@ -174,9 +173,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 {
                     xtype: "fieldset",
                     title: __("Filter by Network Attributes"),
-                    layout: "hbox",
                     defaults: {
-                        labelAlign: "top",
+                        labelAlign: "left",
                         padding: 4
                     },
                     items: [
