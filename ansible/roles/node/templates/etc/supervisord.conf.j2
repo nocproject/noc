@@ -36,7 +36,7 @@ chown = {{ noc_user }}
 
 {% if noc_env_type == "prod" %}
 [inet_http_server]
-port = {{ ansible_nodename }}:9001
+port = {{ ansible_nodename }}:9009
 username = {{ noc_user }}
 password = {{ supervisorctl_key }}
 {% endif %}
