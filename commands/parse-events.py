@@ -89,13 +89,17 @@ class Command(BaseCommand):
                 key=operator.itemgetter(1),
                 reverse=True
             )
-            s_total = sum(stats[k] for k in stats if not k.startswith("Unknown | "))
+            s_total = sum(stats[k] for k in stats if not self.is_ignored(k))
             data = [["Events", "%", "Event class"]]
             for ecls, qty in s_data:
                 data += [[str(qty), "%3.2f%%" % (float(stats[ecls] * 100) / float(total)), ecls]]
             data += [["", "%3.2f%%" % (float(s_total * 100) / total), "Classification Quality"]]
             self.print("Event classes summary:")
             self.print(format_table([4, 6, 10], data))
+
+    @staticmethod
+    def is_ignored(ecls):
+        return ecls.startswith("Unknown | ") and ecls != "Unknown | Ignore"
 
     def read_syslog(self, f):
         now = datetime.datetime.now()
