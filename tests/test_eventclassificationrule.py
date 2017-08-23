@@ -67,7 +67,6 @@ def test_event(ruleset, event):
     e_vars = e.raw_vars.copy()
     if e.source == "SNMP Trap":
         e_vars.update(MIB.resolve_vars(e.raw_vars))
-    e_vars = e.raw_vars.copy()
     rule, r_vars = ruleset.find_rule(e, e_vars)
     assert rule is not None, "Cannot find matching rule"
     assert rule.event_class == expected_class, "Mismatched event class %s vs %s" % (
