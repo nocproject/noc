@@ -27,7 +27,6 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventlog import EventLog
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.mib import MIB
-from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 import noc.inv.models.interface
@@ -101,7 +100,6 @@ class ClassifierService(Service):
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
-        self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
         self.alter_handlers = []
         self.unclassified_codebook_depth = 5
@@ -171,19 +169,6 @@ class ClassifierService(Service):
                         self.logger.debug("    %s", c_name)
             n += 1
         self.logger.info("%d triggers has been loaded to %d classes", n, cn)
-
-    def load_enumerations(self):
-        self.logger.info("Loading enumerations")
-        n = 0
-        self.enumerations = {}
-        for e in Enumeration.objects.all():
-            r = {}
-            for k, v in e.values.items():
-                for vv in v:
-                    r[vv.lower()] = k
-            self.enumerations[e.name] = r
-            n += 1
-        self.logger.info("%d enumerations loaded" % n)
 
     def load_suppression(self):
         """

@@ -18,6 +18,7 @@ from .cloningrule import CloningRule
 from noc.config import config
 from noc.fm.models.cloneclassificationrule import CloneClassificationRule
 from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.fm.models.enumeration import Enumeration
 from noc.core.handler import get_handler
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.perf import metrics
@@ -35,6 +36,7 @@ E_SRC_SNMP_TRAP = "SNMP Trap"
 class RuleSet(object):
     def __init__(self):
         self.rules = {}  # (profile, chain) -> [rule, ..., rule]
+        self.enumerations = {}  # name -> value -> enumerated
         self.lookup_cls = None
         self.default_rule = None
 
@@ -101,6 +103,21 @@ class RuleSet(object):
         self.rules = dict((k, self.lookup_cls(rules[k])) for k in rules)
         logger.info("%d rules are loaded in the %d chains",
                     n, len(self.rules))
+        #
+        self.load_enumerations()
+
+    def load_enumerations(self):
+        logger.info("Loading enumerations")
+        n = 0
+        self.enumerations = {}
+        for e in Enumeration.objects.all():
+            r = {}
+            for k, v in e.values.items():
+                for vv in v:
+                    r[vv.lower()] = k
+            self.enumerations[e.name] = r
+            n += 1
+        logger.info("%d enumerations loaded" % n)
 
     def find_rule(self, event, vars):
         """
