@@ -131,7 +131,7 @@ class RuleSet(object):
         :rtype: tuple of (EventClass, dict)
         """
         # Get chain
-        src = event.raw_vars.get("source")
+        src = event.source
         if src == E_SRC_SYSLOG:
             chain = "syslog"
             if "message" not in event.raw_vars:

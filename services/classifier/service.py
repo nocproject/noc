@@ -600,11 +600,13 @@ class ClassifierService(Service):
         self.logger.info("[%s|%s|%s] Managed object found",
                          event_id, mo.name, mo.address)
         ts = datetime.datetime.fromtimestamp(ts)
+        source = data.pop("source", "other")
         e = ActiveEvent(
             id=event_id,
             timestamp=ts,
             start_timestamp=ts,
             managed_object=mo,
+            source=source,
             raw_vars=data,
             repeats=1
         )

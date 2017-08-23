@@ -108,8 +108,8 @@ class Command(BaseCommand):
                 timestamp=now,
                 start_timestamp=now,
                 managed_object=self.managed_object,
+                source="syslog",
                 raw_vars={
-                    "source": "syslog",
                     "collector": "default",
                     "message": line[:-1]
                 },

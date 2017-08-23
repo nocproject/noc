@@ -50,11 +50,14 @@ def event(request):
         profile_name=cfg.get("profile__name", DEFAULT_PROFILE)
     )
     now = datetime.datetime.now()
+    data = cfg.get("data", {})
+    source = data.pop("source", "other")
     event = ActiveEvent(
         timestamp=now,
         start_timestamp=now,
         managed_object=mo,
-        raw_vars=cfg.get("data", {}),
+        source=source,
+        raw_vars=data,
         repeats=1
     )
     request.fixturename = "events-%s" % cfg.get("uuid")
