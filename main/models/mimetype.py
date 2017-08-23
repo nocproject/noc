@@ -2,10 +2,12 @@
 # ---------------------------------------------------------------------
 # Database models for main module
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import os
 # Third-party modules
 from django.db import models
 # NOC modules
