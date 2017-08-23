@@ -56,6 +56,12 @@ class BaseCommand(object):
         loglevel = cmd_options.pop("loglevel")
         if loglevel:
             self.setup_logging(loglevel)
+        enable_profiling = cmd_options.get("enable_profiling", False)
+        self.print(enable_profiling)
+        if enable_profiling:
+            # Start profiler
+            import yappi
+            yappi.start()
         try:
             return self.handle(*args, **cmd_options) or 0
         except CommandError as e:
@@ -73,6 +79,19 @@ class BaseCommand(object):
         except Exception:
             error_report()
             return 2
+        finally:
+            if enable_profiling:
+                i = yappi.get_func_stats()
+                i.print_all(
+                    out=self.stdout,
+                    columns={
+                        0: ("name", 80),
+                        1: ("ncall", 10),
+                        2: ("tsub", 8),
+                        3: ("ttot", 8),
+                        4: ("tavg", 8)
+                    }
+                )
 
     def create_parser(self):
         return argparse.ArgumentParser()
@@ -111,6 +130,11 @@ class BaseCommand(object):
             dest="loglevel",
             const="debug",
             help="Debugging output"
+        )
+        group.add_argument(
+            "--enable-profiling",
+            action="store_true",
+            help="Enable built-in profiler"
         )
 
     def add_arguments(self, parser):
