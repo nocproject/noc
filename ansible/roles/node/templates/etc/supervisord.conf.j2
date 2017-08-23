@@ -4,9 +4,11 @@ supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 [ctlplugin:serialrestart]
 supervisor.ctl_factory = supervisorserialrestart.controllerplugin:make_serialrestart_controllerplugin
 
+{% if noc_env_type == "prod" %}
 [ctlplugin:wildcards]
 supervisor.ctl_factory = supervisorwildcards.controllerplugin:make_wildcards_controllerplugin
 match_group = 1
+{% endif %}
 
 [supervisorctl]
 serverurl = unix://{{ supervisor_sock_path }}
