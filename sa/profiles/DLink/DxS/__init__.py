@@ -263,22 +263,22 @@ class Profile(BaseProfile):
         return ports
 
     rx_vlan = re.compile(
-        r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*)\n"
-        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*\n"
-        r"(VLAN Advertisement\s+:.*\n)?"
-        r"(Current )?Tagged ports\s+:(?P<tagged_ports>.*)\n"
-        r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*)",
-        re.IGNORECASE | re.MULTILINE)
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*?)\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*?\n"
+        r"(VLAN Advertisement\s+:.*?\n)?"
+        r"(Current )?Tagged ports\s+:(?P<tagged_ports>.*?)\n"
+        r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*?)",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
     rx_vlan1 = re.compile(
-        r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*)\n"
-        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*\n"
-        r"(VLAN Advertisement\s+:.*\n)?"
-        r"Member Ports\s+:(?P<member_ports>.*)\n"
-        r"(Static ports\s+:.*\n)?"
-        r"((Current )?Tagged Ports\s+:.*\n)?"
-        r"(VLAN Trunk Ports\s+:.*\n)?"
-        r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*)",
-        re.IGNORECASE | re.MULTILINE)
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*?)\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*?\n"
+        r"(VLAN Advertisement\s+:.*?\n)?"
+        r"Member Ports\s+:(?P<member_ports>.*?)\n"
+        r"(Static ports\s+:.*?\n)?"
+        r"((Current )?Tagged Ports\s+:.*?\n)?"
+        r"(VLAN Trunk Ports\s+:.*?\n)?"
+        r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*?)",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def get_vlan(self, script, v):
         match = self.rx_vlan1.search(v)
