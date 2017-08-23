@@ -64,6 +64,12 @@ class BaseCommand(object):
         except KeyboardInterrupt:
             self.print("Ctrl+C")
             return 3
+        except AssertionError as e:
+            if e.args[0]:
+                self.print("ERROR: %s" % e.args[0])
+            else:
+                self.print("Assertion error")
+            return 4
         except Exception:
             error_report()
             return 2
