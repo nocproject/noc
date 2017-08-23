@@ -21,6 +21,8 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
+from noc.core.fileutils import iter_open
+from noc.lib.text import format_table
 
 
 class Command(BaseCommand):
@@ -36,12 +38,18 @@ class Command(BaseCommand):
             help="Input format"
         )
         parser.add_argument(
+            "--progress",
+            action="store_true",
+            help="Display progress"
+        )
+        parser.add_argument(
             "paths",
             nargs=argparse.REMAINDER,
             help="List of input file paths"
         )
 
-    def handle(self, paths, profile, format, *args, **options):
+    def handle(self, paths, profile, format, progress=False,
+               *args, **options):
         assert profile_loader.get_profile(profile), "Invalid profile: %s" % profile
         t0 = time.time()
         ruleset = RuleSet()
@@ -61,7 +69,7 @@ class Command(BaseCommand):
         for p in paths:
             if not os.path.isfile(p):
                 continue
-            with open(p) as f:
+            for f in iter_open(p):
                 for event in reader(f):
                     e_vars = event.raw_vars.copy()
                     if event.source == "SNMP Trap":
@@ -69,18 +77,25 @@ class Command(BaseCommand):
                     rule, r_vars = ruleset.find_rule(event, e_vars)
                     stats[rule.event_class.name] += 1
                     total += 1
+                    if progress and total % 1000 == 0:
+                        self.print("%d records processed" % total)
         dt = time.time() - t0
         self.print("%d events processed in %.2fms (%.fevents/sec)" % (
             total, dt * 1000, float(total) / dt
         ))
-        summary = sorted(
-            [(k, stats[k]) for k in stats],
-            key=operator.itemgetter(0),
-            reverse=True
-        )
-        self.print("Event classes summary:")
-        for ecls, n in summary:
-            self.print("%8d\t%3.2f%%\t%s" % (n, float(n * 100) / float(total), ecls))
+        if stats:
+            s_data = sorted(
+                [(k, stats[k]) for k in stats],
+                key=operator.itemgetter(1),
+                reverse=True
+            )
+            s_total = sum(stats[k] for k in stats if not k.startswith("Unknown | "))
+            data = [["Events", "%", "Event class"]]
+            for ecls, qty in s_data:
+                data += [[str(qty), "%3.2f%%" % (float(stats[ecls] * 100) / float(total)), ecls]]
+            data += [["", "%3.2f%%" % (float(s_total * 100) / total), "Classification Quality"]]
+            self.print("Event classes summary:")
+            self.print(format_table([4, 6, 10], data))
 
     def read_syslog(self, f):
         now = datetime.datetime.now()
@@ -92,7 +107,7 @@ class Command(BaseCommand):
                 raw_vars={
                     "source": "syslog",
                     "collector": "default",
-                    "message": line[-1]
+                    "message": line[:-1]
                 },
                 repeats=1
             )
