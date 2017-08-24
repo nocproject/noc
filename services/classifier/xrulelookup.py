@@ -11,9 +11,9 @@ from collections import defaultdict
 import operator
 import logging
 import cachetools
+import sre_parse
 # Third-party modules
 import esm
-from pyparsing import *
 import bitarray
 # NOC modules
 from noc.services.classifier.rulelookup import RuleLookup
@@ -47,13 +47,7 @@ class XRuleLookup(RuleLookup):
                     continue
                 # Split to keywords
                 for pattern in (p.key_re, p.value_re):
-                    ps = "".join(self.parse_string(pattern))
-                    ps = ps.replace("\\", "")
-                    for keyword in ps.split(QSEP):
-                        if not keyword:
-                            continue
-                        if not any(c for c in keyword if c in alphanums):
-                            continue
+                    for keyword in self.parse(pattern):
                         kw_rules[keyword].add(rule)
         self.kwmask = bitarray.bitarray(len(kw_rules))
         self.kwmask.setall(False)
@@ -86,40 +80,23 @@ class XRuleLookup(RuleLookup):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_pattern_cache"))
-    def parse_string(cls, s):
-        return cls.get_parser().parseString(s)
-
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_parser_cache"))
-    def get_parser(cls):
-        """
-        Python regex parser
-        """
-        def ignore(tokens):
-            return QSEP
-
-        # ParserElement.setDefaultWhitespaceChars("")
-        macro_codes = "AbBdDsSwWZ0123456789"
-        literal_chars = [c for c in printables if c not in r"\[]{}().*?+|$^"] + list(" \t")
-        LBRACK, RBRACK, LBRACE, RBRACE, LPAREN, RPAREN, PIPE = map(Literal, "[]{}()|")
-        MACRO = Combine("\\" + oneOf(list(macro_codes))).setParseAction(ignore)
-        ESCAPED = Combine("\\" + oneOf([c for c in printables if c not in macro_codes]))
-        LITERAL = (ESCAPED | oneOf(list(literal_chars))).leaveWhitespace()
-        RANGE = Combine(LBRACK + SkipTo(RBRACK, ignore=ESCAPED) + RBRACK).setParseAction(ignore)
-        REPETITION = (
-            (LBRACE + Word(nums) + RBRACE) |
-            (LBRACE + Word(nums) + "," + Word(nums) + RBRACE) |
-            (oneOf(list("*+?")) + Optional(Literal("?")))
-        )
-        SPECIAL = oneOf(list(".^$")).setParseAction(ignore)
-        GROUP_OPT = Literal("?") + (oneOf(list("iLmsux:#=!<P")))
-
-        RE = Forward()
-        GROUP = (LPAREN + Optional(GROUP_OPT) + RE + RPAREN).setParseAction(ignore)
-        ELEMENTARY_RE = (LITERAL | MACRO | RANGE | SPECIAL | GROUP)
-        SIMPLE_RE = OneOrMore((ELEMENTARY_RE + REPETITION).setParseAction(ignore) | ELEMENTARY_RE).leaveWhitespace()
-        RE << SIMPLE_RE + ZeroOrMore(PIPE + RE)
-        return RE
-
-# Global parser
-parser = XRuleLookup.get_parser()
+    def parse(cls, s):
+        keywords = []
+        current = []
+        quoted = False
+        for t, x in sre_parse.parse(s):
+            if t == "literal":
+                if x == 92:  # \
+                    if quoted:
+                        current += ["\\"]
+                        quoted = False
+                    else:
+                        quoted = True
+                else:
+                    current += [chr(x)]
+            elif current:
+                keywords += ["".join(current)]
+                current = []
+        if current:
+            keywords += ["".join(current)]
+        return keywords
