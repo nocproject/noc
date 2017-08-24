@@ -2,8 +2,9 @@
     "name": "Subscribers | Summary",
     "$collection": "pm.metrictypes",
     "uuid": "57554f8d-dcf6-43fa-bfba-382b8db8455e",
+    "scope__name": "Subscriber",
+    "field_name": "summary",
+    "field_type": "UInt32",
     "description": "Total active IPoE sessions on the box",
-    "scope": "o",
-    "measure": "sessions",
-    "vector_tag": ""
+    "measure": "sessions"
 }

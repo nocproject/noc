@@ -1,9 +1,10 @@
 {
-  "name": "SLA | ICMP RTT",
-  "$collection": "pm.metrictypes",
-  "uuid": "7134f186-5bc2-4e59-874a-24da8a671b66",
-  "description": "Measured round trip time for ICMP packets in seconds",
-  "scope": "p",
-  "measure": "s",
-  "vector_tag": ""
+    "name": "SLA | ICMP RTT",
+    "$collection": "pm.metrictypes",
+    "uuid": "7134f186-5bc2-4e59-874a-24da8a671b66",
+    "scope__name": "SLA",
+    "field_name": "icmp_rtt",
+    "field_type": "UInt32",
+    "description": "Measured round trip time for ICMP packets in microseconds",
+    "measure": "ms"
 }

@@ -1,9 +1,9 @@
 {
-    "name": "CPU | Usage",
+    "name": "CPU | Usage | 5sec",
     "$collection": "pm.metrictypes",
-    "uuid": "d43538e6-d6f7-44c5-b8eb-049c5e8af6f0",
+    "uuid": "3f87c1f9-e36e-458b-9d73-5fb15f6ba6d1",
     "scope__name": "CPU",
-    "field_name": "usage",
+    "field_name": "load_5s",
     "field_type": "UInt8",
     "description": "CPU Usage in percents",
     "measure": "%"

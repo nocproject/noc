@@ -8,13 +8,62 @@ stages:
   - build
   - upload
 
+test:empty:
+  stage: test
+  image: registry.getnoc.com/noc/nocmc/feature_chmetrics:dev
+  variables:
+    NOC_PG_DB: noc
+    NOC_PG_USER: noc
+    NOC_PG_PASSWORD: noc
+  services:
+    - name: registry.getnoc.com/infrastructure/postgres:master
+      alias: postgres 
+    - name: registry.getnoc.com/infrastructure/mongo:master
+      alias: mongo
+  script:
+    - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
+    - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
+    - mkdir /opt/noc/collections
+    - mv src/* /opt/noc/collections
+    - ls /opt/noc/collections
+    - cd /opt/noc
+    - python manage.py syncdb --noinput
+    - python manage.py migrate
+    - python commands/collection.py sync
+  tags:
+    - docker
+
+test:with data:
+  stage: test
+  image: registry.getnoc.com/noc/nocmc/feature_chmetrics:dev
+  variables:
+    NOC_PG_DB: noc
+    NOC_PG_USER: noc
+    NOC_PG_PASSWORD: noc
+  services:
+    - name: registry.getnoc.com/infrastructure/postgres:dev
+      alias: postgres 
+    - name: registry.getnoc.com/infrastructure/mongo:dev
+      alias: mongo
+  script:
+    - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
+    - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
+    - mkdir /opt/noc/collections
+    - mv src/* /opt/noc/collections
+    - ls /opt/noc/collections
+    - cd /opt/noc
+    - python manage.py migrate
+    - python commands/collection.py sync
+  tags:
+    - docker
+
 build:
   stage: build
   image: python:2.7-alpine
   script:
     - mkdir -p dist 
     - ./build.py package.json
-    - echo ${CI_BUILD_REF} > dist/collections.latest
+    - echo ${CI_BUILD_REF} > dist/collections-chmetrics.latest
   tags:
     - docker
   artifacts:
@@ -23,51 +72,7 @@ build:
     expire_in: 3 min
   only:
     - master@noc/collections
-
-test:empty:
-  stage: test
-  image: registry.getnoc.com/noc/noc-docker:dev
-  variables:
-    NOC_PG_DB: noc
-    NOC_PG_USER: noc
-    NOC_PG_PASSWORD: noc
-  services:
-    - registry.getnoc.com/infrastructure/postgres:master
-    - registry.getnoc.com/infrastructure/mongo:master
-  script:
-    - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
-    - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | awk -F '=' '{print $2}')
-    - mkdir /opt/noc/collections
-    - mv src/* /opt/noc/collections
-    - ls /opt/noc/collections
-    - cd /opt/noc
-    - ./noc migrate
-    - ./noc collection sync
-  tags:
-    - docker
-
-test:with data:
-  stage: test
-  image: registry.getnoc.com/noc/noc-docker:dev
-  variables:
-    NOC_PG_DB: noc
-    NOC_PG_USER: noc
-    NOC_PG_PASSWORD: noc
-  services:
-    - registry.getnoc.com/infrastructure/postgres:dev
-    - registry.getnoc.com/infrastructure/mongo:dev
-  script:
-    - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
-    - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | awk -F '=' '{print $2}')
-    - mkdir /opt/noc/collections
-    - mv src/* /opt/noc/collections
-    - ls /opt/noc/collections
-    - cd /opt/noc
-    - ./noc migrate
-    - ./noc collection sync
-    - ./noc verify-model
-  tags:
-    - docker
+    - chmetrics@noc/collections
 
 upload:
   stage: upload 
@@ -78,3 +83,4 @@ upload:
     - docker 
   only:
     - master@noc/collections
+    - chmetrics@noc/collections
