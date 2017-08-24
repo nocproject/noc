@@ -12,7 +12,7 @@ import noc.lib.nosql as nosql
 
 class DataSource(nosql.EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     name = nosql.StringField()
     datasource = nosql.StringField()

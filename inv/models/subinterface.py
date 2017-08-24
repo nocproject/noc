@@ -42,7 +42,7 @@ TUNNEL_TYPES = (
 class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             ("managed_object", "ifindex"),
             ("managed_object", "vlan_ids"),

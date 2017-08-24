@@ -36,6 +36,7 @@ id_lock = Lock()
 class MetricType(Document):
     meta = {
         "collection": "noc.metrictypes",
+        "strict": False,
         "json_collection": "pm.metrictypes",
         "json_depends_on": [
             "pm.metricscopes"

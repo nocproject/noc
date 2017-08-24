@@ -58,7 +58,8 @@ class LinkSettings(EmbeddedDocument):
 
 class MapSettings(Document):
     meta = {
-        "collection": "noc.mapsettings"
+        "collection": "noc.mapsettings",
+        "strict": False
     }
 
     # Segment or selector id

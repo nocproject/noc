@@ -30,7 +30,7 @@ class SyncCache(Document):
     """
     meta = {
         "collection": "noc.synccaches",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [("model_id", "object_id"),
                     ("sync_id", "instance_id"),
                     ("sync_id", "instance_id", "expire"),

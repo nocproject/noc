@@ -25,7 +25,7 @@ class MACDB(Document):
     """
     meta = {
         "collection": "noc.macs",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["mac", "interface"]
     }
     # Todo: Add Validation

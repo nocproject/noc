@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class Favorites(Document):
     meta = {
         "collection": "noc.favorites",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["user", ("user", "app")]
     }
 

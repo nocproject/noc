@@ -17,7 +17,7 @@ class UnknownModel(Document):
     """
     meta = {
         "collection": "noc.unknown_models",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [("vendor", "managed_object", "part_no")]
     }
 

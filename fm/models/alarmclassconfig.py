@@ -20,7 +20,7 @@ class AlarmClassConfig(Document):
     """
     meta = {
         "collection": "noc.alarmclassconfigs",
-        "allow_inheritance": False
+        "strict": False
     }
 
     alarm_class = PlainReferenceField(AlarmClass, unique=True)

@@ -14,7 +14,7 @@ from mongoengine.fields import StringField, DateTimeField
 class NewPrefixDiscoveryLog(Document):
     meta = {
         "collection": "noc.log.discovery.prefix.new",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["-timestamp"]
     }
     timestamp = DateTimeField()

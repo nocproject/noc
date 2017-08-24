@@ -14,7 +14,7 @@ from mongoengine.fields import StringField
 class Firmware(Document):
     meta = {
         "collection": "noc.firmware",
-        "allow_inheritance": False,
+        "strict": False,
     }
     # Firmware name
     name = StringField(unique=True)

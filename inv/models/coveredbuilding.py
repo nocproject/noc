@@ -18,7 +18,7 @@ from noc.lib.nosql import PlainReferenceField
 class CoveredBuilding(Document):
     meta = {
         "collection": "noc.coveredbuildings",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["building", "coverage"]
     }
     coverage = PlainReferenceField(Coverage)

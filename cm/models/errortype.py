@@ -19,6 +19,7 @@ from noc.lib.text import quote_safe_path
 class ErrorType(Document):
     meta = {
         "collection": "noc.errortypes",
+        "strict": False,
         "json_collection": "cm.errortypes"
     }
     name = StringField(unique=True)

@@ -26,7 +26,8 @@ id_lock = Lock()
 ])
 class PhoneRangeProfile(Document):
     meta = {
-        "collection": "noc.phonerangeprofiles"
+        "collection": "noc.phonerangeprofiles",
+        "strict": False
     }
 
     name = StringField(unique=True)

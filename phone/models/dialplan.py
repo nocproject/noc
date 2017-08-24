@@ -24,7 +24,8 @@ id_lock = Lock()
 ])
 class DialPlan(Document):
     meta = {
-        "collection": "noc.dialplans"
+        "collection": "noc.dialplans",
+        "strict": False
     }
 
     name = StringField(unique=True)

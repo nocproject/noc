@@ -95,7 +95,7 @@ class SLAProfile(Document):
     """
     meta = {
         "collection": "noc.sla_profiles",
-        "allow_inheritance": False
+        "strict": False
     }
     name = StringField(unique=True)
     description = StringField()

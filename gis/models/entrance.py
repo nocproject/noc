@@ -13,7 +13,7 @@ from mongoengine.fields import StringField, IntField, BooleanField
 
 class Entrance(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     number = StringField()
     # Floors

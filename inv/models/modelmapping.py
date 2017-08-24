@@ -16,7 +16,7 @@ from noc.lib.nosql import PlainReferenceField
 class ModelMapping(Document):
     meta = {
         "collection": "noc.modelmappings",
-        "allow_inheritance": False
+        "strict": False
     }
 
     # Vendor, as returned by get_inventory

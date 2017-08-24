@@ -33,7 +33,7 @@ ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "timestamp", "root", "-severity",
             ("alarm_class", "managed_object"),

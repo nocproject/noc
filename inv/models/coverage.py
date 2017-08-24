@@ -14,7 +14,7 @@ from mongoengine.fields import (StringField, BooleanField)
 class Coverage(Document):
     meta = {
         "collection": "noc.coverage",
-        "allow_inheritance": False,
+        "strict": False,
     }
     # Subscriber name
     name = StringField(unique=True)

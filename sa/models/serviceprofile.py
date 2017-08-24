@@ -27,7 +27,8 @@ id_lock = Lock()
 @on_save
 class ServiceProfile(Document):
     meta = {
-        "collection": "noc.serviceprofiles"
+        "collection": "noc.serviceprofiles",
+        "strict": False
     }
     name = StringField(unique=True)
     description = StringField()

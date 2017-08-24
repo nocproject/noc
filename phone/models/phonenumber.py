@@ -39,6 +39,7 @@ class LinkedNumber(EmbeddedDocument):
 class PhoneNumber(Document):
     meta = {
         "collection": "noc.phonenumbers",
+        "strict": False,
         "indexes": [
             "linked_numbers.number"
         ]

@@ -25,6 +25,7 @@ class ValidationPolicyItem(EmbeddedDocument):
 class ValidationPolicySettings(Document):
     meta = {
         "collection": "noc.validationpolicysettings",
+        "strict": False,
         "indexes": [("model_id", "object_id")]
     }
     model_id = StringField()

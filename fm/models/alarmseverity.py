@@ -29,7 +29,7 @@ class AlarmSeverity(Document):
     """
     meta = {
         "collection": "noc.alarmseverities",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["severity"],
         "json_collection": "fm.alarmseverities"
     }

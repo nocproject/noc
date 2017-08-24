@@ -21,7 +21,7 @@ from noc.lib.text import quote_safe_path
 
 class EventClassificationRuleVar(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     name = fields.StringField(required=True)
     value = fields.StringField(required=False)
@@ -37,7 +37,7 @@ class EventClassificationRuleVar(EmbeddedDocument):
 class EventClassificationRuleCategory(Document):
     meta = {
         "collection": "noc.eventclassificationrulecategories",
-        "allow_inheritance": False
+        "strict": False
     }
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
@@ -60,7 +60,7 @@ class EventClassificationRuleCategory(Document):
 
 class EventClassificationPattern(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     key_re = fields.StringField(required=True)
     value_re = fields.StringField(required=True)
@@ -78,7 +78,7 @@ class EventClassificationRule(Document):
     """
     meta = {
         "collection": "noc.eventclassificationrules",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.eventclassificationrules",
         "json_depends_on": [
             "fm.eventclasses"

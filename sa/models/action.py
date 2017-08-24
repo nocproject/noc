@@ -57,6 +57,7 @@ class ActionParameter(EmbeddedDocument):
 class Action(Document):
     meta = {
         "collection": "noc.actions",
+        "strict": False,
         "json_collection": "sa.actions"
     }
     uuid = UUIDField(unique=True)

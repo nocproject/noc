@@ -46,6 +46,7 @@ class DashboardCell(EmbeddedDocument):
 class DashboardLayout(Document):
     meta = {
         "collection": "noc.dashboardlayouts",
+        "strict": False,
         "json_collection": "bi.dashboardlayouts"
     }
 

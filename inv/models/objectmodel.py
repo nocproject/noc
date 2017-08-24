@@ -33,7 +33,7 @@ id_lock = Lock()
 
 class ObjectModelConnection(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     name = StringField()
     description = StringField()
@@ -98,7 +98,7 @@ class ObjectModel(Document):
     """
     meta = {
         "collection": "noc.objectmodels",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             ("vendor", "data.asset.part_no"),
             ("vendor", "data.asset.order_part_no")
@@ -292,7 +292,7 @@ class ObjectModel(Document):
 class ModelConnectionsCache(Document):
     meta = {
         "collection": "noc.inv.objectconnectionscache",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["model", ("type", "gender")]
     }
     # Connection type

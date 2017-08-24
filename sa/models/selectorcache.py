@@ -28,7 +28,7 @@ q_lock = Lock()
 class SelectorCache(Document):
     meta = {
         "collection": "noc.cache.selector",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["object", "selector", "vc_domain"]
     }
     object = IntField(required=True)

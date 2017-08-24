@@ -39,6 +39,7 @@ id_lock = Lock()
 class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",
+        "strict": False,
         "indexes": ["parent"]
     }
 

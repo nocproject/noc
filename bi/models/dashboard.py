@@ -35,7 +35,7 @@ class DashboardAccess(EmbeddedDocument):
 class Dashboard(Document):
     meta = {
         "collection": "noc.dashboards",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "owner", "tags"
         ]

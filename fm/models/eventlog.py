@@ -19,7 +19,7 @@ EVENT_STATE_CHOICES = [
 
 class EventLog(document.EmbeddedDocument):
     meta = {
-        "allow_inheritance": False,
+        "strict": False,
     }
     timestamp = fields.DateTimeField()
     from_status = fields.StringField(

@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 class SlowOp(Document):
     meta = {
         "collection": "noc.slowops",
+        "strict": False,
         "indexes": [
             {
                 "fields": ["expire"],

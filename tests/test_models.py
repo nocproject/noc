@@ -9,7 +9,7 @@
 # Third-party modules
 import pytest
 # NOC modules
-from noc.models import iter_model_id, get_model, get_model_id
+from noc.models import iter_model_id, get_model, get_model_id, is_document
 
 
 def test_iter_model_id():
@@ -43,3 +43,12 @@ def test_model_id(model_id):
     if model:
         real_model_id = get_model_id(model)
         assert real_model_id == model_id
+
+
+def test_document(model_id):
+    model = get_model(model_id)
+    assert model
+    if not is_document(model):
+        return
+    assert model._meta.get("allow_inheritance") is None, "'allow_inheritance' is obsolete and must not be used"
+    assert model._meta.get("strict") == False, "Document must be declared as {'strict': False}"

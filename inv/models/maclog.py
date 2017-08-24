@@ -17,7 +17,7 @@ class MACLog(Document):
     """
     meta = {
         "collection": "noc.mac_log",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["mac", "-timestamp"]
     }
     # Todo: Add Validation

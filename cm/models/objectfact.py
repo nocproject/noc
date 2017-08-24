@@ -19,6 +19,7 @@ from noc.lib.nosql import ForeignKeyField
 class ObjectFact(Document):
     meta = {
         "collection": "noc.objectfacts",
+        "strict": False,
         "indexes": [
             "object",
             "attrs.rule"

@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class TextIndex(Document):
     meta = {
         "collection": "noc.textindex",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             ("model", "object"),
             {

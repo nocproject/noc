@@ -28,7 +28,7 @@ class ManagementPolicy(EmbeddedDocument):
 class FirmwarePolicy(Document):
     meta = {
         "collection": "noc.firmwarepolicy",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["platform", "firmware"]
     }
     # Platform (Matched with get_version)

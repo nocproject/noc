@@ -28,7 +28,7 @@ class Link(Document):
     """
     meta = {
         "collection": "noc.links",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["interfaces", "linked_objects"]
     }
 

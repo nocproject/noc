@@ -16,7 +16,7 @@ from noc.lib.prettyjson import to_json
 class OIDAlias(Document):
     meta = {
         "collection": "noc.oidaliases",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.oidaliases"
     }
 

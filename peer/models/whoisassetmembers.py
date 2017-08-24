@@ -19,7 +19,7 @@ class WhoisASSetMembers(Document):
     """
     meta = {
         "collection": "noc.whois.asset.members",
-        "allow_inheritance": False
+        "strict": False
     }
 
     as_set = StringField(primary_key=True, unique=True)

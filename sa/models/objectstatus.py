@@ -18,7 +18,7 @@ from noc.fm.models.outage import Outage
 class ObjectStatus(Document):
     meta = {
         "collection": "noc.cache.object_status",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["object"]
     }
     # Object id

@@ -16,7 +16,7 @@ from mongoengine.fields import IntField, DateTimeField
 class Outage(Document):
     meta = {
         "collection": "noc.fm.outages",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["object", ("object", "-start")]
     }
 

@@ -32,7 +32,7 @@ class SLAProbeTest(EmbeddedDocument):
 class SLAProbe(Document):
     meta = {
         "collection": "noc.sla_probes",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "managed_object"
         ]

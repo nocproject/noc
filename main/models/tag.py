@@ -16,7 +16,7 @@ from noc.lib.db import QTags
 class Tag(Document):
     meta = {
         "collection": "noc.tags",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["models"]
     }
 

@@ -23,7 +23,7 @@ from noc.core.span import get_current_span
 class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "root",
             "timestamp",

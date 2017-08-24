@@ -20,7 +20,7 @@ class ForwardingInstance(Document):
     """
     meta = {
         "collection": "noc.forwardinginstances",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["managed_object"]
     }
     managed_object = ForeignKeyField(ManagedObject)

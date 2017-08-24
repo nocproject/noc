@@ -14,7 +14,7 @@ from mongoengine.fields import StringField, IntField
 class UserState(Document):
     meta = {
         "collection": "noc.userstate",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             ("user_id", "key")
         ]

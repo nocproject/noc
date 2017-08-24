@@ -23,7 +23,7 @@ class ArchivedEvent(document.Document):
     """
     meta = {
         "collection": "noc.events.archive",
-        "allow_inheritance": True,
+        "strict": False,
         "indexes": ["timestamp", "alarms"]
     }
     status = "S"

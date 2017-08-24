@@ -38,6 +38,7 @@ id_lock = Lock()
 class NetworkSegment(Document):
     meta = {
         "collection": "noc.networksegments",
+        "strict": False,
         "indexes": ["parent", "sibling", "adm_domains"]
     }
 

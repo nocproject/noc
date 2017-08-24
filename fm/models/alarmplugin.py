@@ -13,7 +13,7 @@ from mongoengine.document import EmbeddedDocument, Document
 
 class AlarmPlugin(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
 
     name = fields.StringField()

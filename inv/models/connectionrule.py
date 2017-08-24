@@ -20,7 +20,7 @@ from noc.core.model.decorator import on_delete_check
 
 class Context(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     type = StringField()
     scope = StringField()
@@ -48,7 +48,7 @@ class Context(EmbeddedDocument):
 
 class Rule(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     match_type = StringField()
     match_connection = StringField()
@@ -94,7 +94,7 @@ class ConnectionRule(Document):
     """
     meta = {
         "collection": "noc.connectionrules",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [],
         "json_collection": "inv.connectionrules"
     }

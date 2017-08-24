@@ -32,7 +32,7 @@ DEFAULT_TTSYSTEM_SHARD = "default"
 class TTSystem(Document):
     meta = {
         "collection": "noc.ttsystem",
-        "allow_inheritance": False
+        "strict": False
     }
 
     name = StringField(unique=True)

@@ -19,6 +19,7 @@ class RefBookField(models.Model):
     Refbook fields
     """
     class Meta:
+        app_label = "main"
         verbose_name = "Ref Book Field"
         verbose_name_plural = "Ref Book Fields"
         unique_together = [("ref_book", "order"), ("ref_book", "name")]

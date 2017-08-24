@@ -69,6 +69,7 @@ class PathItem(EmbeddedDocument):
 class MetricScope(Document):
     meta = {
         "collection": "noc.metricscopes",
+        "strict": False,
         "json_collection": "pm.metricscopes",
     }
 
