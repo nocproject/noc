@@ -23,6 +23,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
 from noc.core.fileutils import iter_open
 from noc.lib.text import format_table
+from noc.core.perf import metrics
 
 
 class Command(BaseCommand):
@@ -84,6 +85,7 @@ class Command(BaseCommand):
             total, dt * 1000, float(total) / dt
         ))
         if stats:
+            # Prepare statistics
             s_data = sorted(
                 [(k, stats[k]) for k in stats],
                 key=operator.itemgetter(1),
@@ -93,7 +95,12 @@ class Command(BaseCommand):
             data = [["Events", "%", "Event class"]]
             for ecls, qty in s_data:
                 data += [[str(qty), "%3.2f%%" % (float(stats[ecls] * 100) / float(total)), ecls]]
+            # Calculate classification quality
             data += [["", "%3.2f%%" % (float(s_total * 100) / total), "Classification Quality"]]
+            # Ruleset hit rate
+            rs_rate = float(metrics["rules_checked"].value) / float(total)
+            data += [["", "%.2f" % rs_rate, "Rule checks per event"]]
+            # Dump table
             self.print("Event classes summary:")
             self.print(format_table([4, 6, 10], data))
 
