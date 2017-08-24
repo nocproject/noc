@@ -117,7 +117,6 @@ class ClassifierService(Service):
         """
         self.logger.info("Using rule lookup solution: %s",
                          config.classifier.lookup_handler)
-        self.load_enumerations()
         self.ruleset.load()
         self.load_triggers()
         self.load_suppression()
