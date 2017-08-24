@@ -17,7 +17,7 @@
   yum_repository:
     name: altinity_clickhouse
     description: altinity_clickhouse
-    baseurl: https://packagecloud.io/altinity/clickhouse/el/{{ ansible_distribution_major_version }}
+    baseurl: https://packagecloud.io/altinity/clickhouse/el/{{ ansible_distribution_major_version }}/$basearch
     gpgcheck: no
     enabled: yes
   environment:
