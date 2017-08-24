@@ -1,5 +1,5 @@
 {
-    "name": "collections-chmetrics",
+    "name": "collections",
     "version": "latest",
     "dst_prefix": "collections",
     "src_prefix": "",
