@@ -9,113 +9,88 @@
 # Python modules
 from collections import defaultdict
 import operator
-import re
 import logging
 import cachetools
+import itertools
 # Third-party modules
 import esm
 from pyparsing import *
 # NOC modules
 from noc.services.classifier.rulelookup import RuleLookup
+from noc.core.perf import metrics
 
 
 logger = logging.getLogger(__name__)
 
+QSEP = "<<@>>"
+
 
 class XRuleLookup(RuleLookup):
-    RE_SEP = "\x00RE@SEP\x00"
+    _pattern_cache = {}
+    _parser_cache = {}
 
     def __init__(self, rules):
-        self.l_index = None
-        self.r_index = {}
-        self.cond_rules = defaultdict(set)  # Condition -> [Rules]
-        self.rule_cond = {}  # Rule -> {conditions}
-        self.conditions = {}  # id -> (left_re, right_re)
-        self.parser = parser
-        self.pattern_cache = {}
+        self.index = esm.Index()
+        self.keyword_rules = defaultdict(set)  # keyword index -> {rules}
+        self.rule_keywords = {}  # Rule -> {keyword indices}
         self.initialize(rules)
         super(XRuleLookup, self).__init__(rules)
-        del self.pattern_cache
-
-    def enter(self, index, regex, obj):
-        def is_applicable(h):
-            if not h:
-                return False
-            return len([c for c in h if c in alphanums]) > 1
-
-        hints = [
-            h for h
-            in "".join(self.parse_string(regex))
-                .replace("\\", "")
-                .split(self.RE_SEP)
-            if is_applicable(h)
-        ]
-        for hint in hints:
-            index.enter(hint, obj)
 
     def initialize(self, rules):
-        self.l_index = esm.Index()
-        conds = {}  # (left, right) -> condition
-        lpatterns = {}  # Left
+        # Process all rules and insert keywords to index
+        keyword_index = {}  # keyword -> index
         for rule in rules:
-            rc = set()
+            keywords = set()
             for p in rule.rule.patterns:
                 if p.key_re in ("source", "^source$",
                                 "profile", "^profile$"):
                     continue
-                pd = (p.key_re, p.value_re)
-                cond = conds.get(pd)
-                if not cond:
-                    cond = len(conds)
-                    conds[pd] = cond
-                    self.conditions[cond] = (
-                        p.key_re,
-                        p.value_re
-                    )
-                    li = lpatterns.get(p.key_re)
-                    if not li:
-                        li = len(lpatterns)
-                        lpatterns[p.key_re] = li
-                        self.enter(self.l_index, p.key_re, li)
-                        self.r_index[li] = esm.Index()
-                    self.enter(self.r_index[li], p.value_re, cond)
-                rc.add(cond)
-            self.rule_cond[rule] = rc
-            for c in rc:
-                self.cond_rules[c].add(rule)
-        # Fix all indexes
-        self.l_index.fix()
-        for i in self.r_index.itervalues():
-            i.fix()
+                # Split to keywords
+                for pattern in (p.key_re, p.value_re):
+                    ps = "".join(self.parse_string(pattern))
+                    ps = ps.replace("\\", "")
+                    for keyword in ps.split(QSEP):
+                        if not keyword:
+                            continue
+                        if not any(c for c in keyword if c in alphanums):
+                            continue
+                        kwi = keyword_index.get(keyword)
+                        if kwi is None:
+                            kwi = len(keyword)
+                            keyword_index[keyword] = kwi
+                            self.index.enter(keyword, kwi)
+                        keywords.add(kwi)
+                # Update forward and back references
+                self.rule_keywords[rule] = keywords
+                for kwi in keywords:
+                    self.keyword_rules[kwi].add(rule)
+        # Finally fix index
+        self.index.fix()
 
     def lookup_rules(self, event, vars):
         """
         Perform event lookup and return first matched rules
         """
-        conds = set()
-        for k in vars:
-            for _, x in self.l_index.query(k):
-                conds.update(y for _, y in self.r_index[x].query(vars[k]))
-        matched = set()
-        for c in conds:
-            for rule in self.cond_rules[c]:
-                rc = self.rule_cond[rule]
-                if rc <= conds:
-                    matched.add(rule)
+        query = QSEP.join("%s%s%s" % (k, QSEP, vars[k]) for k in vars)
+        metrics["esm_lookups"] += 1
+        keywords = set(kwi for _, kwi in self.index.query(query))
+        rules = itertools.chain(*tuple(self.keyword_rules[kwi] for kwi in keywords))
+        matched = [rule for rule in rules if self.rule_keywords[rule] <= keywords]
         return sorted(matched, key=lambda y: y.preference)
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("pattern_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_pattern_cache"))
     def parse_string(self, s):
-        return self.parser.parseString(s)
+        return self.get_parser().parseString(s)
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_parser_cache"))
     def get_parser(cls):
         """
         Python regex parser
         """
         def ignore(tokens):
-            return cls.RE_SEP
+            return QSEP
 
         # ParserElement.setDefaultWhitespaceChars("")
         macro_codes = "AbBdDsSwWZ0123456789"
