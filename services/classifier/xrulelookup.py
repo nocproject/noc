@@ -11,10 +11,10 @@ from collections import defaultdict
 import operator
 import logging
 import cachetools
-import itertools
 # Third-party modules
 import esm
 from pyparsing import *
+import bitarray
 # NOC modules
 from noc.services.classifier.rulelookup import RuleLookup
 from noc.core.perf import metrics
@@ -30,17 +30,17 @@ class XRuleLookup(RuleLookup):
     _parser_cache = {}
 
     def __init__(self, rules):
+        super(XRuleLookup, self).__init__(sorted(rules, key=lambda x: x.preference))
         self.index = esm.Index()
-        self.keyword_rules = defaultdict(set)  # keyword index -> {rules}
-        self.rule_keywords = {}  # Rule -> {keyword indices}
+        self.kwmask = None
+        self.rule_masks = []
         self.initialize(rules)
-        super(XRuleLookup, self).__init__(rules)
 
     def initialize(self, rules):
-        # Process all rules and insert keywords to index
-        keyword_index = {}  # keyword -> index
+        kw_rules = defaultdict(set)
+        rule_masks = {}
+        # Collect keyword -> {rules} bindings
         for rule in rules:
-            keywords = set()
             for p in rule.rule.patterns:
                 if p.key_re in ("source", "^source$",
                                 "profile", "^profile$"):
@@ -54,18 +54,21 @@ class XRuleLookup(RuleLookup):
                             continue
                         if not any(c for c in keyword if c in alphanums):
                             continue
-                        kwi = keyword_index.get(keyword)
-                        if kwi is None:
-                            kwi = len(keyword)
-                            keyword_index[keyword] = kwi
-                            self.index.enter(keyword, kwi)
-                        keywords.add(kwi)
-                # Update forward and back references
-                self.rule_keywords[rule] = keywords
-                for kwi in keywords:
-                    self.keyword_rules[kwi].add(rule)
-        # Finally fix index
+                        kw_rules[keyword].add(rule)
+        self.kwmask = bitarray.bitarray(len(kw_rules))
+        self.kwmask.setall(False)
+        # Initialize rule keyword masks
+        for rule in rules:
+            rule_masks[rule] = self.kwmask.copy()
+        # Fill index
+        for kwi, keyword in enumerate(kw_rules):
+            self.index.enter(keyword, kwi)
+            for rule in kw_rules[keyword]:
+                rule_masks[rule][kwi] = 1
         self.index.fix()
+        #
+        for rule in rules:
+            self.rule_masks += [(rule, rule_masks[rule])]
 
     def lookup_rules(self, event, vars):
         """
@@ -73,15 +76,18 @@ class XRuleLookup(RuleLookup):
         """
         query = QSEP.join("%s%s%s" % (k, QSEP, vars[k]) for k in vars)
         metrics["esm_lookups"] += 1
-        keywords = set(kwi for _, kwi in self.index.query(query))
-        rules = itertools.chain(*tuple(self.keyword_rules[kwi] for kwi in keywords))
-        matched = [rule for rule in rules if self.rule_keywords[rule] <= keywords]
-        return sorted(matched, key=lambda y: y.preference)
+        kwm = self.kwmask.copy()
+        for _, kwi in self.index.query(query):
+            kwm[kwi] = 1
+        return [
+            rule for rule, mask in self.rule_masks
+            if mask & kwm == mask
+        ]
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_pattern_cache"))
-    def parse_string(self, s):
-        return self.get_parser().parseString(s)
+    def parse_string(cls, s):
+        return cls.get_parser().parseString(s)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_parser_cache"))
