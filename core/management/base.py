@@ -57,6 +57,7 @@ class BaseCommand(object):
         if loglevel:
             self.setup_logging(loglevel)
         enable_profiling = cmd_options.pop("enable_profiling", False)
+        show_metrics = cmd_options.pop("show_metrics", False)
         if enable_profiling:
             # Start profiler
             import yappi
@@ -91,6 +92,12 @@ class BaseCommand(object):
                         4: ("tavg", 8)
                     }
                 )
+            if show_metrics:
+                from noc.core.perf import apply_metrics
+                d = apply_metrics({})
+                self.print("Internal metrics:")
+                for k in d:
+                    self.print("%40s : %s" % (k, d[k]))
 
     def create_parser(self):
         return argparse.ArgumentParser()
@@ -134,6 +141,11 @@ class BaseCommand(object):
             "--enable-profiling",
             action="store_true",
             help="Enable built-in profiler"
+        )
+        group.add_argument(
+            "--show-metrics",
+            action="store_true",
+            help="Dump internal metrics"
         )
 
     def add_arguments(self, parser):
