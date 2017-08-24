@@ -73,10 +73,9 @@ class XRuleLookup(RuleLookup):
         kwm = self.kwmask.copy()
         for _, kwi in self.index.query(query):
             kwm[kwi] = 1
-        return [
-            rule for rule, mask in self.rule_masks
-            if mask & kwm == mask
-        ]
+        for rule, mask in self.rule_masks:
+            if mask & kwm == mask:
+                yield rule
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_pattern_cache"))
