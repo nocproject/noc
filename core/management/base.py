@@ -56,7 +56,7 @@ class BaseCommand(object):
         loglevel = cmd_options.pop("loglevel")
         if loglevel:
             self.setup_logging(loglevel)
-        enable_profiling = cmd_options.get("enable_profiling", False)
+        enable_profiling = cmd_options.pop("enable_profiling", False)
         if enable_profiling:
             # Start profiler
             import yappi
