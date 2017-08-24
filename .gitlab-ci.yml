@@ -10,7 +10,7 @@ stages:
 
 test:empty:
   stage: test
-  image: registry.getnoc.com/noc/nocmc/feature_chmetrics:dev
+  image: registry.getnoc.com/noc/nocmc/feature_microservices:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
@@ -35,7 +35,7 @@ test:empty:
 
 test:with data:
   stage: test
-  image: registry.getnoc.com/noc/nocmc/feature_chmetrics:dev
+  image: registry.getnoc.com/noc/nocmc/feature_microservices:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
@@ -63,7 +63,7 @@ build:
   script:
     - mkdir -p dist 
     - ./build.py package.json
-    - echo ${CI_BUILD_REF} > dist/collections-chmetrics.latest
+    - echo ${CI_BUILD_REF} > dist/collections.latest
   tags:
     - docker
   artifacts:
@@ -72,7 +72,6 @@ build:
     expire_in: 3 min
   only:
     - master@noc/collections
-    - chmetrics@noc/collections
 
 upload:
   stage: upload 
@@ -83,4 +82,3 @@ upload:
     - docker 
   only:
     - master@noc/collections
-    - chmetrics@noc/collections
