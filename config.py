@@ -85,7 +85,7 @@ class Config(BaseConfig):
     class chwriter(ConfigSection):
         batch_size = IntParameter(default=50000)
         records_buffer = IntParameter(default=1000000)
-        batch_delay_ms = IntParameter(default=1000)
+        batch_delay_ms = IntParameter(default=10000)
         channel_expire_interval = SecondsParameter(default="5M")
         suspend_timeout_ms = IntParameter(default=3000)
         # Topic to listen
