@@ -66,6 +66,12 @@
             {% for n in groups['svc-bi'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
+            {% for n in groups['svc-web'] %}
+                <ip>{{hostvars[n].ansible_host}}</ip>
+            {% endfor %}
+            {% for n in groups['svc-haproxy'] %}
+                <ip>{{hostvars[n].ansible_host}}</ip>
+            {% endfor %}
                 <ip>{{tower_ip}}</ip>
 			</networks>
 			<profile>readonly</profile>
