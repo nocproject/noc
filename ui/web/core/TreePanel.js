@@ -105,7 +105,7 @@ Ext.define('NOC.core.TreePanel', {
                             + value + '</b>';
                     }
                 }, {
-                    width: 20,
+                    width: 21,
                     renderer: function() {
                         return '<i class="fa fa-location-arrow" aria-hidden="true"></i>';
                     }
@@ -146,7 +146,7 @@ Ext.define('NOC.core.TreePanel', {
                     return Ext.String.format('{0}<span style="padding-left: {1}px" title="{2}">{2}</span>', icon, padding, value);
                 }
             }, {
-                width: 20,
+                width: 21,
                 renderer: function(value, metadata, record) {
                     if(hasChild(record.data)) {
                         return '<i class="fa fa-location-arrow" aria-hidden="true"></i>';

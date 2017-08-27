@@ -56,8 +56,8 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                         text: 'New Object',
                         fill: '#000000',
                         ref: 'image',
-                        refX: '50%',
-                        refY: '100%', refY2: 3,
+                        'ref-x': '50%',
+                        'ref-dy': 3,
                         'text-anchor': 'middle'
                     }
                 }
