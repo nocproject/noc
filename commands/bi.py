@@ -61,6 +61,8 @@ class Command(BaseCommand):
         clean_parser = subparsers.add_parser("clean")
         # load command
         load_parser = subparsers.add_parser("load")
+        # extract dicts
+        extract_dict = subparsers.add_parser("dictionaries")
 
     def handle(self, cmd, data_prefix, dict_xml_prefix, dict_data_prefix, *args, **options):
         self.DATA_PREFIX = data_prefix
@@ -107,6 +109,8 @@ class Command(BaseCommand):
                 e.extract()
                 self.set_last_extract(ecls.name, e.last_ts or end)
                 start += window
+
+    def handle_dictionaries(self, *args, **options):
         # Extract dictionaries
         for dcls in Dictionary.iter_cls():
             # Temporary data
