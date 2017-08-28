@@ -12,6 +12,7 @@
     - requirements
   environment:
     https_proxy: "{{http_proxy}}"
+  when: "'Linux' in ansible_system"
 
 - name: Get Consul package checksum
   shell: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
@@ -22,6 +23,7 @@
   changed_when: false
   tags:
     - requirements
+  when: "'Linux' in ansible_system"
 
 - name: Download Consul
   get_url:
@@ -37,6 +39,7 @@
     - requirements
   environment:
     https_proxy: "{{http_proxy}}"
+  when: "'Linux' in ansible_system"
 
 - name: create consul tmp dir
   file:
@@ -55,6 +58,7 @@
     creates: "{{ consul_temp_unarchive }}/consul"
   tags:
     - requirements
+  when: "'Linux' in ansible_system"
 
 - name: Overwrite Consul binary if needed
   copy:
@@ -66,3 +70,4 @@
     - requirements
   notify:
     - restart consul
+  when: "'Linux' in ansible_system"

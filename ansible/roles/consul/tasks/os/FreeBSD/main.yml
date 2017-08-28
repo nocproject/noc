@@ -1,11 +1,8 @@
 ---
-- name: BSD init script
-  template:
-    src: consul_bsdinit.j2
-    dest: "{{etc_prefix}}/rc.d/consul"
-    owner: root
-    group: wheel
-    mode: 0755
+- name: "Install consul"
+  pkgng:
+    name: "consul"
+    state: present
 
 - name: set consul bind_address
   set_fact:

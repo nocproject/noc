@@ -268,7 +268,7 @@ class PingService(Service):
             )
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
-        # Send RTT and attrpmts metrics
+        # Send RTT and attempts metrics
         to_report_rtt = rtt is not None and ps.report_rtt
         if (to_report_rtt or ps.report_attempts) and ps.bi_id:
             lt = time.localtime(t0)
