@@ -11,6 +11,17 @@
     name: nsq
     shell: "{{fake_shell}}"
 
+- name: create path for on-disk queue files
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  with_items:
+    - "{{nsqd_db_dir}}"
+    - "{{nsqd_config_dir}}"
+
 - name: Install nsqlookupd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqlookupd.conf.j2"
