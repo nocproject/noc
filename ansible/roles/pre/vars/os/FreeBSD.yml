@@ -66,3 +66,5 @@ fake_shell: /sbin/nologin
 
 grafana_dashboard_dir: /var/db/grafana/dashboards
 grafana_plugins_dir: /var/db/grafana/plugins
+
+clickhouse_service_name: clickhouse

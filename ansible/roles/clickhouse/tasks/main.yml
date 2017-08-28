@@ -53,6 +53,6 @@
 
 - name: Start clickhouse service
   service:
-    name: "clickhouse-server"
+    name: "{{clickhouse_service_name}}"
     enabled: yes
     state: started
