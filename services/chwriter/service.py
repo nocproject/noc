@@ -37,7 +37,7 @@ class CHWriterService(Service):
             self.ch_address = config.chwriter.write_to
         else:
             # Standalone configuration
-            self.ch_address = config.clickhouse.addresses[0]
+            self.ch_address = config.clickhouse.rw_addresses[0]
         self.restore_timeout = None
 
     @tornado.gen.coroutine
@@ -146,6 +146,8 @@ class CHWriterService(Service):
                 channel.url,
                 method="POST",
                 body=data,
+                user=config.clickhouse.rw_user,
+                password=config.clickhouse.rw_password,
                 content_encoding=config.clickhouse.encoding
             )
             if code == 200:
