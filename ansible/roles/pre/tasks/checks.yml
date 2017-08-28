@@ -118,7 +118,7 @@
 - name: fail if patroni set for one node
   fail:
     msg: "Patroni can be installed when node count is more than one."
-  when: play_hosts | length == 1 and groups['svc-patroni'] | length > 0
+  when: groups['all'] | length > 1 and groups['svc-patroni'] | length > 0
 
 - name: fail if haproxy not for debian/rhel
   fail:
@@ -129,7 +129,7 @@
 - name: fail if keepalived set for one node
   fail:
     msg: "keepalived can be installed when node count is more than one."
-  when: play_hosts | length == 1 and groups['svc-keepalived'] | length > 0
+  when: groups['all'] | length > 1 and groups['svc-keepalived'] | length > 0
 
 - name: fail if patroni set only for one node
   fail:
