@@ -33,8 +33,8 @@ class Channel(object):
         self.flushing = False
         self.url = "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
             address,
-            config.clickhouse.user,
-            config.clickhouse.password,
+            config.clickhouse.rw_user,
+            config.clickhouse.rw_password,
             db,
             self.encoded_sql
         )
