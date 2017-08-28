@@ -8,53 +8,17 @@
   "id": "4d2b3163-b0a8-4859-84d8-409285c32680",
   "targets": [
     {
-      "policy": "default",
-      "dsType": "influxdb",
-      "resultFormat": "time_series",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=",
-          "value": "$device"
-        }
-      ],
-      "groupBy": [
-        {
-          "type": "time",
-          "params": [
-            "$discovery_interval"
-          ]
-        },
-        {
-          "type": "tag",
-          "params": [
-            "slot"
-          ]
-        },
-        {
-          "type": "fill",
-          "params": [
-            "null"
-          ]
-        }
-      ],
-      "select": [
-        [
-          {
-            "type": "field",
-            "params": [
-              "value"
-            ]
-          },
-          {
-            "type": "mean",
-            "params": []
-          }
-        ]
-      ],
       "refId": "A",
-      "measurement": "{{graph}}",
-      "alias": "{{graph}} on slot $tag_slot"
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(temperature) FROM $table WHERE managed_object = $bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "environment",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateTimeColDataType": "ts",
+      "dateColDataType": "date"
     }
   ],
   "datasource": null,

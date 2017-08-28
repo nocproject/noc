@@ -9,53 +9,17 @@
   "steppedLine": false,
   "targets": [
     {
-      "dsType": "influxdb",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=",
-          "value": "$device"
-        }
-      ],
       "refId": "A",
-      "alias": "CPU | Usage | 5sec on slot $tag_slot",
       "resultFormat": "time_series",
-      "measurement": "CPU | Usage | 5sec",
-      "policy": "default",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "type": "tag",
-          "params": [
-            "slot"
-          ]
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ]
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(load_5s) FROM $table WHERE managed_object = $bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "cpu",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
     }
   ],
   "fill": 1,
