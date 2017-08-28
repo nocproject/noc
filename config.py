@@ -101,10 +101,11 @@ class Config(BaseConfig):
         default_rule = StringParameter(default="Unknown | Default")
 
     class clickhouse(ConfigSection):
-        addresses = ServiceParameter(service="clickhouse", wait=True)
+        rw_addresses = ServiceParameter(service="clickhouse", wait=True)
         db = StringParameter(default="noc")
-        user = StringParameter(default="default")
-        password = SecretParameter()
+        rw_user = StringParameter(default="default")
+        rw_password = SecretParameter()
+        ro_addresses = ServiceParameter(service="clickhouse", wait=True)
         ro_user = StringParameter(default="readonly")
         ro_password = StringParameter()
         request_timeout = SecondsParameter(default="1h")

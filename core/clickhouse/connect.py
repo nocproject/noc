@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import urllib
+import random
 # Third-party modules
 import six
 # NOC modules
@@ -18,9 +19,20 @@ from .error import ClickhouseError
 
 
 class ClickhouseClient(object):
-    def __init__(self, host=None, port=None):
-        self.host = host or config.clickhouse.addresses[0].host
-        self.port = port or config.clickhouse.addresses[0].port
+    def __init__(self, host=None, port=None, read_only=True):
+        self.read_only = read_only
+        if read_only:
+            self.user = config.clickhouse.ro_user
+            self.password = config.clickhouse.ro_password
+        else:
+            self.user = config.clickhouse.rw_user
+            self.password = config.clickhouse.rw_password
+        if host:
+            self.addresses = ["%s:%s" % (host, port or 8123)]
+        elif read_only:
+            self.addresses = [str(x) for x in config.clickhouse.ro_addresses]
+        else:
+            self.addresses = [str(x) for x in config.clickhouse.rw_addresses]
 
     def execute(self, sql=None, args=None, nodb=False, post=None):
         def q(v):
@@ -40,13 +52,13 @@ class ClickhouseClient(object):
                 qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
             else:
                 post = sql.encode('utf8')
-        url = "http://%s:%s/?%s" % (self.host, self.port, "&".join(qs))
+        url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))
         code, headers, body = fetch_sync(
             url,
             method="POST",
             body=post,
-            user=config.clickhouse.user,
-            password=config.clickhouse.password,
+            user=self.user,
+            password=self.password,
             connect_timeout=config.clickhouse.connect_timeout,
             request_timeout=config.clickhouse.request_timeout
         )
@@ -73,5 +85,5 @@ class ClickhouseClient(object):
         return r and r[0][0] == "1"
 
 
-def connection(host=None, port=None):
-    return ClickhouseClient(host=host, port=port)
+def connection(host=None, port=None, read_only=True):
+    return ClickhouseClient(host=host, port=port, read_only=read_only)
