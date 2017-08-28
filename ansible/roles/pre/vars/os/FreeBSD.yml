@@ -31,10 +31,10 @@ nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
 nginx_reload_command: "service nginx reload"
 nginx_user: www
 
-telegraf_reload_command: "service telegraf reload"
+telegraf_reload_command: "service telegraf restart"
 
 nsqd_reload_command: "service nsqd reload"
-nsqadmin_reload_command: "service nsqadmin reload"
+nsqadmin_reload_command: "service nsqadmin restart"
 
 postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
