@@ -45,7 +45,7 @@ class Command(BaseCommand):
         Connect to database
         :return:
         """
-        self.connect = connection(host=self.host, port=self.port)
+        self.connect = connection(host=self.host, port=self.port, read_only=False)
 
     def ensure_db(self):
         """
