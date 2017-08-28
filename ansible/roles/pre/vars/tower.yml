@@ -65,9 +65,9 @@ web_ui_language: "{% if noc_config['config'].get('web-global-%s' % groups['svc-w
 
 install_method: hg
 
-clickhouse_user: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('user', 'noc')}}"
-clickhouse_password: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('password', 'noc')}}"
-clickhouse_ro_password: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('ro_password', 'noc') }}"
+clickhouse_user: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0], {}), {}).get('user', 'noc')}}"
+clickhouse_password: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0], {}).get('password', 'noc')}}"
+clickhouse_ro_password: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0], {}).get('ro_password', 'noc') }}"
 
 clickhouse_db: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('db', 'noc')}}"
 clickhouse_max_query_size: "{{noc_config['config'].get('clickhouse-global-%s' % ansible_nodename, {}).get('query_size', 262144)}}"

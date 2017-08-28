@@ -107,7 +107,7 @@ class Config(BaseConfig):
         rw_password = SecretParameter()
         ro_addresses = ServiceParameter(service="clickhouse", wait=True)
         ro_user = StringParameter(default="readonly")
-        ro_password = StringParameter()
+        ro_password = SecretParameter()
         request_timeout = SecondsParameter(default="1h")
         connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
