@@ -150,7 +150,7 @@ class PingSocket(object):
             # Check for negative RTT
             if rtt < 0:
                 metrics["ping_time_stepbacks"] += 1
-                logger.info("[%s] Negative RTT detected. Possible timer stepback. Check system time synchronization")
+                logger.info("[%s] Negative RTT detected (%s). Possible timer stepback. Check system time synchronization", rtt)
                 rtt = None
             # Resolve future
             f.set_result(rtt)
