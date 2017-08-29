@@ -850,8 +850,8 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with discovery<br/>
     level: global
-    category: external
-    command: "./services/ping/service.py"
+    category: internal
+    command: "./services/sae/service.py"
     process_name: "%(program_name)s-%(process_num)02d"
     oom_score_adj: 300
     priority: 90
