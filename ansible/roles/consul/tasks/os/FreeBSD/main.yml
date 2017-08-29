@@ -4,6 +4,14 @@
     name: "consul"
     state: present
 
+- name: BSD init script
+  template:
+    src: consul_bsdinit.j2
+    dest: "{{etc_prefix}}/rc.d/consul"
+    owner: root
+    group: wheel
+    mode: 0755
+
 - name: set consul bind_address
   set_fact:
     consul_bind_address: "{{ lookup('env','CONSUL_BIND_ADDRESS') | default(hostvars[ansible_nodename]['ansible_'+ consul_iface ]['ipv4'][0]['address'], true) }}"
