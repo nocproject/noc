@@ -31,12 +31,13 @@
     - config
     - noc_config
 
-- name: install services templates
-  template:
+- name: remove services templates
+  file:
     src: "etc/services/{{item}}"
     dest: "{{noc_etc}}/services/{{item}}"
     owner: "{{noc_user}}"
     mode: "0644"
+    state: absent
   with_items:
     - activator.conf
     - bi.conf
@@ -66,16 +67,14 @@
     - noc_config
 
 - name: Build supervisor config
-  command: "{{ noc_root }}/scripts/deploy/apply-config {{ ansible_nodename }}"
-  register: result
-  changed_when: "'CHANGED' in result.stdout"
-  args:
-    chdir: "{{ noc_root }}"
+  template:
+    src: "etc/noc_services.conf.j2"
+    dest: "{{noc_root}}/etc/noc_services.conf"
+    owner: "{{noc_user}}"
+    mode: "0640"
   tags:
     - config
     - noc_config
-  environment:
-    NOC_CONFIG: "{{config_order}}"
 
 - name: install .env file
   template:
