@@ -13,3 +13,5 @@ memcahed_user: memcached
 memcahed_conf: "/etc/sysconfig/memcached"
 
 pgbouncer_user: pgbouncer
+
+jemalloc_path: /lib64/libjemalloc.so.1

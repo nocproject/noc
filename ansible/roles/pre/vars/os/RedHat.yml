@@ -16,3 +16,5 @@ memcahed_conf: /etc/sysconfig/memcached
 
 pgbouncer_user: pgbouncer
 zookeeper_reload_command: "systemctl reload zookeeper-server"
+
+jemalloc_path: /lib64/libjemalloc.so.1

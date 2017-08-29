@@ -91,6 +91,7 @@
     - noc
   vars_files:
     - "vars/main.yml"
+    - "config/services.yml"
   roles:
     - role: node
 
