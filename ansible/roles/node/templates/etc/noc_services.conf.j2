@@ -26,7 +26,7 @@ stopsignal = TERM
 stopwaitsecs = {{ services[srv].stopwaitsecs  | default(50, True)}}
 stopasgroup = false
 killasgroup = true
-user = {{noc_user}}
+user = {% if 'user' in services[srv] %}{{services[srv].user}}{% else %}{{noc_user}}{% endif %}
 redirect_stderr = true
 stdout_logfile = {{noc_logs}}/{{ services[srv].process_name | default("%(program_name)s-%(process_num)02d", True) }}.log
 stdout_logfile_maxbytes = {{ services[srv].stdout_logfile_maxbytes  | default('10MB', True)}}
@@ -38,6 +38,6 @@ stderr_logfile_backups = {{ services[srv].stderr_logfile_backups  | default(3, T
 stderr_events_enabled = false
 environment=NOC_CONFIG="{{config_order}}"{% if not 'global' in p -%},NOC_POOL="{{ p }}"{% endif %},NOC_DC="{{ noc_dc }}",NOC_NODE="{{ ansible_nodename }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{noc_config.config[service].loglevel }}",LD_PRELOAD={% if jemalloc_path %}"{{ jemalloc_path }}"{% endif %}
 
-        {%- endif -%}
-    {%- endif -%}
+        {% endif %}
+    {% endif %}
 {%- endfor -%}
