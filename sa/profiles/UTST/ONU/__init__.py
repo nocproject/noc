@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     command_submit = "\r"
     command_super = "enable"
     pattern_unpriveleged_prompt = r"^ONU208i#|ONU2004>"
-    pattern_prompt = r"^ONU208i\(enable\)|ONU2004#"
+    pattern_prompt = r"^ONU208i\(enable\)|ONU2004(?:i#|#)"
 
     #pattern_prompt = r"^Select menu option.*:"
     #pattern_more = [
