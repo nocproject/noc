@@ -155,11 +155,10 @@ class PingSocket(object):
             # Resolve future
             f.set_result(rtt)
         else:
-            logger.info(
-                "[%s] Ignoring stale session (req=%s, seq=%s). Possible duplicated packet",
+            logger.debug(
+                "[%s] Ignoring stale session (req=%s, seq=%s)",
                 address, req_id, seq
             )
-            metrics["ping_duplicated_packets"] += 1
 
     def on_timeout(self, future):
         """
