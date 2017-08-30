@@ -68,5 +68,5 @@ class Script(GetMetricsScript):
             if not match:
                 continue
             rtt = match.group(1)
-            r[probe_id]["rtt"] = float(rtt)
+            r[probe_id]["rtt"] = float(rtt*1000)
         return r
