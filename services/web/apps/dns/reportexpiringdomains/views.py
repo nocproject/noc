@@ -29,7 +29,7 @@ class Reportreportexpiringdomains(SimpleReport):
     title = _("Expiring Domains")
     form = ReportForm
 
-    def get_data(self, days, **kwargs):
+    def get_data(self, request, days, **kwargs):
         return self.from_query(title=self.title,
                                columns=[
                                    _("Domain"),

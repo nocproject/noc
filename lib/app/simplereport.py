@@ -670,7 +670,7 @@ class SimpleReport(ReportApplication):
     # List of PredefinedReport instances
     predefined_reports = {}
 
-    def get_data(self, **kwargs):
+    def get_data(self, request, **kwargs):
         """
         Returns Report object
         """
