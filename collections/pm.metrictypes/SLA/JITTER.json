@@ -6,5 +6,5 @@
     "field_name": "jitter",
     "field_type": "Int32",
     "description": "Measured deviation of round trip time in microseconds",
-    "measure": "ms"
+    "measure": "μs"
 }
