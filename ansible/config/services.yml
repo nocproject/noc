@@ -830,6 +830,7 @@ services:
     stopwaitsecs: 1
     stdout_logfile_maxbytes: 10MB
     stdout_logfile_backups: 3
+    user: root
   postgres:
     description: >
       <strong>Service type</strong>: External <br/>
