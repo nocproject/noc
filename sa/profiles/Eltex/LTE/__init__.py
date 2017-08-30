@@ -15,15 +15,14 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Eltex.LTE"
     pattern_username = r"(?<!Last )login: "
-    username_submit = "\r"
-    password_submit = "\r"
     pattern_more = [
         (r"\[Yes/press any key for no\]", "Y")
     ]
     # pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = \
-        r"^(Command not found. Use '?' to view available commands|" + \
-        "Incomplete command\s+|Invalid argument\s+)"
+        r"^(Command not found|Incomplete command|Invalid argument)"
+    username_submit = "\r"
+    password_submit = "\r"
     command_submit = "\r"
     command_enter_config = "configure"
     command_leave_config = "exit"

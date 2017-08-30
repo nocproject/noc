@@ -29,7 +29,12 @@ class Script(BaseScript):
             if match:
                 macs += [match.group("mac")]
             cmd = self.cli("show interfaces mac-address")
-        macs += self.rx_mac2.findall(cmd)
+            macs += self.rx_mac2.findall(cmd)
+        if not macs:
+            mac_table = self.scripts.get_mac_address_table()
+            for m in mac_table:
+                if m["type"] == "C":
+                    macs += [m["mac"]]
         macs.sort()
         return [{
             "first_chassis_mac": f,
