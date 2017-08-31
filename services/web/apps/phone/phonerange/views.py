@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # phone.phonerange application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,7 +23,11 @@ class PhoneRangeApplication(ExtDocApplication):
     model = PhoneRange
     parent_model = PhoneRange
     parent_field = "parent"
-    query_fields = ["name__icontains", "description__icontains"]
+    query_fields = [
+        "name__icontains",
+        "description__icontains",
+        "from_number__startswith"
+    ]
 
     def field_total_numbers(self, o):
         return o.total_numbers
