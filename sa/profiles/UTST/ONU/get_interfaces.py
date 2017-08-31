@@ -27,7 +27,9 @@ class Script(BaseScript):
     def execute(self):
         interfaces = []
         v = self.cli("show port")
-        if (self.match_version(platform__contains="UTST_ONU208I")):
+        if (self.match_version(platform__contains="UTST_ONU208I") or
+            self.match_version(platform__contains="onu-zhe")
+            ):
             for match in self.rx_int2.finditer(v):
                 ifname = match.group("ifname")
                 if "on" in match.group("admin_status"):
