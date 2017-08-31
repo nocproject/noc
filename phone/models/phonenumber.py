@@ -14,6 +14,7 @@ import operator
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField, ListField,
                                 EmbeddedDocumentField)
+from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
 from .phonerange import PhoneRange
@@ -26,6 +27,7 @@ from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.lib.text import clean_number
 
 id_lock = Lock()
 
@@ -99,6 +101,10 @@ class PhoneNumber(Document):
 
     def clean(self):
         super(PhoneNumber, self).clean()
+        # Check number is valid integer
+        self.number = clean_number(self.number or "")
+        if not self.number:
+            raise ValidationError("Empty phone number")
         # Change parent
         self.phone_range = PhoneRange.get_closest_range(
             dialplan=self.dialplan,

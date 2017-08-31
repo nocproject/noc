@@ -440,3 +440,15 @@ def format_table(widths, data, sep=" ", hsep=" "):
     ]
     out += [mask % tuple(row) for row in data[1:]]
     return "\n".join(out)
+
+
+rx_non_numbers = re.compile("[^0-9]+")
+
+
+def clean_number(n):
+    """
+    Remove all non-number occurences
+    :param n:
+    :return:
+    """
+    return rx_non_numbers.sub("", n)

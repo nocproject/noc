@@ -102,7 +102,24 @@ Ext.define("NOC.phone.phonerange.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "from_number",
+                    xtype: "textfield",
+                    regex: /^\d+$/,
+                    fieldLabel: __("From Number"),
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "to_number",
+                    xtype: "textfield",
+                    regex: /^\d+$/,
+                    fieldLabel: __("To Number"),
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "description",
@@ -139,18 +156,6 @@ Ext.define("NOC.phone.phonerange.Application", {
                     xtype: "sa.terminationgroup.LookupField",
                     fieldLabel: __("Termination Group"),
                     allowBlank: true
-                },
-                {
-                    name: "from_number",
-                    xtype: "textfield",
-                    fieldLabel: __("From Number"),
-                    allowBlank: false
-                },
-                {
-                    name: "to_number",
-                    xtype: "textfield",
-                    fieldLabel: __("To Number"),
-                    allowBlank: false
                 },
                 {
                     name: "to_allocate_numbers",
