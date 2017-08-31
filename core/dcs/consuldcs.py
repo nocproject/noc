@@ -304,10 +304,11 @@ class ConsulDCS(DCSBase):
                         yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 if not touched:
                     self.logger.info("Cannot refresh session, stopping")
-                    self.keep_alive_task.stop()
-                    self.keep_alive_task = None
+                    if self.keep_alive_task:
+                        self.keep_alive_task.stop()
+                        self.keep_alive_task = None
                     self.kill()
-            else:
+            elif self.keep_alive_task:
                 self.keep_alive_task.stop()
                 self.keep_alive_task = None
         finally:
