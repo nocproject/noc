@@ -155,7 +155,7 @@ class ReduceTask(models.Model):
             objects = object_selector.managed_objects
         elif isinstance(object_selector, ManagedObject):
             objects = [object_selector]
-        elif isinstance(object_selector, six.basestring):
+        elif isinstance(object_selector, six.string_types):
             objects = [ManagedObject.objects.get(name=object_selector)]
         elif type(object_selector) in (int, long):
             objects = [ManagedObject.objects.get(id=object_selector)]
@@ -163,7 +163,7 @@ class ReduceTask(models.Model):
             objects = list(object_selector)
         # Resolve strings to managed objects, if returned by selector
         objects = [ManagedObject.objects.get(name=x)
-                   if isinstance(x, six.basestring) else x for x in objects]
+                   if isinstance(x, six.string_types) else x for x in objects]
         # Auto-detect reduce task timeout, if not set
         if not timeout:
             timeout = 0
