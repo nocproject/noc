@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alarms Extractor
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alarms Extractor
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import bisect
 import datetime
-## NOC modules
+# NOC modules
 from base import BaseExtractor
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.reboot import Reboot
@@ -21,12 +21,11 @@ from noc.lib.dateutils import total_seconds
 from noc.config import config
 
 
-
 class AlarmsExtractor(BaseExtractor):
     name = "alarms"
     extract_delay = config.bi.extract_delay_alarms
     clean_delay = config.bi.clean_delay_alarms
-    reboot_interval = datetime.timedelta(config.bi.reboot_interval)
+    reboot_interval = datetime.timedelta(seconds=config.bi.reboot_interval)
 
     def __init__(self, prefix, start, stop):
         super(AlarmsExtractor, self).__init__(prefix, start, stop)
