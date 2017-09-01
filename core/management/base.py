@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # CLI Command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ import argparse
 # NOC modules
 from noc.core.debug import error_report
 from noc.config import config
+from noc.core.tz import setup_timezone
 
 
 class CommandError(Exception):
@@ -37,6 +38,10 @@ class BaseCommand(object):
         if __name__ == "__main__":
             Command().run()
         """
+        try:
+            setup_timezone()
+        except ValueError as e:
+            self.die(str(e))
         sys.exit(self.run_from_argv(sys.argv[1:]))
 
     def run_from_argv(self, argv):
