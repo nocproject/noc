@@ -44,6 +44,7 @@ from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.nsq.reader import Reader as NSQReader
 from noc.core.span import get_spans, SPAN_FIELDS
+from noc.core.tz import setup_timezone
 
 CHWRITER = "chwriter"
 
@@ -303,6 +304,12 @@ class Service(object):
         # Bootstrap logging with --loglevel
         self.setup_logging(cmd_options["loglevel"])
         self.log_separator()
+        # Setup timezone
+        try:
+            self.logger.info("Setting timezone to %s", config.timezone)
+            setup_timezone()
+        except ValueError as e:
+            self.die(str(e))
         # Setup title
         self.set_proc_title()
         # Setup signal handlers
