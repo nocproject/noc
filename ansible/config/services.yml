@@ -896,6 +896,7 @@ services:
     stopwaitsecs: 3
     stdout_logfile_maxbytes: 10MB
     stdout_logfile_backups: 3
+    user: root
   tgsender:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -932,6 +933,7 @@ services:
     stopwaitsecs: 2
     stdout_logfile_maxbytes: 10MB
     stdout_logfile_backups: 3
+    user: root
   web:
     description: >
       <strong>Service type</strong>: Internal <br/>
