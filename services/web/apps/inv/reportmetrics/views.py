@@ -234,12 +234,13 @@ class ReportTraffic(SimpleReport):
             "from": str(int(ts_from_date*1000)),
             "to": str(int(ts_to_date*1000)),
             # o.name.replace("#", "%23")
+            "biid": "",
             "oname": "",
             "iname": ""}
 
         report_map = {
             "load_interfaces": {
-                "url": """%(path)s?title=interface&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
+                "url": """%(path)s?title=interface&biid=%(biid)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
                 "q_group": ["interface"],
                 "columns": [_("Int Name"), _("Int Descr"),
                             TableColumn(_("IN bps"), align="right"),
@@ -247,7 +248,7 @@ class ReportTraffic(SimpleReport):
                             ]
             },
             "errors": {
-                "url": """%(path)s?title=%(rname)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
+                "url": """%(path)s?title=%(rname)s&biid=%(biid)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
                 "columns": [_("Int Name"),
                             TableColumn(_("Errors IN"), align="right"),
                             TableColumn(_("Errors OUT"), align="right"),
@@ -256,7 +257,7 @@ class ReportTraffic(SimpleReport):
                 "q_group": ["interface"]
             },
             "load_cpu": {
-                "url": "%(path)s?title=%(rname)s&obj=%(oname)s&from=%(from)s&to=%(to)s",
+                "url": "%(path)s?title=%(rname)s&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s",
                 "columns": [TableColumn(_("Memory | Usage %"), align="right"),
                             TableColumn(_("CPU | Usage %"), align="right")]
             },
@@ -313,6 +314,7 @@ class ReportTraffic(SimpleReport):
             if not l:
                 continue
             mo = moss[l[0]]
+            d_url["biid"] = mo.get_bi_id()
             d_url["oname"] = mo.name.replace("#", "%23")
             if zero and allow_archive and not sum(data):
                 # For InfluxDB query
