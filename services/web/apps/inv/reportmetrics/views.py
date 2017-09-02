@@ -262,6 +262,7 @@ class ReportTraffic(SimpleReport):
                             TableColumn(_("CPU | Usage %"), align="right")]
             },
             "ping": {
+                "url": """%(path)s?title=ping&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
                 "columns": [TableColumn(_("Ping | RTT (ms)"), align="right"),
                             TableColumn(_("Ping | Attempts"), align="right")]
             }
