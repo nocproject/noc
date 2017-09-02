@@ -1,4 +1,18 @@
 ---
+- name: Add PostgreSQL repository RHEL
+  yum_repository:
+    name: pgdg-{{ postgresql_version|replace(".","") }}-centos
+    description: PostgreSQL {{ postgresql_version }}
+    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgresql_version|replace(".","") }}
+    enabled: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
 - name: "Install PostgreSQL"
   yum:
     name: "{{ item }}"
