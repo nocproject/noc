@@ -65,9 +65,9 @@ class MACApplication(ExtApplication):
     # query_condition = "icontains"
     # int_query_fields = ["vlan"]
 
-    implied_permissions = {
-        "read": ["inv:macdb:lookup", "main:style:lookup"]
-    }
+    # implied_permissions = {
+    #     "read": ["inv:macdb:lookup", "main:style:lookup"]
+    # }
 
     @staticmethod
     def field_description(o, iname):
