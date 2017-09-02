@@ -257,7 +257,7 @@ class ReportTraffic(SimpleReport):
                 "q_group": ["interface"]
             },
             "load_cpu": {
-                "url": "%(path)s?title=cpu&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s",
+                "url": """%(path)s?title=cpu&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
                 "columns": [TableColumn(_("Memory | Usage %"), align="right"),
                             TableColumn(_("CPU | Usage %"), align="right")]
             },
