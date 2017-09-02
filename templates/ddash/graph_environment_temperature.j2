@@ -11,14 +11,14 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(temperature) FROM $table WHERE managed_object = $bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT \n    t, \n    groupArray((sensor, Temperature)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as sensor, \n        avg(temperature) as `Temperature` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
       "database": "noc",
       "tableLoading": false,
       "table": "environment",
       "dateLoading": false,
       "datetimeLoading": false,
-      "dateTimeColDataType": "ts",
-      "dateColDataType": "date"
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
     }
   ],
   "datasource": null,
