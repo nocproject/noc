@@ -20,6 +20,7 @@
     - libffi-dev
     - libmemcached11
     - libmemcached-dev
+    - zlib1g-dev
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
