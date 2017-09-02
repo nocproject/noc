@@ -117,7 +117,7 @@ class Script(BaseScript):
                     i["mac"] = match1.group("mac")
                 else:
                     match1 = self.rx_port3.search(c)
-                if match1.group("descr"):
+                if match1 and match1.group("descr"):
                     i["description"] = match1.group("descr")
             except self.CLISyntaxError:
                 pass
