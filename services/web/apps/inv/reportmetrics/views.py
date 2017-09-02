@@ -284,7 +284,7 @@ class ReportTraffic(SimpleReport):
             report_map["load_cpu"].update({"q_select": ["arrayStringConcat(path)", "quantile(0.98)(usage) as usage"],
                                            "q_group": ["path"]})
             report_map["ping"].update({
-                "q_select": ["managed_object", "round(quantile(0.98)(rtt) / 1000, 2)", "quantile(0.98)(attempts)"]})
+                "q_select": ["managed_object", "round(quantile(0.98)(rtt) / 1000, 2)", "avg(attempts)"]})
             moss = {str(mo.get_bi_id()): mo for mo in mos}
 
         if reporttype in ["load_interfaces", "errors"]:
