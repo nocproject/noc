@@ -233,12 +233,15 @@ class ConsulDCS(DCSBase):
         self.svc_check_url = "http://%s:%s/health/?service=%s" % (
             address, port, svc_id)
         self.health_check_service_id = svc_id
-        checks = consul.Check.http(
-            self.svc_check_url,
-            self.check_interval,
-            "%ds" % self.check_timeout
-        )
-        checks["DeregisterCriticalServiceAfter"] = self.release_after
+        if config.features.consul_healthchecks:
+            checks = consul.Check.http(
+                self.svc_check_url,
+                self.check_interval,
+                "%ds" % self.check_timeout
+            )
+            checks["DeregisterCriticalServiceAfter"] = self.release_after
+        else:
+            checks = []
         while True:
             self.logger.info("Registering service %s: %s:%s (id=%s)",
                              name, address, port, svc_id)
