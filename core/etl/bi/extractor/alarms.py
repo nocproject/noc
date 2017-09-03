@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import bisect
 import datetime
 # NOC modules
@@ -19,6 +18,7 @@ from noc.bi.models.alarms import Alarms
 from noc.core.etl.bi.stream import Stream
 from noc.lib.dateutils import total_seconds
 from noc.config import config
+from noc.lib.dateutils import hits_in_range
 
 
 class AlarmsExtractor(BaseExtractor):
@@ -70,14 +70,12 @@ class AlarmsExtractor(BaseExtractor):
             if not mo:
                 continue
             # Process reboot data
-            o_reboots = reboots.get(d["managed_object"])
-            n_reboots = 0
-            if o_reboots:
-                i = min(bisect.bisect_left(o_reboots, d["clear_timestamp"]), len(o_reboots) - 1)
-                t0 = d["timestamp"] - self.reboot_interval
-                while i >= 0 and o_reboots[i] >= t0:
-                    n_reboots += 1
-                    i -= 1
+            o_reboots = reboots.get(d["managed_object"], [])
+            n_reboots = hits_in_range(
+                o_reboots,
+                d["timestamp"] - self.reboot_interval,
+                d["clear_timestamp"]
+            )
             #
             self.alarm_stream.push(
                 ts=d["timestamp"],
