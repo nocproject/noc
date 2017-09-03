@@ -242,27 +242,30 @@ class ConsulDCS(DCSBase):
             checks["DeregisterCriticalServiceAfter"] = self.release_after
         else:
             checks = []
-        while True:
-            self.logger.info("Registering service %s: %s:%s (id=%s)",
-                             name, address, port, svc_id)
-            try:
-                r = yield self.consul.agent.service.register(
-                    name=name,
-                    service_id=svc_id,
-                    address=address,
-                    port=port,
-                    tags=tags,
-                    check=checks
-                )
-            except ConsulRepeatableErrors as e:
-                self.logger.info("Cannot register service %s: %s",
-                                 name, e)
-                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
-                continue
-            if r:
-                self.svc_id = svc_id
-            break
-        raise tornado.gen.Return(r)
+        if config.features.service_registration:
+            while True:
+                self.logger.info("Registering service %s: %s:%s (id=%s)",
+                                 name, address, port, svc_id)
+                try:
+                    r = yield self.consul.agent.service.register(
+                        name=name,
+                        service_id=svc_id,
+                        address=address,
+                        port=port,
+                        tags=tags,
+                        check=checks
+                    )
+                except ConsulRepeatableErrors as e:
+                    self.logger.info("Cannot register service %s: %s",
+                                     name, e)
+                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                    continue
+                if r:
+                    self.svc_id = svc_id
+                break
+            raise tornado.gen.Return(r)
+        else:
+            raise tornado.gen.Return(True)
 
     @tornado.gen.coroutine
     def deregister(self):
@@ -273,7 +276,7 @@ class ConsulDCS(DCSBase):
                 pass
             except Exception as e:
                 self.logger.error("Cannot destroy session: %s", e)
-        if self.svc_id:
+        if self.svc_id and config.features.service_registration:
             try:
                 yield self.consul.agent.service.deregister(self.svc_id)
             except ConsulRepeatableErrors:
