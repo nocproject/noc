@@ -19,4 +19,5 @@ class Profile(BaseProfile):
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
+    command_disable_pager = "terminal length 0"
     command_exit = "exit"
