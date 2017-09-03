@@ -25,10 +25,6 @@ Ext.define("NOC.sla.slaprobe.Model", {
             persist: false
         },
         {
-            name: "tests",
-            type: "auto"
-        },
-        {
             name: "description",
             type: "string"
         },
@@ -46,9 +42,24 @@ Ext.define("NOC.sla.slaprobe.Model", {
             type: "string"
         },
         {
-            name: "targets",
-            type: "string",
-            persist: false
+            name: "group",
+            type: "string"
+        },
+        {
+            name: "type",
+            type: "string"
+        },
+        {
+            name: "target",
+            type: "string"
+        },
+        {
+            name: "hw_timestamp",
+            type: "string"
+        },
+        {
+            name: "tags",
+            type: "auto"
         }
     ]
 });
