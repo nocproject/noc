@@ -27,9 +27,24 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     renderer: NOC.render.Lookup("managed_object")
                 },
                 {
-                    text: __("Probe"),
+                    text: __("Group"),
+                    dataIndex: "group",
+                    width: 200
+                },
+                {
+                    text: __("Name"),
                     dataIndex: "name",
-                    width: 100
+                    width: 150
+                },
+                {
+                    text: __("Type"),
+                    dataIndex: "type",
+                    width: 75
+                },
+                {
+                    text: __("Target"),
+                    dataIndex: "target",
+                    width: 200
                 },
                 {
                     text: __("Profile"),
@@ -38,14 +53,15 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
-                    text: __("Targets"),
-                    dataIndex: "targets",
-                    width: 200
-                },
-                {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1
+                },
+                {
+                    text: __("Tags"),
+                    dataIndex: "tags",
+                    renderer: NOC.render.Tags,
+                    width: 100
                 }
             ],
 
@@ -60,6 +76,38 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "group",
+                    xtype: "textfield",
+                    fieldLabel: __("Group"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "type",
+                    xtype: "combobox",
+                    fieldLabel: __("Type"),
+                    allowBlank: false,
+                    uiStyle: "medium",
+                    store: [
+                        ["icmp-echo", "icmp-echo"],
+                        ["path-jitter", "path-jitter"],
+                        ["udp-echo", "udp-echo"],
+                        ["http-get", "http-get"],
+                        ["dns", "dns"],
+                        ["ftp", "ftp"],
+                        ["dhcp", "dhcp"],
+                        ["owamp", "OWAMP"],
+                        ["twamp", "TWAMP"]
+                    ]
+                },
+                {
+                    name: "target",
+                    xtype: "textfield",
+                    fieldLabel: __("Target"),
                     allowBlank: false
                 },
                 {
@@ -75,35 +123,17 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "tests",
-                    xtype: "gridfield",
-                    columns: [
-                        {
-                            text: __("Name"),
-                            dataIndex: "name",
-                            width: 100,
-                            editor: "textfield"
-                        },
-                        {
-                            text: __("Type"),
-                            dataIndex: "type",
-                            width: 100,
-                            editor: "textfield"
-                        },
-                        {
-                            text: __("Target"),
-                            dataIndex: "target",
-                            flex: 1,
-                            editor: "textfield"
-                        },
-                        {
-                            text: __("HW. Timestamp"),
-                            dataIndex: "hw_timestamp",
-                            width: 50,
-                            renderer: NOC.render.Bool,
-                            editor: "checkbox"
-                        }
-                    ]
+                    name: "hw_timestamps",
+                    xtype: "checkbox",
+                    boxLabel: __("HW. Timestamps"),
+                    allowBlank: true
+                },
+                {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Tags"),
+                    allowBlank: true,
+                    uiStyle: "extra"
                 }
             ],
             openDashboard: {
