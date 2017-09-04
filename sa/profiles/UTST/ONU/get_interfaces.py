@@ -27,9 +27,23 @@ class Script(BaseScript):
     def execute(self):
         interfaces = []
         v = self.cli("show port")
-        if (self.match_version(platform__contains="UTST_ONU208I") or
-            self.match_version(platform__contains="onu-zhe")
-            ):
+        if (self.match_version(version__contains="2.0.3.6")):
+            for match in self.rx_int1.finditer(v):
+                ifname = match.group("ifname")
+                iface = {
+                    "name": ifname,
+                    "type": "physical",
+                    "admin_status": True,
+                    "oper_status": True,
+                    "subinterfaces": [{
+                        "name": ifname,
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["BRIDGE"]
+                    }]
+                }
+                interfaces += [iface]
+        else:
             for match in self.rx_int2.finditer(v):
                 ifname = match.group("ifname")
                 if "on" in match.group("admin_status"):
@@ -53,22 +67,4 @@ class Script(BaseScript):
                     }]
                 }
                 interfaces += [iface]
-        else:
-            for match in self.rx_int1.finditer(v):
-                ifname = match.group("ifname")
-                iface = {
-                    "name": ifname,
-                    "type": "physical",
-                    "admin_status": True,
-                    "oper_status": True,
-                    "subinterfaces": [{
-                        "name": ifname,
-                        "admin_status": True,
-                        "oper_status": True,
-                        "enabled_afi": ["BRIDGE"]
-                    }]
-                }
-                interfaces += [iface]
         return [{"interfaces": interfaces}]
-
-
