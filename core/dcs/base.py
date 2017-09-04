@@ -177,7 +177,7 @@ class DCSBase(object):
         """
         raise NotImplementedError()
 
-    def get_status(self, message):
+    def get_status(self):
         if self.status:
             return self.HEALTH_OK_HTTP_CODE, "OK"
         else:
