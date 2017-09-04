@@ -42,18 +42,27 @@
   tags:
     - config
 
-- name: Including postgres.conf
+- name: Exclude postgres.conf
   lineinfile:
     dest: "{{postgresql_conf_path}}"
     line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
+    state: absent
   notify: restart postgres # have to restart postgres because of default listen on 0.0.0.0
+  tags:
+    - config
+
+- name: Including postgres.conf
+  lineinfile:
+    dest: "{{postgresql_conf_path}}"
+    line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
+  notify: restart postgres
   tags:
     - config
 
 - name: Setting config
   template:
     src: "postgres.conf.j2"
-    dest: "{{ noc_root }}/var/etc/postgres/postgres.conf"
+    dest: "{{ postgresql_conf_prefix }}/noc.conf"
   notify: reload postgres
   tags:
     - config

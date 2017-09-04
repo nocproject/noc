@@ -15,24 +15,34 @@
   when: "'Linux' in ansible_system"
 
 
-- name: Creating postgres directories
-  file:
-    path: "{{item}}"
-    state: "directory"
-  with_items:
-    - "{{noc_root}}/var/etc/postgres"
+#
+# Remove me after 1 dec 2017
+#
+- block:
+  - name: setup env
+    file:
+      src: "{{item.name}}"
+      dest: "{{item.dest}}"
+      mode: "{{item.mode}}"
+      owner: "{{noc_user}}"
+      state: absent
+    ignore_errors: true
+    no_log: true
+    with_items:
+      - name: env.j2
+        dest: "{{ noc_root }}/var/etc/postgres/env"
+        mode: "u=rw,g=r,o=r"
+      - name: pgpass.j2
+        dest: "{{ noc_root }}/var/etc/postgres/.pgpass"
+        mode: "u=rw,g-rwx,o-rwx"
 
-- name: setup env
-  template:
-    src: "{{item.name}}"
-    dest: "{{item.dest}}"
-    mode: "{{item.mode}}"
-    owner: "{{noc_user}}"
-  ignore_errors: true
-  no_log: true
-  with_items:
-    - { name: env.j2, dest: "{{ noc_root }}/var/etc/postgres/env", mode: "u=rw,g=r,o=r" }
-    - { name: pgpass.j2, dest: "{{ noc_root }}/var/etc/postgres/.pgpass", mode: "u=rw,g-rwx,o-rwx" }
+  - name: Creating postgres directories
+    file:
+      path: "{{item}}"
+      state: "directory"
+      state: absent
+    with_items:
+      - "{{noc_root}}/var/etc/postgres"
 
 - include: "os/{{ ansible_distribution }}/main.yml"
 
@@ -45,10 +55,19 @@
     tags:
       - config
 
-  - name: Including postgres.conf
+  - name: Exclude postgres.conf
     lineinfile:
       dest: "{{postgresql_conf_path}}"
       line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
+      state: absent
+    notify: restart postgres
+    tags:
+      - config
+
+  - name: Including postgres.conf
+    lineinfile:
+      dest: "{{postgresql_conf_path}}"
+      line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
     notify: restart postgres
     tags:
       - config
@@ -56,7 +75,7 @@
   - name: Setting config
     template:
       src: "postgres.conf.j2"
-      dest: "{{ noc_root }}/var/etc/postgres/postgres.conf"
+      dest: "{{ postgresql_conf_prefix }}/noc.conf"
     notify: restart postgres
     tags:
       - config
@@ -71,11 +90,12 @@
     become_user: "{{postgres_user}}"
 
   - name: install pgpassword for consul user
-    template:
+    file:
       src: "pgpass.j2"
       dest: "{{ consul_home }}/.pgpass"
       mode: "0400"
       owner: "{{consul_user}}"
+      state: absent
     no_log: true
 
   - name: copy postgres consul templates
