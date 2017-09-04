@@ -18,7 +18,7 @@ from .loader import get_dcs_url, get_dcs_class
 
 
 def resolve(name, hint=None, wait=True, timeout=None,
-            full_result=False, near=False):
+            full_result=False, near=False, critical=False):
     """
     Returns *hint* when service is active or new service
     instance,
@@ -37,13 +37,15 @@ def resolve(name, hint=None, wait=True, timeout=None,
                 r = yield dcs.resolve_near(
                     name, hint=hint, wait=wait,
                     timeout=timeout,
-                    full_result=full_result
+                    full_result=full_result,
+                    critical=critical
                 )
             else:
                 r = yield dcs.resolve(
                     name, hint=hint, wait=wait,
                     timeout=timeout,
-                    full_result=full_result
+                    full_result=full_result,
+                    critical=critical
                 )
             result.append(r)
         except tornado.gen.Return as e:

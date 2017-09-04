@@ -92,9 +92,12 @@ class ConsulResolver(ResolverBase):
                     token=self.dcs.consul_token,
                     passing=True
                 )
-            except ConsulRepeatableErrors:
+            except ConsulRepeatableErrors as e:
+                if self.critical:
+                    self.dcs.set_faulty_status("Consul error: %s" % e)
                 continue
             if old_index == index:
+                self.dcs.set_faulty_status("Timed out")
                 continue  # Timed out
             r = dict(
                 (str(svc["Service"]["ID"]), "%s:%s" % (
@@ -468,7 +471,7 @@ class ConsulDCS(DCSBase):
 
     @tornado.gen.coroutine
     def resolve_near(self, name, hint=None, wait=True, timeout=None,
-                     full_result=False):
+                     full_result=False, critical=False):
         """
         Synchronous call to resolve nearby service
         Commonly used for external services like databases
@@ -477,6 +480,7 @@ class ConsulDCS(DCSBase):
         :param timeout:
         :param full_result:
         :param hint:
+        :param critical:
         :return: address:port
         """
         self.logger.info("Resolve near service %s", name)
@@ -491,10 +495,14 @@ class ConsulDCS(DCSBase):
                 )
             except ConsulRepeatableErrors as e:
                 self.logger.info("Consul error: %s", e)
+                if critical:
+                    self.set_faulty_status("Consul error: %s" % e)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
             if not services and wait:
                 self.logger.info("No active service %s. Waiting", name)
+                if critical:
+                    self.set_faulty_status("No active service %s. Waiting" % name)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
             r = []
@@ -504,4 +512,6 @@ class ConsulDCS(DCSBase):
                 if not full_result:
                     break
             self.logger.info("Resolved near service %s to %s", name, r)
+            if critical:
+                self.clear_faulty_status()
             raise tornado.gen.Return(r)

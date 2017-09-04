@@ -956,3 +956,14 @@ class Service(object):
             return False
         else:
             return True
+
+    def get_health_status(self):
+        """
+        Check service health to be reported to service registry
+        :return: (http code, message)
+        """
+        if self.dcs:
+            # DCS is initialized
+            return self.dcs.get_status()
+        else:
+            return 200, "OK"
