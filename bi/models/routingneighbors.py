@@ -12,6 +12,7 @@ from noc.core.clickhouse.fields import (
     DateField, DateTimeField, UInt64Field, StringField, ReferenceField)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.translation import ugettext as _
 
 
 class RoutingNeighbors(Model):
@@ -25,13 +26,25 @@ class RoutingNeighbors(Model):
         ManagedObject,
         description=_("Object Name")
     )
-    interface = StringField()
-    subinterface = StringField()
-    neighbor_address = StringField()
+    interface = StringField(
+        description=_("Physical Interface")
+    )
+    subinterface = StringField(
+        description=_("Logical Interface")
+    )
+    neighbor_address = StringField(
+        description=_("Neighbor Address")
+    )
     neighbor_object = ReferenceField(
         ManagedObject,
-        description=_("Object Name")
+        description=_("Neighbor Object")
     )
-    protocol = StringField()
-    bgp_local_as = UInt64Field()
-    bgp_remote_as = UInt64Field()
+    protocol = StringField(
+        description=_("Protocol")
+    )
+    bgp_local_as = UInt64Field(
+        description=_("BGP Local AS")
+    )
+    bgp_remote_as = UInt64Field(
+        description=_("BGP Remogte AS")
+    )
