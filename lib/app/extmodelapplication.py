@@ -36,6 +36,7 @@ class ExtModelApplication(ExtApplication):
     pk_field_name = None  # Set by constructor
     clean_fields = {}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
+    order_map = {}  # field name -> SQL query for ordering
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -339,6 +340,25 @@ class ExtModelApplication(ExtApplication):
             return f, m2m
         else:
             return pdata, {}
+
+    def extra_query(self, q, order):
+        new_order = []
+        extra_select = {}
+        for n, o in enumerate(order):
+            if o.startswith("-"):
+                fname = o[1:]
+            else:
+                fname = o
+            if fname in self.order_map:
+                no = "%s_order_%d" % (fname, n)
+                extra_select[no] = self.order_map[fname]
+                new_order += [no]
+            else:
+                new_order += [o]
+        extra = {}
+        if extra_select:
+            extra["select"] = extra_select
+        return extra, new_order
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):

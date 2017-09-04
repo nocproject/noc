@@ -64,6 +64,10 @@ class ManagedObjectApplication(ExtModelApplication):
             "inv:networksegment:lookup"
         ]
     }
+    order_map = {
+        "profile": "SELECT name FROM main_ordermap WHERE scope = 'profile' AND scope_id = sa_managedobject.profile",
+        "platform": "SELECT name FROM main_ordermap WHERE scope = 'platform' AND scope_id = sa_managedobject.platform"
+    }
 
     DISCOVERY_JOBS = [
         ("box", "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"),
