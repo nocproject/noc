@@ -106,7 +106,7 @@ def snmp_get(address, oids, port=161,
         for new_oids in oid_parts:
             new_result = yield snmp_get(
                 address=address,
-                oids=new_oids,
+                oids=dict((k, k) for k in new_oids),
                 port=port,
                 community=community,
                 version=version,
