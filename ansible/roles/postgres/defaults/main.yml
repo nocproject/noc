@@ -1,1 +1,3 @@
 postgres_max_connections: 301
+postgresql_conf_path: "{{postgresql_conf_prefix}}/postgresql.conf"
+postgresql_hba_path: "{{postgresql_conf_prefix}}/pg_hba.conf"

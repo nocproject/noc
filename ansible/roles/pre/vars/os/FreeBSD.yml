@@ -40,8 +40,7 @@ postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql
 postgres_data_dir: /usr/local/pgsql/data
-postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
-postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
+postgresql_conf_prefix: /usr/local/pgsql/data
 postgresql_version: 9.5
 
 tower_path: /usr/local/tower
