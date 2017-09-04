@@ -104,17 +104,24 @@ def snmp_get(address, oids, port=161,
             # Some oids after b_idx may be correct
             oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1:]]]
         for new_oids in oid_parts:
-            new_result = yield snmp_get(
-                address=address,
-                oids=dict((k, k) for k in new_oids),
-                port=port,
-                community=community,
-                version=version,
-                timeout=timeout,
-                tos=tos,
-                ioloop=ioloop,
-                udp_socket=sock
-            )
+            try:
+                new_result = yield snmp_get(
+                    address=address,
+                    oids=dict((k, k) for k in new_oids),
+                    port=port,
+                    community=community,
+                    version=version,
+                    timeout=timeout,
+                    tos=tos,
+                    ioloop=ioloop,
+                    udp_socket=sock
+                )
+            except SNMPError as e:
+                if e.code == NO_SUCH_NAME and len(new_oids) == 1:
+                    # Ignore NO_SUCH_VALUE for last oid in list
+                    new_result = {}
+                else:
+                    raise
             for k in new_result:
                 if k in oid_map:
                     result[oid_map[k]] = new_result[k]
