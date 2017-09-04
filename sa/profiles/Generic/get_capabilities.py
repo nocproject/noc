@@ -137,6 +137,69 @@ class Script(BaseScript):
         """
         return False
 
+    def has_hsrp(self):
+        """
+        Returns True when HSRP is enabled
+        :return:
+        """
+        return False
+
+    def has_vrrp_v2(self):
+        """
+        Returns True when VRRP v2 is enabled
+        :return:
+        """
+        return False
+
+    def has_vrrp_v3(self):
+        """
+        Returns True when VRRP v3 is enabled
+        :return:
+        """
+        return False
+
+    def has_bgp(self):
+        """
+        Returns True when BGP is enabled
+        :return:
+        """
+        return False
+
+    def has_ospf_v2(self):
+        """
+        Returns True when OSPF v2 is enabled
+        :return:
+        """
+        return False
+
+    def has_ospf_v3(self):
+        """
+        Returns True when OSPF v3 is enabled
+        :return:
+        """
+        return False
+
+    def has_isis(self):
+        """
+        Returns True when ISIS is enabled
+        :return:
+        """
+        return False
+
+    def has_ldp(self):
+        """
+        Returns True when LDP is enabled
+        :return:
+        """
+        return False
+
+    def has_rsvp(self):
+        """
+        Returns True when RSVP is enabled
+        :return:
+        """
+        return False
+
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
@@ -147,7 +210,6 @@ class Script(BaseScript):
     def execute(self):
         caps = {}
         svs = self.get_snmp_versions()
-        print svs
         if svs:
             # SNMP is enabled
             caps["SNMP"] = True
@@ -180,6 +242,24 @@ class Script(BaseScript):
             caps["Network | UDLD"] = True
         if self.has_ipv6():
             caps["Network | IPv6"] = True
+        if self.has_hsrp():
+            caps["Network | HSRP"] = True
+        if self.has_vrrp_v2():
+            caps["Network | VRRP | v2"] = True
+        if self.has_vrrp_v3():
+            caps["Network | VRRP | v3"] = True
+        if self.has_bgp():
+            caps["Network | BGP"] = True
+        if self.has_ospf_v2():
+            caps["Network | OSPF | v2"] = True
+        if self.has_ospf_v3():
+            caps["Network | VRRP | v3"] = True
+        if self.has_isis():
+            caps["Network | ISIS"] = True
+        if self.has_ldp():
+            caps["Network | LDP"] = True
+        if self.has_rsvp():
+            caps["Network | RSVP"] = True
         self.execute_platform(caps)
         return caps
 
