@@ -44,6 +44,8 @@ class Script(BaseScript):
         "xdsl-channel": "physical",
         "atm-bonding": "physical",
         "atm": "physical",
+        "atm-ima": "physical",
+        "shdsl": "physical",
         "sw-loopback": "loopback",
         "bonding": "other"
     }
