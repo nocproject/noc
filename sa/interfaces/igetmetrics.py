@@ -27,12 +27,7 @@ class IGetMetrics(BaseInterface):
         # ifindex hint
         "ifindex": IntParameter(required=False),
         # SLA probe hint
-        "sla_tests": DictListParameter(attrs={
-            # Test name
-            "name": StringParameter(),
-            # Test type
-            "types": StringParameter()
-        }, required=False)
+        "sla_type": StringParameter(required=False)
     })
     returns = DictListParameter(attrs={
         # Opaque id as in input

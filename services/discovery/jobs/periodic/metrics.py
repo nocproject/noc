@@ -305,8 +305,9 @@ class MetricsCheck(DiscoveryCheck):
             "managed_object": self.object.id
         }, {
             "name": 1,
+            "group": 1,
             "profile": 1,
-            "tests": 1
+            "type": 1
         }, read_preference=ReadPreference.SECONDARY_PREFERRED):
             if not p.get("profile"):
                 self.logger.debug("Probe %s has no profile. Skipping", p["name"])
@@ -323,11 +324,8 @@ class MetricsCheck(DiscoveryCheck):
                 metrics += [{
                     "id": m_id,
                     "metric": metric,
-                    "path": [p["name"]],
-                    "sla_tests": [{
-                        "name": t["name"],
-                        "types": t["type"]
-                    } for t in p["tests"]]
+                    "path": [p.get("group", ""), p["name"]],
+                    "sla_type": p.type
                 }]
                 self.id_metrics[m_id] = pm[metric]
         if not metrics:
