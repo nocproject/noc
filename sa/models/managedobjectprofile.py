@@ -199,6 +199,8 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_cpe = models.BooleanField(default=False)
     # Enable MAC discovery
     enable_box_discovery_mac = models.BooleanField(default=False)
+    # Enable metrics
+    enable_box_discovery_metrics = models.BooleanField(default=False)
     # Enable Housekeeping
     enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable periodic discovery.
@@ -212,7 +214,7 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_interface_status = models.BooleanField(default=False)
     # Collect mac address table
     enable_periodic_discovery_mac = models.BooleanField(default=False)
-    # Collect mac address table
+    # Collect metrics
     enable_periodic_discovery_metrics = models.BooleanField(default=False)
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)

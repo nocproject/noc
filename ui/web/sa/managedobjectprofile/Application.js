@@ -568,6 +568,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_box_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: __("MAC")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_metrics",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Metrics")
                                         }
                                     ]
                                 },
