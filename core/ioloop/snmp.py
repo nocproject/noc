@@ -99,10 +99,10 @@ def snmp_get(address, oids, port=161,
         oid_parts = []
         if b_idx:
             # Oids before b_idx are probable correct
-            oid_parts += [vb[0] for vb in resp.varbinds[:b_idx]]
+            oid_parts += [[vb[0] for vb in resp.varbinds[:b_idx]]]
         if b_idx < len(resp.varbinds) - 1:
             # Some oids after b_idx may be correct
-            oid_parts += [vb[0] for vb in resp.varbinds[b_idx + 1:]]
+            oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1:]]]
         for new_oids in oid_parts:
             new_result = yield snmp_get(
                 address=address,
