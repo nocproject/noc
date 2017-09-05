@@ -24,6 +24,7 @@ class IGetSLAProbes(BaseInterface):
     tags: Additional tags
     """
     returns = DictListParameter(attrs={
+        "group": StringParameter(required=True, default=""),
         "name": StringParameter(),
         "description": StringParameter(required=False),
         "type": StringParameter(choices=[
@@ -39,6 +40,5 @@ class IGetSLAProbes(BaseInterface):
         ]),
         "target": StringParameter(),
         "hw_timestamp": BooleanParameter(default=False),
-        "group": StringParameter(required=False),
         "tags": StringListParameter(required=False)
     })
