@@ -71,7 +71,7 @@ class SLACheck(DiscoveryCheck):
             })
             del new_probes[group, p.name]
         # Add remaining probes
-        for group, name in six.itervalues(new_probes):
+        for group, name in six.iterkeys(new_probes):
             self.logger.info("[%s|%s] Creating probe", group, name)
             new_data = new_probes.get((group, name))
             probe = SLAProbe(

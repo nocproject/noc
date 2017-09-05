@@ -33,16 +33,16 @@ class MetricConfig(object):
         "metric",
         "path",
         "ifindex",
-        "sla_tests"
+        "sla_type"
     )
 
     def __init__(self, id, metric, path=None, ifindex=None,
-                 sla_tests=None):
+                 sla_type=None):
         self.id = id
         self.metric = metric
         self.path = path
         self.ifindex = ifindex
-        self.sla_tests = sla_tests
+        self.sla_type = sla_type
 
     def __repr__(self):
         return "<MetricConfig #%s %s>" % (self.id, self.metric)

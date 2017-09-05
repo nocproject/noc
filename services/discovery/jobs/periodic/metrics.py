@@ -325,7 +325,7 @@ class MetricsCheck(DiscoveryCheck):
                     "id": m_id,
                     "metric": metric,
                     "path": [p.get("group", ""), p["name"]],
-                    "sla_type": p.type
+                    "sla_type": p["type"]
                 }]
                 self.id_metrics[m_id] = pm[metric]
         if not metrics:
