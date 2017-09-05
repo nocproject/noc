@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Subscriber Sessions Subcard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-import tornado.gen
 # NOC modules
 from base import BaseCard
 from noc.inv.models.interface import Interface

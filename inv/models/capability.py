@@ -26,6 +26,7 @@ id_lock = Lock()
 class Capability(Document):
     meta = {
         "collection": "noc.inv.capabilities",
+        "strict": False,
         "json_collection": "inv.capabilities"
     }
     name = StringField(unique=True)

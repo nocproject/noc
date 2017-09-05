@@ -1,0 +1,18 @@
+---
+
+- name: Install zookeeper monitoring
+  template:
+    src: "zookeeper.conf.j2"
+    dest: "{{ telegraf_confd_path }}/zookeeper.conf"
+  notify: reload telegraf
+  tags:
+    - config
+    - telegraf
+
+- name: copy zookeeper consul templates
+  template:
+    src: zookeeper.json.j2
+    dest: "{{consul_configd_path}}/zookeeper.json"
+  notify: reload consul
+  tags:
+    - consul

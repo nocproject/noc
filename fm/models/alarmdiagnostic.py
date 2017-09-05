@@ -20,6 +20,7 @@ import bson
 class AlarmDiagnostic(Document):
     meta = {
         "collection": "noc.alarmdiagnostic",
+        "strict": False,
         "indexes": [
             "alarm"
         ]

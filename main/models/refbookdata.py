@@ -27,6 +27,7 @@ class RefBookData(models.Model):
     Ref. Book Data
     """
     class Meta:
+        app_label = "main"
         verbose_name = "Ref Book Data"
         verbose_name_plural = "Ref Book Data"
 

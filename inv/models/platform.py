@@ -30,7 +30,7 @@ id_lock = threading.Lock()
 class Platform(Document):
     meta = {
         "collection": "noc.platforms",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "inv.platforms",
         "json_unique_fields": ["vendor", "name"],
         "indexes": [

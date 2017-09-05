@@ -46,7 +46,7 @@ class ReportFilterApplication(SimpleReport):
         self.customize_form(RForm, "ip_prefix", search=True)
         return RForm
 
-    def get_data(self, **kwargs):
+    def get_data(self, request, **kwargs):
         def get_row(p):
             r = [p.vrf.name, p.prefix, p.state.name, unicode(p.asn),
                 unicode(p.vc) if p.vc else ""]

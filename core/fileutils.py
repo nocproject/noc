@@ -8,6 +8,7 @@
 import os
 import tempfile
 import hashlib
+import tarfile
 import gzip
 # Third-party modules
 import six
@@ -191,3 +192,30 @@ def tail(path, lines):
             if len(l) >= lines or not pos:
                 return l[-lines:]
             avg *= 1.61
+
+
+def iter_open(path):
+    """
+    Generator yielding file-like objects from path
+    :param path:
+    :return:
+    """
+    if path.endswith("tar.gz") or path.endswith("tgz"):
+        tf = tarfile.open(path, "r:gz")
+        for name in tf:
+            f = tf.extractfile(name)
+            yield f
+        tf.close()
+    elif path.endswith("tar.bz2") or path.endswith("tbz"):
+        tf = tarfile.open(path, "r:bz")
+        for f in tf:
+            yield f
+        tf.close()
+    elif path.endswith(".gz"):
+        f = gzip.open(path, "r")
+        yield f
+        f.close()
+    else:
+        f = open(path, "r")
+        yield f
+        f.close()

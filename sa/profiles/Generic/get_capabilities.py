@@ -48,13 +48,17 @@ class Script(BaseScript):
                 pass
         return False
 
-    def check_snmp_getnext(self, oid, bulk=False, only_first=True):
+    def check_snmp_getnext(self, oid, bulk=False, only_first=True, version=None):
         """
         Check SNMP response to GETNEXT/BULK
         """
         try:
-            for k, v in self.snmp.getnext(oid, bulk=bulk,
-                                          only_first=only_first):
+            r = self.snmp.getnext(oid, bulk=bulk,
+                                  only_first=only_first,
+                                  version=version)
+            if not r:
+                return False
+            for k, v in r:
                 return True
         except (self.snmp.TimeOutError, SNMPError):
             pass
@@ -81,19 +85,21 @@ class Script(BaseScript):
         return self.check_snmp_getnext(self.SNMP_BULK_CHECK_OID,
                                        bulk=True)
 
-    def has_snmp_ifmib(self):
+    def has_snmp_ifmib(self, version=None):
         """
         Check IF-MIB support
         """
         return self.check_snmp_getnext(mib["IF-MIB::ifIndex"],
-                                       only_first=True)
+                                       only_first=True,
+                                       version=version)
 
-    def has_snmp_ifmib_hc(self):
+    def has_snmp_ifmib_hc(self, version=None):
         """
         Check IF-MIB 64 bit counters
         """
         return self.check_snmp_getnext(mib["IF-MIB::ifHCInOctets"],
-                                       only_first=True)
+                                       only_first=True,
+                                       version=version)
 
     def has_lldp(self):
         """
@@ -131,6 +137,69 @@ class Script(BaseScript):
         """
         return False
 
+    def has_hsrp(self):
+        """
+        Returns True when HSRP is enabled
+        :return:
+        """
+        return False
+
+    def has_vrrp_v2(self):
+        """
+        Returns True when VRRP v2 is enabled
+        :return:
+        """
+        return False
+
+    def has_vrrp_v3(self):
+        """
+        Returns True when VRRP v3 is enabled
+        :return:
+        """
+        return False
+
+    def has_bgp(self):
+        """
+        Returns True when BGP is enabled
+        :return:
+        """
+        return False
+
+    def has_ospf_v2(self):
+        """
+        Returns True when OSPF v2 is enabled
+        :return:
+        """
+        return False
+
+    def has_ospf_v3(self):
+        """
+        Returns True when OSPF v3 is enabled
+        :return:
+        """
+        return False
+
+    def has_isis(self):
+        """
+        Returns True when ISIS is enabled
+        :return:
+        """
+        return False
+
+    def has_ldp(self):
+        """
+        Returns True when LDP is enabled
+        :return:
+        """
+        return False
+
+    def has_rsvp(self):
+        """
+        Returns True when RSVP is enabled
+        :return:
+        """
+        return False
+
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
@@ -150,9 +219,9 @@ class Script(BaseScript):
                 self.capabilities[self.SNMP_CAPS[v]] = v in svs
             if svs & set([SNMP_v2c, SNMP_v3]) and self.has_snmp_bulk():
                 caps["SNMP | Bulk"] = True
-            if self.has_snmp_ifmib():
+            if self.has_snmp_ifmib(version=list(svs)[-1]):
                 caps["SNMP | IF-MIB"] = True
-                if self.has_snmp_ifmib_hc():
+                if self.has_snmp_ifmib_hc(list(svs)[-1]):
                     caps["SNMP | IF-MIB | HC"] = True
             for cap, oid in self.CHECK_SNMP_GET.iteritems():
                 if self.check_snmp_get(oid):
@@ -173,6 +242,24 @@ class Script(BaseScript):
             caps["Network | UDLD"] = True
         if self.has_ipv6():
             caps["Network | IPv6"] = True
+        if self.has_hsrp():
+            caps["Network | HSRP"] = True
+        if self.has_vrrp_v2():
+            caps["Network | VRRP | v2"] = True
+        if self.has_vrrp_v3():
+            caps["Network | VRRP | v3"] = True
+        if self.has_bgp():
+            caps["Network | BGP"] = True
+        if self.has_ospf_v2():
+            caps["Network | OSPF | v2"] = True
+        if self.has_ospf_v3():
+            caps["Network | VRRP | v3"] = True
+        if self.has_isis():
+            caps["Network | ISIS"] = True
+        if self.has_ldp():
+            caps["Network | LDP"] = True
+        if self.has_rsvp():
+            caps["Network | RSVP"] = True
         self.execute_platform(caps)
         return caps
 

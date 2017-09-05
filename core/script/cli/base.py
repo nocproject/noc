@@ -13,6 +13,7 @@ import re
 import functools
 import datetime
 from functools import reduce
+from threading import Lock
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -24,6 +25,7 @@ from noc.lib.text import replace_re_group
 from .error import (CLIError, CLIAuthFailed, CLINoSuperCommand,
                     CLILowPrivileges, CLIConnectionRefused)
 from noc.config import config
+from noc.core.span import Span
 
 
 class CLI(object):
@@ -49,6 +51,10 @@ class CLI(object):
     KEEP_INTVL = 10
     # Terminate connection after N keepalive failures
     KEEP_CNT = 3
+    # Patterns lock
+    patterns_lock = Lock()
+    # profile name -> patterns
+    patterns_cache = {}
 
     class InvalidPagerPattern(Exception):
         pass
@@ -61,10 +67,8 @@ class CLI(object):
         self.motd = ""
         self.ioloop = None
         self.command = None
-        self.more_patterns = []
-        self.more_commands = []
         self.prompt_stack = []
-        self.patterns = self.build_patterns()
+        self.patterns = self.get_patterns()
         self.buffer = ""
         self.is_started = False
         self.result = None
@@ -159,11 +163,15 @@ class CLI(object):
             )
         else:
             parser = self.read_until_prompt
-        self.ioloop.run_sync(functools.partial(self.submit, parser))
-        if self.error:
-            raise self.error
-        else:
-            return self.result
+        with Span(server=self.script.credentials.get("address"),
+                  service=self.name, in_label=cmd) as s:
+            self.ioloop.run_sync(functools.partial(self.submit, parser))
+            if self.error:
+                if s:
+                    s.error_text = str(self.error)
+                raise self.error
+            else:
+                return self.result
 
     @tornado.gen.coroutine
     def submit(self, parser=None):
@@ -286,6 +294,8 @@ class CLI(object):
                         r = yield handler(matched, match)
                     if r is not None:
                         raise tornado.gen.Return(r)
+                    else:
+                        break  # This state is processed
 
     @tornado.gen.coroutine
     def parse_object_stream(self, parser=None,
@@ -370,7 +380,7 @@ class CLI(object):
         Send proper pager reply
         """
         pg = match.group(0)
-        for p, c in zip(self.more_patterns, self.more_commands):
+        for p, c in self.patterns["more_patterns_commands"]:
             if p.search(pg):
                 self.collected_data += [data]
                 self.send(c)
@@ -383,7 +393,7 @@ class CLI(object):
         """
         self.pattern_table = {}
         for pattern_name in patterns:
-            rx = self.patterns[pattern_name]
+            rx = self.patterns.get(pattern_name)
             if not rx:
                 continue
             self.pattern_table[rx] = patterns[pattern_name]
@@ -430,6 +440,7 @@ class CLI(object):
             "username": (self.on_failure, CLIAuthFailed),
             "password": (self.on_failure, CLIAuthFailed),
             "unprivileged_prompt": self.on_unprivileged_prompt,
+            "super_password": self.on_super_password,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
         }, self.profile.cli_timeout_password)
@@ -500,6 +511,7 @@ class CLI(object):
         self.expect({
             "prompt": self.on_prompt,
             "password": (self.on_failure, CLILowPrivileges),
+            "super_password": (self.on_failure, CLILowPrivileges),
             "pager": self.send_pager_reply,
             "unprivileged_prompt": (self.on_failure, CLILowPrivileges)
         }, self.profile.cli_timeout_password)
@@ -513,6 +525,9 @@ class CLI(object):
         )
         lseq = len(self.profile.setup_sequence)
         for i, c in enumerate(self.profile.setup_sequence):
+            if isinstance(c, six.integer_types) or isinstance(c, float):
+                yield tornado.gen.sleep(c)
+                continue
             cmd = c % self.script.credentials
             yield self.send(cmd)
             # Waiting for response and drop it
@@ -526,6 +541,14 @@ class CLI(object):
         self.logger.debug("Setup sequence complete")
         self.setup_complete = True
         yield self.on_start(data, match)
+
+    def get_patterns(self):
+        with self.patterns_lock:
+            pc = self.patterns_cache.get(self.profile.name)
+            if not pc:
+                pc = self.build_patterns()
+                self.patterns_cache[self.profile.name] = pc
+            return pc.copy()
 
     def build_patterns(self):
         """
@@ -544,15 +567,18 @@ class CLI(object):
                 self.profile.pattern_unpriveleged_prompt,
                 re.DOTALL | re.MULTILINE
             )
-        else:
-            patterns["unprivileged_prompt"] = None
+        if self.profile.pattern_super_password:
+            patterns["super_password"] = re.compile(
+                self.profile.pattern_super_password,
+                re.DOTALL | re.MULTILINE
+            )
         if isinstance(self.profile.pattern_more, six.string_types):
             more_patterns = [self.profile.pattern_more]
-            self.more_commands = [self.profile.command_more]
+            patterns["more_commands"] = [self.profile.command_more]
         else:
             # .more_patterns is a list of (pattern, command)
             more_patterns = [x[0] for x in self.profile.pattern_more]
-            self.more_commands = [x[1] for x in self.profile.pattern_more]
+            patterns["more_commands"] = [x[1] for x in self.profile.pattern_more]
         if self.profile.pattern_start_setup:
             patterns["setup"] = re.compile(
                 self.profile.pattern_start_setup,
@@ -563,8 +589,13 @@ class CLI(object):
             "|".join([r"(%s)" % p for p in more_patterns]),
             re.DOTALL | re.MULTILINE
         )
-        self.more_patterns = [re.compile(p, re.MULTILINE | re.DOTALL)
-                              for p in more_patterns]
+        patterns["more_patterns"] = [
+            re.compile(p, re.MULTILINE | re.DOTALL)
+            for p in more_patterns]
+        patterns["more_patterns_commands"] = list(zip(
+            patterns["more_patterns"],
+            patterns["more_commands"]
+        ))
         return patterns
 
     def resolve_pattern_prompt(self, match):

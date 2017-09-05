@@ -67,7 +67,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "medium",
+                    uiStyle: "large",
                     labelWidth: 170
                 },
                 {
@@ -85,34 +85,53 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     labelWidth: 170
                 },
                 {
-                    name: "filter_id",
-                    xtype: "numberfield",
-                    fieldLabel: __("Filter by ID"),
-                    allowBlank: true,
-                    hideTrigger: true,
-                    uiStyle: "small",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_name",
-                    xtype: "textfield",
-                    fieldLabel: __("Filter by Name (REGEXP)"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_managed",
-                    xtype: "combobox",
-                    fieldLabel: __("Filter by Is Managed"),
-                    store: [
-                        [null, "-"],
-                        [true, "Yes"],
-                        [false, "No"]
-                    ],
-                    allowBlank: true,
-                    uiStyle: "small",
-                    labelWidth: 170
+                    xtype: "fieldset",
+                    title: __("Filter by Main Attributes"),
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "filter_id",
+                            xtype: "numberfield",
+                            fieldLabel: __("ID"),
+                            allowBlank: true,
+                            hideTrigger: true,
+                            uiStyle: "small",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_name",
+                            xtype: "textfield",
+                            fieldLabel: __("Name (REGEXP)"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_description",
+                            xtype: "textfield",
+                            fieldLabel: __("Filter by Description (REGEXP)"),
+                            allowBlank: true,
+                            uiStyle: "large",
+                            labelWidth: 170
+                        },
+                        {
+                            name: "filter_managed",
+                            xtype: "combobox",
+                            fieldLabel: __("Is Managed"),
+                            store: [
+                                [null, "-"],
+                                [true, "Yes"],
+                                [false, "No"]
+                            ],
+                            allowBlank: true,
+                            uiStyle: "small",
+                            labelWidth: 170
+                        }
+                    ]
                 },
                 {
                     name: "filter_pool",
@@ -123,32 +142,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 },
                 {
                     name: "filter_profile",
-                    xtype: "sa.profile.LookupField",
+                    xtype: "main.ref.profile.LookupField",
                     fieldLabel: __("Filter by Profile"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_vendor",
-                    xtype: "inv.vendor.LookupField",
-                    fieldLabel: __("Filter by Vendor"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_platform",
-                    xtype: "inv.platform.LookupField",
-                    fieldLabel: __("Filter by Platform"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_version",
-                    xtype: "inv.firmware.LookupField",
-                    fieldLabel: __("Filter by Version"),
                     allowBlank: true,
                     uiStyle: "large",
                     labelWidth: 170
@@ -213,14 +208,6 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     name: "filter_service_terminator",
                     xtype: "sa.terminationgroup.LookupField",
                     fieldLabel: __("Filter by service terminator"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    labelWidth: 170
-                },
-                {
-                    name: "filter_tt_system",
-                    xtype: "fm.ttsystem.LookupField",
-                    fieldLabel: __("Filter by TT System"),
                     allowBlank: true,
                     uiStyle: "large",
                     labelWidth: 170

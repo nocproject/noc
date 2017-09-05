@@ -24,7 +24,7 @@ class NewEvent(document.Document):
     """
     meta = {
         "collection": "noc.events.new",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["seq"]
     }
     status = "N"

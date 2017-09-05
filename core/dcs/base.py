@@ -31,6 +31,11 @@ class DCSBase(object):
     DEFAULT_SERVICE_RESOLUTION_TIMEOUT = datetime.timedelta(seconds=config.dcs.resolution_timeout)
     # Resolver class
     resolver_cls = None
+    # HTTP code to be returned by /health endpoint when service is healthy
+    HEALTH_OK_HTTP_CODE = 200
+    # HTTP code to be returned by /health endpoint when service is unhealthy
+    # and must be temporary removed from resolver
+    HEALTH_FAILED_HTTP_CODE = 429
 
     def __init__(self, url, ioloop=None):
         self.logger = logging.getLogger(__name__)
@@ -45,6 +50,8 @@ class DCSBase(object):
             10000
         )
         self.health_check_service_id = None
+        self.status = True
+        self.status_message = ""
 
     def parse_url(self, u):
         pass
@@ -94,20 +101,20 @@ class DCSBase(object):
         raise NotImplementedError()
 
     @tornado.gen.coroutine
-    def get_resolver(self, name):
+    def get_resolver(self, name, critical=False):
         with self.resolvers_lock:
-            resolver = self.resolvers.get(name)
+            resolver = self.resolvers.get((name, critical))
             if not resolver:
                 self.logger.info("Running resolver for service %s", name)
-                resolver = self.resolver_cls(self, name)
-                self.resolvers[name] = resolver
+                resolver = self.resolver_cls(self, name, critical)
+                self.resolvers[name, critical] = resolver
                 self.ioloop.add_callback(resolver.start)
         raise tornado.gen.Return(resolver)
 
     @tornado.gen.coroutine
     def resolve(self, name, hint=None, wait=True, timeout=None,
-                full_result=False):
-        resolver = yield self.get_resolver(name)
+                full_result=False, critical=False):
+        resolver = yield self.get_resolver(name, critical)
         r = yield resolver.resolve(
             hint=hint, wait=wait, timeout=timeout,
             full_result=full_result
@@ -159,7 +166,9 @@ class DCSBase(object):
         else:
             return result[0]
 
-    def resolve_near(self, name):
+    @tornado.gen.coroutine
+    def resolve_near(self, name, hint=None, wait=True, timeout=None,
+                     full_result=False, critical=False):
         """
         Synchronous call to resolve nearby service
         Commonly used for external services like databases
@@ -168,9 +177,27 @@ class DCSBase(object):
         """
         raise NotImplementedError()
 
+    def get_status(self):
+        if self.status:
+            return self.HEALTH_OK_HTTP_CODE, "OK"
+        else:
+            return self.HEALTH_FAILED_HTTP_CODE, self.status_message
+
+    def set_faulty_status(self, message):
+        if self.status or self.status_message != message:
+            self.logger.info("Set faulty status to: %s", message)
+            self.status = False
+            self.status_message = message
+
+    def clear_faulty_status(self):
+        if not self.status:
+            self.logger.info("Clearing faulty status")
+            self.status = True
+            self.status_message = ""
+
 
 class ResolverBase(object):
-    def __init__(self, dcs, name):
+    def __init__(self, dcs, name, critical=False):
         self.dcs = dcs
         self.name = name
         self.to_shutdown = False
@@ -181,6 +208,7 @@ class ResolverBase(object):
         self.lock = Lock()
         self.policy = self.policy_random
         self.rr_index = -1
+        self.critical = critical
         self.ready_event = tornado.locks.Event()
 
     def stop(self):
@@ -200,6 +228,11 @@ class ResolverBase(object):
         if self.to_shutdown:
             return
         with self.lock:
+            if self.critical:
+                if services:
+                    self.dcs.clear_faulty_status()
+                else:
+                    self.dcs.set_faulty_status("No active services %s" % self.name)
             self.services = services
             self.service_ids = sorted(services.keys())
             self.service_addresses = set(services.values())
@@ -216,7 +249,8 @@ class ResolverBase(object):
             metrics["dcs.resolver.%s.activeservices" % self.name] = len(self.services)
 
     @tornado.gen.coroutine
-    def resolve(self, hint=None, wait=True, timeout=None, full_result=False):
+    def resolve(self, hint=None, wait=True, timeout=None,
+                full_result=False):
         metrics["dcs.resolver.requests"] += 1
         if wait:
             # Wait until service catalog populated
@@ -228,8 +262,12 @@ class ResolverBase(object):
                 yield self.ready_event.wait(timeout=t)
             except tornado.gen.TimeoutError:
                 metrics["dcs.resolver.errors"] += 1
+                if self.critical:
+                    self.dcs.set_faulty_status("Failed to resolve %s: Timeout" % self.name)
                 raise ResolutionError()
         if not wait and not self.ready_event.is_set():
+            if self.critical:
+                self.dcs.set_faulty_status("Failed to resolve %s: No active services" % self.name)
             raise ResolutionError()
         with self.lock:
             if hint and hint in self.service_addresses:
@@ -240,6 +278,8 @@ class ResolverBase(object):
             else:
                 location = self.services[self.policy()]
         metrics["dcs.resolver.success"] += 1
+        if self.critical:
+            self.dcs.clear_faulty_status()
         raise tornado.gen.Return(location)
 
     def policy_random(self):

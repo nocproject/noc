@@ -36,11 +36,11 @@ class AlarmClass(nosql.Document):
     """
     meta = {
         "collection": "noc.alarmclasses",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.alarmclasses",
         "json_depends_on": [
             "fm.alarmseverities"
-        ]
+        ],
     }
 
     name = fields.StringField(required=True, unique=True)

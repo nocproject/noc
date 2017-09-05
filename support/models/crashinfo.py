@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 class Crashinfo(Document):
     meta = {
         "collection": "noc.crashinfo",
+        "strict": False,
         "indexes": [("status", "timestamp")]
     }
     uuid = UUIDField(unique=True, primary_key=True)

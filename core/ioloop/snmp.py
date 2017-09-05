@@ -74,14 +74,7 @@ def snmp_get(address, oids, port=161,
         else:
             sock.close()
     resp = parse_get_response(data)
-    if resp.error_status != NO_ERROR:
-        oid = None
-        if resp.error_index and resp.varbinds:
-            oid = resp.varbinds[resp.error_index - 1][0]
-        logger.debug("[%s] SNMP error: %s %s",
-                     address, oid, resp.error_status)
-        raise SNMPError(code=resp.error_status, oid=oid)
-    else:
+    if resp.error_status == NO_ERROR:
         # Success
         if oid_map:
             result = {}
@@ -97,6 +90,60 @@ def snmp_get(address, oids, port=161,
             result = resp.varbinds[0][1]
         logger.debug("[%s] GET result: %r", address, result)
         raise Return(result)
+    elif resp.error_status == NO_SUCH_NAME and len(oids) > 1:
+        # One or more invalid oids
+        b_idx = resp.error_index - 1
+        logger.debug("[%s] Invalid oid %s detected, trying to exclude",
+                     address, resp.varbinds[b_idx][0])
+        result = {}
+        oid_parts = []
+        if b_idx:
+            # Oids before b_idx are probable correct
+            oid_parts += [[vb[0] for vb in resp.varbinds[:b_idx]]]
+        if b_idx < len(resp.varbinds) - 1:
+            # Some oids after b_idx may be correct
+            oid_parts += [[vb[0] for vb in resp.varbinds[b_idx + 1:]]]
+        for new_oids in oid_parts:
+            try:
+                new_result = yield snmp_get(
+                    address=address,
+                    oids=dict((k, k) for k in new_oids),
+                    port=port,
+                    community=community,
+                    version=version,
+                    timeout=timeout,
+                    tos=tos,
+                    ioloop=ioloop,
+                    udp_socket=sock
+                )
+            except SNMPError as e:
+                if e.code == NO_SUCH_NAME and len(new_oids) == 1:
+                    # Ignore NO_SUCH_VALUE for last oid in list
+                    new_result = {}
+                else:
+                    raise
+            for k in new_result:
+                if k in oid_map:
+                    result[oid_map[k]] = new_result[k]
+                else:
+                    logger.info(
+                        "[%s] Invalid oid %s returned in reply",
+                        address, k
+                    )
+        if result:
+            logger.debug("[%s] GET result: %r", address, result)
+            raise Return(result)
+        else:
+            # All oids excluded as broken
+            logger.debug("[%s] All oids are broken", address)
+            raise SNMPError(code=NO_SUCH_NAME, oid=oids[0])
+    else:
+        oid = None
+        if resp.error_index and resp.varbinds:
+            oid = resp.varbinds[resp.error_index - 1][0]
+        logger.debug("[%s] SNMP error: %s %s",
+                     address, oid, resp.error_status)
+        raise SNMPError(code=resp.error_status, oid=oid)
 
 
 @coroutine

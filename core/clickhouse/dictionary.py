@@ -16,6 +16,7 @@ import six
 import cachetools
 # NOC modules
 from .fields import BaseField
+from noc.config import config
 
 __all__ = ["Dictionary"]
 
@@ -92,7 +93,7 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "        </layout>",
             "        <source>",
             "            <file>",
-            "                <path>/opt/dictionaries/%s.tsv</path>" % cls._meta.name,
+            "                <path>%s/%s.tsv</path>" % (config.path.bi_dict_data_prefix, cls._meta.name),
             "                <format>TabSeparated</format>",
             "            </file>",
             "        </source>",

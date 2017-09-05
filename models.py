@@ -13,14 +13,23 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def is_document(object):
+    """
+    Check object is mongoengine document
+    :param object:
+    :return:
+    """
+    return getattr(object, "_is_document", False)
+
+
 def get_model_id(object):
     """
     Returns model id for instance object
     """
-    if isinstance(object._meta, dict):
+    if is_document(object):
         # Document
         return u"%s.%s" % (object.__module__.split(".")[1],
-                           object.__class__.__name__)
+                           object._class_name)
     else:
         # Model
         return u"%s.%s" % (object._meta.app_label,
@@ -79,12 +88,11 @@ _MODELS = {
     "main.CustomFieldEnumGroup": "noc.main.models.customfieldenumgroup.CustomFieldEnumGroup",
     "main.CustomFieldEnumValue": "noc.main.models.customfieldenumvalue.CustomFieldEnumValue",
     "main.DBTrigger": "noc.main.models.dbtrigger.DBTrigger",
-    "main.DatabaseStorage": "noc.main.models.DatabaseStorage",
+    "main.DatabaseStorage": "noc.main.models.databasestorage.DatabaseStorage",
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
     "main.Favorites": "noc.main.models.favorites.Favorites",
     "main.Language": "noc.main.models.language.Language",
-    "main.MIMEType": "noc.main.models.MIMEType",
-    "main.Notification": "noc.main.models.notification.Notification",
+    "main.MIMEType": "noc.main.models.mimetype.MIMEType",
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
     "main.NotificationGroupOther": "noc.main.models.notificationgroup.NotificationGroupOther",
     "main.NotificationGroupUser": "noc.main.models.notificationgroup.NotificationGroupUser",
@@ -92,9 +100,9 @@ _MODELS = {
     "main.Pool": "noc.main.models.pool.Pool",
     "main.PrefixTable": "noc.main.models.prefixtable.PrefixTable",
     "main.PyRule": "noc.main.models.pyrule.PyRule",
-    "main.RefBook": "noc.main.models.RefBook",
-    "main.RefBookData": "noc.main.models.RefBookData",
-    "main.RefBookField": "noc.main.models.RefBookField",
+    "main.RefBook": "noc.main.models.refbook.RefBook",
+    "main.RefBookData": "noc.main.models.refbookdata.RefBookData",
+    "main.RefBookField": "noc.main.models.refbookfield.RefBookField",
     "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
     "main.Schedule": "noc.main.models.Schedule",
@@ -119,16 +127,11 @@ _MODELS = {
     "gis.Area": "noc.gis.models.Area",
     "gis.Building": "noc.gis.models.building.Building",
     "gis.Division": "noc.gis.models.division.Division",
-    "gis.FontSet": "noc.gis.models.FontSet",
-    "gis.GeoData": "noc.gis.models.geodata.GeoData",
     "gis.Layer": "noc.gis.models.layer.Layer",
     "gis.LayerUserSettings": "noc.gis.models.layerusersettings.LayerUserSettings",
     "gis.Map": "noc.gis.models.Map",
     "gis.Overlay": "noc.gis.models.Overlay",
     "gis.Street": "noc.gis.models.street.Street",
-    "gis.Style": "noc.gis.models.Style",
-    "gis.TileCache": "noc.gis.models.TileCache",
-    "gis._Layer": "noc.gis.models._Layer",
     # inv models
     "inv.Capability": "noc.inv.models.capability.Capability",
     "inv.ConnectionRule": "noc.inv.models.connectionrule.ConnectionRule",
@@ -150,7 +153,7 @@ _MODELS = {
     "inv.ModelInterface": "noc.inv.models.modelinterface.ModelInterface",
     "inv.ModelMapping": "noc.inv.models.modelmapping.ModelMapping",
     "inv.NetworkSegment": "noc.inv.models.networksegment.NetworkSegment",
-    "inv.NetworkSegmentProfile": "noc.inv.models.networksegment.NetworkSegmentProfile",
+    "inv.NetworkSegmentProfile": "noc.inv.models.networksegmentprofile.NetworkSegmentProfile",
     "inv.NewAddressDiscoveryLog": "noc.inv.models.newaddressdiscoverylog.NewAddressDiscoveryLog",
     "inv.NewPrefixDiscoveryLog": "noc.inv.models.newprefixdiscoverylog.NewPrefixDiscoveryLog",
     "inv.Object": "noc.inv.models.object.Object",
@@ -158,7 +161,6 @@ _MODELS = {
     "inv.ObjectFile": "noc.inv.models.objectfile.ObjectFile",
     "inv.ObjectLog": "noc.inv.models.objectlog.ObjectLog",
     "inv.ObjectModel": "noc.inv.models.objectmodel.ObjectModel",
-    "inv.PendingLinkCheck": "noc.inv.models.pendinglinkcheck.PendingLinkCheck",
     "inv.Platform": "noc.inv.models.platform.Platform",
     "inv.SubInterface": "noc.inv.models.subinterface.SubInterface",
     "inv.Technology": "noc.inv.models.technology.Technology",
@@ -170,7 +172,6 @@ _MODELS = {
     "sa.AdministrativeDomain": "noc.sa.models.administrativedomain.AdministrativeDomain",
     "sa.AuthProfile": "noc.sa.models.authprofile.AuthProfile",
     "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
-    "sa.FailedScriptLog": "noc.sa.models.failedscriptlog.FailedScriptLog",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
     "sa.MRTConfig": "noc.sa.models.mrtconfig.MRTConfig",
@@ -206,9 +207,8 @@ _MODELS = {
     "fm.EventClassificationRule": "noc.fm.models.eventclassificationrule.EventClassificationRule",
     "fm.EventClassificationRuleCategory": "noc.fm.models.eventclassificationrule.EventClassificationRuleCategory",
     "fm.EventTrigger": "noc.fm.models.eventtrigger.EventTrigger",
-    "fm.EscalationItem": "noc.fm.models.alarmescalation.EscalationItem",
     "fm.FailedEvent": "noc.fm.models.failedevent.FailedEvent",
-    "fm.IgnoreEventRules": "noc.fm.models.IgnoreEventRules",
+    "fm.IgnoreEventRules": "noc.fm.models.ignoreeventrules.IgnoreEventRules",
     "fm.IgnorePattern": "noc.fm.models.ignorepattern.IgnorePattern",
     "fm.MIB": "noc.fm.models.mib.MIB",
     "fm.MIBAlias": "noc.fm.models.mibalias.MIBAlias",
@@ -221,7 +221,7 @@ _MODELS = {
     "fm.SyntaxAlias": "noc.fm.models.syntaxalias.SyntaxAlias",
     "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     # pm models
-    "pm.GrafanaDashboard": "noc.pm.models.grafanadashboard.GrafanaDashboard",
+    "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
     # cm models
     "cm.ErrorType": "noc.cm.models.errortype.ErrorType",
@@ -309,6 +309,7 @@ COLLECTIONS = [
     "sa.Profile",
     "sa.Action",
     "inv.Capability",
+    "pm.MetricScope",
     "pm.MetricType",
     "fm.Enumeration",
     "inv.ConnectionRule",

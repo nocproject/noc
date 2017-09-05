@@ -1,4 +1,7 @@
 #jinja2:variable_start_string:'[%', variable_end_string:'%]', trim_blocks: False
+# That file is managed by consul-template.
+#
+# Please do not edit.
 ## <addr>:<port> to listen on for HTTP clients
 http_address = "0.0.0.0:4171"
 
@@ -26,7 +29,7 @@ notification_http_endpoint = ""
 
 ## nsqlookupd HTTP addresses
 nsqlookupd_http_addresses = [
-   {{range service "nsqlookupd"}}"{{.Address}}:{{.Port}}", {{end}}
+   {{range service "nsqlookupdhttp"}}"{{.Address}}:{{.Port}}", {{end}}
 ]
 
 ## nsqd HTTP addresses (optional)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from noc.core.script.metrics import percent_usage
 
 
 class Script(GetMetricsScript):
@@ -25,18 +24,21 @@ class Script(GetMetricsScript):
             self.collect_ip_sla_metrics(metrics)
 
     def collect_ip_sla_metrics(self, metrics):
-        if not (self.ALL_SLA_METRICS & set(metrics)):
-            return  # NO SLA metrics requested
+        # if not (self.ALL_SLA_METRICS & set(metrics)):
+        #    return  # NO SLA metrics requested
         ts = self.get_ts()
         m = self.get_ip_sla_metrics()
-        if self.SLA_ICMP_RTT in metrics:
-            for probe in metrics["SLA | ICMP RTT"]["probes"]:
-                if probe in m and "rtt" in m[probe]:
+        for bv in metrics:
+            if not bv.sla_tests:
+                continue
+            for st in bv.sla_tests:
+                if st["name"] in m and "rtt" in m[st["name"]]:
                     self.set_metric(
-                        name="SLA | ICMP RTT",
-                        value=m[probe]["rtt"],
+                        id=bv.id,
+                        metric=bv.metric,
+                        value=m[st["name"]]["rtt"],
                         ts=ts,
-                        tags={"probe": probe}
+                        path=[st["name"], "rtt"],
                     )
 
     rx_ipsla_probe = re.compile(
@@ -66,5 +68,5 @@ class Script(GetMetricsScript):
             if not match:
                 continue
             rtt = match.group(1)
-            r[probe_id]["rtt"] = float(rtt) / 1000.0
+            r[probe_id]["rtt"] = float(rtt*1000)
         return r

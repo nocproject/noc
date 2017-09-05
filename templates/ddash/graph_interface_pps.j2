@@ -1,4 +1,4 @@
-{% macro pps(interface,device, id) -%}
+{% macro pps(interface, bi_id, device, id) -%}
 
 {
   "title": "PPS {{interface}}",
@@ -39,100 +39,17 @@
   "steppedLine": false,
   "targets": [
     {
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "Interface | Packets | In",
-      "policy": "default",
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(packets_in) as `Input PPS`,  avg(packets_out) as `Output PPS` FROM $table  WHERE managed_object = {{bi_id}} and path[4]=toString('{{interface}}') and $timeFilter GROUP BY t ORDER BY t",
       "refId": "A",
       "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^{{device}}$/"
-        },
-        {
-          "condition": "AND",
-          "key": "interface",
-          "operator": "=~",
-          "value": "/^{{interface}}$/"
-        }
-      ]
-    },
-    {
-      "dsType": "influxdb",
-      "groupBy": [
-        {
-          "params": [
-            "$interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "measurement": "Interface | Packets | Out",
-      "policy": "default",
-      "refId": "B",
-      "resultFormat": "time_series",
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ],
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=~",
-          "value": "/^{{device}}$/"
-        },
-        {
-          "condition": "AND",
-          "key": "interface",
-          "operator": "=~",
-          "value": "/^{{interface}}$/"
-        }
-      ]
+      "database": "noc",
+      "tableLoading": false,
+      "table": "interface",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
     }
   ],
   "timeFrom": null,

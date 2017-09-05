@@ -17,7 +17,7 @@ from division import Division
 class Street(Document):
     meta = {
         "collection": "noc.streets",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["parent", "data"]
     }
     #

@@ -48,7 +48,7 @@ class EnvItem(EmbeddedDocument):
 class RemoteSystem(Document):
     meta = {
         "collection": "noc.remotesystem",
-        "allow_inheritance": False
+        "strict": False
     }
 
     name = StringField(unique=True)
@@ -65,6 +65,7 @@ class RemoteSystem(Document):
     enable_managedobject = BooleanField()
     enable_managedobjectprofile = BooleanField()
     enable_networksegment = BooleanField()
+    enable_networksegmentprofile = BooleanField()
     enable_service = BooleanField()
     enable_subscriber = BooleanField()
     enable_terminationgroup = BooleanField()

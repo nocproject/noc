@@ -80,7 +80,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
             escalation_id)
         metrics["escalation_not_found"] += 1
         return
-
+    alarm.set_escalation_context()
     # Evaluate escalation chain
     mo = alarm.managed_object
     for a in escalation.escalations:
@@ -117,15 +117,15 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 "$gte": ets
             }
         }).count()
-        if ae >= config.escalator.global_limit:
+        if ae >= config.escalator.tt_escalation_limit:
             logger.error(
                 "Escalation limit exceeded (%s/%s). Skipping",
-                ae, config.escalator.global_limit
+                ae, config.escalator.tt_escalation_limit
             )
             metrics["escalation_throttled"] += 1
             alarm.set_escalation_error(
                 "Escalation limit exceeded (%s/%s). Skipping" % (
-                    ae, config.escalator.global_limit))
+                    ae, config.escalator.tt_escalation_limit))
             return
         # Check whether consequences has escalations
         cons_escalated = sorted(alarm.iter_escalated(),
@@ -212,17 +212,22 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                             )
                             # Append affected objects
                             for ao in alarm.iter_affected():
-                                if ao.can_escalate():
+                                if ao.can_escalate(True):
                                     if ao.tt_system == mo.tt_system:
                                         log(
                                             "Appending object %s to group tt %s",
                                             ao.name,
                                             gtt
                                         )
-                                        tts.add_to_group_tt(
-                                            gtt,
-                                            ao.tt_system_id
-                                        )
+                                        try:
+                                            tts.add_to_group_tt(
+                                                gtt,
+                                                ao.tt_system_id
+                                            )
+                                        except TTError as e:
+                                            alarm.set_escalation_error(
+                                                "[%s] %s" % (mo.tt_system.name, e)
+                                            )
                                     else:
                                         log(
                                             "Cannot append object %s to group tt %s: Belongs to other TT system",
@@ -315,7 +320,8 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
 
     if tt_id:
         alarm = get_alarm(alarm_id)
-        if alarm and (alarm.escalation_close_ts or alarm.escalation_close_error):
+        alarm.set_escalation_close_ctx()
+        if alarm and alarm.status == "C" and (alarm.escalation_close_ts or alarm.escalation_close_error):
             log("Alarm is already deescalated")
             metrics["escalation_already_deescalated"] += 1
             return

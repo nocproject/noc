@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class FieldChange(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     field = StringField()
     old = StringField(required=False)
@@ -40,7 +40,7 @@ class FieldChange(EmbeddedDocument):
 class AuditTrail(Document):
     meta = {
         "collection": "noc.audittrail",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "timestamp",
             ("model_id", "object"),

@@ -18,4 +18,5 @@ class HealthRequestHandler(tornado.web.RequestHandler):
         service = self.get_argument("service", None)
         if service and not self.service.is_valid_health_check(service):
             raise tornado.web.HTTPError(400, "Invalid service id")
-        self.write("OK")
+        status, message = self.service.get_health_status()
+        self.set_status(status, message)

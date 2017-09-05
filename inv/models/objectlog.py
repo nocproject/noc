@@ -14,7 +14,7 @@ from mongoengine.fields import (StringField, ObjectIdField, DateTimeField)
 class ObjectLog(Document):
     meta = {
         "collection": "noc.objectlog",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["object"]
     }
 

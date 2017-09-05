@@ -6,12 +6,14 @@ pgbouncer_path_pid: /var/run/pgbouncer
 postgres_system_service: postgresql-{{ postgresql_version }}
 postgres_bin_dir: /usr/pgsql-{{ postgresql_version }}/bin
 postgres_data_dir: /var/lib/pgsql/{{ postgresql_version }}/data
-
-
-postgresql_conf_path: "{{postgres_data_dir}}/postgresql.conf"
-postgresql_hba_path: "{{postgres_data_dir}}/pg_hba.conf"
+postgresql_conf_prefix: /var/lib/pgsql/{{ postgresql_version }}/data
+postgresql_conf_path: "{{postgresql_conf_prefix}}/postgresql.conf"
+postgresql_hba_path: "{{postgresql_conf_prefix}}/pg_hba.conf"
 
 memcahed_user: memcached
 memcahed_conf: /etc/sysconfig/memcached
 
 pgbouncer_user: pgbouncer
+zookeeper_reload_command: "systemctl reload zookeeper-server"
+
+jemalloc_path: /lib64/libjemalloc.so.1

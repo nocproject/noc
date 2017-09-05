@@ -11,6 +11,8 @@ import itertools
 import logging
 # Third-party modules
 import six
+# NOC modules
+from noc.lib.validators import is_int, is_ipv4
 
 logger = logging.getLogger(__name__)
 
@@ -176,6 +178,7 @@ class ServiceItem(object):
     def __contains__(self, item):
         return item in "%s:%s" % (self.host, self.port)
 
+
 class ServiceParameter(BaseParameter):
     """
     Resolve external service location to a list of ServiceItem.
@@ -190,13 +193,16 @@ class ServiceParameter(BaseParameter):
     """
     DEFAULT_RESOLUTION_TIMEOUT = 1
 
-    def __init__(self, service, near=False, wait=True, help=None):
+    def __init__(self, service, near=False, wait=True, help=None,
+                 full_result=True, critical=True):
         if isinstance(service, six.string_types):
             self.services = [service]
         else:
             self.services = service
         self.near = near
         self.wait = wait
+        self.full_result = full_result
+        self.critical = critical
         super(ServiceParameter, self).__init__(default=[], help=help)
 
     def __get__(self, instance, owner):
@@ -215,15 +221,29 @@ class ServiceParameter(BaseParameter):
         from noc.core.dcs.util import resolve
         from noc.core.dcs.error import ResolutionError
 
+        if isinstance(self.services, list) and ":" in self.services[0]:
+            self.value = [ServiceItem(*i.rsplit(":", 1)) for i in self.services]
+            return
+        elif isinstance(self.services, six.string_types) and ":" in self.services:
+            self.value = self.services
+            return
+
         while True:
             for svc in self.services:
+                if ServiceParameter.is_static(svc):
+                    self.value = [ServiceItem(*svc.split(":"))]
+                    break
                 try:
                     items = resolve(
                         svc,
                         wait=self.wait,
                         timeout=self.DEFAULT_RESOLUTION_TIMEOUT,
-                        full_result=True
+                        full_result=self.full_result,
+                        near=self.near,
+                        critical=self.critical
                     )
+                    if not isinstance(items, list):
+                        items = [items]
                     self.value = [ServiceItem(*i.rsplit(":", 1))
                                   for i in items]
                     break
@@ -243,3 +263,12 @@ class ServiceParameter(BaseParameter):
             return self.services[0]
         else:
             return self.services
+
+    @staticmethod
+    def is_static(svc):
+        if ":" not in svc:
+            return False
+        p = svc.split(":")
+        if len(p) != 2:
+            return False
+        return is_ipv4(p[0]) and is_int(p[1])

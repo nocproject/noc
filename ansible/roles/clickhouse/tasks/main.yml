@@ -1,8 +1,19 @@
+- name: add clickhouse group
+  group:
+    name: clickhouse
+
+- name: add clickhouse user
+  user:
+    name: clickhouse
+    shell: "{{fake_shell}}"
+
 - name: Create ch directories
   file:
     path: "{{item}}"
     state: "directory"
     mode: 0755
+    group: clickhouse
+    owner: clickhouse
   with_items:
     - "{{ch_etc_path}}"
     - "{{ch_log_dir}}"
@@ -17,9 +28,20 @@
     src: "{{item}}"
     dest: "{{ch_etc_path}}/"
   no_log: true
+  notify: reload clickhouse-server
   with_items:
     - "config.xml"
     - "users.xml"
+
+- name: install config overrides
+  template:
+    src: "noc.xml"
+    dest: "{{ ch_etc_path }}/noc.xml"
+    force: no
+  no_log: true
+  notify: reload clickhouse-server
+  tags:
+    - config
 
 - name: copy clickhouse consul templates
   template:
@@ -31,14 +53,6 @@
 
 - name: Start clickhouse service
   service:
-    name: "clickhouse-server"
+    name: "{{clickhouse_service_name}}"
     enabled: yes
     state: started
-  when: ansible_distribution == "Ubuntu"
-
-- name: Start clickhouse service
-  service:
-    name: "clickhouse"
-    enabled: yes
-    state: started
-  when: ansible_distribution == "FreeBSD"

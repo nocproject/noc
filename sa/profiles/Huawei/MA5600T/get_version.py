@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"^\s*PRODUCT\s+(\:\s*)?(?P<platform>MA\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
     rx_ver3 = re.compile(
-        r"^\s*VERSION\s*:\s*(?P<platform>MA\S+)(?P<version>V\d+R\d+\S+)\s*\n",
+        r"^\s*VERSION\s*:\s*(?P<platform>(MA|UA)\S+)(?P<version>V\d+R\d+\S+)\s*\n",
         re.MULTILINE)
 
     def execute(self):
@@ -58,4 +58,3 @@ class Script(BaseScript):
                     "platform": match.group("platform"),
                     "version": match.group("version")
                 }
-        return r

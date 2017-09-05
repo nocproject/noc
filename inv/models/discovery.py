@@ -11,7 +11,7 @@ from noc.sa.models.managedobject import ManagedObject
 class Discovery(Document):
     meta = {
         "collection": "noc.schedules.inv.discovery",
-        "allow_inheritance": False
+        "strict": False
     }
 
     job_class = StringField(db_field='jcls')

@@ -32,7 +32,7 @@ mac_lock = Lock()
 
 class MACRange(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     first_mac = StringField()
     last_mac = StringField()
@@ -48,7 +48,7 @@ class DiscoveryID(Document):
     """
     meta = {
         "collection": "noc.inv.discovery_id",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "object", "hostname", "udld_id", "macs"
         ]
@@ -75,7 +75,7 @@ class DiscoveryID(Document):
                 MACRange(
                     first_mac=r["first_chassis_mac"],
                     last_mac=r["last_chassis_mac"]
-                ) for r in chassis_mac
+                ) for r in chassis_mac if r
             ]
         else:
             chassis_mac = []

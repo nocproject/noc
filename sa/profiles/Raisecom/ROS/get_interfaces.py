@@ -211,7 +211,11 @@ class Script(BaseScript):
             # parse only "0" interface
             break
 
-        v = self.cli("show ip interface brief")
+        try:
+            v = self.cli("show ip interface brief")
+        except self.CLISyntaxError:
+            return [{"interfaces": l3}]
+
         for match in self.rx_iface2.finditer(v):
             ifname = match.group("iface")
             i = {

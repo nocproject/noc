@@ -16,7 +16,7 @@ from mongoengine.fields import ObjectIdField, IntField, BooleanField
 class LayerUserSettings(Document):
     meta = {
         "collection": "noc.layerusersettings",
-        "allow_inheritance": False
+        "strict": False
     }
     # User Id
     user = IntField()

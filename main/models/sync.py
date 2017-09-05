@@ -17,7 +17,7 @@ from noc.main.models import User
 class Sync(Document):
     meta = {
         "collection": "noc.sync",
-        "allow_inheritance": False
+        "strict": False
     }
 
     name = StringField(unique=True)

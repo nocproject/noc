@@ -22,55 +22,61 @@ import bson
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
-from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
-from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventlog import EventLog
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.mib import MIB
-from noc.fm.models.cloneclassificationrule import CloneClassificationRule
-from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 import noc.inv.models.interface
-from noc.core.profile.loader import loader as profile_loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.version import get_version
 from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
-from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
-                                    IPParameter, IPv4PrefixParameter,
-                                    IPv6PrefixParameter, PrefixParameter,
-                                    MACAddressParameter, InterfaceTypeError)
 from noc.lib.nosql import ObjectId
 from noc.services.classifier.trigger import Trigger
-from noc.services.classifier.exception import InvalidPatternException, EventProcessingFailed
-from noc.services.classifier.cloningrule import CloningRule
-from noc.services.classifier.rule import Rule
-from noc.core.handler import get_handler
+from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
+from noc.core.perf import metrics
 
-#
-# Exceptions
-#
-#
 # Patterns
-#
 rx_oid = re.compile(r"^(\d+\.){6,}$")
 
-CR_FAILED = 0
-CR_DELETED = 1
-CR_SUPPRESSED = 2
-CR_UNKNOWN = 3
-CR_CLASSIFIED = 4
-CR_DISPOSED = 5
-CR_DUPLICATED = 6
-CR_UDUPLICATED = 7
-CR = ["failed", "deleted", "suppressed",
-      "unknown", "classified", "disposed", "duplicated",
-      "unk. duplicated"
-      ]
+CR_FAILED = "events_failed"
+CR_DELETED = "events_deleted"
+CR_SUPPRESSED = "events_suppressed"
+CR_UNKNOWN = "events_unknown"
+CR_CLASSIFIED = "events_classified"
+CR_DISPOSED = "events_disposed"
+CR_DUPLICATED = "events_duplicated"
+CR_UDUPLICATED = "events_unk_duplicated"
+CR_UOBJECT = "events_unk_object"
+CR_PROCESSED = "events_processed"
+
+CR = [
+    CR_FAILED,
+    CR_DELETED,
+    CR_SUPPRESSED,
+    CR_UNKNOWN,
+    CR_CLASSIFIED,
+    CR_DISPOSED,
+    CR_DUPLICATED,
+    CR_UDUPLICATED,
+    CR_UOBJECT
+]
+
+E_SRC_SYSLOG = "syslog"
+E_SRC_SNMP_TRAP = "SNMP Trap"
+E_SRC_SYSTEM = "system"
+E_SRC_OTHER = "other"
+
+E_SRC_METRICS = {
+    E_SRC_SYSLOG: "events_syslog",
+    E_SRC_SNMP_TRAP: "events_snmp_trap",
+    E_SRC_SYSTEM: "events_system",
+    E_SRC_OTHER: "events_other"
+}
 
 
 class ClassifierService(Service):
@@ -80,7 +86,6 @@ class ClassifierService(Service):
     name = "classifier"
     leader_group_name = "classifier-%(pool)s"
     pooled = True
-    DEFAULT_RULE = config.classifier.default_rule
     process_name = "noc-%(name).10s-%(pool).5s"
 
     # SNMP OID pattern
@@ -91,24 +96,20 @@ class ClassifierService(Service):
     def __init__(self):
         super(ClassifierService, self).__init__()
         self.version = get_version()
-        self.rules = {}  # profile -> [rule, ..., rule]
+        self.ruleset = RuleSet()
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)
         self.post_process = {}  # event_class_id -> [rule1, ..., ruleN]
-        self.enumerations = {}  # name -> value -> enumerated
         self.suppression = {}  # event_class_id -> (condition, suppress)
         self.alter_handlers = []
         self.unclassified_codebook_depth = 5
         self.unclassified_codebook = {}  # object id -> [<codebook>]
         self.handlers = {}  # event class id -> [<handler>]
-        self.default_rule = None
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
-        # Lookup solution setup
-        self.lookup_cls = None
-        #
+        # Reporting
         self.last_ts = None
-        self.stats = defaultdict(int)
+        self.stats = {}
 
     def on_activate(self):
         """
@@ -116,15 +117,13 @@ class ClassifierService(Service):
         """
         self.logger.info("Using rule lookup solution: %s",
                          config.classifier.lookup_handler)
-        self.lookup_cls = get_handler(config.classifier.lookup_handler)
-        self.load_enumerations()
-        self.load_rules()
+        self.ruleset.load()
         self.load_triggers()
         self.load_suppression()
         self.load_link_action()
         self.load_handlers()
         self.subscribe(
-            "events",
+            "events.%s" % config.pool,
             "fmwriter",
             self.on_event
         )
@@ -132,66 +131,6 @@ class ClassifierService(Service):
             self.report, 1000, self.ioloop
         )
         report_callback.start()
-
-    def load_rules(self):
-        """
-        Load rules from database
-        """
-        self.logger.info("Loading rules")
-        n = 0
-        cn = 0
-        profiles = list(profile_loader.iter_profiles())
-        self.rules = {}
-        # Initialize profiles
-        for p in profiles:
-            self.rules[p] = {}
-        # Load cloning rules
-        cloning_rules = []
-        for cr in CloneClassificationRule.objects.all():
-            try:
-                cloning_rules += [CloningRule(cr)]
-            except InvalidPatternException as why:
-                self.logger.error("Failed to load cloning rule '%s': Invalid pattern: %s", cr.name, why)
-                continue
-        self.logger.info("%d cloning rules found", len(cloning_rules))
-        # Initialize rules
-        for r in EventClassificationRule.objects.order_by("preference"):
-            try:
-                rule = Rule(self, r)
-            except InvalidPatternException as why:
-                self.logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, why)
-                continue
-            # Apply cloning rules
-            rs = [rule]
-            for cr in cloning_rules:
-                if cr.match(rule):
-                    try:
-                        rs += [Rule(self, r, cr)]
-                        cn += 1
-                    except InvalidPatternException as why:
-                        self.logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, why)
-                        continue
-            for rule in rs:
-                # Find profile restriction
-                rx = re.compile(rule.profile)
-                for p in profiles:
-                    if rx.search(p):
-                        if rule.chain not in self.rules[p]:
-                            self.rules[p][rule.chain] = []
-                        self.rules[p][rule.chain] += [rule]
-                n += 1
-        if cn:
-            self.logger.info("%d rules are cloned", cn)
-        self.default_rule = Rule(
-            self,
-            EventClassificationRule.objects.filter(name=self.DEFAULT_RULE).first()
-        )
-        # Apply lookup solution
-        for p in self.rules:
-            for c in self.rules[p]:
-                self.rules[p][c] = self.lookup_cls(self.rules[p][c])
-        self.logger.info("%d rules are loaded in the %d profiles",
-                         n, len(self.rules))
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -229,19 +168,6 @@ class ClassifierService(Service):
                         self.logger.debug("    %s", c_name)
             n += 1
         self.logger.info("%d triggers has been loaded to %d classes", n, cn)
-
-    def load_enumerations(self):
-        self.logger.info("Loading enumerations")
-        n = 0
-        self.enumerations = {}
-        for e in Enumeration.objects.all():
-            r = {}
-            for k, v in e.values.items():
-                for vv in v:
-                    r[vv.lower()] = k
-            self.enumerations[e.name] = r
-            n += 1
-        self.logger.info("%d enumerations loaded" % n)
 
     def load_suppression(self):
         """
@@ -525,10 +451,11 @@ class ClassifierService(Service):
         resolved_vars = {
             "profile": event.managed_object.profile.name
         }
-        if event.source == "SNMP Trap":
+        metrics[E_SRC_METRICS.get(event.source, E_SRC_OTHER)] += 1
+        if event.source == E_SRC_SNMP_TRAP:
             # For SNMP traps format values according to MIB definitions
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
-        elif event.source == "syslog" and not event.log:
+        elif event.source == E_SRC_SYSLOG and not event.log:
             # Check for unclassified events flood
             o_id = event.managed_object.id
             if o_id in self.unclassified_codebook:
@@ -537,11 +464,12 @@ class ClassifierService(Service):
                 for pcb in self.unclassified_codebook[o_id]:
                     if self.is_codebook_match(cb, pcb):
                         # Signature is already seen, suppress
-                        return CR_UDUPLICATED
+                        metrics[CR_UDUPLICATED] += 1
+                        return
         # Find matched event class
         c_vars = event.raw_vars.copy()
         c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
-        rule, vars = self.find_matching_rule(event, c_vars)
+        rule, vars = self.ruleset.find_rule(event, c_vars)
         if rule is None:
             # Something goes wrong.
             # No default rule found. Exit immediately
@@ -554,7 +482,8 @@ class ClassifierService(Service):
                 event.id, event.managed_object.name,
                 event.managed_object.address
             )
-            return CR_DELETED
+            metrics[CR_DELETED] += 1
+            return
         if rule.is_unknown_syslog:
             # Append codebook
             msg = event.raw_vars.get("message", "")
@@ -572,7 +501,7 @@ class ClassifierService(Service):
         )
         event_class = rule.event_class
         # Calculate rule variables
-        vars = self.eval_rule_variables(event, event_class, vars)
+        vars = self.ruleset.eval_vars(event, event_class, vars)
         #
         self.logger.info(
             "[%s|%s|%s] Event class: %s (%s)",
@@ -613,7 +542,8 @@ class ClassifierService(Service):
                         event.id, event.managed_object.name,
                         event.managed_object.address
                     )
-                return CR_DELETED
+                metrics[CR_DELETED] += 1
+                return
             elif action == "L":
                 # Do not dispose
                 if iface:
@@ -641,11 +571,12 @@ class ClassifierService(Service):
                 de.log_message(
                     "Duplicated event %s has been discarded" % event.id
                 )
-                return CR_DUPLICATED
+                metrics[CR_DUPLICATED] += 1
+                return
         # Suppress repeats
         if event_class.id in self.suppression:
-            suppress, name, nearest = self.to_suppress(event, event_class,
-                                                       vars)
+            suppress, name, nearest = self.to_suppress(
+                event, event_class, vars)
             if suppress:
                 self.logger.info(
                     "[%s|%s|%s] Suppressed by rule %s",
@@ -654,28 +585,20 @@ class ClassifierService(Service):
                 # Update suppressing event
                 nearest.log_suppression(event.timestamp)
                 # Delete suppressed event
-                return CR_SUPPRESSED
+                metrics[CR_SUPPRESSED] += 1
+                return
         # Activate event
         message = "Classified as '%s' by rule '%s'" % (event_class.name,
                                                        rule.name)
         log = event.log + [EventLog(timestamp=datetime.datetime.now(),
                                     from_status="N", to_status="A",
                                     message=message)]
-        a_event = ActiveEvent(
-            id=event.id,
-            timestamp=event.timestamp,
-            managed_object=event.managed_object,
-            event_class=event_class,
-            start_timestamp=event.timestamp,
-            repeats=1,
-            raw_vars=event.raw_vars,
-            resolved_vars=resolved_vars,
-            vars=vars,
-            log=log,
-            expires=event.timestamp + datetime.timedelta(seconds=event_class.ttl)
-        )
-        a_event.save()
-        event = a_event
+        event.event_class = event_class
+        event.resolved_vars = resolved_vars
+        event.vars = vars
+        event.log = log
+        event.expires = event.timestamp + datetime.timedelta(seconds=event_class.ttl)
+        event.save()
         # Call handlers
         if event_class.id in self.handlers:
             event_id = event.id
@@ -692,7 +615,8 @@ class ClassifierService(Service):
                     )
                     event.id = event_id  # Restore event id
                     event.delete()
-                    return CR_DELETED
+                    metrics[CR_DELETED] += 1
+                    return
         # Call triggers if necessary
         if event_class.id in self.triggers:
             event_id = event.id
@@ -710,7 +634,8 @@ class ClassifierService(Service):
                     )
                     event.id = event_id  # Restore event id
                     event.delete()
-                    return CR_DELETED
+                    metrics[CR_DELETED] += 1
+                    return
         # Finally dispose event to further processing by correlator
         if disposable and rule.to_dispose:
             self.logger.info(
@@ -729,11 +654,13 @@ class ClassifierService(Service):
                 "correlator.dispose.%s" % event.managed_object.pool.name,
                 {"event_id": str(event.id)}
             )
-            return CR_DISPOSED
+            metrics[CR_CLASSIFIED] += 1
+            metrics[CR_DISPOSED] += 1
         elif rule.is_unknown:
-            return CR_UNKNOWN
+            metrics[CR_UNKNOWN] += 1
         else:
-            return CR_CLASSIFIED
+            metrics[CR_CLASSIFIED] += 1
+        return
 
     def find_duplicated_event(self, event, event_class, vars):
         """
@@ -755,29 +682,36 @@ class ClassifierService(Service):
                  *args, **kwargs):
         event_id = bson.ObjectId()
         lag = (time.time() - ts) * 1000
+        metrics["lag_us"] = int(lag * 1000)
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)",
                           event_id, data, lag)
+        metrics[CR_PROCESSED] += 1
         mo = ManagedObject.get_by_id(object)
         if not mo:
             self.logger.info("[%s] Unknown managed object id %s. Skipping",
                              event_id, object)
+            metrics[CR_UOBJECT] += 1
             return True
         self.logger.info("[%s|%s|%s] Managed object found",
                          event_id, mo.name, mo.address)
-        ne = NewEvent(
+        ts = datetime.datetime.fromtimestamp(ts)
+        source = data.pop("source", "other")
+        e = ActiveEvent(
             id=event_id,
-            timestamp=datetime.datetime.fromtimestamp(ts),
+            timestamp=ts,
+            start_timestamp=ts,
             managed_object=mo,
-            raw_vars=data
+            source=source,
+            raw_vars=data,
+            repeats=1
         )
         try:
-            s = self.classify_event(ne)
-            self.stats[s] += 1
+            self.classify_event(e)
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s",
                 event_id, mo.name, mo.address, e)
-            self.stats[CR_FAILED] += 1
+            metrics[CR_FAILED] += 1
             return False
         self.logger.info(
             "[%s|%s|%s] Event processed successfully",
@@ -789,23 +723,27 @@ class ClassifierService(Service):
     def report(self):
         t = self.ioloop.time()
         if self.last_ts:
-            total = float(sum(v for v in self.stats.values()))
+            r = []
+            for m in CR:
+                ov = self.stats.get(m, 0)
+                nv = metrics[m].value
+                r += ["%s: %d" % (m[7:], nv - ov)]
+                self.stats[m] = nv
+            nt = metrics[CR_PROCESSED].value
+            ot = self.stats.get(CR_PROCESSED, 0)
+            total = nt - ot
+            self.stats[CR_PROCESSED] = nt
             dt = (t - self.last_ts)
-            speed = total / dt
             if total:
-                r = ", ".join(
-                    "%s: %d" % (t, self.stats[i])
-                    for i, t in enumerate(CR)
-                )
+                speed = total / dt
                 self.logger.info(
                     "REPORT: %d events in %.2fms. %.2fev/s (%s)" % (
                         total,
                         dt * 1000,
                         speed,
-                        r
+                        ", ".join(r)
                     )
                 )
-        self.stats = defaultdict(int)
         self.last_ts = t
 
     rx_non_alpha = re.compile(r"[^a-z]+")

@@ -45,6 +45,8 @@ class Script(BaseScript):
             index = str(len(templ_name)) + "." + ".".join([str(ord(s)) for s in templ_name])
             oids[templ_name + "UP"] = base_oid_in + index
             oids[templ_name + "DOWN"] = base_oid_out + index
+        if not oids:
+            return {}
         return self.snmp.get(oids)
 
     def get_data(self):
@@ -73,7 +75,9 @@ class Script(BaseScript):
         # Get xdsl2LineStatusActTemplate
         s_templ_table = self.get_iftable("1.3.6.1.2.1.10.251.1.1.1.1.12")
         highspeed = set()
-        s_templ = self.get_teplate_bw(set(s_templ_table.values()))
+        s_templ = {}
+        if s_templ_table:
+            s_templ = self.get_teplate_bw(set(s_templ_table.values()))
         for ifindex in r:
             s = s_table.get(ifindex)
             if s is not None:
@@ -86,8 +90,8 @@ class Script(BaseScript):
             else:
                 s = s_templ_table.get(ifindex)
                 if s is not None:
-                    r[ifindex]["in_speed"] = int(s_templ.get(s + "DOWN")) // 1000
-                    r[ifindex]["out_speed"] = int(s_templ.get(s + "UP")) // 1000
+                    r[ifindex]["in_speed"] = int(s_templ.get(s + "DOWN", 0)) // 1000
+                    r[ifindex]["out_speed"] = int(s_templ.get(s + "UP", 0)) // 1000
         # Refer to ifHighSpeed if necessary
         if highspeed:
             hs_table = self.get_iftable("IF-MIB::ifHighSpeed")

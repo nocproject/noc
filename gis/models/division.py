@@ -16,7 +16,7 @@ from noc.lib.nosql import PlainReferenceField
 class Division(Document):
     meta = {
         "collection": "noc.divisions",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["parent", "data", "name"]
     }
     # Division type

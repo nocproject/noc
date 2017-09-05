@@ -47,6 +47,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         '<feMergeNode in="coloredBlur"/>' +
         '<feMergeNode in="SourceGraphic"/>' +
         '</feMerge>' +
+        '</filter>',
+
+        '<filter x="0" y="0" width="1" height="1" id="solid">' +
+        '<feFlood flood-color="rgb(236,240,241)"/>' +
+        '<feComposite in="SourceGraphic"/>' +
         '</filter>'
     ],
 
@@ -261,7 +266,8 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     renderMap: function(data) {
         var me = this,
-            cells = [];
+            nodes = [],
+            links = [];
 
         me.isInteractive = false;
         me.isDirty = false;
@@ -278,7 +284,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 // skip create
                 return;
             }
-            cells.push(me.createNode(node));
+            nodes.push(me.createNode(node));
             Ext.each(node.ports, function(port) {
                 me.portObjects[port.id] = node.id;
                 Ext.each(port.ports, function(ifname) {
@@ -296,9 +302,14 @@ Ext.define("NOC.inv.map.MapPanel", {
         Ext.each(data.links, function(link) {
             if(me.objectNodes[me.portObjects[link.ports[0]]] &&
                 me.objectNodes[me.portObjects[link.ports[1]]])
-                cells.push(me.createLink(link));
+                links.push(me.createLink(link));
         });
-        me.graph.addCells(cells);
+        me.graph.addCells(nodes);
+        me.graph.addCells(links);
+
+        nodes.forEach(function(node) {
+            node.toFront();
+        });
         // Run status polling
         if(me.statusPollingTaskId) {
             me.getObjectStatus();
@@ -325,7 +336,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             tokens.pop();
             dataName = tokens.join('#');
         }
-        var name = joint.util.breakText(dataName, {width: data.shape_width * 1.5});
+        var name = me.breakText(dataName, {width: data.shape_width * 2});
         sclass = me.shapeRegistry.getShape(data.shape);
         node = new sclass({
             id: data.type + ":" + data.id,
@@ -1175,5 +1186,125 @@ Ext.define("NOC.inv.map.MapPanel", {
                 e.attr('text/text', e.get('name'));
             });
         }
+    },
+
+    breakText: function(text, size, styles, opt) {
+        opt = opt || {};
+        var width = size.width;
+        var height = size.height;
+        var svgDocument = opt.svgDocument || V('svg').node;
+        var textElement = V('<text><tspan></tspan></text>').attr(styles || {}).node;
+        var textSpan = textElement.firstChild;
+        var textNode = document.createTextNode('');
+
+        // Prevent flickering
+        textElement.style.opacity = 0;
+        // Prevent FF from throwing an uncaught exception when `getBBox()`
+        // called on element that is not in the render tree (is not measurable).
+        // <tspan>.getComputedTextLength() returns always 0 in this case.
+        // Note that the `textElement` resp. `textSpan` can become hidden
+        // when it's appended to the DOM and a `display: none` CSS stylesheet
+        // rule gets applied.
+        textElement.style.display = 'block';
+        textSpan.style.display = 'block';
+        textSpan.appendChild(textNode);
+        svgDocument.appendChild(textElement);
+        if (!opt.svgDocument) {
+            document.body.appendChild(svgDocument);
+        }
+
+        var words = text.split(/(\W+)/);
+        var full = [];
+        var lines = [];
+        var p;
+        var lineHeight;
+
+        for (var i = 0, l = 0, len = words.length; i < len; i++) {
+            var word = words[i];
+
+            textNode.data = lines[l] ? lines[l] + word : word;
+            if (textSpan.getComputedTextLength() <= width) {
+                // the current line fits
+                lines[l] = textNode.data;
+                if (p) {
+                    // We were partitioning. Put rest of the word onto next line
+                    full[l++] = true;
+                    // cancel partitioning
+                    p = 0;
+                }
+            } else {
+                if (!lines[l] || p) {
+                    var partition = !!p;
+                    p = word.length - 1;
+                    if (partition || !p) {
+                        // word has only one character.
+                        if (!p) {
+                            if (!lines[l]) {
+                                // we won't fit this text within our rect
+                                lines = [];
+                                break;
+                            }
+                            // partitioning didn't help on the non-empty line
+                            // try again, but this time start with a new line
+                            // cancel partitions created
+                            words.splice(i, 2, word + words[i + 1]);
+                            // adjust word length
+                            len--;
+                            full[l++] = true;
+                            i--;
+                            continue;
+                        }
+                        // move last letter to the beginning of the next word
+                        words[i] = word.substring(0, p);
+                        words[i + 1] = word.substring(p) + words[i + 1];
+                    } else {
+                        // We initiate partitioning
+                        // split the long word into two words
+                        words.splice(i, 1, word.substring(0, p), word.substring(p));
+                        // adjust words length
+                        len++;
+                        if (l && !full[l - 1]) {
+                            // if the previous line is not full, try to fit max part of
+                            // the current word there
+                            l--;
+                        }
+                    }
+                    i--;
+                    continue;
+                }
+                l++;
+                i--;
+            }
+            // if size.height is defined we have to check whether the height of the entire
+            // text exceeds the rect height
+            if (height !== undefined) {
+                if (lineHeight === undefined) {
+                    var heightValue;
+                    // use the same defaults as in V.prototype.text
+                    if (styles.lineHeight === 'auto') {
+                        heightValue = { value: 1.5, unit: 'em' };
+                    } else {
+                        heightValue = joint.util.parseCssNumeric(styles.lineHeight, ['em']) || { value: 1, unit: 'em' };
+                    }
+                    lineHeight = heightValue.value;
+                    if (heightValue.unit === 'em' ) {
+                        lineHeight *= textElement.getBBox().height;
+                    }
+                }
+                if (lineHeight * lines.length > height) {
+                    // remove overflowing lines
+                    lines.splice(Math.floor(height / lineHeight));
+                    break;
+                }
+            }
+        }
+        if (opt.svgDocument) {
+            // svg document was provided, remove the text element only
+            svgDocument.removeChild(textElement);
+        } else {
+            // clean svg document
+            document.body.removeChild(svgDocument);
+        }
+        return lines.join('\n');
     }
 });

@@ -12,7 +12,7 @@ import os
 import yaml
 # NOC modules
 from base import BaseProtocol
-from noc.config import config
+
 
 class LegacyProtocol(BaseProtocol):
     """
@@ -21,7 +21,6 @@ class LegacyProtocol(BaseProtocol):
 
     legacy:///
     """
-    PATH = config.path.legacy_config
     NOC_MAPPINGS = [
         ("noc.installation_name", "installation_name"),
         ("noc.language", "language"),
@@ -35,6 +34,10 @@ class LegacyProtocol(BaseProtocol):
         ("noc.influx_db", "influxdb.db"),
         ("noc.influx_password", "influxdb.password"),
         ("noc.influx_user", "influxdb.user"),
+        ("noc.ch_db", "clickhouse.db"),
+        ("noc.ch_user", "clickhouse.rw_user"),
+        ("noc.ch_password", "clickhouse.rw_password"),
+        ("noc.ch_ro_password", "clickhouse.ro_password"),
 
         # Activator
         ("activator.script_threads", "activator.script_threads"),
@@ -141,6 +144,13 @@ class LegacyProtocol(BaseProtocol):
 
     ]
 
+    def __init__(self, config, url):
+        super(LegacyProtocol, self).__init__(config, url)
+        if self.parsed_url.path == "/":
+            self.path = config.path.legacy_config
+        else:
+            self.path = self.parsed_url.path
+
     def load(self):
         def get_path(conf, key):
             d = conf
@@ -151,7 +161,9 @@ class LegacyProtocol(BaseProtocol):
                     break
             return d
 
-        with open(self.PATH) as f:
+        if not os.path.exists(self.path):
+            return
+        with open(self.path) as f:
             data = yaml.load(f)["config"]
         for legacy_key, new_key in self.NOC_MAPPINGS:
             v = get_path(data, legacy_key % {"node": self.config.node, "pool": self.config.pool})

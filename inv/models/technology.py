@@ -22,7 +22,7 @@ class Technology(Document):
     """
     meta = {
         "collection": "noc.technologies",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "inv.technologies"
     }
 

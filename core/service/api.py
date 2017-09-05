@@ -15,6 +15,8 @@ import ujson
 # NOC modules
 from noc.core.error import NOCError
 from noc.core.debug import error_report
+from noc.core.span import Span
+from noc.core.error import ERR_UNKNOWN
 
 
 Redirect = namedtuple("Redirect", ["location", "method", "params"])
@@ -33,6 +35,9 @@ class APIRequestHandler(tornado.web.RequestHandler):
 
     @tornado.gen.coroutine
     def post(self, *args, **kwargs):
+        span_ctx = self.request.headers.get("X-NOC-Span-Ctx", 0)
+        span_id = self.request.headers.get("X-NOC-Span", 0)
+        sample = 1 if span_ctx and span_id else 0
         # Parse JSON
         try:
             req = ujson.loads(self.request.body)
@@ -65,44 +70,51 @@ class APIRequestHandler(tornado.web.RequestHandler):
             "[RPC call from %s] %s.%s(%s)",
             calling_service, api.name, method, params
         )
-        try:
-            if getattr(h, "executor", ""):
-                # Threadpool version
-                executor = self.service.get_executor(h.executor)
-                result = executor.submit(h, *params)
-            else:
-                # Serialized version
-                result = h(*params)
-            if tornado.gen.is_future(result):
-                result = yield result
-            if isinstance(result, Redirect):
-                # Redirect protocol extension
-                self.set_status(307, "Redirect")
-                self.set_header("Location", result.location)
-                self.write(ujson.dumps({
-                    "id": id,
-                    "method": result.method,
-                    "params": result.params
-                }))
-            else:
-                # Dump output
-                self.write(ujson.dumps({
-                    "id": id,
-                    "error": None,
-                    "result": result
-                }))
-        except NOCError as e:
-            self.api_error(
-                "Failed: %s" % e,
-                id=id,
-                code=e.code
-            )
-        except Exception as e:
-            error_report()
-            self.api_error(
-                "Failed: %s" % e,
-                id=id
-            )
+        with Span(server=self.service.name,
+                  service="api.%s" % method, sample=sample,
+                  parent=span_id, context=span_ctx) as span:
+            try:
+                if getattr(h, "executor", ""):
+                    # Threadpool version
+                    executor = self.service.get_executor(h.executor)
+                    result = executor.submit(h, *params)
+                else:
+                    # Serialized version
+                    result = h(*params)
+                if tornado.gen.is_future(result):
+                    result = yield result
+                if isinstance(result, Redirect):
+                    # Redirect protocol extension
+                    self.set_status(307, "Redirect")
+                    self.set_header("Location", result.location)
+                    self.write(ujson.dumps({
+                        "id": id,
+                        "method": result.method,
+                        "params": result.params
+                    }))
+                else:
+                    # Dump output
+                    self.write(ujson.dumps({
+                        "id": id,
+                        "error": None,
+                        "result": result
+                    }))
+            except NOCError as e:
+                span.error_code = e.code
+                span.error_text = str(e)
+                self.api_error(
+                    "Failed: %s" % e,
+                    id=id,
+                    code=e.code
+                )
+            except Exception as e:
+                error_report()
+                span.error_code = ERR_UNKNOWN
+                span.error_text = str(e)
+                self.api_error(
+                    "Failed: %s" % e,
+                    id=id
+                )
 
     def api_error(self, msg, id=None, code=None):
         if id is not None:

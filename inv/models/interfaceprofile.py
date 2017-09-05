@@ -106,7 +106,7 @@ class InterfaceProfile(Document):
     """
     meta = {
         "collection": "noc.interface_profiles",
-        "allow_inheritance": False
+        "strict": False
     }
     name = StringField(unique=True)
     description = StringField()
@@ -163,6 +163,9 @@ class InterfaceProfile(Document):
     bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DEFAULT_PROFILE_NAME = "default"
 
     def __unicode__(self):
         return self.name
@@ -178,9 +181,6 @@ class InterfaceProfile(Document):
         return InterfaceProfile.objects.filter(name=name).first()
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
     def get_default_profile(cls):
-        try:
-            return cls._default_profile
-        except AttributeError:
-            cls._default_profile = cls.get_by_name("default")
-            return cls._default_profile
+        return InterfaceProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()

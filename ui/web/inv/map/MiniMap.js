@@ -24,7 +24,7 @@ Ext.define('NOC.inv.map.MiniMap', {
         this.paperEl = this.items.first().el.dom;
         this.paper = mapPanel.paper;
         var w = this.width;
-        var h = this.getHeight() - 10;
+        var h = this.height - 10;
 
         this.miniPaper = new joint.dia.Paper({
             el: this.paperEl,

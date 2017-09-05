@@ -8,53 +8,17 @@
   "id": "4d2b3163-b0a8-4859-84d8-409285c32680",
   "targets": [
     {
-      "policy": "default",
-      "dsType": "influxdb",
-      "resultFormat": "time_series",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=",
-          "value": "$device"
-        }
-      ],
-      "groupBy": [
-        {
-          "type": "time",
-          "params": [
-            "$discovery_interval"
-          ]
-        },
-        {
-          "type": "tag",
-          "params": [
-            "slot"
-          ]
-        },
-        {
-          "type": "fill",
-          "params": [
-            "null"
-          ]
-        }
-      ],
-      "select": [
-        [
-          {
-            "type": "field",
-            "params": [
-              "value"
-            ]
-          },
-          {
-            "type": "mean",
-            "params": []
-          }
-        ]
-      ],
       "refId": "A",
-      "measurement": "{{graph}}",
-      "alias": "{{graph}} on slot $tag_slot"
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((sensor, Temperature)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as sensor, \n        avg(temperature) as `Temperature` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "environment",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
     }
   ],
   "datasource": null,

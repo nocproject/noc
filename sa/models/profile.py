@@ -32,7 +32,7 @@ id_lock = threading.Lock()
 class Profile(Document):
     meta = {
         "collection": "noc.profiles",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "sa.profiles",
         "json_unique_fields": ["name"]
     }

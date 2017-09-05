@@ -25,7 +25,5 @@ class SLAProbeApplication(ExtDocApplication):
 
     def field_targets(self, o):
         r = []
-        for t in o.tests:
-            if t.target:
-                r += ["%s:%s" % (t.type, t.target)]
+        r += ["%s:%s" % (o.type, o.target)]
         return ", ".join(r)

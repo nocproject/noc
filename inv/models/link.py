@@ -11,10 +11,9 @@ from collections import defaultdict
 import datetime
 # NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
-                           StringField, DateTimeField)
-from interface import Interface
+                           StringField, DateTimeField, ListField,
+                           IntField)
 from noc.core.model.decorator import on_delete, on_save
-from noc.core.defer import call_later
 
 
 @on_delete
@@ -29,20 +28,30 @@ class Link(Document):
     """
     meta = {
         "collection": "noc.links",
-        "allow_inheritance": False,
-        "indexes": ["interfaces"]
+        "strict": False,
+        "indexes": ["interfaces", "linked_objects"]
     }
 
-    interfaces = PlainReferenceListField(Interface)
+    interfaces = PlainReferenceListField("inv.Interface")
+    # List of linked objects
+    linked_objects = ListField(IntField())
     # Name of discovery method or "manual"
     discovery_method = StringField()
     # Timestamp of first discovery
     first_discovered = DateTimeField(default=datetime.datetime.now)
     # Timestamp of last confirmation
     last_seen = DateTimeField()
+    # L2 path cost
+    l2_cost = IntField(default=1)
+    # L3 path cost
+    l3_cost = IntField(default=1)
 
     def __unicode__(self):
         return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
+
+    def clean(self):
+        self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
+        super(Link, self).clean()
 
     def contains(self, iface):
         """
@@ -57,7 +66,7 @@ class Link(Document):
         Check link is point-to-point link
         :return:
         """
-        return len(self.interfaces) == 2
+        return len(self.linked_objects) == 2
 
     @property
     def is_lag(self):
@@ -132,6 +141,7 @@ class Link(Document):
 
     @classmethod
     def object_links(cls, object):
+        from interface import Interface
         ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
         return cls.objects.filter(interfaces__in=ifaces)
 
@@ -140,7 +150,8 @@ class Link(Document):
         return cls.object_links(object).count()
 
     def on_save(self):
-        self.update_topology()
+        if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
+            self.update_topology()
 
     def on_delete(self):
         self.update_topology()

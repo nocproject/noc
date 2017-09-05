@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
 
     rx_probe = re.compile(
-        r"^\s+name = (?P<name>\S+)\s*\n"
+        r"^\s+name = \"?(?P<name>.+)\"?\s*\n"
         r"^\s+adminStatus = enabled\s*\n"
         r"^\s+ipAddress = (?P<target>\S+)\s*\n"
         r"^\s+hostName = .+\n"
@@ -35,7 +35,9 @@ class Script(BaseScript):
 
     TEST_TYPES = {
         "icmp": "icmp-echo",
-        "udpEcho": "udp-echo"
+        "udpEcho": "udp-echo",
+        "udpServerPort": "udp-echo",
+        "twampLightPort": "twamp"
     }
 
     def execute(self):
@@ -46,7 +48,9 @@ class Script(BaseScript):
         )
         for match in self.rx_probe.finditer(c):
             probe_type = match.group("type")
-            if not probe_type in ["icmp", "udpEcho"]:
+            if not probe_type in [
+                "icmp", "udpEcho", "udpServerPort", "twampLightPort"
+            ]:
                 continue
             test = {
                 "name": match.group("name"),

@@ -32,6 +32,42 @@
     "list": [
       {
         "current": {
+          "text": "{{bi_id_a}}",
+          "value": "{{bi_id_a}}"
+        },
+        "datasource": null,
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "bi_id_a",
+        "options": {
+          "text": "{{bi_id_a}}",
+          "value": "{{bi_id_a}}"
+        },
+        "query": "{{bi_id_a}}",
+        "refresh": 0,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "{{bi_id_b}}",
+          "value": "{{bi_id_b}}"
+        },
+        "datasource": null,
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "bi_id_b",
+        "options": {
+          "text": "{{bi_id_b}}",
+          "value": "{{bi_id_b}}"
+        },
+        "query": "{{bi_id_b}}",
+        "refresh": 0,
+        "type": "custom"
+      },
+      {
+        "current": {
           "text": "{{device_a}}",
           "value": "{{device_a}}"
         },
@@ -174,10 +210,10 @@
       "panels": [
         {% from "graph_interface_errors.j2" import errors -%}
         {% from "graph_interface_discards.j2" import discards -%}
-        {{errors("$interface_a", "$device_a", 1)}},
-        {{discards("$interface_a", "$device_a", 2)}},
-        {{errors("$interface_b", "$device_b", 3)}},
-        {{discards("$interface_b", "$device_b", 4)}}
+        {{errors("$interface_a", "$bi_id_a", "$device_a", 1)}},
+        {{discards("$interface_a", "$bi_id_a", "$device_a", 2)}},
+        {{errors("$interface_b", "$bi_id_b", "$device_b", 3)}},
+        {{discards("$interface_b", "$bi_id_b", "$device_b", 4)}}
       ]
     },
     {
@@ -188,20 +224,20 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_load_simple.j2" import interface -%}
-        {{interface("$interface_a", "$device_a", 5)}},
-        {{interface("$interface_b", "$device_b", 6)}}
+        {{interface("$interface_a", "$bi_id_a", "$device_a", 5)}},
+        {{interface("$interface_b", "$bi_id_b", "$device_b", 6)}}
         ]
     },
     {
       "title": "PPS",
       "showTitle": true,
-      "collapse": true,
+      "collapse": false,
       "editable": true,
       "height": "250px",
       "panels": [
         {% from "graph_interface_pps.j2" import pps -%}
-        {{pps("$interface_a", "$device_a", 7)}},
-        {{pps("$interface_b", "$device_b", 8)}}
+        {{pps("$interface_a", "$bi_id_a", "$device_a", 7)}},
+        {{pps("$interface_b", "$bi_id_a", "$device_b", 8)}}
       ]
     }
   ]

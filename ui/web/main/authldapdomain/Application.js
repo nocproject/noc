@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.authldapdomain application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.authldapdomain.Application");
@@ -27,6 +27,12 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     dataIndex: "is_active",
                     width: 50,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Default"),
+                    dataIndex: "is_default",
+                    width: 50,
+                    renderer: NOC.render.Bool
                 }
             ],
 
@@ -42,6 +48,11 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     name: "is_active",
                     xtype: "checkbox",
                     boxLabel: __("Active")
+                },
+                {
+                    name: "is_default",
+                    xtype: "checkbox",
+                    boxLabel: __("Default Domain")
                 },
                 {
                     name: "description",

@@ -45,7 +45,7 @@ class Script(BaseScript):
                 pass
 
         # Fallback to HTTP
-        response = self.http.fetch("/devname.cgi")
+        response = self.http.get("/devname.cgi")
         match = self.rx_plat.search(response.body)
         platform = match.group("platform")
         match = self.rx_rev.search(response.body)

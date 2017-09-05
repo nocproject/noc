@@ -34,6 +34,7 @@
       {% include "template_device_id.j2" with context -%},
       {% include "template_ip_info.j2" with context -%},
       {% include "template_segment.j2" with context -%},
+      {% include "template_bi_id.j2" with context -%},
       {% include "template_probe.j2" with context -%}
     ]
   },
@@ -96,66 +97,37 @@
           "steppedLine": true,
           "targets": [
             {
-              "alias": "RTT on $device $tag_probe",
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "probe"
-                  ],
-                  "type": "tag"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "SLA | ICMP RTT",
-              "policy": "default",
-              "rawQuery": false,
               "refId": "A",
               "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "object",
-                  "operator": "=~",
-                  "value": "/^$device$/"
-                },
-                {
-                  "condition": "AND",
-                  "key": "probe",
-                  "operator": "=~",
-                  "value": "/^$probe$/"
-                }
-              ]
+              "intervalFactor": 1,
+              "query": "SELECT \n    t, \n    groupArray((concat('Probe rtt ',path[1]), d)) AS groupArr\nFROM \n    ( SELECT \n        $timeSeries t, \n        path[1], \n        avg(icmp_rtt) d \n        from noc.sla \n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id \n        GROUP BY t, path\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+              "database": "noc",
+              "tableLoading": false,
+              "table": "sla",
+              "dateLoading": false,
+              "datetimeLoading": false,
+              "dateColDataType": "date",
+              "dateTimeColDataType": "ts"
+            },
+            {
+              "refId": "B",
+              "resultFormat": "time_series",
+              "intervalFactor": 1,
+              "query": "SELECT \n    t, \n    groupArray((concat('Probe jitter ',path[1]), d)) AS groupArr\nFROM \n    ( SELECT \n        $timeSeries t, \n        path[1], \n        avg(jitter) d \n        from noc.sla \n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id \n        GROUP BY t, path\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+              "database": "noc",
+              "tableLoading": false,
+              "table": "sla",
+              "dateLoading": false,
+              "datetimeLoading": false,
+              "dateColDataType": "date",
+              "dateTimeColDataType": "ts"
             }
-          ],
+
+        ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "535-Пушк.-7609#2255939",
+          "title": "$device",
           "tooltip": {
             "msResolution": false,
             "shared": true,
@@ -224,52 +196,17 @@
           "steppedLine": false,
           "targets": [
             {
-              "dsType": "influxdb",
-              "groupBy": [
-                {
-                  "params": [
-                    "$interval"
-                  ],
-                  "type": "time"
-                },
-                {
-                  "params": [
-                    "null"
-                  ],
-                  "type": "fill"
-                }
-              ],
-              "measurement": "SLA | ICMP RTT",
-              "policy": "default",
+              "database": "noc",
+              "dateColDataType": "date",
+              "dateLoading": false,
+              "dateTimeColDataType": "ts",
+              "datetimeLoading": false,
+              "intervalFactor": 1,
+              "query": "SELECT \n    $timeSeries as t, \n    avg(icmp_rtt), \n    avg(jitter) \nFROM $table \nWHERE \n    managed_object=$bi_id \n    and $timeFilter \n    and path[1]=toString($probe)\nGROUP BY t \nORDER BY t",
               "refId": "A",
               "resultFormat": "time_series",
-              "select": [
-                [
-                  {
-                    "params": [
-                      "value"
-                    ],
-                    "type": "field"
-                  },
-                  {
-                    "params": [],
-                    "type": "mean"
-                  }
-                ]
-              ],
-              "tags": [
-                {
-                  "key": "object",
-                  "operator": "=~",
-                  "value": "/^$device$/"
-                },
-                {
-                  "condition": "AND",
-                  "key": "probe",
-                  "operator": "=~",
-                  "value": "/^$probe$/"
-                }
-              ]
+              "table": "sla",
+              "tableLoading": false
             }
           ],
           "thresholds": [],

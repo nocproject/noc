@@ -1,25 +1,20 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Interface Facts Report
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
 from django import forms
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
-from noc.lib.nosql import get_db
-from pymongo import ReadPreference
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.cm.models.objectfact import ObjectFact
-from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
@@ -61,7 +56,6 @@ class ReportFilterApplication(SimpleReport):
     def get_data(self, request, pool=None, int_profile=None,
                  mop=None, avail_status=None, **kwargs):
         data = []
-        avail = {}
         mos = ManagedObject.objects.filter(is_managed=True)
 
         # % fixme remove.
@@ -83,20 +77,12 @@ class ReportFilterApplication(SimpleReport):
         # Interface._get_collection()
         while mos_ids[(0 + n):(10000 + n)]:
             mos_ids_f = mos_ids[(0 + n):(10000 + n)]
-            iface_filter = {"managed_object": {"$in": mos_ids_f}, "profile": int_profile.id}
-
-            iface_db = get_db()["noc.interface"]
-
             s_iface = set(["%d.%s" % (mo.id, name) for mo, name in iface])
-
             of = ObjectFact.objects.filter(object__in=mos_ids_f,
                                            cls="subinterface", attrs__traffic_control_broadcast=False)
-
             a_f = set([".".join((str(o.object.id), o.attrs["name"])) for o in of])
-
             res.extend(a_f.intersection(s_iface))
             n += 10000
-
         for s in res:
             mo, iface = s.split(".")
             mo = ManagedObject.get_by_id(mo)

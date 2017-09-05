@@ -25,7 +25,7 @@ id_lock = Lock()
 class Layer(Document):
     meta = {
         "collection": "noc.layers",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "gis.layers"
     }
     name = StringField(unique=True)

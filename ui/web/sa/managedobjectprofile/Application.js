@@ -967,9 +967,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             width: 150,
                                             editor: {
                                                 xtype: "pm.metrictype.LookupField",
-                                                query: {
-                                                    scope: "o"
-                                                }
+                                                //query: {
+                                                //   scope: "o"
+                                                //}
                                             },
                                             renderer: NOC.render.Lookup("metric_type")
                                         },
@@ -1146,7 +1146,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     uiStyle: "medium",
                                     store: [
                                         ["E", __("Enable")],
-                                        ["D", __("Disable")]
+                                        ["D", __("Disable")],
+                                        ["R", __("As Depended")]
                                     ],
                                     value: "E"
                                 }

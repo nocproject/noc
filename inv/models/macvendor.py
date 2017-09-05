@@ -20,7 +20,7 @@ class MACVendor(Document):
     """
     meta = {
         "collection": "noc.macvendors",
-        "allow_inheritance": False
+        "strict": False
     }
 
     # 3 octets, hexadecimal, upper

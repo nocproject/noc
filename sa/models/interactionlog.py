@@ -13,7 +13,7 @@ from mongoengine import document, fields
 class InteractionLog(document.Document):
     meta = {
         "collection": "noc.log.sa.interaction",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             ("object", "-timestamp"),
             {

@@ -32,13 +32,14 @@ class ProbeSetting(object):
         "report_attempts",
         "time_expr",
         "time_cond",
+        "bi_id",
         "task"
     ]
 
     def __init__(self, id, address, name, interval, status=None,
                  policy="f", size=64, count=3, timeout=1000,
                  report_rtt=False, report_attempts=False,
-                 time_expr=None, *args, **kwargs):
+                 time_expr=None, bi_id=None, *args, **kwargs):
         self.id = id
         self.address = address
         self.name = name
@@ -54,6 +55,7 @@ class ProbeSetting(object):
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
         self.task = None
+        self.bi_id = bi_id
 
     def update(self, interval, report_rtt, report_attempts=False,
                policy="f", size=64, count=3, timeout=1000,

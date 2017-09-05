@@ -18,7 +18,7 @@ from noc.lib.nosql import ForeignKeyField
 class DynamicIPPoolUsage(Document):
     meta = {
         "collection": "noc.dynamic_ippool_isage",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [("termination_group", "vrf", "pool_name", "technology")]
     }
 

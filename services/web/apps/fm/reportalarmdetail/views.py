@@ -16,12 +16,12 @@ import xlsxwriter
 import bson
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, IntParameter
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectpath import ObjectPath
 from noc.inv.models.networksegment import NetworkSegment
@@ -52,12 +52,14 @@ class ReportAlarmDetailApplication(ExtApplication):
               "source": StringParameter(required=True),
               "segment": StringParameter(required=False),
               "administrative_domain": StringParameter(required=False),
+              "selector": StringParameter(required=False),
               "columns": StringParameter(required=False),
               "format": StringParameter(choices=["csv", "xlsx"])
           })
     def api_report(self, request, from_date, to_date, format,
                    min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
-                   segment=None, administrative_domain=None, columns=None, source="both"):
+                   segment=None, administrative_domain=None, selector=None,
+                   columns=None, source="both"):
         def row(row, container_path, segment_path):
             def qe(v):
                 if v is None:
@@ -163,6 +165,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                     administrative_domain = user_ads
             else:
                 administrative_domain = user_ads
+        if selector:
+            selector = ManagedObjectSelector.get_by_id(int(selector))
+            mos = mos.filter(selector.Q)
 
         # Working if Administrative domain set
         if administrative_domain:
@@ -173,6 +178,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                 pass
 
         mos_id = list(mos.values_list("id", flat=True))
+        if selector:
+            q["managed_object"] = {"$in": mos_id}
+
         container_lookup = ReportContainer(mos_id)
         attr = ReportObjectAttributes([])
         attr_res = ReportAttrResolver([])

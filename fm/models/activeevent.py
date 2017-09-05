@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ActiveEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,26 +13,29 @@ from threading import Lock
 # Django modules
 from django.template import Template, Context
 # Third-party modules
-from mongoengine import document, fields
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, DateTimeField, IntField,
+                                ListField, EmbeddedDocumentField,
+                                DictField, ObjectIdField)
 from bson import Binary
 # NOC modules
 from eventlog import EventLog
 from eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib import nosql
 from noc.lib.dateutils import total_seconds
 from noc.core.cache.decorator import cachedmethod
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
 
 id_lock = Lock()
 
 
-class ActiveEvent(document.Document):
+class ActiveEvent(Document):
     """
     Event in the Active state
     """
     meta = {
         "collection": "noc.events.active",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "timestamp", "discriminator", "alarms",
             ("timestamp", "event_class", "managed_object"),
@@ -44,18 +47,19 @@ class ActiveEvent(document.Document):
     }
     status = "A"
     # Fields
-    timestamp = fields.DateTimeField(required=True)
-    managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
-    event_class = nosql.PlainReferenceField(EventClass, required=True)
-    start_timestamp = fields.DateTimeField(required=True)
-    repeats = fields.IntField(required=True)
-    raw_vars = nosql.RawDictField()
-    resolved_vars = nosql.RawDictField()
-    vars = fields.DictField()
-    log = fields.ListField(fields.EmbeddedDocumentField(EventLog))
-    discriminator = fields.StringField(required=False)
-    alarms = fields.ListField(nosql.ObjectIdField())
-    expires = fields.DateTimeField(required=False)
+    timestamp = DateTimeField(required=True)
+    managed_object = ForeignKeyField(ManagedObject, required=True)
+    event_class = PlainReferenceField(EventClass, required=True)
+    start_timestamp = DateTimeField(required=True)
+    repeats = IntField(required=True)
+    source = StringField()
+    raw_vars = RawDictField()
+    resolved_vars = RawDictField()
+    vars = DictField()
+    log = ListField(EmbeddedDocumentField(EventLog))
+    discriminator = StringField(required=False)
+    alarms = ListField(ObjectIdField())
+    expires = DateTimeField(required=False)
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -195,6 +199,7 @@ class ActiveEvent(document.Document):
         if type(o) in (int, long):
             return o
         return o.id
+
 
 # Avoid circular references
 from newevent import NewEvent

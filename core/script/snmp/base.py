@@ -25,6 +25,8 @@ class SNMP(object):
     class FatalTimeoutError(Exception):
         pass
 
+    SNMPError = SNMPError
+
     def __init__(self, script, beef=None):
         self.script = script
         self.ioloop = None

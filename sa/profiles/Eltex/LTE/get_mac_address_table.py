@@ -19,8 +19,8 @@ class Script(BaseScript):
     cache = True
 
     rx_olt = re.compile(
-        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interfaces>(\S+ \d+|\S+))\s+"
-        r"(?P<type>\S+)\s+\S+\s+\S+\s+\d+\s*$", re.MULTILINE)
+        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>(\S+ \d+|\S+))\s+"
+        r"(?P<type>\S+)\s+\S+\s+\S+( to CPU)?\s+\d+\s*$", re.MULTILINE)
 
     rx_switch = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
@@ -70,7 +70,26 @@ class Script(BaseScript):
         elif mac is not None:
             cmd += " include mac %s" % self.profile.convert_mac(mac)
         with self.profile.switch(self):
-            for match in self.rx_switch.finditer(self.cli(cmd, cached=True)):
+            c = self.cli(cmd, cached=True)
+            for match in self.rx_switch.finditer(c):
+                interface = match.group("interface")
+                mtype = {
+                    "dynamic": "D",
+                    "static": "S",
+                    "permanent": "S",
+                    "self": "S"
+                }[match.group("type").lower()]
+                if interface == "CPU":
+                    mtype = "C"
+                r += [{
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [interface],
+                    "type": mtype
+                }]
+            if r:
+                return r
+            for match in self.rx_olt.finditer(c):
                 interface = match.group("interface")
                 mtype = {
                     "dynamic": "D",

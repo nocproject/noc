@@ -36,7 +36,7 @@ id_lock = threading.Lock()
 class Firmware(Document):
     meta = {
         "collection": "noc.firmwares",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "inv.firmwares",
         "json_depends_on": [
             "sa.profile"

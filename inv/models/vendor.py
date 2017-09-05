@@ -37,7 +37,7 @@ class Vendor(Document):
     """
     meta = {
         "collection": "noc.vendors",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "inv.vendors",
         "json_unique_fields": ["code"]
     }

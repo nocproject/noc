@@ -67,11 +67,29 @@ config:
       label: "Lookup solution"
       type: str
   clickhouse:
+    user:
+      default: noc
+      label: "RW user"
+      type: str
+      description: "RW user"
     password:
       default: noc
-      description: test
       label: "Password for user default"
       type: str
+      description: "RW user password"
+    ro_password:
+      label: "Password for user readonly"
+      description: "RO user password"
+      default: noc
+      type: str
+    db:
+      default: noc
+      label: "db name"
+      type: str
+    query_size:
+      default: 262144
+      label: "Max query size"
+      type: int
   consul:
     replication_token:
       label: "consul replication token"
@@ -129,6 +147,21 @@ config:
       description: "<strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>"
       label: "Mem size for snapshot"
       type: int
+  haproxy:
+    stats:
+      default: false
+      description: "on port 1936"
+      label: "haproxy's stats interface"
+      type: bool
+    user:
+      label: "Stats interface user"
+      type: str
+      default: admin
+    password:
+      label: "Stats interface password"
+      description: "a-z,A-Z,0-9,_-"
+      type: str
+      default: noc
   keepalived:
     nginx_virtual_ip:
       description: "<strong> <a href=http://keepalived.readthedocs.io/en/latest/ target=_blank> http://www.keepalived.org/documentation.html </a> </strong>"
@@ -140,6 +173,9 @@ config:
       type: str
     patroni_virtual_ip:
       label: "Patroni virtual IP"
+      type: str
+    clickhouse_virtual_ip:
+      label: "Clickhouse virtual IP"
       type: str
   login:
     language:
@@ -228,47 +264,16 @@ config:
       default: false
       label: "Use JSON logging"
       type: bool
+    certificate:
+      default: true
+      label: "Self-signed certificate"
+      description: "Is provided certificate is trusted by nodes?"
+      type: bool
   noc:
-    geocoding_google_key:
-      default: null
-      label: "Google API key"
-      type: str
-    geocoding_google_language:
-      default: en
-      label: "Google response language"
-      type: str
-    geocoding_order:
-      default: "yandex,google"
-      label: "List of geocoding methods"
-      type: str
-    geocoding_yandex_key:
-      default: null
-      label: "Yandex API key"
-      type: str
-    installation_name:
-      default: "Unconfigured installation"
-      label: "Installation name"
-      type: str
-    rpc_choose_services:
-      default: 3
-      label: "Choose RPC services"
-      type: int
-    rpc_retry_timeout:
-      default: "0.1,0.5,1,3,10,30"
-      label: "RPC Retry timeout"
-      type: str
-    timezone:
-      default: "Europe/Moscow"
-      label: "Time Zone"
-      type: str
-    topology_rca_window:
-      default: 0
-      label: "Topology-based RCA window (seconds)"
-      type: int
-    tt_escalation_limit:
-      default: 10
-      label: "TT escalation limin (tt/minute)"
-      type: int
+    config:
+      type: text
+      label: "Settings"
+      description: "<strong> <a href=https://kb.nocproject.org/x/8oKYAQ target=_blank> Doc in russian</a> </strong>"
   nsqd:
     max_messages_in_memory:
       default: 10000
@@ -286,6 +291,11 @@ config:
       description: "<strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>"
       label: "Pgbouncer max clients"
       type: int
+    pgbouncer_max_db_connections:
+      default: 10
+      description: "<strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>"
+      label: "Pgbouncer connections to postgres"
+      type: int
   ping:
     restore_threshold:
       default: 0
@@ -298,15 +308,6 @@ config:
     tos:
       default: 0
       label: "IP ToS mark"
-      type: int
-  pmwriter:
-    batch_size:
-      default: 2500
-      label: "Write batch size (metrics)"
-      type: int
-    metrics_buffer:
-      default: 50000
-      label: "Metrics buffer size (metrics)"
       type: int
   postgres:
     max_clients:
@@ -383,15 +384,15 @@ services:
       <strong>docs</strong>: To be done<br/>
       <strong>Placement constraint</strong>: On separate node<br/>
     level: pool
-  zz_alerta:
-    description: >
-      <strong>Service type</strong>: Not a service <br/>
-      <strong>Short description</strong>: Configuration menu for alerta <br/>
-      <strong>Long description</strong>: If configured will be used for notifications about deploys. On Productions install only<br/>
-      <strong>Scale Recommendations</strong>: None<br/>
-      <strong>docs</strong>: http://docs.alerta.io/en/latest/ <br/>
-      <strong>Placement constraint</strong>:  Will not be placed. just to have config for it. <br/>
-    level: global
+    category: internal
+    command: "./services/activator/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    priority: 100
+    oom_score_adj: 300
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   bi:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -401,6 +402,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     level: global
+    category: internal
+    command: "./services/bi/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 50
+    priority: 300
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
     required_assets:
       - bi
   card:
@@ -412,6 +422,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
+    category: internal
+    command: "./services/card/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 100
+    priority: 300
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
     required_assets:
       - card
       - web
@@ -424,6 +443,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     level: global
+    category: internal
+    command: "./services/chwriter/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 10
+    priority: 300
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   classifier:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -433,6 +461,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with correlator<br/>
     level: pool
+    category: internal
+    command: "./services/classifier/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 50
+    priority: 300
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   clickhouse:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -442,6 +479,7 @@ services:
       <strong>docs</strong>: "https://clickhouse.yandex/docs/en/"<br/>
       <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     level: global
+    category: external
     port: 8123
   consul:
     description: >
@@ -452,6 +490,7 @@ services:
       <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
       <strong>Placement constraint</strong>: Long living node. <br/>
     level: global
+    category: external
     port: 8500
   correlator:
     description: >
@@ -462,6 +501,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: pool
+    category: internal
+    command: "./services/correlator/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 20
+    priority: 150
+    startretries: 999
+    stopwaitsecs: 5
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   dev:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -471,6 +519,7 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
+    category: external
     required_assets:
       - mib
   discovery:
@@ -482,6 +531,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: High cpu/memory usage.<br/>
     level: pool
+    category: internal
+    command: "./services/discovery/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 500
+    priority: 100
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   escalator:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -491,6 +549,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
+    category: internal
+    command: "./services/escalator/service.py"
+    process_name: "%(program_name)s"
+    oom_score_adj: 5
+    priority: 50
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 10
   grafana:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -500,6 +567,7 @@ services:
       <strong>docs</strong>: http://docs.grafana.org/<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     level: system
+    category: external
     port: 8002
   grafanads:
     description: >
@@ -510,6 +578,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
+    category: internal
+    command: "./services/grafanads/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 900
+    priority: 500
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 1
   haproxy:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -519,15 +596,17 @@ services:
       <strong>docs</strong>: https://kb.nocproject.org/pages/viewpage.action?pageId=22970899 <br/>
       <strong>Placement constraint</strong>: On node with keepalived <br/>
     level: global
+    category: external
   influxdb:
     description: >
       <strong>Service type</strong>: External <br/>
-      <strong>Short description</strong>: The Reliable, High Performance TCP/HTTP Load Balancer <br/>
-      <strong>Long description</strong>: InfluxDB is a custom high performance datastore written specifically for timestamped data, including DevOps monitoring, application metrics, IoT sensor data, & real-time analytics.<br/>
-      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
-      <strong>docs</strong>: https://docs.influxdata.com/influxdb/v1.2/<br/>
+      <strong>Short description</strong>: TimeSeriesDatabase for internal self mon.<br/>
+      <strong>Long description</strong>: Used to store metrics discovered by telegraf<br/>
+      <strong>Scale Recommendations</strong>: Optional. <br/>
+      <strong>docs</strong>: https://docs.influxdata.com/influxdb/v1.3/<br/>
       <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     level: system
+    category: external
     port: 8086
   keepalived:
     description: >
@@ -538,6 +617,7 @@ services:
       <strong>docs</strong>: http://www.keepalived.org/documentation.html<br/>
       <strong>Placement constraint</strong>: On node with nginxes and on node with ha-proxies<br/>
     level: global
+    category: external
   login:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -547,7 +627,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
-    scope: test
+    category: internal
+    command: "./services/login/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 10
+    priority: 40
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 5
   mailsender:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -557,15 +645,25 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
+    category: internal
+    command: "./services/mailsender/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 100
+    priority: 600
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   memcached:
     description: >
       <strong>Service type</strong>: External <br/>
       <strong>Short description</strong>: Memcached daemon <br/>
       <strong>Long description</strong>: Database caching. For both Mongodb and Postgres<br/>
       <strong>Scale Recommendations</strong>: Optional. <br/>
-      <strong>docs</strong>: https://github.com/memcached/memcached/wiki <br/>
+      <strong>docs</strong>: <a href="https://kb.nocproject.org/pages/viewpage.action?pageId=26772210#id-КонфигурацияNOC-Сервисыускорения(pgbouncer,memcached)" target="_blank">Docs in russian</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
+    category: external
     port: 11211
   mongod:
     description: >
@@ -576,6 +674,7 @@ services:
       <strong>docs</strong>: https://docs.mongodb.com/manual/ <br/>
       <strong>Placement constraint</strong>: Long living nodes. Medium cpu usage. Consumes at least 50%+1Gb of memery on node. Better use separate one.<br/>
     level: system
+    category: external
     port: 27017
   mrt:
     description: >
@@ -586,6 +685,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
+    category: internal
+    command: "./services/mrt/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 100
+    priority: 110
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   nginx:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -595,12 +703,23 @@ services:
       <strong>docs</strong>: http://nginx.org/en/docs/http/ngx_http_upstream_module.html <br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: system
+    category: external
     port: 443
     require_cert: true
     required_assets:
       - web
       - card
       - bi
+  noc:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: NOC settings <br/>
+      <strong>Long description</strong>: Write settings.yml. file will not be overwritten once created<br/>
+      <strong>Scale Recommendations</strong>: At one any node <br/>
+      <strong>docs</strong>: <br/>
+      <strong>Placement constraint</strong>: Any <br/>
+    level: global
+    category: config
   notebook:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -610,6 +729,15 @@ services:
       <strong>docs</strong>: https://ipython.org/notebook.html <br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
+    category: external
+    command: "./bin/jupyter-notebook"
+    process_name: "%(program_name)s"
+    oom_score_adj: 100
+    priority: 110
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   nsqadmin:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -619,6 +747,7 @@ services:
       <strong>docs</strong>: http://nsq.io/components/nsqadmin.html <br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: system
+    category: external
     port: 4171
   nsqd:
     description: >
@@ -629,6 +758,7 @@ services:
       <strong>docs</strong>: http://nsq.io/components/nsqd.html <br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: system
+    category: external
     port: 4151
   nsqlookupd:
     description: >
@@ -639,6 +769,7 @@ services:
       <strong>docs</strong>: http://nsq.io/components/nsqlookupd.html <br/>
       <strong>Placement constraint</strong>: Long living node. <br/>
     level: system
+    category: external
     port: 4161
   omap:
     description: >
@@ -649,6 +780,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
+    category: internal
+    command: "./services/omap/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 100
+    priority: 120
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 1
   patroni:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -658,6 +798,7 @@ services:
       <strong>docs</strong>: https://kb.nocproject.org/pages/viewpage.action?pageId=22970899 <br/>
       <strong>Placement constraint</strong>: On node with postgres <br/>
     level: global
+    category: external
     port: 8008
   pgbouncer:
     description: >
@@ -665,9 +806,11 @@ services:
       <strong>Short description</strong>: PGbouncer <br/>
       <strong>Long description</strong>: Used for pool connections to postgres. Optional, but hihgly recommended. <br/>
       <strong>Scale Recommendations</strong>: Can be placed on one node with postgres or on each node. <br/>
-      <strong>docs</strong>: https://pgbouncer.github.io/config.html <br/>
+      <strong>docs</strong>: <a href="https://kb.nocproject.org/pages/viewpage.action?pageId=26772210#id-КонфигурацияNOC-Сервисыускорения(pgbouncer,memcached)" target="_blank">Docs in russian</a><br/>
       <strong>Placement constraint</strong>: On node with postgres <br/>
+      <strong>Config</strong>: Have to be explicitly chosen in config. <br/>
     level: system
+    category: external
     port: 6432
   ping:
     description: >
@@ -678,15 +821,16 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
-  pmwriter:
-    description: >
-      <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: Pmwriter service <br/>
-      <strong>Long description</strong>:  Reads nsqd queue and writes data to InfluxDB. <br/>
-      <strong>Scale Recommendations</strong>: At least two per system. <br/>
-      <strong>docs</strong>: "To be done"<br/>
-      <strong>Placement constraint</strong>: On node with InfluxDB<br/>
-    level: global
+    category: internal
+    command: "./services/ping/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 200
+    priority: 90
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
+    user: root
   postgres:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -696,6 +840,7 @@ services:
       <strong>docs</strong>: https://www.postgresql.org/docs/9.6/static/index.html<br/>
       <strong>Placement constraint</strong>: Low cpu usage, low memory usage. low io usage. Nothing works without it.<br/>
     level: system
+    category: external
     port: 5432
   sae:
     description: >
@@ -706,6 +851,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with discovery<br/>
     level: global
+    category: internal
+    command: "./services/sae/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 300
+    priority: 90
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   scheduler:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -715,6 +869,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with discovery<br/>
     level: global
+    category: internal
+    command: "./services/scheduler/service.py"
+    process_name: "%(program_name)s"
+    oom_score_adj: 100
+    priority: 50
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
   syslogcollector:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -724,6 +887,16 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
+    category: internal
+    command: "./services/syslogcollector/service.py"
+    process_name: "%(program_name)s"
+    oom_score_adj: 50
+    priority: 200
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
+    user: root
   tgsender:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -733,6 +906,15 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
+    category: internal
+    command: "./services/tgsender/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 300
+    priority: 600
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 5
   trapcollector:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -742,6 +924,16 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
+    category: internal
+    command: "./services/trapcollector/service.py"
+    process_name: "%(program_name)s"
+    oom_score_adj: 50
+    priority: 200
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
+    user: root
   web:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -751,6 +943,25 @@ services:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     level: global
+    category: internal
+    command: "./services/web/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 300
+    priority: 50
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
     required_assets:
       - web
       - mib
+  zz_alerta:
+    description: >
+      <strong>Service type</strong>: Not a service <br/>
+      <strong>Short description</strong>: Configuration menu for alerta <br/>
+      <strong>Long description</strong>: If configured will be used for notifications about deploys. On Productions install only<br/>
+      <strong>Scale Recommendations</strong>: None<br/>
+      <strong>docs</strong>: http://docs.alerta.io/en/latest/ <br/>
+      <strong>Placement constraint</strong>:  Will not be placed. just to have config for it. <br/>
+    level: global
+    category: config

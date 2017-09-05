@@ -28,7 +28,7 @@ handlers_lock = Lock()
 
 class EventClassVar(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     name = fields.StringField(required=True)
     description = fields.StringField(required=False)
@@ -56,7 +56,7 @@ class EventClassVar(EmbeddedDocument):
 
 class EventDispositionRule(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     # Name, unique within event class
     name = fields.StringField(required=True, default="dispose")
@@ -139,7 +139,7 @@ class EventDispositionRule(EmbeddedDocument):
 
 class EventSuppressionRule(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     name = fields.StringField()
     condition = fields.StringField(required=True, default="True")
@@ -164,7 +164,7 @@ class EventSuppressionRule(EmbeddedDocument):
 
 class EventPlugin(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
 
     name = fields.StringField()
@@ -177,7 +177,7 @@ class EventPlugin(EmbeddedDocument):
 class EventClassCategory(nosql.Document):
     meta = {
         "collection": "noc.eventclasscategories",
-        "allow_inheritance": False
+        "strict": False
     }
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
@@ -204,7 +204,7 @@ class EventClass(Document):
     """
     meta = {
         "collection": "noc.eventclasses",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.eventclasses",
         "json_depends_on": [
             "fm.alarmclasses"

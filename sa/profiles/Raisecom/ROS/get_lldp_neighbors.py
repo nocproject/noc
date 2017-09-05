@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_lldp = re.compile(
-        r"^\s*(Port\s+)?port(?P<port>\d+)\s*has\s+1\s*remotes:\n(\n)?"
+        r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
         r"^\s*ChassisIdSubtype:\s+(?P<ch_type>\S+)\s*\n"
@@ -29,13 +29,13 @@ class Script(BaseScript):
         r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
         r"^\s*PortDesc:\s+(?P<port_descr>.+)\s*\n"
         r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc:\s+(?P<sys_descr>.+?)\n"
+        r"^\s*SysDesc:\s+(?P<sys_descr>[\S\s?]+?)\n"
         r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE)
 
     rx_lldp_womac = re.compile(
-        r"^\s*(Port\s+)?port(?P<port>\d+)\s*has\s+1\s*remotes:\n(\n)?"
+        r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
         r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
@@ -43,10 +43,10 @@ class Script(BaseScript):
         r"^\s*PortId\s*:\s+(?P<port_id>.+)\s*\n"
         r"^\s*PortDesc\s*:\s+(?P<port_descr>.+)\s*\n"
         r"^\s*SysName\s*:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc\s*:\s+(?P<sys_descr>.+?)\n"
+        r"^\s*SysDesc\s*:\s+(?P<sys_descr>[\S\s?]+?)\n"
         r"^\s*SysCapSupported\s*:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled\s*:\s+(?P<sys_caps_enabled>\S+)\s*\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE)
 
     rx_lldp_rem = re.compile(
         r"^port(?P<port>\d+)\s+(?P<ch_id>\S+)", re.MULTILINE)

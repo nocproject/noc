@@ -73,7 +73,8 @@ class Script(BaseScript):
                     "Interface name": 5, "Interface Name": 5,
                     "Inerface Alias": 5, "Inerface alias": 5,
                     "Interface Alias": 5, "Interface alias": 5,
-                    "Local": 7
+                    "Local": 7, "Locally Assigned": 7,
+                    "Locally assigned": 7
                 }[match.group("p_type")]
                 if n["remote_port_subtype"] == 3:
                     remote_port = \

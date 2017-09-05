@@ -59,7 +59,7 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                 {
                     name: "multicast_vlan",
                     xtype: "numberfield",
-                    fieldLabel: __("Management VLAN"),
+                    fieldLabel: __("Multicast VLAN"),
                     allowBlank: true
                 },
                 {

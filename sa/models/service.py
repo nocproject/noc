@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 class Service(Document):
     meta = {
         "collection": "noc.services",
+        "strict": False,
         "indexes": [
             "subscriber",
             "managed_object",

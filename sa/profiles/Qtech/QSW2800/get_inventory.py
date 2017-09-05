@@ -50,18 +50,23 @@ class Script(BaseScript):
             num = iface.split()[0].split("/")[-1]
             for t in self.rx_trans.finditer(iface):
                 description = ""
-                mfg_date = datetime.datetime.strptime(t.group("mfg_date"), "%b %d %Y")
                 part_no = self.profile.convert_sfp(t.group("sfp_type"),
                                                    t.group("link_length"),
                                                    t.group("bit_rate"),
                                                    t.group("wavelength"))
-                r += [{
+                data = {
                     "type": "XCVR",
-                    "numper": num,
+                    "number": num,
                     "vendor": t.group("vendor").strip(),
                     "part_no": part_no,
                     "serial": t.group("serial_number").strip(),
-                    "mfg_date": mfg_date.strftime("%Y-%m-%d"),
                     "description": ""
-                }]
+                }
+                try:
+                    mfg_date = datetime.datetime.strptime(t.group("mfg_date"), "%b %d %Y")
+                    data["mfg_date"] = mfg_date.strftime("%Y-%m-%d")
+                except ValueError:
+                    pass
+                r += [data]
+
         return r

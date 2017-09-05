@@ -19,7 +19,7 @@ class MIBAlias(Document):
     """
     meta = {
         "collection": "noc.mibaliases",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.mibaliases"
     }
     rewrite_mib = StringField(unique=True)

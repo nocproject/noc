@@ -16,7 +16,7 @@ from mongoengine.fields import StringField, IntField
 class UserSession(Document):
     meta = {
         "collection": "noc.user_sessions",
-        "allow_inheritance": False
+        "strict": False
     }
     session_key = StringField(primary_key=True)
     user_id = IntField()

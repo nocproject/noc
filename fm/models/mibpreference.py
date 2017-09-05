@@ -16,7 +16,7 @@ from noc.lib.prettyjson import to_json
 class MIBPreference(Document):
     meta = {
         "collection": "noc.mibpreferences",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.mibpreferences"
     }
     mib = StringField(required=True, unique=True)

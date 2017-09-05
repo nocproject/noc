@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,8 +51,10 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_log_ae = re.compile(r"AE bundle: (?P<bundle>\S+?)\.\d+", re.MULTILINE)
     rx_flags_vlan = re.compile(
-        r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)\s*\]",
+        r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)"
+        r"(\s+0x\d+\.(?P<vlan2>\d+))?\s*\]",
         re.IGNORECASE | re.MULTILINE)
+    # Flags: Up SNMP-Traps 0x20004000 VLAN-Tag [ 0x8100.3637 0x8100.19 ] In(pop-swap .999) Out(swap-push 0x8100.3637 .19)
     rx_flags_unnumbered = re.compile(
         r"^\s+Flags:.+, Unnumbered", re.IGNORECASE | re.MULTILINE)
     rx_iface_unnumbered = re.compile(
@@ -72,6 +74,8 @@ class Script(BaseScript):
         for I in ifaces:
             if "." in I["interface"]:
                 continue
+            #if I["interface"] != "ge-3/0/1":
+            #    continue
             v = self.cli("show interfaces %s" % I["interface"])
             L = self.rx_log_split.split(v)
             phy = L.pop(0)
@@ -107,7 +111,7 @@ class Script(BaseScript):
                 }
             # Get description
             match = self.rx_phy_description.search(phy)
-            if match:
+            if match and match.group("description") != "-=unused=-":
                 iface["description"] = match.group("description")
             # Get ifindex
             match = self.rx_phy_ifindex.search(phy)
@@ -152,6 +156,8 @@ class Script(BaseScript):
                 match = self.rx_flags_vlan.search(s)
                 if match:
                     vlan_ids = [int(match.group("vlan"))]
+                    if match.group("vlan2"):
+                        vlan_ids += [int(match.group("vlan2"))]
                 # Process protocols
                 for p in self.rx_log_protocol.split(s)[1:]:
                     match = self.re_search(self.rx_log_pname, p)
@@ -190,10 +196,14 @@ class Script(BaseScript):
                         match = self.re_search(self.rx_log_ae, p)
                         bundle = match.group("bundle")
                         iface["aggregated_interface"] = bundle
-                    elif proto.lower() == "eth-switch":
+                    elif proto.lower() == "eth-switch" \
+                    or proto.lower() == "multiservice":
+                        if proto.lower() == "eth-switch":
+                            si["enabled_afi"] += ["BRIDGE"]
                         if not vlans_requested:
                             # Request vlans port mapping
-                            untagged, tagged = self.get_vlan_port_mapping()
+                            untagged, tagged, l3_ids = \
+                                self.get_vlan_port_mapping()
                             vlans_requested = True
                         # Set untagged
                         try:
@@ -205,14 +215,25 @@ class Script(BaseScript):
                             si["tagged_vlans"] = sorted(tagged[si["name"]])
                         except KeyError:
                             pass
+                        # Set vlan_ids for EX series
+                        try:
+                            si["vlan_ids"] = [l3_ids[si["name"]]]
+                        except KeyError:
+                            pass
                         # x = untagged.get(si["name"])
                         # if x:
                         #     si["untagged_vlans"]
+                    """
+                    Why we are setting vlan_ids only on IP interfaces ?
+
                     # Set vlan_ids
                     if vlan_ids and (
                         "IPv4" in si["enabled_afi"] or
                         "IPv6" in si["enabled_afi"]
                     ):
+                        si["vlan_ids"] = vlan_ids
+                    """
+                    if vlan_ids:
                         si["vlan_ids"] = vlan_ids
                 if self.rx_flags_unnumbered.search(s):
                     match = self.rx_iface_unnumbered.search(s)
@@ -268,6 +289,15 @@ class Script(BaseScript):
     rx_vlan_tagged = re.compile(r"\s+Tagged interfaces:\s*(.+)",
                                 re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
+    rx_vlan_sep1 = re.compile(r"^\nRouting instance:", re.MULTILINE)
+    rx_802_1Q_tag1 = re.compile(r"^Tag:\s+(?P<tag>\d+)", re.MULTILINE)
+    rx_l3_iface = re.compile(
+        r"^Layer 3 interface: (?P<iface>\S+)", re.MULTILINE)
+    rx_iface_vlan = re.compile(
+        r"^\s+(?P<iface>\S\S\-\S+),(?P<type>tagged|untagged)",
+        re.MULTILINE
+    )
+
     def get_vlan_port_mapping(self):
         """
         Get Vlan to port mappings for Juniper EX series.
@@ -291,10 +321,13 @@ class Script(BaseScript):
 
         untagged = {}  # port -> vlan id
         tagged = {}  # port -> [vlan_id, ...]
+        l3_ids = {}  # port -> vlan_id
         v = self.cli("show vlans detail")
+        found = False
         for vdata in self.rx_vlan_sep.split(v):
             match = self.rx_802_1Q_tag.search(vdata)
             if match:
+                found = True
                 # 802.1Q VLAN
                 tag = int(match.group("tag"))
                 # Process tagged interfaces
@@ -315,6 +348,30 @@ class Script(BaseScript):
                         if i:
                             untagged[i] = tag
                 continue
-            # @todo: Q-in-Q handling
-        self.logger.debug("VLANS: %s %s" % (untagged, tagged))
-        return untagged, tagged
+        if found:
+            # self.logger.debug("VLANS: %s %s" % (untagged, tagged))
+            return untagged, tagged, l3_ids
+        for vdata in self.rx_vlan_sep1.split(v):
+            match = self.rx_802_1Q_tag1.search(vdata)
+            if match:
+                # 802.1Q VLAN
+                tag = int(match.group("tag"))
+                # Process interfaces
+                for match in self.rx_iface_vlan.finditer(vdata):
+                    i = match.group("iface")
+                    i = clean_interface(i)
+                    if match.group("type") == "tagged":
+                        try:
+                            tagged[i] += [tag]
+                        except KeyError:
+                            tagged[i] = [tag]
+                    else:
+                            untagged[i] = tag
+                match = self.rx_l3_iface.search(vdata)
+                if match:
+                    i = match.group("iface")
+                    i = clean_interface(i)
+                    l3_ids[i] = tag
+        # self.logger.debug("VLANS: %s %s %s" % (untagged, tagged, l3_ids))
+        # @todo: Q-in-Q handling
+        return untagged, tagged, l3_ids

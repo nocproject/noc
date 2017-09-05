@@ -18,7 +18,7 @@ class WhoisOriginRoute(Document):
     """
     meta = {
         "collection": "noc.whois.origin.route",
-        "allow_inheritance": False
+        "strict": False
     }
 
     origin = StringField(primary_key=True, unique=True)

@@ -23,6 +23,7 @@ from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
 from probesetting import ProbeSetting
+from noc.core.perf import metrics
 
 
 class PingService(Service):
@@ -65,7 +66,7 @@ class PingService(Service):
         except OSError as e:
             self.logger.info("Cannot set nice level to -20: %s", e)
         #
-        self.perf_metrics["down_objects"] = 0
+        metrics["down_objects"] = 0
         # Open ping sockets
         self.ping = Ping(self.ioloop, tos=config.ping.tos)
         # Register RPC aliases
@@ -116,7 +117,7 @@ class PingService(Service):
         """
         if self.messages:
             messages, self.messages = self.messages, []
-            self.mpub("events", messages)
+            self.mpub("events.%s" % config.pool, messages)
 
     @tornado.gen.coroutine
     def get_object_mappings(self):
@@ -150,7 +151,7 @@ class PingService(Service):
         for d in xd & nd:
             if self.probes[d].is_differ(sm[d]):
                 self.update_probe(d, sm[d])
-        self.perf_metrics["ping_objects"] = len(self.probes)
+        metrics["ping_objects"] = len(self.probes)
 
     def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
@@ -169,7 +170,7 @@ class PingService(Service):
         )
         ps.task = pt
         pt.start()
-        self.perf_metrics["ping_probe_create"] += 1
+        metrics["ping_probe_create"] += 1
 
     def delete_probe(self, ip):
         if ip not in self.probes:
@@ -179,9 +180,9 @@ class PingService(Service):
         ps.task.stop()
         ps.task = None
         del self.probes[ip]
-        self.perf_metrics["ping_probe_delete"] += 1
+        metrics["ping_probe_delete"] += 1
         if ps.status is not None and not ps.status:
-            self.perf_metrics["down_objects"] -= 1
+            metrics["down_objects"] -= 1
 
     def update_probe(self, ip, data):
         self.logger.info("Update probe: %s (%ds)", ip, data["interval"])
@@ -189,7 +190,7 @@ class PingService(Service):
         if ps.interval != data["interval"]:
             ps.task.set_callback_time(data["interval"] * 1000)
         self.probes[ip].update(**data)
-        self.perf_metrics["ping_probe_update"] += 1
+        metrics["ping_probe_update"] += 1
 
     @tornado.gen.coroutine
     def ping_check(self, ps):
@@ -203,11 +204,11 @@ class PingService(Service):
         t0 = time.time()
         if address not in self.probes:
             return
-        self.perf_metrics["ping_check_total"] += 1
+        metrics["ping_check_total"] += 1
         if ps.time_cond:
             dt = datetime.datetime.fromtimestamp(t0)
             if not eval(ps.time_cond, {"T": dt}):
-                self.perf_metrics["ping_check_skips"] += 1
+                metrics["ping_check_skips"] += 1
                 return
         rtt, attempts = yield self.ping.ping_check_rtt(
             ps.address,
@@ -218,19 +219,19 @@ class PingService(Service):
         )
         s = rtt is not None
         if s:
-            self.perf_metrics["ping_check_success"] += 1
+            metrics["ping_check_success"] += 1
         else:
-            self.perf_metrics["ping_check_fail"] += 1
+            metrics["ping_check_fail"] += 1
         if ps and s != ps.status:
             if s:
-                self.perf_metrics["down_objects"] -= 1
+                metrics["down_objects"] -= 1
             else:
-                self.perf_metrics["down_objects"] += 1
+                metrics["down_objects"] += 1
             if config.ping.throttle_threshold:
                 # Process throttling
                 down_ratio = (
-                    float(self.perf_metrics["down_objects"]) * 100.0 /
-                    float(self.perf_metrics["ping_objects"])
+                    float(metrics["down_objects"]) * 100.0 /
+                    float(metrics["ping_objects"])
                 )
                 if self.is_throttled:
                     restore_ratio = config.ping.restore_threshold or config.ping.throttle_threshold
@@ -268,19 +269,28 @@ class PingService(Service):
             )
             ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
-        # Send RTT metrics
-        if rtt is not None and ps.report_rtt:
-            self.register_metrics([
-                "Ping\\ |\\ RTT,object=%s value=%s %s" % (
-                    q(ps.name), rtt, int(time.time())
-                )
-            ])
-        if ps.report_attempts:
-            self.register_metrics([
-                "Ping\\ |\\ Attempts,object=%s value=%s %s" % (
-                    q(ps.name), attempts, int(time.time())
-                )
-            ])
+        # Send RTT and attempts metrics
+        to_report_rtt = rtt is not None and ps.report_rtt
+        if (to_report_rtt or ps.report_attempts) and ps.bi_id:
+            lt = time.localtime(t0)
+            fields = ["ping", "date", "ts", "managed_object"]
+            values = [
+                time.strftime("%Y-%m-%d", lt),
+                time.strftime("%Y-%m-%d %H:%M:%S", lt),
+                str(ps.bi_id)
+            ]
+            if to_report_rtt:
+                fields += ["rtt"]
+                values += [str(int(rtt * 1000000))]
+            if ps.report_attempts:
+                fields += ["attempts"]
+                values += [str(attempts)]
+            self.register_metrics(
+                ".".join(fields),
+                [
+                    "\t".join(values)
+                ]
+            )
 
 
 if __name__ == "__main__":

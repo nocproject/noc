@@ -40,6 +40,7 @@ class PlatformMatch(EmbeddedDocument):
 class ActionCommands(Document):
     meta = {
         "collection": "noc.actioncommands",
+        "strict": False,
         "json_collection": "sa.actioncommands",
         "json_depends_on": [
             "sa.actions",

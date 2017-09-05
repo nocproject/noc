@@ -23,7 +23,7 @@ class ObjectFile(Document):
     """
     meta = {
         "collection": "noc.objectfiles",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["object"]
     }
 

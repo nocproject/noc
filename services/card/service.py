@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # Card service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from noc.core.service.ui import UIService
 from card import CardRequestHandler
 from search import SearchRequestHandler
 from noc.config import config
+
 
 class CardService(UIService):
     name = "card"
@@ -28,6 +29,7 @@ class CardService(UIService):
             ("^/api/card/search/$", SearchRequestHandler),
             ("^/api/card/view/(\S+)/(\S+)/$", CardRequestHandler)
         ]
+
 
 if __name__ == "__main__":
     CardService().start()

@@ -6,11 +6,12 @@
   ]
   method = "GET"
 
-  insecure_skip_verify = false
+  insecure_skip_verify = {% if nginx_self_signed_cerificate %}true{% else %}false{% endif %}
+
   response_timeout = "15s"
 
   [inputs.httpjson.headers]
-    Authorization = "Basic YWRtaW46YWRtaW4K" # admin:admin
+    Authorization = "Basic YWRtaW46YWRtaW4=" # admin:admin
 
 ##
 ## NOC users!

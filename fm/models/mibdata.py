@@ -14,7 +14,7 @@ from mib import MIB
 class MIBData(nosql.Document):
     meta = {
         "collection": "noc.mibdata",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["oid", "name", "mib", "aliases"]
     }
     mib = nosql.PlainReferenceField(MIB)

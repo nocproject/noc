@@ -2,26 +2,29 @@
 # ---------------------------------------------------------------------
 # Building object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, EmbeddedDocumentField,
                                 DictField, DateTimeField)
-from mongoengine import signals
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
-from entrance import Entrance
-from division import Division
+from .entrance import Entrance
+from .division import Division
+from noc.core.model.decorator import on_save
 
 
+@on_save
 class Building(Document):
     meta = {
         "collection": "noc.buildings",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["adm_division", "data", "sort_order"]
     }
     # Administrative division
@@ -59,14 +62,10 @@ class Building(Document):
     # Filled by primary address trigger
     sort_order = StringField()
 
-    @classmethod
-    def update_floors(cls, sender, document, **kwargs):
-        """
-        Update floors
-        """
-
     @property
     def primary_address(self):
+        from .address import Address
+
         # Try primary address first
         pa = Address.objects.filter(building=self.id, is_primary=True).first()
         if pa:
@@ -90,9 +89,3 @@ class Building(Document):
             ]
             e_home += homes_per_entrance
         self.save()
-
-# Setup signals
-signals.pre_save.connect(Building.update_floors, sender=Building)
-
-# Avoid circular references
-from address import Address

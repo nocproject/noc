@@ -31,7 +31,7 @@ from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
-from noc.core.influxdb.client import InfluxDBClient
+from noc.core.clickhouse.connect import connection
 
 tags_lock = threading.RLock()
 
@@ -252,30 +252,23 @@ class MapApplication(ExtApplication):
                 ]
             }]
         # Get link bandwidth
-        query = []
+        where = []
         for mo in o:
             for i in o[mo]:
-                query += [
-                    "SELECT object, interface, last(value) "
-                    "FROM \"Interface | Load | In\" "
-                    "WHERE object='%s' AND interface='%s' " % (
-                        q(mo.name), q(i.name)
-                    ),
-                    "SELECT object, interface, last(value) "
-                    "FROM \"Interface | Load | Out\" "
-                    "WHERE object='%s' AND interface='%s' " % (
-                        q(mo.name), q(i.name)
-                    )
-                ]
-        client = InfluxDBClient()
+                where += [(mo, i)]
+        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(mo.get_bi_id()), q(i.name))
+                             for mo, i in where])
+        query = ["select  managed_object, path[4], anyLast(load_in), anyLast(load_out) ",
+                 "from interface",
+                 "where %s" % where,
+                 "group by managed_object, path[4]"]
+        ch = connection()
         mo_in = defaultdict(float)
         mo_out = defaultdict(float)
-        for row in client.query(query):
-            if row["_name"] == "Interface | Load | In":
-                mo_in[row["object"]] += row["last"]
-            else:
-                mo_out[row["object"]] += row["last"]
-        mos = [mo["name"] for mo in r["objects"]]
+        for row in ch.execute(" ".join(query)):
+            mo_in[row[0]] += float(row[2])
+            mo_out[row[0]] += float(row[3])
+        mos = [str(ManagedObject.get_by_id(mo["id"]).get_bi_id()) for mo in r["objects"]]
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
@@ -423,20 +416,20 @@ class MapApplication(ExtApplication):
                             m["tags"]["interface"]
                         )
                     ] = m["id"]
-                    tag_id[m["tags"]["object"], m["tags"]["interface"]] = m["id"]
-                    mlst += [(m["metric"], m["tags"]["object"], m["tags"]["interface"])]
+                    object_bi = str(ManagedObject.objects.get(name=m["tags"]["object"]).get_bi_id())
+                    tag_id[object_bi, m["tags"]["interface"]] = m["id"]
+                    mlst += [(m["metric"], object_bi, m["tags"]["interface"])]
                 except KeyError:
                     pass
         # @todo: Get last values from cache
         if not mlst:
             return {}
-        query = "; ".join([
-            "SELECT object, interface, last(value) AS value "
-            "FROM \"%s\" "
-            "WHERE object = '%s' AND interface = '%s' " % (
-                q(m), q(o), q(i)
-            ) for m, o, i in mlst
-        ])
+        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(o), q(i)) for m, o, i in mlst])
+        s = ["select  managed_object, path[4], anyLast(load_in), anyLast(load_out) ",
+             "from interface",
+             "where %s" % where,
+             "group by managed_object, path[4]"]
+
         r = {}
         # Apply interface statuses
         for d in Interface._get_collection().find(
@@ -456,17 +449,16 @@ class MapApplication(ExtApplication):
                 "oper_status": d.get("oper_status", True)
             }
         # Apply metrics
-        client = InfluxDBClient()
-        try:
-            for rq in client.query(query):
-                pid = tag_id.get((rq["object"], rq["interface"]))
-                if not pid:
-                    continue
-                if pid not in r:
-                    r[pid] = {}
-                r[pid][rq["_name"]] = rq["value"]
-        except ValueError as e:
-            self.logger.error("[influxdb] Query error: %s" % e)
+        ch = connection()
+        # print " ".join(s)
+        for rq in ch.execute(" ".join(s)):
+            pid = tag_id.get((rq[0], rq[1]))
+            if not pid:
+                continue
+            if pid not in r:
+                r[pid] = {}
+            r[pid]["Interface | Load | In"] = rq[2]
+            r[pid]["Interface | Load | Out"] = rq[3]
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],

@@ -17,7 +17,7 @@ from noc.lib.nosql import ForeignKeyField
 
 class PrefixListCachePrefix(EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
 
     prefix = StringField(required=True)
@@ -35,7 +35,7 @@ class PrefixListCache(Document):
     """
     meta = {
         "collection": "noc.prefix_list_cache",
-        "allow_inheritance": False
+        "strict": False
     }
 
     peering_point = ForeignKeyField(PeeringPoint)

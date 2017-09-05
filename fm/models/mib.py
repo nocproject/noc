@@ -34,7 +34,7 @@ rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 class MIB(nosql.Document):
     meta = {
         "collection": "noc.mibs",
-        "allow_inheritance": False
+        "strict": False
     }
     name = nosql.StringField(required=True, unique=True)
     description = nosql.StringField(required=False)

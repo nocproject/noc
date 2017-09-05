@@ -12,7 +12,7 @@ import noc.lib.nosql as nosql
 
 class AlarmClassVar(nosql.EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     name = nosql.StringField(required=True)
     description = nosql.StringField(required=False)

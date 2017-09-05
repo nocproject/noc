@@ -52,7 +52,8 @@ class SegmentTopologySettings(EmbeddedDocument):
 ])
 class NetworkSegmentProfile(Document):
     meta = {
-        "collection": "noc.networksegmentprofiles"
+        "collection": "noc.networksegmentprofiles",
+        "strict": False
     }
 
     name = StringField(unique=True)

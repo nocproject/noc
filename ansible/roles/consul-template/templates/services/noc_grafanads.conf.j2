@@ -1,3 +1,4 @@
+# {{ ansible_managed }}
 template {
   source = "{{ consul_template_templates_dir }}/noc_grafanads.ctmpl"
   destination = "{{ telegraf_confd_path }}/noc-grafanads.conf"

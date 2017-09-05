@@ -13,7 +13,7 @@ from noc.lib.nosql import (Document, StringField, UUIDField)
 class CollectionCache(Document):
     meta = {
         "collection": "noc.collectioncache",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["collection"]
     }
 

@@ -10,7 +10,8 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.inv.networksegment.TreeCombo",
-        "NOC.sa.administrativedomain.TreeCombo"
+        "NOC.sa.administrativedomain.TreeCombo",
+        "NOC.sa.managedobjectselector.LookupField"
     ],
 
     initComponent: function() {
@@ -39,6 +40,8 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["phys_interface_count", __("Physical Iface Count"), false],
                 ["link_count", __("Link Count"), false],
                 ["interface_type_count", __("Interface count by type"), false],
+                ["object_caps", __("Object capabilities"), false],
+                ["object_tags", __("Object Tags"), false]
             ]
         });
 
@@ -91,6 +94,7 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
 
         me.adm_domain = null;
         me.segment = null;
+        me.selector = null;
 
         me.formPanel = Ext.create("Ext.form.Panel", {
             autoScroll: true,
@@ -126,6 +130,22 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                         scope: me,
                         select: function(combo, record) {
                             me.adm_domain = record.get("id")
+                        }
+                    }
+                },
+                {
+                    name: "Selector",
+                    xtype: "sa.managedobjectselector.LookupField",
+                    fieldLabel: __("By Selector"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
+                    allowBlank: true,
+                    listeners: {
+                        scope: me,
+                        select: function(combo, record) {
+                            me.selector = record.get("id")
                         }
                     }
                 },
@@ -175,6 +195,10 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
 
         if(me.segment) {
             url.push("&segment=" + me.segment);
+        }
+
+        if(me.selector) {
+            url.push("&selector=" + me.selector);
         }
 
         me.columnsStore.each(function(record) {

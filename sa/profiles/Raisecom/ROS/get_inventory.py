@@ -41,7 +41,7 @@ class Script(BaseScript):
                                     ])
             r += [{
                 "type": "XCVR",
-                "numper": num,
+                "number": num,
                 "vendor": d["Vendor Name"].strip(),
                 "part_no": d["Vendor Part Number"].strip(),
                 "serial": d["Vendor Serial Number"].strip(),

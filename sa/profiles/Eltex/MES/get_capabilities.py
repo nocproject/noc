@@ -18,6 +18,9 @@ class Script(BaseScript):
     name = "Eltex.MES.get_capabilities"
 
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
+    rx_lacp_en = re.compile(r"\s+Partner"
+                            r"[\S\s]+?"
+                            r"\s+Oper Key:\s+1", re.MULTILINE)
     rx_gvrp_en = re.compile(
         r"GVRP Feature is currently Enabled on the device?")
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
@@ -29,6 +32,14 @@ class Script(BaseScript):
         """
         cmd = self.cli("show lldp configuration", ignore_errors=True)
         return self.rx_lldp_en.search(cmd) is not None
+
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check box has lacp enabled on Eltex
+        """
+        cmd = self.cli("show lacp Port-Channel", ignore_errors=True)
+        return self.rx_lacp_en.search(cmd) is not None
 
     @false_on_cli_error
     def has_stp(self):
@@ -61,3 +72,6 @@ class Script(BaseScript):
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
+        if self.has_lacp():
+            caps["Network | LACP"] = True
+

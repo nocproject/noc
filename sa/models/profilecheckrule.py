@@ -24,7 +24,7 @@ from noc.lib.text import quote_safe_path
 class ProfileCheckRule(Document):
     meta = {
         "collection": "noc.profilecheckrules",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "sa.profilecheckrules",
         "json_depends_on": [
             "sa.profile"

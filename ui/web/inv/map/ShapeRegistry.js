@@ -10,19 +10,19 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
     singleton: true,
     shapes: {},
 
-    getShape: function (name) {
+    getShape: function(name) {
         var me = this,
             sc, sv,
             n = name.replace("/", ".").replace(" ", "_"),
             typeName = "noc." + n,
-            registerClass = function (name, cls) {
+            registerClass = function(name, cls) {
                 var sr = joint.shapes,
                     tns = name.split(".").reverse(),
                     v;
-                for (;;) {
+                for(; ;) {
                     v = tns.pop();
-                    if (tns.length) {
-                        if (sr[v] === undefined) {
+                    if(tns.length) {
+                        if(sr[v] === undefined) {
                             sr[v] = {};
                         }
                         sr = sr[v];
@@ -34,14 +34,13 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
             };
 
         sc = me.shapes[name];
-        if (sc) {
+        if(sc) {
             return sc;
         }
         // Shape class
         sc = joint.shapes.basic.Generic.extend({
-            markup: '<g class="rotatable"><g class="scalable"><image/></g><text/></g>',
+            markup: '<g class="scalable"><image/></g><g class="rotatable"><text filter="url(#solid)"/></g>',
             defaults: joint.util.deepSupplement({
-                //type: "basic." + n,
                 type: typeName,
                 size: {
                     width: 50,
@@ -57,13 +56,13 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                         text: 'New Object',
                         fill: '#000000',
                         ref: 'image',
-                        'ref-x': .5,
-                        'text-anchor': 'middle',
-                        'ref-y': .99
+                        'ref-x': '50%',
+                        'ref-dy': 3,
+                        'text-anchor': 'middle'
                     }
                 }
             }, joint.shapes.basic.Generic.prototype.defaults),
-            setFilter: function (filter) {
+            setFilter: function(filter) {
                 var me = this;
                 me.attr("image/filter", "url(#" + filter + ")");
             }

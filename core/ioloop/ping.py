@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## PingSocket implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  PingSocket implementation
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2017 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import socket
-from errno import *
+from errno import EINTR, EAGAIN
 import struct
 import os
 import itertools
 import functools
 import errno
 import logging
-## Third-party modules
+# Third-party modules
 from tornado.ioloop import IOLoop
 import tornado.gen
 import tornado.concurrent
 from tornado.util import errno_from_exception
-## NOC modules
+# NOC modules
 from noc.speedup.ip import build_icmp_echo_request
 from noc.core.perf import metrics
 from noc.config import config
@@ -41,6 +41,8 @@ _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 IPv4_STRUCT = struct.Struct("!BBHHHBBHII")
 ICMP_STRUCT = struct.Struct("!BBHHH")
 TS_STRUCT = struct.Struct("!d")
+
+IGNORABLE_ERRORS = (EINTR, EAGAIN)
 
 
 class PingSocket(object):
@@ -130,18 +132,26 @@ class PingSocket(object):
     def on_read(self, fd, events):
         try:
             msg, addr = self.socket.recvfrom(MAX_RECV)
-        except socket.error, why:
-            if why[0] in (EINTR, EAGAIN):
+        except socket.error as e:
+            if e[0] in IGNORABLE_ERRORS:
+                metrics["ignorable_ping_errors"] += 1
                 return  # Exit silently
-            raise socket.error, why
+            metrics["ping_recvfrom_errors"] += 1
+            raise socket.error, e
         status, address, req_id, seq, rtt = self.parse_reply(msg, addr[0])
         if status is None:
+            metrics["ping_unknown_icmp_packets"] += 1
             return
         logger.debug("[%s] Reply (req=%s, seq=%s, status=%s, rtt=%s)",
                      address, req_id, seq, status, rtt)
         sid = (address, req_id, seq)
         if sid in self.sessions:
             f = self.sessions.pop(sid)
+            # Check for negative RTT
+            if rtt < 0:
+                metrics["ping_time_stepbacks"] += 1
+                logger.info("[%s] Negative RTT detected (%s). Possible timer stepback. Check system time synchronization", rtt)
+                rtt = None
             # Resolve future
             f.set_result(rtt)
         else:
@@ -243,7 +253,7 @@ class Ping4Socket(PingSocket):
             return
         icmp_header = msg[20:28]
         (icmp_type, icmp_code, icmp_checksum,
-        req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
+            req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
         if icmp_type == ICMPv4_ECHOREPLY:
             rtt = None
             if len(msg) > 36:
@@ -284,8 +294,8 @@ class Ping6Socket(PingSocket):
         # (ver_tc_flow, plen, hdr, ttl) = struct.unpack("!IHBB", msg[:8])
         # src_ip = msg[64: 192]
         # @todo: Access IPv6 header
-        src_ip = None
-        ttl = None
+        # src_ip = None
+        # ttl = None
         # icmp_header = msg[40:48]
         icmp_header = msg[:8]
         (icmp_type, icmp_code, icmp_checksum,

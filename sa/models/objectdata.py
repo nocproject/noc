@@ -82,7 +82,7 @@ class ObjectData(Document):
                 "$in": o
             }
         }, {"_id": 1, "uplinks": 1}):
-            uplinks[d["_id"]] = d["uplinks"]
+            uplinks[d["_id"]] = d.get("uplinks", [])
         return uplinks
 
     @classmethod

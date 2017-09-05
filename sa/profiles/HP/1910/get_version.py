@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # HP.1910.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -55,8 +55,9 @@ class Script(BaseScript):
                 match = self.rx_platform_HP_snmp.search(platform)
                 if not match:
                     match = self.rx_platform_3Com.search(platform)
-                platform = match.group("platform")
-                return {
+                if match:
+                    platform = match.group("platform")
+                    return {
                         "vendor": vendor,
                         "platform": platform.replace(' ', '_'),
                         "version": version,

@@ -44,7 +44,7 @@ class Object(Document):
     """
     meta = {
         "collection": "noc.objects",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "data",
             "container",

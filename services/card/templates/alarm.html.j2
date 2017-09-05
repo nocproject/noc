@@ -74,6 +74,19 @@
         </tr>
         {% endif %}
     {% endif %}
+    {% if escalation_ctx or escalation_close_ctx %}
+    <tr>
+        <th scope="row">{{ _("Escalation trace") }}</tr>
+        <tr>
+            {% if escalation_ctx %}
+            <a href="/api/card/view/span/{{ escalation_ctx }}/">{{ _("Escalation trace") }}</a>
+            {% endif %}
+            {% if escalation_close_ctx %}
+            <a href="/api/card/view/span/{{ escalation_close_ctx }}/">{{ _("Deescalation trace") }}</a>
+            {% endif %}
+        <tr>
+    </tr>
+    {% endif %}
     <tr>
         <th scope="row">{{ _("Body") }}</th>
         <td><pre>{{ body }}</pre></td>
@@ -101,6 +114,7 @@
                         <th>{{ _("Services") }}</th>
                         <th>{{ _("Duration") }}</th>
                         <th>{{ _("Object") }}</th>
+                        <th>{{ _("IP") }}</th>
                         <th>{{ _("Class") }}</th>
                         <th>{{ _("Subject") }}</th>
                     </tr>
@@ -117,6 +131,7 @@
                         </td>
                         <td>{{ a.display_duration }}</td>
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object | managed_object_title }}</a></td>
+                        <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.address }}</a></td>
                         <td>{{ a.alarm_class.name }}</td>
                         <td>{{ a.subject }}</td>
                     </th>

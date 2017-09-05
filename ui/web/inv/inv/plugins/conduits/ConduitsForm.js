@@ -12,11 +12,8 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     ],
     title: __("Conduits"),
     closable: false,
-    layout: {
-        type: "hbox",
-        align: "stretch"
-    },
-    autoScroll: true,
+    layout: "border",
+    scrollable: true,
     app: null,
 
     initComponent: function() {
@@ -76,8 +73,9 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         });
 
         me.ductsGrid = Ext.create("Ext.grid.Panel", {
+            region: "east",
             store: me.ductsStore,
-            width: 400,
+            width: '50%',
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
@@ -136,7 +134,10 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         });
         //
         me.conduitsLayout = Ext.create("NOC.inv.inv.plugins.conduits.ConduitsLayoutPanel", {
-            app: me
+            app: me,
+            region: "east",
+            scrollable: true,
+            width: "50%"
         });
         //
         Ext.apply(me, {

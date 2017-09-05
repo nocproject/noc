@@ -10,8 +10,6 @@
 import os
 import datetime
 import gzip
-# Third-party modules
-import nsq
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
@@ -19,6 +17,7 @@ from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.clickhouse.dictionary import Dictionary
 from noc.config import config
+from noc.core.service.shard import Sharder
 
 
 class Command(BaseCommand):
@@ -62,6 +61,8 @@ class Command(BaseCommand):
         clean_parser = subparsers.add_parser("clean")
         # load command
         load_parser = subparsers.add_parser("load")
+        # extract dicts
+        extract_dict = subparsers.add_parser("dictionaries")
 
     def handle(self, cmd, data_prefix, dict_xml_prefix, dict_data_prefix, *args, **options):
         self.DATA_PREFIX = data_prefix
@@ -108,6 +109,8 @@ class Command(BaseCommand):
                 e.extract()
                 self.set_last_extract(ecls.name, e.last_ts or end)
                 start += window
+
+    def handle_dictionaries(self, *args, **options):
         # Extract dictionaries
         for dcls in Dictionary.iter_cls():
             # Temporary data
@@ -138,49 +141,23 @@ class Command(BaseCommand):
             e.clean()
 
     def handle_load(self):
-        def publish():
-            def finish_pub(conn, data):
-                if isinstance(data, nsq.Error):
-                    self.stdout.write("NSQ pub error: %s\n" % data)
-                    self.stdout.write("Failed to send file: %s\n" % fn)
-                else:
-                    self.stdout.write("Removing %s\n" % fn)
-                    os.unlink(fn)
-                    os.unlink(meta_path)
-                writer.io_loop.add_callback(publish)
-
-            if not files:
-                # Done
-                writer.io_loop.stop()
-                return
-            fn = files.pop(0)
-            meta_path = fn[:-7] + ".meta"
-            with open(meta_path) as ff:
-                tn = ff.read()
-            self.stdout.write("Sending %s\n" % fn)
-            with gzip.open(fn, "rb") as ff:
-                data = ff.read()
-            msg = "%s\n%s" % (tn, data)
-            writer.pub(self.TOPIC, msg, callback=finish_pub)
-
-        def on_connect():
-            if writer.conns:
-                # Connected
-                writer.io_loop.add_callback(publish)
-            else:
-                self.stdout.write("Waiting for NSQ connection\n")
-                writer.io_loop.call_later(self.NSQ_CONNECT_TIMEOUT,
-                                          on_connect)
-
-        files = []
-        for f in sorted(os.listdir(self.DATA_PREFIX)):
-            if not f.endswith(".tsv.gz"):
+        for fn in sorted(os.listdir(self.DATA_PREFIX)):
+            if not fn.endswith(".tsv.gz"):
                 continue
-            files += [os.path.join(self.DATA_PREFIX, f)]
-        # Stream to NSQ
-        writer = nsq.Writer([str(a) for a in config.nsqd.addresses])
-        writer.io_loop.add_callback(on_connect)
-        nsq.run()
+            path = os.path.join(self.DATA_PREFIX, fn)
+            meta_path = path[:-7] + ".meta"
+            # Read fields
+            with open(meta_path) as f:
+                fields = f.read()
+            # Read data
+            with gzip.open(path, "rb") as f:
+                data = f.read().splitlines()
+            sharder = Sharder(fields)
+            sharder.feed(data)
+            sharder.pub()
+            os.unlink(path)
+            os.unlink(meta_path)
+
 
 if __name__ == "__main__":
     Command().run()

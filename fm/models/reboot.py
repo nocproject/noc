@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Uptime report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 class Reboot(Document):
     meta = {
         "collection": "noc.fm.reboots",
+        "strict": False,
         "indexes": ["ts", "object", ("object", "ts")]
     }
 

@@ -120,10 +120,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             HouseKeepingCheck(self).run()
 
     def can_run(self):
-        return (
-            self.object.is_managed and
-            self.object.object_profile.enable_box_discovery
-        )
+        return (super(BoxDiscoveryJob, self).can_run() and
+                self.object.object_profile.enable_box_discovery)
 
     def get_interval(self):
         if self.object:

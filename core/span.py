@@ -12,6 +12,8 @@ import time
 import random
 import os
 import struct
+# Third-party modules
+import tornado.gen
 # NOC modules
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
@@ -29,6 +31,7 @@ DEFAULT_CLIENT = "NOC"
 DEFAULT_SERVER = "NOC"
 DEFAULT_SERVICE = "unknown"
 DEFAULT_SAMPLE_RATE = 1
+PARENT_SAMPLE = -1
 DEFAULT_ERROR_TEXT = ""
 DEFAULT_LABEL = ""
 DEFAULT_ID = 0
@@ -37,16 +40,19 @@ US = 1000000.0
 
 class Span(object):
     def __init__(self, client=DEFAULT_CLIENT, server=DEFAULT_SERVER,
-                 service=DEFAULT_SERVICE, sample=DEFAULT_SAMPLE_RATE,
-                 in_label=DEFAULT_LABEL, parent=DEFAULT_ID):
+                 service=DEFAULT_SERVICE, sample=PARENT_SAMPLE,
+                 in_label=DEFAULT_LABEL, parent=DEFAULT_ID,
+                 context=DEFAULT_ID):
         self.client = client
         self.server = server
         self.service = service
         self.sample = sample
         if not sample:
             self.is_sampled = False
-        if sample == DEFAULT_SAMPLE_RATE:
+        elif sample == DEFAULT_SAMPLE_RATE:
             self.is_sampled = True
+        elif sample == PARENT_SAMPLE:
+            self.is_sampled = hasattr(tls, "span_context")
         else:
             self.is_sampled = random.randint(0, sample - 1) == 0
         self.start = None
@@ -56,15 +62,16 @@ class Span(object):
         self.in_label = in_label
         self.out_label = DEFAULT_LABEL
         self.parent = parent
+        self.context = context
         self.span_id = DEFAULT_ID
         self.span_context = DEFAULT_ID
         self.span_parent = DEFAULT_ID
 
     def __enter__(self):
         if not self.is_sampled:
-            return
+            return self
         # Generate span ID
-        self.span_id = struct.unpack("!Q", os.urandom(8))[0]
+        self.span_id = struct.unpack("!Q", os.urandom(8))[0] & 0x7fffffffffffffff
         # Get span context
         try:
             self.span_context = tls.span_context
@@ -76,7 +83,7 @@ class Span(object):
             except AttributeError:
                 pass
         except AttributeError:
-            self.span_context = self.span_id
+            self.span_context = self.context if self.context else self.span_id
             tls.span_context = self.span_context
         tls.span_parent = self.span_id
         self.start = time.time()
@@ -86,7 +93,7 @@ class Span(object):
         global spans
         if not self.is_sampled:
             return
-        if exc_type:
+        if exc_type and not self.error_text and not self.is_ignorable_error(exc_type):
             self.error_code = ERR_UNKNOWN
             self.error_text = str(exc_val).strip("\t").replace("\t", " ")
         self.duration = int((time.time() - self.start) * US)
@@ -104,8 +111,8 @@ class Span(object):
             self.error_code,
             self.error_text,
             self.sample,
-            self.in_label,
-            self.out_label
+            str(self.in_label).encode("string_escape"),
+            str(self.out_label).encode("string_escape")
         ])
         with span_lock:
             spans += [row]
@@ -115,6 +122,10 @@ class Span(object):
         else:
             tls.span_parent = self.span_parent
         metrics["spans"] += 1
+
+    @staticmethod
+    def is_ignorable_error(exc_type):
+        return exc_type == tornado.gen.Return
 
 
 def get_spans():
@@ -128,3 +139,12 @@ def get_spans():
         r = spans
         spans = []
     return r
+
+
+def get_current_span():
+    """
+    Get current span if active
+
+    :return: Current context, span or None, None
+    """
+    return getattr(tls, "span_context", None), getattr(tls, "span_parent", None)

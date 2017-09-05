@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6
+from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
 from noc.core.mac import MAC
 
@@ -32,28 +32,24 @@ class Script(BaseScript):
             chassis_id = i[1]
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
                 chassis_id_subtype = 5
+            elif is_mac(chassis_id):
+                chassis_id_subtype = 4
             else:
-                try:
-                    MACAddressParameter().clean(chassis_id)
-                    chassis_id_subtype = 4
-                except ValueError:
-                    chassis_id_subtype = 7
+                chassis_id_subtype = 7
             port_id = i[2]
             if is_ipv4(port_id) or is_ipv6(port_id):
                 port_id_subtype = 4
+            elif is_mac(port_id):
+                port_id_subtype = 3
             else:
-                try:
-                    MACAddressParameter().clean(port_id)
-                    port_id_subtype = 3
-                except ValueError:
-                    port_id_subtype = 7
+                port_id_subtype = 7
             caps = 0
             for c in i[4].split(","):
                 c = c.strip()
                 if c:
                     caps |= {
                         "O": 1, "P": 2, "B": 4,
-                        "W": 8, "R": 16, "T": 32,
+                        "W": 8, "R": 16, "r": 16, "T": 32,
                         "C": 64, "S": 128
                     }[c]
             """

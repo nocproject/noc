@@ -23,7 +23,8 @@ class RuleItem(EmbeddedDocument):
 
 class ValidationPolicy(Document):
     meta = {
-        "collection": "noc.validationpolicy"
+        "collection": "noc.validationpolicy",
+        "strict": False
     }
 
     name = StringField(unique=True)

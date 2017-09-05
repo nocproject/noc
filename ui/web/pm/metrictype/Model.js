@@ -32,11 +32,20 @@ Ext.define("NOC.pm.metrictype.Model", {
             type: "string"
         },
         {
+            name: "scope__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "measure",
             type: "string"
         },
         {
-            name: "vector_tag",
+            name: "field_name",
+            type: "string"
+        },
+        {
+            name: "field_type",
             type: "string"
         },
         {

@@ -16,7 +16,7 @@ from noc.lib.prettyjson import to_json
 class SyntaxAlias(Document):
     meta = {
         "collection": "noc.syntaxaliases",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.syntaxaliases"
     }
     name = StringField(unique=True, required=True)

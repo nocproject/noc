@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class DocCategory(Document):
     meta = {
         "collection": "noc.doccategories",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["type"]
     }
 

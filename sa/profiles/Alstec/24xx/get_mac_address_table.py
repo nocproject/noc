@@ -19,6 +19,10 @@ class Script(BaseScript):
     name = "Alstec.24xx.get_mac_address_table"
     interface = IGetMACAddressTable
 
+    rx_all_v = re.compile(
+        r"^(?P<vlan_id>\S\S:\S\S):(?P<mac>\S+)\s+(?P<interface>\S+)\s+\d+\s+"
+        r"(?P<type>\S+)\s*\n", re.MULTILINE)
+
     rx_all = re.compile(
         r"^\s*(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<type>\S+)\s*\n",
@@ -40,7 +44,11 @@ class Script(BaseScript):
             cmd += " interface %s" % interface
             rx_line = self.rx_iface
         r = []
-        for match in rx_line.finditer(self.cli(cmd)):
+        v = self.cli(cmd)
+        if "IfIndex" in v:
+            # Old format table
+            rx_line = self.rx_all_v
+        for match in rx_line.finditer(v):
             if match.group("type") == "Learned":
                 mtype = "D"
             else:
@@ -52,8 +60,16 @@ class Script(BaseScript):
                 _iface = interface
             else:
                 _iface = match.group("interface")
+            if vlan is not None:
+                _vlan = vlan
+            else:
+                if len(match.group("vlan_id")) == 5:
+                    _vlan = int((match.group("vlan_id")).replace(":", ""), 16)
+                else:
+                    _vlan = int(match.group("vlan_id"))
+
             r.append({
-                "vlan_id": match.group("vlan_id"),
+                "vlan_id": _vlan,
                 "mac": match.group("mac"),
                 "interfaces": [_iface],
                 "type": mtype

@@ -17,7 +17,7 @@ from layer import Layer
 class FontSet(nosql.Document):
     meta = {
         "collection": "noc.gis.fontsets",
-        "allow_inheritance": False
+        "strict": False
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
@@ -30,7 +30,7 @@ class FontSet(nosql.Document):
 
 class Rule(nosql.EmbeddedDocument):
     meta = {
-        "allow_inheritance": False
+        "strict": False
     }
     minscale_zoom = nosql.IntField(required=False)
     maxscale_zoom = nosql.IntField(required=False)
@@ -52,7 +52,7 @@ class Rule(nosql.EmbeddedDocument):
 class Style(nosql.Document):
     meta = {
         "collection": "noc.gis.styles",
-        "allow_inheritance": False
+        "strict": False
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
@@ -65,7 +65,7 @@ class Style(nosql.Document):
 class _Layer(nosql.Document):
     meta = {
         "collection": "noc.gis.layers",
-        "allow_inheritance": False
+        "strict": False
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
@@ -81,7 +81,7 @@ class _Layer(nosql.Document):
 class Map(nosql.Document):
     meta = {
         "collection": "noc.gis.maps",
-        "allow_inheritance": False
+        "strict": False
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
@@ -108,7 +108,7 @@ class Map(nosql.Document):
 
 class Area(nosql.Document):
     meta = {
-        "allow_inheritance": False,
+        "strict": False,
         "collection": "noc.gis.areas"
     }
 
@@ -128,7 +128,7 @@ class Area(nosql.Document):
 class TileCache(nosql.Document):
     meta = {
         "collection": "noc.gis.tilecache",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [("map", "zoom", "x", "y")]
     }
 
@@ -147,7 +147,7 @@ class TileCache(nosql.Document):
 class Overlay(nosql.Document):
     meta = {
         "collection": "noc.gis.overlays",
-        "allow_inheritance": False
+        "strict": False
     }
 
     name = nosql.StringField(required=True)

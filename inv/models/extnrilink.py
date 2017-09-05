@@ -20,7 +20,7 @@ class ExtNRILink(Document):
     """
     meta = {
         "collection": "noc.extnrilinks",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["src_mo", "dst_mo", "link"]
     }
     # Source managed object (NOC's ManagedObject.id)

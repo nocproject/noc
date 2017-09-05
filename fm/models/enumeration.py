@@ -17,7 +17,7 @@ from noc.lib.prettyjson import to_json
 class Enumeration(Document):
     meta = {
         "collection": "noc.enumerations",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.enumerations"
     }
 

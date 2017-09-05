@@ -20,7 +20,7 @@ id_lock = Lock()
 class ObjectPath(Document):
     meta = {
         "collection": "noc.cache.objectpaths",
-        "allow_inheritance": False,
+        "strict": False,
     }
     # Object id
     object = IntField(primary_key=True)

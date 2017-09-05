@@ -25,6 +25,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 from noc.config import config
+from noc.core.span import get_current_span
 
 ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 
@@ -32,7 +33,7 @@ ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": [
             "timestamp", "root", "-severity",
             ("alarm_class", "managed_object"),
@@ -79,6 +80,8 @@ class ActiveAlarm(nosql.Document):
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
     escalation_error = nosql.StringField(required=False)
+    # span context
+    escalation_ctx = nosql.LongField(required=False)
     # Close tt when alarm cleared
     close_tt = nosql.BooleanField(default=False)
     # Do not clear alarm until *wait_tt* is closed
@@ -230,6 +233,7 @@ class ActiveAlarm(nosql.Document):
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
             escalation_error=self.escalation_error,
+            escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             closing_event=self.closing_event,
             discriminator=self.discriminator,
@@ -514,6 +518,17 @@ class ActiveAlarm(nosql.Document):
                 "escalation_error": error
             }}
         )
+
+    def set_escalation_context(self):
+        current_context, current_span = get_current_span()
+        if current_context or self.escalation_ctx:
+            self.escalation_ctx = current_context
+            self._get_collection().update(
+                {"_id": self.id},
+                {"$set": {
+                    "escalation_ctx": current_context
+                }}
+            )
 
     def set_clear_notification(self, notification_group, template):
         self.clear_notification_group = notification_group

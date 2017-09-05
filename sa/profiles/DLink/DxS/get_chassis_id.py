@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.lib.text import parse_table
 import re
 
 
@@ -28,6 +29,7 @@ class Script(BaseScript):
     def execute(self):
         match = self.re_search(self.rx_ver, self.scripts.get_switch())
         mac = match.group("id")
+        macs = []
         try:
             v = self.cli("show fdb static", cached=True)
             macs = self.rx_line.findall(v)
@@ -39,13 +41,28 @@ class Script(BaseScript):
                         break
                 if not found:
                     macs += [mac]
-                macs.sort()
-                return [{
-                    "first_chassis_mac": f,
-                    "last_chassis_mac": t
-                } for f, t in self.macs_to_ranges(macs)]
         except:
             pass
+        try:
+            v = self.cli("show stack_information", cached=True)
+            for i in parse_table(v):
+                if not i[5]:
+                    continue
+                found = False
+                for m in macs:
+                    if m == i[5]:
+                        found = True
+                        break
+                if not found:
+                    macs += [i[5]]
+        except:
+            pass
+        if macs:
+            macs.sort()
+            return [{
+                "first_chassis_mac": f,
+                "last_chassis_mac": t
+            } for f, t in self.macs_to_ranges(macs)]
 
         return {
             "first_chassis_mac": mac,

@@ -35,6 +35,7 @@ logger = logging.getLogger(__name__)
 class AlarmDiagnosticConfig(Document):
     meta = {
         "collection": "noc.alarmdiagnosticconfig",
+        "strict": False,
         "indexes": [
             "alarm_class"
         ]

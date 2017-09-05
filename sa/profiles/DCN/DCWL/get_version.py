@@ -19,7 +19,7 @@ class Script(BaseScript):
     name = "DCN.DCWL.get_version"
     cache = True
     interface = IGetVersion
-    
+
     def execute(self):
         r = []
         c = self.cli("get device-info", cached=True)
@@ -29,13 +29,13 @@ class Script(BaseScript):
                 platform = r[1].strip()
             if r[0] == "version-id":
                 version = r[1].strip()
-        d = self.cli("get system detail", cached=True)  
-        for line in d.splitlines():     
+        d = self.cli("get system detail", cached=True)
+        for line in d.splitlines():
             r = line.split(' ', 1)
             if r[0] == "version":
                 hwversion = r[1].strip()
             if r[0] == "serial-number":
-                sn = r[1].strip()   
+                sn = r[1].strip()
         return {
             "vendor": "DCN",
             "platform": platform,

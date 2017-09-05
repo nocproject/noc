@@ -15,7 +15,7 @@ from noc.core.translation import ugettext as _
 class Reportreportduplicatedfqdns(SimpleReport):
     title = _("Duplicated FQDNs")
 
-    def get_data(self, **kwargs):
+    def get_data(self, request, **kwargs):
         vrf_id = VRF.get_global().id
         return self.from_query(title=self.title,
                                columns=["FQDN", "AFI"," N", "Addresses"],

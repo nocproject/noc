@@ -14,7 +14,7 @@ from mongoengine.fields import StringField, DateTimeField
 class NewAddressDiscoveryLog(Document):
     meta = {
         "collection": "noc.log.discovery.address.new",
-        "allow_inheritance": False,
+        "strict": False,
         "indexes": ["-timestamp"]
     }
     timestamp = DateTimeField()

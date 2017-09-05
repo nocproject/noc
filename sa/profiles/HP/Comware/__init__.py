@@ -6,8 +6,7 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 import re
 from noc.core.profile.base import BaseProfile
 
@@ -26,3 +25,9 @@ class Profile(BaseProfile):
         re.compile(r"\x1b\[42D\s+\x1b\[42D"),
         "\r"
     ]
+
+    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+
+    def clean_spaces(self, config):
+        config = self.spaces_rx.sub("", config)
+        return config

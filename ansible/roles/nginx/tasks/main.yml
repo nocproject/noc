@@ -69,8 +69,8 @@
 
 - name: copy nginx consul templates
   template:
-    src: nginx.json
-    dest: "{{consul_configd_path}}/"
+    src: nginx.json.j2
+    dest: "{{consul_configd_path}}/nginx.json"
   notify: reload consul
   tags:
     - consul

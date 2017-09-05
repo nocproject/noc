@@ -19,7 +19,8 @@ from noc.main.models.style import Style
 
 class SubscriberProfile(Document):
     meta = {
-        "collection": "noc.subscriberprofiles"
+        "collection": "noc.subscriberprofiles",
+        "strict": False
     }
 
     name = StringField(unique=True)

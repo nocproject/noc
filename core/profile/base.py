@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SA Profile Base
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# SA Profile Base
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
@@ -39,6 +39,9 @@ class BaseProfile(object):
     # Regulal expression to catch password prompt
     # (Telnet/SSH sessions)
     pattern_password = "[Pp]ass[Ww]ord: ?"
+    # Regular expression to catch implicit super password prompt
+    # (Telnet/SSH sessions)
+    pattern_super_password = None
     # Regular expression to catch command prompt
     # (CLI Sessions)
     pattern_prompt = r"^\S*[>#]"

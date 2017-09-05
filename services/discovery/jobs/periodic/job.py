@@ -48,15 +48,14 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     def init_context(self):
         if "counters" not in self.context:
             self.context["counters"] = {}
-        if "metrics_window" not in self.context:
+        if "metric_windows" not in self.context:
             self.context["metric_windows"] = {}
 
     def can_run(self):
-        return (
-            self.object.is_managed and
-            self.object.object_profile.enable_periodic_discovery and
-            self.object.object_profile.periodic_discovery_interval
-        )
+        return (super(PeriodicDiscoveryJob, self).can_run() and
+                self.object.object_profile.enable_periodic_discovery and
+                self.object.object_profile.periodic_discovery_interval
+                )
 
     def get_interval(self):
         if self.object:

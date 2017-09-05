@@ -69,6 +69,58 @@ class MAC(Model):
     vlan = UInt16Field(description=_("VLAN"))
     is_uni = UInt8Field(description=_("Is UNI"))
 
+    def mac_filter(self, query, offset=0, limit=400, convert_mac=False):
+        """
+        Filter interface to MACDB
+        :param query: Query to MACDB
+        :param query: dict
+        :param offset: Offset output data
+        :type offset: int
+        :param limit: Offset output data
+        :type limit: limit data count
+        :param convert_mac: Conver MAC from int to str represent
+        :return: list query result from MACDB
+        select max(ts), managed_object, interface, vlan from mac
+        where like(MACNumToString(mac), 'A0:AB:1B%') group by managed_object, interface, vlan;
+        """
+        query_field = ["mac", "managed_object"]
+        if not query:
+            return
+        f_filter = {}
+        for k in query:
+            field = k
+            q = "eq"
+            if "__" in field:
+                field, q = k.split("__")
+            if field not in query_field:
+                # Not implemented
+                continue
+            if q == "like" and not convert_mac:
+                field = "MACNumToString(mac)"
+            # @todo convert mac all
+            f_filter["$%s" % q] = [{"$field": field}, query[k]]
+        if not f_filter:
+            return
+        print f_filter
+        fields = [{"expr": "max(ts)", "alias": "timestamp", "order": 0},
+                  {"expr": "mac", "alias": "mac", "group": 1},
+                  {"expr": "vlan", "alias": "vlan", "group": 2},
+                  {"expr": "managed_object", "alias": "managed_object", "group": 3},
+                  {"expr": "interface", "alias": "interface", "group": 4}
+                  ]
+        if convert_mac:
+            fields[1]["expr"] = "MACNumToString(mac)"
+        # @todo paging (offset and limit)
+        # @todo check in list
+        ch_query = {"fields": fields, "filter": f_filter}
+        ch_query["limit"] = limit
+        if offset:
+            ch_query["offset"] = offset
+        res = self.query(ch_query)
+        # print res
+        for r in res["result"]:
+            yield dict(zip(res["fields"], r))
+
     def get_neighbors_by_mac(self, macs, mos=None):
         """
         Return list BI ID MO by interfaces. Filter mo by macs
@@ -79,25 +131,18 @@ class MAC(Model):
         if not macs and not mos:
             return
         neighbors = defaultdict(dict)
-        fields = [{"expr": "max(ts)", "alias": "timestamp", "order": 0},
-                  {"expr": "mac", "alias": "mac", "group": 1},
-                  {"expr": "vlan", "alias": "vlan", "group": 2},
-                  {"expr": "managed_object", "alias": "managed_object", "group": 3},
-                  {"expr": "interface", "alias": "interface", "group": 4}
-                  ]
         if mos:
-            res = self.query(
-                {"fields": fields, "filter": {"$in": [{"$field": 'managed_object'}, mos]}})
+            query = {"managed_object__in": mos}
         else:
-            res = self.query(
-                {"fields": fields, "filter": {"$in": [{"$field": 'mac'}, macs]}})
-
-        for r in res["result"]:
-            val = dict(zip(res["fields"], r))
-            agg = int(val["managed_object"])
-            if val["interface"] in neighbors[agg]:
-                neighbors[agg][val["interface"]] += [int(val["mac"])]
+            query = {"mac__in": macs}
+        for r in self.mac_filter(query):
+            agg = int(r["managed_object"])
+            if r["interface"] in neighbors[agg]:
+                neighbors[agg][r["interface"]] += [int(r["mac"])]
             else:
-                neighbors[agg][val["interface"]] = [int(val["mac"])]
+                neighbors[agg][r["interface"]] = [int(r["mac"])]
 
         return neighbors
+
+    def get_mac_history(self, mac):
+        return []

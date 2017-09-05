@@ -29,6 +29,7 @@ from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.defer import call_later
+from noc.lib.text import clean_number
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -39,6 +40,7 @@ id_lock = Lock()
 class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",
+        "strict": False,
         "indexes": ["parent"]
     }
 
@@ -106,6 +108,12 @@ class PhoneRange(Document):
             .order_by("-from_number", "to_number").first()
 
     def clean(self):
+        self.from_number = clean_number(self.from_number or "")
+        if not self.from_number:
+            raise ValidationError("Empty from_number")
+        self.to_number = clean_number(self.to_number or "")
+        if not self.to_number:
+            raise ValidationError("Empty to_number")
         if self.to_number < self.from_number:
             self.from_number, self.to_number = self.to_number, self.from_number
         super(PhoneRange, self).clean()

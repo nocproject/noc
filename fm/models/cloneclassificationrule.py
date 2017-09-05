@@ -22,7 +22,7 @@ class CloneClassificationRule(Document):
     """
     meta = {
         "collection": "noc.cloneclassificationrules",
-        "allow_inheritance": False,
+        "strict": False,
         "json_collection": "fm.cloneclassificationrules",
         "json_depends_on": [
             "fm.eventclassificationrules"

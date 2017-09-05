@@ -15,7 +15,6 @@ class Script(GetMetricsScript):
     name = "Qtech.QSW2800.get_metrics"
 
 
-
 class SlotRule(OIDRule):
 
     name = "slot"
@@ -39,9 +38,11 @@ class SlotRule(OIDRule):
         for i in r:
             if self.is_complex:
                 gen = [mib[self.expand(o, {"hwSlotIndex": r[i]})] for o in self.oid]
+                path = ["0", "0", i, ""] if "CPU" in metric.metric else ["0", i, "0"]
                 if gen:
-                    yield tuple(gen), self.type, self.scale, {"slot": i}
+                    yield tuple(gen), self.type, self.scale, path
             else:
                 oid = mib[self.expand(self.oid, {"hwSlotIndex": r[i]})]
+                path = ["0", "0", i, ""] if "CPU" in metric.metric else ["0", i, "0"]
                 if oid:
-                    yield oid, self.type, self.scale, {"slot": i}
+                    yield oid, self.type, self.scale, path

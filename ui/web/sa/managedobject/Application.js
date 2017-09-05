@@ -803,7 +803,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                             store: [
                                 ["P", __("Profile")],
                                 ["E", __("Enable")],
-                                ["D", __("Disable")]
+                                ["D", __("Disable")],
+                                ["R", __("As Depended")]
                             ],
                             value: "P"
                         },

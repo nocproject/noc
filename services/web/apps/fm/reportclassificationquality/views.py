@@ -16,7 +16,7 @@ from noc.core.translation import ugettext as _
 class ReportClassificationQuality(SimpleReport):
     title = _("Classification Quality")
 
-    def get_data(self, **kwargs):
+    def get_data(self, request, **kwargs):
         default_ids = [c.id for c in
                        EventClass.objects.filter(name__startswith="Unknown | ")]
         count = ActiveEvent.objects.count()

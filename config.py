@@ -12,7 +12,7 @@ import os
 import socket
 import sys
 import urllib
-
+from collections import namedtuple
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
@@ -85,8 +85,14 @@ class Config(BaseConfig):
     class chwriter(ConfigSection):
         batch_size = IntParameter(default=50000)
         records_buffer = IntParameter(default=1000000)
-        batch_delay_ms = IntParameter(default=1000)
+        batch_delay_ms = IntParameter(default=10000)
         channel_expire_interval = SecondsParameter(default="5M")
+        suspend_timeout_ms = IntParameter(default=3000)
+        # Topic to listen
+        topic = StringParameter(default="chwriter")
+        # <address:port> of ClickHouse server to write
+        write_to = StringParameter()
+        max_in_flight = IntParameter(default=10)
 
     class classifier(ConfigSection):
         lookup_handler = HandlerParameter(
@@ -95,16 +101,40 @@ class Config(BaseConfig):
         default_rule = StringParameter(default="Unknown | Default")
 
     class clickhouse(ConfigSection):
-        addresses = ServiceParameter(service="clickhouse", wait=True)
+        rw_addresses = ServiceParameter(service="clickhouse", wait=True)
         db = StringParameter(default="noc")
-        user = StringParameter(default="default")
-        password = SecretParameter()
+        rw_user = StringParameter(default="default")
+        rw_password = SecretParameter()
+        ro_addresses = ServiceParameter(service="clickhouse", wait=True)
+        ro_user = StringParameter(default="readonly")
+        ro_password = SecretParameter()
         request_timeout = SecondsParameter(default="1h")
         connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
+        encoding = StringParameter(default="", choices=[
+            "",
+            "deflate",
+            "gzip"
+        ])
+        # Cluster name for sharded/replicated configuration
+        # Matches appropriative <remote_servers> part
+        cluster = StringParameter()
+        # Cluster topology
+        # Expression in form
+        # <topology> ::= <shard> | <shard>,<topology>
+        # <shard> ::= [<weight>]<replicas>
+        # <weight> := <DIGITS>
+        # <replicas> := <DIGITS>
+        # Examples:
+        # 1 - non-replicated, non-sharded configuration
+        # 1,1 - 2 shards, non-replicated
+        # 2,2 - 2 shards, 2 replicas in each
+        # 3:2,2 - first shard has 2 replicas an weight 3,
+        #   second shard has 2 replicas and weight 1
+        cluster_topology = StringParameter(default="1")
 
     class cm(ConfigSection):
-        vcs_type = StringParameter(default="gridvcs", choices="hg, CVS, gridvcs")
+        vcs_type = StringParameter(default="gridvcs", choices=["hg", "CVS", "gridvcs"])
 
     class consul(ConfigSection):
         token = SecretParameter()
@@ -157,17 +187,18 @@ class Config(BaseConfig):
 
     class discovery(ConfigSection):
         max_threads = IntParameter(default=20)
+        sample = IntParameter(default=0)
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")
 
     class escalator(ConfigSection):
-        global_limit = IntParameter(default=50)
-        max_threads = IntParameter(default=10)
+        max_threads = IntParameter(default=5)
         retry_timeout = SecondsParameter(default="60s")
         tt_escalation_limit = IntParameter(default=10)
         ets = SecondsParameter(default="60s")
         wait_tt_check_interval = SecondsParameter(default="60s")
+        sample = IntParameter(default=0)
 
     class features(ConfigSection):
         use_uvlib = BooleanParameter(default=False)
@@ -175,6 +206,9 @@ class Config(BaseConfig):
         sentry = BooleanParameter(default=False)
         traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
+        telemetry = BooleanParameter(default=False, help="Enable internal telemetry export to Clickhouse")
+        consul_healthchecks = BooleanParameter(default=True, help="While registering serive in consul also register health check")
+        service_registration = BooleanParameter(default=True, help="Permit consul self registration")
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")
@@ -242,6 +276,8 @@ class Config(BaseConfig):
         default="%(asctime)s [%(name)s] %(message)s"
     )
 
+    thread_stack_size = IntParameter(default=0)
+
     class logging(ConfigSection):
         log_api_calls = BooleanParameter(default=False)
         log_sql_statements = BooleanParameter(default=False)
@@ -259,7 +295,6 @@ class Config(BaseConfig):
         radius_server = StringParameter()
         user_cookie_ttl = IntParameter(default=1)
 
-
     class mailsender(ConfigSection):
         smtp_server = StringParameter()
         smtp_port = IntParameter(default=25)
@@ -270,7 +305,7 @@ class Config(BaseConfig):
         smtp_password = SecretParameter()
 
     class memcached(ConfigSection):
-        addresses = ServiceParameter(service="memcached", wait=True)
+        addresses = ServiceParameter(service="memcached", wait=True, full_result=True)
         pool_size = IntParameter(default=8)
         default_ttl = SecondsParameter(default="1d")
 
@@ -283,7 +318,6 @@ class Config(BaseConfig):
         retries = IntParameter(default=20)
         timeout = SecondsParameter(default="3s")
 
-
     class mrt(ConfigSection):
         max_concurrency = IntParameter(default=50)
 
@@ -291,18 +325,27 @@ class Config(BaseConfig):
 
     class nsqd(ConfigSection):
         addresses = ServiceParameter(service="nsqd",
-                                     wait=True, near=True)
+                                     wait=True, near=True,
+                                     full_result=False)
         http_addresses = ServiceParameter(service="nsqdhttp",
-                                     wait=True, near=True)
+                                          wait=True, near=True,
+                                          full_result=False)
         pub_retry_delay = FloatParameter(default=0.1)
         ch_chunk_size = IntParameter(default=4000)
         connect_timeout = SecondsParameter(default="3s")
         request_timeout = SecondsParameter(default="30s")
+        reconnect_interval = IntParameter(default=15)
+        compression = StringParameter(
+            choices=["", "deflate", "snappy"],
+            default=""
+        )
+        compression_level = IntParameter(default=6)
+        max_in_flight = IntParameter(default=1)
 
     class nsqlookupd(ConfigSection):
         addresses = ServiceParameter(service="nsqlookupd",
-                                     wait=True, near=True)
-        http_addresses = ServiceParameter(service="nsqlookupdhttp", wait=True)
+                                     wait=True, near=True, full_result=False)
+        http_addresses = ServiceParameter(service="nsqlookupdhttp", wait=True, full_result=False)
 
     class path(ConfigSection):
         smilint = StringParameter()
@@ -333,8 +376,8 @@ class Config(BaseConfig):
 
     class pg(ConfigSection):
         addresses = ServiceParameter(
-            service=["pgbouncer", "postgres"],
-            wait=True
+            service="postgres",
+            wait=True, near=True, full_result=False
         )
         db = StringParameter(default="noc")
         user = StringParameter()
@@ -365,7 +408,6 @@ class Config(BaseConfig):
         https_proxy = StringParameter(default=os.environ.get("https_proxy"))
         ftp_proxy = StringParameter(default=os.environ.get("ftp_proxy"))
 
-
     pool = StringParameter(default=os.environ.get("NOC_POOL", ""))
 
     class rpc(ConfigSection):
@@ -395,7 +437,7 @@ class Config(BaseConfig):
         autointervaljob_initial_submit_interval = SecondsParameter(default="1d")
 
     class script(ConfigSection):
-        timeout = SecondsParameter(default="2M", help="default script timeout")
+        timeout = SecondsParameter(default="2M", help="default sa script script timeout")
         session_idle_timeout = SecondsParameter(default="1M", help="defeault session timeout")
         caller_timeout = SecondsParameter(default="1M")
         calling_service = StringParameter(default="MTManager")
@@ -423,8 +465,6 @@ class Config(BaseConfig):
         idle_timeout = SecondsParameter(default="30s")
         shutdown_timeout = SecondsParameter(default="1M")
 
-
-
     timezone = StringParameter(
         default="Europe/Moscow"
     )
@@ -441,8 +481,10 @@ class Config(BaseConfig):
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
 
-
-
+    class tests(ConfigSection):
+        enable_coverage = BooleanParameter(default=False)
+        events_path = StringParameter(default="collections/test.events")
+        profilecheck_path = StringParameter(default="collections/test.profilecheck")
 
     def __init__(self):
         self.setup_logging()
@@ -516,6 +558,42 @@ class Config(BaseConfig):
             )
         logging.captureWarnings(True)
 
+    @property
+    def ch_cluster_topology(self):
+        if not hasattr(self, "_ch_cluster_topology"):
+            shards = []
+            for s in self.clickhouse.cluster_topology.split(","):
+                s = s.strip()
+                if ":" in s:
+                    weight, replicas = s.split(":")
+                else:
+                    weight, replicas = 1, s
+                shards += [CHClusterShard(int(replicas), int(weight))]
+            self._ch_cluster_topology = shards
+        return self._ch_cluster_topology
+
+    def get_ch_topology_type(self):
+        """
+        Detect ClickHouse topology type
+        :return: Any of
+          * CH_UNCLUSTERED
+          * CH_REPLICATED
+          * CH_SHARDED
+        """
+        topo = self.ch_cluster_topology
+        if len(topo) == 1:
+            if topo[0].replicas == 1:
+                return CH_UNCLUSTERED
+            else:
+                return CH_REPLICATED
+        else:
+            return CH_SHARDED
+
+
+CHClusterShard = namedtuple("CHClusterShard", ["replicas", "weight"])
+CH_UNCLUSTERED = 0
+CH_REPLICATED = 1
+CH_SHARDED = 2
 
 config = Config()
 config.load()
