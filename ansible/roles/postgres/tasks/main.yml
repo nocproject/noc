@@ -39,7 +39,6 @@
   - name: Creating postgres directories
     file:
       path: "{{item}}"
-      state: "directory"
       state: absent
     with_items:
       - "{{noc_root}}/var/etc/postgres"
