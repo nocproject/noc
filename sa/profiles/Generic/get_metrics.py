@@ -401,6 +401,10 @@ class Script(BaseScript):
                     "Fatal timeout error on: %s", oids
                 )
                 break
+            except self.snmp.SNMPError as e:
+                self.logger.error(
+                    "SNMP error code %s", e.code
+                )
         # Process results
         for oid in batch:
             ts = self.get_ts()
