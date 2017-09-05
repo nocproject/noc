@@ -96,6 +96,7 @@ _MODELS = {
     "main.NotificationGroup": "noc.main.models.notificationgroup.NotificationGroup",
     "main.NotificationGroupOther": "noc.main.models.notificationgroup.NotificationGroupOther",
     "main.NotificationGroupUser": "noc.main.models.notificationgroup.NotificationGroupUser",
+    "main.OrderMap": "noc.main.models.ordermap.OrderMap",
     "main.Permission": "noc.main.models.permission.Permission",
     "main.Pool": "noc.main.models.pool.Pool",
     "main.PrefixTable": "noc.main.models.prefixtable.PrefixTable",

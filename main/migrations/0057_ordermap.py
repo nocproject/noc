@@ -17,11 +17,11 @@ class Migration:
         db.create_table('main_ordermap', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True,
                                     auto_created=True)),
-            ('scope', models.CharField("Scope", max_length=64)),
-            ('scope_id', models.CharField("ID", max_length=24)),
+            ('model', models.CharField("Model", max_length=64)),
+            ('ref_id', models.CharField("Ref ID", max_length=24)),
             ('name', models.CharField("Name", max_length=256))
         ))
-        db.create_index("main_ordermap", ["scope", "scope_id"], unique=True)
+        db.create_index("main_ordermap", ["model", "ref_id"], unique=True)
 
     def backwards(self):
         db.delete_table("main_ordermap")

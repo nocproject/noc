@@ -65,8 +65,9 @@ class ManagedObjectApplication(ExtModelApplication):
         ]
     }
     order_map = {
-        "profile": "SELECT name FROM main_ordermap WHERE scope = 'profile' AND scope_id = sa_managedobject.profile",
-        "platform": "SELECT name FROM main_ordermap WHERE scope = 'platform' AND scope_id = sa_managedobject.platform"
+        "profile": "SELECT name FROM main_ordermap WHERE model = 'profile' AND ref_id = sa_managedobject.profile",
+        "platform": "SELECT name FROM main_ordermap WHERE model = 'platform' AND ref_id = sa_managedobject.platform",
+        "version": "SELECT name FROM main_ordermap WHERE model = 'version' AND ref_id = sa_managedobject.version"
     }
 
     DISCOVERY_JOBS = [
