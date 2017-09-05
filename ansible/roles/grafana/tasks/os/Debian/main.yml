@@ -10,7 +10,7 @@
 
 - name: Add Grafana repo
   apt_repository:
-    repo: "deb https://packagecloud.io/grafana/stable/debian/ wheezy main"
+    repo: "deb https://packagecloud.io/grafana/stable/debian/ {{ansible_distribution_release}} main"
     state: present
     update_cache: yes
   environment:
@@ -25,6 +25,7 @@
     state: present
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    force: yes
   notify: restart grafana
   tags:
     - requirements

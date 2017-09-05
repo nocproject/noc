@@ -1,3 +1,18 @@
+- name: add clickhouse data to legacy config
+  set_fact:
+    noc_config: "{{noc_config | combine({
+    'config':{
+        'noc':{
+            'ch_db': clickhouse_db,
+            'ch_user': clickhouse_user,
+            'ch_password': clickhouse_password,
+            'ch_ro_password': clickhouse_ro_password
+        }
+    }}, recursive=True) }}"
+  tags:
+    - config
+    - noc_config
+
 - name: Generate NOC config
   template:
     src: "etc/noc.yml.j2"
@@ -16,12 +31,13 @@
     - config
     - noc_config
 
-- name: install services templates
-  template:
+- name: remove services templates
+  file:
     src: "etc/services/{{item}}"
     dest: "{{noc_etc}}/services/{{item}}"
     owner: "{{noc_user}}"
     mode: "0644"
+    state: absent
   with_items:
     - activator.conf
     - bi.conf
@@ -39,7 +55,6 @@
     - notifier.conf
     - omap.conf
     - ping.conf
-    - pmwriter.conf
     - sae.conf
     - scheduler.conf
     - sync.conf
@@ -52,13 +67,21 @@
     - noc_config
 
 - name: Build supervisor config
-  command: "{{ noc_root }}/scripts/deploy/apply-config {{ ansible_nodename }}"
-  register: result
-  changed_when: "'CHANGED' in result.stdout"
-  args:
-    chdir: "{{ noc_root }}"
+  template:
+    src: "etc/noc_services.conf.j2"
+    dest: "{{noc_root}}/etc/noc_services.conf"
+    owner: "{{noc_user}}"
+    mode: "0640"
   tags:
     - config
     - noc_config
-  environment:
-    NOC_CONFIG: "{{config_order}}"
+
+- name: install .env file
+  template:
+    src: "env.j2"
+    dest: "{{noc_root}}/.env"
+    owner: "{{noc_user}}"
+    mode: "0644"
+  tags:
+    - config
+    - noc_config

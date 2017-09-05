@@ -128,9 +128,9 @@ class ScriptLoader(object):
         for path in glob.glob("custom/sa/profiles/*/*/*.py"):
             vendor, system, name = path.split(os.sep)[-3:]
             name = name[:-3]
-            if name != "__init__":           
+            if name != "__init__":
                 ns.add("%s.%s.%s" % (vendor, system, name))
-                profiles.add("%s.%s" % (vendor, system))   
+                profiles.add("%s.%s" % (vendor, system))
         # Load common scripts
         profiles = set()
         for path in glob.glob("sa/profiles/*/*/*.py"):

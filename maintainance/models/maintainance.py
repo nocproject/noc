@@ -42,6 +42,7 @@ class MaintainanceSegment(EmbeddedDocument):
 class Maintainance(Document):
     meta = {
         "collection": "noc.maintainance",
+        "strict": False,
         "indexes": [
             "affected_objects.object",
             ("start", "is_completed")

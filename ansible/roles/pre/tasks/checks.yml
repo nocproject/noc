@@ -1,6 +1,6 @@
 - name: Check ansible version
   fail:
-    msg: "{{ ansible_version.full }} is not supported by this role. Please use atleast 2.3.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
+    msg: "{{ ansible_version.full }} is not supported by this role. Please use at least 2.3.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
   when: ansible_version is defined and ansible_version.full | version_compare('2.3.0.0', '<')
 
 - name: Check distribution compatibility
@@ -18,10 +18,20 @@
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
   when: ansible_distribution == "Debian" and ansible_distribution_version|version_compare(8.0, '<')
 
+- name: Fail if too new release of Debian
+  fail:
+    msg: "{{ ansible_distribution_version }} currently is not an acceptable version of {{ ansible_distribution }} for this role"
+  when: ansible_distribution == "Debian" and ansible_distribution_version|version_compare(9.0, '>=')
+
 - name: Fail for a new release of Ubuntu
   fail:
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
   when: ansible_distribution == "Ubuntu" and ansible_distribution_version|version_compare("16.04", '>')
+
+- name: Fail for a old release of Ubuntu
+  fail:
+    msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version|version_compare("16.04", '<')
 
 - block:
   - name: tower version is too old
@@ -65,7 +75,7 @@
 - name: Ensure tower url
   fail:
     msg: "Please ensure that correct settings has been provided on tower settings page and they was saved."
-  when: noc_repo=="http://example.com/hg/VQ3W6R"
+  when: noc_repo=="http://example.com/hg/VQ3W6R" or noc_repo=="http://example.com/hg/MHBNEJ"
 
 - block:
   - name: Ensure consul setup
@@ -100,35 +110,32 @@
     msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
   when: groups['svc-patroni'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
 
+- name: fail if patroni enabled and postgres not 9.6
+  fail:
+    msg: "Patroni can be installed only with postgres 9.6"
+  when: groups['svc-patroni'] | length > 0 and postgresql_version|version_compare("9.6", '<')
+
 - name: fail if patroni set for one node
   fail:
     msg: "Patroni can be installed when node count is more than one."
-  when: play_hosts | length == 1 and groups['svc-patroni'] | length > 0
+  when: groups['all'] | length == 1 and groups['svc-patroni'] | length > 0
 
 - name: fail if haproxy not for debian/rhel
   fail:
-    msg: "Haproxy and patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
-  when: groups['svc-haproxy'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
+    msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
+  when: groups['svc-patroni'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
 
-- name: fail if haproxy set for one node
-  fail:
-    msg: "Haproxy can be installed when node count is more than one."
-  when: play_hosts | length == 1 and groups['svc-haproxy'] | length > 0
 
 - name: fail if keepalived set for one node
   fail:
     msg: "keepalived can be installed when node count is more than one."
-  when: play_hosts | length == 1 and groups['svc-keepalived'] | length > 0
+  when: groups['all'] | length == 1 and groups['svc-keepalived'] | length > 0
 
 - name: fail if patroni set only for one node
   fail:
     msg: "patroni have to be installed on atleast two nodes"
   when: groups['svc-patroni'] | length == 1
 
-- name: fail if haproxy set only for one node
-  fail:
-    msg: "Haproxy have to be installed on atleast two nodes"
-  when: groups['svc-haproxy'] | length == 1
 
 - name: fail if keepalived set only for one node
   fail:
@@ -139,3 +146,8 @@
   fail:
     msg: "Proxy server have to be in defined with scheme for example http://admin:password@192.168.1.1:3128. currently it is: '{{http_proxy}}'"
   when: "'http://' not in http_proxy and 'https://' not in http_proxy and proxy is defined"
+
+- name: Pgbouncer connections overprovisioned
+  fail:
+    msg: "Pgbouncer has more connections to postgres that postgres can handle postgres_max_connections={{postgres_max_connections}} is more than pgbouncer_max_cons={{groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int}}"
+  when: groups['svc-pgbouncer'] | length > 1 and groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int > postgres_max_connections

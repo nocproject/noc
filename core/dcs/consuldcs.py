@@ -92,9 +92,12 @@ class ConsulResolver(ResolverBase):
                     token=self.dcs.consul_token,
                     passing=True
                 )
-            except ConsulRepeatableErrors:
+            except ConsulRepeatableErrors as e:
+                if self.critical:
+                    self.dcs.set_faulty_status("Consul error: %s" % e)
                 continue
             if old_index == index:
+                self.dcs.set_faulty_status("Timed out")
                 continue  # Timed out
             r = dict(
                 (str(svc["Service"]["ID"]), "%s:%s" % (
@@ -233,33 +236,39 @@ class ConsulDCS(DCSBase):
         self.svc_check_url = "http://%s:%s/health/?service=%s" % (
             address, port, svc_id)
         self.health_check_service_id = svc_id
-        checks = consul.Check.http(
-            self.svc_check_url,
-            self.check_interval,
-            "%ds" % self.check_timeout
-        )
-        checks["DeregisterCriticalServiceAfter"] = self.release_after
-        while True:
-            self.logger.info("Registering service %s: %s:%s (id=%s)",
-                             name, address, port, svc_id)
-            try:
-                r = yield self.consul.agent.service.register(
-                    name=name,
-                    service_id=svc_id,
-                    address=address,
-                    port=port,
-                    tags=tags,
-                    check=checks
-                )
-            except ConsulRepeatableErrors as e:
-                self.logger.info("Cannot register service %s: %s",
-                                 name, e)
-                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
-                continue
-            if r:
-                self.svc_id = svc_id
-            break
-        raise tornado.gen.Return(r)
+        if config.features.consul_healthchecks:
+            checks = consul.Check.http(
+                self.svc_check_url,
+                self.check_interval,
+                "%ds" % self.check_timeout
+            )
+            checks["DeregisterCriticalServiceAfter"] = self.release_after
+        else:
+            checks = []
+        if config.features.service_registration:
+            while True:
+                self.logger.info("Registering service %s: %s:%s (id=%s)",
+                                 name, address, port, svc_id)
+                try:
+                    r = yield self.consul.agent.service.register(
+                        name=name,
+                        service_id=svc_id,
+                        address=address,
+                        port=port,
+                        tags=tags,
+                        check=checks
+                    )
+                except ConsulRepeatableErrors as e:
+                    self.logger.info("Cannot register service %s: %s",
+                                     name, e)
+                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                    continue
+                if r:
+                    self.svc_id = svc_id
+                break
+            raise tornado.gen.Return(r)
+        else:
+            raise tornado.gen.Return(True)
 
     @tornado.gen.coroutine
     def deregister(self):
@@ -270,7 +279,7 @@ class ConsulDCS(DCSBase):
                 pass
             except Exception as e:
                 self.logger.error("Cannot destroy session: %s", e)
-        if self.svc_id:
+        if self.svc_id and config.features.service_registration:
             try:
                 yield self.consul.agent.service.deregister(self.svc_id)
             except ConsulRepeatableErrors:
@@ -304,10 +313,11 @@ class ConsulDCS(DCSBase):
                         yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 if not touched:
                     self.logger.info("Cannot refresh session, stopping")
-                    self.keep_alive_task.stop()
-                    self.keep_alive_task = None
+                    if self.keep_alive_task:
+                        self.keep_alive_task.stop()
+                        self.keep_alive_task = None
                     self.kill()
-            else:
+            elif self.keep_alive_task:
                 self.keep_alive_task.stop()
                 self.keep_alive_task = None
         finally:
@@ -459,36 +469,49 @@ class ConsulDCS(DCSBase):
                 raise tornado.gen.Return((slot_number, total_slots))
             self.logger.info("Cannot acquire slot: CAS changed, retry")
 
-    def resolve_near(self, name):
+    @tornado.gen.coroutine
+    def resolve_near(self, name, hint=None, wait=True, timeout=None,
+                     full_result=False, critical=False):
         """
         Synchronous call to resolve nearby service
         Commonly used for external services like databases
         :param name: Service name
+        :param wait:
+        :param timeout:
+        :param full_result:
+        :param hint:
+        :param critical:
         :return: address:port
         """
         self.logger.info("Resolve near service %s", name)
-        client = consul.base.Consul(
-            host=self.consul_host,
-            port=self.consul_port,
-            token=self.consul_token
-        )
         index = 0
         while True:
             try:
-                index, services = client.catalog.service(
-                    service=self.name,
+                index, services = yield self.consul.catalog.service(
+                    service=name,
                     index=index,
                     near="_agent",
                     token=self.consul_token
                 )
             except ConsulRepeatableErrors as e:
                 self.logger.info("Consul error: %s", e)
+                if critical:
+                    self.set_faulty_status("Consul error: %s" % e)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
-            if not services:
+            if not services and wait:
                 self.logger.info("No active service %s. Waiting", name)
+                if critical:
+                    self.set_faulty_status("No active service %s. Waiting" % name)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
+            r = []
             for svc in services:
-                return "%s:%s" % (str(svc["ServiceAddress"]),
-                                  str(svc["ServicePort"]))
+                r += ["%s:%s" % (str(svc["ServiceAddress"] or svc["Address"]),
+                                 str(svc["ServicePort"]))]
+                if not full_result:
+                    break
+            self.logger.info("Resolved near service %s to %s", name, r)
+            if critical:
+                self.clear_faulty_status()
+            raise tornado.gen.Return(r)

@@ -31,17 +31,16 @@ nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
 nginx_reload_command: "service nginx reload"
 nginx_user: www
 
-telegraf_reload_command: "service telegraf reload"
+telegraf_reload_command: "service telegraf restart"
 
 nsqd_reload_command: "service nsqd reload"
-nsqadmin_reload_command: "service nsqadmin reload"
+nsqadmin_reload_command: "service nsqadmin restart"
 
 postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql
 postgres_data_dir: /usr/local/pgsql/data
-postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
-postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
+postgresql_conf_prefix: /usr/local/pgsql/data
 postgresql_version: 9.5
 
 tower_path: /usr/local/tower
@@ -66,3 +65,5 @@ fake_shell: /sbin/nologin
 
 grafana_dashboard_dir: /var/db/grafana/dashboards
 grafana_plugins_dir: /var/db/grafana/plugins
+
+clickhouse_service_name: clickhouse

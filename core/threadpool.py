@@ -15,10 +15,13 @@ import itertools
 import time
 import datetime
 from collections import deque
+import sys
 # Third-party modules
 from concurrent.futures import Future
 from tornado.gen import with_timeout
 from noc.config import config
+from noc.core.span import Span, get_current_span
+from noc.core.error import NOCError, ERR_UNKNOWN
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +47,8 @@ class ThreadPoolExecutor(object):
         self.done_future = None
         self.started = time.time()
         self.waiters = []
+        if config.thread_stack_size:
+            threading.stack_size(config.thread_stack_size)
 
     def _put(self, item):
         with self.mutex:
@@ -107,14 +112,15 @@ class ThreadPoolExecutor(object):
             self.max_workers = max_workers
 
     def stop_one_worker(self):
-        self._put((None, None, None, None))
+        self._put((None, None, None, None, None, None))
 
     def submit(self, fn, *args, **kwargs):
         if self.to_shutdown:
             raise RuntimeError(
                 "Cannot schedule new task after shutdown")
         future = Future()
-        self._put((future, fn, args, kwargs))
+        span_ctx, span = get_current_span()
+        self._put((future, fn, args, kwargs, span_ctx, span))
         return future
 
     def shutdown(self, sync=False):
@@ -143,7 +149,7 @@ class ThreadPoolExecutor(object):
         try:
             while not self.to_shutdown:
                 try:
-                    future, fn, args, kwargs = self._get(
+                    future, fn, args, kwargs, span_ctx, span = self._get(
                         self.idle_timeout
                     )
                 except IdleTimeout:
@@ -155,11 +161,22 @@ class ThreadPoolExecutor(object):
                     break
                 if not future.set_running_or_notify_cancel():
                     continue
-                try:
-                    result = fn(*args, **kwargs)
-                    future.set_result(result)
-                except BaseException as e:
-                    future.set_exception(e)
+                sample = 1 if span_ctx else 0
+                with Span(service="threadpool", sample=sample,
+                          context=span_ctx, parent=span) as span:
+                    try:
+                        result = fn(*args, **kwargs)
+                        future.set_result(result)
+                    except NOCError as e:
+                        exc_info = sys.exc_info()
+                        future.set_exception_info(e, exc_info[2])
+                        span.error_code = e.default_code
+                        span.error_text = str(e)
+                    except BaseException as e:
+                        exc_info = sys.exc_info()
+                        future.set_exception_info(e, exc_info[2])
+                        span.error_code = ERR_UNKNOWN
+                        span.error_text = str(e)
         finally:
             logger.debug("Stopping worker thread %s", t.name)
             with self.mutex:

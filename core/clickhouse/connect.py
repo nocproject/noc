@@ -7,29 +7,32 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
+from __future__ import absolute_import
 import urllib
+import random
 # Third-party modules
 import six
 # NOC modules
 from noc.core.http.client import fetch_sync
 from noc.config import config
-
-
-class ClickhouseError(Exception):
-    pass
+from .error import ClickhouseError
 
 
 class ClickhouseClient(object):
-    # @fixme took better one from config with shard settings
-    HOST = os.environ.get("NOC_CLICKHOUSE_HOST", "clickhouse")
-    PORT = os.environ.get("NOC_CLICKHOUSE_PORT", 8123)
-    DB = config.clickhouse.db
-    REQUEST_TIMEOUT = config.clickhouse.request_timeout
-    CONNECT_TIMEOUT = config.clickhouse.connect_timeout
-
-    def __init__(self):
-        pass
+    def __init__(self, host=None, port=None, read_only=True):
+        self.read_only = read_only
+        if read_only:
+            self.user = config.clickhouse.ro_user
+            self.password = config.clickhouse.ro_password
+        else:
+            self.user = config.clickhouse.rw_user
+            self.password = config.clickhouse.rw_password
+        if host:
+            self.addresses = ["%s:%s" % (host, port or 8123)]
+        elif read_only:
+            self.addresses = [str(x) for x in config.clickhouse.ro_addresses]
+        else:
+            self.addresses = [str(x) for x in config.clickhouse.rw_addresses]
 
     def execute(self, sql=None, args=None, nodb=False, post=None):
         def q(v):
@@ -41,18 +44,23 @@ class ClickhouseClient(object):
 
         qs = []
         if not nodb:
-            qs += ["database=%s" % self.DB]
+            qs += ["database=%s" % config.clickhouse.db]
         if sql:
             if args:
                 sql = sql % tuple(q(v) for v in args)
-            qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
-        url = "http://%s:%s/?%s" % (self.HOST, self.PORT, "&".join(qs))
+            if post:
+                qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
+            else:
+                post = sql.encode('utf8')
+        url = "http://%s/?%s" % (random.choice(self.addresses), "&".join(qs))
         code, headers, body = fetch_sync(
             url,
-            method="POST" if post else "GET",
-            body=post if post else None,
-            connect_timeout=self.CONNECT_TIMEOUT,
-            request_timeout=self.REQUEST_TIMEOUT
+            method="POST",
+            body=post,
+            user=self.user,
+            password=self.password,
+            connect_timeout=config.clickhouse.connect_timeout,
+            request_timeout=config.clickhouse.request_timeout
         )
         if code != 200:
             raise ClickhouseError("%s: %s" % (code, body))
@@ -62,7 +70,7 @@ class ClickhouseClient(object):
 
     def ensure_db(self):
         self.execute(
-            post="CREATE DATABASE IF NOT EXISTS %s;" % self.DB,
+            post="CREATE DATABASE IF NOT EXISTS %s;" % config.clickhouse.db,
             nodb=True
         )
 
@@ -73,9 +81,9 @@ class ClickhouseClient(object):
             WHERE
               database=%s
               AND name = %s
-        """, [self.DB, name])
+        """, [config.clickhouse.db, name])
         return r and r[0][0] == "1"
 
 
-def connection():
-    return ClickhouseClient()
+def connection(host=None, port=None, read_only=True):
+    return ClickhouseClient(host=host, port=port, read_only=read_only)

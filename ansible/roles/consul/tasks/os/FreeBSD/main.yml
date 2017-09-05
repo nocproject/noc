@@ -1,4 +1,9 @@
 ---
+- name: "Install consul"
+  pkgng:
+    name: "consul"
+    state: present
+
 - name: BSD init script
   template:
     src: consul_bsdinit.j2

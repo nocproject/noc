@@ -26,7 +26,7 @@ tower_ip: 127.0.0.1
 tower_path: /opt/tower
 tower_dist_dir: "{{tower_path}}/var/tower/data/src_dist"
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
-tower_minimum_version: "0.1a66"
+tower_minimum_version: "0.1a72"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
 
 grafana_group: grafana
@@ -74,6 +74,7 @@ nginx_reload_command: "systemctl reload nginx"
 telegraf_reload_command: "systemctl reload telegraf"
 nsqd_reload_command: "systemctl reload nsqd"
 nsqadmin_reload_command: "systemctl reload nsqadmin"
+zookeeper_reload_command: "systemctl reload zookeeper"
 
 #Memtune
 kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
@@ -118,10 +119,6 @@ consul_scripts_path: "{{consul_configd_path}}/scripts"
 
 supervisor_sock_path: /var/run/supervisor_noc.sock
 
-bi_export_dir: "{{noc_root}}/var/bi"
-bi_export_dict_dir: "{{noc_root}}/var/bi-dict"
-bi_export_dict_data_dir: "{{noc_root}}/var/bi-dict-data"
-
 noc_logs: /var/log/noc
 noc_var_lib: /var/lib/noc
 noc_var: /var/opt/noc
@@ -129,6 +126,9 @@ noc_etc: "{{noc_root}}/etc"
 noc_reports_dir: "{{noc_var_lib}}/reports"
 noc_crashinfo_dir: "{{noc_root}}/var/cp/crashinfo/new"
 
+bi_export_dir: "{{noc_var_lib}}/bi"
+bi_export_dict_dir: "{{noc_var_lib}}/bi-dict"
+bi_export_dict_data_dir: "{{noc_var_lib}}/bi-dict-data"
 
 nsqd_db_dir: "/var/spool/nsqd"
 nsqd_config_dir: "{{etc_prefix}}/nsq"
@@ -140,3 +140,7 @@ mongo_dir: "{{etc_prefix}}/mongod"
 mongo_conf: "{{ etc_prefix }}/mongod.conf"
 
 fake_shell: /bin/false
+
+zookeeper_config_dir: "{{etc_prefix}}/zookeeper/conf"
+
+haproxy_clickhouse_listen: 8124
