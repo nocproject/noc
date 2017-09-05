@@ -8,20 +8,22 @@
 
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
+from noc.lib.text import parse_kv
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 
 
 class Script(GetMetricsScript):
     name = "Cisco.IOS.get_metrics"
 
-    ALL_SLA_METRICS = set(["SLA | ICMP RTT"])
-    SLA_ICMP_RTT = "SLA | ICMP RTT"
+    ALL_SLA_METRICS = set(["SLA | ICMP RTT", "SLA | JITTER", "SLA | UDP RTT"])
 
     def collect_profile_metrics(self, metrics):
         if self.has_capability("Cisco | IP | SLA | Probes"):
-            self.collect_ip_sla_metrics(metrics)
+            self.logger.debug("Merics %s" % metrics)
+            if self.ALL_SLA_METRICS.intersection(set(m.metric for m in metrics)):
+                # check
+                self.collect_ip_sla_metrics(metrics)
 
     def collect_ip_sla_metrics(self, metrics):
         # if not (self.ALL_SLA_METRICS & set(metrics)):
@@ -29,16 +31,15 @@ class Script(GetMetricsScript):
         ts = self.get_ts()
         m = self.get_ip_sla_metrics()
         for bv in metrics:
-            if not bv.sla_tests:
-                continue
-            for st in bv.sla_tests:
-                if st["name"] in m and "rtt" in m[st["name"]]:
+            if bv.metric in self.ALL_SLA_METRICS:
+                id = tuple(bv.path + [bv.metric])
+                if id in m:
                     self.set_metric(
                         id=bv.id,
                         metric=bv.metric,
-                        value=m[st["name"]]["rtt"],
+                        value=m[id],
                         ts=ts,
-                        path=[st["name"], "rtt"],
+                        path=bv.path,
                     )
 
     rx_ipsla_probe = re.compile(
@@ -59,14 +60,29 @@ class Script(GetMetricsScript):
         :return:
         """
         v = self.cli("show ip sla statistics")
+        metric_map = {"ipsla operation id": "name",
+                      "latest rtt": "rtt",
+                      "source to destination jitter min/avg/max": "sd_jitter",
+                      "destination to source jitter min/avg/max": "ds_jitter",
+                      "number of rtt": "num_rtt"}
+
         r_v = self.rx_ipsla_probe.split(v)
         if len(r_v) < 3:
             return {}
-        r = defaultdict(dict)
+        # r = defaultdict(dict)
+        r = {}
+
         for probe_id, data in zip(r_v[1::2], r_v[2::2]):
-            match = self.rx_ipsla_latest_rtt.search(data)
-            if not match:
-                continue
-            rtt = match.group(1)
-            r[probe_id]["rtt"] = float(rtt*1000)
+            p = parse_kv(metric_map, data)
+            if "rtt" in p:
+                # Latest RTT: 697 milliseconds
+                rtt = p["rtt"].split()[0]
+                try:
+                    r[("", probe_id, "SLA | UDP RTT")] = float(rtt) * 1000
+                except ValueError:
+                    pass
+            if "sd_jitter" in p:
+                # Source to Destination Jitter Min/Avg/Max: 0/8/106 milliseconds
+                jitter = p["sd_jitter"].split()[0].split("/")[1]
+                r[("", probe_id, "SLA | JITTER")] = float(jitter) * 1000
         return r
