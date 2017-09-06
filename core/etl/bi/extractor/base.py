@@ -33,3 +33,12 @@ class BaseExtractor(object):
 
     def clean(self):
         pass
+
+    @classmethod
+    def get_start(cls):
+        """
+        Returns timestamp of first record
+        or None when no data found
+        :return:
+        """
+        return None
