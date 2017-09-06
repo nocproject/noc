@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Failed Scripts Report
 # ---------------------------------------------------------------------
@@ -17,14 +16,12 @@ from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
-from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
-from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportDiscoveryProblem(object):
