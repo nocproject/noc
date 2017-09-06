@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.core.clickhouse.dictionary import Dictionary
-from noc.core.clickhouse.fields import StringField
+from noc.core.clickhouse.fields import StringField, UInt8Field
 
 
 class InterfaceProfile(Dictionary):
@@ -17,10 +17,4 @@ class InterfaceProfile(Dictionary):
         layout = "flat"
 
     name = StringField()
-
-    @classmethod
-    def get_record(cls, value):
-        return {
-            "_id": value,
-            "name": value
-        }
+    is_uni = UInt8Field()

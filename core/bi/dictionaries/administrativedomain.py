@@ -18,11 +18,3 @@ class AdministrativeDomain(Dictionary):
 
     name = StringField()
     parent = ReferenceField("self")
-
-    @classmethod
-    def get_record(cls, value):
-        return {
-            "_id": value.id,
-            "name": value.name,
-            "parent": cls.lookup(value.parent) if value.parent else 0
-        }
