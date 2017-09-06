@@ -215,7 +215,7 @@ class Config(BaseConfig):
         keep_events_wo_alarm = IntParameter(default=0)
         keep_events_with_alarm = IntParameter(default=-1)
         alarm_close_retries = IntParameter(default=5)
-        outage_refresh  = SecondsParameter(default="60s")
+        outage_refresh = SecondsParameter(default="60s")
         total_outage_refresh = SecondsParameter(default="60s")
 
     class geocoding(ConfigSection):
@@ -480,6 +480,11 @@ class Config(BaseConfig):
         language = StringParameter(default="en")
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
+
+    class datasource(ConfigSection):
+        chunk_size = IntParameter(default=1000)
+        max_threads = IntParameter(default=10)
+        default_ttl = SecondsParameter(default="1h")
 
     class tests(ConfigSection):
         enable_coverage = BooleanParameter(default=False)

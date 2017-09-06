@@ -16,11 +16,9 @@ class Platform(Dictionary):
         name = "platform"
         layout = "flat"
 
+    # Platform name
     name = StringField()
-
-    @classmethod
-    def get_record(cls, value):
-        return {
-            "_id": value,
-            "name": value
-        }
+    # Vendor name
+    vendor = StringField()
+    # <vendor> <platdorm>
+    full_name = StringField()
