@@ -28,8 +28,12 @@ class BaseCommand(object):
         self.stdout = stdout
         self.stderr = stderr
 
-    def print(self, *args):
-        print(*args, file=self.stdout)
+    def print(self, *args, **kwargs):
+        if "file" not in kwargs:
+            kwargs["file"] = self.stdout
+        if "flush" in kwargs and kwargs.pop("flush"):
+            self.stdout.flush()
+        print(*args, **kwargs)
 
     def run(self):
         """
