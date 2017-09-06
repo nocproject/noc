@@ -25,11 +25,13 @@ from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler
+from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 handlers_lock = Lock()
 
 
+@bi_sync
 class AlarmClass(nosql.Document):
     """
     Alarm class
@@ -95,6 +97,8 @@ class AlarmClass(nosql.Document):
     # Root cause will be detached if consequence alarm
     # will not clear itself in *recover_time*
     recover_time = fields.IntField(required=False, default=300)
+    #
+    bi_id = fields.LongField()
     #
     category = nosql.ObjectIdField()
 

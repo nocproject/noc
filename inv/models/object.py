@@ -13,7 +13,8 @@ from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ObjectIdField,
-                                ListField, PointField, ReferenceField)
+                                ListField, PointField, ReferenceField,
+                                LongField)
 from mongoengine import signals
 import cachetools
 import six
@@ -30,10 +31,12 @@ from noc.lib.middleware import get_user
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
+from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 
 
+@bi_sync
 @on_save
 @on_delete_check(check=[
     ("sa.ManagedObject", "container")
@@ -64,6 +67,8 @@ class Object(Document):
     point = PointField(auto_index=True)
     #
     tags = ListField(StringField())
+    # Object id in BI
+    bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
