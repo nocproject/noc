@@ -2,14 +2,16 @@
 # ----------------------------------------------------------------------
 # BI extract/load commands
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 import datetime
 import gzip
+import time
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
@@ -91,22 +93,29 @@ class Command(BaseCommand):
         }, upsert=True)
 
     def handle_extract(self, *args, **options):
-        t0 = datetime.datetime.fromtimestamp(0)
         now = datetime.datetime.now()
         window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
-            start = self.get_last_extract(ecls.name) or t0
+            start = self.get_last_extract(ecls.name)
+            if not start:
+                start = ecls.get_start()
+                if not start:
+                    self.print("[%s] No data, skipping" % e.name)
+                    continue
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
             while start < stop:
-                end = min(
-                    start + window,
-                    stop
-                )
+                end = min(start + window, stop)
                 e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
-                self.stdout.write("Extracting %s (%s - %s)\n" % (
-                    e.name, start, end
-                ))
-                e.extract()
+                self.print("[%s] Extracting %s - %s ... " % (e.name, start, end), end="", flush=True)
+                t0 = time.time()
+                nr = e.extract()
+                dt = time.time() - t0
+                if dt > 0.0:
+                    self.print("%d records in %.3fs (%.2frec/s)" % (
+                        nr, dt, float(nr) / dt
+                    ))
+                else:
+                    self.print("no records")
                 self.set_last_extract(ecls.name, e.last_ts or end)
                 start += window
 
