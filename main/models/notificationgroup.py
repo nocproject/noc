@@ -45,7 +45,7 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
     ("fm.AlarmTrigger", "notification_group"),
     ("fm.EventTrigger", "notification_group"),
     ("inv.InterfaceProfile", "status_change_notification"),
-    ("ReportSubscription", "notification_group"),
+    ("main.ReportSubscription", "notification_group"),
     ("vc.VCDomainProvisioningConfig", "notification_group")
 ])
 class NotificationGroup(models.Model):
