@@ -27,16 +27,16 @@ class RebootsExtractor(BaseExtractor):
         self.reboot_stream = Stream(Reboots, prefix)
 
     def extract(self):
+        nr = 0
         for d in Reboot._get_collection().find({
             "ts": {
                 "$gt": self.start,
                 "$lte": self.stop
             }
-        }, timeout=False).sort("ts"):
+        }, no_cursor_timeout=True).sort("ts"):
             mo = ManagedObject.get_by_id(d["object"])
             if not mo:
                 continue
-            version = mo.version
             self.reboot_stream.push(
                 ts=d["ts"],
                 managed_object=mo,
@@ -46,15 +46,17 @@ class RebootsExtractor(BaseExtractor):
                 object_profile=mo.object_profile,
                 vendor=mo.vendor,
                 platform=mo.platform,
-                version=version.version,
+                version=mo.version,
                 administrative_domain=mo.administrative_domain,
                 segment=mo.segment,
                 container=mo.container,
                 x=mo.x,
                 y=mo.y
             )
+            nr += 1
             self.last_ts = d["ts"]
         self.reboot_stream.finish()
+        return nr
 
     def clean(self):
         Reboot._get_collection().remove({
@@ -62,3 +64,14 @@ class RebootsExtractor(BaseExtractor):
                 "$lte": self.clean_ts
             }
         })
+
+    @classmethod
+    def get_start(cls):
+        d = Reboot._get_collection().find_one(
+            {},
+            {"_id": 0, "ts": 1},
+            sort=[("ts", 1)]
+        )
+        if not d:
+            return None
+        return d.get("ts")

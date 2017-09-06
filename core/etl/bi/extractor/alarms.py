@@ -13,6 +13,7 @@ import datetime
 from base import BaseExtractor
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.reboot import Reboot
+from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.alarms import Alarms
 from noc.core.etl.bi.stream import Stream
@@ -32,8 +33,8 @@ class AlarmsExtractor(BaseExtractor):
         self.alarm_stream = Stream(Alarms, prefix)
 
     def extract(self):
+        nr = 0
         # Get reboots
-        reboots = {}  # object -> [ts1, .., tsN]
         r = Reboot._get_collection().aggregate([
             {
                 "$match": {
@@ -57,15 +58,15 @@ class AlarmsExtractor(BaseExtractor):
                 }
             }
         ])
-        if r["ok"]:
-            reboots = dict((d["_id"], d["reboots"]) for d in r["result"])
+        # object -> [ts1, .., tsN]
+        reboots = dict((d["_id"], d["reboots"]) for d in r)
         #
         for d in ArchivedAlarm._get_collection().find({
             "clear_timestamp": {
                 "$gt": self.start,
                 "$lte": self.stop
             }
-        }, timeout=False).sort("timestamp"):
+        }, no_cursor_timeout=True).sort("timestamp"):
             mo = ManagedObject.get_by_id(d["managed_object"])
             if not mo:
                 continue
@@ -83,7 +84,7 @@ class AlarmsExtractor(BaseExtractor):
                 duration=max(0, int(total_seconds(d["clear_timestamp"] - d["timestamp"]))),
                 alarm_id=str(d["_id"]),
                 root=str(d.get("root") or ""),
-                alarm_class=d["alarm_class"],
+                alarm_class=AlarmClass.get_by_id(d["alarm_class"]),
                 severity=d["severity"],
                 reopens=d.get("reopens") or 0,
                 direct_services=sum(ss["summary"] for ss in d.get("direct_services", [])),
@@ -100,7 +101,7 @@ class AlarmsExtractor(BaseExtractor):
                 object_profile=mo.object_profile,
                 vendor=mo.vendor,
                 platform=mo.platform,
-                version=mo.version.version,
+                version=mo.version,
                 administrative_domain=mo.administrative_domain,
                 segment=mo.segment,
                 container=mo.container,
@@ -108,8 +109,10 @@ class AlarmsExtractor(BaseExtractor):
                 y=mo.y,
                 reboots=n_reboots
             )
+            nr += 1
             self.last_ts = d["timestamp"]
         self.alarm_stream.finish()
+        return nr
 
     def clean(self):
         ArchivedAlarm._get_collection().remove({
@@ -117,3 +120,14 @@ class AlarmsExtractor(BaseExtractor):
                 "$lte": self.clean_ts
             }
         })
+
+    @classmethod
+    def get_start(cls):
+        d = ArchivedAlarm._get_collection().find_one(
+            {},
+            {"_id": 0, "timestamp": 1},
+            sort=[("timestamp", 1)]
+        )
+        if not d:
+            return None
+        return d.get("timestamp")
