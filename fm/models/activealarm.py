@@ -491,7 +491,7 @@ class ActiveAlarm(nosql.Document):
                 "escalation_error": None
             }
         })
-        if r.get("nModified", 0) == 0:
+        if r.acknowledged and not r.modified_count:
             # Already closed, update archive
             ArchivedAlarm._get_collection().update({
                 "_id": self.id

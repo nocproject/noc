@@ -162,10 +162,9 @@ class Scheduler(object):
                 Job.ATTR_STATUS: Job.S_WAIT
             }
         })
-        if r["ok"]:
-            nm = r.get("nModified", 0)
-            if nm:
-                self.logger.info("Reset: %d", nm)
+        if r.acknowledged:
+            if r.modified_count:
+                self.logger.info("Reset: %d", r.modified_count)
             else:
                 self.logger.info("Nothing to reset")
         else:
@@ -303,13 +302,14 @@ class Scheduler(object):
                         Job.ATTR_STATUS: Job.S_RUN
                     }
                 })
-                if not r["ok"]:
+                if r.acknowledged:
+                    if r.modified_count != len(jids):
+                        self.logger.error(
+                            "Failed to update all running statuses: %d of %d",
+                            r.modified_count, len(jids)
+                        )
+                else:
                     self.logger.error("Failed to update running status")
-                if r["nModified"] != len(jids):
-                    self.logger.error(
-                        "Failed to update all running statuses: %d of %d",
-                        r["nModified"], len(jids)
-                    )
                 # Fetch contexts
                 # version -> key -> job
                 cjobs = {}
