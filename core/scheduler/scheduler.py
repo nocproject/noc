@@ -18,6 +18,7 @@ import pymongo.errors
 import tornado.gen
 import tornado.ioloop
 from concurrent.futures import Future
+from pymongo import DeleteOne, UpdateOne
 # NOC modules
 from .job import Job
 from noc.lib.nosql import get_db
@@ -69,8 +70,7 @@ class Scheduler(object):
         self.to_reset_running = reset_running
         self.running_groups = set()
         self.collection = None
-        self.bulk = None
-        self.bulk_ops = 0
+        self.bulk = []
         self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
         self.executor = None
@@ -136,7 +136,7 @@ class Scheduler(object):
             self.logger.debug("Open collection %s",
                               self.collection_name)
             self.collection = get_db()[self.collection_name]
-            self.reset_bulk_ops()
+            self.bulk = []
         return self.collection
 
     def get_executor(self):
@@ -346,22 +346,18 @@ class Scheduler(object):
                     time.sleep(dt)
         return n
 
-    def reset_bulk_ops(self):
-        self.bulk = self.collection.initialize_unordered_bulk_op()
-        self.bulk_ops = 0
-
     def apply_bulk_ops(self):
+        if not self.bulk:
+            return  # Nothing to apply
         t0 = self.ioloop.time()
         with self.bulk_lock:
-            if not self.bulk_ops:
-                return
             try:
-                r = self.bulk.execute()
+                r = self.collection.bulk_write(self.bulk)
                 dt = self.ioloop.time() - t0
                 self.logger.info(
                     "%d bulk operations complete in %dms: "
                     "inserted=%d, updated=%d, removed=%d",
-                    self.bulk_ops,
+                    len(self.bulk),
                     int(dt * 1000),
                     r.inserted_count,
                     r.modified_count,
@@ -378,7 +374,7 @@ class Scheduler(object):
                 metrics["%s_bulk_failed" % self.name] += 1
                 return
             finally:
-                self.reset_bulk_ops()
+                self.bulk = []
 
     def remove_job(self, jcls, key=None):
         """
@@ -396,8 +392,7 @@ class Scheduler(object):
         """
         self.logger.info("Remove job %s", jid)
         with self.bulk_lock:
-            self.bulk.find({Job.ATTR_ID: jid}).remove_one()
-            self.bulk_ops += 1
+            self.bulk += [DeleteOne({Job.ATTR_ID: jid})]
 
     def submit(self, jcls, key=None, data=None, ts=None, delta=None,
                keep_ts=False, max_runs=None):
@@ -508,8 +503,7 @@ class Scheduler(object):
             }
             self.logger.debug("update(%s, %s)", q, op)
             with self.bulk_lock:
-                self.bulk.find(q).update(op)
-                self.bulk_ops += 1
+                self.bulk += [UpdateOne(q, op)]
 
     def apply_cache_ops(self):
         with self.cache_lock:
