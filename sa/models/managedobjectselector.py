@@ -69,7 +69,7 @@ class ManagedObjectSelector(models.Model):
     is_enabled = models.BooleanField(_("Is Enabled"), default=True)
     filter_id = models.IntegerField(_("Filter by ID"), null=True, blank=True)
     filter_name = models.CharField(_("Filter by Name (REGEXP)"),
-            max_length=256, null=True, blank=True, validators=[check_re])
+                                   max_length=256, null=True, blank=True, validators=[check_re])
     filter_managed = models.NullBooleanField(
         _("Filter by Is Managed"),
         null=True, blank=True, default=True)
@@ -79,40 +79,40 @@ class ManagedObjectSelector(models.Model):
     filter_platform = DocumentReferenceField(Platform, null=True, blank=True)
     filter_version = DocumentReferenceField(Firmware, null=True, blank=True)
     filter_object_profile = models.ForeignKey(ManagedObjectProfile,
-            verbose_name=_("Filter by Object's Profile"), null=True, blank=True)
+                                              verbose_name=_("Filter by Object's Profile"), null=True, blank=True)
     filter_address = models.CharField(_("Filter by Address (REGEXP)"),
-            max_length=256, null=True, blank=True, validators=[check_re])
+                                      max_length=256, null=True, blank=True, validators=[check_re])
     filter_prefix = models.ForeignKey(PrefixTable,
-            verbose_name=_("Filter by Prefix Table"), null=True, blank=True)
+                                      verbose_name=_("Filter by Prefix Table"), null=True, blank=True)
     filter_administrative_domain = models.ForeignKey(AdministrativeDomain,
-            verbose_name=_("Filter by Administrative Domain"),
-            null=True, blank=True)
+                                                     verbose_name=_("Filter by Administrative Domain"),
+                                                     null=True, blank=True)
     filter_vrf = models.ForeignKey("ip.VRF",
-            verbose_name=_("Filter by VRF"), null=True, blank=True)
+                                   verbose_name=_("Filter by VRF"), null=True, blank=True)
     filter_vc_domain = models.ForeignKey("vc.VCDomain",
-            verbose_name=_("Filter by VC Domain"), null=True, blank=True)
+                                         verbose_name=_("Filter by VC Domain"), null=True, blank=True)
     filter_termination_group = models.ForeignKey(TerminationGroup,
-            verbose_name=_("Filter by termination group"), null=True, blank=True,
-            related_name="selector_termination_group_set"
-            )
+                                                 verbose_name=_("Filter by termination group"), null=True, blank=True,
+                                                 related_name="selector_termination_group_set"
+                                                 )
     filter_service_terminator = models.ForeignKey(TerminationGroup,
-            verbose_name=_("Filter by service terminator"), null=True, blank=True,
-            related_name="selector_service_terminator_set"
-            )
+                                                  verbose_name=_("Filter by service terminator"), null=True, blank=True,
+                                                  related_name="selector_service_terminator_set"
+                                                  )
     filter_tt_system = DocumentReferenceField(TTSystem, null=True, blank=True)
     filter_user = models.CharField(_("Filter by User (REGEXP)"),
-            max_length=256, null=True, blank=True)
+                                   max_length=256, null=True, blank=True)
     filter_remote_path = models.CharField(_("Filter by Remote Path (REGEXP)"),
-            max_length=256, null=True, blank=True, validators=[check_re])
+                                          max_length=256, null=True, blank=True, validators=[check_re])
     filter_description = models.CharField(_("Filter by Description (REGEXP)"),
-            max_length=256, null=True, blank=True, validators=[check_re])
+                                          max_length=256, null=True, blank=True, validators=[check_re])
     filter_tags = TagsField(_("Filter By Tags"),
-            null=True, blank=True)
+                            null=True, blank=True)
     source_combine_method = models.CharField(_("Source Combine Method"),
-            max_length=1, default="O", choices=[("A", "AND"), ("O", "OR")])
+                                             max_length=1, default="O", choices=[("A", "AND"), ("O", "OR")])
     sources = models.ManyToManyField("self",
-            verbose_name=_("Sources"), symmetrical=False,
-            null=True, blank=True, related_name="sources_set")
+                                     verbose_name=_("Sources"), symmetrical=False,
+                                     null=True, blank=True, related_name="sources_set")
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -142,7 +142,7 @@ class ManagedObjectSelector(models.Model):
         ManagedObject.objects.filter
         """
         # Exclude NOC internal objects
-        q = ~Q(profile_name__startswith="NOC.")
+        q = ~Q(profile__in=list(Profile.objects.filter(name__startswith="NOC.")))
         # Exclude objects being wiped
         q &= ~Q(name__startswith="wiping-")
         # Filter by is_managed
@@ -170,8 +170,8 @@ class ManagedObjectSelector(models.Model):
         if self.filter_version:
             q &= Q(version=self.filter_version.id)        
         # Filter by ttsystem
-        if self.filter_ttsystem:
-            q &= Q(tt_system=self.filter_ttsystem.id)
+        if self.filter_tt_system:
+            q &= Q(tt_system=self.filter_tt_system.id)
         # Filter by object's profile
         if self.filter_object_profile:
             q &= Q(object_profile=self.filter_object_profile)
@@ -381,11 +381,11 @@ class ManagedObjectSelectorByAttribute(models.Model):
         app_label = "sa"
 
     selector = models.ForeignKey(ManagedObjectSelector,
-            verbose_name=_("Object Selector"))
+                                 verbose_name=_("Object Selector"))
     key_re = models.CharField(_("Filter by key (REGEXP)"),
-            max_length=256, validators=[check_re])
+                              max_length=256, validators=[check_re])
     value_re = models.CharField(_("Filter by value (REGEXP)"),
-            max_length=256, validators=[check_re])
+                                max_length=256, validators=[check_re])
 
     def __unicode__(self):
         return u"%s: %s = %s" % (
