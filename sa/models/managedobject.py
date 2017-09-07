@@ -629,8 +629,8 @@ class ManagedObject(Model):
             content += [self.trap_source_ip]
         platform = self.platform
         if platform:
-            content += [platform]
-            card += " [%s]" % platform
+            content += [unicode(platform.name)]
+            card += " [%s]" % platform.name
         version = self.get_attr("version")
         if version:
             content += [version]
