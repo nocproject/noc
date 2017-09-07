@@ -177,9 +177,8 @@ class ReportAvailabilityApplication(SimpleReport):
             ]
             # data = Interface.objects._get_collection().aggregate(pipeline,
             data = get_db()["noc.interfaces"].with_options(
-                read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(pipeline,
-                                                                              read_preference=ReadPreference.SECONDARY_PREFERRED)
-            data = [d["_id"] for d in data["result"]]
+                read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(pipeline)
+            data = [d["_id"] for d in data]
             mos = mos.exclude(id__in=data)
 
         mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
