@@ -527,7 +527,7 @@ class Config(BaseConfig):
             hosts = self.mongo.addresses
             if self.mongo.rs:
                 self._mongo_connection_args["replicaSet"] = self.mongo.rs
-                self._mongo_connection_args["slave_okay"] = True
+                self._mongo_connection_args["readPreference"] = "secondaryPreferred"
             elif len(hosts) > 1:
                 raise ValueError("Replica set name must be set")
             url = ["mongodb://"]
