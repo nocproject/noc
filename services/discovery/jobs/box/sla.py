@@ -10,7 +10,7 @@
 import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sla.models.slaprobe import SLAProbe, SLAProbeTest
+from noc.sla.models.slaprobe import SLAProbe
 
 
 class SLACheck(DiscoveryCheck):
