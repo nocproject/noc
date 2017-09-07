@@ -141,6 +141,8 @@ class ManagedObjectSelector(models.Model):
         Returns Q object which can be applied to
         ManagedObject.objects.filter
         """
+        # Exclude NOC internal objects
+        q = ~Q(profile_name__startswith="NOC.")
         # Exclude objects being wiped
         q &= ~Q(name__startswith="wiping-")
         # Filter by is_managed
