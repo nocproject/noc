@@ -80,16 +80,16 @@ class ReportFilterApplication(SimpleReport):
                 continue
 
             # is_alive = [s.id for s in is_managed if s.get_status()]
-            is_alive_id = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
-                                                                    "status": True},
-                                                                   {"_id": 1, "object": 1},
-                                                                   read_preference=ReadPreference.SECONDARY_PREFERRED)
+            is_alive_id = get_db()["noc.cache.object_status"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).find({"object": {"$in": is_managed_undef_in},
+                                                                          "status": True},
+                                                                         {"_id": 1, "object": 1})
 
-            is_not_alived_c = get_db()["noc.cache.object_status"].find(
+            is_not_alived_c = get_db()["noc.cache.object_status"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).find(
                 {"object": {"$in": is_managed_undef_in},
                  "status": False},
-                {"_id": 1, "object": 1},
-                read_preference=ReadPreference.SECONDARY_PREFERRED).count()
+                {"_id": 1, "object": 1}).count()
 
             is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                    m["object"] for m in is_alive_id]
@@ -99,16 +99,18 @@ class ReportFilterApplication(SimpleReport):
             is_managed_g_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                m_id for m_id in is_managed_undef_in]
 
-            bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp.": "Failed to guess SNMP community",
-                                                         "_id": {"$in": is_managed_alive_in}},
-                                                        read_preference=ReadPreference.SECONDARY_PREFERRED).count()
-            bad_cli_cred = get_db()["noc.joblog"].find({"problems.suggest_cli.": "Failed to guess CLI credentials",
-                                                        "_id": {"$in": is_managed_ng_in}},
-                                                       read_preference=ReadPreference.SECONDARY_PREFERRED).count()
-            profile_not_found = get_db()["noc.joblog"].find({
-                "problems.profile.": {"$regex": "^Not find profile for OID:.*"},
-                "_id": {"$in": is_managed_g_in}},
-                read_preference=ReadPreference.SECONDARY_PREFERRED).count()
+            bad_snmp_cred = get_db()["noc.joblog"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+            ).find({"problems.suggest_snmp.": "Failed to guess SNMP community",
+                    "_id": {"$in": is_managed_alive_in}}).count()
+            bad_cli_cred = get_db()["noc.joblog"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+            ).find({"problems.suggest_cli.": "Failed to guess CLI credentials",
+                    "_id": {"$in": is_managed_ng_in}}).count()
+            profile_not_found = get_db()["noc.joblog"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+                {"problems.profile.": {"$regex": "^Not find profile for OID:.*"},
+                 "_id": {"$in": is_managed_g_in}}).count()
 
             # profile_not_detect = get_db()["noc.joblog"].find({
             #    "problems.profile": {"$regex": "^Cannot find profile in.*"},
@@ -117,14 +119,14 @@ class ReportFilterApplication(SimpleReport):
 
             # not_procc_yet = get_db()["noc.schedules.discovery." + p.name].find({"ls": {"$exists": False},
             #
-            bad_snmp_cred_id = [r["_id"] for r in get_db()["noc.joblog"].find({
-                "problems.suggest_snmp.": "Failed to guess SNMP community",
-                "_id": {"$in": is_managed_alive_in}},
-                read_preference=ReadPreference.SECONDARY_PREFERRED)]
-            profile_not_detect_id = [r["_id"] for r in get_db()["noc.joblog"].find({
-                "problems.profile.": {"$regex": "^Cannot find profile in.*"},
-                "_id": {"$in": is_managed_g_in}},
-                read_preference=ReadPreference.SECONDARY_PREFERRED)]
+            bad_snmp_cred_id = [r["_id"] for r in get_db()["noc.joblog"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+                {"problems.suggest_snmp.": "Failed to guess SNMP community",
+                 "_id": {"$in": is_managed_alive_in}})]
+            profile_not_detect_id = [r["_id"] for r in get_db()["noc.joblog"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+                {"problems.profile.": {"$regex": "^Cannot find profile in.*"},
+                 "_id": {"$in": is_managed_g_in}})]
             not_procc_yet = 0
             # MO ID in variable reason
             var_ids = set([int(r.rsplit("-", 1)[1]) for r in set(is_managed_alive_in) - set(bad_snmp_cred_id)])

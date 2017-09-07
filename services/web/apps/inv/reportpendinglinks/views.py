@@ -59,11 +59,12 @@ class ReportPendingLinks(object):
         n = 0
         ignored_ifaces = []
         while mos_job[(0 + n):(10000 + n)]:
-            job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"$and": [
+            job_logs = get_db()["noc.joblog"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+            ).aggregate([{"$match": {"$and": [
                 {"_id": {"$in": mos_job[(0 + n):(10000 + n)]}},
                 {"problems.lldp": {"$exists": True}}]}},
-                {"$project": {"_id": 1, "problems.lldp": 1}}],
-                read_preference=ReadPreference.SECONDARY_PREFERRED)
+                {"$project": {"_id": 1, "problems.lldp": 1}}])
 
             for discovery in job_logs:
                 if "RPC Error:" in discovery["problems"]["lldp"] or \

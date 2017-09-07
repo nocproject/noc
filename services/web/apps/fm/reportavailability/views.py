@@ -129,7 +129,8 @@ class ReportAvailabilityApplication(SimpleReport):
             {"$group": {"_id": "$object", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}}
         ]
-        data = Reboot._get_collection().aggregate(pipeline, read_preference=ReadPreference.SECONDARY_PREFERRED)
+        data = Reboot._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(pipeline)
         # data = data["result"]
         return dict((rb["_id"], rb["count"]) for rb in data)
 
@@ -175,8 +176,9 @@ class ReportAvailabilityApplication(SimpleReport):
                 {"$project": {"_id": True}}
             ]
             # data = Interface.objects._get_collection().aggregate(pipeline,
-            data = get_db()["noc.interfaces"].aggregate(pipeline,
-                                                        read_preference=ReadPreference.SECONDARY_PREFERRED)
+            data = get_db()["noc.interfaces"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(pipeline,
+                                                                              read_preference=ReadPreference.SECONDARY_PREFERRED)
             data = [d["_id"] for d in data["result"]]
             mos = mos.exclude(id__in=data)
 

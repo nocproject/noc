@@ -63,28 +63,29 @@ class ReportFilterApplication(SimpleReport):
         is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))
 
         # is_alive = [s.id for s in is_managed if s.get_status()]
-        is_alive_id = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
-                                                                "status": True},
-                                                               {"_id": 1, "object": 1},
-                                                               read_preference=ReadPreference.SECONDARY_PREFERRED)
-        is_alive_id_ng = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_not_generic_in},
-                                                                   "status": True},
-                                                                  {"_id": 1, "object": 1},
-                                                                  read_preference=ReadPreference.SECONDARY_PREFERRED)
-        is_not_alived_c = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
-                                                                    "status": False},
-                                                                   {"_id": 1, "object": 1},
-                                                                   read_preference=ReadPreference.SECONDARY_PREFERRED)
+        is_alive_id = get_db()["noc.cache.object_status"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find({"object": {"$in": is_managed_undef_in},
+                                                                      "status": True},
+                                                                     {"_id": 1, "object": 1})
+        is_alive_id_ng = get_db()["noc.cache.object_status"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find({"object": {"$in": is_managed_not_generic_in},
+                                                                      "status": True},
+                                                                     {"_id": 1, "object": 1})
+        is_not_alived_c = get_db()["noc.cache.object_status"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find({"object": {"$in": is_managed_undef_in},
+                                                                      "status": False},
+                                                                     {"_id": 1, "object": 1})
         is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                m["object"] for m in is_alive_id]
         is_managed_ng_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                             m["object"] for m in is_alive_id_ng]
-        bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp.": "Failed to guess SNMP community",
-                                                     "_id": {"$in": is_managed_alive_in}},
-                                                    read_preference=ReadPreference.SECONDARY_PREFERRED)
-        bad_cli_cred = get_db()["noc.joblog"].find({"problems.suggest_cli.": "Failed to guess CLI credentials",
-                                                    "_id": {"$in": is_managed_ng_in}},
-                                                   read_preference=ReadPreference.SECONDARY_PREFERRED)
+        bad_snmp_cred = get_db()["noc.joblog"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+            {"problems.suggest_snmp.": "Failed to guess SNMP community",
+             "_id": {"$in": is_managed_alive_in}})
+        bad_cli_cred = get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+            {"problems.suggest_cli.": "Failed to guess CLI credentials",
+             "_id": {"$in": is_managed_ng_in}})
         mos_id = list(is_managed.values_list("id", flat=True))
         mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
         for b in is_not_alived_c:

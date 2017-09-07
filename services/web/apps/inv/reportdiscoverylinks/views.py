@@ -28,18 +28,20 @@ class ReportFilterApplication(SimpleReport):
     def get_data(self, request, **kwargs):
         data = []
 
-        value = get_db()["noc.links"].aggregate([
-            {"$unwind": "$interfaces"},
-            {
-                "$lookup": {
-                    "from": "noc.interfaces",
-                    "localField": "interfaces",
-                    "foreignField": "_id",
-                    "as": "int"
-                }
-            },
-            {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}
-        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        value = get_db()["noc.links"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
+            [
+                {"$unwind": "$interfaces"},
+                {
+                    "$lookup": {
+                        "from": "noc.interfaces",
+                        "localField": "interfaces",
+                        "foreignField": "_id",
+                        "as": "int"
+                    }
+                },
+                {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}
+            ])
         count = {0: set([]), 1: set([]), 2: set([]), 3: set([])}
         ap = AuthProfile.objects.filter(name__startswith="TG")
         for v in value:
