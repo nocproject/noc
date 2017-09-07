@@ -233,11 +233,10 @@ class NetworkSegment(Document):
         }
         if not status:
             set_op["lost_redundancy"] = False
-        NetworkSegment._get_collection().update(
+        NetworkSegment._get_collection().update_many(
             filter, {
                 "$set": set_op
-            },
-            multi=True
+            }
         )
 
     def set_lost_redundancy(self, status):

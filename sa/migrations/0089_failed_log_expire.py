@@ -13,11 +13,11 @@ class Migration:
     def forwards(self):
         expires = datetime.datetime.now() + datetime.timedelta(days=7)
         c = get_db()["noc.log.sa.failed_scripts"]
-        c.update({}, {
+        c.update_many({}, {
             "$set": {
                 "expires": expires
             }
-        }, multi=True)
+        })
 
     def backwards(self):
         pass

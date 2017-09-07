@@ -74,10 +74,10 @@ class AlarmDiagnostic(Document):
     def clear_diagnostics(cls, alarm):
         if hasattr(alarm, "id"):
             alarm = alarm.id
-        AlarmDiagnostic._get_collection().update({
+        AlarmDiagnostic._get_collection().update_many({
             "alarm": alarm
         }, {
             "$set": {
                 "expires": datetime.datetime.now() + cls.TTL
             }
-        }, multi=True)
+        })

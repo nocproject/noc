@@ -11,13 +11,13 @@ class Migration:
             pmap[d["name"]] = d["_id"]
         # Update
         for p in pmap:
-            acoll.update({
+            acoll.update_many({
                 "profile": p
             }, {
                 "$set": {
                     "profile": pmap[p]
                 }
-            }, multi=True)
+            })
 
     def backwards(self):
         pass
