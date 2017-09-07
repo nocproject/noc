@@ -155,13 +155,13 @@ class Scheduler(object):
         Reset all running jobs to waiting status
         """
         self.logger.debug("Reset running jobs")
-        r = self.get_collection().update(self.get_query({
+        r = self.get_collection().update_many(self.get_query({
             Job.ATTR_STATUS: Job.S_RUN
         }), {
             "$set": {
                 Job.ATTR_STATUS: Job.S_WAIT
             }
-        }, multi=True)
+        })
         if r["ok"]:
             nm = r.get("nModified", 0)
             if nm:
@@ -294,7 +294,7 @@ class Scheduler(object):
                     "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
                     jids, Job.ATTR_STATUS, Job.S_RUN
                 )
-                r = collection.update({
+                r = collection.update_many({
                     "_id": {
                         "$in": jids
                     }
@@ -302,7 +302,7 @@ class Scheduler(object):
                     "$set": {
                         Job.ATTR_STATUS: Job.S_RUN
                     }
-                }, multi=True)
+                })
                 if not r["ok"]:
                     self.logger.error("Failed to update running status")
                 if r["nModified"] != len(jids):
