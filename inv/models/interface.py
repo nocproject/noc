@@ -150,8 +150,9 @@ class Interface(Document):
             }
         else:
             q = {"interfaces": self.id}
-        return bool(Link._get_collection().find_one(q,
-                                                    read_preference=ReadPreference.SECONDARY_PREFERRED))
+        return bool(Link._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).find_one(q))
 
     def unlink(self):
         """

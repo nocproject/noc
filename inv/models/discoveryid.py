@@ -144,12 +144,14 @@ class DiscoveryID(Document):
             metrics["discoveryid_mac_interface"] += 1
             o = set(
                 d["managed_object"]
-                for d in Interface._get_collection().find({
+                for d in Interface._get_collection().with_options(
+                    read_preference=ReadPreference.SECONDARY_PREFERRED
+                ).find({
                     "mac": mac
                 }, {
                     "_id": 0,
                     "managed_object": 1
-                }, read_preference=ReadPreference.SECONDARY_PREFERRED)
+                })
             )
             if len(o) == 1:
                 return ManagedObject.get_by_id(list(o)[0])

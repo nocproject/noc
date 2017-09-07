@@ -65,10 +65,12 @@ class SelectorCache(Document):
         sid = selector
         if hasattr(selector, "id"):
             sid = selector.id
-        return bool(cls._get_collection().find_one({
+        return bool(cls._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).find_one({
             "object": oid,
             "selector": sid
-        }, read_preference=ReadPreference.SECONDARY_PREFERRED))
+        }))
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("q_cache"), lock=lambda x: q_lock)

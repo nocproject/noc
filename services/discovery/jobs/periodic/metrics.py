@@ -269,14 +269,16 @@ class MetricsCheck(DiscoveryCheck):
         :return:
         """
         metrics = []
-        for i in Interface._get_collection().find({
+        for i in Interface._get_collection().with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).find({
             "managed_object": self.object.id,
             "type": "physical"
         }, {
             "name": 1,
             "ifindex": 1,
             "profile": 1
-        }, read_preference=ReadPreference.SECONDARY_PREFERRED):
+        }):
             ipr = self.get_interface_profile_metrics(i["profile"])
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
