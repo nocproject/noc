@@ -15,12 +15,12 @@ import hashlib
 import uuid
 from collections import namedtuple
 import sys
-import six
 # Third-party modules
 import ujson
 import bson
 from mongoengine.fields import ListField, EmbeddedDocumentField
 from mongoengine.errors import NotUniqueError
+from pymongo import UpdateOne
 # NOC modules
 from noc.core.fileutils import safe_rewrite
 
@@ -350,28 +350,24 @@ class Collection(object):
         :param model:
         :return:
         """
-        n = 0
         bulk = self.model._get_collection().initialize_unordered_bulk_op()
-        for d in self.model._get_collection().find(
-            {
-                "uuid": {"$type": "string"}
-            },
-            {
+        for d in self.model._get_collection().find({
+                "uuid": {
+                    "$type": "string"
+                }
+            }, {
                 "_id": 1,
                 "uuid": 1
             }
         ):
-            bulk.find({"_id": d["_id"]}).update({
+            bulk += [UpdateOne({"_id": d["_id"]}, {
                 "$set": {
                     "uuid": uuid.UUID(d["uuid"])
                 }
-            })
-            n += 1
-        if n:
-            self.stdout.write("[%s] Fixing %d UUID\n" % (
-                self.name, n
-            ))
-            bulk.execute()
+            })]
+        if bulk:
+            self.stdout.write("[%s] Fixing %d UUID\n" % (self.name, len(bulk)))
+            self.model._get_collection().bulk_write(bulk)
 
     @classmethod
     def install(cls, data):
