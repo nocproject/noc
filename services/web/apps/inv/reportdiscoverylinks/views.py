@@ -13,6 +13,7 @@ from pymongo import ReadPreference
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
+from noc.sa.models.profile import Profile
 from noc.core.translation import ugettext as _
 from noc.core.profile.loader import GENERIC_PROFILE
 
@@ -60,7 +61,7 @@ class ReportFilterApplication(SimpleReport):
             smos = set(
                 ManagedObject.objects.filter(
                     pool=p, is_managed=True).exclude(
-                    profile_name=GENERIC_PROFILE).exclude(
+                    profile=Profile.get_by_name(GENERIC_PROFILE)).exclude(
                     auth_profile__in=ap
                 ).values_list('id', flat=True))
             all_p = 100.0/len(smos) if len(smos) else 1.0
