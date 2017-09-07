@@ -90,7 +90,7 @@ class MODashboard(BaseDashboard):
             "lags": self.object_data["lags"],
             "device": self.object.name.replace('\"', ''),
             "ip": self.object.address,
-            "platform": self.object.version.platform or "Unknown platform",
+            "platform": self.object.platform.name if self.object.platform else "Unknown platform",
             "device_id": self.object.id,
             "firmare_version": self.object.version.version or None,
             "segment": self.object.segment.id,
