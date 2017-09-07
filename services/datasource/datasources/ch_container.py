@@ -26,4 +26,3 @@ class CHContainerDataSource(BaseDataSource):
                 obj.container.get_bi_id() if obj.container else ""
             )]
         return r
-`
