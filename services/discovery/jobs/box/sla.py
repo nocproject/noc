@@ -11,6 +11,7 @@ import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sla.models.slaprobe import SLAProbe
+from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class SLACheck(DiscoveryCheck):
