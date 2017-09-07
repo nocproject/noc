@@ -28,7 +28,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             {"$match": {"count": {"$gt": 1}}}
         ])
 
-        for f in find["result"]:
+        for f in find:
             # DiscoveryID.objects.filter(chassis_mac=f["_id"])
             if not f["_id"]:
                 # Empty DiscoveryID

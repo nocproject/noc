@@ -152,9 +152,7 @@ class ServiceSummary(Document):
                     }
                 }
             ])
-            assert ra["ok"]
-            subscribers = dict(
-                (x["_id"], x["total"]) for x in ra["result"])
+            subscribers = dict((x["_id"], x["total"]) for x in ra)
             ri[i] = {
                 "service": dict(profiles),
                 "subscriber": subscribers

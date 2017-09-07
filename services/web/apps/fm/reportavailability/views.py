@@ -131,7 +131,7 @@ class ReportAvailabilityApplication(SimpleReport):
         ]
         data = Reboot._get_collection().aggregate(pipeline, read_preference=ReadPreference.SECONDARY_PREFERRED)
         # data = data["result"]
-        return dict([(rb["_id"], rb["count"]) for rb in data["result"]])
+        return dict((rb["_id"], rb["count"]) for rb in data)
 
     def get_data(self, request, interval=1, from_date=None, to_date=None,
                  skip_avail=False, skip_zero_avail=False, filter_zero_access=False, **kwargs):

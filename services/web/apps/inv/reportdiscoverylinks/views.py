@@ -42,7 +42,7 @@ class ReportFilterApplication(SimpleReport):
         ], read_preference=ReadPreference.SECONDARY_PREFERRED)
         count = {0: set([]), 1: set([]), 2: set([]), 3: set([])}
         ap = AuthProfile.objects.filter(name__startswith="TG")
-        for v in value["result"]:
+        for v in value:
             if v["count"] > 2:
                 count[3].add(v["_id"][0])
                 continue

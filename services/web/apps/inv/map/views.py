@@ -311,8 +311,7 @@ class MapApplication(ExtApplication):
                         }
                     }
                 ])
-                if "ok" in a:
-                    r.update([d["_id"] for d in a["result"]])
+                r.update([d["_id"] for d in a])
             return r
 
         def get_maintainance(objects):

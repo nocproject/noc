@@ -129,10 +129,7 @@ class TextIndex(Document):
                 }
             }
         ])
-        if r["ok"]:
-            return r["result"]
-        else:
-            return []
+        return list(r)
 
 
 def full_text_search(cls):

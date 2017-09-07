@@ -18,7 +18,7 @@ class ReportObjectSummaryApplication(SimpleReport):
 
     def get_data(self, **kwargs):
         self.model_name = {}  # oid -> name
-        data = Object._get_collection().aggregate([
+        data = list(Object._get_collection().aggregate([
             {
                 "$group": {
                     "_id": "$model",
@@ -27,8 +27,8 @@ class ReportObjectSummaryApplication(SimpleReport):
                     }
                 }
             }
-        ])
-        oms = [x["_id"] for x in data["result"] if x["_id"]]
+        ]))
+        oms = [x["_id"] for x in data if x["_id"]]
         c = ObjectModel._get_collection()
         om_names = {}
         while oms:
@@ -48,7 +48,7 @@ class ReportObjectSummaryApplication(SimpleReport):
             )
         data = sorted((
             [om_names[x["_id"]], x["total"]]
-            for x in data["result"]
+            for x in data
             if x["_id"] in om_names
         ), key=lambda x: -x[1])
         return self.from_dataset(

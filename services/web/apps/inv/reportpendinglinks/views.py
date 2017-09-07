@@ -65,7 +65,7 @@ class ReportPendingLinks(object):
                 {"$project": {"_id": 1, "problems.lldp": 1}}],
                 read_preference=ReadPreference.SECONDARY_PREFERRED)
 
-            for discovery in job_logs["result"]:
+            for discovery in job_logs:
                 if "RPC Error:" in discovery["problems"]["lldp"] or \
                                 "Unhandled exception" in discovery["problems"]["lldp"]:
                     continue

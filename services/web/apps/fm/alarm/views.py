@@ -403,7 +403,7 @@ class AlarmApplication(ExtApplication):
         if delta:
             dt = datetime.timedelta(seconds=int(delta))
             t0 = datetime.datetime.now() - dt
-            r = ActiveAlarm._get_collection().aggregate([
+            r = list(ActiveAlarm._get_collection().aggregate([
                 {
                     "$match": {
                         "timestamp": {
@@ -419,9 +419,9 @@ class AlarmApplication(ExtApplication):
                         }
                     }
                 }
-            ])
-            if r["ok"] and r["result"]:
-                s = AlarmSeverity.get_severity(r["result"][0]["severity"])
+            ]))
+            if r:
+                s = AlarmSeverity.get_severity(r[0]["severity"])
                 if s and s.sound and s.volume:
                     sound = "/ui/pkg/nocsound/%s.mp3" % s.sound
                     volume = float(s.volume) / 100.0

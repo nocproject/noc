@@ -90,8 +90,7 @@ class ReportRebootsApplication(SimpleReport):
             {"$group": {"_id": "$object", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}}
         ]
-        data = Reboot._get_collection().aggregate(pipeline)
-        data = data["result"]
+        data = list(Reboot._get_collection().aggregate(pipeline))
         # Get managed objects
         if not request.user.is_superuser:
             id_perm = [mo.id for mo in ManagedObject.objects.filter(

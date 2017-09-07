@@ -63,7 +63,7 @@ class ReportDiscoveryApplication(SimpleReport):
             },
             {"$sort": {"count": -1}}
         ])
-        d = [(x["_id"], x["count"]) for x in r["result"]]
+        d = [(x["_id"], x["count"]) for x in r]
         data += sorted(d, key=lambda x: -x[1])
         # Discovery jobs
         data += [SectionRow("Discovery jobs summary")]

@@ -70,7 +70,7 @@ class ReportDiscoveryProblem(object):
         for p in self.mos_pools:
             r = get_db()[self.coll_name % p.name].aggregate(self.pipelines.get(p.name, self.pipeline()),
                                                             read_preference=ReadPreference.SECONDARY_PREFERRED)
-            for x in r["result"]:
+            for x in r:
                 # @todo Append info for MO
                 yield x
 
