@@ -350,7 +350,7 @@ class Collection(object):
         :param model:
         :return:
         """
-        bulk = self.model._get_collection().initialize_unordered_bulk_op()
+        bulk = []
         for d in self.model._get_collection().find({
                 "uuid": {
                     "$type": "string"
