@@ -26,6 +26,7 @@ from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.perf import metrics
 from noc.config import config
 
+
 class Scheduler(object):
     COLLECTION_BASE = "noc.schedules."
 
@@ -160,7 +161,7 @@ class Scheduler(object):
             "$set": {
                 Job.ATTR_STATUS: Job.S_WAIT
             }
-        }, multi=True, safe=True)
+        }, multi=True)
         if r["ok"]:
             nm = r.get("nModified", 0)
             if nm:
@@ -301,7 +302,7 @@ class Scheduler(object):
                     "$set": {
                         Job.ATTR_STATUS: Job.S_RUN
                     }
-                }, multi=True, safe=True)
+                }, multi=True)
                 if not r["ok"]:
                     self.logger.error("Failed to update running status")
                 if r["nModified"] != len(jids):
