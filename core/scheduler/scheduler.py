@@ -363,9 +363,9 @@ class Scheduler(object):
                     "inserted=%d, updated=%d, removed=%d",
                     self.bulk_ops,
                     int(dt * 1000),
-                    r.get("nInserted", 0),
-                    r.get("nModified", 0),
-                    r.get("nRemoved", 0)
+                    r.inserted_count,
+                    r.modified_count,
+                    r.deleted_count
                 )
             except pymongo.errors.BulkWriteError as e:
                 self.logger.error(
