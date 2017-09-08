@@ -36,6 +36,11 @@ Ext.define("NOC.inv.platform.Model", {
             name: "is_builtin",
             type: "boolean",
             persist: false
+        },
+        {
+            name: "full_name",
+            type: "string",
+            persist: false
         }
     ]
 });

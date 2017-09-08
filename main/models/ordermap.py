@@ -12,7 +12,7 @@ from django.db import models
 # model -> label field
 ORDER_MAP_MODELS = {
     "sa.Profile": "name",
-    "inv.Platform": "name",
+    "inv.Platform": "full_name",
     "inv.Firmware": "version"
 }
 

@@ -35,8 +35,8 @@ Ext.define("NOC.inv.platform.Application", {
                     renderer: NOC.render.Lookup("vendor")
                 },
                 {
-                    text: "Name",
-                    dataIndex: "name",
+                    text: __("Platform"),
+                    dataIndex: "full_name",
                     flex: 1
                 },
                 {

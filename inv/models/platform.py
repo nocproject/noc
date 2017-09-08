@@ -19,7 +19,7 @@ from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules
 from .vendor import Vendor
-from noc.lib.nosql import ReferenceField
+from noc.lib.nosql import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
 
@@ -40,9 +40,11 @@ class Platform(Document):
             }
         ]
     }
-    vendor = ReferenceField(Vendor)
+    vendor = PlainReferenceField(Vendor)
     name = StringField()
     description = StringField(required=False)
+    # Full name, combined from vendor platform
+    full_name = StringField()
     # Global ID
     uuid = UUIDField(binary=True)
     # Object id in BI
@@ -53,6 +55,10 @@ class Platform(Document):
 
     def __unicode__(self):
         return self.name
+
+    def clean(self):
+        self.full_name = "%s %s" % (self.vendor.name, self.name)
+        super(Platform, self).clean()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
