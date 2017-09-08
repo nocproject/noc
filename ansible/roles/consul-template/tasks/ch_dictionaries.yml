@@ -1,0 +1,19 @@
+---
+- name: Create ch directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+  with_items:
+    - "{{consul_template_ch_dictionaries_dir}}"
+
+- name: put ch dictionary templates to consul-template dir
+  copy:
+    src: "{{item}}"
+    dest: "{{consul_template_ch_dictionaries_dir}}"
+  with_fileglob:
+    - "files/ch_dictionaries/*.ctmpl"
+
+- name: install consul-template config for ch dictionary
+  template:
+    src: services/ch_dictionary.conf.j2
+    dest: "{{consul_template_config_dir}}"

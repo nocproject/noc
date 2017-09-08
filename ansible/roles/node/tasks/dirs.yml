@@ -56,5 +56,3 @@
     mode: 0755
   with_items:
     - "{{bi_export_dir}}"
-    - "{{bi_export_dict_dir}}"
-    - "{{bi_export_dict_data_dir}}"

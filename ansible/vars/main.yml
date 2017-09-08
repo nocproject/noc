@@ -18,6 +18,7 @@ consul_home: "/home/{{consul_user}}"
 consul_template_version: "0.19.0"
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{etc_prefix}}/consul-template/templates"
+consul_template_ch_dictionaries_dir: "{{etc_prefix}}/consul-template/templates/ch_dictionaries"
 
 telegraf_prometheus_enabled: "{{lookup('env','PROMETHEUS_ENABLED') | default(False, True)}}"
 telegraf_influxdb_enabled: "{{lookup('env','INFLUXDB_ENABLED') | default(True, True)}}"
@@ -127,8 +128,6 @@ noc_reports_dir: "{{noc_var_lib}}/reports"
 noc_crashinfo_dir: "{{noc_root}}/var/cp/crashinfo/new"
 
 bi_export_dir: "{{noc_var_lib}}/bi"
-bi_export_dict_dir: "{{noc_var_lib}}/bi-dict"
-bi_export_dict_data_dir: "{{noc_var_lib}}/bi-dict-data"
 
 nsqd_db_dir: "/var/spool/nsqd"
 nsqd_config_dir: "{{etc_prefix}}/nsq"
@@ -144,3 +143,6 @@ fake_shell: /bin/false
 zookeeper_config_dir: "{{etc_prefix}}/zookeeper/conf"
 
 haproxy_clickhouse_listen: 8124
+
+ch_etc_path: "{{etc_prefix}}/clickhouse-server"
+ch_dictionaries_path: "{{ch_etc_path}}/dictionaries"
