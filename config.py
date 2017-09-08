@@ -360,8 +360,6 @@ class Config(BaseConfig):
         beef_prefix = StringParameter(default="var/beef/sa")
         cp_new = StringParameter(default="var/cp/crashinfo/new")
         bi_data_prefix = StringParameter(default="var/bi")
-        bi_dict_xml_prefix = StringParameter(default="var/bi-dict")
-        bi_dict_data_prefix = StringParameter(default="var/bi-dict-data")
         babel_cfg = StringParameter(default="etc/babel.cfg")
         babel = StringParameter(default="./bin/pybabel")
         pojson = StringParameter(default="./bin/pojson")
