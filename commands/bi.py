@@ -24,8 +24,6 @@ from noc.core.service.shard import Sharder
 
 class Command(BaseCommand):
     DATA_PREFIX = config.path.bi_data_prefix
-    DICT_XML_PREFIX = config.path.bi_dict_xml_prefix
-    DICT_DATA_PREFIX = config.path.bi_dict_data_prefix
 
     TOPIC = "chwriter"
     NSQ_CONNECT_TIMEOUT = config.nsqd.connect_timeout
@@ -47,29 +45,15 @@ class Command(BaseCommand):
             default=self.DATA_PREFIX,
             help="Show only summary"
         )
-        parser.add_argument(
-            "--dict-xml-prefix",
-            default=self.DICT_XML_PREFIX,
-            help="Show only summary"
-        )
-        parser.add_argument(
-            "--dict-data-prefix",
-            default=self.DICT_DATA_PREFIX,
-            help="Show only summary"
-        )
         # extract command
         extract_parser = subparsers.add_parser("extract")
         # clean command
         clean_parser = subparsers.add_parser("clean")
         # load command
         load_parser = subparsers.add_parser("load")
-        # extract dicts
-        extract_dict = subparsers.add_parser("dictionaries")
 
-    def handle(self, cmd, data_prefix, dict_xml_prefix, dict_data_prefix, *args, **options):
+    def handle(self, cmd, data_prefix, *args, **options):
         self.DATA_PREFIX = data_prefix
-        self.DICT_XML_PREFIX = dict_xml_prefix
-        self.DICT_DATA_PREFIX = dict_data_prefix
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def get_last_extract(self, name):
