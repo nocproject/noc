@@ -38,7 +38,7 @@ class MACApplication(ExtApplication):
     title = _("MacDB")
     menu = _("Mac DB")
     model = MACDB
-    bi_c = BIIDConvert()
+    bi_c = ""
     macdb = MACDBC()
     mac_search_re = re.compile(r"([\dABCDEF][\dABCDEF]:){2,}", re.IGNORECASE)
     mac_search_re_inv = re.compile(r"(:[\dABCDEF][\dABCDEF]){2,}", re.IGNORECASE)
