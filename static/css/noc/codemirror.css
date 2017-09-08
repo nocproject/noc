@@ -1,0 +1,43 @@
+.CodeMirror-merge, .CodeMirror-merge .CodeMirror {
+    height: auto;
+}
+
+.CodeMirror-merge-2pane .CodeMirror-merge-pane {
+    width: 52%;
+}
+
+.CodeMirror-merge-2pane .CodeMirror-merge-pane-rightmost {
+    width: 45%;
+}
+
+.CodeMirror-merge-2pane .CodeMirror-merge-gap {
+    width: 3%;
+}
+
+.CodeMirror-merge-r-inserted, .CodeMirror-merge-l-inserted {
+    background-image: none;
+    background-color: green;
+    background-position: bottom left;
+    background-repeat: repeat-x;
+}
+
+.CodeMirror-merge-r-deleted, .CodeMirror-merge-l-deleted {
+    background-image: none;
+    background-color: red;
+    background-position: bottom left;
+    background-repeat: repeat-x;
+}
+
+.CodeMirror-merge-l-chunk {
+    background: #395161;
+}
+
+.CodeMirror-merge-l-connect {
+    fill: #395161;
+    stroke: #88e;
+    stroke-width: 1px;
+}
+
+.CodeMirror-merge-collapsed-widget {
+    background: #395161;
+}
