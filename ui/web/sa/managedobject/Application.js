@@ -221,7 +221,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: __("Platform"),
                     dataIndex: "platform",
-                    width: 150
+                    width: 150,
+                    renderer: NOC.render.Lookup("platform")
                 },
                 {
                     text: __("SA Profile"),
