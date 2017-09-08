@@ -54,8 +54,9 @@ class Script(BaseScript):
                 continue
             test = {
                 "name": match.group("name"),
+                "group": "",
                 "type": self.TEST_TYPES[probe_type],
                 "target": match.group("target"),
             }
-            r += [{"name": match.group("name"), "tests": [test]}]
+            r += [test]
         return r
