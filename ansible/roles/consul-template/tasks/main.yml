@@ -47,6 +47,13 @@
     - requirements
     - config
 
+- name: include ch_dictionaries
+  include: "ch_dictionaries.yml"
+  when: ansible_nodename in groups['svc-clickhouse']
+  tags:
+    - requirements
+    - config
+
 - name: start consul-template service
   service:
     name: consul-template

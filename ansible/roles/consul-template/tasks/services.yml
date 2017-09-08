@@ -41,6 +41,20 @@
   when: ansible_nodename in groups['svc-bi'] and telegraf_influxdb_enabled
 
 - block:
+  - name: install noc_datasource template
+    copy:
+      src: noc_bi.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_datasource.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_datasource config for template
+    template:
+      src: services/noc_datasource.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_datasource.conf"
+    notify: reload consul-template
+  when: ansible_nodename in groups['svc-ch_datasource'] and telegraf_influxdb_enabled
+
+- block:
   - name: install noc_chwriter template
     copy:
       src: noc_chwriter.ctmpl
