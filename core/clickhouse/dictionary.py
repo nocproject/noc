@@ -91,10 +91,10 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "            <%s />" % cls._meta.layout,
             "        </layout>",
             "        <source>",
-            "            <file>",
-            "                <path>%s/%s.tsv</path>" % (config.path.bi_dict_data_prefix, cls._meta.name),
+            "            <http>",
+            "                <url>http://{{ range $index, $element := service \"datasource~_agent\"}}{{if eq $index 0}}{{.Address}}:{{.Port}}{{end}}{{else}}127.0.0.1:65535{{ end }}/api_datasource/ch_%s.tsv</url>" % cls._meta.name,
             "                <format>TabSeparated</format>",
-            "            </file>",
+            "            </http>",
             "        </source>",
             "        <structure>",
             "             <id>",
@@ -102,7 +102,8 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "             </id>",
             "             <attribute>",
             "                 <name>id</name>",
-            "                 <type>String</type>"
+            "                 <type>String</type>",
+            "                 <hierarchical>false</hierarchical>",
             "             </attribute>"
         ]
         for f in cls._fields_order:
@@ -113,7 +114,7 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
                 "                 <name>%s</name>" % ff.name,
                 "                 <type>%s</type>" % ff.db_type,
                 "                 <null_value>Unknown</null_value>",
-                "                 <hierarchical>%s</hierarchical>" % "true" if hier else "false",
+                "                 <hierarchical>%s</hierarchical>" % ("true" if hier else "false"),
                 "             </attribute>"
             ]
         x += [

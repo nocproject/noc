@@ -122,20 +122,11 @@ class Command(BaseCommand):
     def handle_dictionaries(self, *args, **options):
         # Extract dictionaries
         for dcls in Dictionary.iter_cls():
-            # Temporary data
-            dpath = os.path.join(self.DICT_DATA_PREFIX, "%s.tsv.tmp" % dcls._meta.name)
-            self.stdout.write("Extracting dictionary data to %s\n" % dpath)
-            with open(dpath, "w") as f:
-                dcls.dump(f)
             # Temporary XML
             xpath = os.path.join(self.DICT_XML_PREFIX, "%s.xml.tml" % dcls._meta.name)
             self.stdout.write("Extracting dictionary XML to %s\n" % xpath)
             with open(xpath, "w") as f:
                 f.write(dcls.get_config())
-            # Move temporary data
-            df = dpath[:-4]
-            self.stdout.write("Renaming dictionary data to %s\n" % df)
-            os.rename(dpath, df)
             # Move temporary XML
             xf = xpath[:-4]
             self.stdout.write("Rename dictionary XML to %s\n" % xf)
