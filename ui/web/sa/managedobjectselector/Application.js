@@ -142,7 +142,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 },
                 {
                     name: "filter_profile",
-                    xtype: "main.ref.profile.LookupField",
+                    xtype: "sa.profile.LookupField",
                     fieldLabel: __("Filter by Profile"),
                     allowBlank: true,
                     uiStyle: "large",
