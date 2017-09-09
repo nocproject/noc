@@ -18,3 +18,4 @@ class Profile(BaseProfile):
     command_exit = "logout"
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
+    snmp_metrics_get_chunk = 10
