@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: Wilis
-# OS:     FWBD
+# Rotek.RT-BS.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -16,7 +15,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "Wilis.FWBD.get_version"
+    name = "Rotek.RT-BS.get_version"
     cache = True
     interface = IGetVersion
 

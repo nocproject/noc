@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Wilis.FWBD.get_config
+# Rotek.RT-BS.get_config
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):
-    name = "Wilis.FWBD.get_config"
+    name = "Rotek.RT-BS.get_config"
     interface = IGetConfig
 
     def execute(self):
