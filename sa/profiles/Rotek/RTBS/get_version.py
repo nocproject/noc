@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Rotek.RT-BS.get_version
+# Rotek.RTBS.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -15,7 +15,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "Rotek.RT-BS.get_version"
+    name = "Rotek.RTBS.get_version"
     cache = True
     interface = IGetVersion
 

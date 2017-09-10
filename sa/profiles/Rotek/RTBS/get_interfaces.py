@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Rotek.RT-BS.get_interfaces
+# Rotek.RTBS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -15,7 +15,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "Rotek.RT-BS.get_interfaces"
+    name = "Rotek.RTBS.get_interfaces"
     cache = True
     interface = IGetInterfaces
 
