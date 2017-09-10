@@ -105,37 +105,64 @@ class ReportObjectDetailLinks(object):
 
 
 class ReportDiscoveryResult(object):
-    """Report for Discovery Result"""
-    def __init__(self, mo_ids):
-        self.mo_ids = mo_ids
-        self.out = self.load(self.mo_ids)
+    """Report for MO links detail"""
+    def __init__(self, mos, avail_only=False, match=None, load=False):
+        """
 
-    @staticmethod
-    def load(mo_ids):
+        :param mos:
+        :type mos: ManagedObject.objects.filter()
+        """
+        self.mo_ids = list(mos.values_list("id", flat=True))
+        if avail_only:
+            status = ObjectStatus.get_statuses(self.mo_ids)
+            self.mo_ids = [s for s in status if status[s]]
+        self.mos_pools = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
+        self.coll_name = "noc.schedules.discovery.%s"
+        # @todo Good way for pipelines fill
+        self.pipelines = {}
+        self.match = match
+        self.out = self.load() if load else {}
 
+    def pipeline(self, match=None):
+        """
+        Generate pipeline for request
+        :param match: Match filter
+        :type match: dict
+        :return:
+        :rtype: list
+        """
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
-        match = {"job.problems": {"$exists": True, "$ne": {  }}}
-
         pipeline = [
-            {"$match": {"key": {"$in": mo_ids}, "jcls": discovery}},
+            {"$match": {"key": {"$in": self.mo_ids}, "jcls": discovery}},
             {"$project": {
                 "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
                 "st": True,
                 "key": True}},
             {"$lookup": {"from": "noc.joblog", "localField": "j_id", "foreignField": "_id", "as": "job"}},
-            {"$project": {"job.problems": True, "st": True, "key": True}},
-            {"$match": match}]
+            {"$project": {"job.problems": True, "st": True, "key": True}}]
+        if self.match:
+            # @todo check match
+            pipeline += [{"$match": self.match}]
+        else:
+            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {  }}}}]
+        return pipeline
 
-        value = {}
-        for p in []:
-            value = get_db()["noc.schedules.discovery.%s" % p.name].aggregate(pipeline,
-                                                                         read_preference=ReadPreference.SECONDARY_PREFERRED)
+    def load(self):
 
         r = defaultdict(dict)
-        for v in value["result"]:
-            pass
+        for v in self:
+            r[int(v["key"])]["time"] = v["st"]
+            r[int(v["key"])]["problems"] = v["job"][0]["problems"]
         # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
         return r
+
+    def __iter__(self):
+        for p in self.mos_pools:
+            r = get_db()[self.coll_name % p.name].aggregate(self.pipelines.get(p.name, self.pipeline()),
+                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
+            for x in r["result"]:
+                # @todo Append info for MO
+                yield x
 
     def __getitem__(self, item):
         return self.out.get(item, {})
