@@ -178,7 +178,7 @@ class ReportFilterApplication(SimpleReport):
         rdp = ReportDiscoveryProblem(mos, avail_only=avail_status, match=match)
         exclude_method = []
         if filter_pending_links:
-            exclude_method += ["lldp", "lacp", "cdp"]
+            exclude_method += ["lldp", "lacp", "cdp", "huawei_ndp"]
 
         for discovery in rdp:
                 mo = ManagedObject.get_by_id(discovery["key"])
@@ -198,6 +198,7 @@ class ReportFilterApplication(SimpleReport):
                             mo.name,
                             mo.address,
                             mo.profile_name,
+                            mo.administrative_domain.name,
                             _("Yes") if mo.get_status() else _("No"),
                             discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
                             method,
