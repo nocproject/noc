@@ -20,6 +20,23 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
+        # Try SNMP first
+        if self.has_snmp():
+            try:
+                line = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
+                platform = line.split(",")[0].strip()
+                v = line.split(",")[1].strip()
+                sres = v.split(".")
+                sw = "%s.%s.%s" % (sres[0],sres[1],sres[2])
+                return {
+                    "vendor": "Rotek",
+                    "platform": platform,
+                    "version": sw,
+                }
+            except self.snmp.TimeOutError:
+                pass
+        # Fallback to CLI
+        """
         try:
             c = self.cli("show software version", cached=True)
         except self.CLISyntaxError:
@@ -36,3 +53,4 @@ class Script(BaseScript):
             "platform": platform,
             "version": sw,
             }
+        """
