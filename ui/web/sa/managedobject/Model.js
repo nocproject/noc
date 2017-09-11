@@ -340,6 +340,10 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
+            name: "cli_session_policy",
+            type: "string"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

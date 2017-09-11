@@ -288,6 +288,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "int"
         },
         {
+            name: "cli_session_policy",
+            type: "string"
+        },
+        {
             name: "enable_periodic_discovery",
             xtype: "boolean",
             defaultValue: false

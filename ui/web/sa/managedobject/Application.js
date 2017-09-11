@@ -487,6 +487,19 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     hideTrigger: true
                                 },
                                 {
+                                    name: "cli_session_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("CLI Session Policy"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "P"
+                                },
+                                {
                                     name: "max_scripts",
                                     xtype: "numberfield",
                                     fieldLabel: __("Max. Scripts"),

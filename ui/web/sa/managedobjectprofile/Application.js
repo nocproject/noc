@@ -189,6 +189,25 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
+                            title: __("Access"),
+                            items: [
+                                {
+                                    name: "cli_session_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("CLI Session Policy"),
+                                    allowBlank: true,
+                                    labelWidth: 60,
+                                    labelAlign: "left",
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "E"
+                                }
+                            ]
+                        },
+                        {
                             title: __("Card"),
                             items: [
                                 {

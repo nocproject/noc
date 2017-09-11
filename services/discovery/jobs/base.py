@@ -139,7 +139,10 @@ class MODiscoveryJob(PeriodicJob):
         self.caps = self.object.update_caps(caps, source=source)
 
     def allow_sessions(self):
-        return bool(self.get_caps().get("Management | Allow Sessions"))
+        r = self.object.can_cli_session()
+        if r:
+            self.object.get_profile().allow_cli_session(None, None)
+        return r
 
     def update_umbrella(self, umbrella_cls, details):
         """
