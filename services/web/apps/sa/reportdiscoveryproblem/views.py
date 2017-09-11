@@ -210,7 +210,7 @@ class ReportFilterApplication(SimpleReport):
             title=self.title,
             columns=[
                 _("Managed Object"), _("Address"), _("Profile"),
-                _("Avail"), _("Last successful discovery"),
+                _("Administrative Domain"), _("Avail"), _("Last successful discovery"),
                 _("Discovery"), _("Error")
             ],
             data=data)
