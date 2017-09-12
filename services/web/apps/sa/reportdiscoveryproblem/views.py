@@ -165,7 +165,9 @@ class ReportFilterApplication(SimpleReport):
 
         if profile_check_only:
             match = {"$or": [{"job.problems.suggest_cli": {"$exists": True}},
-                             {"job.problems.suggest_snmp": {"$exists": True}}]}
+                             {"job.problems.suggest_snmp": {"$exists": True}},
+                             {"job.problems.profile.": {"$regex": "Cannot detect profile"}},
+                             {"job.problems.version.": {"$regex": "Remote error code 1000[1234]"}}]}
 
         elif failed_scripts_only:
             match = {"$and": [
