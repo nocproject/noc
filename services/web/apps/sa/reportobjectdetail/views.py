@@ -478,6 +478,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "segment",
             "phys_interface_count",
             "link_count",
+            "discovery_problem"
             # "object_tags"
             # "object_caps"
             # "interface_type_count"
@@ -500,6 +501,7 @@ class ReportObjectDetailApplication(ExtApplication):
          "SEGMENT",
          "PHYS_INTERFACE_COUNT",
          "LINK_COUNT",
+         "DISCOVERY_PROBLEM"
          # "OBJECT_TAGS"
          # "OBJECT_CAPS"
          # "INTERFACE_TYPE_COUNT"
@@ -546,6 +548,7 @@ class ReportObjectDetailApplication(ExtApplication):
         moss = []
         iface_count = {}
         link_count = {}
+        discovery_problem = {}
         iface_type_count = {}
         object_caps = {}
         container_lookup = ReportContainer(mos_id)
@@ -559,6 +562,8 @@ class ReportObjectDetailApplication(ExtApplication):
             iface_type_count = ReportObjectIfacesStatusStat(mos_id, columns=type_columns)
         if "link_count" in columns.split(","):
             link_count = ReportObjectLinkCount([])
+        if "discovery_problem" in columns.split(","):
+            discovery_problem = ReportDiscoveryResult(mos, load=True)
         if "object_caps" in columns.split(","):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.caps.values()
@@ -577,7 +582,7 @@ class ReportObjectDetailApplication(ExtApplication):
         for mo in moss:
             if mo not in mos_id:
                 continue
-
+            dp = discovery_problem[mo]
             r += [translate_row(row([
                 mo,
                 moss[0],
@@ -594,7 +599,8 @@ class ReportObjectDetailApplication(ExtApplication):
                 container_lookup[mo].get("text", ""),
                 segment_lookup.get(bson.objectid.ObjectId(moss[6]), "No segment") if segment_lookup else "",
                 iface_count[mo] if iface_count else "",
-                link_count[mo] if link_count else ""
+                link_count[mo] if link_count else "",
+                dp.get("problems", "") if dp else ""
                 # iface_type_count[mo] if iface_type_count else ["", "", "", ""]
             ]), cmap)]
             if "interface_type_count" in columns.split(","):
