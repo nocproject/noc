@@ -36,23 +36,10 @@ from noc.main.models.synccache import SyncCache
 logger = logging.getLogger(__name__)
 
 
-#
-# Managers for DNSZone
-#
-class ForwardZoneManager(models.Manager):
-    def get_query_set(self):
-        q = (Q(name__iendswith=".in-addr.arpa") |
-             Q(name__iendswith=".ip6.int") |
-             Q(name__iendswith=".ip6.arpa"))
-        return super(ForwardZoneManager, self).get_query_set().exclude(q)
-
-
-class ReverseZoneManager(models.Manager):
-    def get_query_set(self):
-        q = (Q(name__iendswith=".in-addr.arpa") |
-             Q(name__iendswith=".ip6.int") |
-             Q(name__iendswith=".ip6.arpa"))
-        return super(ReverseZoneManager, self).get_query_set().filter(q)
+# Constants
+ZONE_FORWARD = "F"
+ZONE_REVERSE_IPV4 = "4"
+ZONE_REVERSE_IPV6 = "6"
 
 
 class DNSZone(models.Model):
@@ -67,6 +54,16 @@ class DNSZone(models.Model):
         app_label = "dns"
 
     name = models.CharField(_("Domain"), max_length=256, unique=True)
+    type = models.CharField(
+        _("Type"),
+        max_length=1, null=False, blank=False,
+        default=ZONE_FORWARD,
+        choices=[
+            (ZONE_FORWARD, "Forward"),
+            (ZONE_REVERSE_IPV4, "Reverse IPv4"),
+            (ZONE_REVERSE_IPV6, "Reverse IPv6")
+        ]
+    )
     description = models.CharField(_("Description"),
                                    null=True, blank=True, max_length=64)
     project = models.ForeignKey(
@@ -86,8 +83,6 @@ class DNSZone(models.Model):
 
     # Managers
     objects = models.Manager()
-    forward_zones = ForwardZoneManager()
-    reverse_zones = ReverseZoneManager()
     zone = GridVCSField("dnszone")
 
     def __unicode__(self):
@@ -101,8 +96,14 @@ class DNSZone(models.Model):
         """
         return site.reverse("dns:dnszone:change", self.id)
 
-    @property
-    def type(self):
+    def save(self, *args, **kwargs):
+        # Set .type
+        self.type = self.get_type_for_zone(self.name or "")
+        # Rest of save
+        super(DNSZone, self).save(*args, **kwargs)
+
+    @staticmethod
+    def get_type_for_zone(name):
         """
         Zone type. One of:
 
@@ -113,13 +114,13 @@ class DNSZone(models.Model):
         :return: Zone type
         :rtype: String
         """
-        nl = self.name.lower()
+        nl = name.lower()
         if nl.endswith(".in-addr.arpa"):
-            return "R4"  # IPv4 reverse
+            return ZONE_REVERSE_IPV4  # IPv4 reverse
         elif nl.endswith(".ip6.int") or nl.endswith(".ip6.arpa"):
-            return "R6"  # IPv6 reverse
+            return ZONE_REVERSE_IPV6  # IPv6 reverse
         else:
-            return "F"  # Forward
+            return ZONE_FORWARD  # Forward
 
     rx_rzone = re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
 
@@ -131,7 +132,7 @@ class DNSZone(models.Model):
         :return: IPv4 or IPv6 prefix
         :rtype: String
         """
-        if self.type == "R4":
+        if self.type == ZONE_REVERSE_IPV4:
             # Get IPv4 prefix covering reverse zone
             n = self.name.lower()
             if n.endswith(".in-addr.arpa"):
@@ -141,7 +142,7 @@ class DNSZone(models.Model):
                 r += ["0"] * l
                 ml = 32 - 8 * l
                 return ".".join(r) + "/%d" % ml
-        elif self.type == "R6":
+        elif self.type == ZONE_REVERSE_IPV6:
             # Get IPv6 prefix covering reverse zone
             n = self.name.lower()
             if n.endswith(".ip6.int"):
@@ -276,7 +277,7 @@ class DNSZone(models.Model):
         :return: RPSL
         :rtype: String
         """
-        if self.type == "F":
+        if self.type == ZONE_FORWARD:
             return ""
         # Do not generate RPSL for private reverse zones
         if self.name.lower().endswith(".10.in-addr.arpa"):
@@ -549,15 +550,15 @@ class DNSZone(models.Model):
         records = []
         records += self.get_rr()
         records += self.get_ns()
-        if self.type == "F":
+        if self.type == ZONE_FORWARD:
             records += self.get_ipam_a()
             records += self.get_missed_ns_a()
             order_by = cmp_fwd
-        elif self.type == "R4":
+        elif self.type == ZONE_REVERSE_IPV4:
             records += self.get_ipam_ptr4()
             records += self.get_classless_delegation()
             order_by = cmp_ptr
-        elif self.type == "R6":
+        elif self.type == ZONE_REVERSE_IPV6:
             records += self.get_ipam_ptr6()
             order_by = cmp_ptr
         else:

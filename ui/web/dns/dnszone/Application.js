@@ -36,6 +36,16 @@ Ext.define("NOC.dns.dnszone.Application", {
                     width: 30
                 },
                 {
+                    text: __("Type"),
+                    dataIndex: "type",
+                    renderer: NOC.render.Choices({
+                        "F": __("Fwd"),
+                        "4": __("Rev IPv4"),
+                        "6": __("Rev IPv6")
+                    }),
+                    width: 30
+                },
+                {
                     text: __("Serial"),
                     dataIndex: "serial",
                     width: 75
@@ -207,6 +217,16 @@ Ext.define("NOC.dns.dnszone.Application", {
             name: "profile",
             ftype: "lookup",
             lookup: "dns.dnszoneprofile"
+        },
+        {
+            title: __("By Type"),
+            name: "type",
+            ftype: "choices",
+            store: [
+                ["F", __("Forward")],
+                ["4", __("IPv4 Reverse")],
+                ["6", __("IPv6 Reverse")]
+            ]
         },
         {
             title: __("By Project"),

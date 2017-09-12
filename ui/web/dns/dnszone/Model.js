@@ -65,6 +65,11 @@ Ext.define("NOC.dns.dnszone.Model", {
             type: "date"
         },
         {
+            name: "type",
+            type: "string",
+            persist: false
+        },
+        {
             name: "tags",
             type: "auto"
         }
