@@ -9,5 +9,5 @@
     "match_method": "contains",
     "value": "1.3.6.1.4.1.40248",
     "action": "match",
-    "profile": "Vitesse.VSC"
+    "profile__name": "Vitesse.VSC"
 }

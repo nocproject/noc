@@ -3,7 +3,7 @@
     "uuid": "ea73dc9f-c499-4513-b8a7-2d668d28e012",
     "action__name": "ping",
     "description": "",
-    "profile": "MikroTik.RouterOS",
+    "profile__name": "MikroTik.RouterOS",
     "config_mode": false,
     "preference": 1000,
     "match": [],

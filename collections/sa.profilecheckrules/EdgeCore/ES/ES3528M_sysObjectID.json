@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.259.6.10.94",
     "action": "match",
-    "profile": "EdgeCore.ES"
+    "profile__name": "EdgeCore.ES"
 }

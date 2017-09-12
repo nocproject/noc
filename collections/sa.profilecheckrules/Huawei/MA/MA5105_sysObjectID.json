@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.2011.2.6.5.21",
     "action": "match",
-    "profile": "Huawei.VRP3"
+    "profile__name": "Huawei.VRP3"
 }

@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.35265.1.28",
     "action": "match",
-    "profile": "Eltex.DSLAM"
+    "profile__name": "Eltex.DSLAM"
 }

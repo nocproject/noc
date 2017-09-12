@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.4413",
     "action": "match",
-    "profile": "Alstec.24xx"
+    "profile__name": "Alstec.24xx"
 }

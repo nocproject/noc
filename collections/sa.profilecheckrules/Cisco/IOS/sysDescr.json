@@ -9,5 +9,5 @@
     "match_method": "re",
     "value": "^Cisco IOS Software",
     "action": "match",
-    "profile": "Cisco.IOS"
+    "profile__name": "Cisco.IOS"
 }

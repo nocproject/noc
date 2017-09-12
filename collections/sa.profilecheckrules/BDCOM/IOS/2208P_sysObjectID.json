@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.3320.1.347.0",
     "action": "match",
-    "profile": "BDCOM.IOS"
+    "profile__name": "BDCOM.IOS"
 }

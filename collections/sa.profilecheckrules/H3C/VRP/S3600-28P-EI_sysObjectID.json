@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.25506.1.37",
     "action": "match",
-    "profile": "H3C.VRP"
+    "profile__name": "H3C.VRP"
 }

@@ -9,5 +9,5 @@
     "match_method": "contains",
     "value": "ALSTEC MSPU System",
     "action": "match",
-    "profile": "Alstec.7200"
+    "profile__name": "Alstec.7200"
 }

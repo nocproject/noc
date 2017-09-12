@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.890.1.5.8.16",
     "action": "match",
-    "profile": "Zyxel.ZyNOS"
+    "profile__name": "Zyxel.ZyNOS"
 }

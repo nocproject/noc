@@ -9,5 +9,5 @@
   "match_method": "contains",
   "value": "Orion Networks international Inc.",
   "action": "match",
-  "profile": "Orion.NOS"
+  "profile__name": "Orion.NOS"
 }

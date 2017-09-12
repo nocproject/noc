@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.1332.1.24.3",
     "action": "match",
-    "profile": "Iskratel.ESCOM"
+    "profile__name": "Iskratel.ESCOM"
 }
