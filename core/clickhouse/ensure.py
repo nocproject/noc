@@ -56,5 +56,5 @@ def ensure_all_pm_scopes():
     # Replicated configuration
     ch = connection()
     for host, port in ch.execute("SELECT host_address, port FROM system.clusters WHERE cluster = %s", args=[config.clickhouse.cluster]):
-        c = connection(host=host, port=port)
+        c = connection(host=host, port=port, read_only=False)
         ensure_pm_scopes(c)
