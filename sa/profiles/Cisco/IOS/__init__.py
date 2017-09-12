@@ -108,6 +108,8 @@ class Profile(BaseProfile):
                 return "Ca %s/%s" % (
                     match.group('pr_if'), match.group('sub_if')
                 )
+        if il.endswith(" type tunnel"):
+            il = il[:-12]
         if il.startswith("virtual-template"):
             return "Vi %s" % il[16:].strip()
         if il.startswith("service-engine"):
