@@ -10,7 +10,7 @@ stages:
 
 test:empty:
   stage: test
-  image: registry.getnoc.com/noc/nocmc/feature_microservices:dev
+  image: registry.getnoc.com/noc/nocmc/feature_moversion:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
@@ -35,7 +35,7 @@ test:empty:
 
 test:with data:
   stage: test
-  image: registry.getnoc.com/noc/nocmc/feature_microservices:dev
+  image: registry.getnoc.com/noc/nocmc/feature_moversion:dev
   variables:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
@@ -63,7 +63,7 @@ build:
   script:
     - mkdir -p dist 
     - ./build.py package.json
-    - echo ${CI_BUILD_REF} > dist/collections.latest
+    - echo ${CI_BUILD_REF} > dist/collections-moversion.latest
   tags:
     - docker
   artifacts:
@@ -71,6 +71,7 @@ build:
       - dist/
     expire_in: 3 min
   only:
+    - moversion@noc/collections
     - master@noc/collections
 
 upload:
@@ -81,4 +82,5 @@ upload:
   tags:
     - docker 
   only:
+    - moversion@noc/collections
     - master@noc/collections

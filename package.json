@@ -1,7 +1,7 @@
 {
-    "name": "collections",
+    "name": "collections-moversion",
     "version": "latest",
-    "dst_prefix": "collections",
+    "dst_prefix": "collections-moversion",
     "src_prefix": "",
     "files": [
        "**"
