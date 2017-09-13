@@ -50,11 +50,17 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
+    rx_owner = re.compile(
+        "Owner: *(?P<owner>[^\n]+)\n",
+        re.MULTILINE
+    )
+
     # IOS to interface type conversion
     # @todo: Add other types
     TEST_TYPES = {
         "icmp-echo": "icmp-echo",
         "path-jitter": "path-jitter",
+        "udp-jitter": "path-jitter",
         "icmp-jitter": "icmp-echo",
         "echo": "icmp-echo",
         "udp-echo": "udp-echo"
@@ -93,13 +99,15 @@ class Script(BaseScript):
                 )
             type = self.TEST_TYPES[type]
             target = match.group("target")
+            match = self.rx_owner.search(config)
+            group = ""
+            if match:
+                group = match.group("owner").strip()
             r += [{
                 "name": name,
-                "tests": [{
-                    "name": name,
-                    "type": type,
-                    "target": target
-                }]
+                "group": group,
+                "type": type,
+                "target": target
             }]
             match = self.rx_tag.search(config)
             if match:

@@ -36,23 +36,10 @@ from noc.main.models.synccache import SyncCache
 logger = logging.getLogger(__name__)
 
 
-#
-# Managers for DNSZone
-#
-class ForwardZoneManager(models.Manager):
-    def get_query_set(self):
-        q = (Q(name__iendswith=".in-addr.arpa") |
-             Q(name__iendswith=".ip6.int") |
-             Q(name__iendswith=".ip6.arpa"))
-        return super(ForwardZoneManager, self).get_query_set().exclude(q)
-
-
-class ReverseZoneManager(models.Manager):
-    def get_query_set(self):
-        q = (Q(name__iendswith=".in-addr.arpa") |
-             Q(name__iendswith=".ip6.int") |
-             Q(name__iendswith=".ip6.arpa"))
-        return super(ReverseZoneManager, self).get_query_set().filter(q)
+# Constants
+ZONE_FORWARD = "F"
+ZONE_REVERSE_IPV4 = "4"
+ZONE_REVERSE_IPV6 = "6"
 
 
 class DNSZone(models.Model):
@@ -67,8 +54,18 @@ class DNSZone(models.Model):
         app_label = "dns"
 
     name = models.CharField(_("Domain"), max_length=256, unique=True)
+    type = models.CharField(
+        _("Type"),
+        max_length=1, null=False, blank=False,
+        default=ZONE_FORWARD,
+        choices=[
+            (ZONE_FORWARD, "Forward"),
+            (ZONE_REVERSE_IPV4, "Reverse IPv4"),
+            (ZONE_REVERSE_IPV6, "Reverse IPv6")
+        ]
+    )
     description = models.CharField(_("Description"),
-        null=True, blank=True, max_length=64)
+                                   null=True, blank=True, max_length=64)
     project = models.ForeignKey(
         Project, verbose_name="Project",
         null=True, blank=True, related_name="dnszone_set")
@@ -76,8 +73,9 @@ class DNSZone(models.Model):
     is_auto_generated = models.BooleanField(_("Auto generated?"))
     serial = models.IntegerField(_("Serial"), default=0)
     profile = models.ForeignKey(DNSZoneProfile,
-        verbose_name=_("Profile"))
-    notification_group = models.ForeignKey(NotificationGroup,
+                                verbose_name=_("Profile"))
+    notification_group = models.ForeignKey(
+        NotificationGroup,
         verbose_name=_("Notification Group"), null=True, blank=True,
         help_text=_("Notification group to use when zone changed"))
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
@@ -85,8 +83,6 @@ class DNSZone(models.Model):
 
     # Managers
     objects = models.Manager()
-    forward_zones = ForwardZoneManager()
-    reverse_zones = ReverseZoneManager()
     zone = GridVCSField("dnszone")
 
     def __unicode__(self):
@@ -100,8 +96,14 @@ class DNSZone(models.Model):
         """
         return site.reverse("dns:dnszone:change", self.id)
 
-    @property
-    def type(self):
+    def save(self, *args, **kwargs):
+        # Set .type
+        self.type = self.get_type_for_zone(self.name or "")
+        # Rest of save
+        super(DNSZone, self).save(*args, **kwargs)
+
+    @staticmethod
+    def get_type_for_zone(name):
         """
         Zone type. One of:
 
@@ -112,13 +114,13 @@ class DNSZone(models.Model):
         :return: Zone type
         :rtype: String
         """
-        nl = self.name.lower()
+        nl = name.lower()
         if nl.endswith(".in-addr.arpa"):
-            return "R4"  # IPv4 reverse
+            return ZONE_REVERSE_IPV4  # IPv4 reverse
         elif nl.endswith(".ip6.int") or nl.endswith(".ip6.arpa"):
-            return "R6"  # IPv6 reverse
+            return ZONE_REVERSE_IPV6  # IPv6 reverse
         else:
-            return "F"  # Forward
+            return ZONE_FORWARD  # Forward
 
     rx_rzone = re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
 
@@ -130,7 +132,7 @@ class DNSZone(models.Model):
         :return: IPv4 or IPv6 prefix
         :rtype: String
         """
-        if self.type == "R4":
+        if self.type == ZONE_REVERSE_IPV4:
             # Get IPv4 prefix covering reverse zone
             n = self.name.lower()
             if n.endswith(".in-addr.arpa"):
@@ -140,7 +142,7 @@ class DNSZone(models.Model):
                 r += ["0"] * l
                 ml = 32 - 8 * l
                 return ".".join(r) + "/%d" % ml
-        elif self.type == "R6":
+        elif self.type == ZONE_REVERSE_IPV6:
             # Get IPv6 prefix covering reverse zone
             n = self.name.lower()
             if n.endswith(".ip6.int"):
@@ -264,8 +266,7 @@ class DNSZone(models.Model):
         :return: List of zone NSes
         :rtype: List of string
         """
-        return sorted(self.get_ns_name(ns)
-            for ns in self.profile.authoritative_servers)
+        return sorted(self.get_ns_name(ns) for ns in self.profile.authoritative_servers)
 
     @property
     def rpsl(self):
@@ -276,7 +277,7 @@ class DNSZone(models.Model):
         :return: RPSL
         :rtype: String
         """
-        if self.type == "F":
+        if self.type == ZONE_FORWARD:
             return ""
         # Do not generate RPSL for private reverse zones
         if self.name.lower().endswith(".10.in-addr.arpa"):
@@ -326,7 +327,6 @@ class DNSZone(models.Model):
         """
         ttl = self.profile.zone_ttl
         # @todo: Filter by VRF
-        r = []
         l = len(self.name) + 1
         q = (
             Q(fqdn__iexact=self.name) |
@@ -334,7 +334,7 @@ class DNSZone(models.Model):
         )
         for z in DNSZone.objects.filter(
                 name__iendswith=".%s" % self.name
-            ).values_list("name", flat=True):
+        ).values_list("name", flat=True):
             q &= ~(
                 Q(fqdn__iexact=z) |
                 Q(fqdn__iendswith=".%s" % z)
@@ -366,14 +366,16 @@ class DNSZone(models.Model):
 
         ttl = self.profile.zone_ttl
         l = len(self.name) + 1
-        return [(
-            ptr(a.address)[:-l],
-            "PTR",
-            a.fqdn + ".",
-            ttl,
-            None
+        return [
+            (
+                ptr(a.address)[:-l],
+                "PTR",
+                a.fqdn + ".",
+                ttl,
+                None
             ) for a in Address.objects.filter(afi="4").extra(
-                where=["address << %s"], params=[self.reverse_prefix])
+                where=["address << %s"], params=[self.reverse_prefix]
+            )
         ]
 
     def get_ipam_ptr6(self):
@@ -384,14 +386,16 @@ class DNSZone(models.Model):
         """
         ttl = self.profile.zone_ttl
         origin_length = (len(self.name) - 8 + 1) // 2
-        return [(
-            IPv6(a.address).ptr(origin_length),
-            "PTR",
-            a.fqdn + ".",
-            ttl,
-            None
+        return [
+            (
+                IPv6(a.address).ptr(origin_length),
+                "PTR",
+                a.fqdn + ".",
+                ttl,
+                None
             ) for a in Address.objects.filter(afi="6").extra(
-            where=["address << %s"], params=[self.reverse_prefix])
+                where=["address << %s"], params=[self.reverse_prefix]
+            )
         ]
 
     def get_missed_ns_a(self):
@@ -409,14 +413,15 @@ class DNSZone(models.Model):
             if not ns.ip:
                 continue
             ns_name = self.get_ns_name(ns)
-             # NS server from zone
-            if (ns_name.endswith(suffix) and
-                "." not in ns_name[:-len(suffix)]):
+            # NS server from zone
+            if ns_name.endswith(suffix) and "." not in ns_name[:-len(suffix)]:
                 in_zone_nses[ns_name[:-len(suffix)]] = ns.ip
         # Find missed in-zone NSes
-        return [(name, "A", in_zone_nses[name], ttl, None)
+        return [
+            (name, "A", in_zone_nses[name], ttl, None)
             for name in in_zone_nses
-            if not (name in in_zone_nses and type in ("A", "IN A"))]
+            if not (name in in_zone_nses and type in ("A", "IN A"))
+        ]
 
     def get_ns(self):
         ttl = self.profile.zone_ttl
@@ -432,8 +437,7 @@ class DNSZone(models.Model):
                 records += [(z.name[:-l - 1], "NS", ns_name,
                              ttl, None)]
                 # Zone delegated to NS from the child zone
-                if (ns_name.endswith(suffix) and
-                    "." in ns_name[:-len(suffix)]):
+                if ns_name.endswith(suffix) and "." in ns_name[:-len(suffix)]:
                     r = (ns_name[:-len(suffix)], ns.ip)
                     if r not in nested_nses:
                         nested_nses += [r]
@@ -464,7 +468,8 @@ class DNSZone(models.Model):
         # Range delegations
         for r in AddressRange.objects.filter(action="D").extra(
             where=["from_address << %s", "to_address << %s"],
-            params=[self.reverse_prefix, self.reverse_prefix]):
+            params=[self.reverse_prefix, self.reverse_prefix]
+        ):
             nses = [ns.strip() for ns in r.reverse_nses.split(",")]
             for a in r.addresses:
                 n = a.address.split(".")[-1]
@@ -476,7 +481,7 @@ class DNSZone(models.Model):
         # Subnet delegation macro
         delegations = defaultdict(list)
         for d in [r for r in self.dnszonerecord_set.filter(
-            type="NS", name__contains="/")]:
+                type="NS", name__contains="/")]:
             delegations[d.name] += [d.content]
         # Perform classless reverse zone delegation
         for d in delegations:
@@ -493,7 +498,8 @@ class DNSZone(models.Model):
             bitmask = ((1 << m) - 1) << (8 - m)
             if net & bitmask != net:
                 continue  # Invalid network
-            records += [(str(i), "CNAME", "%d.%s" % (i, d), ttl, None)
+            records += [
+                (str(i), "CNAME", "%d.%s" % (i, d), ttl, None)
                 for i in range(net, net + (1 << (8 - m)))
             ]
         return records
@@ -544,15 +550,15 @@ class DNSZone(models.Model):
         records = []
         records += self.get_rr()
         records += self.get_ns()
-        if self.type == "F":
+        if self.type == ZONE_FORWARD:
             records += self.get_ipam_a()
             records += self.get_missed_ns_a()
             order_by = cmp_fwd
-        elif self.type == "R4":
+        elif self.type == ZONE_REVERSE_IPV4:
             records += self.get_ipam_ptr4()
             records += self.get_classless_delegation()
             order_by = cmp_ptr
-        elif self.type == "R6":
+        elif self.type == ZONE_REVERSE_IPV6:
             records += self.get_ipam_ptr6()
             order_by = cmp_ptr
         else:
@@ -661,7 +667,7 @@ class DNSZone(models.Model):
         if cz == nz:
             logger.debug("Zone not changed: %s", self.name)
             return False  # Not changed
-         # Step serial
+        # Step serial
         self.set_next_serial()
         # Generate new zone again
         # Because serial has been changed

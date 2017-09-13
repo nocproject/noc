@@ -31,6 +31,8 @@ class Script(BaseScript):
             return True
         if i.startswith("VPLS"):
             return True
+        if i.startswith("seq_no:"):
+            return True
         return False
 
     def execute(self, interface=None, vlan=None, mac=None):

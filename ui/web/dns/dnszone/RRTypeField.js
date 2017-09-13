@@ -15,6 +15,7 @@ Ext.define("NOC.dns.dnszone.RRTypeField", {
         "AAAA",
         "AFSDB",
         "AXFR",
+        "CAA",
         "CERT",
         "CNAME",
         "DHCID",

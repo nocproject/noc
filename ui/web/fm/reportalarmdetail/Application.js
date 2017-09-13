@@ -30,7 +30,8 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["duration_sec", __("Duration"), true],
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
-                ["object_profile", __("IP"), true],
+                ["object_profile", __("Profile"), true],
+                ["object_admdomain", __("Administrative Domain"), true],
                 ["object_platform", __("Platform"), true],
                 ["object_version", __("Version"), true],
                 ["alarm_class", __("Alarm Class"), true],
@@ -106,6 +107,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         me.segment = null;
         me.adm_domain = null;
         me.selector = null;
+        me.ex_selector = null;
 
         me.formPanel = Ext.create("Ext.form.Panel", {
             autoScroll: true,
@@ -166,6 +168,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     listWidth: 1,
                     listAlign: 'left',
                     labelAlign: "left",
+                    labelWidth: 100,
                     width: 500,
                     allowBlank: true,
                     listeners: {
@@ -182,12 +185,30 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     listWidth: 1,
                     listAlign: 'left',
                     labelAlign: "left",
+                    labelWidth: 100,
                     width: 500,
                     allowBlank: true,
                     listeners: {
                         scope: me,
                         select: function(combo, record) {
                             me.selector = record.get("id")
+                        }
+                    }
+                },
+                {
+                    name: "Exclude selector",
+                    xtype: "sa.managedobjectselector.LookupField",
+                    fieldLabel: __("Exclude MO by Selector"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    labelWidth: 100,
+                    width: 500,
+                    allowBlank: true,
+                    listeners: {
+                        scope: me,
+                        select: function(combo, record) {
+                            me.ex_selector = record.get("id")
                         }
                     }
                 },
@@ -277,6 +298,9 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         }
         if(me.selector) {
             url.push("&selector=" + me.selector);
+        }
+        if(me.ex_selector) {
+            url.push("&ex_selector=" + me.ex_selector);
         }
         me.columnsStore.each(function(record) {
             if(record.get("is_active")) {

@@ -53,13 +53,14 @@ class ReportAlarmDetailApplication(ExtApplication):
               "segment": StringParameter(required=False),
               "administrative_domain": StringParameter(required=False),
               "selector": StringParameter(required=False),
+              "ex_selector": StringParameter(required=False),
               "columns": StringParameter(required=False),
               "format": StringParameter(choices=["csv", "xlsx"])
           })
     def api_report(self, request, from_date, to_date, format,
                    min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
                    segment=None, administrative_domain=None, selector=None,
-                   columns=None, source="both"):
+                   ex_selector=None, columns=None, source="both"):
         def row(row, container_path, segment_path):
             def qe(v):
                 if v is None:
@@ -96,6 +97,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             "object_name",
             "object_address",
             "object_profile",
+            "object_admdomain",
             "object_platform",
             "object_version",
             "alarm_class",
@@ -115,6 +117,7 @@ class ReportAlarmDetailApplication(ExtApplication):
          _("OBJECT_NAME"),
          _("OBJECT_ADDRESS"),
          _("OBJECT_PROFILE"),
+         _("OBJECT_ADMDOMAIN"),
          _("OBJECT_PLATFORM"),
          _("OBJECT_VERSION"),
          _("ALARM_CLASS"),
@@ -168,6 +171,9 @@ class ReportAlarmDetailApplication(ExtApplication):
         if selector:
             selector = ManagedObjectSelector.get_by_id(int(selector))
             mos = mos.filter(selector.Q)
+        if ex_selector:
+            ex_selector = ManagedObjectSelector.get_by_id(int(ex_selector))
+            mos = mos.exclude(ex_selector.Q)
 
         # Working if Administrative domain set
         if administrative_domain:
@@ -178,7 +184,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 pass
 
         mos_id = list(mos.values_list("id", flat=True))
-        if selector:
+        if selector or ex_selector:
             q["managed_object"] = {"$in": mos_id}
 
         container_lookup = ReportContainer(mos_id)
@@ -222,9 +228,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
-                    mo.profile.name,
-                    attr_res[mo.id][2] if attr else "",
-                    attr_res[mo.id][3] if attr else "",
+                    mo.profile_name,
+                    attr[mo.id][2] if attr else "",
+                    attr[mo.id][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
@@ -271,9 +277,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
-                    mo.profile.name,
-                    attr_res[mo.id][2] if attr else "",
-                    attr_res[mo.id][3] if attr else "",
+                    mo.profile_name,
+                    attr[mo.id][2] if attr else "",
+                    attr[mo.id][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,

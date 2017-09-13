@@ -8,10 +8,8 @@
 
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from noc.core.script.metrics import percent_usage
 
 
 class Script(GetMetricsScript):
@@ -47,57 +45,32 @@ class Script(GetMetricsScript):
 
     def collect_profile_metrics(self, metrics):
         if self.has_capability("OneAccess | IP | SLA | Probes"):
-            self.collect_ip_sla_metrics(metrics)
-        self.collect_ip_sla_metrics(metrics)
+            self.logger.debug("Merics %s" % metrics)
+            if self.ALL_SLA_METRICS.intersection(set(m.metric for m in metrics)):
+                self.collect_ip_sla_metrics(metrics)
 
     def collect_ip_sla_metrics(self, metrics):
-        if not (self.ALL_SLA_METRICS & set(metrics)):
-            return  # NO SLA metrics requested
+        # if not (self.ALL_SLA_METRICS & set(metrics)):
+        #    return  # NO SLA metrics requested
         ts = self.get_ts()
-        probes = self.scripts.get_sla_probes()
+        m = self.get_ip_sla_metrics()
+        for bv in metrics:
+            if bv.metric in self.ALL_SLA_METRICS:
+                id = tuple(bv.path + [bv.metric])
+                if id in m:
+                    self.set_metric(
+                        id=bv.id,
+                        metric=bv.metric,
+                        value=m[id],
+                        ts=ts,
+                        path=bv.path,
+                    )
+
+    def get_ip_sla_metrics(self):
+        r = {}
         self.cli("SELGRP Performance")
         c = self.cli("GET ip/router/qualityMonitor[]/")
-        for match in self.rx_metric.finditer(c):
-            name = match.group("name")
-            delay = match.group("delay")
-            jitter = match.group("jitter")
-            if self.SLA_ICMP_RTT in metrics:
-                for p in probes:
-                    if (
-                        p["name"] == name and
-                        p["tests"][0]["type"] == "icmp-echo" and
-                        name in metrics[self.SLA_ICMP_RTT]["probes"]
-                    ):
-                        self.set_metric(
-                            name=self.SLA_ICMP_RTT,
-                            value=float(delay) * 1000000,
-                            ts=ts,
-                            tags={"probe": name}
-                        )
-            if self.SLA_UDP_RTT in metrics:
-                for p in probes:
-                    if (
-                        p["name"] == name and
-                        p["tests"][0]["type"] == "udp-echo" and
-                        name in metrics[self.SLA_UDP_RTT]["probes"]
-                    ):
-                        self.set_metric(
-                            name=self.SLA_UDP_RTT,
-                            value=float(delay) * 1000000,
-                            ts=ts,
-                            tags={"probe": name}
-                        )
-            if self.SLA_JITTER in metrics:
-                for p in probes:
-                    if (
-                        p["name"] == name and
-                        name in metrics[self.SLA_JITTER]["probes"]
-                    ):
-                        self.set_metric(
-                            name=self.SLA_JITTER,
-                            value=float(jitter) * 1000000,
-                            ts=ts,
-                            tags={"probe": name}
-                        )
-                        break
-
+        for match in self.rx_metric.findall(c):
+            r[("", match[0], "SLA | UDP RTT")] = float(match[1]) * 1000000
+            r[("", match[0], "SLA | JITTER")] = float(match[2]) * 1000000
+        return r

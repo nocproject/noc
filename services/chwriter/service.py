@@ -237,8 +237,8 @@ class CHWriterService(Service):
         code, headers, body = yield fetch(
             "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
                 self.ch_address,
-                config.clickhouse.user,
-                config.clickhouse.password,
+                config.clickhouse.rw_user,
+                config.clickhouse.rw_password,
                 config.clickhouse.db,
                 "SELECT%20dummy%20FROM%20system.one"
             )

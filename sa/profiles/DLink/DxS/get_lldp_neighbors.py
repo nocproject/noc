@@ -55,6 +55,7 @@ class Script(BaseScript):
                     "chassis component": 1,
                     "interface alias": 2,
                     "port component": 3,
+                    "port_component": 3,
                     "mac address": 4,
                     "macaddress": 4,
                     "network address": 5,
@@ -72,6 +73,7 @@ class Script(BaseScript):
                     # DES-3200-28 1.85.B008
                     "nterface_alias": 1,
                     "port component": 2,
+                    "port_component": 2,
                     "mac address": 3,
                     "macaddress": 3,
                     "network address": 4,

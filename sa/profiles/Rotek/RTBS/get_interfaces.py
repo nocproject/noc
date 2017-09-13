@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Wilis.FWBD.get_interfaces
+# Rotek.RTBS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -15,7 +15,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "Wilis.FWBD.get_interfaces"
+    name = "Rotek.RTBS.get_interfaces"
     cache = True
     interface = IGetInterfaces
 
@@ -30,9 +30,15 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        enabled_afi = []
-        ip = []
-        mac = []
+        ssid = {}
+        i = ["ra0", "ra1"]
+        for ri in i:
+            s = self.cli("show interface %s ssid" % ri)
+            v = self.cli("show interface %s vlan-to-ssid" % ri)
+            res = s.split(":")[1].strip().replace("\"", "")
+            resv = v.split(":")[1].strip().replace("\"", "")
+            ssid[ri] = {"ssid": res, "vlan": resv}
+            print ssid
         with self.profile.shell(self):
             v = self.cli("ip a", cached=True)
             for match in self.rx_sh_int.finditer(v):
@@ -70,5 +76,25 @@ class Script(BaseScript):
                 else:
                     iface["subinterfaces"][0]["enabled_afi"] = ["BRIDGE"]
                 interfaces += [iface]
+                for ri in ssid.items():
+                    if ifname in ri[0]:
+                        iface = {
+                            "type": "physical",
+                            "name": "%s.%s" % (ifname, ri[1]["ssid"]),
+                            "admin_status": a_stat,
+                            "oper_status": o_status,
+                            "mac": mac,
+                            "snmp_ifindex": match.group("ifindex"),
+                            "subinterfaces": [{
+                                "name": "%s.%s" % (ifname, ri[1]["ssid"]),
+                                "enabled_afi": ["BRIDGE"],
+                                "admin_status": a_stat,
+                                "oper_status": o_status,
+                                "mac": mac,
+                                "snmp_ifindex": match.group("ifindex"),
+                                "untagged_vlan": int(ri[1]["vlan"]),
 
+                            }]
+                        }
+                        interfaces += [iface]
         return [{"interfaces": interfaces}]

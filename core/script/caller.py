@@ -14,6 +14,8 @@ import itertools
 from noc.core.service.client import open_sync_rpc
 from noc.core.script.loader import loader
 from noc.core.service.loader import get_dcs
+from noc.core.dcs.error import ResolutionError
+from noc.core.service.error import RPCNoService
 from noc.config import config
 
 CALLING_SERVICE = config.script.calling_service
@@ -65,7 +67,10 @@ class Session(object):
             svc = cls._sessions.get(session)
         if not pool:
             return svc
-        nsvc = get_dcs().resolve_sync("activator-%s" % pool, hint=svc)
+        try:
+            nsvc = get_dcs().resolve_sync("activator-%s" % pool, hint=svc)
+        except ResolutionError:
+            raise RPCNoService("activator-%s" % pool)
         if nsvc:
             if (svc and svc != nsvc) or (not svc):
                 with cls._lock:

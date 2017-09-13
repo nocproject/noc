@@ -1,8 +1,7 @@
 mongo_conf: "/etc/mongod.conf"
 mongo_db_path: /var/lib/mongodb/
 mongo_dir: "/etc/mongod"
-mongo_fork: "true"
-mongo_hosts: "127.0.0.1"
+mongo_fork: True
 mongo_logging_driver: "syslog"
 mongo_path: /usr/bin/mongo
 mongo_pid: " "

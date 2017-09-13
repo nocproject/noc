@@ -27,6 +27,7 @@ from noc.sa.interfaces.base import (
     ModelParameter, InterfaceTypeError)
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
+from noc.models import is_document
 
 
 class ExtModelApplication(ExtApplication):
@@ -215,15 +216,16 @@ class ExtModelApplication(ExtApplication):
                 # Unroll __referred
                 app, fn = v.split("__", 1)
                 model = self.site.apps[app].model
-                extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
-                    self.model._meta.db_table, self.model._meta.pk.name,
-                    model._meta.get_field_by_name(fn)[0].attname,
-                    model._meta.db_table
-                    )
-                if None in nq:
-                    nq[None] += [extra_where]
-                else:
-                    nq[None] = [extra_where]
+                if not is_document(model):
+                    extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
+                        self.model._meta.db_table, self.model._meta.pk.name,
+                        model._meta.get_field_by_name(fn)[0].attname,
+                        model._meta.db_table
+                        )
+                    if None in nq:
+                        nq[None] += [extra_where]
+                    else:
+                        nq[None] = [extra_where]
                 continue
             elif lt and hasattr(self, "lookup_%s" % lt):
                 # Custom lookup

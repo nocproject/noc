@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: Willis
-# OS:     FWBD
+# Vendor: Rotek
+# OS:     RTBS
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -12,7 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
-    name = "Wilis.FWBD"
+    name = "Rotek.RTBS"
     pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
     pattern_syntax_error = r"^\(ERROR\) "
     command_submit = "\r"

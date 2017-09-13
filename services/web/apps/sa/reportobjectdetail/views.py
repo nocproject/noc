@@ -111,37 +111,66 @@ class ReportObjectDetailLinks(object):
 
 
 class ReportDiscoveryResult(object):
-    """Report for Discovery Result"""
-    def __init__(self, mo_ids):
-        self.mo_ids = mo_ids
-        self.out = self.load(self.mo_ids)
+    """Report for MO links detail"""
+    def __init__(self, mos, avail_only=False, match=None, load=False):
+        """
 
-    @staticmethod
-    def load(mo_ids):
+        :param mos:
+        :type mos: ManagedObject.objects.filter()
+        """
+        self.mo_ids = list(mos.values_list("id", flat=True))
+        if avail_only:
+            status = ObjectStatus.get_statuses(self.mo_ids)
+            self.mo_ids = [s for s in status if status[s]]
+        self.mos_pools = [Pool.get_by_id(p) for p in set(mos.values_list("pool", flat=True))]
+        self.coll_name = "noc.schedules.discovery.%s"
+        # @todo Good way for pipelines fill
+        self.pipelines = {}
+        self.match = match
+        self.out = self.load() if load else {}
 
+    def pipeline(self, match=None):
+        """
+        Generate pipeline for request
+        :param match: Match filter
+        :type match: dict
+        :return:
+        :rtype: list
+        """
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
-        match = {"job.problems": {"$exists": True, "$ne": {  }}}
-
         pipeline = [
-            {"$match": {"key": {"$in": mo_ids}, "jcls": discovery}},
+            {"$match": {"key": {"$in": self.mo_ids}, "jcls": discovery}},
             {"$project": {
                 "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
                 "st": True,
                 "key": True}},
             {"$lookup": {"from": "noc.joblog", "localField": "j_id", "foreignField": "_id", "as": "job"}},
-            {"$project": {"job.problems": True, "st": True, "key": True}},
-            {"$match": match}]
+            {"$project": {"job.problems": True, "st": True, "key": True}}]
+        if self.match:
+            # @todo check match
+            pipeline += [{"$match": self.match}]
+        else:
+            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {  }}}}]
+        return pipeline
 
         value = {}
         for p in []:
-            value = get_db()["noc.schedules.discovery.%s" % p.name].with_options(
-                read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(pipeline)
+            value = get_db()["noc.schedules.discovery.%s" % p.name].aggregate(pipeline,
+                                                                         read_preference=ReadPreference.SECONDARY_PREFERRED)
 
         r = defaultdict(dict)
-        for v in value:
+        for v in value["result"]:
             pass
         # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
         return r
+
+    def __iter__(self):
+        for p in self.mos_pools:
+            r = get_db()[self.coll_name % p.name].aggregate(self.pipelines.get(p.name, self.pipeline()),
+                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
+            for x in r["result"]:
+                # @todo Append info for MO
+                yield x
 
     def __getitem__(self, item):
         return self.out.get(item, {})
@@ -496,6 +525,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "segment",
             "phys_interface_count",
             "link_count",
+            "discovery_problem"
             # "object_tags"
             # "object_caps"
             # "interface_type_count"
@@ -518,6 +548,7 @@ class ReportObjectDetailApplication(ExtApplication):
          "SEGMENT",
          "PHYS_INTERFACE_COUNT",
          "LINK_COUNT",
+         "DISCOVERY_PROBLEM"
          # "OBJECT_TAGS"
          # "OBJECT_CAPS"
          # "INTERFACE_TYPE_COUNT"
@@ -565,6 +596,7 @@ class ReportObjectDetailApplication(ExtApplication):
         moss = []
         iface_count = {}
         link_count = {}
+        discovery_problem = {}
         iface_type_count = {}
         object_caps = {}
         container_lookup = ReportContainer(mos_id)
@@ -578,6 +610,8 @@ class ReportObjectDetailApplication(ExtApplication):
             iface_type_count = ReportObjectIfacesStatusStat(mos_id, columns=type_columns)
         if "link_count" in columns.split(","):
             link_count = ReportObjectLinkCount([])
+        if "discovery_problem" in columns.split(","):
+            discovery_problem = ReportDiscoveryResult(mos, load=True)
         if "object_caps" in columns.split(","):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.caps.values()
@@ -596,7 +630,7 @@ class ReportObjectDetailApplication(ExtApplication):
         for mo in moss:
             if mo not in mos_id:
                 continue
-
+            dp = discovery_problem.get(mo)
             r += [translate_row(row([
                 mo,
                 moss[0],
@@ -615,7 +649,8 @@ class ReportObjectDetailApplication(ExtApplication):
                 container_lookup[mo].get("text", ""),
                 segment_lookup.get(bson.objectid.ObjectId(moss[6]), "No segment") if segment_lookup else "",
                 iface_count[mo] if iface_count else "",
-                link_count[mo] if link_count else ""
+                link_count[mo] if link_count else "",
+                dp.get("problems", "") if dp else ""
                 # iface_type_count[mo] if iface_type_count else ["", "", "", ""]
             ]), cmap)]
             if "interface_type_count" in columns.split(","):

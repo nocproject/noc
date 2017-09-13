@@ -1201,6 +1201,10 @@ class IPAMAppplication(Application):
             self.prefix = prefix
 
         def clean_to_prefix(self):
+            if "to_prefix" not in self.cleaned_data:
+                raise forms.ValidationError("Prefix is required")
+            if "vrf" not in self.cleaned_data:
+                raise forms.ValidationError("VRF is required")
             to_prefix = self.cleaned_data["to_prefix"]
             check_prefix(to_prefix)
             p0 = IP.prefix(self.prefix.prefix)

@@ -1,21 +1,23 @@
 {
     "": {
         "Content-Transfer-Encoding": "8bit",
-        "Content-Type": "text/plain; charset=UTF-8",
+        "Content-Type": "text/plain; charset=utf-8",
         "Generated-By": "Babel 2.3.4",
         "Language": "ru",
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2017-01-26 08:14+0500",
-        "POT-Creation-Date": "2017-01-26 07:38+0500",
+        "PO-Revision-Date": "2017-09-07 22:45+0500",
+        "POT-Creation-Date": "2017-09-07 18:53+0300",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 1.8.11",
-        "X-Poedit-Basepath": "micro/noc_bitbucket",
-        "X-Poedit-SearchPath-0": "."
+        "X-Generator": "Poedit 2.0.3"
     },
+    "About system": [
+        null,
+        "О системе"
+    ],
     "About system ...": [
         null,
         "О программе ..."
@@ -34,7 +36,7 @@
     ],
     "Account is not registred. Please register account to get access to additional support and services": [
         null,
-        "Учётная запись не зарегистрирована. Пожалуйста, зарегистрируйте учётную запись для получения доступа к дополнительной поддержки и сервису."
+        "Учётная запись не зарегистрирована. Пожалуйста, зарегистрируйте учётную запись для получения доступа к дополнительной поддержке и сервису."
     ],
     "Account is registred. You have access to additional support and serivces": [
         null,
@@ -43,6 +45,10 @@
     "Action": [
         null,
         "Действие"
+    ],
+    "Actions": [
+        null,
+        "Действия"
     ],
     "Active": [
         null,
@@ -132,6 +138,10 @@
         null,
         "Админ"
     ],
+    "Admin. Domain": [
+        null,
+        "З.О."
+    ],
     "Administrative": [
         null,
         "Административный"
@@ -143,6 +153,10 @@
     "Administrative Domain": [
         null,
         "Зона ответственности"
+    ],
+    "Administrative-Territorial Division": [
+        null,
+        "Административно-территориальное деление"
     ],
     "Affected Objects": [
         null,
@@ -174,7 +188,7 @@
     ],
     "Alarm Commented": [
         null,
-        "Авараия откомментирована"
+        "Авария откомментирована"
     ],
     "Alarm Reopened": [
         null,
@@ -216,9 +230,17 @@
         null,
         "Аварии"
     ],
+    "Alarms source": [
+        null,
+        "Источник аварии"
+    ],
     "All": [
         null,
         "Все"
+    ],
+    "All Success": [
+        null,
+        "Успешны все"
     ],
     "All interface settings has been applied successfully": [
         null,
@@ -264,6 +286,10 @@
         null,
         "Архив"
     ],
+    "As Depended": [
+        null,
+        "Эскалировать только как зависимые"
+    ],
     "Attach account": [
         null,
         "Подключить учётную запись"
@@ -278,7 +304,7 @@
     ],
     "Attributes": [
         null,
-        "Аттрибуты"
+        "Атрибуты"
     ],
     "Attrs": [
         null,
@@ -295,6 +321,10 @@
     "Auto generated?": [
         null,
         "Создать автоматически?"
+    ],
+    "Avail": [
+        null,
+        "Доступность"
     ],
     "Back": [
         null,
@@ -342,7 +372,7 @@
     ],
     "Box discovery intervals": [
         null,
-        "Интервал Пакетного опроса"
+        "Интервал пакетного опроса"
     ],
     "Branch": [
         null,
@@ -380,6 +410,10 @@
         null,
         "По категории"
     ],
+    "By Controller": [
+        null,
+        "По контроллеру"
+    ],
     "By Date": [
         null,
         "По дате"
@@ -396,9 +430,21 @@
         null,
         "По Группе"
     ],
-    "By IP list (max. 500):": [
+    "By IP list (max. 2000):": [
         null,
-        "По списку IP адресов (мак. 500)"
+        "По списку IP адресов (макс. 2000):"
+    ],
+    "By IPv4": [
+        null,
+        "По IPv4"
+    ],
+    "By IPv6": [
+        null,
+        "По IPv6"
+    ],
+    "By Ignore CLI Errors": [
+        null,
+        "Игнорировать ошибки CLI"
     ],
     "By Link Event": [
         null,
@@ -428,6 +474,10 @@
         null,
         "По Родителю"
     ],
+    "By Platform:": [
+        null,
+        "По платформе:"
+    ],
     "By Pool": [
         null,
         "По Пулу"
@@ -451,6 +501,10 @@
     "By Range": [
         null,
         "По Диапазону"
+    ],
+    "By Require Confirmation": [
+        null,
+        "Требовать подтверждения"
     ],
     "By SA Profile": [
         null,
@@ -488,6 +542,14 @@
         null,
         "По статусу"
     ],
+    "By Style": [
+        null,
+        "По Стилю"
+    ],
+    "By Supplier": [
+        null,
+        "По поставщику"
+    ],
     "By Tags": [
         null,
         "По тэгам"
@@ -508,9 +570,21 @@
         null,
         "По VRF"
     ],
+    "By VRF Group": [
+        null,
+        "По VRF группе"
+    ],
     "By Vendor": [
         null,
         "По производителю"
+    ],
+    "By Vendor:": [
+        null,
+        "По производителю:"
+    ],
+    "By version:": [
+        null,
+        "По версии:"
     ],
     "CR. Context": [
         null,
@@ -608,6 +682,10 @@
         null,
         "Проверять при загрузке через"
     ],
+    "Checked": [
+        null,
+        "Использовать"
+    ],
     "Class": [
         null,
         "Класс"
@@ -670,7 +748,7 @@
     ],
     "Command Log": [
         null,
-        "Лог комманд"
+        "Лог команд"
     ],
     "Commands": [
         null,
@@ -714,7 +792,7 @@
     ],
     "Config Changed": [
         null,
-        "Конфиг изменён"
+        "Конфигурация изменена"
     ],
     "Config Policy Violation": [
         null,
@@ -722,7 +800,7 @@
     ],
     "Config changed": [
         null,
-        "Конфиг изменен"
+        "Конфигурация изменена"
     ],
     "Config policy violation": [
         null,
@@ -784,6 +862,10 @@
         null,
         "Контакты"
     ],
+    "Container": [
+        null,
+        "Контейнер"
+    ],
     "Container (Level 1)": [
         null,
         "Контейнер (Уровень 1)"
@@ -811,6 +893,10 @@
     "Container (Level 7)": [
         null,
         "Контейнер (Уровень 7)"
+    ],
+    "Container Address": [
+        null,
+        "Адрес контейнера"
     ],
     "Content": [
         null,
@@ -848,9 +934,17 @@
         null,
         "Контрольное время (переоткрытий нет)"
     ],
+    "Controller": [
+        null,
+        "Контроллер"
+    ],
+    "Convert Username": [
+        null,
+        "Конвертировать Имя пользователя"
+    ],
     "Copy existing values to a new object": [
         null,
-        "Скопировать значение в новый объект"
+        "Скопировать значения в новый объект"
     ],
     "Count": [
         null,
@@ -1024,9 +1118,17 @@
         null,
         "Опрос"
     ],
+    "Discovery Alarm": [
+        null,
+        "Авария при опросе"
+    ],
     "Discovery Policy": [
         null,
         "Политика при опросе"
+    ],
+    "Discriminator": [
+        null,
+        "Разделитель"
     ],
     "Display Name": [
         null,
@@ -1035,6 +1137,10 @@
     "Disposition": [
         null,
         "Размещение"
+    ],
+    "Do not convert": [
+        null,
+        "Не конвертировать"
     ],
     "Do you wish to delete record? This operation cannot be undone!": [
         null,
@@ -1088,6 +1194,10 @@
         null,
         "Синхронизация с IPAM"
     ],
+    "Enable lost redundancy check": [
+        null,
+        "Включить проверку резерва"
+    ],
     "Enabled": [
         null,
         "Включить"
@@ -1104,6 +1214,10 @@
         null,
         "Подъезды"
     ],
+    "Environment": [
+        null,
+        "Окружение"
+    ],
     "Error": [
         null,
         "Ошибка"
@@ -1111,6 +1225,10 @@
     "Error Type": [
         null,
         "Тип ошибки"
+    ],
+    "Error getting validation results": [
+        null,
+        "Ошибка получения результата валидации"
     ],
     "Error in data": [
         null,
@@ -1120,9 +1238,37 @@
         null,
         "Ошибка при сохранении записи!"
     ],
+    "Escalate": [
+        null,
+        "Эскалировать"
+    ],
+    "Escalate failed": [
+        null,
+        "Сбой эскалации"
+    ],
+    "Escalate failed : ": [
+        null,
+        "Сбой эскалации"
+    ],
     "Escalate to": [
         null,
         "Эскалировать на (объект)"
+    ],
+    "Escalated": [
+        null,
+        "Эскалировано"
+    ],
+    "Escalation": [
+        null,
+        "Эскалации"
+    ],
+    "Escalation Policy": [
+        null,
+        "Политика эскалаций"
+    ],
+    "Escalation Retries": [
+        null,
+        "Количество повторов"
     ],
     "Escalation Time": [
         null,
@@ -1176,6 +1322,10 @@
         null,
         "События"
     ],
+    "Exclude": [
+        null,
+        "Исключить"
+    ],
     "Expand panels": [
         null,
         "Развернуть панели"
@@ -1192,6 +1342,10 @@
         null,
         "Экспорт"
     ],
+    "Export all records from buffer (screen)": [
+        null,
+        "Экспортировать все записи из буфера (экрана)"
+    ],
     "Expression": [
         null,
         "Выражение"
@@ -1203,6 +1357,10 @@
     "Extra Small": [
         null,
         "Очень маленький"
+    ],
+    "Extractors/Loaders": [
+        null,
+        "Выгрузка/Загрузчики"
     ],
     "FQDN Template": [
         null,
@@ -1222,7 +1380,7 @@
     ],
     "Failed Interval, sec": [
         null,
-        "Интервал при сбое, с"
+        "Интервал при сбое, сек."
     ],
     "Failed interval": [
         null,
@@ -1298,7 +1456,7 @@
     ],
     "Failed to find node": [
         null,
-        "Ошибка про поиске ноды"
+        "Ошибка про поиске узла"
     ],
     "Failed to fix": [
         null,
@@ -1438,7 +1596,7 @@
     ],
     "Failed to save conduits": [
         null,
-        "Ошибка при сохранении связей."
+        "Ошибка при сохранении связей"
     ],
     "Failed to save config": [
         null,
@@ -1480,6 +1638,14 @@
         null,
         "Ошибка при загрузке файлов"
     ],
+    "Failure Cooldown": [
+        null,
+        "Время недоступности системы"
+    ],
+    "Fatal Alarm Weight": [
+        null,
+        "Вес аварии уровня Fatal"
+    ],
     "Favorites": [
         null,
         "Избранное"
@@ -1491,6 +1657,14 @@
     "Field": [
         null,
         "Поле"
+    ],
+    "Field Name": [
+        null,
+        "Имя поля"
+    ],
+    "Field Type": [
+        null,
+        "Тип поля"
     ],
     "File #": [
         null,
@@ -1536,17 +1710,9 @@
         null,
         "Фильтровать по описанию (Шаблон)"
     ],
-    "Filter by ID": [
+    "Filter by Main Attributes": [
         null,
-        "Фильтровать по ID"
-    ],
-    "Filter by Is Managed": [
-        null,
-        "Фильтровать по статусу"
-    ],
-    "Filter by Name (REGEXP)": [
-        null,
-        "Фильтровать по имени (Шаблон)"
+        "Фильтр по основным аттрибутам"
     ],
     "Filter by Object Profile": [
         null,
@@ -1578,7 +1744,7 @@
     ],
     "Filter by attributes": [
         null,
-        "Фильтровать по аттрибутам"
+        "Фильтровать по атрибутам"
     ],
     "Filter by service terminator": [
         null,
@@ -1612,6 +1778,10 @@
         null,
         "Первый номер"
     ],
+    "First Success": [
+        null,
+        "Первый успешный"
+    ],
     "Fix": [
         null,
         "Исправить"
@@ -1627,6 +1797,10 @@
     "Font Color": [
         null,
         "Цвет шрифта"
+    ],
+    "Fresh Alarms (time/opacity)": [
+        null,
+        "Разметка по длительности (время/яркость)"
     ],
     "From": [
         null,
@@ -1666,7 +1840,7 @@
     ],
     "Gender": [
         null,
-        "Мама/Папа"
+        "Тип соединителя"
     ],
     "Get JSON": [
         null,
@@ -1786,7 +1960,11 @@
     ],
     "In (kbit/s)": [
         null,
-        "Вх (Кб/с)"
+        "Вх (Кбит/с)"
+    ],
+    "Include": [
+        null,
+        "Включить"
     ],
     "Indexed": [
         null,
@@ -1800,6 +1978,10 @@
         null,
         "Интер."
     ],
+    "Integration": [
+        null,
+        "Интеграция"
+    ],
     "Interface": [
         null,
         "Интерфейс"
@@ -1811,6 +1993,10 @@
     "Interface changed": [
         null,
         "Интерфейс изменён"
+    ],
+    "Interface count by type": [
+        null,
+        "Кол-во интерфейсов по скорости"
     ],
     "Interface status": [
         null,
@@ -1834,7 +2020,7 @@
     ],
     "Interval, sec": [
         null,
-        "Интервал, с"
+        "Интервал, сек."
     ],
     "Introduced": [
         null,
@@ -1912,6 +2098,10 @@
         null,
         "Ключ (REGEXP)"
     ],
+    "Key Fields": [
+        null,
+        "Ключевые поля"
+    ],
     "Key RE": [
         null,
         "Ключ RE"
@@ -1972,6 +2162,18 @@
         null,
         "Последний раз"
     ],
+    "Last status": [
+        null,
+        "Последнее состояние"
+    ],
+    "Last success": [
+        null,
+        "Последний успешный"
+    ],
+    "Last update": [
+        null,
+        "Последнее обновление"
+    ],
     "Last week's changes": [
         null,
         "Изменения за последнюю неделю"
@@ -1996,6 +2198,10 @@
         null,
         "Уровень"
     ],
+    "Level Up": [
+        null,
+        "Подняться вверх"
+    ],
     "Limit": [
         null,
         "Предел"
@@ -2007,6 +2213,10 @@
     "Link": [
         null,
         "Линк"
+    ],
+    "Link Count": [
+        null,
+        "Кол-во линков"
     ],
     "Link Event": [
         null,
@@ -2040,6 +2250,14 @@
         null,
         "Линки"
     ],
+    "Local AS": [
+        null,
+        "Локальная AS"
+    ],
+    "Local Address": [
+        null,
+        "Локальный адрес"
+    ],
     "Local Description": [
         null,
         "Локальное описание"
@@ -2048,9 +2266,17 @@
         null,
         "Локальная группа"
     ],
+    "Local IP": [
+        null,
+        "Локальный IP"
+    ],
     "Local Interface": [
         null,
         "Локальный интерфейс"
+    ],
+    "Location": [
+        null,
+        "Расположение"
     ],
     "Locked?": [
         null,
@@ -2080,17 +2306,25 @@
         null,
         "Нижний порог предупр."
     ],
+    "Lowercase": [
+        null,
+        "Приводить к нижнему регистру"
+    ],
     "Lvl": [
         null,
         "Уров."
     ],
-    "MAC Discovery": [
+    "MAC Discovery Policy": [
         null,
-        "Сбор MAC адресов"
+        "Политика сбора MAC адресов"
+    ],
+    "MAC discovery interval": [
+        null,
+        "Интервал сбора MAC адресов"
     ],
     "MIBs has been uploaded": [
         null,
-        "MIB'ы будет загружены"
+        "MIB'ы будут загружены"
     ],
     "MIME Type": [
         null,
@@ -2116,6 +2350,10 @@
         null,
         "Объект"
     ],
+    "Managed Object Profile": [
+        null,
+        "Профиль объекта"
+    ],
     "Managed Object Selector": [
         null,
         "Селектор"
@@ -2127,6 +2365,10 @@
     "Management": [
         null,
         "Управление"
+    ],
+    "Management VLAN": [
+        null,
+        "VLAN управления"
     ],
     "Map": [
         null,
@@ -2184,6 +2426,10 @@
         null,
         "Макс.Увел."
     ],
+    "Max. Duration": [
+        null,
+        "Макс. продолжительность"
+    ],
     "Max. Length": [
         null,
         "Макс. длина"
@@ -2192,9 +2438,21 @@
         null,
         "Макс. скриптов одновр."
     ],
+    "Max. Threads": [
+        null,
+        "Количество потоков"
+    ],
     "Max. Zoom": [
         null,
         "Макс.Увел."
+    ],
+    "Measure": [
+        null,
+        "Единицы измерения"
+    ],
+    "Measurements": [
+        null,
+        "Число измерений"
     ],
     "Medium": [
         null,
@@ -2272,6 +2530,10 @@
         null,
         "Месяц"
     ],
+    "Multicast VLAN": [
+        null,
+        "Мультикаст VLAN"
+    ],
     "Must contain only numbers": [
         null,
         "Должен содержать только числа"
@@ -2279,6 +2541,10 @@
     "Name": [
         null,
         "Имя"
+    ],
+    "Name (REGEXP)": [
+        null,
+        "Имя (Шаблон)"
     ],
     "Name template": [
         null,
@@ -2295,6 +2561,14 @@
     "Neighbor": [
         null,
         "Сосед"
+    ],
+    "Network Segment": [
+        null,
+        "Сегмент"
+    ],
+    "Network Segment Profile": [
+        null,
+        "Профиль сегмента"
     ],
     "New": [
         null,
@@ -2343,6 +2617,10 @@
     "No new VRFs found": [
         null,
         "Новые VRF не найдены"
+    ],
+    "No records": [
+        null,
+        "Нет записей"
     ],
     "Not Found": [
         null,
@@ -2419,6 +2697,18 @@
     "Object Selector": [
         null,
         "Селектор"
+    ],
+    "Object Status": [
+        null,
+        "Статус объекта"
+    ],
+    "Object Tags": [
+        null,
+        "Тэги"
+    ],
+    "Object capabilities": [
+        null,
+        "Возможности объекта"
     ],
     "Object has been loaded": [
         null,
@@ -2506,11 +2796,19 @@
     ],
     "Out (kbit/s)": [
         null,
-        "Вых (Кб/с)"
+        "Исх (Кбит/с)"
     ],
     "Overview": [
         null,
         "Обзор"
+    ],
+    "Packet size, bytes": [
+        null,
+        "Размер пакета (байт)"
+    ],
+    "Packets count": [
+        null,
+        "Количество пакетов"
     ],
     "Paid Till": [
         null,
@@ -2575,6 +2873,26 @@
     "Physical": [
         null,
         "Физический"
+    ],
+    "Physical Iface Count": [
+        null,
+        "Кол-во интерфейсов"
+    ],
+    "Ping Check": [
+        null,
+        "Проверка доступности"
+    ],
+    "Ping Policy": [
+        null,
+        "Политика определения доступности"
+    ],
+    "Ping discovery intervals": [
+        null,
+        "Интервал проверки доступности"
+    ],
+    "Ping series settings": [
+        null,
+        "Настройки серии"
     ],
     "Platform": [
         null,
@@ -2742,7 +3060,7 @@
     ],
     "Rack: ": [
         null,
-        "Стойка:"
+        "Стойка: "
     ],
     "Raise": [
         null,
@@ -2772,10 +3090,6 @@
         null,
         "Записи будут обновлены"
     ],
-    "Recover Time": [
-        null,
-        "Время восстановления"
-    ],
     "Redundant": [
         null,
         "Отказоустойчивый"
@@ -2796,13 +3110,25 @@
         null,
         "Перезагрузить"
     ],
+    "Reload data": [
+        null,
+        "Обновить данные"
+    ],
     "Remote Description": [
         null,
         "Удаленное описание"
     ],
+    "Remote ID": [
+        null,
+        "ID внешней системы"
+    ],
     "Remote Interface": [
         null,
         "Удаленный интерфейс"
+    ],
+    "Remote System": [
+        null,
+        "Внешняя система"
     ],
     "Remove": [
         null,
@@ -2840,6 +3166,10 @@
         null,
         "Собирать RTT при ping"
     ],
+    "Report ping attempts": [
+        null,
+        "Сохранять ошибки в серии"
+    ],
     "Req": [
         null,
         "Треб."
@@ -2855,6 +3185,10 @@
     "Require Group": [
         null,
         "Требует группу"
+    ],
+    "Require any group": [
+        null,
+        "Требовать любую группу"
     ],
     "Reset": [
         null,
@@ -2872,10 +3206,6 @@
         null,
         "Сбросить изменения"
     ],
-    "Reset filter": [
-        null,
-        "Сброс фильтра"
-    ],
     "Reset filters": [
         null,
         "Сбросить фильтры"
@@ -2887,6 +3217,10 @@
     "Resources": [
         null,
         "Ресурсы"
+    ],
+    "Restrict MAC to management vlan": [
+        null,
+        "Ограничить сбор маков Вланом управления"
     ],
     "Result": [
         null,
@@ -3000,6 +3334,14 @@
         null,
         "STP заблокирован"
     ],
+    "SW Serial": [
+        null,
+        "Версия ПО"
+    ],
+    "SW Version": [
+        null,
+        "Версия ПО"
+    ],
     "Save": [
         null,
         "Сохранить"
@@ -3060,6 +3402,10 @@
         null,
         "Доступно для поиска"
     ],
+    "Seconds": [
+        null,
+        "Интервал (сек)"
+    ],
     "Section": [
         null,
         "Секция"
@@ -3100,6 +3446,10 @@
         null,
         "Свойства сегмента"
     ],
+    "Segment Policy": [
+        null,
+        "Политика сегмента"
+    ],
     "Segments": [
         null,
         "Сегменты"
@@ -3136,6 +3486,10 @@
         null,
         "Выбрать VRF для импорта"
     ],
+    "Select all records from buffer (screen)": [
+        null,
+        "Выбрать все записи из буфера (экрана)"
+    ],
     "Select base layer": [
         null,
         "Выбрать начальный уровень"
@@ -3155,6 +3509,10 @@
     "Select segment...": [
         null,
         "Выберите сегмент..."
+    ],
+    "Selected": [
+        null,
+        "Выбранные"
     ],
     "Selector": [
         null,
@@ -3222,7 +3580,11 @@
     ],
     "Shape": [
         null,
-        "Иконка"
+        "Изображение"
+    ],
+    "Shard": [
+        null,
+        "Шард"
     ],
     "Shift": [
         null,
@@ -3252,6 +3614,10 @@
         null,
         "Показать метки"
     ],
+    "Show MACs": [
+        null,
+        "Отобразить МАКи"
+    ],
     "Show Map": [
         null,
         "Карта"
@@ -3275,6 +3641,10 @@
     "Show all alarms": [
         null,
         "Показывать все аварии"
+    ],
+    "Show all nodes": [
+        null,
+        "Показать"
     ],
     "Show archived alarms": [
         null,
@@ -3320,9 +3690,13 @@
         null,
         "Статичная карта"
     ],
+    "Show/Hide Filter": [
+        null,
+        "Отобразить/скрыть фильтр"
+    ],
     "Show/Hide basket": [
         null,
-        "Показать/Скрыть тележку"
+        "Показать/Скрыть корзину"
     ],
     "Show/Hide legend": [
         null,
@@ -3404,6 +3778,14 @@
         null,
         "Окончание"
     ],
+    "Stop Polling": [
+        null,
+        "Остановить опрос"
+    ],
+    "Stored": [
+        null,
+        "Сохрянять"
+    ],
     "Street": [
         null,
         "Улица"
@@ -3444,6 +3826,10 @@
         null,
         "Тема/Класс"
     ],
+    "Subscriber": [
+        null,
+        "Абоненты"
+    ],
     "Success": [
         null,
         "Успех"
@@ -3451,6 +3837,14 @@
     "Success!": [
         null,
         "Успех!"
+    ],
+    "Suggest CLI": [
+        null,
+        "Возможные реквизиты"
+    ],
+    "Suggest SNMP": [
+        null,
+        "Возможный SNMP"
     ],
     "Summary": [
         null,
@@ -3463,6 +3857,10 @@
     "Super Password": [
         null,
         "Пароль Суперпользователя"
+    ],
+    "Supplier": [
+        null,
+        "Поставщик"
     ],
     "Suppress": [
         null,
@@ -3483,6 +3881,10 @@
     "Swap revisions": [
         null,
         "Переключить версии"
+    ],
+    "Switch Off": [
+        null,
+        "Переключить"
     ],
     "Switch to breadcrumb view": [
         null,
@@ -3508,13 +3910,21 @@
         null,
         "Канал синхронизации"
     ],
+    "Synchronize mail": [
+        null,
+        "Синхронизировать email"
+    ],
+    "Synchronize name": [
+        null,
+        "Синхронизировать имя"
+    ],
     "Syntax": [
         null,
         "Синтаксис"
     ],
     "Syslog Source": [
         null,
-        "Источник syslog"
+        "Источник Syslog"
     ],
     "Syslog Source IP": [
         null,
@@ -3536,9 +3946,17 @@
         null,
         "TT"
     ],
+    "TT Queue": [
+        null,
+        "Очередь TT"
+    ],
     "TT System": [
         null,
         "Система TT"
+    ],
+    "TT System ID": [
+        null,
+        "ID в системе TT"
     ],
     "Table": [
         null,
@@ -3660,6 +4078,10 @@
         null,
         "Таймаут (с)"
     ],
+    "Timeout, msec": [
+        null,
+        "Таймаут (мсек)"
+    ],
     "Timestamp": [
         null,
         "Время"
@@ -3712,13 +4134,17 @@
         null,
         "Вкл./Выкл. звук"
     ],
-    "Too many IP, max 500": [
+    "Too many IP, max 2000": [
         null,
-        "Слишко много IP адресов (максимум 500)"
+        "Слишком много IP, макс. 2000"
     ],
     "Topology": [
         null,
         "Топология"
+    ],
+    "Topology methods": [
+        null,
+        "Методы построения топологии"
     ],
     "Total": [
         null,
@@ -3758,7 +4184,7 @@
     ],
     "Units": [
         null,
-        "Рзамер (в юнитах)"
+        "Размер (в юнитах)"
     ],
     "Unknows mode :": [
         null,
@@ -3788,9 +4214,17 @@
         null,
         "Загрузить файлы"
     ],
+    "Uppercase": [
+        null,
+        "Приводить к верхнему регистру"
+    ],
     "Uptime": [
         null,
         "Время работы"
+    ],
+    "Use Controller's": [
+        null,
+        "Использовать контроллер"
     ],
     "Use TLS": [
         null,
@@ -3803,6 +4237,10 @@
     "User Clearable": [
         null,
         "Закрыто пользователем"
+    ],
+    "User Interface": [
+        null,
+        "Пользовательский интерфейс"
     ],
     "User Search Filter": [
         null,
@@ -3842,7 +4280,7 @@
     ],
     "VRF Group": [
         null,
-        "Группа VRF"
+        "VRF группа"
     ],
     "Validation": [
         null,
@@ -3940,6 +4378,14 @@
         null,
         "Окно"
     ],
+    "Window Function": [
+        null,
+        "Функция \"окна\""
+    ],
+    "Window Type": [
+        null,
+        "Тип \"окна\""
+    ],
     "Workflow Editor": [
         null,
         "Редактор рабочих процессов"
@@ -3951,6 +4397,10 @@
     "Would you like to reset current layout and generate new?": [
         null,
         "Сбросить раскладку карты и перестроить заново?"
+    ],
+    "Yes/No": [
+        null,
+        "Да/Нет"
     ],
     "Your must select maintainance!": [
         null,
@@ -3994,7 +4444,7 @@
     ],
     "basket empty": [
         null,
-        "тележка пуста"
+        "корзина пуста"
     ],
     "cluster": [
         null,
@@ -4010,7 +4460,7 @@
     ],
     "data unavailable": [
         null,
-        "данные недоступны"
+        "данные не доступны"
     ],
     "division": [
         null,
@@ -4046,7 +4496,7 @@
     ],
     "oper down": [
         null,
-        "порт в дауне"
+        "соединение отсутствует"
     ],
     "origin": [
         null,
@@ -4055,6 +4505,10 @@
     "pattern": [
         null,
         "шаблон"
+    ],
+    "permission_name": [
+        null,
+        "имя_разрешения"
     ],
     "plugin": [
         null,
@@ -4078,7 +4532,7 @@
     ],
     "site": [
         null,
-        "свйт"
+        "сайт"
     ],
     "state": [
         null,

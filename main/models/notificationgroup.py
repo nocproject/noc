@@ -38,15 +38,15 @@ USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
 
 
 @on_delete_check(check=[
-    ("cm.ObjectNotify", "administrative_domain"),
+    ("cm.ObjectNotify", "notification_group"),
     ("dns.DNSZone", "notification_group"),
     ("dns.DNSZoneProfile", "notification_group"),
-    ("fm.ActiveAlarm", "notification_group"),
+    ("fm.ActiveAlarm", "clear_notification_group"),
     # ("fm.EscalationItem", "administrative_domain")
     ("fm.AlarmTrigger", "notification_group"),
     ("fm.EventTrigger", "notification_group"),
     ("inv.InterfaceProfile", "status_change_notification"),
-    # ("ReportSubscription", "notification_group"),
+    ("main.ReportSubscription", "notification_group"),
     ("vc.VCDomainProvisioningConfig", "notification_group")
 ])
 class NotificationGroup(models.Model):

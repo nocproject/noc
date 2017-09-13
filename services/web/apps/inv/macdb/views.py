@@ -31,24 +31,6 @@ from noc.core.translation import ugettext as _
 tags_lock = threading.RLock()
 
 
-class BIIDConvert(object):
-    """
-    Administrative Domain that contains Pool
-    Use getitem PoolId
-    """
-    _biid_convert_cache = TTLCache(300, 3600)
-
-    def __init__(self):
-        self.convert = self.load()
-
-    @cachedmethod(operator.attrgetter("_biid_convert_cache"))
-    def load(self):
-        return {mo.get_bi_id(): mo for mo in ManagedObject.objects.filter()}
-
-    def __getitem__(self, item):
-        return self.convert.get(int(item), None)
-
-
 class MACApplication(ExtApplication):
     """
     MAC application
@@ -56,7 +38,7 @@ class MACApplication(ExtApplication):
     title = _("MacDB")
     menu = _("Mac DB")
     model = MACDB
-    bi_c = BIIDConvert()
+    bi_c = ""
     macdb = MACDBC()
     mac_search_re = re.compile(r"([\dABCDEF][\dABCDEF]:){2,}", re.IGNORECASE)
     mac_search_re_inv = re.compile(r"(:[\dABCDEF][\dABCDEF]){2,}", re.IGNORECASE)
@@ -85,7 +67,7 @@ class MACApplication(ExtApplication):
 
         for p in m:
             # mo = self.managedobject_name_to_id(int(p["managed_object"]))
-            mo = self.bi_c[p["managed_object"]]
+            mo = ManagedObject.objects.filter()[0]
             if not mo:
                 self.logger.warning("Managed object does not exists: %s" % p["managed_object"])
                 continue

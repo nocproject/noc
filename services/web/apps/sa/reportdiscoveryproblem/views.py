@@ -168,7 +168,9 @@ class ReportFilterApplication(SimpleReport):
 
         if profile_check_only:
             match = {"$or": [{"job.problems.suggest_cli": {"$exists": True}},
-                             {"job.problems.suggest_snmp": {"$exists": True}}]}
+                             {"job.problems.suggest_snmp": {"$exists": True}},
+                             {"job.problems.profile.": {"$regex": "Cannot detect profile"}},
+                             {"job.problems.version.": {"$regex": "Remote error code 1000[1234]"}}]}
 
         elif failed_scripts_only:
             match = {"$and": [
@@ -181,7 +183,7 @@ class ReportFilterApplication(SimpleReport):
         rdp = ReportDiscoveryProblem(mos, avail_only=avail_status, match=match)
         exclude_method = []
         if filter_pending_links:
-            exclude_method += ["lldp", "lacp", "cdp"]
+            exclude_method += ["lldp", "lacp", "cdp", "huawei_ndp"]
 
         for discovery in rdp:
                 mo = ManagedObject.get_by_id(discovery["key"])
@@ -212,7 +214,7 @@ class ReportFilterApplication(SimpleReport):
             title=self.title,
             columns=[
                 _("Managed Object"), _("Address"), _("Profile"),
-                _("Avail"), _("Last successful discovery"),
+                _("Administrative Domain"), _("Avail"), _("Last successful discovery"),
                 _("Discovery"), _("Error")
             ],
             data=data)

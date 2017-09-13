@@ -95,8 +95,8 @@ class Script(BaseScript):
                 for c in match.group("capability").strip().split(", "):
                     cap |= {
                         "Other": 1, "Repeater": 2, "Bridge": 4,
-                        "WLAN": 8, "Router": 16, "Telephone": 32,
-                        "Cable": 64, "Station": 128
+                        "WLAN": 8, "WLAN Access Point": 8, "Router": 16,
+                        "Telephone": 32, "Cable": 64, "Station": 128
                     }[c]
                 n["remote_capabilities"] = cap
             i["neighbors"] += [n]

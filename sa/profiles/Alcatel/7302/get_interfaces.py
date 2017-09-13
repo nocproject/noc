@@ -47,7 +47,8 @@ class Script(BaseScript):
         "atm-ima": "physical",
         "shdsl": "physical",
         "sw-loopback": "loopback",
-        "bonding": "other"
+        "bonding": "other",
+        "bridge-port": "other"
     }
 
     def execute(self):
