@@ -582,7 +582,7 @@ class ReportObjectDetailApplication(ExtApplication):
         for mo in moss:
             if mo not in mos_id:
                 continue
-            dp = discovery_problem[mo]
+            dp = discovery_problem.get(mo)
             r += [translate_row(row([
                 mo,
                 moss[0],
