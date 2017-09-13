@@ -268,7 +268,7 @@ class CorrelatorService(Service):
                     a.save()
                 elif e.timestamp > a.last_update:
                     # Refresh last update
-                    a.last_update = e.timestamp()
+                    a.last_update = e.timestamp
                     a.save()
                 self.perf_metrics["alarm_contribute"] += 1
                 return
