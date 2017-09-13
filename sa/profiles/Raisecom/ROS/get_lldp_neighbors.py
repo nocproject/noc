@@ -87,6 +87,7 @@ class Script(BaseScript):
                     "Repeater/Hub": 2,
                     "Bridge/Switch": 4,
                     "Router": 16,
+                    "Telephone": 32,
                     "Station": 128
                 }[c]
             n = {
