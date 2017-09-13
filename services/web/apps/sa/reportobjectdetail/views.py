@@ -153,21 +153,20 @@ class ReportDiscoveryResult(object):
             pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {  }}}}]
         return pipeline
 
-        value = {}
-        for p in []:
-            value = get_db()["noc.schedules.discovery.%s" % p.name].aggregate(pipeline,
-                                                                         read_preference=ReadPreference.SECONDARY_PREFERRED)
+    def load(self):
 
         r = defaultdict(dict)
-        for v in value["result"]:
-            pass
+        for v in self:
+            r[int(v["key"])]["time"] = v["st"]
+            r[int(v["key"])]["problems"] = v["job"][0]["problems"]
         # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
         return r
 
     def __iter__(self):
         for p in self.mos_pools:
-            r = get_db()[self.coll_name % p.name].aggregate(self.pipelines.get(p.name, self.pipeline()),
-                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
+            r = get_db()[self.coll_name % p.name].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
+                self.pipelines.get(p.name, self.pipeline()))
             for x in r["result"]:
                 # @todo Append info for MO
                 yield x
