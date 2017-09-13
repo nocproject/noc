@@ -66,7 +66,7 @@ from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 
 # Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 2
+MANAGEDOBJECT_CACHE_VERSION = 3
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
