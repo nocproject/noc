@@ -46,9 +46,9 @@ class ReportFilterApplication(SimpleReport):
                 data += [[mo.name,
                           mo.address,
                           mo.vendor or None,
-                          mo.get_attr("platform") or None,
+                          mo.platform.full_name or None,
                           mo.get_attr("HW version") or None,
-                          mo.get_attr("version") or None,
+                          mo.version.version,
                           mo.get_attr("Serial Number") or None,
                           None
                           ]]
@@ -57,9 +57,9 @@ class ReportFilterApplication(SimpleReport):
                     data += [[x["name"],
                               mo.address,
                               mo.vendor or None,
-                              mo.get_attr("platform") or None,
+                              mo.platform.full_name or None,
                               mo.get_attr("HW version") or None,
-                              mo.get_attr("version") or None,
+                              mo.version.version or None,
                               x["data"]["asset"]["serial"]
                               ]]
 

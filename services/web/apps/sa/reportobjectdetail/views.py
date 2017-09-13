@@ -167,7 +167,7 @@ class ReportDiscoveryResult(object):
             r = get_db()[self.coll_name % p.name].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
                 self.pipelines.get(p.name, self.pipeline()))
-            for x in r["result"]:
+            for x in r:
                 # @todo Append info for MO
                 yield x
 
