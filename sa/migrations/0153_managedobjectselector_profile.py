@@ -21,7 +21,7 @@ class Migration:
             UPDATE sa_managedobjectselector
             SET filter_profile = %s
             WHERE filter_profile = %s
-            """, [pmap[p]], p)
+            """, [pmap[p], p])
         # Alter .filter_profile column
         db.execute("ALTER TABLE sa_managedobjectselector ALTER filter_name TYPE CHAR(24) USING SUBSTRING(\"filter_name\", 1, 24)")
         # Create .filter_vendor field
