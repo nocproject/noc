@@ -22,6 +22,7 @@ class Profile(BaseProfile):
     command_submit = "\r"
     username_submit = "\r"
     password_submit = "\r"
+    enable_cli_session = False
     command_exit = "logout"
     telnet_send_on_connect = "\r"
     convert_mac = BaseProfile.convert_mac_to_dashed
