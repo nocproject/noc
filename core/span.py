@@ -95,7 +95,7 @@ class Span(object):
             return
         if exc_type and not self.error_text and not self.is_ignorable_error(exc_type):
             self.error_code = ERR_UNKNOWN
-            self.error_text = str(exc_val).strip("\t").replace("\t", " ")
+            self.error_text = str(exc_val).strip("\t").replace("\t", " ").replace("\n", " ")
         self.duration = int((time.time() - self.start) * US)
         lt = time.localtime(self.start)
         row = "\t".join(str(x) for x in [

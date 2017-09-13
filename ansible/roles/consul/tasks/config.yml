@@ -87,7 +87,7 @@
     - config
   when: "'Linux' in ansible_system"
 
-# fight against thousands of time-wait connections. good enough reading http://fx-files.ru/archives/602
+# fight against thousands of time-wait connections. good enough reading https://vincent.bernat.im/en/blog/2014-tcp-time-wait-state-linux
 # that one is dangerous
 - name: Tune sysctl.conf for consul
   sysctl:

@@ -105,6 +105,7 @@ _MODELS = {
     "main.RefBookData": "noc.main.models.refbookdata.RefBookData",
     "main.RefBookField": "noc.main.models.refbookfield.RefBookField",
     "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
+    "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
     "main.Schedule": "noc.main.models.Schedule",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
