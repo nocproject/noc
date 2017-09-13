@@ -156,7 +156,7 @@ class ReportDiscoveryResult(object):
     def load(self):
 
         r = defaultdict(dict)
-        for v in self:
+        for v in self.__iter__():
             r[int(v["key"])]["time"] = v["st"]
             r[int(v["key"])]["problems"] = v["job"][0]["problems"]
         # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
