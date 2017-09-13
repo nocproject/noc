@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+from functools import reduce
 # Third-party modules
 from django.http import HttpResponse
 from django.db.models.fields import (
@@ -15,6 +16,7 @@ from django.db.models.fields import (
     DateField, DateTimeField, related)
 from django.db.models import Q
 from django.db.utils import IntegrityError
+import six
 # NOC modules
 from extapplication import ExtApplication, view
 from noc.sa.interfaces.base import (
@@ -294,7 +296,7 @@ class ExtModelApplication(ExtApplication):
     def lookup_tags(self, q, name, value):
         if not value:
             return
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = [value]
         tq = ("%%s::text[] <@ %s.tags" % self.db_table, [value])
         if None in q:
