@@ -51,9 +51,10 @@ class VersionCheck(DiscoveryCheck):
         if not self.object.version or version.id != self.object.version.id:
             if self.object.version:
                 self.logger.info("Version changed: %s -> %s",
-                                 self.object.version.name, version.name)
+                                 self.object.version.version,
+                                 version.version)
             else:
-                self.logger.info("Set version: %s", version.name)
+                self.logger.info("Set version: %s", version.version)
             self.object.version = version
             changed = True
             # @todo: Check next_version and report upgrade
