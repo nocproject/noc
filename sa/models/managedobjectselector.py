@@ -159,19 +159,19 @@ class ManagedObjectSelector(models.Model):
             q &= Q(name__regex=self.filter_name)
         # Filter by profile
         if self.filter_profile:
-            q &= Q(profile=self.filter_profile.id)
+            q &= Q(profile=self.filter_profile)
         # Filter by vendor
         if self.filter_vendor:
-            q &= Q(vendor=self.filter_vendor.id)        
+            q &= Q(vendor=self.filter_vendor)
         # Filter by platform
         if self.filter_platform:
-            q &= Q(platform=self.filter_platform.id)        
+            q &= Q(platform=self.filter_platform)
         # Filter by version
         if self.filter_version:
-            q &= Q(version=self.filter_version.id)        
+            q &= Q(version=self.filter_version)
         # Filter by ttsystem
         if self.filter_tt_system:
-            q &= Q(tt_system=self.filter_tt_system.id)
+            q &= Q(tt_system=self.filter_tt_system)
         # Filter by object's profile
         if self.filter_object_profile:
             q &= Q(object_profile=self.filter_object_profile)
