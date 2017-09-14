@@ -120,7 +120,7 @@ class Firmware(Document):
                     profile=profile,
                     vendor=vendor,
                     version=version,
-                    uuid=uuid
+                    uuid=uuid.uuid4()
                 )
                 firmware.save()
                 return firmware
