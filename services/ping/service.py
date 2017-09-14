@@ -46,7 +46,7 @@ class PingService(Service):
         self.ping = None
         self.is_throttled = False
         self.slot_number = 0
-        self.total_slots = 1
+        self.total_slots = 0
 
     @tornado.gen.coroutine
     def on_activate(self):
