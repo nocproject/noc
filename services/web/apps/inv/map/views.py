@@ -208,7 +208,7 @@ class MapApplication(ExtApplication):
             "name": object.name,
             "description": object.description,
             "address": object.address,
-            "platform": o.platform.name if o.platform else "",
+            "platform": object.platform.full_name if object.platform else "",
             "profile": object.profile.name,
             "external": object.segment.id != segment.id,
             "external_segment": {
