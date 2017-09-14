@@ -172,7 +172,7 @@ class ReportDiscoveryResult(object):
                 yield x
 
     def __getitem__(self, item):
-        return self.out.get(item, {})
+        return self.out[item] if item in self.out else {}
 
 
 class ReportContainer(object):
@@ -412,7 +412,7 @@ class ReportObjects(object):
     @staticmethod
     def load(mos_id):
         query = "select sa.id,sa.name,sa.address, sa.is_managed, "
-        query += "profile, op.name as object_profile, ad.name as  administrative_domain, sa.segment "
+        query += "profile, op.name as object_profile, ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         query += "WHERE op.id = sa.object_profile_id and ad.id = sa.administrative_domain_id "
         # query += "LIMIT 20"
@@ -629,7 +629,7 @@ class ReportObjectDetailApplication(ExtApplication):
         for mo in moss:
             if mo not in mos_id:
                 continue
-            dp = discovery_problem.get(mo)
+            dp = discovery_problem[mo] if discovery_problem else {}
             r += [translate_row(row([
                 mo,
                 moss[0],
