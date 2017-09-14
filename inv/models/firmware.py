@@ -20,7 +20,7 @@ import cachetools
 # NOC modules
 from .vendor import Vendor
 from noc.sa.models.profile import Profile
-from noc.lib.nosql import ReferenceField
+from noc.lib.nosql import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
@@ -52,11 +52,13 @@ class Firmware(Document):
     # Global ID
     uuid = UUIDField(binary=True)
     #
-    profile = ReferenceField(Profile)
-    vendor = ReferenceField(Vendor)
+    profile = PlainReferenceField(Profile)
+    vendor = PlainReferenceField(Vendor)
     version = StringField()
     description = StringField()
     download_url = StringField()
+    # Full name, combined from profile and version
+    full_name = StringField()
     # Object id in BI
     bi_id = LongField()
 
@@ -64,7 +66,11 @@ class Firmware(Document):
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
-        return self.version
+        return self.full_name
+
+    def clean(self):
+        self.full_name = "%s %s" % (self.profile.name, self.version)
+        super(Firmware, self).clean()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),

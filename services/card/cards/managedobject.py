@@ -221,7 +221,7 @@ class ManagedObjectCard(BaseCard):
             "object_profile_name": self.object.object_profile.name,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
-            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version.version),
+            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version),
             "firmware_recommended": FirmwarePolicy.get_recommended_version(self.object.platform),
             "service_summary": service_summary,
             #

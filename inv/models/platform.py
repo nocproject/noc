@@ -44,7 +44,7 @@ class Platform(Document):
     name = StringField()
     description = StringField(required=False)
     # Full name, combined from vendor platform
-    full_name = StringField()
+    full_name = StringField(unique=True)
     # Global ID
     uuid = UUIDField(binary=True)
     # Object id in BI
@@ -54,7 +54,7 @@ class Platform(Document):
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
-        return self.name
+        return self.full_name
 
     def clean(self):
         self.full_name = "%s %s" % (self.vendor.name, self.name)

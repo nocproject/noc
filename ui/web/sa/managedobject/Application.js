@@ -443,7 +443,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "software_image",
                                     xtype: "displayfield",
                                     fieldLabel: __("Software Image"),
-                                    allowBlank: false
+                                    allowBlank: true
                                 }
                             ]
                         }
