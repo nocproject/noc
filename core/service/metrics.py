@@ -21,9 +21,6 @@ class MetricsHandler(tornado.web.RequestHandler):
         self.service = service
 
     def get(self):
-        def q(s):
-            return s.translate(TR)
-
         labels = [
             "service=\"%s\"" % self.service.name,
             "node=\"%s\"" % config.node
@@ -36,7 +33,7 @@ class MetricsHandler(tornado.web.RequestHandler):
         for key in mdata:
             if isinstance(mdata[key], six.string_types) or isinstance(mdata[key], bool):
                 continue
-            qm = q(key)
+            qm = str(key).translate(TR)
             out += ["# TYPE %s untyped" % qm.lower()]
             out += ["%s{%s} %s" % (qm.lower(), labels.lower(), mdata[key])]
         self.add_header("Content-Type", "text/plain; version=0.0.4")
