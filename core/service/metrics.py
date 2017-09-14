@@ -23,10 +23,12 @@ class MetricsHandler(tornado.web.RequestHandler):
     def get(self):
         labels = [
             "service=\"%s\"" % self.service.name,
-            "node=\"%s\"" % config.node
+            "node=\"%s\"" % config.node,
         ]
         if self.service.pooled:
             labels += ["pool=\"%s\"" % config.pool]
+        if self.service.name in ("discovery", "ping"):
+            labels += ["slot=\"%s\"" % self.service.slot_number]
         labels = ",".join(labels)
         out = []
         mdata = self.service.get_mon_data()
