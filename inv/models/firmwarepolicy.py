@@ -65,7 +65,7 @@ class FirmwarePolicy(Document):
             return None
         fp = FirmwarePolicy.objects.filter(
             platform=platform.id,
-            version=version.id
+            firmware=version.id
         ).first()
         if fp:
             return fp.status
