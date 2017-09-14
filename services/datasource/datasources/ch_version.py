@@ -22,7 +22,7 @@ class CHVersionDataSource(BaseDataSource):
             r += [(
                 a.get_bi_id(),
                 a.id,
-                a.name,
+                a.version,
                 a.profile.name,
                 a.vendor.name
             )]

@@ -11,6 +11,7 @@ from __future__ import absolute_import
 # NOC modules
 from .base import BaseDataSource
 from noc.inv.models.object import Object
+from noc.core.bi.decorator import bi_hash
 
 
 class CHContainerDataSource(BaseDataSource):
@@ -23,6 +24,6 @@ class CHContainerDataSource(BaseDataSource):
                 obj.get_bi_id(),
                 obj.id,
                 obj.name,
-                obj.container.get_bi_id() if obj.container else ""
+                bi_hash(obj.container) if obj.container else ""
             )]
         return r
