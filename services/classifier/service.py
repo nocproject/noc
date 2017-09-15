@@ -284,42 +284,6 @@ class ClassifierService(Service):
             self.logger.error("Failed to load handler '%s'. Ignoring", h)
             return None
 
-    def decode_str(self, event, value):
-        return value
-
-    def decode_int(self, event, value):
-        if value is not None and value.isdigit():
-            return int(value)
-        else:
-            return 0
-
-    def decode_ipv4_address(self, event, value):
-        return IPv4Parameter().clean(value)
-
-    def decode_ipv6_address(self, event, value):
-        return IPv6Parameter().clean(value)
-
-    def decode_ip_address(self, event, value):
-        return IPParameter().clean(value)
-
-    def decode_ipv4_prefix(self, event, value):
-        return IPv4PrefixParameter().clean(value)
-
-    def decode_ipv6_prefix(self, event, value):
-        return IPv6PrefixParameter().clean(value)
-
-    def decode_ip_prefix(self, event, value):
-        return PrefixParameter().clean(value)
-
-    def decode_mac(self, event, value):
-        return MACAddressParameter().clean(value)
-
-    def decode_interface_name(self, event, value):
-        return event.managed_object.get_profile().convert_interface_name(value)
-
-    def decode_oid(self, event, value):
-        return value
-
     def retry_failed_events(self):
         """
         Return failed events to the unclassified queue if
