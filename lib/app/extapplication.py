@@ -104,6 +104,9 @@ class ExtApplication(Application):
     def queryset(self, request, query=None):
         raise NotImplementedError
 
+    def instance_to_dict(self, o):
+        raise NotImplementedError
+
     def list_data(self, request, formatter):
         """
         Returns a list of requested object objects
@@ -119,8 +122,18 @@ class ExtApplication(Application):
             q = dict((str(k), v[0] if len(v) == 1 else v)
                      for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
+        if limit:
+            try:
+                limit = int(limit)
+            except ValueError:
+                raise HttpResponse(400, "Invalid %s param" % self.limit_param)
         # page = q.get(self.page_param)
-        start = q.get(self.start_param)
+        start = q.get(self.start_param) or 0
+        if start:
+            try:
+                start = int(start)
+            except ValueError:
+                raise HttpResponse(400, "Invalid %s param" % self.start_param)
         query = q.get(self.query_param)
         only = q.get(self.only_param)
         if only:
@@ -167,23 +180,27 @@ class ExtApplication(Application):
                 data = data.filter(id__in=fav_items)
             else:
                 data = data.exclude(id__in=fav_items)
+        # Store unpaged/unordered queryset
+        unpaged_data = data
+        # Select related records when fetching for models
         if hasattr(data, "_as_sql"):  # For Models only
             data = data.select_related()
         # Apply sorting
         ordering = ordering or self.default_ordering
         if ordering:
             data = data.order_by(*ordering)
-        if request.is_extjs:
-            total = data.count()  # Total unpaged count
-        if start is not None and limit is not None:
-            data = data[int(start):int(start) + int(limit)]
-        ld = len(data)
-        if self.row_limit and ld > self.row_limit:
-            # Request too large
-            return self.response(
-                "System limit is %d records (%d requested)" % (self.row_limit, ld),
-                status=self.TOO_LARGE)
+        # Apply row limit if necessary
+        if self.row_limit:
+            limit = min(limit, self.row_limit + 1)
+        # Apply paging
+        if limit:
+            data = data[start:start + limit]
+        # Fetch and format data
         out = [formatter(o, fields=only) for o in data]
+        if self.row_limit and len(out) == self.row_limit + 1:
+            return self.response(
+                "System records limit exceeded (%d records)" % self.row_limit,
+                status=self.TOO_LARGE)
         # Set favorites
         if not only and formatter == self.instance_to_dict:
             if fav_items is None:
@@ -191,6 +208,11 @@ class ExtApplication(Application):
             for r in out:
                 r[self.fav_status] = r[self.pk] in fav_items
         if request.is_extjs:
+            ld = len(out)
+            if limit and ld == limit:
+                total = unpaged_data.count()
+            else:
+                total = ld
             out = {
                 "total": total,
                 "success": True,
