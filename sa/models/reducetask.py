@@ -226,7 +226,7 @@ class ReduceTask(models.Model):
         # Run map task for each object
         for o in objects:
             ng = ngs[o.activator.id]
-            no_sessions = not ng and o.profile_name != "NOC.SAE"
+            no_sessions = not ng and o.profile.name != "NOC.SAE"
             for ms, p in msp:
                 # Set status to "F" if script not found
                 if no_sessions or ms not in o.profile.scripts:
@@ -234,7 +234,7 @@ class ReduceTask(models.Model):
                 else:
                     status = "W"
                 # Build full map script name
-                msn = "%s.%s" % (o.profile_name, ms)
+                msn = "%s.%s" % (o.profile.name, ms)
                 # Expand parameter, if callable
                 if callable(p):
                     p = p(o)

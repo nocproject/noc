@@ -144,12 +144,14 @@ class DiscoveryID(Document):
             metrics["discoveryid_mac_interface"] += 1
             o = set(
                 d["managed_object"]
-                for d in Interface._get_collection().find({
+                for d in Interface._get_collection().with_options(
+                    read_preference=ReadPreference.SECONDARY_PREFERRED
+                ).find({
                     "mac": mac
                 }, {
                     "_id": 0,
                     "managed_object": 1
-                }, read_preference=ReadPreference.SECONDARY_PREFERRED)
+                })
             )
             if len(o) == 1:
                 return ManagedObject.get_by_id(list(o)[0])
@@ -164,18 +166,19 @@ class DiscoveryID(Document):
             # Fallback to interface addresses
             o = set(
                 d["managed_object"]
-                for d in SubInterface._get_collection().find({
-                    "ipv4_addresses": {
+                for d in SubInterface._get_collection().with_options(
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).find({
+                       "ipv4_addresses": {
                         "$gt": ipv4_address + "/",
                         "$lt": ipv4_address + "/99"
-                    }
-                }, {
-                    "_id": 0,
-                    "managed_object": 1,
-                    "ipv4_addresses": 1
-                }, read_preference=ReadPreference.SECONDARY_PREFERRED)
+                        }
+                    }, {
+                        "_id": 0,
+                        "managed_object": 1,
+                        "ipv4_addresses": 1
+                    })
                 if has_ip(ipv4_address, d["ipv4_addresses"])
-            )
+                )
             if len(o) == 1:
                 metrics["discoveryid_ip_interface"] += 1
                 return ManagedObject.get_by_id(list(o)[0])

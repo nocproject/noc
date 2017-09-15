@@ -141,7 +141,7 @@ class RuleSet(object):
         else:
             chain = "other"
         # Find rules lookup
-        lookup = self.rules.get((event.managed_object.profile_name, chain))
+        lookup = self.rules.get((event.managed_object.profile.name, chain))
         if lookup:
             for r in lookup.lookup_rules(event, vars):
                 # Try to match rule

@@ -1,20 +1,29 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Firmware
+# Firmware Policy
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014=6 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, ListField,
                                 EmbeddedDocumentField)
 # NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from firmware import Firmware
-from noc.lib.nosql import ForeignKeyField
+from .firmware import Firmware
+from .platform import Platform
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.lib.text import split_alnum
+
+
+FS_RECOMMENDED = "r"
+FS_ACCEPTABLE = "a"
+FS_NOT_RECOMMENDED = "n"
+FS_DENIED = "d"
 
 
 class ManagementPolicy(EmbeddedDocument):
@@ -32,19 +41,19 @@ class FirmwarePolicy(Document):
         "indexes": ["platform", "firmware"]
     }
     # Platform (Matched with get_version)
-    platform = StringField()
+    platform = PlainReferenceField(Platform)
     #
     description = StringField()
     #
     object_profile = ForeignKeyField(ManagedObjectProfile)
     #
-    firmware = ReferenceField(Firmware)
+    firmware = PlainReferenceField(Firmware)
     status = StringField(
         choices=[
-            ("r", "Recommended"),
-            ("a", "Acceptable"),
-            ("n", "Not recommended"),
-            ("d", "Denied")
+            (FS_RECOMMENDED, "Recommended"),
+            (FS_ACCEPTABLE, "Acceptable"),
+            (FS_NOT_RECOMMENDED, "Not recommended"),
+            (FS_DENIED, "Denied")
         ]
     )
     #
@@ -52,20 +61,33 @@ class FirmwarePolicy(Document):
 
     @classmethod
     def get_status(cls, platform, version):
-        for fp in FirmwarePolicy.objects.filter(platform=platform):
-            if fp.firmware.version == version:
-                return fp.status
-        return None
+        if not platform or not version:
+            return None
+        fp = FirmwarePolicy.objects.filter(
+            platform=platform.id,
+            firmware=version.id
+        ).first()
+        if fp:
+            return fp.status
+        else:
+            return None
 
     @classmethod
     def get_recommended_version(cls, platform):
-        fp = FirmwarePolicy.objects.filter(platform=platform, status="r").first()
+        if not platform:
+            return None
+        fp = FirmwarePolicy.objects.filter(
+            platform=platform.id,
+            status=FS_RECOMMENDED).first()
         if fp:
             return fp.firmware.version
         versions = []
-        for fp in FirmwarePolicy.objects.filter(platform=platform, status="a"):
+        for fp in FirmwarePolicy.objects.filter(
+                platform=platform.id,
+                status=FS_ACCEPTABLE):
             versions += [fp.firmware.version]
         if versions:
-            return sorted(versions,key=split_alnum)[-1]
+            # Get latest acceptable version
+            return sorted(versions, key=lambda x: split_alnum(x.name))[-1]
         else:
             return None

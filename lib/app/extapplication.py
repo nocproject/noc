@@ -151,7 +151,10 @@ class ExtApplication(Application):
             xa = {"where": w}
             if p:
                 xa["params"] = p
-            data = self.queryset(request, query).filter(**q).extra(**xa)
+            if xaa:
+                data = self.queryset(request, query).filter(**q).extra(**xaa)
+            else:
+                data = self.queryset(request, query).filter(**q).extra(**xa)
         elif xaa:
             # ExtraQuery
             data = self.queryset(request, query).filter(**q).extra(**xaa)

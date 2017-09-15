@@ -14,8 +14,8 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.sa.models.managedobject import ManagedObject
 from noc.lib.text import split_alnum
+from noc.settings import config
 from noc.core.handler import get_handler
 
 
@@ -63,10 +63,7 @@ class Command(BaseCommand):
     def get_objects(exprs):
         objects = set()
         for s in exprs:
-            try:
-                objects.update(ManagedObjectSelector.resolve_expression(s))
-            except ManagedObject.DoesNotExist:
-                continue
+            objects.update(ManagedObjectSelector.resolve_expression(s))
         return sorted(objects, key=lambda x: x.name)
 
     @staticmethod
@@ -95,11 +92,9 @@ class Command(BaseCommand):
 
     def handle_show(self, moo, *args, **options):
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, (o.get_attr("platform") if o.get_attr("platform") else None)
-                                            or o.profile_name))
+            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None)
+                                            or o.profile.name))
             ifaces = self.get_interfaces(o)
-            if not ifaces:
-                return
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
                 self.show_interface(
@@ -107,7 +102,7 @@ class Command(BaseCommand):
 
     def handle_reset(self, moo, *args, **kwargs):
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, (o.get_attr("platform") if o.get_attr("platform") else None)
+            self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None)
                                               or o.profile.name))
             for i in Interface.objects.filter(managed_object=o.id):
                 if i.profile:
@@ -125,13 +120,10 @@ class Command(BaseCommand):
             # raise CommandError("No classification solution")
         pcache = {}
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):\n" % (o.name, o.get_attr("platform") if o.get_attr("platform") else o.profile_name))
+            self.stdout.write("%s (%s):" % (o.name, o.platform.name if o.platform else o.profile.name))
             ifaces = self.get_interfaces(o)
-            if not ifaces:
-                continue
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
-                v = "Unknown"
                 if not i.profile or not i.profile_locked:
                     pn = get_profile(i)
                     if pn:
@@ -139,18 +131,12 @@ class Command(BaseCommand):
                         if not p:
                             p = InterfaceProfile.get_by_id(pn)
                             pcache[pn] = p
-                        if i.profile == p:
-                            v = "Akready set %s" % p.name
-                        else:
-                            i.profile = p
-                            i.save()
-                            v = "Set %s" % p.name
+                        i.profile = p
+                        i.save()
+                        v = "Set %s" % p.name
                     else:
                         v = "Not matched"
-                    # self.show_interface(tps, i, v)
-                elif i.profile_locked:
-                    v = "Profile locked"
-                self.show_interface(tps, i, v)
+                    self.show_interface(tps, i, v)
 
 if __name__ == "__main__":
     Command().run()

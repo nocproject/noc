@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-
 # ---------------------------------------------------------------------
-# Failed Discovery Report
+# Failed Scripts Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +12,7 @@ from itertools import ifilterfalse
 # Third-party modules
 from django import forms
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
@@ -69,9 +68,9 @@ class ReportDiscoveryProblem(object):
 
     def __iter__(self):
         for p in self.mos_pools:
-            r = get_db()[self.coll_name % p.name].aggregate(self.pipelines.get(p.name, self.pipeline()),
-                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
-            for x in r["result"]:
+            r = get_db()[self.coll_name % p.name].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED
+                                                               ).aggregate(self.pipelines.get(p.name, self.pipeline()))
+            for x in r:
                 # @todo Append info for MO
                 yield x
 
@@ -162,6 +161,10 @@ class ReportFilterApplication(SimpleReport):
         if filter_view_other:
             mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
             mos = mos.filter(profile_name="Generic.Host").exclude(object_profile__in=mnp_in)
+        discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
+        mos_id = list(mos.values_list("id", flat=True))
+        if avail_status:
+            avail = ObjectStatus.get_statuses(mos_id)
 
         if profile_check_only:
             match = {"$or": [{"job.problems.suggest_cli": {"$exists": True}},
@@ -199,8 +202,7 @@ class ReportFilterApplication(SimpleReport):
                         (
                             mo.name,
                             mo.address,
-                            mo.profile_name,
-                            mo.administrative_domain.name,
+                            mo.profile.name,
                             _("Yes") if mo.get_status() else _("No"),
                             discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
                             method,

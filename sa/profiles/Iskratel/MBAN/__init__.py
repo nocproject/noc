@@ -25,5 +25,6 @@ class Profile(BaseProfile):
     command_exit = "exit"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
+    enable_cli_session = False
     command_submit = "\r\n"
     rogue_chars = ["\r\x00"]

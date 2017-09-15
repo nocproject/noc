@@ -90,7 +90,7 @@ class ReportFilterApplication(SimpleReport):
                 (
                     mo.name,
                     mo.address,
-                    mo.profile_name,
+                    mo.profile.name,
                     iface
                 )
             ]

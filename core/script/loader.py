@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
+#----------------------------------------------------------------------
 # Script loader
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+#----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
-# ---------------------------------------------------------------------
+#----------------------------------------------------------------------
 
 # Python modules
 import sys
@@ -12,13 +12,11 @@ import glob
 import logging
 import inspect
 import threading
-
 import os
 import re
-
-
 # NOC modules
 from base import BaseScript
+from noc.core.profile.loader import GENERIC_PROFILE
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +122,7 @@ class ScriptLoader(object):
                         for s in match.group(1).split(",")
                         if s.strip()
                     ]
-                    ns.add("Generic.Host.%s" % gn)
+                    ns.add("%s.%s" % (GENERIC_PROFILE, gn))
         # Load custom scripts
         profiles = set()
         for path in glob.glob("custom/sa/profiles/*/*/*.py"):

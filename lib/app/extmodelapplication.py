@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+from functools import reduce
 # Third-party modules
 from django.http import HttpResponse
 from django.db.models.fields import (
@@ -15,6 +16,7 @@ from django.db.models.fields import (
     DateField, DateTimeField, related)
 from django.db.models import Q
 from django.db.utils import IntegrityError
+import six
 # NOC modules
 from extapplication import ExtApplication, view
 from noc.sa.interfaces.base import (
@@ -37,6 +39,7 @@ class ExtModelApplication(ExtApplication):
     pk_field_name = None  # Set by constructor
     clean_fields = {}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
+    order_map = {}  # field name -> SQL query for ordering
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -295,7 +298,7 @@ class ExtModelApplication(ExtApplication):
     def lookup_tags(self, q, name, value):
         if not value:
             return
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             value = [value]
         tq = ("%%s::text[] <@ %s.tags" % self.db_table, [value])
         if None in q:
@@ -341,6 +344,25 @@ class ExtModelApplication(ExtApplication):
             return f, m2m
         else:
             return pdata, {}
+
+    def extra_query(self, q, order):
+        new_order = []
+        extra_select = {}
+        for n, o in enumerate(order):
+            if o.startswith("-"):
+                fname = o[1:]
+            else:
+                fname = o
+            if fname in self.order_map:
+                no = "%s_order_%d" % (fname, n)
+                extra_select[no] = self.order_map[fname]
+                new_order += [no]
+            else:
+                new_order += [o]
+        extra = {}
+        if extra_select:
+            extra["select"] = extra_select
+        return extra, new_order
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):

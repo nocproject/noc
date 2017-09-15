@@ -29,6 +29,7 @@ class Profile(BaseProfile):
     command_enter_zynos = "mode zynos"
     command_exit_zynos = "sys cli newCLI"
     pattern_syntax_error = "Invalid (command|input)"
+    enable_cli_session = False
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     rx_ifname = re.compile(r"^swp(?P<number>\d+)$")
 

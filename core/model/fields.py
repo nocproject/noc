@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Custom field types
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Custom field types
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import types
 import cPickle
-## Django modules
+# Third-party modules
 from django.db import models
-## Third-party modules
 from south.modelsinspector import add_introspection_rules
-## NOC Modules
+import six
+from bson import ObjectId
+# NOC Modules
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import ranges_to_list, list_to_ranges
@@ -198,7 +199,7 @@ class IntMapField(models.Field):
     def to_python(self, value):
         if not value:
             return set()
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             return set(ranges_to_list(value))
         else:
             return value
@@ -260,7 +261,7 @@ class TagsField(models.Field):
 
         if value is None:
             return None
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.string_types):
             # Legacy AutoCompleteTagsField tweak
             if "," in value:
                 value = value.split(",")
@@ -295,12 +296,12 @@ class ColorField(models.Field):
         super(ColorField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             return value
         return u"#%06x" % value
 
     def get_db_prep_value(self, value, connection, prepared=False):
-        if isinstance(value, basestring):
+        if isinstance(value, six.string_types):
             if value.startswith("#"):
                 value = value[1:]
             return int(value, 16)
@@ -351,7 +352,7 @@ class DocumentReferenceDescriptor(object):
                 "Cannot assign None: \"%s.%s\" does not allow null values." % (
                     instance._meta.object_name, self.field.name)
             )
-        elif value is not None and not isinstance(value, (self.field.document, basestring)):
+        elif value is not None and not isinstance(value, (self.field.document, six.string_types)):
             raise ValueError(
                 "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
                     value, instance._meta.object_name,
@@ -380,9 +381,13 @@ class DocumentReferenceField(models.Field):
     def get_prep_value(self, value):
         if value is None:
             return None
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.string_types):
             return value
+        elif isinstance(value, ObjectId):
+            return str(value)
         else:
+            # Dereference
+            # @todo: Maybe .pk is better way
             return str(value.id)
 
 
@@ -415,6 +420,6 @@ class CachedForeignKey(models.ForeignKey):
         setattr(cls, self.get_cache_name(),
                 CachedForeignKeyDescriptor(self))
 
-##
+#
 add_introspection_rules([], ["^noc\.core\.model\.fields\."])
 from django.contrib.admin.widgets import AdminTextInputWidget

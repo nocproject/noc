@@ -16,6 +16,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
     pattern_syntax_error = r"^\(ERROR\) "
     command_submit = "\r"
+    enable_cli_session = False
     command_exit = "logout"
 
     INTERFACE_TYPES = {

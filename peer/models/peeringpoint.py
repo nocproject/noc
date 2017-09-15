@@ -2,16 +2,19 @@
 # ---------------------------------------------------------------------
 # PeeringPoint model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Django modules
 from django.db import models
 # NOC modules
-from noc.main.models import NotificationGroup
-from asn import AS
-from noc.core.profile.loader import loader as profile_loader
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.sa.models.profile import Profile
+from noc.core.model.fields import DocumentReferenceField
+from .asn import AS
 from noc.lib.rpsl import rpsl_format
 
 
@@ -29,8 +32,7 @@ class PeeringPoint(models.Model):
     local_as = models.ForeignKey(AS, verbose_name="Local AS")
     router_id = models.IPAddressField("Router-ID", unique=True)
     # @todo: Replace with managed object
-    profile_name = models.CharField("Profile", max_length=128,
-                                    choices=profile_loader.choices())
+    profile = DocumentReferenceField(Profile, null=False, blank=False)
     communities = models.CharField(
         "Import Communities", max_length=128,
         blank=True, null=True)
@@ -75,10 +77,6 @@ class PeeringPoint(models.Model):
             if pr.export_filter_name:
                 pls[pr.export_filter_name] = pr.export_filter
         return pls.items()
-
-    @property
-    def profile(self):
-        return profile_registry[self.profile_name]()
 
     @property
     def rpsl(self):

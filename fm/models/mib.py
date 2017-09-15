@@ -47,6 +47,7 @@ class MIB(nosql.Document):
 
     MIBRequiredException = MIBRequiredException
     MIB_PATH = ["var/mibs/local", "var/mibs/dist"]
+    SMILINT_PATH = ["/usr/local/bin/"]
 
     def __unicode__(self):
         return self.name

@@ -59,13 +59,14 @@ class ReportPendingLinks(object):
         n = 0
         ignored_ifaces = []
         while mos_job[(0 + n):(10000 + n)]:
-            job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"$and": [
+            job_logs = get_db()["noc.joblog"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+            ).aggregate([{"$match": {"$and": [
                 {"_id": {"$in": mos_job[(0 + n):(10000 + n)]}},
                 {"problems.lldp": {"$exists": True}}]}},
-                {"$project": {"_id": 1, "problems.lldp": 1}}],
-                read_preference=ReadPreference.SECONDARY_PREFERRED)
+                {"$project": {"_id": 1, "problems.lldp": 1}}])
 
-            for discovery in job_logs["result"]:
+            for discovery in job_logs:
                 if "RPC Error:" in discovery["problems"]["lldp"] or \
                                 "Unhandled exception" in discovery["problems"]["lldp"]:
                     continue
@@ -95,11 +96,11 @@ class ReportPendingLinks(object):
                         # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
                         problems[mo_id][iface] = {
                             "problem": "Not found iface on remote",
-                            "remote_id": "%s; %s ;%s" % (rmo.name, rmo.profile_name, pend_str.group("remote_iface")),
+                            "remote_id": "%s; %s ;%s" % (rmo.name, rmo.profile.name, pend_str.group("remote_iface")),
                             "remote_iface": pend_str.group("remote_iface")}
                         problems[rmo.id][pend_str.group("remote_iface")] = {
                             "problem": "Not found local iface on remote",
-                            "remote_id": "%s; %s; %s" % (mo.name, mo.profile_name, iface),
+                            "remote_id": "%s; %s; %s" % (mo.name, mo.profile.name, iface),
                             "remote_iface": pend_str.group("remote_iface")}
                         # print(discovery["problems"]["lldp"])
                 pass
@@ -144,7 +145,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 data += [(
                     mo.name,
                     mo.address,
-                    mo.profile_name,
+                    mo.profile.name,
                     mo.administrative_domain.name,
                     iface,
                     problem[problems[mo_id][iface]["problem"]],

@@ -15,12 +15,15 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobject.SchemeLookupField",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.main.pool.LookupField",
+        "NOC.sa.profile.LookupField",
+        "NOC.inv.vendor.LookupField",
+        "NOC.inv.platform.LookupField",
+        "NOC.inv.firmware.LookupField",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.main.pyrule.LookupField",
-        "NOC.main.ref.profile.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.terminationgroup.LookupField",
@@ -218,11 +221,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: __("Platform"),
                     dataIndex: "platform",
-                    width: 150
+                    width: 150,
+                    renderer: NOC.render.Lookup("platform")
                 },
                 {
                     text: __("SA Profile"),
-                    dataIndex: "profile_name"
+                    dataIndex: "profile",
+                    renderer: NOC.render.Lookup("profile")
                 },
                 {
                     text: __("Obj. Profile"),
@@ -312,28 +317,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 },
                 {
-                    xtype: "fieldset",
-                    layout: "hbox",
-                    border: false,
-                    padding: 0,
-                    items: [
-                        {
-                            name: "platform",
-                            xtype: "displayfield",
-                            fieldLabel: __("Platform"),
-                            allowBlank: true
-                        },
-                        {
-                            name: "version",
-                            xtype: "displayfield",
-                            fieldLabel: __("Version"),
-                            labelWidth: 55,
-                            padding: "0px 0px 0px 4px",
-                            allowBlank: true
-                        }
-                    ]
-                },
-                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
@@ -418,7 +401,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: __("Access"),
+                    title: __("Platform"),
                     items: [
                         {
                             xtype: "container",
@@ -429,12 +412,55 @@ Ext.define("NOC.sa.managedobject.Application", {
                             },
                             items: [
                                 {
-                                    name: "profile_name",
-                                    xtype: "main.ref.profile.LookupField",
+                                    name: "profile",
+                                    xtype: "sa.profile.LookupField",
                                     fieldLabel: __("SA Profile"),
                                     allowBlank: false,
                                     groupEdit: true
                                 },
+                                {
+                                    name: "vendor",
+                                    xtype: "inv.vendor.LookupField",
+                                    fieldLabel: __("Vendor"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "platform",
+                                    xtype: "inv.platform.LookupField",
+                                    fieldLabel: __("Platform"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "version",
+                                    xtype: "inv.firmware.LookupField",
+                                    fieldLabel: __("Version"),
+                                    allowBlank: true,
+                                    groupEdit: true
+                                },
+                                {
+                                    name: "software_image",
+                                    xtype: "displayfield",
+                                    fieldLabel: __("Software Image"),
+                                    allowBlank: true
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    title: __("Access"),
+                    items: [
+                        {
+                            xtype: "container",
+                            layout: "hbox",
+                            defaults: {
+                                labelAlign: "top",
+                                padding: 4
+                            },
+                            items: [
                                 {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
@@ -459,6 +485,19 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     minValue: 0,
                                     maxValue: 65535,
                                     hideTrigger: true
+                                },
+                                {
+                                    name: "cli_session_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("CLI Session Policy"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "P"
                                 },
                                 {
                                     name: "max_scripts",
@@ -870,7 +909,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.callParent();
     },
     filters: [
-        // @todo: By SA Profile
         {
             title: __("By Managed"),
             name: "is_managed",
@@ -878,9 +916,9 @@ Ext.define("NOC.sa.managedobject.Application", {
         },
         {
             title: __("By SA Profile"),
-            name: "profile_name",
+            name: "profile",
             ftype: "lookup",
-            lookup: "main.ref.profile"
+            lookup: "sa.profile"
         },
         {
             title: __("By Obj. Profile"),

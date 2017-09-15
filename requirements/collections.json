@@ -2,7 +2,7 @@
   "url": "https://cdn.getnoc.com/noc/",
   "packages": [
     {
-      "name": "collections",
+      "name": "collections-moversion",
       "version": "latest"
     }
   ]

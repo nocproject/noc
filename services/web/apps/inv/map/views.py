@@ -208,8 +208,8 @@ class MapApplication(ExtApplication):
             "name": object.name,
             "description": object.description,
             "address": object.address,
-            "platform": object.platform,
-            "profile": object.profile_name,
+            "platform": object.platform.full_name if object.platform else "",
+            "profile": object.profile.name,
             "external": object.segment.id != segment.id,
             "external_segment": {
                 "id": str(object.segment.id),
@@ -311,8 +311,7 @@ class MapApplication(ExtApplication):
                         }
                     }
                 ])
-                if "ok" in a:
-                    r.update([d["_id"] for d in a["result"]])
+                r.update([d["_id"] for d in a])
             return r
 
         def get_maintainance(objects):

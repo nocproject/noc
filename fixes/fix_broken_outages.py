@@ -29,12 +29,11 @@ def fix():
         {"$match": {"duration": {"$lte": 0}}},
         {"$project": {"_id": 1}}
     ])
-    if r["ok"]:
-        ids = [d["_id"] for d in r["result"]]
-        if ids:
-            Outage._get_collection().remove({
-                "_id": {
-                    "$in": ids
-                }
-            })
+    ids = [d["_id"] for d in r]
+    if ids:
+        Outage._get_collection().remove({
+            "_id": {
+                "$in": ids
+            }
+        })
     print (" ... Done (%d records fixed)" % len(ids))

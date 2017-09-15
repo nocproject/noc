@@ -44,9 +44,17 @@ class InvMonitorApplication(ExtApplication):
                 Job.ATTR_LAST_STATUS: Job.E_EXCEPTION,
             }
             t0 = sc.find_one(late_q, limit=1, sort=[("ts", 1)])
-            ldur = sc.aggregate([{"$group": {"_id": "$jcls", "avg": {"$avg": "$ldur"}}},
-                                 {"$sort": {"_id": 1}}])
-            ldur = ldur["result"]
+            ldur = list(sc.aggregate([
+                {
+                    "$group": {
+                        "_id": "$jcls",
+                        "avg": {"$avg": "$ldur"}
+                    }
+                },
+                {
+                    "$sort": {"_id": 1}
+                }
+            ]))
             if t0 and t0["ts"] < now:
                 lag = (now - t0["ts"]).total_seconds()
             else:

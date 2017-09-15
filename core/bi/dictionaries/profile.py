@@ -17,10 +17,3 @@ class Profile(Dictionary):
         layout = "flat"
 
     name = StringField()
-
-    @classmethod
-    def get_record(cls, value):
-        return {
-            "_id": value,
-            "name": value
-        }

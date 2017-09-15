@@ -18,11 +18,13 @@ from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.core.model.decorator import on_delete_check
+from noc.core.bi.decorator import bi_sync
 
 
 id_lock = Lock()
 
 
+@bi_sync
 @on_delete_check(check=[
     ("cm.ObjectNotify", "administrative_domain"),
     # ("fm.EscalationItem", "administrative_domain"),

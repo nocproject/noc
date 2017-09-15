@@ -199,7 +199,7 @@ class FMMonitorApplication(ExtApplication):
         y = {}
         res = get_db()["noc.alarms.active"].aggregate(pipeline)
 
-        for x in res["result"]:
+        for x in res:
             if "root" in x["_id"]:
                 z[x["_id"]["adm_path"]] += x["tags"]
             else:
@@ -208,9 +208,9 @@ class FMMonitorApplication(ExtApplication):
         for e in self.a_p:
             non_root = sum([y[x] for x in self.a_p[e] if x in y])
             w_root = sum([z[x] for x in self.a_p[e] if x in z])
-            r[self.p_c[e]] = {"non-root": non_root,
-                              "root": w_root,
-                              "total": non_root + w_root
-                              }
-
+            r[self.p_c[e]] = {
+                "non-root": non_root,
+                "root": w_root,
+                "total": non_root + w_root
+            }
         return r

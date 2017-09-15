@@ -18,6 +18,8 @@ def get_py_modules_list():
         dirs[:] = [d for d in dirs if not d.startswith(".") and d != "lib64"]
         if root == "./lib":
             dirs[:] = [d for d in dirs if d not in ("python", "python2.7")]
+        elif root == ".":
+            dirs[:] = [d for d in dirs if d not in ("share", "var")]
         for f in files:
             if f.startswith(".") or not f.endswith(".py"):
                 continue

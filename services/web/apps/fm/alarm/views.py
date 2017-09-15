@@ -166,7 +166,7 @@ class AlarmApplication(ExtApplication):
             "segment": str(o.managed_object.segment.id),
             "escalation_tt": o.escalation_tt,
             "escalation_error": o.escalation_error,
-            "platform": o.managed_object.platform,
+            "platform": o.managed_object.platform.name if o.managed_object.platform else "",
             "address": o.managed_object.address,
             "isInMaintenance": mtc,
             "summary": self.f_glyph_summary({
@@ -220,9 +220,9 @@ class AlarmApplication(ExtApplication):
         # Managed object properties
         mo = alarm.managed_object
         d["managed_object_address"] = mo.address
-        d["managed_object_profile"] = mo.profile_name
-        d["managed_object_platform"] = mo.platform
-        d["managed_object_version"] = mo.get_attr("version")
+        d["managed_object_profile"] = mo.profile.name
+        d["managed_object_platform"] = mo.platform.name if mo.platform else ""
+        d["managed_object_version"] = mo.version.version if mo.version else ""
         d["segment"] = mo.segment.name
         d["segment_id"] = str(mo.segment.id)
         d["segment_path"] = " | ".join(NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment))
@@ -403,7 +403,7 @@ class AlarmApplication(ExtApplication):
         if delta:
             dt = datetime.timedelta(seconds=int(delta))
             t0 = datetime.datetime.now() - dt
-            r = ActiveAlarm._get_collection().aggregate([
+            r = list(ActiveAlarm._get_collection().aggregate([
                 {
                     "$match": {
                         "timestamp": {
@@ -419,9 +419,9 @@ class AlarmApplication(ExtApplication):
                         }
                     }
                 }
-            ])
-            if r["ok"] and r["result"]:
-                s = AlarmSeverity.get_severity(r["result"][0]["severity"])
+            ]))
+            if r:
+                s = AlarmSeverity.get_severity(r[0]["severity"])
                 if s and s.sound and s.volume:
                     sound = "/ui/pkg/nocsound/%s.mp3" % s.sound
                     volume = float(s.volume) / 100.0

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.firmware application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,3 +19,6 @@ class FirmwareApplication(ExtDocApplication):
     title = _("Firmware")
     menu = [_("Setup"), _("Firmware")]
     model = Firmware
+    query_fields = [
+        "version__icontains"
+    ]

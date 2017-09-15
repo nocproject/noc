@@ -10,7 +10,7 @@ Ext.define('NOC.core.filter.Filter', {
 
     requires: [
         'Ext.ux.form.SearchField',
-        'NOC.main.ref.profile.LookupField',
+        'NOC.sa.profile.LookupField',
         'NOC.main.pool.LookupField',
         'NOC.sa.vendor.LookupField',
         'NOC.sa.platform.LookupField',
@@ -57,7 +57,7 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'main.ref.profile.LookupField',
+            xtype: 'sa.profile.LookupField',
             itemId: 'profile_name', // name of http request query param
             fieldLabel: __('By SA Profile:'),
             uiStyle: undefined,

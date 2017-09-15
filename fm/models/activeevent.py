@@ -76,6 +76,7 @@ class ActiveEvent(Document):
     def mark_as_new(self, message=None):
         """
         Move to new queue
+        @todo: Deprecated
         """
         if message is None:
             message = "Reclassification requested"
@@ -199,6 +200,22 @@ class ActiveEvent(Document):
         if type(o) in (int, long):
             return o
         return o.id
+
+    def contribute_to_alarm(self, alarm):
+        if alarm.id in self.alarms:
+            return
+        self._get_collection().update_one({
+                "_id": self.id,
+            }, {
+                "$set": {
+                    "expires": None,
+                },
+                "$push": {
+                    "alarms": alarm.id
+                }
+            })
+        self.alarms.append(alarm.id)
+        self.expires = None
 
 
 # Avoid circular references

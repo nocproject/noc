@@ -60,7 +60,7 @@ class EventSummaryReport(SimpleReport):
             try:
                 p = mo_map[k]
             except KeyError:
-                p = ManagedObject.objects.get(id=k).profile_name
+                p = ManagedObject.objects.get(id=k).profile.name
                 mo_map[k] = p
             try:
                 pc[p] += v

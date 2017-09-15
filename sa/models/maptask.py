@@ -95,11 +95,11 @@ class MapTask(models.Model):
         object = cls.resolve_object(object)
         # Convert script name
         if "." not in script:
-            script = "%s.%s" % (object.profile_name, script)
+            script = "%s.%s" % (object.profile.name, script)
         sp = script.split(".")
         if (len(sp) != 3 or
-                not script.startswith(object.profile_name + ".") or
-                sp[-1] not in object.profile.scripts):
+                not script.startswith(object.profile.name + ".") or
+                sp[-1] not in object.get_profile().scripts):
             status = "F"
             result = {
                 "code": ERR_INVALID_SCRIPT,

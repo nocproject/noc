@@ -34,6 +34,7 @@ from .sla import SLACheck
 from .cpe import CPECheck
 from .hk import HouseKeepingCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
+from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -113,6 +114,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 check(self).run()
         if self.object.object_profile.enable_box_discovery_sla:
             SLACheck(self).run()
+        if self.object.object_profile.enable_box_discovery_metrics:
+            MetricsCheck(self).run()
         if self.object.object_profile.enable_box_discovery_hk:
             HouseKeepingCheck(self).run()
 
@@ -152,3 +155,9 @@ class BoxDiscoveryJob(MODiscoveryJob):
 
     def get_alarm_weight(self):
         return self.object.object_profile.box_discovery_alarm_weight
+
+    def init_context(self):
+        if "counters" not in self.context:
+            self.context["counters"] = {}
+        if "metrics_window" not in self.context:
+            self.context["metric_windows"] = {}

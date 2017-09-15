@@ -260,7 +260,16 @@ class CorrelatorService(Service):
                     e.event_class.name,
                     a.alarm_class.name, a.id
                 )
-                a.contribute_event(e)
+                # Contribute event to alarm
+                e.contribute_to_alarm(a)
+                if e.timestamp < a.timestamp:
+                    # Set to earlier date
+                    a.timestamp = e.timestamp
+                    a.save()
+                elif e.timestamp > a.last_update:
+                    # Refresh last update
+                    a.last_update = e.timestamp
+                    a.save()
                 self.perf_metrics["alarm_contribute"] += 1
                 return
         # Calculate alarm coverage
@@ -297,11 +306,11 @@ class CorrelatorService(Service):
                     message="Alarm risen from event %s(%s) by rule '%s'" % (
                         str(e.id), str(e.event_class.name), r.u_name)
                 )
-            ]
+            ],
+            opening_event=e.id
         )
-        # Saved by contribute_event
-        # a.save()
-        a.contribute_event(e, open=True)
+        a.save()
+        e.contribute_to_alarm(a)
         self.logger.info(
             "[%s|%s|%s] %s raises alarm %s(%s): %r",
             e.id, managed_object.name, managed_object.address,
@@ -391,7 +400,9 @@ class CorrelatorService(Service):
                     e.event_class.name,
                     a.alarm_class.name, a.id
                 )
-                a.contribute_event(e, close=True)
+                e.contribute_to_alarm(a)
+                a.closing_event = e.id
+                a.last_update = max(a.last_update, e.timestamp)
                 a.clear_alarm(
                     "Cleared by disposition rule '%s'" % r.u_name,
                     ts=e.timestamp

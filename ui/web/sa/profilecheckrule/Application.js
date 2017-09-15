@@ -10,7 +10,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.profilecheckrule.Model",
-        "NOC.main.ref.profile.LookupField"
+        "NOC.sa.profile.LookupField"
     ],
     model: "NOC.sa.profilecheckrule.Model",
     search: true,
@@ -76,7 +76,8 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                     text: __("Profile"),
                     dataIndex: "profile",
                     flex: 1,
-                    width: 150
+                    width: 150,
+                    renderer: NOC.render.Lookup("profile")
                 }
             ],
 
@@ -179,7 +180,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                         },
                         {
                             name: "profile",
-                            xtype: "main.ref.profile.LookupField",
+                            xtype: "sa.profile.LookupField",
                             fieldLabel: __("Profile"),
                             allowBlank: false,
                             uiStyle: "medium"
@@ -195,6 +196,14 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
+                }
+            ],
+            filters: [
+                {
+                    title: __("By Profile"),
+                    name: "profile",
+                    ftype: "lookup",
+                    lookup: "sa.profile"
                 }
             ]
         });

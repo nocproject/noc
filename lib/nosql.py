@@ -35,7 +35,7 @@ for i in range(RETRIES):
         logger.info("Connecting to MongoDB %s", ca)
         connect(**config.mongo_connection_args)
         break
-    except mongoengine.connection.ConnectionError as e:
+    except mongoengine.connection.MongoEngineConnectionError as e:
         logger.error("Cannot connect to mongodb: %s", e)
         if i < RETRIES - 1:
             logger.error("Waiting %d seconds", TIMEOUT)

@@ -139,7 +139,10 @@ class MODiscoveryJob(PeriodicJob):
         self.caps = self.object.update_caps(caps, source=source)
 
     def allow_sessions(self):
-        return bool(self.get_caps().get("Management | Allow Sessions"))
+        r = self.object.can_cli_session()
+        if r:
+            self.object.get_profile().allow_cli_session(None, None)
+        return r
 
     def update_umbrella(self, umbrella_cls, details):
         """
@@ -481,7 +484,7 @@ class DiscoveryCheck(object):
         Returns Interface instance
         """
         mo = mo or self.object
-        name = mo.profile.convert_interface_name(name)
+        name = mo.get_profile().convert_interface_name(name)
         self.logger.debug("Searching port by name: %s:%s", mo.name, name)
         key = (mo, name)
         if key not in self.if_name_cache:
@@ -814,7 +817,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         May return aliases name which can be finally resolved
         during clean interface
         """
-        return remote_object.profile.convert_interface_name(
+        return remote_object.get_profile().convert_interface_name(
             remote_interface
         )
 

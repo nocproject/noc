@@ -16,12 +16,22 @@ Ext.define("NOC.inv.firmware.Model", {
             type: "string"
         },
         {
+            name: "profile",
+            type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "vendor",
             type: "string"
         },
         {
-            name: "name",
-            type: "string"
+            name: "vendor__label",
+            type: "string",
+            persist: false
         },
         {
             name: "download_url",
@@ -34,6 +44,11 @@ Ext.define("NOC.inv.firmware.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "is_builtin",
+            type: "boolean",
+            persist: false
         }
     ]
 });

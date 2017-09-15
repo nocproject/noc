@@ -159,38 +159,6 @@ class ActiveAlarm(nosql.Document):
             else:
                 self.save()
 
-    def contribute_event(self, e, open=False, close=False):
-        # Set opening event when necessary
-        if open:
-            self.opening_event = e.id
-        # Set closing event when necessary
-        if close:
-            self.closing_event = e.id
-        # Update timestamp
-        if e.timestamp < self.timestamp:
-            self.timestamp = e.timestamp
-        else:
-            self.last_update = max(self.last_update, e.timestamp)
-        if self.id:
-            self.save(save_condition={"id": self.id})
-        else:
-            self.save()
-        # Update event's list of alarms
-        if self.id not in e.alarms:
-            e._get_collection().update({
-                "_id": e.id,
-            }, {
-                "$set": {
-                    "expires": None,
-                },
-                "$push": {
-                    "alarms": self.id
-                }
-            })
-            e.alarms.append(self.id)
-            e.expires = None
-            # e.save()
-
     def clear_alarm(self, message, ts=None, force=False):
         """
         Clear alarm
@@ -481,38 +449,23 @@ class ActiveAlarm(nosql.Document):
         self.escalation_ts = datetime.datetime.now()
         self.close_tt = close_tt
         self.log_message("Escalated to %s" % tt_id)
-        r = ActiveAlarm._get_collection().update({
-            "_id": self.id
-        }, {
+        q = {"_id": self.id}
+        op = {
             "$set": {
                 "escalation_tt": self.escalation_tt,
                 "escalation_ts": self.escalation_ts,
                 "close_tt": self.close_tt,
                 "escalation_error": None
             }
-        })
-        if r.get("nModified", 0) == 0:
+        }
+        r = ActiveAlarm._get_collection().update_one(q, op)
+        if r.acknowledged and not r.modified_count:
             # Already closed, update archive
-            ArchivedAlarm._get_collection().update({
-                "_id": self.id
-            }, {
-                "$set": {
-                    "escalation_tt": self.escalation_tt,
-                    "escalation_ts": self.escalation_ts,
-                    "close_tt": self.close_tt,
-                    "escalation_error": None
-                }
-            })
-        # self.save(save_condition={
-        #     "managed_object": {
-        #         "$exists": True
-        #     },
-        #     "id": self.id
-        # })
+            ArchivedAlarm._get_collection().update_one(q, op)
 
     def set_escalation_error(self, error):
         self.escalation_error = error
-        self._get_collection().update(
+        self._get_collection().update_one(
             {"_id": self.id},
             {"$set": {
                 "escalation_error": error
@@ -523,7 +476,7 @@ class ActiveAlarm(nosql.Document):
         current_context, current_span = get_current_span()
         if current_context or self.escalation_ctx:
             self.escalation_ctx = current_context
-            self._get_collection().update(
+            self._get_collection().update_one(
                 {"_id": self.id},
                 {"$set": {
                     "escalation_ctx": current_context

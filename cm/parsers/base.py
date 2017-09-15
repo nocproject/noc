@@ -64,17 +64,17 @@ class BaseParser(object):
 
     def convert_interface_name(self, name):
         try:
-            return self.managed_object.profile.convert_interface_name(name)
-        except:
+            return self.managed_object.get_profile().convert_interface_name(name)
+        except Exception as e:
             return name
 
     def get_system_fact(self):
         if not self.system_fact:
             self.system_fact = System(
-                profile=self.managed_object.profile_name,
-                vendor=self.managed_object.get_attr("vendor"),
-                platform=self.managed_object.get_attr("platform"),
-                version=self.managed_object.get_attr("version")
+                profile=self.managed_object.profile.name,
+                vendor=self.managed_object.vendor.code if self.managed_object.vendor else None,
+                platform=self.managed_object.platform.name if self.managed_object.platform else None,
+                version=self.managed_object.version.version if self.managed_object.version else None,
             )
             self.yield_fact(self.system_fact)
         return self.system_fact

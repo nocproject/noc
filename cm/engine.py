@@ -11,11 +11,12 @@ import logging
 from collections import defaultdict
 import datetime
 import uuid
-import re
 import threading
 # Third-party modules
+import six
 import clips
 from pymongo.errors import BulkWriteError
+from pymongo import UpdateOne, InsertOne, DeleteOne
 # NOC modules
 from noc.cm.facts.error import Error
 from noc.cm.facts.role import Role
@@ -70,16 +71,16 @@ class Engine(object):
         for k, v in fact.iter_factitems():
             if v is None or v == [] or v == tuple():
                 continue
-            if isinstance(v, basestring):
+            if isinstance(v, six.string_types):
                 v = v.replace("\n", "\\n")
             f.Slots[k] = v
         try:
             f.Assert()
-        except clips.ClipsError, why:
+        except clips.ClipsError as e:
             self.logger.error("Could not assert: %s", f.PPForm())
             self.logger.error(
                 "CLIPS Error: %s\n%s",
-                why,
+                e,
                 clips.ErrorStream.Read()
             )
             return
@@ -185,10 +186,10 @@ class Engine(object):
                 try:
                     cfg = r.get_config()
                     r.prepare(**cfg)
-                except clips.ClipsError, why:
+                except clips.ClipsError as e:
                     self.logger.error(
                         "CLIPS Error: %s\n%s",
-                        why,
+                        e,
                         clips.ErrorStream.Read()
                     )
                     continue
@@ -330,7 +331,7 @@ class Engine(object):
         e_facts = {}  # uuid -> fact
         try:
             f = self.env.InitialFact()
-        except clips.ClipsError, w:
+        except clips.ClipsError:
             return  # No facts
         while f:
             if f.Template and f.Template.Name in self.templates:
@@ -347,9 +348,8 @@ class Engine(object):
         # Get facts from database
         now = datetime.datetime.now()
         collection = ObjectFact._get_collection()
-        bulk = collection.initialize_unordered_bulk_op()
+        bulk = []
         new_facts = set(e_facts)
-        changed = False
         for f in collection.find({"object": self.object.id}):
             if f["_id"] in e_facts:
                 fact = e_facts[f["_id"]]
@@ -359,26 +359,26 @@ class Engine(object):
                     self.logger.debug(
                         "Fact %s has been changed: %s -> %s",
                         f["_id"], f["attrs"], f_attrs)
-                    bulk.find({"_id": f["_id"]}).update({
+                    bulk += [UpdateOne({
+                        "_id": f["_id"]
+                    }, {
                         "$set": {
                             "attrs": f_attrs,
                             "changed": now,
                             "label": unicode(fact)
                         }
-                    })
-                    changed = True
+                    })]
                 new_facts.remove(f["_id"])
             else:
                 # Removed fact
                 self.logger.debug("Fact %s has been removed", f["_id"])
-                bulk.find({"_id": f["_id"]}).remove()
-                changed = True
+                bulk += [DeleteOne({"_id": f["_id"]})]
         # New facts
         for f in new_facts:
             fact = e_facts[f]
             f_attrs = self.get_fact_attrs(fact)
             self.logger.debug("Creating fact %s: %s", f, f_attrs)
-            bulk.insert({
+            bulk += [InsertOne({
                 "_id": f,
                 "object": self.object.id,
                 "cls": fact.cls,
@@ -386,16 +386,14 @@ class Engine(object):
                 "attrs": f_attrs,
                 "introduced": now,
                 "changed": now
-            })
-        if new_facts:
-            changed = True
-        if changed:
+            })]
+        if bulk:
             self.logger.debug("Commiting changes to database")
             try:
-                bulk.execute()
+                collection.bulk_write(bulk)
                 self.logger.debug("Database has been synced")
-            except BulkWriteError, bwe:
-                self.logger.error("Bulk write error: '%s'", bwe.details)
+            except BulkWriteError as e:
+                self.logger.error("Bulk write error: '%s'", e.details)
                 self.logger.error("Stopping check")
         else:
             self.logger.debug("Nothing changed")

@@ -27,20 +27,22 @@ class DiscoveryService(Service):
     def __init__(self):
         super(DiscoveryService, self).__init__()
         self.send_callback = None
+        self.slot_number = 0
+        self.total_slots = 0
 
     @tornado.gen.coroutine
     def on_activate(self):
-        slot_number, total_slots = yield self.acquire_slot()
-        if total_slots > 1:
+        self.slot_number, self.total_slots = yield self.acquire_slot()
+        if self.total_slots > 1:
             self.logger.info(
                 "Enabling distributed mode: Slot %d/%d",
-                slot_number, total_slots
+                self.slot_number, self.total_slots
             )
             ifilter = {
                 "key": {
                     "$mod": [
-                        total_slots,
-                        slot_number
+                        self.total_slots,
+                        self.slot_number
                     ]
                 }
             }

@@ -199,6 +199,8 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_cpe = models.BooleanField(default=False)
     # Enable MAC discovery
     enable_box_discovery_mac = models.BooleanField(default=False)
+    # Enable metrics
+    enable_box_discovery_metrics = models.BooleanField(default=False)
     # Enable Housekeeping
     enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable periodic discovery.
@@ -212,7 +214,7 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_interface_status = models.BooleanField(default=False)
     # Collect mac address table
     enable_periodic_discovery_mac = models.BooleanField(default=False)
-    # Collect mac address table
+    # Collect metrics
     enable_periodic_discovery_metrics = models.BooleanField(default=False)
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
@@ -305,6 +307,16 @@ class ManagedObjectProfile(models.Model):
         default=1
     )
     #
+    cli_session_policy = models.CharField(
+        "CLI Session Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="E"
+    )
+    #
     metrics = PickledField()
     #
     tags = TagsField("Tags", null=True, blank=True)
@@ -383,6 +395,9 @@ class ManagedObjectProfile(models.Model):
 
     def can_create_periodic_alarms(self):
         return self.periodic_discovery_alarm_policy == "E"
+
+    def can_cli_session(self):
+        return self.cli_session_policy == "E"
 
     def save(self, force_insert=False, force_update=False, using=None):
         # Validate MeticType for object profile

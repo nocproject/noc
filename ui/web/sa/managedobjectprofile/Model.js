@@ -266,6 +266,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_metrics",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_box_discovery_hk",
             xtype: "boolean",
             defaultValue: false
@@ -281,6 +286,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "box_discovery_alarm_weight",
             type: "int"
+        },
+        {
+            name: "cli_session_policy",
+            type: "string"
         },
         {
             name: "enable_periodic_discovery",

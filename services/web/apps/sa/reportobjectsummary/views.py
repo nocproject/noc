@@ -10,6 +10,9 @@
 # Third-party modules
 from django import forms
 # NOC modules
+from noc.sa.models.profile import Profile
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -74,6 +77,10 @@ class ReportObjectsSummary(SimpleReport):
         wr = ("", "",)
         wr_and = ("", "",)
         wr_and2 = ("", "",)
+        platform = {str(p["_id"]): p["name"] for p in Platform.objects.all().as_pymongo().scalar("id", "name")}
+        version = {str(p["_id"]): p["version"] for p in Firmware.objects.all().as_pymongo().scalar("id", "version")}
+        profile = {str(p["_id"]): p["name"] for p in Profile.objects.all().as_pymongo().scalar("id", "name")}
+
         if not request.user.is_superuser:
             ad = tuple(UserAccess.get_domains(request.user))
             wr = ("WHERE administrative_domain_id in ", ad)
@@ -86,7 +93,7 @@ class ReportObjectsSummary(SimpleReport):
         # By Profile
         if report_type == "profile":
             columns = [_("Profile")]
-            query = """SELECT profile_name,COUNT(*) FROM sa_managedobject
+            query = """SELECT profile,COUNT(*) FROM sa_managedobject
                     %s%s GROUP BY 1 ORDER BY 2 DESC""" % wr
         # By Administrative Domain
         elif report_type == "domain":
@@ -99,7 +106,7 @@ class ReportObjectsSummary(SimpleReport):
         # By Profile and Administrative Domains
         elif report_type == "domain-profile":
             columns = [_("Administrative Domain"), _("Profile")]
-            query = """SELECT d.name,profile_name,COUNT(*)
+            query = """SELECT d.name,profile,COUNT(*)
                     FROM sa_managedobject o JOIN sa_administrativedomain d ON (o.administrative_domain_id=d.id)
                     %s%s
                     GROUP BY 1,2
@@ -122,15 +129,13 @@ class ReportObjectsSummary(SimpleReport):
             """ % wr_and2
         elif report_type == "platform":
             columns = [_("Platform"), _("Profile")]
-            query = """select sam.profile_name, sama.value,count(value)
-                    from sa_managedobject sam join  sa_managedobjectattribute sama on (sam.id=sama.managed_object_id)
-                    where sama.key='platform' %s%s group by 1,2 order by count(value) desc;""" % wr_and
+            query = """select sam.profile, sam.platform, COUNT(platform)
+                    from sa_managedobject sam %s%s group by 1,2 order by count(platform) desc;""" % wr
 
         elif report_type == "version":
-            columns = [_("Platform"), _("Version")]
-            query = """select sam.profile_name, sama.value,count(value)
-                    from sa_managedobject sam join sa_managedobjectattribute sama on (sam.id=sama.managed_object_id)
-                    where sama.key='version' %s%s group by 1,2 order by count(value) desc;""" % wr_and
+            columns = [_("Profile"), _("Version")]
+            query = """select sam.profile, sam.version, COUNT(version)
+                    from sa_managedobject sam %s%s group by 1,2 order by count(version) desc;""" % wr
 
         else:
             raise Exception("Invalid report type: %s" % report_type)
@@ -139,4 +144,18 @@ class ReportObjectsSummary(SimpleReport):
                 title = self.title+": "+t
                 break
         columns += [TableColumn(_("Quantity"), align="right", total="sum", format="integer")]
-        return self.from_query(title=title, columns=columns, query=query, enumerate=True)
+
+        cursor = self.cursor()
+        cursor.execute(query, ())
+        data = []
+        for c in cursor.fetchall():
+            if report_type == "profile":
+                data += [(profile.get(c[0]), c[1])]
+            elif report_type == "platform":
+                data += [(profile.get(c[0]), platform.get(c[1]), c[2])]
+            elif report_type == "version":
+                data += [(profile.get(c[0]), version.get(c[1]), c[2])]
+            else:
+                data += [c]
+
+        return self.from_dataset(title=title, columns=columns, data=data, enumerate=True)

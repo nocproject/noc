@@ -301,6 +301,66 @@ class ClassifierService(Service):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             self.logger.debug("Failed event %s has been recovered", e.id)
 
+    def find_matching_rule(self, event, vars):
+        """
+        Find first matching classification rule
+
+        :param event: Event
+        :type event: NewEvent
+        :param vars: raw and resolved variables
+        :type vars: dict
+        :returns: Event class and extracted variables
+        :rtype: tuple of (EventClass, dict)
+        """
+        # Get chain
+        src = event.raw_vars.get("source")
+        if src == "syslog":
+            chain = "syslog"
+            if "message" not in event.raw_vars:
+                return None, None
+        elif src == "SNMP Trap":
+            chain = "snmp_trap"
+        else:
+            chain = "other"
+        # Find rules lookup
+        lookup = self.rules.get(event.managed_object.profile.name, {}).get(chain)
+        if lookup:
+            for r in lookup.lookup_rules(event, vars):
+                # Try to match rule
+                v = r.match(event, vars)
+                if v is not None:
+                    self.logger.debug(
+                        "[%s] Matching class for event %s found: %s (Rule: %s)",
+                        event.managed_object.name, event.id, r.event_class_name, r.name
+                    )
+                    return r, v
+        if self.default_rule:
+            return self.default_rule, {}
+        return None, None
+
+    def eval_rule_variables(self, event, event_class, vars):
+        """
+        Evaluate rule variables
+        """
+        r = {}
+        for ecv in event_class.vars:
+            # Check variable is present
+            if ecv.name not in vars:
+                if ecv.required:
+                    raise Exception("Required variable '%s' is not found" % ecv.name)
+                else:
+                    continue
+            # Decode variable
+            v = vars[ecv.name]
+            decoder = getattr(self, "decode_%s" % ecv.type, None)
+            if decoder:
+                try:
+                    v = decoder(event, v)
+                except InterfaceTypeError:
+                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
+            r[ecv.name] = v
+        return r
+
     def to_suppress(self, event, event_class, vars):
         """
         Check wrether event must be suppressed
@@ -353,7 +413,7 @@ class ClassifierService(Service):
         :returns: Classification status (CR_*)
         """
         resolved_vars = {
-            "profile": event.managed_object.profile_name
+            "profile": event.managed_object.profile.name
         }
         metrics[E_SRC_METRICS.get(event.source, E_SRC_OTHER)] += 1
         if event.source == E_SRC_SNMP_TRAP:
@@ -415,7 +475,7 @@ class ClassifierService(Service):
         # Additionally check link events
         disposable = True
         if event_class.link_event and "interface" in vars:
-            if_name = event.managed_object.profile.convert_interface_name(vars["interface"])
+            if_name = event.managed_object.get_profile().convert_interface_name(vars["interface"])
             iface = self.get_interface(event.managed_object.id, if_name)
             if iface:
                 self.logger.info(

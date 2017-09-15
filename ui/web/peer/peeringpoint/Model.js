@@ -37,8 +37,13 @@ Ext.define("NOC.peer.peeringpoint.Model", {
             type: "string"
         },
         {
-            name: "profile_name",
+            name: "profile",
             type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string",
+            persist: false
         },
         {
             name: "communities",

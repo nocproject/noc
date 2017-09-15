@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ProfileCheckRule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,6 +13,8 @@ from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
                                 IntField)
 # NOC modules
+from noc.lib.nosql import PlainReferenceField
+from noc.sa.models.profile import Profile
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -23,7 +25,10 @@ class ProfileCheckRule(Document):
     meta = {
         "collection": "noc.profilecheckrules",
         "strict": False,
-        "json_collection": "sa.profilecheckrules"
+        "json_collection": "sa.profilecheckrules",
+        "json_depends_on": [
+            "sa.profile"
+        ]
     }
 
     name = StringField(required=True, unique=True)
@@ -53,7 +58,7 @@ class ProfileCheckRule(Document):
         "maybe"
     ], default="match")
     # Resulting profile name
-    profile = StringField(required=True)
+    profile = PlainReferenceField(Profile, required=True)
     #
     category = ObjectIdField()
 
@@ -73,7 +78,7 @@ class ProfileCheckRule(Document):
             "match_method": self.match_method,
             "value": self.value,
             "action": self.action,
-            "profile": self.profile
+            "profile__name": self.profile.name
         }
 
     def to_json(self):
@@ -90,7 +95,7 @@ class ProfileCheckRule(Document):
                 "match_method",
                 "value",
                 "action",
-                "profile"
+                "profile__name"
             ])
 
     def get_json_path(self):

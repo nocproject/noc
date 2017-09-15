@@ -76,7 +76,7 @@ class ValidationRuleApplication(ExtDocApplication):
             }
         ])
         r = []
-        for x in ar["result"]:
+        for x in ar:
             mo = ManagedObject.get_by_id(x["_id"])
             if not mo:
                 continue

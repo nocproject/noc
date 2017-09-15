@@ -25,6 +25,8 @@ class Profile(BaseProfile):
     ]
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     command_more = "n"
+
+    enable_cli_session = False
     command_exit = "exit"
 
     def convert_interface_name(self, interface):

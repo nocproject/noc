@@ -166,14 +166,14 @@ class LLDPCheck(TopologyDiscoveryCheck):
                 return i
         # Try interface name
         try:
-            n_port = object.profile.convert_interface_name(port)
+            n_port = object.get_profile().convert_interface_name(port)
             i = Interface.objects.filter(
                 managed_object=object.id,
                 name=n_port
             ).first()
             if i:
                 return i
-            for p in object.profile.get_interface_names(n_port):
+            for p in object.get_profile().get_interface_names(n_port):
                 i = Interface.objects.filter(
                     managed_object=object.id, name=p).first()
                 if i:

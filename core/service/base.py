@@ -518,7 +518,7 @@ class Service(object):
         self.die("")
 
     def get_register_tags(self):
-        tags = []
+        tags = ["noc"]
         if config.features.traefik:
             if self.traefik_backend and self.traefik_frontend_rule:
                 tags += [

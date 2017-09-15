@@ -15,6 +15,7 @@ from noc.tests.util.jsonloader import json_loader
 from noc.services.classifier.ruleset import RuleSet
 from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
 from noc.config import config
@@ -47,7 +48,7 @@ def event(request):
         id=MO_ID,
         name=MO_NAME,
         address=MO_ADDRESS,
-        profile_name=cfg.get("profile__name", DEFAULT_PROFILE)
+        profile=Profile.get_by_name(cfg.get("profile__name", DEFAULT_PROFILE))
     )
     now = datetime.datetime.now()
     data = cfg.get("data", {})

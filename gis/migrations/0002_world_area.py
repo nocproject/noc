@@ -19,7 +19,7 @@ class Migration:
                 "max_zoom": 5,
                 "SW": [-180.0, -90.0],
                 "NE": [179.999999, 89.999999]
-            }, safe=True)
+            })
 
     def backwards(self):
         pass

@@ -18,5 +18,6 @@ class Profile(BaseProfile):
     pattern_more = r"^-- more --.*?$"
     command_more = " "
     command_exit = "exit"
+    enable_cli_session = False
     command_save_config = "config save"
     pattern_syntax_error = r"^Valid commands are:"

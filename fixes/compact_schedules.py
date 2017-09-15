@@ -18,12 +18,12 @@ def fix():
         if not c.count():
             continue
         # Remove unused schedules fields
-        c.update({
+        c.update_many({
             "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
         }, {
             "$unset": {
                 "ctx": "",
                 "ctv": ""
             }
-        }, multi=True)
+        })
         c.database.command({"compact": c.name, "force": True})

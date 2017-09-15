@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -186,9 +186,9 @@ class EventApplication(ExtApplication):
         # Managed object properties
         mo = event.managed_object
         d["managed_object_address"] = mo.address
-        d["managed_object_profile"] = mo.profile_name
-        d["managed_object_platform"] = mo.platform
-        d["managed_object_version"] = mo.get_attr("version")
+        d["managed_object_profile"] = mo.profile.name
+        d["managed_object_platform"] = mo.platform.name if mo.platform else ""
+        d["managed_object_version"] = mo.version.version if mo.version else ""
         d["segment"] = mo.segment.name
         d["segment_id"] = str(mo.segment.id)
         d["tags"] = mo.tags
@@ -274,7 +274,7 @@ class EventApplication(ExtApplication):
                     e_class = match.group(1)
         r = ["["]
         r += ["    {"]
-        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile_name)]
+        r += ["        \"profile\": \"%s\"," % json_escape(event.managed_object.profile.name)]
         if e_class:
             r += ["        \"event_class__name\": \"%s\"," % e_class]
         r += ["        \"raw_vars\": {"]

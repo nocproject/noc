@@ -143,7 +143,7 @@ class AuthLDAPDomain(Document):
                 "is_default" in self._changed_fields
         ):
             # Only one default domain permitted
-            AuthLDAPDomain._get_collection().update({
+            AuthLDAPDomain._get_collection().update_many({
                 "is_default": True,
                 "_id": {
                     "$ne": self.id
@@ -152,7 +152,7 @@ class AuthLDAPDomain(Document):
                 "$set": {
                     "is_default": False
                 }
-            }, multi=True)
+            })
 
     def get_user_search_filter(self):
         if self.user_search_filter:

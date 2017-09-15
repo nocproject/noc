@@ -153,6 +153,8 @@ class BaseProfile(object):
     snmp_metrics_get_chunk = 15
     # Timeout for snmp GET request
     snmp_metrics_get_timeout = 3
+    # Allow CLI sessions by default
+    enable_cli_session = True
 
     def convert_prefix(self, prefix):
         """
@@ -398,3 +400,7 @@ class BaseProfile(object):
     @classmethod
     def get_telnet_naws(cls):
         return cls.telnet_naws
+
+    @classmethod
+    def allow_cli_session(cls, platform, version):
+        return cls.enable_cli_session

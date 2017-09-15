@@ -58,7 +58,6 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         lifetime_min = None
         lifetime_max = None
 
-    _lookup_cache = cachetools.LRUCache(10000)
     _collection = None
     _seq = None
 
@@ -92,15 +91,20 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "            <%s />" % cls._meta.layout,
             "        </layout>",
             "        <source>",
-            "            <file>",
-            "                <path>%s/%s.tsv</path>" % (config.path.bi_dict_data_prefix, cls._meta.name),
+            "            <http>",
+            "                <url>http://{{ range $index, $element := service \"datasource~_agent\"}}{{if eq $index 0}}{{.Address}}:{{.Port}}{{end}}{{else}}127.0.0.1:65535{{ end }}/api_datasource/ch_%s.tsv</url>" % cls._meta.name,
             "                <format>TabSeparated</format>",
-            "            </file>",
+            "            </http>",
             "        </source>",
             "        <structure>",
             "             <id>",
+            "                 <name>bi_id</name>",
+            "             </id>",
+            "             <attribute>",
             "                 <name>id</name>",
-            "             </id>"
+            "                 <type>String</type>",
+            "                 <hierarchical>false</hierarchical>",
+            "             </attribute>"
         ]
         for f in cls._fields_order:
             ff = cls._fields[f]
@@ -110,7 +114,7 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
                 "                 <name>%s</name>" % ff.name,
                 "                 <type>%s</type>" % ff.db_type,
                 "                 <null_value>Unknown</null_value>",
-                "                 <hierarchical>%s</hierarchical>" % "true" if hier else "false",
+                "                 <hierarchical>%s</hierarchical>" % ("true" if hier else "false"),
                 "             </attribute>"
             ]
         x += [
@@ -138,48 +142,6 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         return None
 
     @classmethod
-    def get_collection_name(cls):
-        return "noc.bi_dict_%s" % cls._meta.name
-
-    @classmethod
-    def get_collection(cls):
-        if not cls._collection:
-            from noc.lib.nosql import get_db
-            cls._collection = get_db()[cls.get_collection_name()]
-            cls._collection.create_index("id", unique=True)
-        return cls._collection
-
-    @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_lookup_cache"))
-    def lookup(cls, value):
-        c = cls.get_collection()
-        record = cls.get_record(value)
-        d = c.find_one({"_id": record["_id"]}, {"_id": 0, "id": 1})
-        if d:
-            # Found
-            return d["id"]
-        # Not found
-        if cls._seq is None:
-            # Find current sequence value
-            current = 1
-            for d in c.find({}, {"_id": 0, "id": 1}).sort("id", -1).limit(1):
-                current = d["id"] + 1
-            cls._seq = itertools.count(current)
-        # Insert
-        record["id"] = next(cls._seq)
-        c.insert(record)
-        return record["id"]
-
-    @classmethod
-    def get_record(cls, value):
-        """
-        Return dict instance to populate dictionary
-        :param value:
-        :return:
-        """
-        raise NotImplementedError()
-
-    @classmethod
     def get_field_type(cls, name):
         """
         Returns field type
@@ -191,6 +153,8 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
 
     @classmethod
     def dump(cls, out):
+        # @todo: !!!
+        raise NotImplementedError()
         for d in cls.get_collection().find({}):
             out.write("%s\t%s\n" % (
                 str(d["id"]),

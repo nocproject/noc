@@ -83,7 +83,7 @@ class SyncCache(Document):
 
     @classmethod
     def delete_object(cls, object):
-        cls._get_collection().update({
+        cls._get_collection().update_many({
                 "model_id": cls.get_model_id(object),
                 "object_id": str(object.id)
             }, {
@@ -91,8 +91,7 @@ class SyncCache(Document):
                     "changed": cls.DELETE_DATE,
                     "expire": cls.DELETE_DATE
                 }
-            },
-            multi=True
+            }
         )
 
     @classmethod
@@ -100,7 +99,7 @@ class SyncCache(Document):
         now = datetime.datetime.now()
         c = cls._get_collection()
         model_id = cls.get_model_id(object)
-        c.update({
+        c.update_many({
                 "model_id": model_id,
                 "object_id": str(object.id)
             }, {
@@ -108,8 +107,7 @@ class SyncCache(Document):
                     "changed": now,
                     "expire": now
                 }
-            },
-            multi=True
+            }
         )
 
     @classmethod

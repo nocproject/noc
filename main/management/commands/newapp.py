@@ -58,6 +58,7 @@ class Command(BaseCommand):
         "StringField": "string",
         "BooleanField": "boolean",
         "IntField": "int",
+        "LongField": "int",
         "FloatField": "float",
         "DateTimeField": "auto",
         "GeoPointField": "auto",

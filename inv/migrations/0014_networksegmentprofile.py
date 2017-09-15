@@ -35,11 +35,11 @@ class Migration(object):
         else:
             profile_id = result.inserted_id
 
-        db["noc.networksegments"].update({}, {
+        db["noc.networksegments"].update_many({}, {
             "$set": {
                 "profile": profile_id
             }
-        }, multi=True)
+        })
 
     def backwards(self):
         pass

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import argparse
-## Third-party modules
-## NOC modules
+# Third-party modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.mib import mib
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             v = o.scripts.get_snmp_get(oid=mib["SNMPv2-MIB::sysObjectID.0"])
             self.stdout.write(
                 "%s,%s,%s,%s\n" % (
-                    o.profile_name,
+                    o.profile.name,
                     platform,
                     "SNMPv2-MIB::sysObjectID.0",
                     v

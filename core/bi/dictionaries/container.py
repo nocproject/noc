@@ -18,11 +18,3 @@ class Container(Dictionary):
 
     name = StringField()
     parent = ReferenceField("self")
-
-    @classmethod
-    def get_record(cls, value):
-        return {
-            "_id": value.id,
-            "name": value.name,
-            "parent": cls.lookup(value.get_by_id(value.container)) if value.container else 0
-        }

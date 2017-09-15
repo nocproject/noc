@@ -24,17 +24,17 @@ Ext.define("NOC.inv.vendor.Application", {
             width: 100
         },
         {
+            text: __("Site"),
+            dataIndex: "site",
+            flex: 1,
+            renderer: NOC.render.URL
+        },
+        {
             text: __("Builtin"),
             dataIndex: "is_builtin",
             width: 30,
             renderer: NOC.render.Bool,
             sortable: false
-        },
-        {
-            text: __("Site"),
-            dataIndex: "site",
-            flex: 1,
-            renderer: NOC.render.URL
         }
     ],
     fields: [

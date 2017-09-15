@@ -27,7 +27,7 @@ Ext.define("NOC.sa.runcommands.ApplicationModel", {
             type: "string"
         },
         {
-            name: "profile_name",
+            name: "profile",
             type: "string"
         },
         {

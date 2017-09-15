@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # sa.actioncommands application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,6 +26,6 @@ class ActionCommandsApplication(ExtDocApplication):
         data = super(ActionCommandsApplication, self).clean(data)
         try:
             Template(data["commands"])
-        except Exception, why:
-            raise ValueError("Invalid template: %s", why)
+        except Exception as e:
+            raise ValueError("Invalid template: %s", e)
         return data

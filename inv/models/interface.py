@@ -68,7 +68,7 @@ class Interface(Document):
         choices=[(x, x) for x in INTERFACE_PROTOCOLS]
     ), default=[])
     profile = PlainReferenceField(InterfaceProfile,
-        default=InterfaceProfile.get_default_profile)
+                                  default=InterfaceProfile.get_default_profile)
     # profile locked on manual user change
     profile_locked = BooleanField(required=False, default=False)
     #
@@ -99,7 +99,7 @@ class Interface(Document):
 
     def save(self, *args, **kwargs):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
-            self.name = self.managed_object.profile.convert_interface_name(self.name)
+            self.name = self.managed_object.get_profile().convert_interface_name(self.name)
         if (not hasattr(self, "_changed_fields") or "mac" in self._changed_fields) and self.mac:
             self.mac = MACAddressParameter().clean(self.mac)
         try:
@@ -150,8 +150,9 @@ class Interface(Document):
             }
         else:
             q = {"interfaces": self.id}
-        return bool(Link._get_collection().find_one(q,
-                                                    read_preference=ReadPreference.SECONDARY_PREFERRED))
+        return bool(Link._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).find_one(q))
 
     def unlink(self):
         """
@@ -170,6 +171,8 @@ class Interface(Document):
         """
         Create p-t-p link with other interface
         Raise ValueError if either of interface already connected.
+        :param other: Other Iface for link
+        :param method: Linking method
         :type other: Interface
         :returns: Link instance
         """
@@ -261,10 +264,10 @@ class Interface(Document):
         except ManagedObject.DoesNotExist:
             raise ValueError("Invalid manged object: %s" % o)
         # Normalize interface name
-        i = mo.profile.convert_interface_name(i)
+        i = mo.get_profile().convert_interface_name(i)
         # Look for interface
         iface = Interface.objects.filter(managed_object=mo.id,
-            name=i).first()
+                                         name=i).first()
         return iface
 
     @property

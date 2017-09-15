@@ -30,6 +30,10 @@ from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.profile import Profile
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.vendor import Vendor
 
 # @todo ThreadingCount
 # @todo ReportDiscovery Problem
@@ -59,15 +63,17 @@ class ReportObjectCaps(object):
         d = {}
         while mo_ids[0+i:10000+i]:
             match = {"_id": {"$in": mo_ids}}
-            value = get_db()["noc.sa.objectcapabilities"].aggregate([
-                {"$match": match},
-                {"$unwind": "$caps"},
-                {"$match": {"caps.source": "caps"}},
-                {"$project": {"key": "$caps.capability", "value": "$caps.value"}},
-                {"$group": {"_id": "$_id", "cap": {"$push": {"item": "$key", "val": "$value"}}}}
-            ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+            value = get_db()["noc.sa.objectcapabilities"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
+                [
+                    {"$match": match},
+                    {"$unwind": "$caps"},
+                    {"$match": {"caps.source": "caps"}},
+                    {"$project": {"key": "$caps.capability", "value": "$caps.value"}},
+                    {"$group": {"_id": "$_id", "cap": {"$push": {"item": "$key", "val": "$value"}}}}
+                ])
 
-            for v in value["result"]:
+            for v in value:
                 r = dict(("c_%s" % str(l["item"]), l["val"]) for l in v["cap"] if "c_%s" % str(l["item"]) in self.caps)
                 d[v["_id"]] = Caps(**r)
             i += 10000
@@ -91,14 +97,14 @@ class ReportObjectDetailLinks(object):
                                      "iface_n": "$int.name",
                                      "iface_id": "$int._id",
                                      "mo": "$int.managed_object"}}}
-        value = get_db()["noc.links"].aggregate([
+        value = get_db()["noc.links"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
             {"$unwind": "$interfaces"},
             {"$lookup": {"from": "noc.interfaces", "localField": "interfaces", "foreignField": "_id", "as": "int"}},
             {"$match": match},
             {"$group": group}
-        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        ])
 
-        return dict((v["_id"][0], v["links"]) for v in value["result"] if v["_id"])
+        return dict((v["_id"][0], v["links"]) for v in value if v["_id"])
 
     def __getitem__(self, item):
         return self.out.get(item, [])
@@ -150,7 +156,7 @@ class ReportDiscoveryResult(object):
     def load(self):
 
         r = defaultdict(dict)
-        for v in self:
+        for v in self.__iter__():
             r[int(v["key"])]["time"] = v["st"]
             r[int(v["key"])]["problems"] = v["job"][0]["problems"]
         # return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
@@ -158,14 +164,15 @@ class ReportDiscoveryResult(object):
 
     def __iter__(self):
         for p in self.mos_pools:
-            r = get_db()[self.coll_name % p.name].aggregate(self.pipelines.get(p.name, self.pipeline()),
-                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
-            for x in r["result"]:
+            r = get_db()[self.coll_name % p.name].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
+                self.pipelines.get(p.name, self.pipeline()))
+            for x in r:
                 # @todo Append info for MO
                 yield x
 
     def __getitem__(self, item):
-        return self.out.get(item, {})
+        return self.out[item] if item in self.out else {}
 
 
 class ReportContainer(object):
@@ -179,14 +186,14 @@ class ReportContainer(object):
         match = {"data.management.managed_object": {"$exists": True}}
         if mo_ids:
             match = {"data.management.managed_object": {"$in": mo_ids}}
-        value = get_db()["noc.objects"].aggregate([
+        value = get_db()["noc.objects"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
             {"$match": match},
             {"$lookup": {"from": "noc.objects", "localField": "container", "foreignField": "_id", "as": "cont"}},
             {"$project": {"data": 1, "cont.data": 1}}
-        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        ])
 
         r = defaultdict(dict)
-        for v in value["result"]:
+        for v in value:
             if "asset" in v["data"]:
                 r[v["data"]["management"]["managed_object"]].update(v["data"]["asset"])
             if v["cont"]:
@@ -207,13 +214,13 @@ class ReportObjectLinkCount(object):
 
     @staticmethod
     def load():
-        value = get_db()["noc.links"].aggregate([
+        value = get_db()["noc.links"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
             {"$unwind": "$interfaces"},
             {"$lookup": {"from": "noc.interfaces", "localField": "interfaces", "foreignField": "_id", "as": "int"}},
             {"$group": {"_id": "$int.managed_object", "count": {"$sum": 1}}}
-        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        ])
 
-        return dict((v["_id"][0], v["count"]) for v in value["result"] if v["_id"])
+        return dict((v["_id"][0], v["count"]) for v in value if v["_id"])
 
     def __getitem__(self, item):
         return self.out.get(item, 0)
@@ -231,12 +238,12 @@ class ReportObjectIfacesTypeStat(object):
         if ids:
             match = {"type": i_type,
                      "managed_object": {"$in": ids}}
-        value = get_db()["noc.interfaces"].aggregate([
+        value = get_db()["noc.interfaces"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
             {"$match": match},
             {"$group": {"_id": "$managed_object", "count": {"$sum": 1}}}
-        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        ])
 
-        return dict((v["_id"], v["count"]) for v in value["result"])
+        return dict((v["_id"], v["count"]) for v in value)
 
     def __getitem__(self, item):
         return self.out.get(item, 0)
@@ -271,14 +278,14 @@ class ReportObjectIfacesStatusStat(object):
         if self.mo_ids:
             match = {"type": "physical",
                      "managed_object": {"$in": self.mo_ids}}
-        value = get_db()["noc.interfaces"].aggregate([
+        value = get_db()["noc.interfaces"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
             {"$match": match},
             {"$group": {"_id": group,
                         "count": {"$sum": 1}}}
-        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        ])
         def_l = [""] * len(self.columns)
         r = defaultdict(lambda: [""] * len(self.columns))
-        for v in value["result"]:
+        for v in value:
             c = {
                 True: "Up",
                 False: "Down",
@@ -318,7 +325,7 @@ class ReportObjectIfacesStatusStat(object):
 class ReportObjectAttributes(object):
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
-        self.attr_list = ["vendor", "version", "platform", "Serial Number", "HW version"]
+        self.attr_list = ["Serial Number", "HW version"]
         self.out = self.load(self.attr_list)
 
     @staticmethod
@@ -351,7 +358,48 @@ class ReportObjectAttributes(object):
         return mo_attrs
 
     def __getitem__(self, item):
-        return self.out.get(item, ["", "", "", "", ""])
+        return self.out.get(item, ["", ""])
+
+
+class ReportAttrResolver(object):
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.attr_list = ["profile", "vendor", "version", "platform"]
+        self.out = self.load(self.attr_list)
+
+    @staticmethod
+    def load(attr_list):
+        """
+        :param ids:
+        :param attr_list:
+        :return: Dict tuple MO attributes mo_id -> (attrs_list)
+        :rtype: dict
+        """
+        platform = {str(p["_id"]): p["name"] for p in Platform.objects.all().as_pymongo().scalar("id", "name")}
+        vendor = {str(p["_id"]): p["name"] for p in Vendor.objects.all().as_pymongo().scalar("id", "name")}
+        version = {str(p["_id"]): p["version"] for p in Firmware.objects.all().as_pymongo().scalar("id", "version")}
+        profile = {str(p["_id"]): p["name"] for p in Profile.objects.all().as_pymongo().scalar("id", "name")}
+
+        mo_attrs_resolv = {}
+        cursor = connection.cursor()
+
+        base_select = "select id, profile, vendor, platform, version from sa_managedobject"
+
+        query1 = base_select
+
+        query = query1
+        cursor.execute(query)
+        mo_attrs_resolv.update(dict([(c[0], [profile.get(c[1], ""),
+                                             vendor.get(c[2], ""),
+                                             platform.get(c[3], ""),
+                                             version.get(c[4], "")
+                                             ])
+                                     for c in cursor]))
+
+        return mo_attrs_resolv
+
+    def __getitem__(self, item):
+        return self.out.get(item, ["", "", "", ""])
 
 
 class ReportObjects(object):
@@ -363,8 +411,8 @@ class ReportObjects(object):
 
     @staticmethod
     def load(mos_id):
-        query = "select sa.id, sa.name, sa.address, sa.is_managed, profile_name, op.name as object_profile,"
-        query += "ad.name as administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
+        query = "select sa.id,sa.name,sa.address, sa.is_managed, "
+        query += "profile, op.name as object_profile, ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
         query += "WHERE op.id = sa.object_profile_id and ad.id = sa.administrative_domain_id "
         # query += "LIMIT 20"
@@ -400,9 +448,8 @@ class ReportObjectsHostname(object):
         mos_filter = {"label": "system"}
         if mos_ids:
             mos_filter["object"] = {"$in": mos_ids}
-        value = db.find(mos_filter,
-                        {"_id": 0, "object": 1, "attrs.hostname": 1},
-                        read_preference=ReadPreference.SECONDARY_PREFERRED)
+        value = db.with_options(read_preference=ReadPreference.SECONDARY_PREFERRED
+                                ).find(mos_filter, {"_id": 0, "object": 1, "attrs.hostname": 1})
         return {v["object"]: v["attrs"].get("hostname") for v in value}
 
     @staticmethod
@@ -411,9 +458,8 @@ class ReportObjectsHostname(object):
         mos_filter = {}
         if mos_ids:
             mos_filter["object"] = {"$in": mos_ids}
-        value = db.find(mos_filter,
-                        {"_id": 0, "object": 1, "hostname": 1},
-                        read_preference=ReadPreference.SECONDARY_PREFERRED)
+        value = db.with_options(read_preference=ReadPreference.SECONDARY_PREFERRED
+                                ).find(mos_filter, {"_id": 0, "object": 1, "hostname": 1})
         return {v["object"]: v.get("hostname") for v in value}
 
     def __getitem__(self, item):
@@ -545,6 +591,7 @@ class ReportObjectDetailApplication(ExtApplication):
         avail = {}
         segment_lookup = {}
         attr = {}
+        attr_resolv = {}
         moss = []
         iface_count = {}
         link_count = {}
@@ -573,27 +620,29 @@ class ReportObjectDetailApplication(ExtApplication):
 
         if len(mos_id) < 70000:
             # @todo Warning - too many objects
-            if "object_vendor" in columns.split(",") or "object_platform" in columns.split(",") \
-                    or "object_version" in columns.split(",") or "object_serial" in columns.split(","):
+            if "object_serial" in columns.split(","):
                 attr = ReportObjectAttributes([])
+            attr_resolv = ReportAttrResolver([])
             moss = ReportObjects([])
         # @todo mo_attributes_lookup
         # @todo segment_name lookup
         for mo in moss:
             if mo not in mos_id:
                 continue
-            dp = discovery_problem.get(mo)
+            dp = discovery_problem[mo] if discovery_problem else {}
             r += [translate_row(row([
                 mo,
                 moss[0],
                 moss[1],
                 "managed" if moss[2] else "unmanaged",
                 moss[3],
-                moss[4],
-                attr[mo][0] if attr else "",
-                "%s;(%s)" % (attr[mo][2], attr[mo][4]) if attr else "",
-                attr[mo][1] if attr else "",
-                attr[mo][3] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
+                # Profile
+                attr_resolv[mo][0],
+                attr_resolv[mo][0] if attr else "",
+                attr_resolv[mo][2] if attr else "",
+                attr_resolv[mo][1] if attr else "",
+                # Serial
+                attr[mo][0] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
                 _("Yes") if avail.get(mo, None) else _("No"),
                 moss[5],
                 container_lookup[mo].get("text", ""),

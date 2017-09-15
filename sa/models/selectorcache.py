@@ -65,10 +65,12 @@ class SelectorCache(Document):
         sid = selector
         if hasattr(selector, "id"):
             sid = selector.id
-        return bool(cls._get_collection().find_one({
+        return bool(cls._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).find_one({
             "object": oid,
             "selector": sid
-        }, read_preference=ReadPreference.SECONDARY_PREFERRED))
+        }))
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("q_cache"), lock=lambda x: q_lock)
@@ -91,7 +93,7 @@ class SelectorCache(Document):
                 continue
             if s.filter_managed is not None and object.is_managed != s.filter_managed:
                 continue
-            if s.filter_profile and object.profile_name != s.filter_profile:
+            if s.filter_profile and object.profile.id != s.filter_profile.id:
                 continue
             if s.filter_pool and object.pool.id != s.filter_pool.id:
                 continue

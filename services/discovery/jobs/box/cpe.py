@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# ID check
+# CPE check
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -11,6 +11,7 @@ import datetime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
 
 
 class CPECheck(DiscoveryCheck):
@@ -59,7 +60,7 @@ class CPECheck(DiscoveryCheck):
                 mo = ManagedObject(
                     name=name,
                     pool=self.object.pool,
-                    profile_name="Generic.Host",
+                    profile=Profile.get_generic_profile_id(),
                     object_profile=self.object.object_profile.cpe_profile or self.object.object_profile,
                     administrative_domain=self.object.administrative_domain,
                     scheme=self.object.scheme,

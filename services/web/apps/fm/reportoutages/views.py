@@ -123,8 +123,8 @@ class ReportOutagesApplication(SimpleReport):
             r += [(
                 m.name,
                 m.address,
-                m.profile_name,
-                m.platform,
+                m.profile.name,
+                m.platform.name if m.platform else "",
                 _("Yes") if m.is_managed else _("No"),
                 _("Yes") if m.get_status() else _("No"),
                 downtime,

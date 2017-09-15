@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Failed Scripts Report
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
 
 from django import forms
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport, TableColumn
+from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
+from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportForm(forms.Form):
@@ -57,34 +57,35 @@ class ReportFilterApplication(SimpleReport):
             is_managed = is_managed.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_man = is_not_man.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_resp = is_not_resp.filter(administrative_domain__in=UserAccess.get_domains(request.user))
-        is_managed_not_generic = is_managed.exclude(profile_name="Generic.Host")
-        is_managed_undef = is_managed.filter(profile_name="Generic.Host")
+        is_managed_not_generic = is_managed.exclude(profile=Profile.get_by_name(GENERIC_PROFILE))
+        is_managed_undef = is_managed.filter(profile=Profile.get_by_name(GENERIC_PROFILE))
         is_managed_undef_in = list(is_managed_undef.values_list("id", flat=True))
         is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))
 
         # is_alive = [s.id for s in is_managed if s.get_status()]
-        is_alive_id = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
-                                                                "status": True},
-                                                               {"_id": 1, "object": 1},
-                                                               read_preference=ReadPreference.SECONDARY_PREFERRED)
-        is_alive_id_ng = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_not_generic_in},
-                                                                   "status": True},
-                                                                  {"_id": 1, "object": 1},
-                                                                  read_preference=ReadPreference.SECONDARY_PREFERRED)
-        is_not_alived_c = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
-                                                                    "status": False},
-                                                                   {"_id": 1, "object": 1},
-                                                                   read_preference=ReadPreference.SECONDARY_PREFERRED)
+        is_alive_id = get_db()["noc.cache.object_status"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find({"object": {"$in": is_managed_undef_in},
+                                                                      "status": True},
+                                                                     {"_id": 1, "object": 1})
+        is_alive_id_ng = get_db()["noc.cache.object_status"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find({"object": {"$in": is_managed_not_generic_in},
+                                                                      "status": True},
+                                                                     {"_id": 1, "object": 1})
+        is_not_alived_c = get_db()["noc.cache.object_status"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find({"object": {"$in": is_managed_undef_in},
+                                                                      "status": False},
+                                                                     {"_id": 1, "object": 1})
         is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                m["object"] for m in is_alive_id]
         is_managed_ng_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                             m["object"] for m in is_alive_id_ng]
-        bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp.": "Failed to guess SNMP community",
-                                                     "_id": {"$in": is_managed_alive_in}},
-                                                    read_preference=ReadPreference.SECONDARY_PREFERRED)
-        bad_cli_cred = get_db()["noc.joblog"].find({"problems.suggest_cli.": "Failed to guess CLI credentials",
-                                                    "_id": {"$in": is_managed_ng_in}},
-                                                   read_preference=ReadPreference.SECONDARY_PREFERRED)
+        bad_snmp_cred = get_db()["noc.joblog"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+            {"problems.suggest_snmp.": "Failed to guess SNMP community",
+             "_id": {"$in": is_managed_alive_in}})
+        bad_cli_cred = get_db()["noc.joblog"].with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED).find(
+            {"problems.suggest_cli.": "Failed to guess CLI credentials",
+             "_id": {"$in": is_managed_ng_in}})
         mos_id = list(is_managed.values_list("id", flat=True))
         mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
         for b in is_not_alived_c:
@@ -92,7 +93,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.profile_name,
+                mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
@@ -106,7 +107,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.profile_name,
+                mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
@@ -119,7 +120,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.profile_name,
+                mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,

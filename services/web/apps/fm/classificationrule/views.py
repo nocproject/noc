@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # fm.classificationrule application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 event = get_event(q["data"])
                 if event:
                     data = event.raw_vars.copy()
-                    data["profile"] = event.managed_object.profile_name
+                    data["profile"] = event.managed_object.profile.name
                 else:
                     errors += ["Event not found: %s" % q["data"]]
             else:
@@ -204,7 +204,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
         event = get_event(event_id)
         if not event:
             self.response_not_found()
-        event_name = " | ".join(event.managed_object.profile_name.split(".")) + " | <name> "
+        event_name = " | ".join(event.managed_object.profile.name.split(".")) + " | <name> "
         if event.raw_vars["source"] == "syslog":
             event_name += "(SYSLOG)"
         elif event.raw_vars["source"] == "SNMP Trap":

@@ -9,6 +9,7 @@
 
 # Python modules
 import contextlib
+import threading
 # Third-party modules
 from psycopg2.pool import ThreadedConnectionPool
 # NOC modules
@@ -27,6 +28,7 @@ class SAEService(Service):
         self.pool_cache = {}
         self.activators = {}
         self.pg_pool = None
+        self.pg_pool_ready = threading.Event()
 
     def load_pools(self):
         self.logger.info("Loading pools")
@@ -40,6 +42,7 @@ class SAEService(Service):
             config.sae.db_threads,
             **config.pg_connection_args
         )
+        self.pg_pool_ready.set()
 
     def get_pool_name(self, pool_id):
         """
@@ -49,6 +52,7 @@ class SAEService(Service):
 
     @contextlib.contextmanager
     def get_pg_connect(self):
+        self.pg_pool_ready.wait()
         connect = self.pg_pool.getconn()
         if not connect.autocommit:
             connect.autocommit = True

@@ -11,8 +11,12 @@ import tornado.gen
 # NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
-from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import ManagedObject  # Do not delete
 from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.models.profile import Profile
+from noc.inv.models.vendor import Vendor
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
 from noc.config import config
@@ -28,23 +32,17 @@ class SAEAPI(API):
 
     RUN_SQL = """
         SELECT
-            mo.name, mo.is_managed, mo.profile_name,
-            mo.scheme, mo.address, mo.port, mo."user",
-            mo.password,
-            mo.super_password, mo.remote_path,
-            mo.snmp_ro, mo.pool,
+            mo.name, mo.is_managed, mo.profile,
+            mo.vendor, mo.platform, mo.version,
+            mo.scheme, mo.address, mo.port,
+            mo."user", mo.password, mo.super_password, mo.remote_path,
+            mo.snmp_ro, mo.pool, mo.software_image,
             mo.auth_profile_id,
             ap.user, ap.password, ap.super_password,
-            ap.snmp_ro, ap.snmp_rw,
-            ARRAY(
-              SELECT key || ' := ' || value
-              FROM sa_managedobjectattribute
-              WHERE managed_object_id = %s
-            )
+            ap.snmp_ro, ap.snmp_rw
         FROM
             sa_managedobject mo
-            LEFT JOIN sa_authprofile ap
-                ON (mo.auth_profile_id = ap.id)
+            LEFT JOIN sa_authprofile ap ON (mo.auth_profile_id = ap.id)
         WHERE mo.id = %s
     """
 
@@ -53,7 +51,10 @@ class SAEAPI(API):
         sn = "activator-%s" % pool
         for i in range(self.ACTIVATOR_RESOLUTION_RETRIES):
             try:
-                svc = yield self.service.dcs.resolve(sn)
+                svc = yield self.service.dcs.resolve(
+                    sn,
+                    timeout=self.ACTIVATOR_RESOLUTION_TIMEOUT
+                )
                 raise tornado.gen.Return(svc)
             except ResolutionError as e:
                 self.logger.info("Cannot resolve %s: %s", sn, e)
@@ -125,19 +126,18 @@ class SAEAPI(API):
         # Get Object's attributes
         with self.service.get_pg_connect() as connection:
             cursor = connection.cursor()
-            cursor.execute(self.RUN_SQL, [object_id, object_id])
+            cursor.execute(self.RUN_SQL, [object_id])
             data = cursor.fetchall()
         if not data:
             raise APIError("Object is not found")
-        (name, is_managed, profile_name,
+        (name, is_managed, profile,
+         vendor, platform, version,
          scheme, address, port, user, password,
          super_password, remote_path,
-         snmp_ro, pool_id,
+         snmp_ro, pool_id, sw_image,
          auth_profile_id,
          ap_user, ap_password, ap_super_password,
-         ap_snmp_ro, ap_snmp_rw, attrs) = data[0]
-        # Get attributes
-        attributes = dict(a.split(" := ", 1) for a in attrs if a)
+         ap_snmp_ro, ap_snmp_rw) = data[0]
         # Check object is managed
         if not is_managed:
             raise APIError("Object is not managed")
@@ -171,19 +171,20 @@ class SAEAPI(API):
             if port:
                 credentials["http_port"] = port
         # Build version
-        if ("vendor" in attributes and "platform" in attributes
-            and "version" in attributes):
+        if vendor and platform and version:
             version = {
-                "vendor": attributes["vendor"],
-                "platform": attributes["platform"],
-                "version": attributes["version"]
+                "vendor": Vendor.get_by_id(vendor).code,
+                "platform": Platform.get_by_id(platform).name,
+                "version": Firmware.get_by_id(version).version
             }
+            if sw_image:
+                version["image"] = sw_image
         else:
             version = None
         # Build capabilities
         capabilities = ObjectCapabilities.get_capabilities(object_id)
         return dict(
-            profile=profile_name,
+            profile=Profile.get_by_id(profile).name,
             pool_id=pool_id,
             credentials=credentials,
             capabilities=capabilities,

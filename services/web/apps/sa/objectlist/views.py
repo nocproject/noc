@@ -15,7 +15,7 @@ from noc.lib.nosql import Q as m_Q
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import Version
+from noc.inv.models.firmware import Firmware
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectcapabilities import ObjectCapabilities
@@ -55,10 +55,9 @@ class ObjectListApplication(ExtApplication):
             "id": str(o.id),
             "name": o.name,
             "address": o.address,
-            "profile_name": o.profile_name,
-            # "platform": o.platform,
-            "platform": o.ex_platform,
-            "version": o.ex_version,
+            "profile_name": o.profile.name,
+            "platform": o.platform.name if o.platform else "",
+            "version": o.version.version if o.version else "",
             "row_class": o.object_profile.style.css_class_name if o.object_profile.style else ""
             # "row_class": ""
         }
@@ -184,23 +183,7 @@ class ObjectListApplication(ExtApplication):
         return nq
 
     def extra_query(self, q, order):
-        # Query for MO attributest. Get key - ex_ATTRNAME
-        sql = """SELECT value AS platform 
-                 FROM sa_managedobjectattribute AS saa 
-                 WHERE key=\'%s\' AND saa.managed_object_id=sa_managedobject.id"""
-        # Query for filter by attributest
-        sql_w = """EXISTS (SELECT managed_object_id
-                           FROM sa_managedobjectattribute
-                           WHERE managed_object_id=sa_managedobject.id AND key=%s AND value LIKE %s)
-                           """
         extra = {"select": {}}
-        for v in Version._fields:
-            # key = "ex_" + v
-            extra["select"]["ex_" + v] = sql % v
-            if v in order:
-                extra["order_by"] = ["ex_" + v]
-            elif "-" + v in order:
-                extra["order_by"] = ["-ex_" + v]
         if "address" in order:
             extra["select"]["ex_address"] = " cast_test_to_inet(address) "
             extra["order_by"] = ["ex_address", "address"]
@@ -208,14 +191,6 @@ class ObjectListApplication(ExtApplication):
             extra["select"]["ex_address"] = " cast_test_to_inet(address) "
             extra["order_by"] = ["-ex_address", "-address"]
 
-        e_q = set(q).intersection(set(Version._fields))
-        # Extra filter query
-        if e_q:
-            extra["where"] = []
-            extra["params"] = []
-            for e in e_q:
-                extra["where"].append(sql_w)
-                extra["params"] += [e, "%" + q[e] + "%"]
         self.logger.info("Extra: %s" % extra)
         return extra, [] if "order_by" in extra else order
 
