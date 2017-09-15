@@ -332,7 +332,7 @@ class CorrelatorService(Service):
         # Gather diagnostics when necessary
         AlarmDiagnosticConfig.on_raise(a)
         # Watch for escalations, when necessary
-        if not a.root:
+        if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
 
     def correlate(self, r, a):

@@ -157,6 +157,7 @@ class Config(BaseConfig):
         topology_rca_window = IntParameter(default=0)
         oo_close_delay = SecondsParameter(default="20s")
         discovery_delay = SecondsParameter(default="10M")
+        auto_escalation = BooleanParameter(default=True)
 
     class customization(ConfigSection):
         favicon_url = StringParameter(
