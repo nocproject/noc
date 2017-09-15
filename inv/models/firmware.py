@@ -66,7 +66,7 @@ class Firmware(Document):
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
-        return self.full_name
+        return self.full_name if self.full_name else self.version
 
     def clean(self):
         self.full_name = "%s %s" % (self.profile.name, self.version)
