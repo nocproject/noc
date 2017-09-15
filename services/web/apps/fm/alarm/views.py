@@ -122,6 +122,9 @@ class AlarmApplication(ExtApplication):
             else:
                 q["managed_object__in"] = s
             q.pop("managedobjectselector")
+        if "cleared_after" in q:
+            q["clear_timestamp__gte"] = datetime.datetime.now() - datetime.timedelta(seconds=int(q["cleared_after"]))
+            q.pop("cleared_after")
         #
         if "wait_tt" in q:
             q["wait_tt__exists"] = True
