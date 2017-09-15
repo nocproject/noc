@@ -20,6 +20,10 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
+        r = {"vendor": "Rotek",
+             "platform": "",
+             "version": ""
+             }
         # Try SNMP first
         if self.has_snmp():
             try:
@@ -27,14 +31,15 @@ class Script(BaseScript):
                 platform = line.split(",")[0].strip()
                 v = line.split(",")[1].strip()
                 sres = v.split(".")
-                sw = "%s.%s.%s" % (sres[0],sres[1],sres[2])
-                return {
+                sw = "%s.%s.%s" % (sres[0], sres[1], sres[2])
+                r = {
                     "vendor": "Rotek",
                     "platform": platform,
                     "version": sw,
                 }
             except self.snmp.TimeOutError:
                 pass
+
         # Fallback to CLI
         """
         try:
@@ -54,3 +59,4 @@ class Script(BaseScript):
             "version": sw,
             }
         """
+        return r
