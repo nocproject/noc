@@ -1,5 +1,5 @@
 {
-    "name": "collections-moversion",
+    "name": "collections",
     "version": "latest",
     "dst_prefix": "collections",
     "src_prefix": "",
