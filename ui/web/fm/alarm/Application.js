@@ -571,6 +571,33 @@ Ext.define('NOC.fm.alarm.Application', {
                     }
                 },
                 {
+                    text: __('Start'),
+                    dataIndex: "timestamp",
+                    width: 120,
+                    hidden: true,
+                    renderer: NOC.render.DateTime
+                },
+                {
+                    text: __('Stop'),
+                    dataIndex: "clear_timestamp",
+                    width: 120,
+                    hidden: true,
+                    renderer: function(v) {
+                        if(v === null) {
+                            return "-"
+                        } else {
+                            return NOC.render.DateTime(v)
+                        }
+                    }
+                },
+                {
+                    text: __('Duration'),
+                    dataIndex: "duration",
+                    width: 120,
+                    hidden: true,
+                    renderer: NOC.render.Duration
+                },
+                {
                     text: __('Object/Segment'),
                     dataIndex: 'managed_object',
                     width: 250,
