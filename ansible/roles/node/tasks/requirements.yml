@@ -1,8 +1,3 @@
-- name: Revert local patches
-  command: "{{ noc_root }}/scripts/deploy/apply-patches --revert"
-  args:
-    chdir: "{{ noc_root }}"
-
 - name: Install node python packages(should take a while for a first time)
   pip:
     chdir: "{{noc_root}}"
@@ -52,9 +47,3 @@
   template:
     src: "lib/python/site-packages/noc.pth.j2"
     dest: "{{noc_root}}/lib/python/site-packages/noc.pth"
-
-
-- name: Apply local patches
-  command: "{{ noc_root }}/scripts/deploy/apply-patches"
-  args:
-    chdir: "{{ noc_root }}"
