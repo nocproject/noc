@@ -6,7 +6,6 @@
     - python2
     - py27-virtualenv
     - mercurial
-    - quilt
     - curl
     - libffi
     - libmemcached
