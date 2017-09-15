@@ -47,7 +47,6 @@
    - libmemcached
    - libmemcached-devel
    - zlib-devel
-   - quilt
    - jemalloc
   environment:
     https_proxy: "{{ http_proxy }}"
