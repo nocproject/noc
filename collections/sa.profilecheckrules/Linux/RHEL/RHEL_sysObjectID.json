@@ -9,6 +9,6 @@
     "match_method": "re",
     "value": "^Linux\\s.*.(fc\\d+.|el\\d+.).*",
     "action": "match",
-    "profile": "Linux.RHEL"
+    "profile__name": "Linux.RHEL"
 }
 

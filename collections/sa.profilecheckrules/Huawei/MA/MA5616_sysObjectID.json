@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.2011.2.169",
     "action": "match",
-    "profile": "Huawei.MA5600T"
+    "profile__name": "Huawei.MA5600T"
 }

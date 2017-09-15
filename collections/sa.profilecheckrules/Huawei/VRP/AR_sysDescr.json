@@ -9,5 +9,5 @@
     "match_method": "re",
     "value": "^Huawei AR.*",
     "action": "match",
-    "profile": "Huawei.VRP"
+    "profile__name": "Huawei.VRP"
 }
