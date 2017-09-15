@@ -29,7 +29,7 @@ id_lock = threading.Lock()
     ("inv.ObjectModel", "vendor"),
     ("inv.Platform", "vendor"),
     ("inv.Firmware", "vendor"),
-    ("sa.ManagedObject", "profile")
+    ("sa.ManagedObject", "vendor")
 ])
 class Vendor(Document):
     """

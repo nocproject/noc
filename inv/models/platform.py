@@ -20,6 +20,7 @@ import cachetools
 # NOC modules
 from .vendor import Vendor
 from noc.lib.nosql import PlainReferenceField
+from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
 
@@ -27,6 +28,9 @@ id_lock = threading.Lock()
 
 
 @bi_sync
+@on_delete_check(check=[
+    ("sa.ManagedObject", "platform")
+])
 class Platform(Document):
     meta = {
         "collection": "noc.platforms",
