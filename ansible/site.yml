@@ -323,6 +323,20 @@
     - role: card
 
 - name: Install and upgrade NOC
+  hosts: svc-ch_datasource
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - ch_datasource
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: ch_datasource
+
+
+- name: Install and upgrade NOC
   hosts: svc-omap
   become: yes
   strategy: free

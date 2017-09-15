@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NRI Port mapper
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# NRI Port mapper
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 
 class BasePortMapper(object):
@@ -46,7 +46,7 @@ class BasePortMapper(object):
 
     def __init__(self, managed_object):
         self.managed_object = managed_object
-        self.profile = self.managed_object.profile_name
+        self.profile = self.managed_object.profile.name
         self.platform = self.managed_object.platform
 
     def to_local(self, name):

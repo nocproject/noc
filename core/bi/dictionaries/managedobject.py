@@ -17,10 +17,4 @@ class ManagedObject(Dictionary):
         layout = "hashed"
 
     name = StringField()
-
-    @classmethod
-    def get_record(cls, value):
-        return {
-            "_id": value.id,
-            "name": value.name
-        }
+    address = StringField()

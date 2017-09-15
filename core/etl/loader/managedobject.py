@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Managed Object loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Managed Object loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from base import BaseLoader
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
+from noc.sa.models.profile import Profile
 
 
 class ManagedObjectLoader(BaseLoader):
@@ -68,6 +69,8 @@ class ManagedObjectLoader(BaseLoader):
         v["pool"] = self.pools[v["pool"]]
         v["tags"] = [x.strip().strip('"') for x in v["tags"].split(",")
                      if x.strip()] if v["tags"] else []
+        v["profile"] = Profile.get_by_name(v["profile_name"])
+        del v["profile_name"]
         return v
 
     def purge(self):

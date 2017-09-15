@@ -19,6 +19,7 @@
     - "{{ch_log_dir}}"
     - "{{ch_data_dir}}"
     - "{{ch_big_query_dir}}"
+    - "{{ch_dictionaries_path}}"
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"

@@ -18,6 +18,7 @@ import pymongo.errors
 import tornado.gen
 import tornado.ioloop
 from concurrent.futures import Future
+from pymongo import DeleteOne, UpdateOne
 # NOC modules
 from .job import Job
 from noc.lib.nosql import get_db
@@ -25,6 +26,7 @@ from noc.core.handler import get_handler
 from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.perf import metrics
 from noc.config import config
+
 
 class Scheduler(object):
     COLLECTION_BASE = "noc.schedules."
@@ -68,8 +70,7 @@ class Scheduler(object):
         self.to_reset_running = reset_running
         self.running_groups = set()
         self.collection = None
-        self.bulk = None
-        self.bulk_ops = 0
+        self.bulk = []
         self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
         self.executor = None
@@ -135,7 +136,7 @@ class Scheduler(object):
             self.logger.debug("Open collection %s",
                               self.collection_name)
             self.collection = get_db()[self.collection_name]
-            self.reset_bulk_ops()
+            self.bulk = []
         return self.collection
 
     def get_executor(self):
@@ -154,17 +155,16 @@ class Scheduler(object):
         Reset all running jobs to waiting status
         """
         self.logger.debug("Reset running jobs")
-        r = self.get_collection().update(self.get_query({
+        r = self.get_collection().update_many(self.get_query({
             Job.ATTR_STATUS: Job.S_RUN
         }), {
             "$set": {
                 Job.ATTR_STATUS: Job.S_WAIT
             }
-        }, multi=True, safe=True)
-        if r["ok"]:
-            nm = r.get("nModified", 0)
-            if nm:
-                self.logger.info("Reset: %d", nm)
+        })
+        if r.acknowledged:
+            if r.modified_count:
+                self.logger.info("Reset: %d", r.modified_count)
             else:
                 self.logger.info("Nothing to reset")
         else:
@@ -293,7 +293,7 @@ class Scheduler(object):
                     "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
                     jids, Job.ATTR_STATUS, Job.S_RUN
                 )
-                r = collection.update({
+                r = collection.update_many({
                     "_id": {
                         "$in": jids
                     }
@@ -301,14 +301,15 @@ class Scheduler(object):
                     "$set": {
                         Job.ATTR_STATUS: Job.S_RUN
                     }
-                }, multi=True, safe=True)
-                if not r["ok"]:
+                })
+                if r.acknowledged:
+                    if r.modified_count != len(jids):
+                        self.logger.error(
+                            "Failed to update all running statuses: %d of %d",
+                            r.modified_count, len(jids)
+                        )
+                else:
                     self.logger.error("Failed to update running status")
-                if r["nModified"] != len(jids):
-                    self.logger.error(
-                        "Failed to update all running statuses: %d of %d",
-                        r["nModified"], len(jids)
-                    )
                 # Fetch contexts
                 # version -> key -> job
                 cjobs = {}
@@ -345,26 +346,22 @@ class Scheduler(object):
                     time.sleep(dt)
         return n
 
-    def reset_bulk_ops(self):
-        self.bulk = self.collection.initialize_unordered_bulk_op()
-        self.bulk_ops = 0
-
     def apply_bulk_ops(self):
+        if not self.bulk:
+            return  # Nothing to apply
         t0 = self.ioloop.time()
         with self.bulk_lock:
-            if not self.bulk_ops:
-                return
             try:
-                r = self.bulk.execute()
+                r = self.collection.bulk_write(self.bulk)
                 dt = self.ioloop.time() - t0
                 self.logger.info(
                     "%d bulk operations complete in %dms: "
                     "inserted=%d, updated=%d, removed=%d",
-                    self.bulk_ops,
+                    len(self.bulk),
                     int(dt * 1000),
-                    r.get("nInserted", 0),
-                    r.get("nModified", 0),
-                    r.get("nRemoved", 0)
+                    r.inserted_count,
+                    r.modified_count,
+                    r.deleted_count
                 )
             except pymongo.errors.BulkWriteError as e:
                 self.logger.error(
@@ -377,7 +374,7 @@ class Scheduler(object):
                 metrics["%s_bulk_failed" % self.name] += 1
                 return
             finally:
-                self.reset_bulk_ops()
+                self.bulk = []
 
     def remove_job(self, jcls, key=None):
         """
@@ -395,8 +392,7 @@ class Scheduler(object):
         """
         self.logger.info("Remove job %s", jid)
         with self.bulk_lock:
-            self.bulk.find({Job.ATTR_ID: jid}).remove_one()
-            self.bulk_ops += 1
+            self.bulk += [DeleteOne({Job.ATTR_ID: jid})]
 
     def submit(self, jcls, key=None, data=None, ts=None, delta=None,
                keep_ts=False, max_runs=None):
@@ -507,8 +503,7 @@ class Scheduler(object):
             }
             self.logger.debug("update(%s, %s)", q, op)
             with self.bulk_lock:
-                self.bulk.find(q).update(op)
-                self.bulk_ops += 1
+                self.bulk += [UpdateOne(q, op)]
 
     def apply_cache_ops(self):
         with self.cache_lock:

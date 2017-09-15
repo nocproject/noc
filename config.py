@@ -215,7 +215,7 @@ class Config(BaseConfig):
         keep_events_wo_alarm = IntParameter(default=0)
         keep_events_with_alarm = IntParameter(default=-1)
         alarm_close_retries = IntParameter(default=5)
-        outage_refresh  = SecondsParameter(default="60s")
+        outage_refresh = SecondsParameter(default="60s")
         total_outage_refresh = SecondsParameter(default="60s")
 
     class geocoding(ConfigSection):
@@ -360,8 +360,6 @@ class Config(BaseConfig):
         beef_prefix = StringParameter(default="var/beef/sa")
         cp_new = StringParameter(default="var/cp/crashinfo/new")
         bi_data_prefix = StringParameter(default="var/bi")
-        bi_dict_xml_prefix = StringParameter(default="var/bi-dict")
-        bi_dict_data_prefix = StringParameter(default="var/bi-dict-data")
         babel_cfg = StringParameter(default="etc/babel.cfg")
         babel = StringParameter(default="./bin/pybabel")
         pojson = StringParameter(default="./bin/pojson")
@@ -481,6 +479,11 @@ class Config(BaseConfig):
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
 
+    class datasource(ConfigSection):
+        chunk_size = IntParameter(default=1000)
+        max_threads = IntParameter(default=10)
+        default_ttl = SecondsParameter(default="1h")
+
     class tests(ConfigSection):
         enable_coverage = BooleanParameter(default=False)
         events_path = StringParameter(default="collections/test.events")
@@ -522,7 +525,7 @@ class Config(BaseConfig):
             hosts = self.mongo.addresses
             if self.mongo.rs:
                 self._mongo_connection_args["replicaSet"] = self.mongo.rs
-                self._mongo_connection_args["slave_okay"] = True
+                self._mongo_connection_args["readPreference"] = "secondaryPreferred"
             elif len(hosts) > 1:
                 raise ValueError("Replica set name must be set")
             url = ["mongodb://"]
