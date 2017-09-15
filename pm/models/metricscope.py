@@ -205,7 +205,7 @@ class MetricScope(Document):
             return c
 
         changed = False
-        ch = connect or connection()
+        ch = connect or connection(read_only=False)
         if not ch.has_table(self._get_raw_db_table()):
             # Create new table
             ch.execute(post=self.get_create_sql())
