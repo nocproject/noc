@@ -22,3 +22,4 @@ class ProfileApplication(ExtDocApplication):
     query_fields = [
         "name__icontains", "description__icontains"
     ]
+    default_ordering = ["name"]
