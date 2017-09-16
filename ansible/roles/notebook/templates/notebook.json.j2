@@ -6,7 +6,7 @@
     "enableTagOverride": false,
     "check": {
         "http": "http://{{ hostvars[ansible_nodename].ansible_host }}:{{ notebook_port }}/notebook/login",
-        "interval": "60s"
+        "interval": "300s"
     }
   }
 }
