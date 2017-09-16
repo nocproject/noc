@@ -8,14 +8,14 @@ mongo_version: "{{ lookup('env','MONGO_VERSION') | default(3.2, True)}}"
 grafana_version: "4.4.1"
 nsq_version: "0.3.8"
 
-consul_version: "0.8.5"
+consul_version: "0.9.3"
 consul_url: "{{ lookup('env','CONSUL_URL')}}"
 consul_token: "{{lookup('env','CONSUL_TOKEN')}}"
 consul_env: '{{ True if (consul_url and consul_token) else False}}'
 consul_user: consul
 consul_home: "/home/{{consul_user}}"
 
-consul_template_version: "0.19.0"
+consul_template_version: "0.19.3"
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{etc_prefix}}/consul-template/templates"
 consul_template_ch_dictionaries_dir: "{{etc_prefix}}/consul-template/templates/ch_dictionaries"
