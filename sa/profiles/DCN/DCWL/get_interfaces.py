@@ -41,8 +41,7 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        r = []
-        c = self.cli("get interface all", cached=True)
+        c = self.cli("get interface all detail")
         for line in c.splitlines():
             r = line.split(' ', 1)
             if r[0] == "name":
@@ -62,7 +61,7 @@ class Script(BaseScript):
                 #ip address + ip subnet
                 if ip_subnet or ip_address:
                     ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-                    interfaces += [{
+                    iface = {
                         "type": iftype,
                         "name": name,
                         "mac": mac,
@@ -72,10 +71,11 @@ class Script(BaseScript):
                             "enabled_afi": ["IPv4"],
                             "ipv4_addresses": [ip_address],
                         }]
-                    }]
+                    }
+                    interfaces += [iface]
                 #no ip address + ip subnet
                 else:
-                    interfaces += [{
+                    iface = {
                         "type": iftype,
                         "name": name,
                         "mac": mac,
@@ -84,5 +84,26 @@ class Script(BaseScript):
                             "mac": mac,
                             "enabled_afi": ["BRIDGE"],
                         }]
-                    }]
+                    }
+                    interfaces += [iface]
+        for line in c.splitlines():
+            r = line.split(' ', 1)
+            if r[0] == "name":
+                name = r[1].strip()
+            if r[0] == "mac":
+                mac = r[1].strip()
+            if r[0] == "ssid":
+                ssid = r[1].strip().replace(" ", "").replace("Managed", "")
+                if ssid:
+                    iface = {
+                        "type": "physical",
+                        "name": "%s.%s" % (name, ssid),
+                        "mac": mac,
+                        "subinterfaces": [{
+                            "name": "%s.%s" % (name, ssid),
+                            "mac": mac,
+                            "enabled_afi": ["BRIDGE"],
+                        }]
+                    }
+                    interfaces += [iface]
         return [{"interfaces": interfaces}]

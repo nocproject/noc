@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Vendor: DCN
-# OS:     DCWL
+# DCN.DCWL.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -28,12 +27,12 @@ class Script(BaseScript):
             if r[0] == "device-name":
                 platform = r[1].strip()
             if r[0] == "version-id":
-                version = r[1].strip()
+                hwversion = r[1].strip()
         d = self.cli("get system detail", cached=True)
         for line in d.splitlines():
             r = line.split(' ', 1)
             if r[0] == "version":
-                hwversion = r[1].strip()
+                version = r[1].strip()
             if r[0] == "serial-number":
                 sn = r[1].strip()
         return {
