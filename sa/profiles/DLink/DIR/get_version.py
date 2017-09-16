@@ -32,8 +32,12 @@ class Script(BaseScript):
 
         urlpath = baseURL + req + ";"
         self.logger.debug("URL path is: %s" % urlpath)
-
-        rr = self.http.get(urlpath)
+        try:
+            rr = self.http.get(urlpath)
+        except self.http.HTTPError:
+            return {"vendor": "DLink",
+                    "version": "",
+                    "platform": ""}
         rr = rr.splitlines()
 
         self.logger.debug("Result: %s " % rr)
