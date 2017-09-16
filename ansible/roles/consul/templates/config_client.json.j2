@@ -23,6 +23,7 @@
   "encrypt": "{{ consul_raw_key }}",
   "log_level": "{{ consul_log_level }}",
   "enable_syslog": {{ consul_syslog_enable|lower }},
+  "enable_script_checks": true,
   "start_join": [ {% set comma_nodes = joiner(", ") -%}
   {% for n in groups['svc-consul'] %}
      {{ comma_nodes() }}"{{hostvars[n].ansible_host}}"
