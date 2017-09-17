@@ -22,6 +22,14 @@
   tags:
     - config
 
+- name: render telegraf config inputs
+  template:
+    src: "telegraf/noc.conf.j2"
+    dest: "{{ telegraf_confd_path }}/noc.conf"
+  notify: reload telegraf
+  tags:
+    - config
+
 - name: render telegraf config prom config
   template:
     src: "telegraf/prom.conf.j2"
