@@ -92,7 +92,7 @@ class MODashboard(BaseDashboard):
             "ip": self.object.address,
             "platform": self.object.platform.name if self.object.platform else "Unknown platform",
             "device_id": self.object.id,
-            "firmare_version": self.object.version.version or None,
+            "firmare_version": self.object.version.version if self.object.version else None,
             "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown version",
             "bi_id": self.object.get_bi_id(),
