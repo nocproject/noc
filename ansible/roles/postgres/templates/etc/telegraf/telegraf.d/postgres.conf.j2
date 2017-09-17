@@ -12,3 +12,5 @@
   ## to grab metrics for.
   ##
   address = "host={{ ansible_host }} user={{noc_pg_user}} password={{noc_pg_password}} sslmode=disable database={{noc_pg_db}}"
+
+  ignored_databases = ["postgres", "template0", "template1"]
