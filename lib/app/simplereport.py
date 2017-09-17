@@ -331,7 +331,7 @@ class TableColumn(ReportNode):
         :param f:
         :return:
         """
-        return DateFormat(f).format(config.date_format)
+        return DateFormat(f).format(config.date_time_formats.date_format)
 
     def f_time(self, f):
         """
@@ -339,7 +339,7 @@ class TableColumn(ReportNode):
         :param f:
         :return:
         """
-        return DateFormat(f).format(config.time_format)
+        return DateFormat(f).format(config.date_time_formats.time_format)
 
     def f_datetime(self, f):
         """
@@ -347,7 +347,7 @@ class TableColumn(ReportNode):
         :param f:
         :return:
         """
-        return DateFormat(f).format(config.datetime_format)
+        return DateFormat(f).format(config.date_time_formats.datetime_format)
 
     def f_size(self, f):
         """
