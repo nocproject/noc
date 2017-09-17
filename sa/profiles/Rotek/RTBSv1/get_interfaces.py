@@ -18,27 +18,28 @@ class Script(BaseScript):
     name = "Rotek.RTBS.get_interfaces"
     cache = True
     interface = IGetInterfaces
+    reuse_cli_session = False
+    keep_cli_session = False
 
     rx_sh_int = re.compile(
-        r"^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g)\S+):\s"
+        r"^(?P<ifindex>\d+):\s+(?P<ifname>(e|l|t|b|r|g|a)\S+):\s"
         r"<(?P<flags>.*?)>\s+mtu\s+(?P<mtu>\d+).+?\n"
         r"^\s+link/\S+(?:\s+(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}))?\s+.+?\n"
         r"(?:^\s+inet\s+(?P<ip>\d+\S+)\s+)?",
         re.MULTILINE | re.DOTALL)
-
+    rx_vlan = re.compile(r"\S+vlan-to-ssid: on; id:\s+(?P<vlan>\S+)")
     rx_status = re.compile(r"^(?P<status>UP|DOWN\S+)", re.MULTILINE)
 
     def execute(self):
         interfaces = []
         ssid = {}
-        i = ["ra0", "ra1"]
+        i = ["ath0", "ath2"]
         for ri in i:
             s = self.cli("show interface %s ssid" % ri)
             v = self.cli("show interface %s vlan-to-ssid" % ri)
             res = s.split(":")[1].strip().replace("\"", "")
-            resv = v.split(":")[1].strip().replace("\"", "")
+            resv = v.split(":")[2].strip()
             ssid[ri] = {"ssid": res, "vlan": resv}
-            print ssid
         with self.profile.shell(self):
             v = self.cli("ip a", cached=True)
             for match in self.rx_sh_int.finditer(v):

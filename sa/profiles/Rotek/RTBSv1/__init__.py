@@ -1,30 +1,28 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor: Rotek
-# OS:     RTBS
+# OS:     RTBSv1
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-'''
-'''
+
 from noc.core.profile.base import BaseProfile
 
-
 class Profile(BaseProfile):
-    name = "Rotek.RTBS"
+    name = "Rotek.RTBSv1"
     pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
-    pattern_syntax_error = r"^\(ERROR\)"
+    pattern_syntax_error = r"(ERROR)"
     command_submit = "\r"
-    command_exit = "logout"
-
+    enable_cli_session = False
+    command_exit = "exit\rlogout"
     INTERFACE_TYPES = {
         "et": "physical",
         "lo": "loopback",
         "tu": "tunnel",
-        "gr": "tunnel",
         "br": "physical",
-        "ra": "physical"
+        "at": "physical",
+        "wi": "physical"
     }
 
     @classmethod
@@ -44,4 +42,4 @@ class Profile(BaseProfile):
         def __exit__(self, exc_type, exc_val, exc_tb):
             """Leave switch context"""
             if exc_type is None:
-                self.script.cli("exit\r")
+                self.script.cli("\r")

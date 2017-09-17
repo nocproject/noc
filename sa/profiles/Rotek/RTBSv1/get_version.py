@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Rotek.RTBS.get_version
+# Rotek.RTBSv1.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 
 # Python modules
 import re
@@ -13,8 +14,9 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 from tornado.iostream import StreamClosedError
 
+
 class Script(BaseScript):
-    name = "Rotek.RTBS.get_version"
+    name = "Rotek.RTBSv1.get_version"
     cache = True
     interface = IGetVersion
     reuse_cli_session = False
@@ -39,8 +41,8 @@ class Script(BaseScript):
         with self.profile.shell(self):
                 v = self.cli("cat /etc/product", cached=True)
                 for line in v.splitlines():
-                    l = line.split(" = ", 1)
-                    if "product.id" in l[0]:
-                        platform = l[1].strip()
+                    l = line.split(":", 1)
+                    if "productName" in l[0]:
+                        platform = l[1].strip().replace(" ",".").replace("\"","").replace(",","")
                         result["platform"] = platform
         return result
