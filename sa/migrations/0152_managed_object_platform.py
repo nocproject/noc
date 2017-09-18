@@ -43,7 +43,8 @@ class Migration:
                 "name": platform
             }, {
                 "$set": {
-                    "name": platform
+                    "name": platform,
+                    "full_name": platform
                 },
                 "$setOnInsert": {
                     "vendor": v,
