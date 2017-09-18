@@ -77,6 +77,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 continue
             self.topology_methods += [self.TOPOLOGY_METHODS[ms.method]]
         self.topology_names = [m.name for m in self.topology_methods]
+        #
+        self.reboot_detected = False
         # Run remaining checks
         if self.allow_sessions():
             self.logger.debug("Using CLI sessions")
