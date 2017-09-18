@@ -72,7 +72,7 @@ class Script(GetMetricsScript):
             if wr[0] == "name":
                 wname = wr[1].strip()
             elif wr[0] == "tx-power":
-                txpower = wr[1].strip()
+                txpower = ((27 / 100) * int(wr[1].strip()))  # Max TxPower 27dBm, convert procent -> dBm
             elif wr[0] == "channel-util":
                 channelutil = wr[1].strip()
             elif wr[0] == "channel-free":
