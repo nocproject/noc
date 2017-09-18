@@ -90,6 +90,12 @@ class Span(object):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        def q_tsv(s):
+            if not s:
+                return ""
+            else:
+                return str(s).encode("string_escape")
+
         global spans
         if not self.is_sampled:
             return
@@ -104,15 +110,15 @@ class Span(object):
             self.span_context,
             self.span_id,
             self.parent,
-            self.server,
-            self.service,
-            self.client,
+            q_tsv(self.server),
+            q_tsv(self.service),
+            q_tsv(self.client),
             self.duration,
-            self.error_code,
-            self.error_text,
+            self.error_code or 0,
+            q_tsv(self.error_text),
             self.sample,
-            str(self.in_label).encode("string_escape"),
-            str(self.out_label).encode("string_escape")
+            q_tsv(self.in_label),
+            q_tsv(self.out_label)
         ])
         with span_lock:
             spans += [row]
