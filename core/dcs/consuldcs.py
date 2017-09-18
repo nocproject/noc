@@ -301,18 +301,18 @@ class ConsulDCS(DCSBase):
                 for n in range(self.keepalive_attempts):
                     try:
                         yield self.consul.session.renew(self.session)
-                        self.logger.info("Session renewed")
+                        self.logger.debug("Session renewed")
                         touched = True
                         break
                     except consul.base.NotFound:
-                        self.logger.info("Session lost. Forcing quit")
+                        self.logger.warning("Session lost. Forcing quit")
                         break
                     except ConsulRepeatableErrors as e:
-                        self.logger.info("Cannot refresh session due to ignorable error: %s", e)
+                        self.logger.warning("Cannot refresh session due to ignorable error: %s", e)
                         metrics["dcs.consul.keepalive_retries"] += 1
                         yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 if not touched:
-                    self.logger.info("Cannot refresh session, stopping")
+                    self.logger.critical("Cannot refresh session, stopping")
                     if self.keep_alive_task:
                         self.keep_alive_task.stop()
                         self.keep_alive_task = None
