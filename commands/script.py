@@ -90,11 +90,11 @@ class Command(BaseCommand):
         # Get version info
         v = obj.version
         p = obj.platform
-        if v.version:
+        if v:
             version = {
                 "vendor": v.vendor.name,
                 "platform": p.name,
-                "version": v.version
+                "version": v.version if v else None
             }
         else:
             version = None
@@ -272,7 +272,7 @@ class JSONObject(object):
         self.pool = PoolStub("default")
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
-        self.version = VersionStub(data["version"]) if "version" else None
+        self.version = VersionStub(data["version"]) if "version" in data else None
 
     @property
     def credentials(self):
