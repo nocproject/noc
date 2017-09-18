@@ -324,7 +324,7 @@ def fetch(url, method="GET",
                     io_loop=io_loop
                 )
             except tornado.iostream.StreamClosedError:
-                if eof_mark and parser.is_partial_body() and response_body:
+                if eof_mark and response_body:
                     # Check if EOF mark is in received data
                     response_body = ["".join(response_body)]
                     if isinstance(eof_mark, six.string_types):
