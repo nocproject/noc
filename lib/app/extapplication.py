@@ -209,7 +209,7 @@ class ExtApplication(Application):
                 r[self.fav_status] = r[self.pk] in fav_items
         if request.is_extjs:
             ld = len(out)
-            if limit and ld == limit:
+            if limit and (ld == limit or start > 0):
                 total = unpaged_data.count()
             else:
                 total = ld
