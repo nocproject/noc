@@ -690,13 +690,14 @@ class BaseScript(object):
                     self.cli_stream = None
                     del self.session_cli[self.session]
             if self.cli_stream:
-                if not self.to_reuse_cli_session():
+                if self.to_reuse_cli_session():
+                    self.logger.debug("Using cached session's CLI")
+                    self.cli_stream.set_script(self)
+                else:
                     self.logger.debug(
                         "Script cannot reuse existing CLI session, starting new one"
                     )
                     self.close_cli_stream()
-                self.logger.debug("Using cached session's CLI")
-                self.cli_stream.set_script(self)
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
