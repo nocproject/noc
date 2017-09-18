@@ -30,7 +30,7 @@ Ext.define('NOC.fm.alarm.Application', {
         };
         me.store = Ext.create('NOC.core.ModelStore', {
             model: 'NOC.fm.alarm.Model',
-            autoLoad: false,
+            autoLoad: true,
             customFields: [],
             filterParams: {
                 status: 'A',
@@ -51,6 +51,27 @@ Ext.define('NOC.fm.alarm.Application', {
                 scope: me,
                 load: me.onLoad
             }
+        });
+
+        me.recentStore = Ext.create('NOC.core.ModelStore', {
+            model: 'NOC.fm.alarm.Model',
+            autoLoad: true,
+            customFields: [],
+            filterParams: {
+                status: 'C',
+                collapse: 1
+            },
+            remoteSort: true,
+            sorters: [
+                {
+                    property: 'timestamp',
+                    direction: 'DESC'
+                }
+            ],
+            pageSize: bs,
+            leadingBufferZone: bs,
+            numFromEdge: bs,
+            trailingBufferZone: bs
         });
 
         me.autoreloadButton = Ext.create('Ext.button.Button', {
@@ -184,6 +205,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 {'value': 1440, 'text': '1440 min'}
             ]
         });
+
         me.freshOpacityStore = Ext.create('Ext.data.Store', {
                 fields: ['value', 'text'],
                 data: [
@@ -194,7 +216,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 ]
             }
         );
-        // fresh Alarm control
+        // Show resent Alarm control
         var freshFirstCol = 80;
         var freshSecondCol = 90;
         var freshRowHeight = 23;
@@ -209,6 +231,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: freshFirstCol,
             value: __('Other')
         });
+
         me.freshOpacityOther = Ext.create('Ext.form.ComboBox', {
             width: freshSecondCol,
             queryMode: 'local',
@@ -234,6 +257,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 change: me.onChangeFilter
             }
         });
+
         me.freshOpacity1 = Ext.create('Ext.form.ComboBox', {
             width: freshSecondCol,
             queryMode: 'local',
@@ -259,6 +283,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 change: me.onChangeFilter
             }
         });
+
         me.freshOpacity2 = Ext.create('Ext.form.ComboBox', {
             width: freshSecondCol,
             queryMode: 'local',
@@ -284,6 +309,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 change: me.onChangeFilter
             }
         });
+
         me.freshOpacity3 = Ext.create('Ext.form.ComboBox', {
             width: freshSecondCol,
             queryMode: 'local',
@@ -316,6 +342,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 me.freshOpacity2
             ]
         });
+
         me.freshRule3 = Ext.create('Ext.form.FieldContainer', {
             height: freshRowHeight,
             layout: 'hbox',
@@ -325,6 +352,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 me.freshOpacity3
             ]
         });
+
         me.freshRuleOther = Ext.create('Ext.form.FieldContainer', {
             height: freshRowHeight,
             layout: 'hbox',
@@ -338,6 +366,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 me.freshOpacityOther
             ]
         });
+
         me.freshSwitchOff = Ext.create('Ext.form.field.Checkbox', {
             boxLabel: __('Switch Off'),
             value: false,
@@ -464,213 +493,231 @@ Ext.define('NOC.fm.alarm.Application', {
                 }
             ]
         });
+
+        me.recentShow = Ext.create('Ext.form.FieldSet', {
+            title: __('Show recently closed'),
+            hidden: false,
+            items: {
+                xtype: 'fieldcontainer',
+                height: freshRowHeight,
+                layout: 'hbox',
+                items: {
+                    xtype: 'combo',
+                    width: '100%',
+                    queryMode: 'local',
+                    valueField: 'value',
+                    value: 0,
+                    editable: false,
+                    store: {
+                        fields: ['value', 'text'],
+                        data: [
+                            {'value': 0, 'text': __("don't show")},
+                            {'value': 1, 'text': '5 min'},
+                            {'value': 15, 'text': '15 min'},
+                            {'value': 30, 'text': '30 min'},
+                            {'value': 60, 'text': '60 min'},
+                            {'value': 180, 'text': '3 h'}
+                        ]
+                    },
+                    listeners: {
+                        scope: me,
+                        change: me.onChangeFilter
+                    }
+                }
+            }
+        });
+
         me.currentAlarm = null;
 
-        me.gridPanel = Ext.create('Ext.grid.Panel', {
-            store: me.store,
+        me.gridCols = [
+            {
+                text: __('ID'),
+                dataIndex: 'id',
+                width: 150,
+                hidden: true,
+                renderer: me.renderer
+            },
+            {
+                xtype: 'glyphactioncolumn',
+                width: 20 * 2,
+                sortable: false,
+                items: [
+                    {
+                        glyph: NOC.glyph.globe,
+                        tooltip: __('Show map'),
+                        scope: me,
+                        handler: me.onShowMap
+                    },
+                    {
+                        glyph: NOC.glyph.eye,
+                        tooltip: __('Show object'),
+                        scope: me,
+                        handler: me.onShowObject
+                    }
+                ]
+            },
+            {
+                text: __('Status'),
+                dataIndex: 'status',
+                width: 60,
+                renderer: function(v, _, record) {
+                    var value = NOC.render.Choices(me.STATUS_MAP)(v);
+                    if(record.get('isInMaintenance')) value = '<span title="' + __('Under maintaintance') + '">' +
+                        '<i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;' + value + '</span>';
+                    return value;
+                },
+                hidden: true
+            },
+            {
+                text: __('Time/Duration'),
+                dataIndex: 'timestamp',
+                width: 120,
+                renderer: function(v, _, record) {
+                    return NOC.render.DateTime(record.get('timestamp')) +
+                        '<br/>' +
+                        NOC.render.Duration(record.get('duration'));
+                }
+            },
+            {
+                text: __('Start'),
+                dataIndex: "timestamp",
+                width: 120,
+                hidden: true,
+                renderer: NOC.render.DateTime
+            },
+            {
+                text: __('Stop'),
+                dataIndex: "clear_timestamp",
+                width: 120,
+                hidden: true,
+                renderer: function(v) {
+                    if(v === null) {
+                        return "-"
+                    } else {
+                        return NOC.render.DateTime(v)
+                    }
+                }
+            },
+            {
+                text: __('Duration'),
+                dataIndex: "duration",
+                width: 120,
+                hidden: true,
+                renderer: NOC.render.Duration
+            },
+            {
+                text: __('Object/Segment'),
+                dataIndex: 'managed_object',
+                width: 250,
+                renderer: function(v, _, record) {
+                    return record.get('managed_object__label') + '<br/>' + record.get('segment__label');
+                }
+            },
+            {
+                text: __('Address/Platform'),
+                dataIndex: 'address',
+                width: 120,
+                renderer: function(_, _, record) {
+                    return record.get('address') +
+                        '<br/>' +
+                        (record.get('platform') || '');
+                }
+            },
+            {
+                text: __('Severity'),
+                dataIndex: 'severity',
+                width: 70,
+                renderer: function(v, _, record) {
+                    return record.get('severity__label') +
+                        '<br/>' +
+                        record.get('severity');
+                }
+            },
+            {
+                text: __('Subject/Class'),
+                dataIndex: 'subject',
+                flex: 1,
+                sortable: false,
+                renderer: function(v, _, record) {
+                    return record.get('subject') +
+                        '<br/>' +
+                        record.get('alarm_class__label');
+                }
+            },
+            {
+                text: __('Summary/TT'),
+                dataIndex: 'summary',
+                width: 150,
+                sortable: false,
+                renderer: function(v, _, record) {
+                    var r = [record.get('summary')];
+                    var tt = record.get('escalation_tt') || '';
+                    var ee = record.get('escalation_error') || '';
+                    if(tt !== '') {
+                        r.push('<a href="/api/card/view/tt/' + tt + '/" target="_blank">' + tt + '</a>');
+                    } else {
+                        if(ee !== '') {
+                            r.push('<i class="fa fa-exclamation-triangle"></i> Error')
+                        }
+                    }
+                    return r.join('<br>');
+                }
+            },
+            {
+                text: __('Objects'),
+                dataIndex: 'total_objects',
+                width: 30,
+                align: 'right',
+                sortable: false
+            },
+            {
+                text: __('Events'),
+                dataIndex: 'events',
+                width: 30,
+                align: 'right',
+                sortable: false
+            }
+        ];
+
+        me.recentGridPanel = Ext.create('Ext.grid.Panel', {
+            region: 'center',
+            height: '25%',
+            hidden: true,
+            hideHeaders: false,
             border: false,
+            store: me.recentStore,
+            columns: me.gridCols,
+            listeners: {
+                scope: me,
+                itemdblclick: me.onSelectAlarm
+            },
+            viewConfig: {
+                enableTextSelection: true,
+                loadMask: true,
+                getRowClass: function() {
+                    return 'noc-recent-alarms';
+                },
+                listeners: {
+                    scope: me,
+                    itemcontextmenu: me.onGridContextMenu,
+                    beforerefresh: function(cmp) {
+                        me.gridPanel.plugins[0].bodyTop = 0;
+                    }
+                }
+            }
+        });
+
+        me.gridPanel = Ext.create('Ext.grid.Panel', {
+            region: 'south',
+            height: '100%',
+            resizable: true,
+            split: true,
             itemId: 'grid-panel',
+            border: false,
             stateful: true,
             stateId: 'fm.alarm-grid',
-            dockedItems: [
-                {
-                    xtype: 'form',
-                    itemId: 'filtertoolbar',
-                    width: 208,
-                    title: __('Filter'),
-                    dock: 'right',
-                    padding: 4,
-                    autoScroll: true,
-                    defaults: {
-                        labelAlign: 'top',
-                        padding: 4
-                    },
-                    items: [
-                        me.autoreloadButton,
-                        me.soundButton,
-                        me.typeButton,
-                        me.expandButton,
-                        me.ttConfirmButton,
-                        me.maintainanceButton,
-                        me.objectCombo,
-                        me.segmentCombo,
-                        me.admdomCombo,
-                        me.selectorCombo,
-                        me.alarmClassCombo,
-                        {
-                            xtype: 'fieldset',
-                            layout: 'hbox',
-                            title: __('By Date'),
-                            items: [
-                                me.fromDateField,
-                                me.toDateField
-                            ]
-                        },
-                        {
-                            xtype: 'fieldset',
-                            title: __('Fresh Alarms (time/opacity)'),
-                            layout: 'vbox',
-                            items: [
-                                me.freshSwitchOff,
-                                me.freshRule1,
-                                me.freshRule2,
-                                me.freshRule3,
-                                me.freshRuleOther
-                            ]
-                        }
-                    ]
-                }
-            ],
-            columns: [
-                {
-                    text: __('ID'),
-                    dataIndex: 'id',
-                    width: 150,
-                    hidden: true,
-                    renderer: me.renderer
-                },
-                {
-                    xtype: 'glyphactioncolumn',
-                    width: 20 * 2,
-                    sortable: false,
-                    items: [
-                        {
-                            glyph: NOC.glyph.globe,
-                            tooltip: __('Show map'),
-                            scope: me,
-                            handler: me.onShowMap
-                        },
-                        {
-                            glyph: NOC.glyph.eye,
-                            tooltip: __('Show object'),
-                            scope: me,
-                            handler: me.onShowObject
-                        }
-                    ]
-                },
-                {
-                    text: __('Status'),
-                    dataIndex: 'status',
-                    width: 50,
-                    renderer: function(v, _, record) {
-                        var value = NOC.render.Choices(me.STATUS_MAP)(v);
-                        if(record.get('isInMaintenance')) value = '<span title="' + __('Under maintaintance') + '">' +
-                            '<i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;' + value + '</span>';
-                        return value;
-                    },
-                    hidden: true
-                },
-                {
-                    text: __('Time/Duration'),
-                    dataIndex: 'timestamp',
-                    width: 120,
-                    renderer: function(v, _, record) {
-                        return NOC.render.DateTime(record.get('timestamp')) +
-                            '<br/>' +
-                            NOC.render.Duration(record.get('duration'));
-                    }
-                },
-                {
-                    text: __('Start'),
-                    dataIndex: "timestamp",
-                    width: 120,
-                    hidden: true,
-                    renderer: NOC.render.DateTime
-                },
-                {
-                    text: __('Stop'),
-                    dataIndex: "clear_timestamp",
-                    width: 120,
-                    hidden: true,
-                    renderer: function(v) {
-                        if(v === null) {
-                            return "-"
-                        } else {
-                            return NOC.render.DateTime(v)
-                        }
-                    }
-                },
-                {
-                    text: __('Duration'),
-                    dataIndex: "duration",
-                    width: 120,
-                    hidden: true,
-                    renderer: NOC.render.Duration
-                },
-                {
-                    text: __('Object/Segment'),
-                    dataIndex: 'managed_object',
-                    width: 250,
-                    renderer: function(v, _, record) {
-                        return record.get('managed_object__label') + '<br/>' + record.get('segment__label');
-                    }
-                },
-                {
-                    text: __('Address/Platform'),
-                    dataIndex: 'address',
-                    width: 120,
-                    renderer: function(_, _, record) {
-                        return record.get('address') +
-                            '<br/>' +
-                            (record.get('platform') || '');
-                    }
-                },
-                {
-                    text: __('Severity'),
-                    dataIndex: 'severity',
-                    width: 70,
-                    renderer: function(v, _, record) {
-                        return record.get('severity__label') +
-                            '<br/>' +
-                            record.get('severity');
-                    }
-                },
-                {
-                    text: __('Subject/Class'),
-                    dataIndex: 'subject',
-                    flex: 1,
-                    sortable: false,
-                    renderer: function(v, _, record) {
-                        return record.get('subject') +
-                            '<br/>' +
-                            record.get('alarm_class__label');
-                    }
-                },
-                {
-                    text: __('Summary/TT'),
-                    dataIndex: 'summary',
-                    width: 150,
-                    sortable: false,
-                    renderer: function(v, _, record) {
-                        var r = [record.get('summary')];
-                        var tt = record.get('escalation_tt') || '';
-                        var ee = record.get('escalation_error') || '';
-                        if(tt !== '') {
-                            r.push('<a href="/api/card/view/tt/' + tt + '/" target="_blank">' + tt + '</a>');
-                        } else {
-                            if(ee !== '') {
-                                r.push('<i class="fa fa-exclamation-triangle"></i> Error')
-                            }
-                        }
-                        return r.join('<br>');
-                    }
-                },
-                {
-                    text: __('Objects'),
-                    dataIndex: 'total_objects',
-                    width: 30,
-                    align: 'right',
-                    sortable: false
-                },
-                {
-                    text: __('Events'),
-                    dataIndex: 'events',
-                    width: 30,
-                    align: 'right',
-                    sortable: false
-                }
-            ],
-            //selModel: Ext.create("Ext.selection.CheckboxModel"),
+            store: me.store,
+            columns: me.gridCols,
             listeners: {
                 scope: me,
                 itemdblclick: me.onSelectAlarm
@@ -678,7 +725,7 @@ Ext.define('NOC.fm.alarm.Application', {
             viewConfig: {
                 enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me),
-                loadMask: false,
+                loadMask: true,
                 listeners: {
                     scope: me,
                     itemcontextmenu: me.onGridContextMenu,
@@ -689,12 +736,73 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
         //
-        me.filterPanel = me.gridPanel.getComponent('filtertoolbar');
+        me.filterPanel = Ext.create('Ext.form.Panel', {
+            region: 'east',
+            title: __('Filter'),
+            width: 208,
+            dock: 'right',
+            autoScroll: true,
+            defaults: {
+                labelAlign: 'top',
+                padding: 4
+            },
+            items: [
+                me.autoreloadButton,
+                me.soundButton,
+                me.typeButton,
+                me.expandButton,
+                me.ttConfirmButton,
+                me.maintainanceButton,
+                me.objectCombo,
+                me.segmentCombo,
+                me.admdomCombo,
+                me.selectorCombo,
+                me.alarmClassCombo,
+                {
+                    xtype: 'fieldset',
+                    layout: 'hbox',
+                    title: __('By Date'),
+                    items: [
+                        me.fromDateField,
+                        me.toDateField
+                    ]
+                },
+                {
+                    xtype: 'fieldset',
+                    title: __('Recent Alarms (time/opacity)'),
+                    layout: 'vbox',
+                    items: [
+                        me.freshSwitchOff,
+                        me.freshRule1,
+                        me.freshRule2,
+                        me.freshRule3,
+                        me.freshRuleOther
+                    ]
+                },
+                me.recentShow
+            ]
+        });
+        //
+        me.gridsPanel = Ext.create('Ext.form.Panel', {
+            region: 'center',
+            layout: 'border',
+            items: [
+                me.gridPanel,
+                me.recentGridPanel
+            ]
+        });
+        me.mainPanel = Ext.create('Ext.panel.Panel', {
+            layout: 'border',
+            items: [
+                me.gridsPanel,
+                me.filterPanel
+            ]
+        });
         //
         me.alarmPanel = Ext.create('NOC.fm.alarm.AlarmPanel', {
             app: me
         });
-        me.ITEM_GRID = me.registerItem(me.gridPanel);
+        me.ITEM_GRID = me.registerItem(me.mainPanel);
         me.ITEM_FORM = me.registerItem(me.alarmPanel);
         Ext.apply(me, {
             items: me.getRegisteredItems()
@@ -713,9 +821,17 @@ Ext.define('NOC.fm.alarm.Application', {
     reloadStore: function() {
         var me = this;
         if(me.currentQuery) {
-            me.store.setFilterParams(me.currentQuery);
+            var recentQuery = Ext.clone(me.currentQuery);
+            var query = Ext.clone(me.currentQuery);
+            if(query.hasOwnProperty('cleared_after')) {
+                delete query.cleared_after;
+            }
+            me.store.setFilterParams(query);
+            recentQuery.status = 'C';
+            me.recentStore.setFilterParams(recentQuery);
         }
         me.store.load();
+        me.recentStore.load();
     },
     //
     onChangeFilter: function() {
@@ -730,6 +846,15 @@ Ext.define('NOC.fm.alarm.Application', {
         if(!me.freshDuration1.isValid() || !me.freshDuration2.isValid() || !me.freshDuration3.isValid()) return;
         // Status
         q.status = me.typeButton.items.first().pressed ? 'A' : 'C';
+        var recentCombo = me.recentShow.down('combo');
+        if(recentCombo.getValue()) {
+            me.recentGridPanel.show();
+            me.gridPanel.setHeight('75%');
+            q.cleared_after = recentCombo.getValue();
+        } else {
+            me.gridPanel.setHeight('100%');
+            me.recentGridPanel.hide();
+        }
         // Expand
         if(me.expandButton.items.first().pressed) {
             q.collapse = 1;
@@ -831,6 +956,7 @@ Ext.define('NOC.fm.alarm.Application', {
         // Poll only if polling is not locked
         if(!me.isPollLocked()) {
             me.store.load();
+            me.recentStore.load();
         }
     },
     //
@@ -899,6 +1025,7 @@ Ext.define('NOC.fm.alarm.Application', {
         var me = this;
         if(me.autoreloadButton.pressed) {
             me.store.load();
+            me.recentStore.load();
         }
     },
     //

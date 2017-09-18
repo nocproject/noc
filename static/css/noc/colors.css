@@ -81,3 +81,8 @@
 .noc-no .x-btn-glyph {
     color: #c0392b !important;
 }
+
+.noc-recent-alarms {
+    color: #ecf0f1 !important;
+    background-color: #16a085 !important;
+}
