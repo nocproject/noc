@@ -13,10 +13,13 @@ from threading import Lock
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, IntField,
-                                ListField, EmbeddedDocumentField)
+                                ListField, EmbeddedDocumentField,
+                                LongField)
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.lib.nosql import PlainReferenceField
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 
@@ -71,6 +74,13 @@ class NetworkSegmentProfile(Document):
     # List of enabled topology method
     # in order of preference (most preferable first)
     topology_methods = ListField(EmbeddedDocumentField(SegmentTopologySettings))
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = PlainReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
