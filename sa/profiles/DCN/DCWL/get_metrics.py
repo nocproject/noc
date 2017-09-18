@@ -7,7 +7,7 @@
 #----------------------------------------------------------------------
 
 # Python modules
-
+from __future__ import division
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 
@@ -72,7 +72,7 @@ class Script(GetMetricsScript):
             if wr[0] == "name":
                 wname = wr[1].strip()
             elif wr[0] == "tx-power":
-                txpower = ((27 / 100) * int(wr[1].strip()))  # Max TxPower 27dBm, convert procent -> dBm
+                txpower = ((27 / 100) * int(wr[1].strip()))  # Max TxPower 27dBm, convert % -> dBm
             elif wr[0] == "channel-util":
                 channelutil = wr[1].strip()
             elif wr[0] == "channel-free":
