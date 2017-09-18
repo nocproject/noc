@@ -164,7 +164,7 @@ class AlarmApplication(ExtApplication):
             "subject": o.subject,
             "events": n_events,
             "duration": o.duration,
-            "clear_timestamp": o.clear_timestamp if o.status == "C" else None,
+            "clear_timestamp": self.to_json(o.clear_timestamp) if o.status == "C" else None,
             "row_class": s.style.css_class_name,
             "segment__label": o.managed_object.segment.name,
             "segment": str(o.managed_object.segment.id),
