@@ -46,6 +46,10 @@ Ext.define("NOC.fm.ttsystem.Model", {
         {
             name: "shard_name",
             type: "string"
+        },
+        {
+            name: "telemetry_sample",
+            type: "int"
         }
     ]
 });

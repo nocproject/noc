@@ -88,6 +88,14 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     allowBlank: true,
                     min: 0,
                     uiStyle: "small"
+                },
+                {
+                    name: "telemetry_sample",
+                    xtype: "numberfield",
+                    fieldLabel: __("Tememetry Sample"),
+                    allowBlank: false,
+                    min: 0,
+                    uiStyle: "small"
                 }
             ]
         });

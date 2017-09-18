@@ -49,6 +49,8 @@ class TTSystem(Document):
     # Threadpool settings
     shard_name = StringField(default=DEFAULT_TTSYSTEM_SHARD)
     max_threads = IntField(default=10)
+    # Telemetry settings
+    telemetry_sample = IntField(default=0)
     #
     tags = ListField(StringField())
 
