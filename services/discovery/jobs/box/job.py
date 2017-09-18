@@ -35,6 +35,7 @@ from .cpe import CPECheck
 from .hk import HouseKeepingCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
+from noc.core.span import Span
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -56,36 +57,37 @@ class BoxDiscoveryJob(MODiscoveryJob):
     ])
 
     def handler(self, **kwargs):
-        if self.object.auth_profile and self.object.auth_profile.enable_suggest:
-            SuggestSNMPCheck(self).run()
-        if self.object.object_profile.enable_box_discovery_profile:
-            ProfileCheck(self).run()
-        if self.object.auth_profile and self.object.auth_profile.enable_suggest:
-            SuggestCLICheck(self).run()
-        if self.object.auth_profile and self.object.auth_profile.type == "S":
-            self.logger.info(
-                "Cannot choose valid credentials. Stopping"
-            )
-            return
-        # Build topology methods
-        self.topology_methods = []
-        for ms in self.object.segment.profile.topology_methods:
-            if not ms.is_active:
-                continue
-            if ms.method in ("custom", "handler"):
-                # @todo: Implement
-                continue
-            self.topology_methods += [self.TOPOLOGY_METHODS[ms.method]]
-        self.topology_names = [m.name for m in self.topology_methods]
-        #
-        self.reboot_detected = False
-        # Run remaining checks
-        if self.allow_sessions():
-            self.logger.debug("Using CLI sessions")
-            with self.object.open_session():
+        with Span(sample=self.object.box_telemetry_sample):
+            if self.object.auth_profile and self.object.auth_profile.enable_suggest:
+                SuggestSNMPCheck(self).run()
+            if self.object.object_profile.enable_box_discovery_profile:
+                ProfileCheck(self).run()
+            if self.object.auth_profile and self.object.auth_profile.enable_suggest:
+                SuggestCLICheck(self).run()
+            if self.object.auth_profile and self.object.auth_profile.type == "S":
+                self.logger.info(
+                    "Cannot choose valid credentials. Stopping"
+                )
+                return
+            # Build topology methods
+            self.topology_methods = []
+            for ms in self.object.segment.profile.topology_methods:
+                if not ms.is_active:
+                    continue
+                if ms.method in ("custom", "handler"):
+                    # @todo: Implement
+                    continue
+                self.topology_methods += [self.TOPOLOGY_METHODS[ms.method]]
+            self.topology_names = [m.name for m in self.topology_methods]
+            #
+            self.reboot_detected = False
+            # Run remaining checks
+            if self.allow_sessions():
+                self.logger.debug("Using CLI sessions")
+                with self.object.open_session():
+                    self.run_checks()
+            else:
                 self.run_checks()
-        else:
-            self.run_checks()
 
     def run_checks(self):
         if self.object.object_profile.enable_box_discovery_version:

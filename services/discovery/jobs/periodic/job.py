@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Periodic Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from uptime import UptimeCheck
 from interfacestatus import InterfaceStatusCheck
 from mac import MACCheck
 from metrics import MetricsCheck
+from noc.core.span import Span
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -24,16 +25,17 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     context_version = 1
 
     def handler(self, **kwargs):
-        if self.object.auth_profile and self.object.auth_profile.type == "S":
-            self.logger.info("Invalid credentials. Stopping")
-            return
-        self.reboot_detected = False
-        if self.allow_sessions():
-            self.logger.debug("Using CLI sessions")
-            with self.object.open_session():
+        with Span(sample=self.object.periodic_telemetry_sample):
+            if self.object.auth_profile and self.object.auth_profile.type == "S":
+                self.logger.info("Invalid credentials. Stopping")
+                return
+            self.reboot_detected = False
+            if self.allow_sessions():
+                self.logger.debug("Using CLI sessions")
+                with self.object.open_session():
+                    self.run_checks()
+            else:
                 self.run_checks()
-        else:
-            self.run_checks()
 
     def run_checks(self):
         if self.object.object_profile.enable_periodic_discovery_uptime:

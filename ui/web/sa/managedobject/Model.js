@@ -344,6 +344,22 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
+            name: "box_discovery_telemetry_policy",
+            type: "string"
+        },
+        {
+            name: "box_discovery_telemetry_sample",
+            type: "int"
+        },
+        {
+            name: "periodic_discovery_telemetry_policy",
+            type: "string"
+        },
+        {
+            name: "periodic_discovery_telemetry_sample",
+            type: "int"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

@@ -358,6 +358,14 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             xtype: "int"
         },
         {
+            name: "box_discovery_telemetry_sample",
+            type: "int"
+        },
+        {
+            name: "periodic_discovery_telemetry_sample",
+            type: "int"
+        },
+        {
             name: "cpe_profile__label",
             xtype: "string",
             persist: false

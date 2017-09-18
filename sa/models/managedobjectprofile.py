@@ -306,7 +306,16 @@ class ManagedObjectProfile(models.Model):
         "Periodic Alarm Weight",
         default=1
     )
-    #
+    # Telemetry
+    box_discovery_telemetry_sample = models.IntegerField(
+        "Box Discovery Telemetry Sample",
+        default=0
+    )
+    periodic_discovery_telemetry_sample = models.IntegerField(
+        "Box Discovery Telemetry Sample",
+        default=0
+    )
+    # CLI Sessions
     cli_session_policy = models.CharField(
         "CLI Session Policy",
         max_length=1,

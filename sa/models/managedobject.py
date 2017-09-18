@@ -341,6 +341,35 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Telemetry settings
+    box_discovery_telemetry_policy = CharField(
+        "Box Discovery Telemetry Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    box_discovery_telemetry_sample = IntegerField(
+        "Box Discovery Telemetry Sample",
+        default=0
+    )
+    periodic_discovery_telemetry_policy = CharField(
+        "Box Discovery Telemetry Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    periodic_discovery_telemetry_sample = IntegerField(
+        "Box Discovery Telemetry Sample",
+        default=0
+    )
     # TT system for this object
     tt_system = DocumentReferenceField(TTSystem,
                                        null=True, blank=True)
@@ -1135,6 +1164,24 @@ class ManagedObject(Model):
             return self.object_profile.can_cli_session()
         else:
             return False
+
+    @property
+    def box_telemetry_sample(self):
+        if self.box_discovery_telemetry_policy == "E":
+            return self.box_discovery_telemetry_sample
+        elif self.box_discovery_telemetry_policy == "P":
+            return self.object_profile.box_discovery_telemetry_sample
+        else:
+            return 0
+
+    @property
+    def periodic_telemetry_sample(self):
+        if self.periodic_discovery_telemetry_policy == "E":
+            return self.periodic_discovery_telemetry_sample
+        elif self.periodic_discovery_telemetry_policy == "P":
+            return self.object_profile.periodic_discovery_telemetry_sample
+        else:
+            return 0
 
     @property
     def management_vlan(self):

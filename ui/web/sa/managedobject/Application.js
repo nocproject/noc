@@ -881,6 +881,55 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 },
                 {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Telemetry"),
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "box_discovery_telemetry_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Box Telemetry"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P"
+                        },
+                        {
+                            name: "box_discovery_telemetry_sample",
+                            xtype: "numberfield",
+                            fieldLabel: __("Box Sample"),
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "periodic_discovery_telemetry_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Periodic Alarm"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P"
+                        },
+                        {
+                            name: "periodic_discovery_telemetry_sample",
+                            xtype: "numberfield",
+                            fieldLabel: __("Periodic Sample"),
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
                     name: "tags",
                     xtype: "tagsfield",
                     fieldLabel: __("Tags"),

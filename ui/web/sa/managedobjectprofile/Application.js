@@ -1172,6 +1172,25 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 }
                             ]
                         },
+                        {
+                            title: __("Telemetry"),
+                            items: [
+                                {
+                                    name: "box_discovery_telemetry_sample",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Box Sample"),
+                                    allowBlank: false,
+                                    uiStyle: "medium"
+                                },
+                                {
+                                    name: "periodic_discovery_telemetry_sample",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Periodic Sample"),
+                                    allowBlank: false,
+                                    uiStyle: "medium"
+                                }
+                            ]
+                        }
                     ]
                 }
             ],
