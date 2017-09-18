@@ -149,7 +149,8 @@ class ActivatorAPI(API):
             url,
             request_timeout=config.activator.http_request_timeout,
             follow_redirects=True,
-            validate_cert=config.activator.http_validate_cert
+            validate_cert=config.activator.http_validate_cert,
+            eof_mark="</html>"
         )
         if 200 <= code <= 299:
             raise tornado.gen.Return(body)
