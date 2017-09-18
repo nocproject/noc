@@ -512,11 +512,11 @@ Ext.define('NOC.fm.alarm.Application', {
                         fields: ['value', 'text'],
                         data: [
                             {'value': 0, 'text': __("don't show")},
-                            {'value': 1, 'text': '5 min'},
-                            {'value': 15, 'text': '15 min'},
-                            {'value': 30, 'text': '30 min'},
-                            {'value': 60, 'text': '60 min'},
-                            {'value': 180, 'text': '3 h'}
+                            {'value': 300, 'text': '5 min'},
+                            {'value': 900, 'text': '15 min'},
+                            {'value': 1800, 'text': '30 min'},
+                            {'value': 3600, 'text': '60 min'},
+                            {'value': 10800, 'text': '3 h'}
                         ]
                     },
                     listeners: {
@@ -685,6 +685,7 @@ Ext.define('NOC.fm.alarm.Application', {
             hidden: true,
             hideHeaders: false,
             border: false,
+            emptyText: __('No recently closed alarms'),
             store: me.recentStore,
             columns: me.gridCols,
             listeners: {
