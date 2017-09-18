@@ -22,6 +22,7 @@ import tornado.ioloop
 import tornado.iostream
 from http_parser.parser import HttpParser
 import cachetools
+import six
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
@@ -93,7 +94,8 @@ def fetch(url, method="GET",
           proxies=None,
           user=None,
           password=None,
-          content_encoding=None
+          content_encoding=None,
+          eof_mark=None
     ):
     """
 
@@ -114,6 +116,8 @@ def fetch(url, method="GET",
     :param password:
     :param max_buffer_size:
     :param content_encoding:
+    :param eof_mark: Do not consider connection reset as error if
+      eof_mark received (string or list)
     :return: code, headers, body
     """
     def get_ssl_options():
@@ -320,6 +324,20 @@ def fetch(url, method="GET",
                     io_loop=io_loop
                 )
             except tornado.iostream.StreamClosedError:
+                if eof_mark and parser.is_partial_body() and response_body:
+                    # Check if EOF mark is in received data
+                    response_body = ["".join(response_body)]
+                    if isinstance(eof_mark, six.string_types):
+                        if eof_mark in response_body[0]:
+                            break
+                    else:
+                        found = False
+                        for m in eof_mark:
+                            if m in response_body[0]:
+                                found = True
+                                break
+                        if found:
+                            break
                 metrics["httpclient_timeouts"] += 1
                 raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Connection reset"))
             except tornado.gen.TimeoutError:
@@ -383,7 +401,8 @@ def fetch_sync(url, method="GET",
                proxies=None,
                user=None,
                password=None,
-               content_encoding=None):
+               content_encoding=None,
+               eof_mark=None):
 
     @tornado.gen.coroutine
     def _fetch():
@@ -401,7 +420,8 @@ def fetch_sync(url, method="GET",
             proxies=proxies,
             user=user,
             password=password,
-            content_encoding=content_encoding
+            content_encoding=content_encoding,
+            eof_mark=eof_mark
         )
         r.append(result)
 
