@@ -388,6 +388,17 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # CLI privilege policy
+    cli_privilege_policy = CharField(
+        "CLI Privilege Policy",
+        max_length=1,
+        choices=[
+            ("E", "Raise privileges"),
+            ("D", "Do not raise"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -1219,6 +1230,16 @@ class ManagedObject(Model):
             return self.tt_system.shard_name
         else:
             return DEFAULT_TTSYSTEM_SHARD
+
+    @property
+    def to_raise_privileges(self):
+        if self.cli_privilege_policy == "E":
+            return True
+        elif self.cli_privilege_policy == "P":
+            return self.object_profile.cli_privilege_policy == "E"
+        else:
+            return False
+
 
 @on_save
 class ManagedObjectAttribute(Model):

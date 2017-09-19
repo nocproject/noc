@@ -80,6 +80,11 @@ class CLI(object):
         self.is_closed = False
         self.close_timeout = None
         self.setup_complete = False
+        self.to_raise_privileges = script.credentials.get("raise_privileges", True)
+        if self.to_raise_privileges:
+            self._on_unprivileged_prompt = self.on_unprivileged_prompt
+        else:
+            self._on_unprivileged_prompt = self.on_prompt
 
     def close(self):
         if self.script.session:
@@ -410,7 +415,7 @@ class CLI(object):
             self.expect({
                 "username": self.on_username,
                 "password": self.on_password,
-                "unprivileged_prompt": self.on_unprivileged_prompt,
+                "unprivileged_prompt": self._on_unprivileged_prompt,
                 "prompt": self.on_prompt,
                 "pager": self.send_pager_reply
             }, self.profile.cli_timeout_start)
@@ -425,7 +430,7 @@ class CLI(object):
         self.expect({
             "username": (self.on_failure, CLIAuthFailed),
             "password": self.on_password,
-            "unprivileged_prompt": self.on_unprivileged_prompt,
+            "unprivileged_prompt": self._on_unprivileged_prompt,
             "prompt": self.on_prompt
         }, self.profile.cli_timeout_user)
 
@@ -439,7 +444,7 @@ class CLI(object):
         self.expect({
             "username": (self.on_failure, CLIAuthFailed),
             "password": (self.on_failure, CLIAuthFailed),
-            "unprivileged_prompt": self.on_unprivileged_prompt,
+            "unprivileged_prompt": self._on_unprivileged_prompt,
             "super_password": self.on_super_password,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
