@@ -34,7 +34,7 @@ class StrizhRequestHandler(RequestHandler):
             self.logger.info("Invalid request source: %s", remote_ip)
             raise HTTPError(401, "Invalid address")
         # Get data
-        data = self.request.get_arguments(Q_DATA)
+        data = self.get_arguments(Q_DATA)
         if not data or  len(data[0]) < 2:
             self.logger.info("No data")
             metrics["webcollector_strizh_no_data"] += 1
@@ -42,7 +42,7 @@ class StrizhRequestHandler(RequestHandler):
         # Decode data to binary form
         data = [ord(c) for c in data[0].decode("hex")]
         # Get modem id
-        modem_ids = self.request.get_arguments(Q_CPE_ID)
+        modem_ids = self.get_arguments(Q_CPE_ID)
         if not modem_ids or not modem_ids[0]:
             metrics["webcollector_strizh_no_modem_id"] += 1
             self.logger.info("No modem_id")
