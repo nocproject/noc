@@ -490,6 +490,10 @@ class Config(BaseConfig):
         events_path = StringParameter(default="collections/test.events")
         profilecheck_path = StringParameter(default="collections/test.profilecheck")
 
+    class webcollector(ConfigSection):
+        enable_strizh = BooleanParameter(default=False)
+        strizh_address = StringParameter(default="127.0.0.1")
+
     def __init__(self):
         self.setup_logging()
 
