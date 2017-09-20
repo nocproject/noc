@@ -470,8 +470,8 @@ class CLI(object):
             }, self.profile.cli_timeout_super)
         else:
             # Do not raise privileges
-            # Use unpriviledged prompt as primary prompt
-            self.patterns["prompt"] = self.patterns["unpriviledged_prompt"]
+            # Use unprivileged prompt as primary prompt
+            self.patterns["prompt"] = self.patterns["unprivileged_prompt"]
             return self.on_prompt(data, match)
 
     @tornado.gen.coroutine
@@ -568,9 +568,9 @@ class CLI(object):
             "prompt": re.compile(self.profile.pattern_prompt,
                                  re.DOTALL | re.MULTILINE)
         }
-        if self.profile.pattern_unpriviledged_prompt:
+        if self.profile.pattern_unprivileged_prompt:
             patterns["unprivileged_prompt"] = re.compile(
-                self.profile.pattern_unpriviledged_prompt,
+                self.profile.pattern_unprivileged_prompt,
                 re.DOTALL | re.MULTILINE
             )
         if self.profile.pattern_super_password:
