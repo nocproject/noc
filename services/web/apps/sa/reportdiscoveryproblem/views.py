@@ -203,6 +203,7 @@ class ReportFilterApplication(SimpleReport):
                             mo.name,
                             mo.address,
                             mo.profile.name,
+                            mo.administrative_domain.name,
                             _("Yes") if mo.get_status() else _("No"),
                             discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
                             method,
