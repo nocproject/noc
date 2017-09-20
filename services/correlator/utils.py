@@ -20,7 +20,7 @@ def linked_object(object, interface):
     Returns managed object linked to object:interface or None
     """
     try:
-        cn = object.profile.convert_interface_name(interface)
+        cn = object.get_profile().convert_interface_name(interface)
     except Exception as e:
         logger.error("Cannot convert interface name '%s': %s",
                      interface, e)

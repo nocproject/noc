@@ -221,7 +221,7 @@ class RuleSet(object):
 
     @staticmethod
     def decode_interface_name(event, value):
-        return event.managed_object.profile.convert_interface_name(value)
+        return event.managed_object.get_profile().convert_interface_name(value)
 
     @staticmethod
     def decode_oid(event, value):

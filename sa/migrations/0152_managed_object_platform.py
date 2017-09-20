@@ -32,13 +32,16 @@ class Migration:
         platforms = set()  # vendor, platform
         versions = set()  # profile, version
         for profile, vendor, platform, version in data:
+            platform = platform.strip()
+            if not platform:
+                continue
             platforms.add((vendor, platform))
             versions.add((profile, vendor, version))
         # Create platforms
         for vendor, platform in platforms:
             u = uuid.uuid4()
             v = bson.ObjectId(vendor)
-            pcoll.update({
+            pcoll.update_one({
                 "vendor": v,
                 "name": platform
             }, {
