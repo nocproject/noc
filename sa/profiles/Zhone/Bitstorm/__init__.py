@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zhone.Bitstorm"
-    # pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)\s*>"
+    # pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_username = r"Login>"
     username_submit = "\r"
     password_submit = "\r"

@@ -20,7 +20,7 @@ class Profile(BaseProfile):
         (r"CTRL\+C.+?a ALL", "a"),
         (r"\[Yes/press any key for no\]", "Y")
     ]
-    pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
+    pattern_unprivileged_prompt = r"^\S+:(3|6|user|operator)#"
     pattern_syntax_error = r"(Command: .+|Invalid input detected at)"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     command_more = "a"

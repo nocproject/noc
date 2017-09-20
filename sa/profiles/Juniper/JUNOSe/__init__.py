@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     Juniper.JUNOSe profile
     """
     name = "Juniper.JUNOSe"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
     pattern_prompt = r"^(?P<prompt>\S+?)(?::\S+?)?#"

@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "HP.ProCurve"
     pattern_prompt = r"^[a-zA-Z0-9- _/.]+?(\(\S+\))?# "
-    pattern_unpriveleged_prompt = r"^[a-zA-Z0-9- _/.]+?> "
+    pattern_unprivileged_prompt = r"^[a-zA-Z0-9- _/.]+?> "
     pattern_more = [
         ("Press any key to continue", "\n"),
         ("-- MORE --, next page: Space, next line: Enter, quit: Control-C", " ")

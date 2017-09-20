@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "EdgeCore.ES"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>[^\n]+)>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>[^\n]+)>"
     pattern_syntax_error = r"% Invalid input detected at|% Incomplete command"
     command_super = "enable"
     pattern_prompt = r"^(?P<hostname>[^\n]+)(?:\(config[^)]*\))?#"

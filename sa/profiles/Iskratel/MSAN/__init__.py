@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     name = "Iskratel.MSAN"
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin)|User: ?"
     # Iskratel do not have "enable_super" command
-    # pattern_unpriveleged_prompt = r"^\S+?>"
+    # pattern_unprivileged_prompt = r"^\S+?>"
     pattern_prompt = \
         r"^(\S+?|\(ISKRATEL Switching\)|Iskratel switching)\s*[#>]"
     pattern_more = [

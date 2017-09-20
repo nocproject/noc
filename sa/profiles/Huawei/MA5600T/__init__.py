@@ -24,7 +24,7 @@ class Profile(BaseProfile):
         (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n"),
         (r"\{ \<cr\>\|ont\<K\> \}\:", "\n")
     ]
-    pattern_unpriveleged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \
         r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"

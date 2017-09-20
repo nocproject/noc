@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     name = "Dell.Powerconnect62xx"
     pattern_username = "[Uu]ser( [Nn]ame)?:"
     pattern_more = "--More--"
-    pattern_unpriveleged_prompt = r"^\S+>"
+    pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = r"% Invalid input detected at"
     pattern_prompt = r"^(?P<hostname>\S+(:\S+)*)#"
     command_super = "enable"

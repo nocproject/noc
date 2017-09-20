@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.ZyNOS"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_prompt = r"^\S+?\s*(\S+|)#"
     pattern_more = r"^-- more --.*?$"
     pattern_zynos = r"^\S+?>"
