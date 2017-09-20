@@ -437,6 +437,18 @@ class ManagedObject(Model):
         else:
             return None
 
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_global_cpe_id_cache"),
+        lock=lambda _: id_lock
+    )
+    def get_by_global_cpe_id(cls, id):
+        mo = ManagedObject.objects.filter(global_cpe_id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
     @property
     def data(self):
         try:
