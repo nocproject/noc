@@ -973,6 +973,24 @@ services:
     required_assets:
       - web
       - mib
+  webcollector:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Webhoock and web pushes reciever<br/>
+      <strong>Long description</strong>: Catches different types of http post/get requests and makes avents from them. Currentrly striz is the only supported of recievier<br/>
+      <strong>Scale Recommendations</strong>: One per pool <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
+    level: pool
+    category: internal
+    command: "./services/webcollector/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 300
+    priority: 50
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 1
   zz_alerta:
     description: >
       <strong>Service type</strong>: Not a service <br/>
