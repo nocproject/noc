@@ -43,7 +43,7 @@ class SAEAPI(API):
             mo.cli_privilege_policy, mop.cli_privilege_policy
         FROM
             sa_managedobject mo
-            JOIN sa_managedobjectprofile mop ON (mo.object_profile = mop.id)
+            JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
             LEFT JOIN sa_authprofile ap ON (mo.auth_profile_id = ap.id)
         WHERE mo.id = %s
     """
