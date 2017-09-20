@@ -411,10 +411,12 @@ Ext.define('NOC.core.RepoPreview', {
                         mask.hide();
                     }, function(error) {
                         NOC.error(error);
+                        mask.hide();
                     }
                 );
             }, function(error) {
                 NOC.error(error);
+                mask.hide();
             });
         } else {
             Ext.Ajax.request({
