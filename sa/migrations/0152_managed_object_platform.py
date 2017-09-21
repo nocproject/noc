@@ -33,7 +33,8 @@ class Migration:
         versions = set()  # profile, version
         for profile, vendor, platform, version in data:
             platform = platform.strip()
-            if not platform:
+            vendor = vendor.strip()
+            if not platform or not vendor:
                 continue
             platforms.add((vendor, platform))
             versions.add((profile, vendor, version))
@@ -115,7 +116,8 @@ class Migration:
         #
         for profile, vendor, platform, version in data:
             platform = platform.strip()
-            if not platform:
+            vendor = vendor.strip()
+            if not platform or not vendor:
                 continue
             db.execute("""
                 UPDATE sa_managedobject
