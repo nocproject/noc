@@ -16,6 +16,7 @@ from django.db.models.fields import (
     DateField, DateTimeField, related)
 from django.db.models import Q
 from django.db.utils import IntegrityError
+from django.core.exceptions import ValidationError
 import six
 # NOC modules
 from extapplication import ExtApplication, view
@@ -400,13 +401,24 @@ class ExtModelApplication(ExtApplication):
                 },
                 status=self.CONFLICT)
         except self.model.MultipleObjectsReturned:
-            return self.render_json(
-                    {
-                    "status": False,
-                    "message": "Duplicated record"
+            return self.render_json({
+                "status": False,
+                "message": "Duplicated record"
                 }, status=self.CONFLICT)
         except self.model.DoesNotExist:
             o = self.model(**attrs)
+            # Run models validators
+            try:
+                o.clean_fields()
+            except ValidationError as e:
+                e_msg = []
+                for f in e.message_dict:
+                    e_msg += ["%s: %s" % (f, "; ".join(e.message_dict[f]))]
+                return self.render_json({
+                    "status": False,
+                    "message": "Validation error: %s" % " | ".join(e_msg)
+                }, status=self.BAD_REQUEST)
+            # Check for duplicates
             try:
                 o.save()
                 if m2m_attrs:
@@ -462,12 +474,26 @@ class ExtModelApplication(ExtApplication):
                     "message": "Bad request",
                     "traceback": str(e)
                 }, status=self.BAD_REQUEST)
+        # Find object
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+        # Update attributes
         for k, v in attrs.items():
             setattr(o, k, v)
+        # Run models validators
+        try:
+            o.clean_fields()
+        except ValidationError as e:
+            e_msg = []
+            for f in e.message_dict:
+                e_msg += ["%s: %s" % (f, "; ".join(e.message_dict[f]))]
+            return self.render_json({
+                "status": False,
+                "message": "Validation error: %s" % " | ".join(e_msg)
+            }, status=self.BAD_REQUEST)
+        # Save
         try:
             o.save()
             if m2m_attrs:
