@@ -421,6 +421,7 @@ class ManagedObject(Model):
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _global_cpe_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
