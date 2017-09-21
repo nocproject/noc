@@ -1,0 +1,30 @@
+{
+    "name": "Environment | Door | Open",
+    "$collection": "fm.eventclasses",
+    "uuid": "72464eca-cbba-4229-8bb8-94371fd85359",
+    "description": "Opening angle",
+    "action": "A",
+    "vars": [
+        {
+            "name": "angle",
+            "description": "Opened angle",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "name",
+            "description": "Test name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "deduplication_window": 3,
+    "ttl": 86400,
+    "subject_template": "The door {% if name %}{{name}} {% endif %} is open",
+    "body_template": "The door {% if name %}{{name}} {% endif %} is open",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "repeat_suppression": [
+    ]
+}
