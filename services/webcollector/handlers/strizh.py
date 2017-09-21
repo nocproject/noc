@@ -19,6 +19,16 @@ Q_CPE_ID = "modem_id"
 Q_DATA = "data"
 Q_CPE_PROFILE = "Strizh.Hatch"
 
+DOOR_CLS = {
+    False: "Security | Door | Open",
+    True: "Security | Door | Closed"
+}
+
+DOOR_STATUS = {
+    True: "open",
+    False: "closed"
+}
+
 
 class StrizhRequestHandler(RequestHandler):
     def initialize(self, service):
@@ -36,7 +46,7 @@ class StrizhRequestHandler(RequestHandler):
             raise HTTPError(401, "Invalid address")
         # Get data
         data = self.get_arguments(Q_DATA)
-        if not data or  len(data[0]) < 2:
+        if not data or len(data[0]) < 2:
             self.logger.info("No data")
             metrics["webcollector_strizh_no_data"] += 1
             raise HTTPError(400, "No data")
@@ -56,6 +66,10 @@ class StrizhRequestHandler(RequestHandler):
             metrics["webcollector_strizh_invalid_cpe"] += 1
             raise HTTPError(404, "Invalid CPE")
         # @todo: Check profile
+        if mo.profile.name != Q_CPE_PROFILE:
+            self.logger.info("Invalid Profile: %s", mo.profile.name)
+            metrics["webcollector_strizh_invalid_profile"] += 1
+            raise HTTPError(404, "Invalid Profile")
         # Process data
         handler = getattr(self, "handle_0x%x" % data[0], None)
         if not handler:
@@ -107,13 +121,12 @@ class StrizhRequestHandler(RequestHandler):
             raise HTTPError(400, "Invalid message format")
         voltage = self.decode_voltage(voltage)
         is_open = angle >= config.webcollector.strizh_open_angle
-        door_status = "open" if is_open else "closed"
         self.logger.info(
             "[%s|%s] Movement event: msg_id=%s, angle=%s (%s), flag=0x%x, temp=%s, "
             "voltage=%fV, tx_power=%ddBm",
             mo.name, mo.global_cpe_id,
             msg_id, angle,
-            door_status,
+            DOOR_STATUS[is_open],
             flag, temp, voltage, tx_power
         )
         self.service.register_message(
@@ -121,9 +134,12 @@ class StrizhRequestHandler(RequestHandler):
             int(time.time()),
             {
                 "source": "system",
-                "probe": "strizh",
-                "door_status": door_status,
-                "door_name": "manhole",
-                "door_angle": str(angle)
+                "$event": {
+                    "class": DOOR_CLS[is_open],
+                    "vars": {
+                        "name": "manhole",
+                        "angle": int(angle)
+                    }
+                }
             }
         )
