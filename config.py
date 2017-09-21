@@ -493,6 +493,7 @@ class Config(BaseConfig):
     class webcollector(ConfigSection):
         enable_strizh = BooleanParameter(default=False)
         strizh_address = StringParameter(default="127.0.0.1")
+        strizh_open_angle = IntParameter(default=45)
 
     def __init__(self):
         self.setup_logging()

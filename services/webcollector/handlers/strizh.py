@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import struct
+import time
 # Third-party modules
 from tornado.web import RequestHandler, HTTPError
 # NOC modules
@@ -26,6 +26,7 @@ class StrizhRequestHandler(RequestHandler):
         self.logger = service.logger
 
     def get(self, *args, **kwargs):
+        metrics["webcollector_strizh_requests"] += 1
         # Check remote_address
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = x_real_ip or self.request.remote_ip
@@ -105,9 +106,24 @@ class StrizhRequestHandler(RequestHandler):
             metrics["webcollector_strizh_invalid_format"] += 1
             raise HTTPError(400, "Invalid message format")
         voltage = self.decode_voltage(voltage)
+        is_open = angle >= config.webcollector.strizh_open_angle
+        door_status = "open" if is_open else "closed"
         self.logger.info(
-            "[%s|%s] Door open: msg_id=%s, angle=%s, flag=%s, temp=%s, "
+            "[%s|%s] Movement event: msg_id=%s, angle=%s (%s), flag=0x%x, temp=%s, "
             "voltage=%fV, tx_power=%ddBm",
             mo.name, mo.global_cpe_id,
-            msg_id, angle, flag, temp, voltage, tx_power
+            msg_id, angle,
+            door_status,
+            flag, temp, voltage, tx_power
+        )
+        self.service.register_message(
+            mo.id,
+            int(time.time()),
+            {
+                "source": "system",
+                "probe": "strizh",
+                "door_status": door_status,
+                "door_name": "manhole",
+                "door_angle": str(angle)
+            }
         )
