@@ -1,13 +1,13 @@
 {
-    "name": "Wilis | FWBD | FWBD-0500 sysObjectID",
+    "name": "Rotek | RTBSv1 | RT-BS24-WFN2E.v1 sysObjectID",
     "$collection": "sa.profilecheckrules",
-    "uuid": "8c46a677-b53a-4745-84b4-7c605b3d89e8",
+    "uuid": "ce94ee46-c6bd-4c97-8de7-454832e3eb7a",
     "description": null,
     "preference": 10,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
     "match_method": "eq",
-    "value": "1.3.6.1.4.1.32761",
+    "value": "1.3.6.1.4.1.10002.1",
     "action": "match",
-    "profile__name": "Wilis.FWBD"
+    "profile__name": "Rotek.RTBSv1"
 }
