@@ -39,6 +39,8 @@ from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
+from noc.sa.interfaces.base import InterfaceTypeError
+from noc.services.classifier.exception import EventProcessingFailed
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -53,6 +55,7 @@ CR_DUPLICATED = "events_duplicated"
 CR_UDUPLICATED = "events_unk_duplicated"
 CR_UOBJECT = "events_unk_object"
 CR_PROCESSED = "events_processed"
+CR_PREPROCESSED = "events_preprocessed"
 
 CR = [
     CR_FAILED,
@@ -60,6 +63,7 @@ CR = [
     CR_SUPPRESSED,
     CR_UNKNOWN,
     CR_CLASSIFIED,
+    CR_PREPROCESSED,
     CR_DISPOSED,
     CR_DUPLICATED,
     CR_UDUPLICATED,
@@ -660,6 +664,7 @@ class ClassifierService(Service):
                          event_id, mo.name, mo.address)
         ts = datetime.datetime.fromtimestamp(ts)
         source = data.pop("source", "other")
+        pre_event = data.pop("$event", None)
         e = ActiveEvent(
             id=event_id,
             timestamp=ts,
@@ -669,14 +674,33 @@ class ClassifierService(Service):
             raw_vars=data,
             repeats=1
         )
-        try:
-            self.classify_event(e)
-        except Exception as e:
-            self.logger.error(
-                "[%s|%s|%s] Failed to process event: %s",
-                event_id, mo.name, mo.address, e)
-            metrics[CR_FAILED] += 1
-            return False
+        if pre_event:
+            # Event is preprocessed, just write to database
+            event_class_name = pre_event.get("class")
+            event_class = EventClass.get_by_name(event_class_name)
+            if not event_class:
+                self.logger.error(
+                    "[%s|%s|%s] Failed to process event: Invalid event class '%s'",
+                    event_id, mo.name, mo.address,
+                    event_class_name
+                )
+                metrics[CR_FAILED] += 1
+                return False  # Drop malformed message
+            e.event_class = event_class
+            e.raw_vars = pre_event.get("vars", {})
+            e.vars = e.raw_vars
+            e.save()
+            metrics[CR_PREPROCESSED] += 1
+        else:
+            # Classify event
+            try:
+                self.classify_event(e)
+            except Exception as e:
+                self.logger.error(
+                    "[%s|%s|%s] Failed to process event: %s",
+                    event_id, mo.name, mo.address, e)
+                metrics[CR_FAILED] += 1
+                return False
         self.logger.info(
             "[%s|%s|%s] Event processed successfully",
             event_id, mo.name, mo.address
