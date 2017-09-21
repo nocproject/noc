@@ -606,29 +606,32 @@ class ClassifierService(Service):
                     return
         # Finally dispose event to further processing by correlator
         if disposable and rule.to_dispose:
-            self.logger.info(
-                "[%s|%s|%s] Disposing",
-                event.id, event.managed_object.name,
-                event.managed_object.address
-            )
-            # Heat up cache
-            cache.set(
-                "activeent-%s" % event.id,
-                event,
-                ttl=900
-            )
-            # @todo: Use config.pool instead
-            self.pub(
-                "correlator.dispose.%s" % event.managed_object.pool.name,
-                {"event_id": str(event.id)}
-            )
+            self.dispose_event(event)
             metrics[CR_CLASSIFIED] += 1
-            metrics[CR_DISPOSED] += 1
         elif rule.is_unknown:
             metrics[CR_UNKNOWN] += 1
         else:
             metrics[CR_CLASSIFIED] += 1
         return
+
+    def dispose_event(self, event):
+        self.logger.info(
+            "[%s|%s|%s] Disposing",
+            event.id, event.managed_object.name,
+            event.managed_object.address
+        )
+        # Heat up cache
+        cache.set(
+            "activeent-%s" % event.id,
+            event,
+            ttl=900
+        )
+        # @todo: Use config.pool instead
+        self.pub(
+            "correlator.dispose.%s" % event.managed_object.pool.name,
+            {"event_id": str(event.id)}
+        )
+        metrics[CR_DISPOSED] += 1
 
     def find_duplicated_event(self, event, event_class, vars):
         """
@@ -691,6 +694,8 @@ class ClassifierService(Service):
             e.vars = e.raw_vars
             e.save()
             metrics[CR_PREPROCESSED] += 1
+            if len(event_class.disposition) > 0:
+                self.dispose_event(e)
         else:
             # Classify event
             try:

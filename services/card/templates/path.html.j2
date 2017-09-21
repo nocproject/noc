@@ -1,19 +1,8 @@
-<table class="table table-condensed table-hover">
-<tbody>
-<tr>
-    <th scope="row" colspan="2">
-        {{ _("Path") }}: {{ mo1.name }} ({{mo1.address}}) - {{ mo2.name }} ({{ mo2.address }})
-    </th>
-</tr>
-<tr>
-    <th>{{ _("Name") }}</th>
-    <th>{{ _("Address") }}</th>
-</tr>
-{% for p in path %}
-<tr>
-    <td>{{ p.object.name }}</td>
-    <td>{{ p.object.address }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+<div id="map"></div>
+<div id="summary"><i class="fa fa-spinner fa-spin"></i> {{ _("Loading ...") }}</div>
+<script>
+$(document).ready(function() {
+    var map = new PathMap();
+    map.run({{ path }});
+});
+</script>
