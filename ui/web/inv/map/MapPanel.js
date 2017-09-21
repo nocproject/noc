@@ -935,7 +935,7 @@ Ext.define("NOC.inv.map.MapPanel", {
 
         NOC.run(
             'NOC.inv.map.Maintainance',
-            'Add To Maintainance',
+            __('Add To Maintainance'),
             {
                 args: [
                     {mode: 'Object'},
@@ -952,7 +952,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
         NOC.run(
             'NOC.inv.map.Maintainance',
-            'Add To Maintainance',
+            __('Add To Maintainance'),
             {
                 args: [
                     {mode: 'Object'},
