@@ -1,0 +1,24 @@
+{
+    "name": "Environment | Door | Closed",
+    "$collection": "fm.eventclasses",
+    "uuid": "0175d1e2-24b6-45dd-8383-91bd87d9b9e4",
+    "description": "Door Open",
+    "action": "A",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Test name",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "deduplication_window": 3,
+    "ttl": 86400,
+    "subject_template": "The door {% if name %}{{name}} {% endif %} is closed",
+    "body_template": "The door {% if name %}{{name}} {% endif %} is closed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "repeat_suppression": [
+    ]
+}
