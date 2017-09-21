@@ -6,6 +6,12 @@
     "action": "A",
     "vars": [
         {
+            "name": "angle",
+            "description": "Angle",
+            "type": "int",
+            "required": false
+        },
+        {
             "name": "name",
             "description": "Test name",
             "type": "str",
@@ -19,6 +25,14 @@
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Environment | Door | Open"
+        }
+    ],
     "repeat_suppression": [
     ]
 }
