@@ -88,7 +88,7 @@ class StrizhRequestHandler(RequestHandler):
         self.logger.info(
             "[%s|%s] Self-diagnostics: hw_ver=0x%x, sw_ver=0x%x, "
             "build=0x%x, temp=%dC, voltage=%fV, flags=%x, angle=%d",
-            mo.name, mo.cpe_global_id,
+            mo.name, mo.global_cpe_id,
             hw_ver, sw_ver, build, temp, voltage, flag, angle
         )
 
@@ -108,6 +108,6 @@ class StrizhRequestHandler(RequestHandler):
         self.logger.info(
             "[%s|%s] Door open: msg_id=%s, angle=%s, flag=%s, temp=%s, "
             "voltage=%fV, tx_power=%ddBm",
-            mo.name, mo.cpe_global_id,
+            mo.name, mo.global_cpe_id,
             msg_id, angle, flag, temp, voltage, tx_power
         )
