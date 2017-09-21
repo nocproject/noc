@@ -114,6 +114,9 @@ class Migration:
         )
         #
         for profile, vendor, platform, version in data:
+            platform = platform.strip()
+            if not platform:
+                continue
             db.execute("""
                 UPDATE sa_managedobject
                 SET
