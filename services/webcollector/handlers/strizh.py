@@ -51,14 +51,14 @@ class StrizhRequestHandler(RequestHandler):
         # Get managed object by CPE ID
         mo = ManagedObject.get_by_global_cpe_id(cpe_id)
         if not mo:
-            self.logger("Invalid CPE: %s", cpe_id)
+            self.logger.info("Invalid CPE: %s", cpe_id)
             metrics["webcollector_strizh_invalid_cpe"] += 1
             raise HTTPError(404, "Invalid CPE")
         # @todo: Check profile
         # Process data
         handler = getattr(self, "handle_0x%x" % data[0], None)
         if not handler:
-            self.logger("Unklnown message type %x", data[0])
+            self.logger.info("Unklnown message type %x", data[0])
             metrics["webcollector_strizh_unknown_type"] += 1
             raise HTTPError(400, "Unknown message type")
         handler(mo, data)
