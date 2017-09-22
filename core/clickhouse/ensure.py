@@ -49,7 +49,7 @@ def ensure_pm_scopes(connect=None):
 def ensure_all_pm_scopes():
     from noc.core.clickhouse.connect import connection
 
-    if not config.clickhouse.cluster:
+    if not config.clickhouse.cluster or config.clickhouse.cluster_topology == "1":
         # Standalone configuration
         ensure_pm_scopes()
         return
