@@ -12,6 +12,8 @@ from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.mib import mib
 
+HIGH_SPEED = 4294967295
+
 
 class Script(BaseScript):
     name = "Generic.get_interface_status_ex"
@@ -30,7 +32,7 @@ class Script(BaseScript):
         for ifindex, v in self.get_iftable(mib):
             s = r.get(ifindex)
             if s:
-                r[name] = f(v)
+                s[name] = f(v)
 
     def get_data(self):
         # ifIndex -> ifName mapping
@@ -59,7 +61,7 @@ class Script(BaseScript):
             ri = r.get(ifindex)
             if ri:
                 s = int(s)
-                if s == 4294967295:
+                if s == HIGH_SPEED:
                     highspeed.add(ifindex)
                 elif s:
                     ri["in_speed"] = s // 1000
