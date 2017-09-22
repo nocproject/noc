@@ -217,6 +217,21 @@ class ActiveEvent(Document):
         self.alarms.append(alarm.id)
         self.expires = None
 
+    def do_not_dispose(self):
+        """
+        Skip dispose
+        :return:
+        """
+        self._do_not_dispose = True
+
+    @property
+    def to_dispose(self):
+        if not self.event_class:
+            return True
+        if hasattr(self, "_do_not_dispose"):
+            return False
+        return len(self.event_class.disposition) > 0
+
 
 # Avoid circular references
 from newevent import NewEvent

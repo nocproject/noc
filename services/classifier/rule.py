@@ -123,7 +123,6 @@ class Rule(object):
                 else:
                     c4 += [(self.get_rx(rx_key), self.get_rx(rx_value))]
         self.to_drop = self.event_class.action == "D"
-        self.to_dispose = len(self.event_class.disposition) > 0
         self.compile(c1, c2, c3, c4)
 
     def __unicode__(self):
