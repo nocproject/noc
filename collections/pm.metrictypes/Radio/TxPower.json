@@ -1,0 +1,10 @@
+{
+    "name": "Radio | TxPower",
+    "$collection": "pm.metrictypes",
+    "uuid": "b7e9a400-7c05-4bcc-925a-686fb067f65f",
+    "scope__name": "Interface",
+    "field_name": "tx_power",
+    "field_type": "Int32",
+    "description": "Signal Tx Power on transmitter",
+    "measure": "dBm"
+}

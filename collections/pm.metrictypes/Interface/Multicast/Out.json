@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Multicast | Out",
+    "$collection": "pm.metrictypes",
+    "uuid": "ce90324e-c90c-4e6c-8bb8-b7cf36610af0",
+    "scope__name": "Interface",
+    "field_name": "multicast_out",
+    "field_type": "UInt64",
+    "description": "Multicast packets on output interface",
+    "measure": "packet/s"
+}
