@@ -19,6 +19,8 @@ def json_escape(s):
     """
     if type(s) == bool:
         return "true" if s else "false"
+    if s is None:
+        return ""
     return s.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\"")
 
 
