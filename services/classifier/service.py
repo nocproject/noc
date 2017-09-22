@@ -606,7 +606,7 @@ class ClassifierService(Service):
         :param event:
         :return:
         """
-        if event.event_classs.id not in self.handlers:
+        if event.event_class.id not in self.handlers:
             return False
         event_id = event.id  # Temporary store id
         for h in self.handlers[event.event_class.id]:
