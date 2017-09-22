@@ -1,0 +1,14 @@
+{
+  "$metric": "Interface | Multicast | In",
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHCInMulticastPkts.{{ ifIndex }}",
+    "type": "counter"
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifInMulticastPkts.{{ ifIndex }}",
+    "type": "counter"
+  }
+}

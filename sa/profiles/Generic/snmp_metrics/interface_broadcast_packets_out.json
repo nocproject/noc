@@ -1,0 +1,14 @@
+{
+  "$metric": "Interface | Broadcast | Out",
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHCOutBroadcastPkts.{{ ifIndex }}",
+    "type": "counter"
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifOutBroadcastPkts.{{ ifIndex }}",
+    "type": "counter"
+  }
+}
