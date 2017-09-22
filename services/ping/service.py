@@ -34,6 +34,11 @@ class PingService(Service):
     require_nsq_writer = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
+    PING_CLS = {
+        True: "NOC | Managed Object | Ping OK",
+        False: "NOC | Managed Object | Ping Failed"
+    }
+
     def __init__(self):
         super(PingService, self).__init__()
         self.messages = []
@@ -256,15 +261,15 @@ class PingService(Service):
             )
             ps.status = s
         if ps and not self.is_throttled and s != ps.sent_status:
-            result = "success" if s else "failed"
             self.register_message(
                 ps.id,
                 t0,
                 {
                     "source": "system",
-                    "probe": "ping",
-                    "ip": address,
-                    "result": result
+                    "$event": {
+                        "class": self.PING_CLS[s],
+                        "vars": {}
+                    }
                 }
             )
             ps.sent_status = s
