@@ -95,6 +95,10 @@ class Service(object):
     # Traefik frontend rule
     # i.e. PathPrefix:/api/<name>
     traefik_frontend_rule = None
+    # Require DCS health status to be considered healthy
+    # Usually means resolution error to required services
+    # temporary leads service to unhealthy state
+    require_dcs_health = True
 
     LOG_FORMAT = config.log_format
 
@@ -962,7 +966,7 @@ class Service(object):
         Check service health to be reported to service registry
         :return: (http code, message)
         """
-        if self.dcs:
+        if self.dcs and self.require_dcs_health:
             # DCS is initialized
             return self.dcs.get_status()
         else:
