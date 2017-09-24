@@ -108,6 +108,7 @@ class Vendor(Document):
             vendor = Vendor._get_by_code(code)
             if vendor:
                 return vendor
+            code = code.upper()
             try:
                 vendor = Vendor(
                     name=code,
