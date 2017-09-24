@@ -64,14 +64,23 @@ class Vendor(Document):
         return Vendor.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_code_cache"),
-                             lock=lambda _: id_lock)
-    def get_by_code(cls, code):
+    def _get_by_code(cls, code):
+        """
+        Uncached version of get_by_code
+        :param code:
+        :return:
+        """
         code = code.upper()
         vendor = Vendor.objects.filter(code=code).first()
         if vendor:
             return vendor
         return Vendor.objects.filter(aliases=code).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_code_cache"),
+                             lock=lambda _: id_lock)
+    def get_by_code(cls, code):
+        return cls._get_by_code(code)
 
     def to_json(self):
         return to_json({
@@ -96,7 +105,7 @@ class Vendor(Document):
         :return:
         """
         while True:
-            vendor = Vendor.get_by_code(code)
+            vendor = Vendor._get_by_code(code)
             if vendor:
                 return vendor
             try:
