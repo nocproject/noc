@@ -45,6 +45,9 @@
             {% for n in groups['svc-clickhouse'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
+            {% for n in groups['svc-scheduler'] %}
+                <ip>{{hostvars[n].ansible_host}}</ip>
+            {% endfor %}
             </networks>
 
             <!-- Settings profile for user. -->
