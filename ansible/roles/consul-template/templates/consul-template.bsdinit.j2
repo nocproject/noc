@@ -18,7 +18,7 @@ load_rc_config $name
 
 pidfile="/var/run/consul/consul-template.pid"
 command="{{ consul_template_bin_path }}/consul-template"
-command_args="-config {{consul_template_config_dir}}/ -pid-file=${pidfile} -dedup -kill-signal=SIGTERM &"
+command_args="-config {{consul_template_config_dir}}/ -pid-file=${pidfile} -kill-signal=SIGTERM &"
 start_precmd="${name}_prestart"
 extra_commands="reload"
 
