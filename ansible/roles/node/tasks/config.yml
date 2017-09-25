@@ -82,6 +82,7 @@
     dest: "{{noc_root}}/.env"
     owner: "{{noc_user}}"
     mode: "0644"
+  no_log: true
   tags:
     - config
     - noc_config
