@@ -60,6 +60,11 @@ Ext.define("NOC.sla.slaprobe.Model", {
         {
             name: "tags",
             type: "auto"
+        },
+        {
+            name: "target_id",
+            type: "string",
+            persist: false
         }
     ]
 });

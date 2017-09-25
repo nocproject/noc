@@ -144,5 +144,15 @@ Ext.define("NOC.sla.slaprobe.Application", {
             }
         });
         me.callParent();
+    },
+
+    onPreview: function(record) {
+        window.open(
+            "/api/card/view/path/"
+            + record.get("managed_object")
+            + "-"
+            + record.get("target_id")
+            + "/"
+        )
     }
 });

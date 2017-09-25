@@ -6,10 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import operator
+from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField,
                                 ListField)
+import cachetools
 # NOC modules
 from slaprofile import SLAProfile
 from noc.sa.models.managedobject import ManagedObject
@@ -18,6 +22,8 @@ from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
+
+id_lock = Lock()
 
 
 class SLAProbe(Document):
@@ -47,5 +53,21 @@ class SLAProbe(Document):
     # Optional tags
     tags = ListField(StringField())
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object.name, self.name)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return SLAProbe.objects.filter(id=id).first()
+
+    @cachetools.cachedmethod(operator.attrgetter("_target_cache"), lock=lambda _: id_lock)
+    def get_target(self):
+        mo = ManagedObject.objects.filter(address=self.target)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
