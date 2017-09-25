@@ -28,6 +28,9 @@ stopasgroup = false
 killasgroup = true
 user = {% if 'user' in services[srv] %}{{services[srv].user}}{% else %}{{noc_user}}{% endif %}
 
+{% if not 'FreeBSD' in ansible_system %}
+oom_score_adj = {{ services[srv].oom_score_adj  | default(50, True) }}
+{% endif %}
 redirect_stderr = true
 stdout_logfile = {{noc_logs}}/{{ services[srv].process_name | default("%(program_name)s-%(process_num)02d", True) }}.log
 stdout_logfile_maxbytes = {{ services[srv].stdout_logfile_maxbytes  | default('10MB', True)}}
