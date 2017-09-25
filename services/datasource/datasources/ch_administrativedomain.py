@@ -17,12 +17,10 @@ class CHAdministrativeDomainDataSource(BaseDataSource):
     name = "ch_administrativedomain"
 
     def extract(self):
-        r = []
         for ad in AdministrativeDomain.objects.all().order_by("id"):
-            r += [(
+            yield (
                 ad.get_bi_id(),
                 ad.id,
                 ad.name,
                 ad.parent.get_bi_id() if ad.parent else ""
-            )]
-        return r
+            )

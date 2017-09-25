@@ -22,6 +22,9 @@ from noc.config import config
 class SAEService(Service):
     name = "sae"
     api = [SAEAPI]
+    # Some activator pools may be unavailable
+    # while SAE remains healthy
+    require_dcs_health = False
 
     def __init__(self):
         super(SAEService, self).__init__()

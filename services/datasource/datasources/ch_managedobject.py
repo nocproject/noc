@@ -17,12 +17,10 @@ class CHManagedObjectDataSource(BaseDataSource):
     name = "ch_managedobject"
 
     def extract(self):
-        r = []
         for mo in ManagedObject.objects.all().order_by("id"):
-            r += [(
+            yield (
                 mo.get_bi_id(),
                 mo.id,
                 mo.name,
                 mo.address
-            )]
-        return r
+            )

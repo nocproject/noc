@@ -17,11 +17,9 @@ class CHProfileClassDataSource(BaseDataSource):
     name = "ch_profile"
 
     def extract(self):
-        r = []
         for a in Profile.objects.all().order_by("id"):
-            r += [(
+            yield (
                 a.get_bi_id(),
                 a.id,
                 a.name
-            )]
-        return r
+            )

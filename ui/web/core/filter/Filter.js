@@ -16,6 +16,8 @@ Ext.define('NOC.core.filter.Filter', {
         'NOC.sa.platform.LookupField',
         'NOC.sa.administrativedomain.TreeCombo',
         'NOC.inv.networksegment.TreeCombo',
+        'NOC.inv.firmware.LookupField',
+        'NOC.inv.platform.LookupField',
         'NOC.sa.managedobjectprofile.LookupField',
         'NOC.sa.managedobjectselector.LookupField',
         'NOC.sa.commandsnippet.LookupField',
@@ -106,6 +108,7 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'main.pool.LookupField',
             itemId: 'pool', // name of http request query param
             fieldLabel: __('By Pool:'),
+            uiStyle: undefined,
             listeners: {
                 change: 'setFilter'
             }
@@ -120,7 +123,7 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'sa.platform.LookupField',
+            xtype: 'inv.platform.LookupField',
             itemId: 'platform',  // name of http request query param
             fieldLabel: __('By Platform:'),
             uiStyle: undefined,
@@ -129,17 +132,10 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'searchfield',
-            isLookupField: true,
+            xtype: 'inv.firmware.LookupField',
             itemId: 'version',  // name of http request query param
-            fieldLabel: __('By version:'),
-            labelWidth: 50,
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
-            },
+            fieldLabel: __('By Version:'),
+            uiStyle: undefined,
             listeners: {
                 specialkey: 'setFilter'
             }

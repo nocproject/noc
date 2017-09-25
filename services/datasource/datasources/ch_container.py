@@ -18,12 +18,10 @@ class CHContainerDataSource(BaseDataSource):
     name = "ch_container"
 
     def extract(self):
-        r = []
         for obj in Object.objects.all().order_by("id"):
-            r += [(
+            yield (
                 obj.get_bi_id(),
                 obj.id,
                 obj.name,
                 bi_hash(obj.container) if obj.container else ""
-            )]
-        return r
+            )

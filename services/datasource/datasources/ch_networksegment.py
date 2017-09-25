@@ -17,12 +17,10 @@ class CHAdministrativeDomainDataSource(BaseDataSource):
     name = "ch_networksegment"
 
     def extract(self):
-        r = []
         for ns in NetworkSegment.objects.all().order_by("id"):
-            r += [(
+            yield (
                 ns.get_bi_id(),
                 ns.id,
                 ns.name,
                 ns.parent.get_bi_id() if ns.parent else ""
-            )]
-        return r
+            )

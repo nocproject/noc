@@ -39,6 +39,8 @@ from noc.services.classifier.trigger import Trigger
 from noc.services.classifier.ruleset import RuleSet
 from noc.core.cache.base import cache
 from noc.core.perf import metrics
+from noc.sa.interfaces.base import InterfaceTypeError
+from noc.services.classifier.exception import EventProcessingFailed
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -53,6 +55,7 @@ CR_DUPLICATED = "events_duplicated"
 CR_UDUPLICATED = "events_unk_duplicated"
 CR_UOBJECT = "events_unk_object"
 CR_PROCESSED = "events_processed"
+CR_PREPROCESSED = "events_preprocessed"
 
 CR = [
     CR_FAILED,
@@ -60,6 +63,7 @@ CR = [
     CR_SUPPRESSED,
     CR_UNKNOWN,
     CR_CLASSIFIED,
+    CR_PREPROCESSED,
     CR_DISPOSED,
     CR_DUPLICATED,
     CR_UDUPLICATED,
@@ -361,7 +365,7 @@ class ClassifierService(Service):
             r[ecv.name] = v
         return r
 
-    def to_suppress(self, event, event_class, vars):
+    def to_suppress(self, event, vars):
         """
         Check wrether event must be suppressed
 
@@ -372,7 +376,7 @@ class ClassifierService(Service):
         nearest = None
         n_name = None
         n_suppress = False
-        for r, name, suppress in self.suppression[event_class.id]:
+        for r, name, suppress in self.suppression[event.event_class.id]:
             q = eval(r, {}, {
                 "event": event,
                 "ObjectId": ObjectId,
@@ -399,7 +403,7 @@ class ClassifierService(Service):
             name=name
         ).first()
 
-    def classify_event(self, event):
+    def classify_event(self, event, data):
         """
         Perform event classification.
         Classification steps are:
@@ -412,235 +416,322 @@ class ClassifierService(Service):
         :type event: NewEvent
         :returns: Classification status (CR_*)
         """
+        metrics[E_SRC_METRICS.get(event.source, E_SRC_OTHER)] += 1
+        is_unknown = False
+        #
+        pre_event = data.pop("$event", None)
+        # Resolve MIB variables for SNMP Traps
         resolved_vars = {
             "profile": event.managed_object.profile.name
         }
-        metrics[E_SRC_METRICS.get(event.source, E_SRC_OTHER)] += 1
         if event.source == E_SRC_SNMP_TRAP:
-            # For SNMP traps format values according to MIB definitions
             resolved_vars.update(MIB.resolve_vars(event.raw_vars))
-        elif event.source == E_SRC_SYSLOG and not event.log:
-            # Check for unclassified events flood
-            o_id = event.managed_object.id
-            if o_id in self.unclassified_codebook:
+        # Store event variables
+        event.raw_vars = data
+        event.resolved_vars = resolved_vars
+        # Get matched event class
+        if pre_event:
+            # Event is preprocessed, get class and variables
+            event_class_name = pre_event.get("class")
+            event_class = EventClass.get_by_name(event_class_name)
+            if not event_class:
+                self.logger.error(
+                    "[%s|%s|%s] Failed to process event: Invalid event class '%s'",
+                    event.id, event.managed_object.name,
+                    event.managed_object,
+                    event_class_name
+                )
+                metrics[CR_FAILED] += 1
+                return  # Drop malformed message
+            event.event_class = event_class
+            event.vars = pre_event.get("vars", {})
+        else:
+            # Prevent unclassified events flood
+            if self.check_unclassified_syslog_flood(event):
+                return
+            # Find matched event class
+            c_vars = event.raw_vars.copy()
+            c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
+            rule, vars = self.ruleset.find_rule(event, c_vars)
+            if rule is None:
+                # Something goes wrong.
+                # No default rule found. Exit immediately
+                self.logger.error("No default rule found. Exiting")
+                os._exit(1)
+            if rule.to_drop:
+                # Silently drop event if declared by action
+                self.logger.info(
+                    "[%s|%s|%s] Dropped by action",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address
+                )
+                metrics[CR_DELETED] += 1
+                return
+            if rule.is_unknown_syslog:
+                # Append to codebook
                 msg = event.raw_vars.get("message", "")
                 cb = self.get_msg_codebook(msg)
-                for pcb in self.unclassified_codebook[o_id]:
-                    if self.is_codebook_match(cb, pcb):
-                        # Signature is already seen, suppress
-                        metrics[CR_UDUPLICATED] += 1
-                        return
-        # Find matched event class
-        c_vars = event.raw_vars.copy()
-        c_vars.update(dict((k, fm_unescape(resolved_vars[k])) for k in resolved_vars))
-        rule, vars = self.ruleset.find_rule(event, c_vars)
-        if rule is None:
-            # Something goes wrong.
-            # No default rule found. Exit immediately
-            self.logger.error("No default rule found. Exiting")
-            os._exit(1)
-        if rule.to_drop:
-            # Silently drop event if declared by action
-            self.logger.info(
-                "[%s|%s|%s] Dropped by action",
+                o_id = event.managed_object.id
+                if o_id not in self.unclassified_codebook:
+                    self.unclassified_codebook[o_id] = []
+                cbs = [cb] + self.unclassified_codebook[o_id]
+                cbs = cbs[:self.unclassified_codebook_depth]
+                self.unclassified_codebook[o_id] = cbs
+            self.logger.debug(
+                "[%s|%s|%s] Matching rule: %s",
                 event.id, event.managed_object.name,
-                event.managed_object.address
+                event.managed_object.address, rule.name
             )
-            metrics[CR_DELETED] += 1
-            return
-        if rule.is_unknown_syslog:
-            # Append codebook
-            msg = event.raw_vars.get("message", "")
-            cb = self.get_msg_codebook(msg)
-            o_id = event.managed_object.id
-            if o_id not in self.unclassified_codebook:
-                self.unclassified_codebook[o_id] = []
-            cbs = [cb] + self.unclassified_codebook[o_id]
-            cbs = cbs[:self.unclassified_codebook_depth]
-            self.unclassified_codebook[o_id] = cbs
-        self.logger.debug(
-            "[%s|%s|%s] Matching rule: %s",
-            event.id, event.managed_object.name,
-            event.managed_object.address, rule.name
-        )
-        event_class = rule.event_class
-        # Calculate rule variables
-        vars = self.ruleset.eval_vars(event, event_class, vars)
-        #
+            event.event_class = rule.event_class
+            # Calculate rule variables
+            event.vars = self.ruleset.eval_vars(event, event.event_class, vars)
+            message = "Classified as '%s' by rule '%s'" % (event.event_class.name, rule.name)
+            event.log += [EventLog(timestamp=datetime.datetime.now(),
+                                   from_status="N", to_status="A",
+                                   message=message)]
+            is_unknown = rule.is_unknown
+        # Event class found, process according to rules
         self.logger.info(
             "[%s|%s|%s] Event class: %s (%s)",
             event.id, event.managed_object.name,
-            event.managed_object.address, event_class.name, vars
+            event.managed_object.address, event.event_class.name, event.vars
         )
         # Additionally check link events
-        disposable = True
-        if event_class.link_event and "interface" in vars:
-            if_name = event.managed_object.get_profile().convert_interface_name(vars["interface"])
-            iface = self.get_interface(event.managed_object.id, if_name)
-            if iface:
-                self.logger.info(
-                    "[%s|%s|%s] Found interface %s",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address,
-                    iface.name
-                )
-                action = iface.profile.link_events
-            else:
-                self.logger.info(
-                    "[%s|%s|%s] Interface not found:%s",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address, if_name
-                )
-                action = self.default_link_action
-            if action == "I":
-                # Ignore
-                if iface:
-                    self.logger.info(
-                        "[%s|%s|%s] Marked as ignored by interface profile '%s' (%s)",
-                        event.id, event.managed_object.name,
-                        event.managed_object.address,
-                        iface.profile.name, iface.name)
-                else:
-                    self.logger.info(
-                        "[%s|%s|%s] Marked as ignored by default interface profile",
-                        event.id, event.managed_object.name,
-                        event.managed_object.address
-                    )
-                metrics[CR_DELETED] += 1
-                return
-            elif action == "L":
-                # Do not dispose
-                if iface:
-                    self.logger.info(
-                        "[%s|%s|%s] Marked as not disposable by interface profile '%s' (%s)",
-                        event.id, event.managed_object.name,
-                        event.managed_object.address,
-                        iface.profile.name, iface.name
-                    )
-                else:
-                    self.logger.info(
-                        "[%s|%s|%s] Marked as not disposable by default interface",
-                        event.id, event.managed_object.name,
-                        event.managed_object.address
-                    )
-                disposable = False
+        if self.check_link_event(event):
+            return
         # Deduplication
-        if event_class.deduplication_window:
-            de = self.find_duplicated_event(event, event_class, vars)
-            if de:
-                self.logger.info(
-                    "[%s|%s|%s] Duplicates event %s. Discarding",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address, de.id)
-                de.log_message(
-                    "Duplicated event %s has been discarded" % event.id
-                )
-                metrics[CR_DUPLICATED] += 1
-                return
+        if self.deduplicate_event(event):
+            return
         # Suppress repeats
-        if event_class.id in self.suppression:
-            suppress, name, nearest = self.to_suppress(
-                event, event_class, vars)
-            if suppress:
-                self.logger.info(
-                    "[%s|%s|%s] Suppressed by rule %s",
-                    event.id, event.managed_object.name,
-                    event.managed_object.address, name)
-                # Update suppressing event
-                nearest.log_suppression(event.timestamp)
-                # Delete suppressed event
-                metrics[CR_SUPPRESSED] += 1
-                return
+        if self.suppress_repeats(event):
+            return
         # Activate event
-        message = "Classified as '%s' by rule '%s'" % (event_class.name,
-                                                       rule.name)
-        log = event.log + [EventLog(timestamp=datetime.datetime.now(),
-                                    from_status="N", to_status="A",
-                                    message=message)]
-        event.event_class = event_class
-        event.resolved_vars = resolved_vars
-        event.vars = vars
-        event.log = log
-        event.expires = event.timestamp + datetime.timedelta(seconds=event_class.ttl)
+        event.expires = event.timestamp + datetime.timedelta(seconds=event.event_class.ttl)
         event.save()
         # Call handlers
-        if event_class.id in self.handlers:
-            event_id = event.id
-            for h in self.handlers[event_class.id]:
-                try:
-                    h(event)
-                except:
-                    error_report()
-                if event.to_drop:
-                    self.logger.info(
-                        "[%s|%s|%s] Dropped by handler",
-                        event.id, event.managed_object.name,
-                        event.managed_object.address
-                    )
-                    event.id = event_id  # Restore event id
-                    event.delete()
-                    metrics[CR_DELETED] += 1
-                    return
-        # Call triggers if necessary
-        if event_class.id in self.triggers:
-            event_id = event.id
-            for t in self.triggers[event_class.id]:
-                try:
-                    t.call(event)
-                except:
-                    error_report()
-                if event.to_drop:
-                    # Delete event and stop processing
-                    self.logger.info(
-                        "[%s|%s|%s] Dropped by trigger %s",
-                        event_id, event.managed_object.name,
-                        event.managed_object.address, t.name
-                    )
-                    event.id = event_id  # Restore event id
-                    event.delete()
-                    metrics[CR_DELETED] += 1
-                    return
+        if self.call_event_handlers(event):
+            return
+        # Call triggers
+        if self.call_event_triggers(event):
+            return
         # Finally dispose event to further processing by correlator
-        if disposable and rule.to_dispose:
-            self.logger.info(
-                "[%s|%s|%s] Disposing",
-                event.id, event.managed_object.name,
-                event.managed_object.address
-            )
-            # Heat up cache
-            cache.set(
-                "activeent-%s" % event.id,
-                event,
-                ttl=900
-            )
-            # @todo: Use config.pool instead
-            self.pub(
-                "correlator.dispose.%s" % event.managed_object.pool.name,
-                {"event_id": str(event.id)}
-            )
-            metrics[CR_CLASSIFIED] += 1
-            metrics[CR_DISPOSED] += 1
-        elif rule.is_unknown:
+        if event.to_dispose:
+            self.dispose_event(event)
+        if is_unknown:
             metrics[CR_UNKNOWN] += 1
+        elif pre_event:
+            metrics[CR_PREPROCESSED] += 1
         else:
             metrics[CR_CLASSIFIED] += 1
-        return
 
-    def find_duplicated_event(self, event, event_class, vars):
+    def dispose_event(self, event):
+        self.logger.info(
+            "[%s|%s|%s] Disposing",
+            event.id, event.managed_object.name,
+            event.managed_object.address
+        )
+        # Heat up cache
+        cache.set(
+            "activeent-%s" % event.id,
+            event,
+            ttl=900
+        )
+        # @todo: Use config.pool instead
+        self.pub(
+            "correlator.dispose.%s" % event.managed_object.pool.name,
+            {"event_id": str(event.id)}
+        )
+        metrics[CR_DISPOSED] += 1
+
+    def deduplicate_event(self, event):
         """
-        Returns duplicated event if exists
+        Deduplicate event when necessary
+        :param event:
+        :param vars:
+        :return: True, if event is duplication of existent one
         """
-        t0 = event.timestamp - datetime.timedelta(seconds=event_class.deduplication_window)
+        dw = event.event_class.deduplication_window
+        if not dw:
+            return False  # No deduplication for event class
+        t0 = event.timestamp - datetime.timedelta(seconds=dw)
         q = {
             "managed_object": event.managed_object.id,
             "timestamp__gte": t0,
             "timestamp__lte": event.timestamp,
-            "event_class": event_class.id,
+            "event_class": event.event_class.id,
             "id__ne": event.id
         }
-        for v in vars:
+        for v in event.vars:
             q["vars__%s" % v] = vars[v]
-        return ActiveEvent.objects.filter(**q).first()
+        de = ActiveEvent.objects.filter(**q).first()
+        if de:
+            self.logger.info(
+                "[%s|%s|%s] Duplicates event %s. Discarding",
+                event.id, event.managed_object.name,
+                event.managed_object.address, de.id)
+            de.log_message(
+                "Duplicated event %s has been discarded" % event.id
+            )
+            metrics[CR_DUPLICATED] += 1
+            return True
+        else:
+            return False
+
+    def suppress_repeats(self, event):
+        """
+        Suppress repeated events
+        :param event:
+        :param vars:
+        :return:
+        """
+        if event.event_class.id not in self.suppression:
+            return False
+        suppress, name, nearest = self.to_suppress(event, event.vars)
+        if suppress:
+            self.logger.info(
+                "[%s|%s|%s] Suppressed by rule %s",
+                event.id, event.managed_object.name,
+                event.managed_object.address, name)
+            # Update suppressing event
+            nearest.log_suppression(event.timestamp)
+            # Delete suppressed event
+            metrics[CR_SUPPRESSED] += 1
+            return True
+        else:
+            return False
+
+    def call_event_handlers(self, event):
+        """
+        Call handlers associated with event class
+        :param event:
+        :return:
+        """
+        if event.event_class.id not in self.handlers:
+            return False
+        event_id = event.id  # Temporary store id
+        for h in self.handlers[event.event_class.id]:
+            try:
+                h(event)
+            except:
+                error_report()
+            if event.to_drop:
+                self.logger.info(
+                    "[%s|%s|%s] Dropped by handler",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address
+                )
+                event.id = event_id  # Restore event id
+                event.delete()
+                metrics[CR_DELETED] += 1
+                return True
+        return False
+
+    def call_event_triggers(self, event):
+        """
+        Call triggers associated with event class
+        :param event:
+        :return:
+        """
+        if event.event_class.id not in self.triggers:
+            return False
+        event_id = event.id
+        for t in self.triggers[event.event_class.id]:
+            try:
+                t.call(event)
+            except:
+                error_report()
+            if event.to_drop:
+                # Delete event and stop processing
+                self.logger.info(
+                    "[%s|%s|%s] Dropped by trigger %s",
+                    event_id, event.managed_object.name,
+                    event.managed_object.address, t.name
+                )
+                event.id = event_id  # Restore event id
+                event.delete()
+                metrics[CR_DELETED] += 1
+                return True
+        else:
+            return False
+
+    def check_unclassified_syslog_flood(self, event):
+        """
+        Check if incoming messages is in unclassified codebook
+        :param event:
+        :return:
+        """
+        if event.source != E_SRC_SYSLOG or len(event.log):
+            return False
+        pcbs = self.unclassified_codebook.get(event.managed_object.id)
+        if not pcbs:
+            return False
+        msg = event.raw_vars.get("message", "")
+        cb = self.get_msg_codebook(msg)
+        for pcb in pcbs:
+            if self.is_codebook_match(cb, pcb):
+                # Signature is already seen, suppress
+                metrics[CR_UDUPLICATED] += 1
+                return True
+        return False
+
+    def check_link_event(self, event):
+        """
+        Additional link events check
+        :param event:
+        :return: True - stop processing, False - continue
+        """
+        if not event.event_class.link_event or "interface" not in event.vars:
+            return False
+        if_name = event.managed_object.get_profile().convert_interface_name(event.vars["interface"])
+        iface = self.get_interface(event.managed_object.id, if_name)
+        if iface:
+            self.logger.info(
+                "[%s|%s|%s] Found interface %s",
+                event.id, event.managed_object.name,
+                event.managed_object.address,
+                iface.name
+            )
+            action = iface.profile.link_events
+        else:
+            self.logger.info(
+                "[%s|%s|%s] Interface not found:%s",
+                event.id, event.managed_object.name,
+                event.managed_object.address, if_name
+            )
+            action = self.default_link_action
+        if action == "I":
+            # Ignore
+            if iface:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as ignored by interface profile '%s' (%s)",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address,
+                    iface.profile.name, iface.name)
+            else:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as ignored by default interface profile",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address
+                )
+            metrics[CR_DELETED] += 1
+            return True
+        elif action == "L":
+            # Do not dispose
+            if iface:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as not disposable by interface profile '%s' (%s)",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address,
+                    iface.profile.name, iface.name
+                )
+            else:
+                self.logger.info(
+                    "[%s|%s|%s] Marked as not disposable by default interface",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address
+                )
+            event.do_not_dispose()
+        return False
 
     def on_event(self, message, ts=None, object=None, data=None,
                  *args, **kwargs):
@@ -660,26 +751,26 @@ class ClassifierService(Service):
                          event_id, mo.name, mo.address)
         ts = datetime.datetime.fromtimestamp(ts)
         source = data.pop("source", "other")
-        e = ActiveEvent(
-            id=event_id,
+        event = ActiveEvent(
+            id=bson.ObjectId(),
             timestamp=ts,
             start_timestamp=ts,
             managed_object=mo,
             source=source,
-            raw_vars=data,
             repeats=1
         )
+        # Classify event
         try:
-            self.classify_event(e)
+            self.classify_event(event, data)
         except Exception as e:
             self.logger.error(
                 "[%s|%s|%s] Failed to process event: %s",
-                event_id, mo.name, mo.address, e)
+                event.id, mo.name, mo.address, e)
             metrics[CR_FAILED] += 1
             return False
         self.logger.info(
             "[%s|%s|%s] Event processed successfully",
-            event_id, mo.name, mo.address
+            event.id, mo.name, mo.address
         )
         return True
 

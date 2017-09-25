@@ -17,11 +17,9 @@ class CHAlarmClassDataSource(BaseDataSource):
     name = "ch_alarmclass"
 
     def extract(self):
-        r = []
         for ac in AlarmClass.objects.all().order_by("id"):
-            r += [(
+            yield (
                 ac.get_bi_id(),
                 ac.id,
                 ac.name
-            )]
-        return r
+            )

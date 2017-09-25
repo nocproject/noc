@@ -1,0 +1,27 @@
+#map {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+#summary {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding: 4pt;
+    height: auto;
+    width: auto;
+    text-align: right;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.6);
+    font-size: 24pt;
+    border-bottom-left-radius: 12pt;
+    z-index: 10000;
+}
+
+#summary .badge {
+    font-size: 24pt;
+    border-radius: 12pt;
+}

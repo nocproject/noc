@@ -10,13 +10,14 @@
 import datetime
 import cPickle
 import zlib
+import bz2
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BinaryField,
                                 DateTimeField, IntField)
 import bson
 
-CURRENT_VERSION = 1
+CURRENT_VERSION = 2
 
 
 class DataSourceCache(Document):
@@ -44,8 +45,10 @@ class DataSourceCache(Document):
         d = cls._get_collection().find_one({"_id": name})
         if not d:
             return None
-        decoder = getattr(cls, "decode_v%s" % d.get("version", CURRENT_VERSION))
-        return decoder(d["data"])
+        if d["version"] < CURRENT_VERSION:
+            # Version bump, rebuild cache
+            return None
+        return cls.decode(d["data"])
 
     @classmethod
     def set_data(cls, name, data, ttl):
@@ -69,15 +72,13 @@ class DataSourceCache(Document):
         :param data:
         :return:
         """
-        data = cPickle.dumps(data, cPickle.HIGHEST_PROTOCOL)
-        return zlib.compress(data)
+        return bz2.compress(data, 9)
 
     @classmethod
-    def decode_v1(cls, data):
+    def decode(cls, data):
         """
-        v2 decoding: cPickle + zlib.compress
+        v2 decoding: bz2
         :param data:
         :return:
         """
-        data = zlib.decompress(data)
-        return cPickle.loads(data)
+        return bz2.decompress(data)

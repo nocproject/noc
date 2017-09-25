@@ -23,69 +23,73 @@ Ext.define('NOC.core.filter.FilterController', {
         var queryStr = Ext.util.History.getToken().split('?')[1];
         var parentXtype = this.view.selectionStore.split('.')[0];
         var selectionStoreName = this.view.selectionStore.split('.')[1];
-        var selectionStore = this.view.findParentByType(parentXtype).viewModel.getStore(selectionStoreName);
+        var view = this.getView().findParentByType(parentXtype);
+        //
+        if(view) {
+            var selectionStore = view.getViewModel().getStore(selectionStoreName);
+            //
+            if(queryStr) {
+                this.view.viewModel.set('filterObject', Ext.Object.fromQueryString(queryStr, true));
+                Ext.Array.each(this.lookupFields(), function(item) {
+                    var self = this;
+                    var filterObject = self.view.viewModel.get('filterObject');
+                    var keys = Object.keys(filterObject);
 
-        if(queryStr) {
-            this.view.viewModel.set('filterObject', Ext.Object.fromQueryString(queryStr, true));
-            Ext.Array.each(this.lookupFields(), function(item) {
-                var self = this;
-                var filterObject = self.view.viewModel.get('filterObject');
-                var keys = Object.keys(filterObject);
+                    keys.filter(function(e) {
+                        return Ext.String.startsWith(e, item.itemId, true);
+                    }).map(function(e) {
+                        if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
+                            item.restoreById(filterObject[item.itemId]);
+                        } else if('caps' === item.itemId) {
+                            var delimiter = filterObject[e].indexOf(':');
+                            var condition;
+                            var id, value;
+                            var typeInclude = true;
+                            var typeExclude = false;
 
-                keys.filter(function(e) {
-                    return Ext.String.startsWith(e, item.itemId, true);
-                }).map(function(e) {
-                    if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
-                        item.restoreById(filterObject[item.itemId]);
-                    } else if('caps' === item.itemId) {
-                        var delimiter = filterObject[e].indexOf(':');
-                        var condition;
-                        var id, value;
-                        var typeInclude = true;
-                        var typeExclude = false;
+                            if(delimiter >= 0) {
+                                id = filterObject[e].substring(0, delimiter);
+                                value = filterObject[e].substring(delimiter + 1);
 
-                        if(delimiter >= 0) {
-                            id = filterObject[e].substring(0, delimiter);
-                            value = filterObject[e].substring(delimiter + 1);
-
-                            if(value[0] === '~') {
-                                condition = '<';
-                                value = value.substring(1);
-                            } else if(value[value.length - 1] === '~') {
-                                condition = '>';
-                                value = value.substring(0, value.length - 1);
+                                if(value[0] === '~') {
+                                    condition = '<';
+                                    value = value.substring(1);
+                                } else if(value[value.length - 1] === '~') {
+                                    condition = '>';
+                                    value = value.substring(0, value.length - 1);
+                                } else {
+                                    condition = '==';
+                                }
+                            } else if(filterObject[e][0] === '!') {
+                                id = filterObject[e].substring(1);
+                                typeInclude = false;
+                                typeExclude = true;
                             } else {
-                                condition = '==';
+                                id = filterObject[e];
+                                typeInclude = false;
+                                typeExclude = false;
                             }
-                        } else if(filterObject[e][0] === '!') {
-                            id = filterObject[e].substring(1);
-                            typeInclude = false;
-                            typeExclude = true;
+
+                            var exist = self.view.viewModel.get('capabilityStore').getNodeById(id);
+
+                            if(exist) {
+                                exist.set('typeInclude', typeInclude);
+                                exist.set('typeExclude', typeExclude);
+                                exist.set('condition', condition);
+                                exist.set('value', value);
+                                exist.set('checked', true);
+                            }
                         } else {
-                            id = filterObject[e];
-                            typeInclude = false;
-                            typeExclude = false;
+                            item.setValue(filterObject[item.itemId]);
                         }
+                    });
+                }, this);
 
-                        var exist = self.view.viewModel.get('capabilityStore').getNodeById(id);
-
-                        if(exist) {
-                            exist.set('typeInclude', typeInclude);
-                            exist.set('typeExclude', typeExclude);
-                            exist.set('condition', condition);
-                            exist.set('value', value);
-                            exist.set('checked', true);
-                        }
-                    } else {
-                        item.setValue(filterObject[item.itemId]);
-                    }
-                });
-            }, this);
-
-            selectionStore.setFilterParams(this.view.viewModel.get('filterObject'));
-            this.view.expand();
+                selectionStore.setFilterParams(this.view.viewModel.get('filterObject'));
+                this.view.expand();
+            }
+            selectionStore.load();
         }
-        selectionStore.load();
     },
 
     setFilter: function(field, event) {

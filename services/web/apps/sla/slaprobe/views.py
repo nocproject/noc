@@ -27,3 +27,10 @@ class SLAProbeApplication(ExtDocApplication):
         r = []
         r += ["%s:%s" % (o.type, o.target)]
         return ", ".join(r)
+
+    def field_target_id(self, o):
+        t = o.get_target()
+        if t:
+            return t.id
+        else:
+            return None

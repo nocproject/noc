@@ -24,7 +24,10 @@ class BaseDataSource(object):
             # Try to get cached data
             data = DataSourceCache.get_data(self.name)
             if not data:
-                data = self.extract()
+                data = ["\t".join(str(x) for x in row)
+                        for row in self.extract()]
+                data += [""]
+                data = "\n".join(data)
                 DataSourceCache.set_data(self.name, data, self.ttl)
             return data
         finally:

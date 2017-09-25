@@ -17,13 +17,11 @@ class CHPlatformDataSource(BaseDataSource):
     name = "ch_platform"
 
     def extract(self):
-        r = []
         for p in Platform.objects.all().order_by("id"):
-            r += [(
+            yield (
                 p.get_bi_id(),
                 p.id,
                 p.name,
                 p.vendor.name,
                 "%s %s" % (p.vendor.name, p.name)
-            )]
-        return r
+            )
