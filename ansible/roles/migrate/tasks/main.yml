@@ -97,3 +97,10 @@
   become: yes
   register: mibs_out
   changed_when: mibs_out.stdout | length > 5
+
+- name: Ensure Mongo indecies
+  command: ./noc ensure-indexes
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+  changed_when: False
