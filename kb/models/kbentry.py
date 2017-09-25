@@ -157,6 +157,7 @@ class KBEntry(models.Model):
         """
         Check has KBEntry any bookmarks
         """
+        from kbuserbookmark import KBUserBookmark
         from kbglobalbookmark import KBGlobalBookmark
         # Check Global bookmarks
         if KBGlobalBookmark.objects.filter(kb_entry=self).count() > 0:
@@ -169,6 +170,7 @@ class KBEntry(models.Model):
         """
         Set user bookmark
         """
+        from kbuserbookmark import KBUserBookmark
         if not KBUserBookmark.objects.filter(kb_entry=self,
                                              user=user).exists():
             KBUserBookmark(kb_entry=self, user=user).save()
@@ -177,10 +179,10 @@ class KBEntry(models.Model):
         """
         Uset user bookmark
         """
+        from kbuserbookmark import KBUserBookmark
         for b in KBUserBookmark.objects.filter(kb_entry=self, user=user):
             b.delete()
 
 
 # Avoid circular references
 from kbentryhistory import KBEntryHistory
-from kbuserbookmark import KBUserBookmark
