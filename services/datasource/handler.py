@@ -51,8 +51,12 @@ class DataSourceRequestHandler(tornado.web.RequestHandler):
         :return:
         """
         self.set_header("Content-Type", "text/tsv;charset=utf-8")
-        cs = config.datasource.chunk_size
-        while data:
-            chunk, data = data[:cs], data[cs:]
-            d = ["\t".join(str(f) for f in row) for row in chunk] + [""]
-            self.write("\n".join(d))
+        self.write(data)
+
+    def write_csv(self, data):
+        """
+        Write data in comma-separated format
+        :param data:
+        :return:
+        """
+        raise NotImplementedError()

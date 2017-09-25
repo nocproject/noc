@@ -17,12 +17,10 @@ class CHInterfaceProfileDataSource(BaseDataSource):
     name = "ch_interfaceprofile"
 
     def extract(self):
-        r = []
         for p in InterfaceProfile.objects.all().order_by("id"):
-            r += [(
+            yield (
                 p.get_bi_id(),
                 p.id,
                 p.name,
                 1 if p.is_uni else 0
-            )]
-        return r
+            )

@@ -17,13 +17,11 @@ class CHVersionDataSource(BaseDataSource):
     name = "ch_version"
 
     def extract(self):
-        r = []
         for a in Firmware.objects.all().order_by("id"):
-            r += [(
+            yield (
                 a.get_bi_id(),
                 a.id,
                 a.version,
                 a.profile.name,
                 a.vendor.name
-            )]
-        return r
+            )
