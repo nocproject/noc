@@ -53,7 +53,7 @@
             "window": 30,
             "condition": "True",
             "match_condition": {
-                "vars__number": "alarm.managed_object.profile.get_linecard(alarm.vars['interface'])",
+                "vars__number": "alarm.managed_object.get_linecard(alarm.vars['interface'])",
                 "managed_object": "alarm.managed_object.id"
             }
         },
