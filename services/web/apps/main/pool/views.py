@@ -20,3 +20,4 @@ class PoolApplication(ExtDocApplication):
     menu = [_("Setup"), _("Pools")]
     model = Pool
     glyph = "database"
+    default_ordering = ["name"]
