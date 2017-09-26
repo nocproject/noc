@@ -19,6 +19,7 @@
     - libffi-dev
     - libmemcached11
     - libmemcached-dev
+    - patch
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
