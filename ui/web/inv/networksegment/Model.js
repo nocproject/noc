@@ -93,6 +93,14 @@ Ext.define("NOC.inv.networksegment.Model", {
         {
             name: "bi_id",
             type: "string"
+        },
+        {
+            name: "horizontal_transit_policy",
+            type: "string"
+        },
+        {
+            name: "enable_horizontal_transit",
+            type: "boolean"
         }
     ]
 });

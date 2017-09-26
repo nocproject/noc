@@ -148,7 +148,26 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "max_shown_downlinks",
                     xtype: "numberfield",
                     fieldLabel: __("Max Links"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "horizontal_transit_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Horizontal Transit Policy"),
+                    allowBlank: false,
+                    store: [
+                        ["E", __("Always Enable")],
+                        ["C", __("Calculate")],
+                        ["D", __("Disable")],
+                        ["P", __("Profile")]
+                    ],
+                    uiStyle: "medium"
+                },
+                {
+                    name: "enable_horizontal_transit",
+                    type: "checkbox",
+                    boxLabel: __("Enable Horizontal Transit")
                 },
                 {
                     xtype: "fieldset",
@@ -156,7 +175,7 @@ Ext.define("NOC.inv.networksegment.Application", {
                     title: __("Integration"),
                     defaults: {
                         padding: 4,
-                        labelAlign: "right"
+                        labelAlign: "top"
                     },
                     items: [
                         {
