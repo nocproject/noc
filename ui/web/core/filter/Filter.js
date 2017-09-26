@@ -18,6 +18,7 @@ Ext.define('NOC.core.filter.Filter', {
         'NOC.inv.networksegment.TreeCombo',
         'NOC.inv.firmware.LookupField',
         'NOC.inv.platform.LookupField',
+        'NOC.inv.vendor.LookupField',
         'NOC.sa.managedobjectprofile.LookupField',
         'NOC.sa.managedobjectselector.LookupField',
         'NOC.sa.commandsnippet.LookupField',
@@ -114,7 +115,7 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'sa.vendor.LookupField',
+            xtype: 'inv.vendor.LookupField',
             itemId: 'vendor',  // name of http request query param
             fieldLabel: __('By Vendor:'),
             uiStyle: undefined,
