@@ -166,7 +166,7 @@ Ext.define("NOC.inv.networksegment.Application", {
                 },
                 {
                     name: "enable_horizontal_transit",
-                    type: "checkbox",
+                    xtype: "checkbox",
                     boxLabel: __("Enable Horizontal Transit")
                 },
                 {
