@@ -562,7 +562,7 @@ class ClassifierService(Service):
             "id__ne": event.id
         }
         for v in event.vars:
-            q["vars__%s" % v] = vars[v]
+            q["vars__%s" % v] = event.vars[v]
         de = ActiveEvent.objects.filter(**q).first()
         if de:
             self.logger.info(
