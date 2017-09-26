@@ -16,12 +16,17 @@ Ext.define("NOC.inv.vendor.Application", {
         {
             text: __("Name"),
             dataIndex: "name",
+            width: 150
+        },
+        {
+            text: __("Full Name"),
+            dataIndex: "full_name",
             width: 200
         },
         {
             text: __("Code"),
             dataIndex: "code",
-            width: 100
+            width: 200
         },
         {
             text: __("Site"),
@@ -42,7 +47,15 @@ Ext.define("NOC.inv.vendor.Application", {
             name: "name",
             xtype: "textfield",
             fieldLabel: __("Name"),
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
+        },
+        {
+            name: "full_name",
+            xtype: "textfield",
+            fieldLabel: __("Full Name"),
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "uuid",
@@ -51,7 +64,7 @@ Ext.define("NOC.inv.vendor.Application", {
         },
         {
             name: "code",
-            xtype: "textfield",
+            xtype: "tagsfield",
             fieldLabel: __("Code"),
             allowBlank: false
         },

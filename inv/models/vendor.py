@@ -16,6 +16,7 @@ from mongoengine.fields import (StringField, LongField, URLField,
                                 UUIDField, ListField)
 from mongoengine.errors import NotUniqueError
 import cachetools
+import six
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
@@ -38,20 +39,25 @@ class Vendor(Document):
     meta = {
         "collection": "noc.vendors",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "inv.vendors",
-        "json_unique_fields": ["code"]
+        "json_unique_fields": ["name"]
     }
-
+    # Short vendor name, included as first part of platform
     name = StringField(unique=True)
-    code = StringField(unique=True)
-    site = URLField(required=False)
+    # Full vendor name
+    full_name = StringField(unique=True)
+    # Unique id
     uuid = UUIDField(binary=True)
-    aliases = ListField(StringField())
+    # List of vendor codes to be searched via .get_by_code()
+    code = ListField(StringField(), unique=True)
+    # Vendor's site
+    site = URLField(required=False)
     # Object id in BI
     bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
-    _code_cache = cachetools.TTLCache(1000, ttl=60)
+    _codes_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
@@ -71,10 +77,7 @@ class Vendor(Document):
         :return:
         """
         code = code.upper()
-        vendor = Vendor.objects.filter(code=code).first()
-        if vendor:
-            return vendor
-        return Vendor.objects.filter(aliases=code).first()
+        return Vendor.objects.filter(code=code).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"),
@@ -82,18 +85,30 @@ class Vendor(Document):
     def get_by_code(cls, code):
         return cls._get_by_code(code)
 
+    def clean(self):
+        # Convert code to list
+        if isinstance(self.code, six.string_types):
+            self.code = [self.code]
+        # Uppercase code
+        self.code = [c.upper() for c in self.code]
+        # Fill full name if not set
+        if not self.full_name:
+            self.full_name = self.name
+        #
+        super(Vendor, self).clean()
+
     def to_json(self):
         return to_json({
             "name": self.name,
             "$collection": self._meta["json_collection"],
+            "full_name":self.full_name,
             "code": self.code,
             "site": self.site,
-            "uuid": self.uuid,
-            "aliases": self.aliases
-        }, order=["name", "uuid", "code", "site", "aliases"])
+            "uuid": self.uuid
+        }, order=["name", "uuid", "full_name", "code", "site"])
 
     def get_json_path(self):
-        return "%s.json" % self.code
+        return "%s.json" % self.name
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_ensure_cache"),
@@ -108,11 +123,11 @@ class Vendor(Document):
             vendor = Vendor._get_by_code(code)
             if vendor:
                 return vendor
-            code = code.upper()
             try:
                 vendor = Vendor(
                     name=code,
-                    code=code,
+                    full_name=code,
+                    code=[code],
                     uuid=uuid.uuid4()
                 )
                 vendor.save()
