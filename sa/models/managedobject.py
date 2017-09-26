@@ -1022,6 +1022,14 @@ class ManagedObject(Model):
                 pass
         return None
 
+    def get_linecard(self, ifname):
+        """
+        Returns linecard number related to interface
+        :param name:
+        :return:
+        """
+        return self.get_profile().get_linecard(ifname)
+
     def ensure_discovery_jobs(self):
         """
         Check and schedule discovery jobs
