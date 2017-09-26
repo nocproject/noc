@@ -7,12 +7,12 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2017-09-07 22:45+0500",
-        "POT-Creation-Date": "2017-09-07 18:53+0300",
+        "PO-Revision-Date": "2017-09-26 11:28+0300",
+        "POT-Creation-Date": "2017-09-26 17:35+1000",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 2.0.3"
+        "X-Generator": "Poedit 2.0.4"
     },
     "About system": [
         null,
@@ -45,10 +45,6 @@
     "Action": [
         null,
         "Действие"
-    ],
-    "Actions": [
-        null,
-        "Действия"
     ],
     "Active": [
         null,
@@ -582,7 +578,7 @@
         null,
         "По производителю:"
     ],
-    "By version:": [
+    "By Version:": [
         null,
         "По версии:"
     ],
@@ -906,10 +902,6 @@
         null,
         "Контекст"
     ],
-    "Continue": [
-        null,
-        "Продолжить"
-    ],
     "Control Time 0": [
         null,
         "Контрольное время 0"
@@ -1138,6 +1130,10 @@
         null,
         "Размещение"
     ],
+    "Do Checked": [
+        null,
+        "Продолжить"
+    ],
     "Do not convert": [
         null,
         "Не конвертировать"
@@ -1181,10 +1177,6 @@
     "Effective Settings": [
         null,
         "Действующие настройки"
-    ],
-    "Empty command": [
-        null,
-        "Пустой вывод"
     ],
     "Enable": [
         null,
@@ -1758,6 +1750,10 @@
         null,
         "Отфильтровано"
     ],
+    "Filtering List": [
+        null,
+        "Фильтр"
+    ],
     "First Discovered": [
         null,
         "Первый раз"
@@ -1797,10 +1793,6 @@
     "Font Color": [
         null,
         "Цвет шрифта"
-    ],
-    "Fresh Alarms (time/opacity)": [
-        null,
-        "Разметка по длительности (время/яркость)"
     ],
     "From": [
         null,
@@ -1857,6 +1849,10 @@
     "Glyph": [
         null,
         "Картинка"
+    ],
+    "Go to next step": [
+        null,
+        "Перейти на следующий шаг"
     ],
     "Group": [
         null,
@@ -2530,6 +2526,10 @@
         null,
         "Месяц"
     ],
+    "Move all selected devices to the right": [
+        null,
+        "Переместить все выделенные устройства на правую панель"
+    ],
     "Multicast VLAN": [
         null,
         "Мультикаст VLAN"
@@ -2609,6 +2609,10 @@
     "No interfaces found": [
         null,
         "Интерфейсы не найдены"
+    ],
+    "No leaf selected": [
+        null,
+        "ничего не выбрано"
     ],
     "No matching": [
         null,
@@ -3142,6 +3146,10 @@
         null,
         "Удалить отмеченные"
     ],
+    "Remove all devices from right panel": [
+        null,
+        "Удалить все устройства из правой панели"
+    ],
     "Remove group": [
         null,
         "Удалить группу"
@@ -3149,6 +3157,10 @@
     "Remove group '": [
         null,
         "Удалить группу '"
+    ],
+    "Remove selected devices from right panel": [
+        null,
+        "Удалить выбранные устройства из правой панели"
     ],
     "Rep.": [
         null,
@@ -3486,6 +3498,10 @@
         null,
         "Выбрать VRF для импорта"
     ],
+    "Select all devices on screen": [
+        null,
+        "Выбрать все устройства на экране"
+    ],
     "Select all records from buffer (screen)": [
         null,
         "Выбрать все записи из буфера (экрана)"
@@ -3513,6 +3529,10 @@
     "Selected": [
         null,
         "Выбранные"
+    ],
+    "Selected : {total.selection}": [
+        null,
+        " Выбрано : {total.selection}"
     ],
     "Selector": [
         null,
@@ -4150,6 +4170,10 @@
         null,
         "Всего"
     ],
+    "Total : {total.selected}": [
+        null,
+        "Всего : {total.selected}"
+    ],
     "Total: ": [
         null,
         "Итого:"
@@ -4201,6 +4225,10 @@
     "Unselect All": [
         null,
         "Отменить выделение"
+    ],
+    "Unselect all devices": [
+        null,
+        "Отменить выделение для всех устройств "
     ],
     "Untag.": [
         null,
@@ -4494,6 +4522,10 @@
         null,
         "имя"
     ],
+    "nothing checked": [
+        null,
+        "ничего не отмечено"
+    ],
     "oper down": [
         null,
         "соединение отсутствует"
@@ -4521,10 +4553,6 @@
     "project": [
         null,
         "проект"
-    ],
-    "server-side failure with status code ": [
-        null,
-        "Ошибка со стороны сервера. Код: "
     ],
     "service": [
         null,
