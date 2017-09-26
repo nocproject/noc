@@ -72,7 +72,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             # Build topology methods
             self.topology_methods = []
             for ms in self.object.segment.profile.topology_methods:
-                if not ms.is_active:
+                if ms.method not in self.TOPOLOGY_METHODS or not ms.is_active:
                     continue
                 if ms.method in ("custom", "handler"):
                     # @todo: Implement
