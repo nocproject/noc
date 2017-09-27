@@ -10,6 +10,7 @@
 import datetime
 # Third-party modules
 import six
+from pymongo import UpdateOne
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
@@ -80,11 +81,10 @@ class NRICheck(DiscoveryCheck):
         self.process_services()
         # Apply batch job
         if self.interface_ops:
-            self.logger.info("Applying %d batch writes", len(self.interface_ops))
-            bulk = Interface._get_collection().initialize_unordered_bulk_op()
-            for i in self.interface_ops:
-                bulk.find({"_id": i}).update(self.interface_ops[i])
-            bulk.execute()
+            bulk = [UpdateOne({"_id": i}, self.interface_ops[i])
+                    for i in self.interface_ops]
+            self.logger.info("Applying %d batch writes", len(bulk))
+            Interface._get_collection().bulk_write(bulk)
             ServiceSummary.refresh_object(self.object)
 
     def interface_bulk_op(self, iface_id, op):
@@ -266,14 +266,14 @@ class NRICheck(DiscoveryCheck):
                     "Removing service %s from interface %s",
                     i["service"], i["name"]
                 )
-                op = {
-                    "service": ""
-                }
-                p = prof_map.get(i["service"])
-                if p:
-                    op["profile"] = InterfaceProfile.get_default_profile().id
-
-                self.interface_bulk_op(i["_id"], {"$unset": op})
+                self.interface_bulk_op(i["_id"], {
+                    "$set": {
+                        "profile": InterfaceProfile.get_default_profile().id
+                    },
+                    "$unset": {
+                        "service": ""
+                    }
+                })
             nmap[i["nri_name"]] = i
         for n in smap:
             svc = smap[n]
