@@ -31,6 +31,7 @@ class Service(Document):
     meta = {
         "collection": "noc.services",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "subscriber",
             "managed_object",
@@ -89,6 +90,9 @@ class Service(Document):
     bi_id = LongField()
     #
     tags = ListField(StringField())
+
+    def __unicode__(self):
+        return str(self.id) if self.id else "new service"
 
     def on_delete(self):
         if self.nri_port:
