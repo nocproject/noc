@@ -13,6 +13,8 @@ from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
 
 MAX_PATH_LENGTH = 0xffffffff
+SEGMENT_COST = 1
+HORIZONTAL_COST = 3
 
 
 def max_path_length():
@@ -82,12 +84,12 @@ def get_shortest_path(start, goal):
     pl = len(seg_path)
     hw = {}
     for i, s in enumerate(seg_path):
-        hw[s] = pl - i
+        hw[s] = (pl - i) * SEGMENT_COST
     # Allow path via parent segment
     # if searching within one segment
     if len(seg_path) == 1 and seg_path[0].parent:
         s_seg_path.add(seg_path[0].parent)
-        hw[seg_path[0].parent] = 2
+        hw[seg_path[0].parent] = 2 * SEGMENT_COST
     # Already evaluated nodes
     closed_set = set()
     # Currently discovered nodes than are not evaluated yet.
@@ -132,7 +134,12 @@ def get_shortest_path(start, goal):
             if neighbor in closed_set:
                 continue  # Already evaluated
             if neighbor.segment not in s_seg_path:
-                continue  # Strip ways to unused segments
+                if neighbor.segment.enable_horizontal_transit:
+                    s_seg_path.add(neighbor.segment)
+                    hw[neighbor.segment] = hw[current.segment] + HORIZONTAL_COST
+                else:
+                    # Try horizontal transit
+                    continue  # Strip ways to unused segments
             if neighbor not in open_set:
                 open_set.add(neighbor)  # Discover a new node
             # The distance from start to a neighbor

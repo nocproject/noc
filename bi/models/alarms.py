@@ -27,6 +27,7 @@ from noc.core.bi.dictionaries.alarmclass import AlarmClass
 from noc.core.bi.dictionaries.pool import Pool
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.administrativedomain import AdministrativeDomain as AdministrativeDomainM
 
 
 class Alarms(Model):
@@ -76,14 +77,8 @@ class Alarms(Model):
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
         domain_ids = [
-            x["id"]
-            for x in AdministrativeDomain.get_collection().find({
-                "_id": {
-                    "$in": domains
-                }
-            }, {
-                "id": 1
-            })
+            x.get_bi_id()
+            for x in AdministrativeDomainM.objects.filter(id__in=domains)
         ]
         filter = query.get("filter", {})
         dl = len(domain_ids)

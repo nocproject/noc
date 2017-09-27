@@ -20,6 +20,7 @@
     - libmemcached11
     - libmemcached-dev
     - zlib1g-dev
+    - patch
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
