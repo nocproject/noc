@@ -154,7 +154,7 @@ class SAEAPI(API):
         if privilege_policy == "E":
             raise_privileges = True
         elif privilege_policy == "P":
-            raise_privileges = privilege_policy == "E"
+            raise_privileges = p_privilege_policy == "E"
         else:
             raise_privileges = False
         # Build credentials
