@@ -266,14 +266,16 @@ class NRICheck(DiscoveryCheck):
                     "Removing service %s from interface %s",
                     i["service"], i["name"]
                 )
-                self.interface_bulk_op(i["_id"], {
-                    "$set": {
-                        "profile": InterfaceProfile.get_default_profile().id
-                    },
+                op = {
                     "$unset": {
                         "service": ""
                     }
-                })
+                }
+                if i["service"] in prof_map:
+                    op["$set"] = {
+                        "profile": InterfaceProfile.get_default_profile().id
+                    }
+                self.interface_bulk_op(i["_id"], op)
             nmap[i["nri_name"]] = i
         for n in smap:
             svc = smap[n]
