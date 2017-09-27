@@ -54,18 +54,40 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     name: "management_vlan",
                     xtype: "numberfield",
                     fieldLabel: __("Management VLAN"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "medium",
+                    emptyText: __("Not Configured"),
+                    submitEmptyText: false,
+                    minValue: 1,
+                    maxValue: 4095
                 },
                 {
                     name: "multicast_vlan",
                     xtype: "numberfield",
                     fieldLabel: __("Multicast VLAN"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "medium",
+                    emptyText: __("Not Configured"),
+                    submitEmptyText: false,
+                    minValue: 1,
+                    maxValue: 4095
                 },
                 {
                     name: "enable_lost_redundancy",
                     xtype: "checkbox",
                     boxLabel: __("Enable lost redundancy check")
+                },
+                {
+                    name: "horizontal_transit_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Horizontal Transit Policy"),
+                    allowBlank: false,
+                    store: [
+                        ["E", __("Always Enable")],
+                        ["C", __("Calculate")],
+                        ["D", __("Disable")]
+                    ],
+                    uiStyle: "medium"
                 },
                 {
                     name: "topology_methods",

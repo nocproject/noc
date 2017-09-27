@@ -132,7 +132,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                             pageSize: 0,
                             border: false,
                             scrollable: true,
-                            emptyText: __('Not selected'),
+                            emptyText: __('nothing checked'),
                             split: {
                                 xtype: 'splitter',
                                 width: 1
@@ -149,7 +149,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                             dockedItems: [{
                                 tbar: {
                                     items: [{
-                                        text: __('Remove Selected'),
+                                        text: __('Remove Checked'),
                                         glyph: NOC.glyph.arrow_left,
                                         tooltip: __('Remove selected devices from right panel'),
                                         style: {

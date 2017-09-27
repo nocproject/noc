@@ -84,14 +84,19 @@ class NOCWSGIContainer(tornado.wsgi.WSGIContainer):
         method = request.method
         uri = request.uri
         remote_ip = request.remote_ip
+        user = request.headers.get("Remote-User", "-")
+        agent = request.headers.get("User-Agent", "-")
+        referer = request.headers.get("Referer", "-")
         self.service.logger.info(
-            "%s %s (%s) %.2fms",
-            method, uri, remote_ip,
+            "%s %s - \"%s %s\" HTTP/1.1 %s \"%s\" %s %.2fms",
+            remote_ip, user, method, uri, status_code,
+            referer, agent,
             1000.0 * request.request_time()
         )
         metrics["http_requests"] += 1
         metrics["http_requests_%s" % method.lower()] += 1
         metrics["http_response_%s" % status_code] += 1
+
 
 if __name__ == "__main__":
     WebService().start()

@@ -23,6 +23,7 @@ class VendorApplication(ExtDocApplication):
     query_fields = [
         "name__icontains", "code__icontains", "site__icontains"
     ]
+    default_ordering = ["name"]
 
     def field_is_builtin(self, o):
         return bool(CollectionCache.objects.filter(uuid=o.uuid))

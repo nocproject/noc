@@ -336,7 +336,7 @@ class ManagedObjectProfile(models.Model):
         default="E"
     )
     #
-    metrics = PickledField()
+    metrics = PickledField(blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 

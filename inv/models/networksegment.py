@@ -92,6 +92,20 @@ class NetworkSegment(Document):
     # Collapse object's downlinks on network map
     # when count is above the threshold
     max_shown_downlinks = IntField(default=1000)
+    # Horizontal transit policy
+    horizontal_transit_policy = StringField(
+        choices=[
+            ("E", "Always Enable"),
+            ("C", "Calculate"),
+            ("D", "Disable"),
+            ("P", "Profile")
+        ], default="P"
+    )
+    # Horizontal transit settings
+    # i.e. Allow traffic flow not only from parent-to-childrens and
+    # children-to-children, but parent-to-parent and parent-to-neighbors
+    # Calculated automatically during topology research
+    enable_horizontal_transit = BooleanField(default=False)
     # Objects, services and subscribers belonging to segment directly
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
@@ -129,6 +143,18 @@ class NetworkSegment(Document):
             return self.parent.get_path() + [self.id]
         else:
             return [self.id]
+
+    def clean(self):
+        if self.horizontal_transit_policy == "E":
+            self.enable_horizontal_transit = True
+        elif self.horizontal_transit_policy == "D":
+            self.enable_horizontal_transit = False
+        elif self.profile and self.horizontal_transit_policy == "P":
+            if self.profile.horizontal_transit_policy == "E":
+                self.enable_horizontal_transit = True
+            elif self.profile.horizontal_transit_policy == "D":
+                self.enable_horizontal_transit = False
+        super(NetworkSegment, self).clean()
 
     @property
     def effective_settings(self):
@@ -340,3 +366,11 @@ class NetworkSegment(Document):
             60,
             segment_id=self.id
         )
+
+    def get_horizontal_transit_policy(self):
+        if self.horizontal_transit_policy in ("E", "C"):
+            return self.horizontal_transit_policy
+        elif self.horizontal_transit_policy == "P" and self.profile:
+            return self.profile.horizontal_transit_policy
+        else:
+            return "D"

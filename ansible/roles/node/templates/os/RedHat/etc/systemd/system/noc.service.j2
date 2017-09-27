@@ -14,7 +14,7 @@ KillMode=process
 Restart=on-failure
 TimeoutStopSec=240
 LimitNOFILE=8192
-MemoryLimit={{ ansible_memtotal_mb * 0.93}}M
+MemoryMax={{ ansible_memtotal_mb * 0.93}}M
 
 [Install]
 WantedBy=multi-user.target

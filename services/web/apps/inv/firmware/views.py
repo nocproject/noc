@@ -22,3 +22,4 @@ class FirmwareApplication(ExtDocApplication):
     query_fields = [
         "version__icontains"
     ]
+    default_ordering = ["full_name"]

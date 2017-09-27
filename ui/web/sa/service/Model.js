@@ -1,0 +1,136 @@
+//---------------------------------------------------------------------
+// sa.service Model
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2017 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.sa.service.Model");
+
+Ext.define("NOC.sa.service.Model", {
+    extend: "Ext.data.Model",
+    rest_url: "/sa/service/",
+
+    fields: [
+        {
+            name: "id",
+            type: "string"
+        },
+        {
+            name: "cpe_serial",
+            type: "string"
+        },
+        {
+            name: "logical_status",
+            type: "string",
+            defaultValue: "U"
+        },
+        {
+            name: "ts",
+            type: "auto"
+        },
+        {
+            name: "cpe_group",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "int"
+        },
+        {
+            name: "cpe_model",
+            type: "string"
+        },
+        {
+            name: "description",
+            type: "string"
+        },
+        {
+            name: "cpe_mac",
+            type: "string"
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "managed_object",
+            type: "int"
+        },
+        {
+            name: "managerd_object__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "subscriber",
+            type: "string"
+        },
+        {
+            name: "subscriber__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "profile",
+            type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "stage_name",
+            type: "string"
+        },
+        {
+            name: "account_id",
+            type: "string"
+        },
+        {
+            name: "parent",
+            type: "string"
+        },
+        {
+            name: "tags",
+            type: "auto"
+        },
+        {
+            name: "order_id",
+            type: "string"
+        },
+        {
+            name: "nri_port",
+            type: "string"
+        },
+        {
+            name: "address",
+            type: "string"
+        },
+        {
+            name: "agreement_id",
+            type: "string"
+        },
+        {
+            name: "stage_id",
+            type: "string"
+        },
+        {
+            name: "logical_status_start",
+            type: "auto"
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "stage_start",
+            type: "auto"
+        }
+    ]
+});

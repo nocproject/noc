@@ -71,6 +71,14 @@ class NetworkSegmentProfile(Document):
     multicast_vlan = IntField(required=False, min_value=1, max_value=4095)
     # Detect lost redundancy condition
     enable_lost_redundancy = BooleanField(default=False)
+    # Horizontal transit policy
+    horizontal_transit_policy = StringField(
+        choices=[
+            ("E", "Always Enable"),
+            ("C", "Calculate"),
+            ("D", "Disable")
+        ], default="D"
+    )
     # List of enabled topology method
     # in order of preference (most preferable first)
     topology_methods = ListField(EmbeddedDocumentField(SegmentTopologySettings))

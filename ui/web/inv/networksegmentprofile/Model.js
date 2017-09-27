@@ -34,11 +34,13 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
         },
         {
             name: "management_vlan",
-            type: "int"
+            type: "int",
+            allowNull: true
         },
         {
             name: "multicast_vlan",
-            type: "int"
+            type: "int",
+            allowNull: true
         },
         {
             name: "mac_restrict_to_management_vlan",
@@ -56,6 +58,10 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
             name: "profile__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "horizontal_transit_policy",
+            type: "string"
         }
     ]
 });
