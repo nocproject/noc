@@ -111,7 +111,8 @@ class ActiveAlarm(nosql.Document):
     def __unicode__(self):
         return u"%s" % self.id
 
-    def save(self, *args, **kwargs):
+    def clean(self):
+        super(ActiveAlarm, self).clean()
         if not self.last_update:
             self.last_update = self.timestamp
         data = self.managed_object.data
@@ -119,7 +120,6 @@ class ActiveAlarm(nosql.Document):
         self.segment_path = data.segment_path
         self.container_path = data.container_path
         self.uplinks = data.uplinks
-        return super(ActiveAlarm, self).save(*args, **kwargs)
 
     def safe_save(self, **kwargs):
         """
