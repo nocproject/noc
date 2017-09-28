@@ -83,8 +83,8 @@
 
 - name: Install supervisord init script
   template:
-    src: "os/RedHat/etc/systemd/system/noc.service.j2"
-    dest: "/usr/lib/systemd/system//{{ noc_system_service }}.service"
+    src: "noc.service.j2"
+    dest: "/usr/lib/systemd/system/{{ noc_system_service }}.service"
     mode: "a+rx"
   notify: reload systemd
 
