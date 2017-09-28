@@ -4,10 +4,9 @@ global_defs {
    router_id {{ ansible_nodename }}
 }
 
-{% if 'svc-nginx' in groups and groups['svc-nginx'] | count  > 1 %}
+{% if has_svc_nginx | default(False)%}
 include /etc/keepalived/nginx.cnf
 {% endif %}
-
-{% if 'svc-patroni' in groups and groups['svc-patroni'] | count  > 1 %}
+{% if has_svc_haproxy | default(False)%}
 include /etc/keepalived/patroni.cnf
 {% endif %}
