@@ -54,7 +54,8 @@ class Script(BaseScript):
                 n["remote_port_subtype"] = {
                     "MAC Address": 3,
                     "Interface Name": 5,
-                    "Interface Alias": 7
+                    "Interface Alias": 7,
+                    "Local": 5
                 }[match.group("port_id_subtype").strip()]
                 n["remote_port"] = match.group("port_id").strip()
                 if match.group("port_description").strip():
