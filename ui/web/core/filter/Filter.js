@@ -40,7 +40,8 @@ Ext.define('NOC.core.filter.Filter', {
         labelAlign: 'top',
         minWidth: 270,
         width: '100%',
-        margin: '5 10 0 18'
+        margin: '5 10 0 18',
+        uiStyle: undefined
     },
     items: [
         {
@@ -63,7 +64,6 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'sa.profile.LookupField',
             itemId: 'profile_name', // name of http request query param
             fieldLabel: __('By SA Profile:'),
-            uiStyle: undefined,
             listeners: {
                 change: 'setFilter'
             }
@@ -72,7 +72,6 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'sa.managedobjectprofile.LookupField',
             itemId: 'object_profile', // name of http request query param
             fieldLabel: __('By Obj. Profile:'),
-            uiStyle: undefined,
             listeners: {
                 change: 'setFilter'
             }
@@ -109,7 +108,6 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'main.pool.LookupField',
             itemId: 'pool', // name of http request query param
             fieldLabel: __('By Pool:'),
-            uiStyle: undefined,
             listeners: {
                 change: 'setFilter'
             }
@@ -118,7 +116,6 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'inv.vendor.LookupField',
             itemId: 'vendor',  // name of http request query param
             fieldLabel: __('By Vendor:'),
-            uiStyle: undefined,
             listeners: {
                 change: 'setFilter'
             }
@@ -127,7 +124,6 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'inv.platform.LookupField',
             itemId: 'platform',  // name of http request query param
             fieldLabel: __('By Platform:'),
-            uiStyle: undefined,
             listeners: {
                 change: 'setFilter'
             }
@@ -136,7 +132,6 @@ Ext.define('NOC.core.filter.Filter', {
             xtype: 'inv.firmware.LookupField',
             itemId: 'version',  // name of http request query param
             fieldLabel: __('By Version:'),
-            uiStyle: undefined,
             listeners: {
                 change: 'setFilter'
             }
