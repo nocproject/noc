@@ -951,9 +951,9 @@ Ext.define('NOC.fm.alarm.Application', {
             return;
         }
         // Poll only when in grid preview
-        if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
-            return;
-        }
+        // if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
+        //     return;
+        // }
         // Poll only if polling is not locked
         if(!me.isPollLocked()) {
             me.store.load();
