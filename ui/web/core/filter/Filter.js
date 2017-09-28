@@ -138,7 +138,7 @@ Ext.define('NOC.core.filter.Filter', {
             fieldLabel: __('By Version:'),
             uiStyle: undefined,
             listeners: {
-                specialkey: 'setFilter'
+                change: 'setFilter'
             }
         },
         {
