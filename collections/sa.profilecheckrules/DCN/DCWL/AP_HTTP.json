@@ -1,0 +1,13 @@
+{
+    "name": "DCN | DCWL | AP HTTP",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ead8a77a-7fea-4985-92c8-c529971e08ee",
+    "description": null,
+    "preference": 100,
+    "method": "http_get",
+    "param": "/",
+    "match_method": "contains",
+    "value": "http://www.dcnetworks.com.cn",
+    "action": "match",
+    "profile__name": "DCN.DCWL"
+}
