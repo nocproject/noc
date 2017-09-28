@@ -36,7 +36,7 @@
 
 - name: Install supervisord systemd service
   template:
-    src: "os/Debian/etc/systemd/system/{{ noc_system_service }}.service.j2"
+    src: "{{ noc_system_service }}.service.j2"
     dest: "/etc/systemd/system/{{ noc_system_service }}.service"
   when: "ansible_service_mgr == 'systemd'"
   notify: reload systemd
