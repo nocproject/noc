@@ -95,6 +95,9 @@ class Command(BaseCommand):
             self.stdout.write("%s (%s):\n" % (o.name, (o.platform.name if o.platform else None)
                                             or o.profile.name))
             ifaces = self.get_interfaces(o)
+            if not ifaces:
+                self.stdout.write("No ifaces on object\n")
+                continue
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
                 self.show_interface(
@@ -120,8 +123,11 @@ class Command(BaseCommand):
             # raise CommandError("No classification solution")
         pcache = {}
         for o in self.get_objects(moo):
-            self.stdout.write("%s (%s):" % (o.name, o.platform.name if o.platform else o.profile.name))
+            self.stdout.write("%s (%s):\n" % (o.name, o.platform.name if o.platform else o.profile.name))
             ifaces = self.get_interfaces(o)
+            if not ifaces:
+                self.stdout.write("No ifaces on object\n")
+                continue
             tps = self.get_interface_template(ifaces)
             for i in ifaces:
                 if not i.profile or not i.profile_locked:
