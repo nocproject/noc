@@ -48,14 +48,22 @@ class Script(BaseScript):
             if match:
                 n = {}
                 n["remote_chassis_id_subtype"] = {
+                    "Chassis Component": 1,
+                    "Interface Alias": 2,
+                    "Port Component": 3,
                     "MAC Address": 4,
+                    "Network Address": 5,
+                    "Interface Name": 6,
+                    "Local": 7
                 }[match.group("chassis_id_subtype").strip()]
                 n["remote_chassis_id"] = match.group("chassis_id").strip()
                 n["remote_port_subtype"] = {
+                    "Interface Alias": 1,
+                    "Port Component": 2,
                     "MAC Address": 3,
+                    "Network Address": 4,
                     "Interface Name": 5,
-                    "Interface Alias": 7,
-                    "Local": 5
+                    "Local": 7
                 }[match.group("port_id_subtype").strip()]
                 n["remote_port"] = match.group("port_id").strip()
                 if match.group("port_description").strip():
