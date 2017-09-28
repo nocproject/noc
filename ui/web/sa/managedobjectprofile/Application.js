@@ -23,7 +23,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     rowClassField: "row_class",
     validationModelId: "sa.ManagedObjectProfile",
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         me.ITEM_VALIDATION_SETTINGS = me.registerItem(
@@ -364,7 +364,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {
-                                                            me.form.findField("ping_tm_calculated").setValue(newValue/1000);
+                                                            me.form.findField("ping_tm_calculated").setValue(newValue / 1000);
                                                         }
                                                     }
                                                 },
@@ -763,14 +763,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "cpe_profile",
                                                     xtype: "sa.managedobjectprofile.LookupField",
-                                                    fieldLabel:__("CPE Profile"),
+                                                    fieldLabel: __("CPE Profile"),
                                                     allowBlank: true,
                                                     uiStyle: "medium"
                                                 },
                                                 {
                                                     name: "cpe_auth_profile",
                                                     xtype: "sa.authprofile.LookupField",
-                                                    fieldLabel:__("CPE Auth Profile"),
+                                                    fieldLabel: __("CPE Auth Profile"),
                                                     allowBlank: true,
                                                     uiStyle: "medium"
                                                 }
@@ -1201,7 +1201,88 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         me.callParent();
     },
     //
-    onValidationSettings: function () {
+    filters: [
+        {
+            title: __("Box Discovery"),
+            ftype: "list",
+            listStore: {
+                sorters: "label",
+                data: [
+                    {field_name: "enable_box_discovery_profile", label: __("Pofile")},
+                    {field_name: "enable_box_discovery_version", lLabel: __("Version")},
+                    {field_name: "enable_box_discovery_caps", label: __("Caps")},
+                    {field_name: "enable_box_discovery_interface", label: __("Interface")},
+                    {field_name: "enable_box_discovery_prefix", label: __("Prefix")},
+                    {field_name: "enable_box_discovery_id", label: __("ID")},
+                    {field_name: "enable_box_discovery_config", label: __("Config")},
+                    {field_name: "enable_box_discovery_asset", label: __("Asset")},
+                    {field_name: "enable_box_discovery_vlan", label: __("VLAN")},
+                    {field_name: "enable_box_discovery_mac", label: __("MAC")},
+                    {field_name: "enable_box_discovery_metrics", label: __("Metrics")}
+                ]
+            },
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {label: __('Enabled'), value: true},
+                    {label: __('Disabled'), value: false},
+                    {label: __('All'), value: 'all'}
+                ]
+            }
+        },
+        {
+            title: __("Topology Discovery"),
+            ftype: "list",
+            listStore: {
+                sorters: "label",
+                data: [
+                    {field_name: "enable_box_discovery_nri", label: __("NRI")},
+                    {field_name: "enable_box_discovery_bfd", label: __("BFD")},
+                    {field_name: "enable_box_discovery_cdp", label: __("CDP")},
+                    {field_name: "enable_box_discovery_huawei_ndp", label: __("Huawei NDP")},
+                    {field_name: "enable_box_discovery_mikrotik_ndp", label: __("MikroTik NDP")},
+                    {field_name: "enable_box_discovery_fdp", label: __("FDP")},
+                    {field_name: "enable_box_discovery_lldp", label: __("LLDP")},
+                    {field_name: "enable_box_discovery_oam", label: __("OAM")},
+                    {field_name: "enable_box_discovery_rep", label: __("REP")},
+                    {field_name: "enable_box_discovery_stp", label: __("STP")},
+                    {field_name: "enable_box_discovery_udld", label: __("UDLD")},
+                    {field_name: "enable_box_discovery_lacp", label: __("LACP")}
+                ]
+            },
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {label: __('Enabled'), value: true},
+                    {label: __('Disabled'), value: false},
+                    {label: __('All'), value: 'all'}
+                ]
+            }
+        },
+        {
+            title: __("Periodic Discovery"),
+            ftype: "list",
+            listStore: {
+                sorters: "label",
+                data: [
+                    {field_name: "enable_periodic_discovery_uptime", label: __("Uptime")},
+                    {field_name: "enable_periodic_discovery_interface_status", label: __("Interface status")},
+                    {field_name: "enable_periodic_discovery_mac", label: __("MAC")},
+                    {field_name: "enable_periodic_discovery_metrics", label: __("Metrics")}
+                ]
+            },
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {label: __('Enabled'), value: true},
+                    {label: __('Disabled'), value: false},
+                    {label: __('All'), value: 'all'}
+                ]
+            }
+        }
+    ],
+    //
+    onValidationSettings: function() {
         var me = this;
         me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
     }
