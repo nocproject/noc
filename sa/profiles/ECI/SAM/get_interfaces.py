@@ -15,6 +15,8 @@ import re
 class Script(BaseScript):
     name = "ECI.SAM.get_interfaces"
     interface = IGetInterfaces
+    reuse_cli_session = False
+    keep_cli_session = False
 
     rx_sh_int = re.compile(
         r"^(?P<ifname>\S+)\s+Link type:(?P<type>\S+)\s+HWaddr\s+(?P<mac>\S+)\s+\S+\s+inet\s(?P<ip>\S+)"
