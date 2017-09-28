@@ -3,8 +3,8 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 
-console.debug('Defining NOC.sa.getnow.AppController');
-Ext.define('NOC.sa.getnow.AppController', {
+console.debug('Defining NOC.sa.getnow.Controller');
+Ext.define('NOC.sa.getnow.Controller', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.getnow',
 
