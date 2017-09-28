@@ -8,9 +8,10 @@
 
 # Python modules
 import datetime
-# Django modules
+# Third-party modules
 from django.template import Template as DjangoTemplate
 from django.template import Context
+from mongoengine.errors import SaveConditionError
 # NOC modules
 import noc.lib.nosql as nosql
 from alarmlog import AlarmLog
@@ -120,7 +121,24 @@ class ActiveAlarm(nosql.Document):
         self.uplinks = data.uplinks
         return super(ActiveAlarm, self).save(*args, **kwargs)
 
-    def change_severity(self, user="", delta=None, severity=None):
+    def safe_save(self, **kwargs):
+        """
+        Create new alarm or update existing if still exists
+        :param kwargs:
+        :return:
+        """
+        if self.id:
+            # Update existing only if exists
+            if "save_condition" not in kwargs:
+                kwargs["save_condition"] = {"id": self.id}
+            try:
+                self.save(**kwargs)
+            except SaveConditionError:
+                pass  # Race condition, closed during update
+        else:
+            self.save()
+
+    def change_severity(self, user="", delta=None, severity=None, to_save=True):
         """
         Change alarm severity
         """
@@ -145,20 +163,15 @@ class ActiveAlarm(nosql.Document):
                 self.severity = severity.severity
                 self.log_message(
                     "%s has changed severity to %s" % (user, severity.name))
-        if self.id:
-            self.save(save_condition={"id": self.id})
-        else:
-            self.save()
+        if to_save:
+            self.safe_save()
 
     def log_message(self, message, to_save=True):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
                      from_status=self.status, to_status=self.status,
                      message=message)]
         if to_save:
-            if self.id:
-                self.save(save_condition={"id": self.id})
-            else:
-                self.save()
+            self.safe_save()
 
     def clear_alarm(self, message, ts=None, force=False):
         """
@@ -414,10 +427,8 @@ class ActiveAlarm(nosql.Document):
             self.total_services = svc_list
             self.total_subscribers = sub_list
             if ns != self.severity:
-                self.change_severity(severity=ns)
-            self.save(save_condition={
-                "id": self.id
-            })
+                self.change_severity(severity=ns, to_save=False)
+            self.safe_save()
 
     def set_root(self, root_alarm):
         """
@@ -487,7 +498,7 @@ class ActiveAlarm(nosql.Document):
     def set_clear_notification(self, notification_group, template):
         self.clear_notification_group = notification_group
         self.clear_template = template
-        self.save(save_condition={
+        self.safe_save(save_condition={
             "managed_object": {
                 "$exists": True
             },
