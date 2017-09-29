@@ -41,6 +41,14 @@ class Script(BaseScript):
         r"Sys(|tem\s+)Name\s+:\s(?P<name>\S+).*?"
         r"(SystemCapSupported|System\sCapabilities)\s+:\s"
         r"(?P<capability>[^\n]+).*", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_port_descr = re.compile(
+        r"^\s*Port Description\s+:\s+(?P<descr>.+)\n",
+        re.MULTILINE
+    )
+    rx_system_descr = re.compile(
+        r"^\s*System Description\s+:\s+(?P<descr>.+)\n",
+        re.MULTILINE
+    )
 
     @BaseScript.match()
     def execute_35(self):
@@ -99,6 +107,12 @@ class Script(BaseScript):
                         "Telephone": 32, "Cable": 64, "Station": 128
                     }[c]
                 n["remote_capabilities"] = cap
+                match = self.rx_system_descr.search(v)
+                if match:
+                    n["remote_system_description"] = match.group("descr")
+                match = self.rx_port_descr.search(v)
+                if match:
+                    n["remote_port_description"] = match.group("descr")
             i["neighbors"] += [n]
             r += [i]
         return r
