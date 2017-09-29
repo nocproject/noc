@@ -20,6 +20,7 @@ EVENT_STATE_CHOICES = [
 class EventLog(document.EmbeddedDocument):
     meta = {
         "strict": False,
+        "auto_create_index": False,
     }
     timestamp = fields.DateTimeField()
     from_status = fields.StringField(

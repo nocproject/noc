@@ -25,6 +25,7 @@ class L3Link(Document):
     meta = {
         "collection": "noc.links",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["subinterfaces", "linked_objects"]
     }
 

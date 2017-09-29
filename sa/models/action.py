@@ -63,6 +63,7 @@ class Action(Document):
     meta = {
         "collection": "noc.actions",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "sa.actions"
     }
     uuid = UUIDField(unique=True)

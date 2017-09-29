@@ -36,6 +36,7 @@ class Dashboard(Document):
     meta = {
         "collection": "noc.dashboards",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "owner", "tags"
         ]

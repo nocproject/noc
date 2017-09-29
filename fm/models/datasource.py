@@ -12,7 +12,8 @@ import noc.lib.nosql as nosql
 
 class DataSource(nosql.EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = nosql.StringField()
     datasource = nosql.StringField()

@@ -20,6 +20,7 @@ class DocCategory(Document):
     meta = {
         "collection": "noc.doccategories",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["type"]
     }
 

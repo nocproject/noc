@@ -17,6 +17,7 @@ class SyntaxAlias(Document):
     meta = {
         "collection": "noc.syntaxaliases",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.syntaxaliases"
     }
     name = StringField(unique=True, required=True)

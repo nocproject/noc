@@ -28,7 +28,8 @@ id_lock = threading.Lock()
 class Pool(Document):
     meta = {
         "collection": "noc.pools",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True, min_length=1, max_length=16,

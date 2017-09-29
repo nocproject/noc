@@ -29,6 +29,7 @@ class SelectorCache(Document):
     meta = {
         "collection": "noc.cache.selector",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["object", "selector", "vc_domain"]
     }
     object = IntField(required=True)

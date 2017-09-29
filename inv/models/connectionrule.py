@@ -20,7 +20,8 @@ from noc.core.model.decorator import on_delete_check
 
 class Context(EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     type = StringField()
     scope = StringField()
@@ -48,7 +49,8 @@ class Context(EmbeddedDocument):
 
 class Rule(EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     match_type = StringField()
     match_connection = StringField()
@@ -95,6 +97,7 @@ class ConnectionRule(Document):
     meta = {
         "collection": "noc.connectionrules",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [],
         "json_collection": "inv.connectionrules"
     }

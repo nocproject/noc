@@ -32,7 +32,8 @@ DEFAULT_TTSYSTEM_SHARD = "default"
 class TTSystem(Document):
     meta = {
         "collection": "noc.ttsystem",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

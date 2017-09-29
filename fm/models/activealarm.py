@@ -36,6 +36,7 @@ class ActiveAlarm(nosql.Document):
         "collection": "noc.alarms.active",
         "strict": False,
         "auto_create_index": False,
+        "auto_create_index": False,
         "indexes": [
             "timestamp", "root", "-severity",
             ("alarm_class", "managed_object"),

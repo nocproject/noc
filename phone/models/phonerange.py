@@ -41,6 +41,7 @@ class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["parent"]
     }
 

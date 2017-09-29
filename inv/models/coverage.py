@@ -15,6 +15,7 @@ class Coverage(Document):
     meta = {
         "collection": "noc.coverage",
         "strict": False,
+        "auto_create_index": False,
     }
     # Subscriber name
     name = StringField(unique=True)

@@ -177,7 +177,8 @@ class InterfaceClassificationMatch(EmbeddedDocument):
 class InterfaceClassificationRule(Document):
     meta = {
         "collection": "noc.inv.interfaceclassificationrules",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField(required=False)
     is_active = BooleanField(default=True)

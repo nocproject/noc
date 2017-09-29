@@ -36,6 +36,7 @@ class ActiveEvent(Document):
     meta = {
         "collection": "noc.events.active",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "timestamp", "discriminator", "alarms",
             ("timestamp", "event_class", "managed_object"),

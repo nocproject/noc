@@ -17,6 +17,7 @@ class Tag(Document):
     meta = {
         "collection": "noc.tags",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["models"]
     }
 

@@ -68,7 +68,8 @@ class AlarmEscalation(Document):
     """
     meta = {
         "collection": "noc.alarmescalatons",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

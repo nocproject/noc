@@ -32,6 +32,7 @@ class Service(Document):
         "collection": "noc.services",
         "strict": False,
         "auto_create_index": False,
+        "auto_create_index": False,
         "indexes": [
             "subscriber",
             "managed_object",

@@ -20,6 +20,7 @@ class Favorites(Document):
     meta = {
         "collection": "noc.favorites",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["user", ("user", "app")]
     }
 

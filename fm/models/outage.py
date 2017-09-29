@@ -17,6 +17,7 @@ class Outage(Document):
     meta = {
         "collection": "noc.fm.outages",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["object", ("object", "-start")]
     }
 

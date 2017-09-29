@@ -51,7 +51,8 @@ class ObjectItem(EmbeddedDocument):
 class ValidationRule(Document):
     meta = {
         "collection": "noc.validationrules",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

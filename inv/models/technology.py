@@ -23,6 +23,7 @@ class Technology(Document):
     meta = {
         "collection": "noc.technologies",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "inv.technologies"
     }
 

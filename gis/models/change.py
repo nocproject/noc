@@ -18,6 +18,7 @@ from noc.lib.nosql import PlainReferenceField
 class Change(Document):
     meta = {
         "collection": "noc.changes",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     document = PlainReferenceField(NormativeDocument)

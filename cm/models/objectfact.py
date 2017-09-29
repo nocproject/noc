@@ -20,6 +20,7 @@ class ObjectFact(Document):
     meta = {
         "collection": "noc.objectfacts",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "object",
             "attrs.rule"

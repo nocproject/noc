@@ -17,6 +17,7 @@ class Division(Document):
     meta = {
         "collection": "noc.divisions",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["parent", "data", "name"]
     }
     # Division type

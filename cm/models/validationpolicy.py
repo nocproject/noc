@@ -24,7 +24,8 @@ class RuleItem(EmbeddedDocument):
 class ValidationPolicy(Document):
     meta = {
         "collection": "noc.validationpolicy",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

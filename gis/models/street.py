@@ -18,6 +18,7 @@ class Street(Document):
     meta = {
         "collection": "noc.streets",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["parent", "data"]
     }
     #
