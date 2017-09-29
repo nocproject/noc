@@ -42,6 +42,7 @@ Ext.define("NOC.main.audittrail.Application", {
                     renderer: NOC.render.Choices({
                         "C": "Create",
                         "M": "Modify",
+                        "U": "Update",
                         "D": "Delete"
                     })
                 }
@@ -92,5 +93,30 @@ Ext.define("NOC.main.audittrail.Application", {
         });
         me.callParent();
         me.saveButton.hide();
-    }
+    },
+    //
+    filters: [
+        {
+            title: __("Operation"),
+            ftype: "lookup",
+            name: "op",
+            lookup: "local",
+            valuesStore: {
+                sorters: "label",
+                data: [
+                    {value: "C", label: __("Create")},
+                    {value: "M", label: __("Modify")},
+                    {value: "U", label: __("Update")},
+                    {value: "D", label: __("Delete")}
+                ]
+            }
+        // },{
+        //     title: __("By User"),
+        //     name: "user",
+        //     ftype: "lookup",
+        //     lookup: "main.user",
+        //     valueName: "label",
+        //     addQuery: false
+        }
+    ]
 });
