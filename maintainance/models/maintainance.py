@@ -43,6 +43,7 @@ class Maintainance(Document):
     meta = {
         "collection": "noc.maintainance",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "affected_objects.object",
             ("start", "is_completed")
