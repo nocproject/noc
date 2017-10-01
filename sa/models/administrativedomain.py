@@ -75,9 +75,10 @@ class AdministrativeDomain(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return AdministrativeDomain.objects.get(id=id)
-        except AdministrativeDomain.DoesNotExist:
+        ad = AdministrativeDomain.objects.filter(id=id)[:1]
+        if ad:
+            return ad[0]
+        else:
             return None
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
