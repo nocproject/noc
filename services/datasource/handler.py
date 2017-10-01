@@ -35,7 +35,8 @@ class DataSourceRequestHandler(tornado.web.RequestHandler):
         if not ds_cls:
             raise tornado.web.HTTPError(404, "DataSource not found")
         ds = ds_cls()
-        data = ds.get()
+        executor = self.service.get_executor("max")
+        data = yield executor.submit(ds.get)
         writer(data)
 
     @classmethod
