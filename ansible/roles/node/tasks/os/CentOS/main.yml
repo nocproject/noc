@@ -60,7 +60,7 @@
 
 - name: Install supervisord init script
   template:
-    src: "system/noc.service.j2"
+    src: "noc.service.j2"
     dest: "/etc/systemd/system/{{ noc_system_service }}.service"
     mode: "a+r"
   notify: reload systemd
