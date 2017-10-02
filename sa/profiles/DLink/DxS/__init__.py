@@ -461,3 +461,19 @@ def DxS_L2(v):
         return True
     else:
         return False
+
+
+def get_platform(platform, hw_revision):
+    if (
+        platform.startswith("DES-1210-") or
+        platform.startswith("DES-1228") or
+        platform.startswith("DES-2108") or
+        platform.startswith("DES-3200-") or
+        platform.startswith("DGS-1210-") or
+        platform.startswith("DGS-3120-") or
+        platform.startswith("DGS-3420-") or
+        platform.startswith("DGS-3620-")
+    ):
+        return "%s/%s" % (platform, hw_revision)
+    else:
+        return platform
