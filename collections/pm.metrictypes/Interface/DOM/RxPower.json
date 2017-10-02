@@ -1,0 +1,10 @@
+{
+    "name": "Interface | DOM | RxPower",
+    "$collection": "pm.metrictypes",
+    "uuid": "0ab9a673-6569-450a-bbb5-467dedad91c8",
+    "scope__name": "Interface",
+    "field_name": "optical_rx_dbm",
+    "field_type": "Int16",
+    "description": "Signal Receive Power on transmitter",
+    "measure": "dBm"
+}

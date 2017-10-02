@@ -5,6 +5,6 @@
     "scope__name": "Subscriber",
     "field_name": "summary",
     "field_type": "UInt32",
-    "description": "Total active IPoE sessions on the box",
+    "description": "Total active sessions on the box",
     "measure": "sessions"
 }
