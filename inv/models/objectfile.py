@@ -24,6 +24,7 @@ class ObjectFile(Document):
     meta = {
         "collection": "noc.objectfiles",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["object"]
     }
 

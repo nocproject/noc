@@ -33,6 +33,7 @@ class Profile(Document):
     meta = {
         "collection": "noc.profiles",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "sa.profiles",
         "json_unique_fields": ["name"]
     }

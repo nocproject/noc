@@ -15,6 +15,8 @@ from noc.models import get_model, iter_model_id, is_document
 
 class Command(BaseCommand):
     def handle(self, host=None, port=None, *args, **options):
+        import noc.lib.nosql
+
         for model_id in iter_model_id():
             model = get_model(model_id)
             if not model:

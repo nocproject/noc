@@ -51,4 +51,5 @@ def test_document(model_id):
     if not is_document(model):
         return
     assert model._meta.get("allow_inheritance") is None, "'allow_inheritance' is obsolete and must not be used"
-    assert model._meta.get("strict") == False, "Document must be declared as {'strict': False}"
+    assert not model._meta.get("strict", True), "Document must be declared as {'strict': False}"
+    assert not model._meta.get("auto_create_index", True), "Index autocreation must not be used (Use auto_create_index: False)"

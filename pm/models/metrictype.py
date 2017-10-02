@@ -37,6 +37,7 @@ class MetricType(Document):
     meta = {
         "collection": "noc.metrictypes",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "pm.metrictypes",
         "json_depends_on": [
             "pm.metricscopes"

@@ -16,7 +16,8 @@ from noc.lib.nosql import Document, StringField, BooleanField,\
 class MRTConfig(Document):
     meta = {
         "collection": "noc.mrtconfig",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField(unique=True)
     is_active = BooleanField(default=True)

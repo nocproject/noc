@@ -101,6 +101,7 @@ class Script(BaseScript):
                 desg_priority, desg_id = sv.get("DESG_BRIDGE").split(".")
             else:
                 desg_priority, desg_id = None, None
+                continue
             iface = {
                 "interface": sn,
                 "port_id": "%s.%s" % (sv.get("PRIORITY"), sn.rsplit("/")[-1]),

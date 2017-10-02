@@ -48,7 +48,8 @@ class EnvItem(EmbeddedDocument):
 class RemoteSystem(Document):
     meta = {
         "collection": "noc.remotesystem",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

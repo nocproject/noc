@@ -79,5 +79,6 @@ class Command(BaseCommand):
         else:
             self.print("No directories to pull")
 
+
 if __name__ == "__main__":
     Command().run()

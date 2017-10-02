@@ -15,7 +15,8 @@ from mongoengine.fields import StringField, BooleanField
 class IgnorePattern(Document):
     meta = {
         "collection": "noc.fm.ignorepatterns",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     source = StringField()

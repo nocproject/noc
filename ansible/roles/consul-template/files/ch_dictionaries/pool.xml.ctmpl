@@ -3,8 +3,8 @@
     <dictionary>
         <name>pool</name>
         <lifetime>
-            <min>3600</min>
-            <max>3600</max>
+            <min>86400</min>
+            <max>604800</max>
         </lifetime>
         <layout>
             <hashed />

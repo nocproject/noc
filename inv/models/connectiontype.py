@@ -27,6 +27,7 @@ class ConnectionType(Document):
     meta = {
         "collection": "noc.connectiontypes",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["extend", "data", "c_group"],
         "json_collection": "inv.connectiontypes"
     }

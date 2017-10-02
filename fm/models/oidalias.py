@@ -17,6 +17,7 @@ class OIDAlias(Document):
     meta = {
         "collection": "noc.oidaliases",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.oidaliases"
     }
 

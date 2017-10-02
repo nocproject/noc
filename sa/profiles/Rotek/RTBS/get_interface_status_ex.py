@@ -92,6 +92,9 @@ class Script(BaseScript):
         for soid, sname in self.snmp.getnext("1.3.6.1.4.1.32761.3.5.1.2.1.1.4"):
             sifindex = int(soid.split(".")[-1])
             ss[sifindex] = sname
+        for soid, sname in self.snmp.getnext("1.3.6.1.4.1.41752.3.5.1.2.1.1.4"):
+            sifindex = int(soid.split(".")[-1])
+            ss[sifindex] = sname
         for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
             try:
                 v = self.profile.convert_interface_name(name)

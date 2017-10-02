@@ -7,7 +7,7 @@ console.debug('Defining NOC.sa.getnow.Application');
 Ext.define('NOC.sa.getnow.Application', {
     extend: 'NOC.core.Application',
     requires: [
-        'NOC.sa.getnow.AppController',
+        'NOC.sa.getnow.Controller',
         'NOC.sa.getnow.ViewModel',
         'NOC.core.filter.Filter',
         'NOC.sa.getnow.SelectionGrid'

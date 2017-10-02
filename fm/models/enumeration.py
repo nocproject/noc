@@ -18,6 +18,7 @@ class Enumeration(Document):
     meta = {
         "collection": "noc.enumerations",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.enumerations"
     }
 

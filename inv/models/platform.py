@@ -35,6 +35,7 @@ class Platform(Document):
     meta = {
         "collection": "noc.platforms",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "inv.platforms",
         "json_unique_fields": ["vendor", "name"],
         "indexes": [

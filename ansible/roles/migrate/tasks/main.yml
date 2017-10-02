@@ -32,6 +32,13 @@
   register: migrate_out
   changed_when: "'Nothing to migrate' not in migrate_out.stdout"
 
+- name: Ensure Mongo indecies
+  command: ./noc ensure-indexes
+  args:
+    chdir: "{{ noc_root }}"
+  become_user: "{{ noc_user }}"
+  changed_when: False
+
 - name: Apply pools
   command: "{{ noc_root }}/scripts/deploy/apply-pools"
   args:
@@ -97,10 +104,3 @@
   become: yes
   register: mibs_out
   changed_when: mibs_out.stdout | length > 5
-
-- name: Ensure Mongo indecies
-  command: ./noc ensure-indexes
-  args:
-    chdir: "{{ noc_root }}"
-  become_user: "{{ noc_user }}"
-  changed_when: False

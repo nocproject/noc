@@ -70,6 +70,7 @@ class MetricScope(Document):
     meta = {
         "collection": "noc.metricscopes",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "pm.metricscopes",
     }
 

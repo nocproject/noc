@@ -49,6 +49,7 @@ class Interface(Document):
     meta = {
         "collection": "noc.interfaces",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             ("managed_object", "name"),
             "mac",

@@ -26,6 +26,7 @@ class Layer(Document):
     meta = {
         "collection": "noc.layers",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "gis.layers"
     }
     name = StringField(unique=True)

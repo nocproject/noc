@@ -20,7 +20,8 @@ from noc.main.models.style import Style
 class SubscriberProfile(Document):
     meta = {
         "collection": "noc.subscriberprofiles",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

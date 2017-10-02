@@ -37,6 +37,7 @@ class Firmware(Document):
     meta = {
         "collection": "noc.firmwares",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "inv.firmwares",
         "json_depends_on": [
             "sa.profile"
