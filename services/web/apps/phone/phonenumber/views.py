@@ -20,7 +20,7 @@ class PhoneNumberApplication(ExtDocApplication):
     menu = [_("Phone Number")]
     model = PhoneNumber
     query_fields = [
-        "number__startswith",
+        "number__contains",
         "description__icontains"
     ]
 

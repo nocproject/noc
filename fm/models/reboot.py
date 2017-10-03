@@ -20,6 +20,7 @@ class Reboot(Document):
     meta = {
         "collection": "noc.fm.reboots",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["ts", "object", ("object", "ts")]
     }
 

@@ -39,6 +39,7 @@ class AlarmClass(nosql.Document):
     meta = {
         "collection": "noc.alarmclasses",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.alarmclasses",
         "json_depends_on": [
             "fm.alarmseverities"

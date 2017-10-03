@@ -32,7 +32,8 @@ mac_lock = Lock()
 
 class MACRange(EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     first_mac = StringField()
     last_mac = StringField()
@@ -49,6 +50,7 @@ class DiscoveryID(Document):
     meta = {
         "collection": "noc.inv.discovery_id",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "object", "hostname", "udld_id", "macs"
         ]

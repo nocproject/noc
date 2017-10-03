@@ -14,6 +14,7 @@ class InteractionLog(document.Document):
     meta = {
         "collection": "noc.log.sa.interaction",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             ("object", "-timestamp"),
             {

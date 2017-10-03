@@ -17,6 +17,7 @@ class MIBPreference(Document):
     meta = {
         "collection": "noc.mibpreferences",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.mibpreferences"
     }
     mib = StringField(required=True, unique=True)

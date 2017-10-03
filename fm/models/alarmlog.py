@@ -12,7 +12,8 @@ import noc.lib.nosql as nosql
 
 class AlarmLog(nosql.EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     timestamp = nosql.DateTimeField()
     from_status = nosql.StringField(

@@ -33,7 +33,8 @@ id_lock = Lock()
 
 class ObjectModelConnection(EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField()
     description = StringField()
@@ -99,6 +100,7 @@ class ObjectModel(Document):
     meta = {
         "collection": "noc.objectmodels",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             ("vendor", "data.asset.part_no"),
             ("vendor", "data.asset.order_part_no")
@@ -293,6 +295,7 @@ class ModelConnectionsCache(Document):
     meta = {
         "collection": "noc.inv.objectconnectionscache",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["model", ("type", "gender")]
     }
     # Connection type

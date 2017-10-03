@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.sa.profiles.DLink.DxS import get_platform
 
 
 class Script(BaseScript):
@@ -36,7 +37,9 @@ class Script(BaseScript):
         match = self.re_search(self.rx_ver, s)
         r = {
             "vendor": "DLink",
-            "platform": match.group("platform"),
+            "platform": get_platform(
+                match.group("platform"), match.group("hardware")
+            ),
             "version": match.group("version"),
             "attributes": {
                 "Boot PROM": match.group("bootprom"),
@@ -44,8 +47,10 @@ class Script(BaseScript):
             }
         }
         ser = self.rx_ser.search(s)
-        if (ser and ser.group("serial") != "System" and
-            ser.group("serial") != "Power"):
+        if (
+            ser and ser.group("serial") != "System" and
+            ser.group("serial") != "Power"
+        ):
             r["attributes"]["Serial Number"] = ser.group("serial")
         fwt = self.rx_fwt.search(s)
         if fwt and (fwt.group("fwt") != match.group("version")):

@@ -48,6 +48,7 @@ class Object(Document):
     meta = {
         "collection": "noc.objects",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "data",
             "container",

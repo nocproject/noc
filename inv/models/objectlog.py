@@ -15,6 +15,7 @@ class ObjectLog(Document):
     meta = {
         "collection": "noc.objectlog",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["object"]
     }
 

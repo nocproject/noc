@@ -177,7 +177,8 @@ class EventPlugin(EmbeddedDocument):
 class EventClassCategory(nosql.Document):
     meta = {
         "collection": "noc.eventclasscategories",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
@@ -205,6 +206,7 @@ class EventClass(Document):
     meta = {
         "collection": "noc.eventclasses",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "fm.eventclasses",
         "json_depends_on": [
             "fm.alarmclasses"

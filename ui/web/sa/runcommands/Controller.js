@@ -3,8 +3,8 @@
 // See LICENSE for details
 //---------------------------------------------------------------------
 
-console.debug('Defining NOC.sa.runcommands.AppController');
-Ext.define('NOC.sa.runcommands.AppController', {
+console.debug('Defining NOC.sa.runcommands.Controller');
+Ext.define('NOC.sa.runcommands.Controller', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.runcommands',
 

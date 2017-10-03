@@ -17,7 +17,8 @@ from noc.main.models.style import Style
 class SupplierProfile(Document):
     meta = {
         "collection": "noc.supplierprofiles",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
 
     name = StringField(unique=True)

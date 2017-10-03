@@ -24,7 +24,8 @@ class FailedEvent(document.Document):
     """
     meta = {
         "collection": "noc.events.failed",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     status = "F"
     # Fields

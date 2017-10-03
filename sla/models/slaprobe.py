@@ -30,6 +30,7 @@ class SLAProbe(Document):
     meta = {
         "collection": "noc.sla_probes",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "managed_object"
         ]

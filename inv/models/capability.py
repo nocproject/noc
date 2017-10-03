@@ -27,6 +27,7 @@ class Capability(Document):
     meta = {
         "collection": "noc.inv.capabilities",
         "strict": False,
+        "auto_create_index": False,
         "json_collection": "inv.capabilities"
     }
     name = StringField(unique=True)

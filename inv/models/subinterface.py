@@ -43,6 +43,7 @@ class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             ("managed_object", "ifindex"),
             ("managed_object", "vlan_ids"),

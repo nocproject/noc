@@ -149,6 +149,12 @@ class Script(GetMetricsScript):
                         r[("", "", "", wiface, "Radio | Channel | Busy")] = cb
                         r[("", "", "", wiface, "Radio | Channel | TxFrame")] = ctf
                         r[("", "", "", wiface, "Radio | Channel | RxFrame")] = crf
+                        r[("", "", "", wiface, "Interface | Load | In")] = rxbytes
+                        r[("", "", "", wiface, "Interface | Load | Out")] = txbytes
+                        r[("", "", "", wiface, "Interface | Packets | In")] = rxpackets
+                        r[("", "", "", wiface, "Interface | Packets | Out")] = txpackets
+                        r[("", "", "", wiface, "Interface | Errors | In")] = rxerrors
+                        r[("", "", "", wiface, "Interface | Errors | Out")] = txerrors
                         r[("", "", "", iface, "Interface | Load | In")] = rxbytes
                         r[("", "", "", iface, "Interface | Load | Out")] = txbytes
                         r[("", "", "", iface, "Interface | Packets | In")] = rxpackets

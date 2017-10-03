@@ -16,7 +16,7 @@ Ext.define('NOC.sa.runcommands.Application', {
         'Ext.layout.container.Card',
         'Ext.form.field.ComboBox',
         'NOC.sa.runcommands.ViewModel',
-        'NOC.sa.runcommands.AppController',
+        'NOC.sa.runcommands.Controller',
         'NOC.core.filter.Filter'
     ],
 

@@ -11,5 +11,5 @@ from noc.inv.models.link import Link
 
 
 def fix():
-    for l in Link.objects.all():
+    for l in Link.objects.filter(linked_objects__exists=False).timeout(False):
         l.save()

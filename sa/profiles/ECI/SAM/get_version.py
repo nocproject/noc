@@ -15,6 +15,8 @@ class Script(BaseScript):
     name = "ECI.SAM.get_version"
     cache = True
     interface = IGetVersion
+    reuse_cli_session = False
+    keep_cli_session = False
 
     rx_platform = re.compile(r"\|\|\s+0\s+\|\|\s+(?P<platform>.+)\s*\n")
 

@@ -27,7 +27,8 @@ logger = logging.getLogger(__name__)
 
 class FieldChange(EmbeddedDocument):
     meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     field = StringField()
     old = StringField(required=False)
@@ -41,6 +42,7 @@ class AuditTrail(Document):
     meta = {
         "collection": "noc.audittrail",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "timestamp",
             ("model_id", "object"),

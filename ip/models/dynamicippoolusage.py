@@ -19,6 +19,7 @@ class DynamicIPPoolUsage(Document):
     meta = {
         "collection": "noc.dynamic_ippool_isage",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [("termination_group", "vrf", "pool_name", "technology")]
     }
 

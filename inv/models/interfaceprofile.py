@@ -106,7 +106,8 @@ class InterfaceProfile(Document):
     """
     meta = {
         "collection": "noc.interface_profiles",
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     name = StringField(unique=True)
     description = StringField()

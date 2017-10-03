@@ -511,7 +511,7 @@ Ext.define('NOC.fm.alarm.Application', {
                     store: {
                         fields: ['value', 'text'],
                         data: [
-                            {'value': 0, 'text': __("don't show")},
+                            {'value': 0, 'text': __('don\'t show')},
                             {'value': 300, 'text': '5 min'},
                             {'value': 900, 'text': '15 min'},
                             {'value': 1800, 'text': '30 min'},
@@ -580,19 +580,19 @@ Ext.define('NOC.fm.alarm.Application', {
             },
             {
                 text: __('Start'),
-                dataIndex: "timestamp",
+                dataIndex: 'timestamp',
                 width: 120,
                 hidden: true,
                 renderer: NOC.render.DateTime
             },
             {
                 text: __('Stop'),
-                dataIndex: "clear_timestamp",
+                dataIndex: 'clear_timestamp',
                 width: 120,
                 hidden: true,
                 renderer: function(v) {
                     if(v === null) {
-                        return "-"
+                        return '-'
                     } else {
                         return NOC.render.DateTime(v)
                     }
@@ -600,7 +600,7 @@ Ext.define('NOC.fm.alarm.Application', {
             },
             {
                 text: __('Duration'),
-                dataIndex: "duration",
+                dataIndex: 'duration',
                 width: 120,
                 hidden: true,
                 renderer: NOC.render.Duration
@@ -847,6 +847,12 @@ Ext.define('NOC.fm.alarm.Application', {
         if(!me.freshDuration1.isValid() || !me.freshDuration2.isValid() || !me.freshDuration3.isValid()) return;
         // Status
         q.status = me.typeButton.items.first().pressed ? 'A' : 'C';
+        if(q.status === 'A') {
+            me.autoreloadButton.setDisabled(false);
+        } else {
+            me.autoreloadButton.toggle(false);
+            me.autoreloadButton.setDisabled(true);
+        }
         var recentCombo = me.recentShow.down('combo');
         if(recentCombo.getValue()) {
             me.recentGridPanel.show();
@@ -951,9 +957,9 @@ Ext.define('NOC.fm.alarm.Application', {
             return;
         }
         // Poll only when in grid preview
-        if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
-            return;
-        }
+        // if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
+        //     return;
+        // }
         // Poll only if polling is not locked
         if(!me.isPollLocked()) {
             me.store.load();

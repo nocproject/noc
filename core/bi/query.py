@@ -73,10 +73,16 @@ def in_lookup(seq):
     :return:
     """
     s3 = " NOT" if ("$not" in seq) or ("$NOT" in seq) else ""
+    # check int
+    m = []
+    for l in seq[1]:
+        if type(l) in six.integer_types or l.isdigit():
+            m += [int(l)]
+            continue
     if len(seq[1]) == 1:
-        return "%s%s IN %s" % (seq[0]["$field"], s3, seq[1][0])
+        return "%s%s IN %s" % (seq[0]["$field"], s3, m[0])
     else:
-        return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(seq[1]))
+        return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(m))
 
 
 def f_ternary_if(seq):
@@ -223,6 +229,8 @@ def to_sql(expr):
             if type(v) != list:
                 v = [v]
             return op.to_sql(v)
+    elif isinstance(expr, six.string_types) and expr.isdigit():
+        return int(expr)
     elif isinstance(expr, six.string_types):
         return "'%s'" % escape_str(expr)
     elif isinstance(expr, six.integer_types):

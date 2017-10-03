@@ -24,6 +24,7 @@ class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "root",
             "timestamp",

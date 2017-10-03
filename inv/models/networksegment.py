@@ -39,6 +39,7 @@ class NetworkSegment(Document):
     meta = {
         "collection": "noc.networksegments",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["parent", "sibling", "adm_domains"]
     }
 

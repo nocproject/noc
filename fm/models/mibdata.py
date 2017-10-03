@@ -15,6 +15,7 @@ class MIBData(nosql.Document):
     meta = {
         "collection": "noc.mibdata",
         "strict": False,
+        "auto_create_index": False,
         "indexes": ["oid", "name", "mib", "aliases"]
     }
     mib = nosql.PlainReferenceField(MIB)

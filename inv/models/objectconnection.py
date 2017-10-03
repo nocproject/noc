@@ -20,7 +20,8 @@ from noc.gis.models.layer import Layer
 
 class ObjectConnectionItem(EmbeddedDocument):
     _meta = {
-        "strict": False
+        "strict": False,
+        "auto_create_index": False
     }
     # Object reference
     object = PlainReferenceField(Object)
@@ -38,6 +39,7 @@ class ObjectConnection(Document):
     meta = {
         "collection": "noc.objectconnections",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [("connection.object", "connection.name")]
     }
 

@@ -24,6 +24,7 @@ class DataSourceCache(Document):
     meta = {
         "collection": "datasource_cache",
         "strict": False,
+        "auto_create_index": False,
         "indexes": [{
             "fields": ["expires"],
             "expireAfterSeconds": 0
