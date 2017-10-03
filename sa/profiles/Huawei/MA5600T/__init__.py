@@ -22,9 +22,11 @@ class Profile(BaseProfile):
         (r"\(y/n\) \[n\]", "y\n"),
         (r"\[to\]\:", "\n"),
         (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n"),
-        (r"\{ \<cr\>\|ont\<K\> \}\:", "\n")
+        (r"\{ \<cr\>\|ont\<K\> \}\:", "\n"),
+        (r"Are you sure to modify system time?", "n\n"),
+        (r"Are you sure to log out?", "y\n")
     ]
-    pattern_unpriveleged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \
         r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
