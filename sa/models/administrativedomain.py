@@ -66,6 +66,7 @@ class AdministrativeDomain(models.Model):
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
@@ -76,6 +77,15 @@ class AdministrativeDomain(models.Model):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         ad = AdministrativeDomain.objects.filter(id=id)[:1]
+        if ad:
+            return ad[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        ad = AdministrativeDomain.objects.filter(bi_id=id)[:1]
         if ad:
             return ad[0]
         else:

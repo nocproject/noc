@@ -64,6 +64,7 @@ class Firmware(Document):
     bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
@@ -78,6 +79,11 @@ class Firmware(Document):
                              lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Firmware.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return Firmware.objects.filter(bi_id=id).first()
 
     def to_json(self):
         return to_json({

@@ -40,6 +40,7 @@ class Pool(Document):
     bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _name_cache = cachetools.TTLCache(1000, ttl=60)
     reschedule_lock = threading.Lock()
     reschedule_ts = {}  # pool id -> timestamp
@@ -51,6 +52,11 @@ class Pool(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Pool.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return Pool.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

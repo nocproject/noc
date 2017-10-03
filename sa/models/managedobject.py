@@ -410,6 +410,7 @@ class ManagedObject(Model):
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -421,6 +422,16 @@ class ManagedObject(Model):
                   version=MANAGEDOBJECT_CACHE_VERSION)
     def get_by_id(cls, id):
         mo = ManagedObject.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
+                  lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        mo = ManagedObject.objects.filter(bi_id=id)[:1]
         if mo:
             return mo[0]
         else:

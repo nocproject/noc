@@ -333,6 +333,7 @@ class ManagedObjectProfile(models.Model):
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -340,9 +341,19 @@ class ManagedObjectProfile(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return ManagedObjectProfile.objects.get(id=id)
-        except ManagedObjectProfile.DoesNotExist:
+        mop = ManagedObjectProfile.objects.filter(id=id)[:1]
+        if mop:
+            return mop[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        mop = ManagedObjectProfile.objects.filter(bi_id=id)[:1]
+        if mop:
+            return mop[0]
+        else:
             return None
 
     def iter_pools(self):

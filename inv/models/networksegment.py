@@ -124,6 +124,7 @@ class NetworkSegment(Document):
     bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
@@ -133,6 +134,11 @@ class NetworkSegment(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return NetworkSegment.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return NetworkSegment.objects.filter(bi_id=id).first()
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):

@@ -81,6 +81,7 @@ class MetricType(Document):
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -117,6 +118,11 @@ class MetricType(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return MetricType.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return MetricType.objects.filter(bi_id=id).first()
 
     def on_save(self):
         call_later(
