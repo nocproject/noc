@@ -20,8 +20,8 @@ class CHAdministrativeDomainDataSource(BaseDataSource):
     def extract(self):
         for ns in NetworkSegment.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
             yield (
-                ns.get_bi_id(),
+                ns.bi_id,
                 ns.id,
                 ns.name,
-                ns.parent.get_bi_id() if ns.parent else ""
+                ns.parent.bi_id if ns.parent else ""
             )

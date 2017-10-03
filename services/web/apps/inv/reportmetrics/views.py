@@ -285,7 +285,7 @@ class ReportTraffic(SimpleReport):
                                            "q_group": ["path"]})
             report_map["ping"].update({
                 "q_select": ["managed_object", "round(quantile(0.98)(rtt) / 1000, 2)", "avg(attempts)"]})
-            moss = {str(mo.get_bi_id()): mo for mo in mos}
+            moss = {str(mo.bi_id): mo for mo in mos}
 
         if reporttype in ["load_interfaces", "errors"]:
             iface_dict = {(
@@ -315,7 +315,7 @@ class ReportTraffic(SimpleReport):
             if not l:
                 continue
             mo = moss[l[0]]
-            d_url["biid"] = mo.get_bi_id()
+            d_url["biid"] = mo.bi_id
             d_url["oname"] = mo.name.replace("#", "%23")
             if zero and allow_archive and not sum(data):
                 # For InfluxDB query

@@ -20,7 +20,7 @@ class CHInterfaceProfileDataSource(BaseDataSource):
     def extract(self):
         for p in InterfaceProfile.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
             yield (
-                p.get_bi_id(),
+                p.bi_id,
                 p.id,
                 p.name,
                 1 if p.is_uni else 0

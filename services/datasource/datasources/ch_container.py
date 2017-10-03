@@ -21,7 +21,7 @@ class CHContainerDataSource(BaseDataSource):
     def extract(self):
         for obj in Object.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
             yield (
-                obj.get_bi_id(),
+                obj.bi_id,
                 obj.id,
                 obj.name,
                 bi_hash(obj.container) if obj.container else ""

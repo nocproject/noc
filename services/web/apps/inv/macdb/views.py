@@ -121,7 +121,7 @@ class MACApplication(ExtApplication):
                 mo_q = ManagedObject.get_search_Q(query)
                 if not mo_q:
                     mo_q = d_Q(name__contains=query)
-                mos = [mo.get_bi_id() for mo in ManagedObject.objects.filter(mo_q)[:2]]
+                mos = [mo.bi_id for mo in ManagedObject.objects.filter(mo_q)[:2]]
                 if mos:
                     out = self.api_macdb({"managed_object__in": mos}, limit=limit, offset=start)
         # out = self.api_get_maclog(request, mac)

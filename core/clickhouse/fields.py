@@ -150,7 +150,7 @@ class ReferenceField(BaseField):
         if value is None:
             return str(self.default_value)
         else:
-            return str(value.get_bi_id())
+            return str(value.bi_id)
 
 
 class IPv4Field(BaseField):

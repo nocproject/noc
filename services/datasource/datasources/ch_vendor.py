@@ -20,7 +20,7 @@ class CHVendorDataSource(BaseDataSource):
     def extract(self):
         for a in Vendor.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
             yield (
-                a.get_bi_id(),
+                a.bi_id,
                 a.id,
                 a.name
             )
