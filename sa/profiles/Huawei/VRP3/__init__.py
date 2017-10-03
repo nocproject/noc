@@ -23,7 +23,7 @@ class Profile(BaseProfile):
         (r"\(y/n\) \[n\]", "y\n"),
         (r"\[to\]\:", "\n")
     ]
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"Invalid parameter|Incorrect command"
     command_more = " "

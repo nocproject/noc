@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_more = "CTRL\+C.+?a A[Ll][Ll]\s*"
-    pattern_unpriveleged_prompt = r"\S+:(3|6|user|operator)# ?"
+    pattern_unprivileged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = \
         r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"

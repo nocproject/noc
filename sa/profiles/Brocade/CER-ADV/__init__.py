@@ -15,7 +15,7 @@ class Profile(BaseProfile):
     name = 'Brocade.CER-ADV'
     pattern_more = '--More--'
     pattern_prompt = '\\S+?(\\(\\S+\\))?#'
-    pattern_unpriveleged_prompt = '^\\S+?>'
+    pattern_unprivileged_prompt = '^\\S+?>'
     pattern_syntax_error = 'Invalid input ->|Ambiguous input ->|Incomplete command.'
     pattern_username = 'Login'
     username_submit = '\r'

@@ -13,7 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Opticin.OS"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>[^\n]+)h>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>[^\n]+)h>"
     pattern_syntax_error = \
         r"% Unknown command|% Invalid input detected at|" \
         r"% Incomplete command|% Ambiguous command"

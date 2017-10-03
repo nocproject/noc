@@ -327,6 +327,16 @@ class ManagedObjectProfile(models.Model):
         ],
         default="E"
     )
+    # CLI privilege policy
+    cli_privilege_policy = models.CharField(
+        "CLI Privilege Policy",
+        max_length=1,
+        choices=[
+            ("E", "Raise privileges"),
+            ("D", "Do not raise")
+        ],
+        default="E"
+    )
     #
     metrics = PickledField(blank=True)
     #

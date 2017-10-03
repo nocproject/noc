@@ -25,6 +25,6 @@ class Profile(BaseProfile):
     pattern_password = "[Pp]assword:"
 
     pattern_prompt = r"(^\$\s+|^>\s)"
-    # pattern_unpriveleged_prompt = r"$\s"
+    # pattern_unprivileged_prompt = r"$\s"
     command_exit = "exit"
     command_save_config = "commit\n"

@@ -29,7 +29,7 @@ class Profile(BaseProfile):
         (r"^Begin to receive file, please wait", " "),
         (r"#####", " ")
     ]
-    pattern_unpriveleged_prompt = r"^\S+>"
+    pattern_unprivileged_prompt = r"^\S+>"
     pattern_syntax_error = \
         r"% (Unrecognized command, and error|Invalid input) detected at " \
         r"'\^' marker.|% Ambiguous command:|interface error!|Incomplete " \

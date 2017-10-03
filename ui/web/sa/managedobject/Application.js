@@ -500,6 +500,19 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     value: "P"
                                 },
                                 {
+                                    name: "cli_privilege_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("CLI Privilege Policy"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["E", __("Raise Privileges")],
+                                        ["D", __("Don't Raise")]
+                                    ],
+                                    value: "P"
+                                },
+                                {
                                     name: "max_scripts",
                                     xtype: "numberfield",
                                     fieldLabel: __("Max. Scripts"),
