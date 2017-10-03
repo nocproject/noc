@@ -37,8 +37,8 @@ class Script(BaseScript):
         r"^MAC Address Eth2\s*(?P<mac2>\S+)\n", re.MULTILINE | re.IGNORECASE)
     rx_ver2 = re.compile(
         r"\s*System Name\s*(?P<hostname>\S*)(\s*\n)"
-        r"\s*System Location\s*(?P<location>\S*)(\s*\n)"
-        r"\s*System Contact\s*(?P<contact>\S*)(\s*\n)"
+        r"\s*System Location\s*(?P<location>[\S\s]*)(\s*\n)"
+        r"\s*System Contact\s*(?P<contact>[\S\s]*)(\s*\n)"
         r"\s*System Description\s*(?P<description>.*)",
         re.MULTILINE | re.IGNORECASE)
 

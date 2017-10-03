@@ -22,7 +22,9 @@ class Profile(BaseProfile):
         (r"\(y/n\) \[n\]", "y\n"),
         (r"\[to\]\:", "\n"),
         (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n"),
-        (r"\{ \<cr\>\|ont\<K\> \}\:", "\n")
+        (r"\{ \<cr\>\|ont\<K\> \}\:", "\n"),
+        (r"Are you sure to modify system time?", "n\n"),
+        (r"Are you sure to log out?", "y\n")
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \

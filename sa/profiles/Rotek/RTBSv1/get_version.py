@@ -23,6 +23,27 @@ class Script(BaseScript):
     keep_cli_session = False
 
     def execute(self):
+        # Try SNMP first
+        if self.has_snmp():
+            try:
+                oid = self.snmp.get("1.3.6.1.2.1.1.1.0",
+                                    cached=True)
+                v = oid.split(" ")[2].strip().split(".")
+                platform = "%s.%s" % (oid.split(" ")[0].strip(), oid.split(" ")[1].strip())
+                version = "%s.%s" % (v[0], v[1])
+
+                result = {
+                    "vendor": "Rotek",
+                    "version": version,
+                    "platform": platform,
+                    # "attributes": {
+                    # "HW version": hwversion}
+                }
+                return result
+            except self.snmp.TimeOutError:
+                pass
+
+                # Fallback to CLI
         try:
             c = self.cli("show software version")
         except self.CLISyntaxError:
