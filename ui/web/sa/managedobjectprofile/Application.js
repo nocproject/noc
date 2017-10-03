@@ -212,7 +212,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     allowBlank: true,
                                     uiStyle: "medium",
                                     store: [
-                                        ["P", __("Profile")],
+                                        ["D", __("Do not raise")],
                                         ["E", __("Raise Privileges")]
                                     ],
                                     value: "E"
