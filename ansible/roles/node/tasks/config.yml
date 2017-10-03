@@ -9,6 +9,7 @@
             'ch_ro_password': clickhouse_ro_password
         }
     }}, recursive=True) }}"
+  when: "'svc-clickhouse' in groups and groups['svc-clickhouse'] | length >= 1"
   tags:
     - config
     - noc_config
