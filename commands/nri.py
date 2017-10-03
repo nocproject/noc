@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc nri
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./noc nri
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import argparse
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
@@ -75,11 +75,12 @@ class Command(BaseCommand):
                     elif rn == self.PORT_ERROR:
                         status = "Failed to convert to remote name"
                     else:
+                        print(ln, rn, i.get("nri_name"))
                         status = "Failed to convert to local name"
-                    r += [(i["name"], rn, status)]
-                r = [("Local", "Remote", "Status")] + sorted(r, key=lambda x: split_alnum(x[0]))
+                    r += [(i["name"], rn, i.get("nri_name", "--"), status)]
+                r = [("Local", "Remote", "Interface NRI", "Status")] + sorted(r, key=lambda x: split_alnum(x[0]))
                 self.stdout.write(
-                    "%s\n" % format_table([0, 0, 0], r, sep=" | ", hsep = "-+-")
+                    "%s\n" % format_table([0, 0, 0, 0], r, sep=" | ", hsep = "-+-")
                 )
 
 if __name__ == "__main__":
