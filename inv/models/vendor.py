@@ -49,7 +49,7 @@ class Vendor(Document):
     uuid = UUIDField(binary=True)
     aliases = ListField(StringField())
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _code_cache = cachetools.TTLCache(1000, ttl=60)

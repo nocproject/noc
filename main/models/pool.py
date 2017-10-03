@@ -37,7 +37,7 @@ class Pool(Document):
     description = StringField()
     discovery_reschedule_limit = IntField(default=50)
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _name_cache = cachetools.TTLCache(1000, ttl=60)

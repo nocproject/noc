@@ -121,7 +121,7 @@ class NetworkSegment(Document):
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)

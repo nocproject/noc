@@ -69,7 +69,7 @@ class Object(Document):
     #
     tags = ListField(StringField())
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

@@ -99,7 +99,7 @@ class AlarmClass(nosql.Document):
     # will not clear itself in *recover_time*
     recover_time = fields.IntField(required=False, default=300)
     #
-    bi_id = fields.LongField()
+    bi_id = fields.LongField(unique=True)
     #
     category = nosql.ObjectIdField()
 

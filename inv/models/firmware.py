@@ -61,7 +61,7 @@ class Firmware(Document):
     # Full name, combined from profile and version
     full_name = StringField()
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)

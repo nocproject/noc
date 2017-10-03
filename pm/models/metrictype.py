@@ -76,7 +76,7 @@ class MetricType(Document):
     # Optional required capability
     required_capability = PlainReferenceField(Capability)
     # Object id in BI, used for counter context hashing
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
     #
     category = ObjectIdField()
 

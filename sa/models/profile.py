@@ -42,7 +42,7 @@ class Profile(Document):
     # Global ID
     uuid = UUIDField(binary=True)
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _name_cache = cachetools.TTLCache(1000, ttl=60)

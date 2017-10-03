@@ -30,6 +30,7 @@ from noc.core.defer import call_later
 from .objectmap import ObjectMap
 from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
                                     IntParameter, StringParameter)
+from noc.core.bi.decorator import bi_sync
 
 m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
                                    "is_active": BooleanParameter(default=False),
@@ -57,6 +58,7 @@ id_lock = Lock()
 
 @on_init
 @on_save
+@bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
@@ -258,7 +260,7 @@ class ManagedObjectProfile(models.Model):
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.BigIntegerField(null=True, blank=True)
+    bi_id = models.BigIntegerField(unique=True)
     # Object alarms can be escalated
     escalation_policy = models.CharField(
         "Escalation Policy",
