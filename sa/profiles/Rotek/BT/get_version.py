@@ -26,16 +26,15 @@ class Script(BaseScript):
             try:
                 oid = self.snmp.get("1.3.6.1.2.1.1.1.0",
                                         cached=True)
-                v = oid.split(",")[1].strip().split(".")
-                platform = oid.split(",")[0].strip()
-                version = "%s.%s" % (v[0], v[1])
-
+                sn = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.10")
+                platform = "%s.%s" % (oid.split(" ")[0].strip(), oid.split(" ")[1].strip())
+                version = oid.split(" ")[3].strip().replace(",", "")
                 result = {
                     "vendor": "Rotek",
                     "version": version,
                     "platform": platform,
-                    #"attributes": {
-                        #"HW version": hwversion}
+                    "attributes": {
+                        "Serial Number": sn}
                 }
                 return result
             except self.snmp.TimeOutError:

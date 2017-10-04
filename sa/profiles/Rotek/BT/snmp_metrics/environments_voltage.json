@@ -1,0 +1,17 @@
+{
+  "$metric": "Environment | Voltage",
+  "$type": "oids",
+  "oids": [{
+    "oid": "1.3.6.1.4.1.41752.5.15.1.4",
+    "path": ["","","", "load"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+  },{
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.41752.5.15.1.6",
+    "path": ["","","", "battery"],
+    "type": "gauge",
+    "scale": 1
+  }]
+}
