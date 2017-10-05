@@ -5,6 +5,6 @@
     "scope__name": "Environment",
     "field_name": "status",
     "field_type": "Int8",
-    "description": "Status, in count",
+    "description": "Metric for displaying the status of sensors",
     "measure": "C"
 }
