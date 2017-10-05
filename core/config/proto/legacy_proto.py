@@ -163,8 +163,8 @@ class LegacyProtocol(BaseProtocol):
 
         if not os.path.exists(self.path):
             return
-        with open(self.path) as f:
-            data = yaml.load(f)["config"]
+        with open(self.path, 'r') as f:
+            data = yaml.load(f.read())["config"]
         for legacy_key, new_key in self.NOC_MAPPINGS:
             v = get_path(data, legacy_key % {"node": self.config.node, "pool": self.config.pool})
             if v is not None:
