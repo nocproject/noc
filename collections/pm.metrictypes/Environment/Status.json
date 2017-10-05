@@ -1,5 +1,5 @@
 {
-    "name": "Environment | Status",
+    "name": "Environment | Sensor Status",
     "$collection": "pm.metrictypes",
     "uuid": "50839d54-7b12-41f9-b1f6-1f347d06fea9",
     "scope__name": "Environment",
