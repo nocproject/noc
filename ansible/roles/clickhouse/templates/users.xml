@@ -10,11 +10,13 @@
             <!-- Use cache of uncompressed blocks of data. Meaningful only for processing many of very short queries. -->
             <use_uncompressed_cache>0</use_uncompressed_cache>
             <load_balancing>random</load_balancing>
+            <max_query_size>{{ clickhouse_max_query_size }}</max_query_size>
         </default>
 
         <!-- Profile that allows only read queries. -->
         <readonly>
             <readonly>1</readonly>
+            <max_query_size>{{ clickhouse_max_query_size }}</max_query_size>
         </readonly>
     </profiles>
 
