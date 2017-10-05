@@ -185,7 +185,7 @@ class Script(BaseScript):
                         iface = {
                             "type": "physical",
                             "name": "%s.%s" % (ifname, ri[1]["ssid"]),
-                            "admin_status": a_status,
+                            "admin_status": a_stat,
                             "oper_status": o_status,
                             "mac": mac,
                             "snmp_ifindex": match.group("ifindex"),
@@ -194,9 +194,8 @@ class Script(BaseScript):
                             "subinterfaces": [{
                                 "name": "%s.%s" % (ifname, ri[1]["ssid"]),
                                 "enabled_afi": ["BRIDGE"],
-                                "admin_status": a_status,
+                                "admin_status": a_stat,
                                 "oper_status": o_status,
-                                "mtu": mtu,
                                 "mac": mac,
                                 "snmp_ifindex": match.group("ifindex"),
                                 "untagged_vlan": int(ri[1]["vlan"]),
