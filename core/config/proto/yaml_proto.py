@@ -35,8 +35,8 @@ class YAMLProtocol(BaseProtocol):
     def load(self):
         if not os.path.exists(self.path):
             return
-        with open(self.path) as f:
-            data = yaml.load(f)
+        with open(self.path, 'r') as f:
+            data = yaml.load(f.read())
         if data:
             self.config.update(data)
 
