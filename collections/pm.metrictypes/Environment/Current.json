@@ -1,0 +1,10 @@
+{
+    "name": "Environment | Electric current",
+    "$collection": "pm.metrictypes",
+    "uuid": "d4b212a6-896c-4a36-b9b4-11e87fc81a85",
+    "scope__name": "Environment",
+    "field_name": "elec_current",
+    "field_type": "Int16",
+    "description": "The metric for the Electric Сurrent",
+    "measure": "mA"
+}
