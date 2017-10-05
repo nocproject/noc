@@ -53,6 +53,7 @@
   tags:
     - requirements
     - config
+    - clickhouse
 
 - name: start consul-template service
   service:
