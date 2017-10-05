@@ -30,15 +30,113 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
+        ss = {}
         ssid = {}
+        # Try SNMP first
+        if self.has_snmp():
+            try:
+                for soid, sname in self.snmp.getnext("1.3.6.1.4.1.32761.3.5.1.2.1.1.4"):
+                    sifindex = int(soid.split(".")[-1])
+                    ieee_mode = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.2.%s" % sifindex)
+                    freq = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.7.%s" % sifindex)
+                    channel = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.8.%s" % sifindex)
+                    channelbandwidth = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.9.%s" % sifindex)
+                    ss[sifindex] = {"ssid": sname, "ieee_mode": ieee_mode,
+                        "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
+                for soid, sname in self.snmp.getnext("1.3.6.1.4.1.41752.3.5.1.2.1.1.4"):
+                    sifindex = int(soid.split(".")[-1])
+                    ieee_mode = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.2.%s" % sifindex)
+                    freq = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.7.%s" % sifindex)
+                    channel = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.8.%s" % sifindex)
+                    channelbandwidth = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.9.%s" % sifindex)
+                    ss[sifindex] = {"ssid": sname, "ieee_mode": ieee_mode,
+                        "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
+                for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
+                    ifindex = v[1]
+                    name = self.snmp.get("1.3.6.1.2.1.2.2.1.2.%s" % str(ifindex))
+                    iftype = self.profile.get_interface_type(name)
+                    if "peer" in name:
+                        continue
+                    if not name:
+                        self.logger.info(
+                            "Ignoring unknown interface type: '%s", iftype
+                        )
+                        continue
+                    mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % str(ifindex))
+                    mtu = self.snmp.get("1.3.6.1.2.1.2.2.1.4.%s" % str(ifindex))
+                    astatus = self.snmp.get("1.3.6.1.2.1.2.2.1.7.%s" % str(ifindex))
+                    if astatus == 1:
+                        admin_status = True
+                    else:
+                        admin_status = False
+                    ostatus = self.snmp.get("1.3.6.1.2.1.2.2.1.8.%s" % str(ifindex))
+                    if ostatus == 1:
+                        oper_status = True
+                    else:
+                        oper_status = False
+                    iface = {
+                        "type": iftype,
+                        "name": name,
+                        "mac": mac,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "snmp_ifindex": ifindex,
+                        "subinterfaces": [{
+                            "name": name,
+                            "mac": mac,
+                            "snmp_ifindex": ifindex,
+                            "admin_status": admin_status,
+                            "oper_status": oper_status,
+                            "mtu": mtu,
+                            "enabled_afi": ["BRIDGE"]
+                        }]
+                    }
+                    interfaces += [iface]
+                    for i in ss.items():
+                        if int(i[0]) == ifindex:
+                            a = self.cli("show interface %s ssid-broadcast" % name)
+                            ssid_broadcast = a.split(":")[1].strip()
+                            vname = "%s.%s" % (name, i[1]["ssid"])
+                            iface = {
+                                "type": "physical",
+                                "name": vname,
+                                "mac": mac,
+                                "admin_status": admin_status,
+                                "oper_status": oper_status,
+                                "snmp_ifindex": ifindex,
+                                "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sMHz, channelbandwidth=%sMHz" % (ssid_broadcast,
+                                    i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"], i[1]["channelbandwidth"]),
+                                "subinterfaces": [{
+                                    "name": vname,
+                                    "mac": mac,
+                                    "snmp_ifindex": ifindex,
+                                    "admin_status": admin_status,
+                                    "oper_status": oper_status,
+                                    "mtu": mtu,
+                                    "enabled_afi": ["BRIDGE"]
+                                }]
+                            }
+                            interfaces += [iface]
+                return [{"interfaces": interfaces}]
+            except self.snmp.TimeOutError:
+                pass
+        # GO CLI
         i = ["ra0", "ra1"]
         for ri in i:
             s = self.cli("show interface %s ssid" % ri)
             v = self.cli("show interface %s vlan-to-ssid" % ri)
+            a = self.cli("show interface %s ssid-broadcast" % ri)
+            i = self.cli("show interface %s ieee-mode" % ri)
+            c = self.cli("show interface %s channel" % ri)
+            f = self.cli("show interface %s freq" % ri)
             res = s.split(":")[1].strip().replace("\"", "")
             resv = v.split(":")[1].strip().replace("\"", "")
-            ssid[ri] = {"ssid": res, "vlan": resv}
-            print ssid
+            ssid_broadcast = a.split(":")[1].strip()
+            ieee_mode = "IEEE 802.%s" % i.split(":")[1].strip()
+            channel = c.split(":")[1].strip()
+            freq = f.split(":")[1].strip()
+            ssid[ri] = {"ssid": res, "vlan": resv, "ssid_broadcast": ssid_broadcast, "ieee_mode": ieee_mode,
+                        "channel": channel, "freq": freq}
         with self.profile.shell(self):
             v = self.cli("ip a", cached=True)
             for match in self.rx_sh_int.finditer(v):
@@ -83,15 +181,18 @@ class Script(BaseScript):
                         iface = {
                             "type": "physical",
                             "name": "%s.%s" % (ifname, ri[1]["ssid"]),
-                            "admin_status": a_stat,
+                            "admin_status": a_status,
                             "oper_status": o_status,
                             "mac": mac,
                             "snmp_ifindex": match.group("ifindex"),
+                            "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s" % (
+                            ri[1]["ssid_broadcast"], ri[1]["ieee_mode"], ri[1]["channel"], ri[1]["freq"]),
                             "subinterfaces": [{
                                 "name": "%s.%s" % (ifname, ri[1]["ssid"]),
                                 "enabled_afi": ["BRIDGE"],
-                                "admin_status": a_stat,
+                                "admin_status": a_status,
                                 "oper_status": o_status,
+                                "mtu": mtu,
                                 "mac": mac,
                                 "snmp_ifindex": match.group("ifindex"),
                                 "untagged_vlan": int(ri[1]["vlan"]),

@@ -39,8 +39,45 @@ class Script(BaseScript):
          c = cls.INTERFACE_TYPES.get(name[:2])
          return c
 
+    FREQ = {
+        "bg-n": "2400GHz",
+        "a-n": "5150GHz"
+    }
+
+    @classmethod
+    def get_interface_freq(cls, name):
+         c = cls.FREQ.get(name)
+         return c
+
+    IEEE = {
+        "bg-n": "IEEE 802.11b/g/n",
+        "a-n": "IEEE 802.11a/n"
+    }
+
+    @classmethod
+    def get_interface_ieee(cls, name):
+         c = cls.IEEE.get(name)
+         return c
+
+
     def execute(self):
         interfaces = []
+        wres = {}
+        w = self.cli("get radio all detail")
+        for wline in w.splitlines():
+            wr = wline.split(" ", 1)
+            if wr[0] == "name":
+                wname = wr[1].strip()
+            if wr[0].strip() == "mode":
+                mode = wr[1].strip()
+                freq = self.get_interface_freq(mode)
+                ieee_mode = self.get_interface_ieee(mode)
+            if wr[0].strip() == "channel":
+                channel = wr[1].strip()
+            if wr[0].strip() == "n-bandwidth":
+                channelbandwidth = wr[1].strip()
+                wres[wname] = {"ieee_mode": ieee_mode,
+                        "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
         c = self.cli("get interface all detail")
         for line in c.splitlines():
             r = line.split(' ', 1)
@@ -94,16 +131,31 @@ class Script(BaseScript):
                 mac = r[1].strip()
             if r[0] == "ssid":
                 ssid = r[1].strip().replace(" ", "").replace("Managed", "")
+            if r[0] == "bss":
+                bss = r[1].strip()
                 if ssid:
-                    iface = {
-                        "type": "physical",
-                        "name": "%s.%s" % (name, ssid),
-                        "mac": mac,
-                        "subinterfaces": [{
-                            "name": "%s.%s" % (name, ssid),
-                            "mac": mac,
-                            "enabled_afi": ["BRIDGE"],
-                        }]
-                    }
-                    interfaces += [iface]
+                    b = self.cli("get bss %s detail" % bss)
+                    for line in b.splitlines():
+                        rb = line.split(' ', 1)
+                        if rb[0] == "radio":
+                            radio = rb[1].strip()
+                        if rb[0] == "ignore-broadcast-ssid":
+                            sb = rb[1].strip()
+                            if sb == "off":
+                                ssid_broadcast = "Enable"
+                            for ri in wres.items():
+                                if ri[0] == radio:
+                                    iface = {
+                                        "type": "physical",
+                                        "name": "%s.%s" % (name, ssid),
+                                        "mac": mac,
+                                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz" % (ssid_broadcast,
+                                    ri[1]["ieee_mode"], ri[1]["channel"], ri[1]["freq"], ri[1]["channelbandwidth"]),
+                                        "subinterfaces": [{
+                                            "name": "%s.%s" % (name, ssid),
+                                            "mac": mac,
+                                            "enabled_afi": ["BRIDGE"],
+                                        }]
+                                    }
+                                    interfaces += [iface]
         return [{"interfaces": interfaces}]
