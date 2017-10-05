@@ -226,7 +226,7 @@ class Config(BaseConfig):
         google_language = StringParameter(default="en")
 
     class gis(ConfigSection):
-        ellipsoid = StringParameter(default="ПЗ-90")
+        ellipsoid = StringParameter(default="PZ-90")
         enable_osm = BooleanParameter(default=True)
         enable_google_sat = BooleanParameter(default=False)
         enable_google_roadmap = BooleanParameter(default=False)
