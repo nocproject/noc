@@ -18,7 +18,7 @@ class CHPlatformDataSource(BaseDataSource):
     name = "ch_platform"
 
     def extract(self):
-        for p in Platform.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
+        for p in Platform.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
                 p.bi_id,
                 p.id,

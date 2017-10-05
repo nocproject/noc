@@ -18,7 +18,7 @@ class CHInterfaceProfileDataSource(BaseDataSource):
     name = "ch_interfaceprofile"
 
     def extract(self):
-        for p in InterfaceProfile.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
+        for p in InterfaceProfile.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
                 p.bi_id,
                 p.id,

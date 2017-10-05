@@ -18,7 +18,7 @@ class CHVersionDataSource(BaseDataSource):
     name = "ch_version"
 
     def extract(self):
-        for a in Firmware.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
+        for a in Firmware.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
                 a.bi_id,
                 a.id,

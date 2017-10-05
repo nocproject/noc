@@ -18,7 +18,7 @@ class CHProfileClassDataSource(BaseDataSource):
     name = "ch_profile"
 
     def extract(self):
-        for a in Profile.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
+        for a in Profile.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
                 a.bi_id,
                 a.id,

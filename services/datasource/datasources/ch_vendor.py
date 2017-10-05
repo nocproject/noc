@@ -18,7 +18,7 @@ class CHVendorDataSource(BaseDataSource):
     name = "ch_vendor"
 
     def extract(self):
-        for a in Vendor.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
+        for a in Vendor.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
                 a.bi_id,
                 a.id,

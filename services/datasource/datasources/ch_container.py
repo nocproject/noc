@@ -19,7 +19,7 @@ class CHContainerDataSource(BaseDataSource):
     name = "ch_container"
 
     def extract(self):
-        for obj in Object.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
+        for obj in Object.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
                 obj.bi_id,
                 obj.id,

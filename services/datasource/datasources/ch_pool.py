@@ -18,7 +18,7 @@ class CHPoolDataSource(BaseDataSource):
     name = "ch_pool"
 
     def extract(self):
-        for pool in Pool.objects.all(read_preference=ReadPreference.SECONDARY_PREFERRED).order_by("id"):
+        for pool in Pool.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
             yield (
                 pool.bi_id,
                 pool.id,
