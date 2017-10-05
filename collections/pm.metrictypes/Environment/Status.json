@@ -3,7 +3,7 @@
     "$collection": "pm.metrictypes",
     "uuid": "50839d54-7b12-41f9-b1f6-1f347d06fea9",
     "scope__name": "Environment",
-    "field_name": "status",
+    "field_name": "sensor_status",
     "field_type": "Int8",
     "description": "Metric for displaying the status of sensors",
     "measure": "C"
