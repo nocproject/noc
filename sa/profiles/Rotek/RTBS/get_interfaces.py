@@ -95,7 +95,11 @@ class Script(BaseScript):
                     for i in ss.items():
                         if int(i[0]) == ifindex:
                             a = self.cli("show interface %s ssid-broadcast" % name)
-                            ssid_broadcast = a.split(":")[1].strip()
+                            sb = a.split(":")[1].strip()
+                            if sb == "enabled":
+                                ssid_broadcast = "Enable"
+                            else:
+                                ssid_broadcast = "Disable"
                             vname = "%s.%s" % (name, i[1]["ssid"])
                             iface = {
                                 "type": "physical",
@@ -104,7 +108,7 @@ class Script(BaseScript):
                                 "admin_status": admin_status,
                                 "oper_status": oper_status,
                                 "snmp_ifindex": ifindex,
-                                "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sMHz, channelbandwidth=%sMHz" % (ssid_broadcast,
+                                "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz, channelbandwidth=%sMHz" % (ssid_broadcast,
                                     i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"], i[1]["channelbandwidth"]),
                                 "subinterfaces": [{
                                     "name": vname,

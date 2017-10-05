@@ -396,8 +396,8 @@ keep_events_with_alarm = -1
 # Possible values:
 #     WGS-84
 #     Krass
-#     ПЗ-90
-ellipsoid = ПЗ-90
+#     PZ-90
+ellipsoid = PZ-90
 # Enable OpenStreetMap base layer
 enable_osm = true
 # Enable Google Sattelite base layer
