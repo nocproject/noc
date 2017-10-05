@@ -5,6 +5,6 @@
     "scope__name": "Environment",
     "field_name": "current",
     "field_type": "Float32",
-    "description": "The metric for the current",
+    "description": "The metric for the Electric Сurrent",
     "measure": "mA"
 }
