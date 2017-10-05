@@ -37,7 +37,8 @@ class YAMLProtocol(BaseProtocol):
             return
         with open(self.path) as f:
             data = yaml.load(f)
-        self.config.update(data)
+        if data:
+            self.config.update(data)
 
     def dump(self):
         r = ["---"]
