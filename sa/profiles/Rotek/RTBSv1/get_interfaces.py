@@ -42,9 +42,8 @@ class Script(BaseScript):
                     ieee_mode = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.2.%s" % sifindex)
                     freq = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.6.%s" % sifindex)
                     channel = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.7.%s" % sifindex)
-                    channelbandwidth = self.snmp.get("1.3.6.1.4.1.41752.3.10.1.2.1.1.8.%s" % sifindex)
                     ss[sifindex] = {"ssid": sname, "ieee_mode": ieee_mode,
-                        "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
+                        "channel": channel, "freq": freq}
                 for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
                     ifindex = v[1]
                     name = self.snmp.get("1.3.6.1.2.1.2.2.1.2.%s" % str(ifindex))
@@ -89,7 +88,11 @@ class Script(BaseScript):
                     for i in ss.items():
                         if int(i[0]) == ifindex:
                             a = self.cli("show interface %s ssid-broadcast" % name)
-                            ssid_broadcast = a.split(":")[1].strip()
+                            sb = a.split(":")[1].strip()
+                            if sb == "on":
+                                ssid_broadcast = "Enable"
+                            else:
+                                ssid_broadcast = "Disable"
                             vname = "%s.%s" % (name, i[1]["ssid"])
                             iface = {
                                 "type": "physical",
@@ -98,8 +101,8 @@ class Script(BaseScript):
                                 "admin_status": admin_status,
                                 "oper_status": oper_status,
                                 "snmp_ifindex": ifindex,
-                                "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sMHz, channelbandwidth=%sMHz" % (ssid_broadcast,
-                                    i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"], i[1]["channelbandwidth"]),
+                                "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz" % (ssid_broadcast,
+                                    i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"]),
                                 "subinterfaces": [{
                                     "name": vname,
                                     "mac": mac,
