@@ -17,6 +17,8 @@ from .fields import BaseField
 from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
+from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.managedobject import ManagedObject
 
 __all__ = ["Model"]
 

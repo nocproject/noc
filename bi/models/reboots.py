@@ -21,6 +21,8 @@ from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.pool import Pool
+from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.managedobject import ManagedObject
 from noc.core.translation import ugettext as _
 
 
