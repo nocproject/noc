@@ -14,7 +14,7 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 class Script(GetMetricsScript):
     name = "DCN.DCWL.get_metrics"
 
-    ALL_METRICS = set(["Radio | TxPower", "Interface | Load | In", "Interface | Load | Out", "Interface | Packets | In",
+    ALL_METRICS = set(["Radio | TxPower", "Radio | Quality", "Interface | Load | In", "Interface | Load | Out", "Interface | Packets | In",
                        "Interface | Packets | OUT", "Interface | Errors | In", "Interface | Errors | Out",
                        "Radio | Channel | Util", "Radio | Channel | Free", "Radio | Channel | Busy",
                        "Radio | Channel | TxFrame", "Radio | Channel | RxFrame"])
@@ -23,6 +23,7 @@ class Script(GetMetricsScript):
 
     TYPE = {
         "Radio | TxPower": "gauge",
+        "Radio | Quality": "gauge",
         "Interface | Load | In": "counter",
         "Interface | Load | Out": "counter",
         "Radio | Channel | Util": "gauge",
@@ -109,9 +110,7 @@ class Script(GetMetricsScript):
                 txpower = ((27 / 100) * int(wr[1].strip()))  # Max TxPower 27dBm, convert % -> dBm
             elif wr[0] == "channel-util":
                 channelutil = wr[1].strip()
-            elif wr[0] == "channel-free":
-                channelfree = wr[1].strip()
-                wres[wname] = {"txpower": txpower, "channelutil": channelutil, "channelfree": channelfree}
+                wres[wname] = {"txpower": txpower, "channelutil": channelutil}
         c = self.cli("get interface all detail")
         for vline in c.splitlines():
             rr = vline.split(' ', 1)
@@ -161,7 +160,6 @@ class Script(GetMetricsScript):
                     if w[0] in o[1]["radio"]:
                         txpower = w[1]["txpower"]
                         cu = w[1]["channelutil"]
-                        cf = w[1]["channelfree"]
                         txbytes = o[1]["txbytes"]
                         rxbytes = o[1]["rxbytes"]
                         rxpackets = o[1]["rxpackets"]
@@ -169,8 +167,7 @@ class Script(GetMetricsScript):
                         rxerrors = o[1]["rxerrors"]
                         txerrors = o[1]["txerrors"]
                         r[("", "", "", wiface, "Radio | TxPower")] = txpower
-                        r[("", "", "", wiface, "Radio | Channel | Util")] = cu
-                        r[("", "", "", wiface, "Radio | Channel | Free")] = cf
+                        r[("", "", "", wiface, "Radio | Quality")] = cu
                         r[("", "", "", wiface, "Interface | Load | In")] = rxbytes
                         r[("", "", "", wiface, "Interface | Load | Out")] = txbytes
                         r[("", "", "", wiface, "Interface | Packets | In")] = rxpackets
