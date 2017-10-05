@@ -1,0 +1,10 @@
+{
+    "name": "Environment | Status",
+    "$collection": "pm.metrictypes",
+    "uuid": "50839d54-7b12-41f9-b1f6-1f347d06fea9",
+    "scope__name": "Environment",
+    "field_name": "status",
+    "field_type": "Int8",
+    "description": "Status, in count",
+    "measure": "C"
+}
