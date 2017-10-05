@@ -1,29 +1,23 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_lldp_neighbors
-#
-# commands for the device open mib tree
-#
-# snmp-agent mib-view included ALL iso
-# snmp-agent community read xxx mib-view ALL 
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-#import re
+import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
-#from noc.lib.text import parse_kv
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
+from noc.lib.text import parse_kv
+
 
 class Script(BaseScript):
     name = "Huawei.VRP.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
-    """ #comment for cli
+
     rx_iface_sep = re.compile(
         r"^(\S+)\s+has\s+\d+\s+neighbors?", re.MULTILINE
     )
@@ -69,74 +63,13 @@ class Script(BaseScript):
         "router": 16, "telephone": 32, "cable": 64, "docsiscabledevice": 64,
         "station": 128, "stationonly": 128
     }
-    """
 
-    def execute(self):
-        r = []
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                local_int={}
-                for vv in self.snmp.get_tables(
-                    ["1.0.8802.1.1.2.1.3.7.1.2","1.0.8802.1.1.2.1.3.7.1.3"
-                    ], bulk=True):
-                    local_int[vv[0]]=vv[2]
-                for v in self.snmp.get_tables(
-                    [#"1.0.8802.1.1.2.1.4.1.1.2",
-                     "1.0.8802.1.1.2.1.4.1.1.4", "1.0.8802.1.1.2.1.4.1.1.5",
-                     "1.0.8802.1.1.2.1.4.1.1.6", "1.0.8802.1.1.2.1.4.1.1.7",
-                     "1.0.8802.1.1.2.1.4.1.1.9", "1.0.8802.1.1.2.1.4.1.1.12"
-                     ], bulk=True):
-                    interf=v[0].split('.')
-                    local_interface = local_int[interf[1]]
-                    remote_chassis_id_subtype = v[1]
-                    remotechassisid = ":".join(["%02x" % ord(c) for c in v[2]])
-                    remote_port_subtype = v[3]
-                    if remote_port_subtype == '3':
-                        remote_port = ":".join(["%02x" % ord(c) for c in v[4]])
-                    else:
-                        remote_port = v[4]
-                    if remote_port_subtype == '7':
-                        remote_port_subtype = '5'
-
-                    remote_system_name = v[5]
-
-                    for c in v[6]:
-                           bits = bin(ord(c))[2:]
-                           bits = '00000000'[len(bits):] + bits
-
-                    bb=bits[::-1]
-
-                    cap = 0
-
-                    for b in bb:
-                         cap = cap * 2 + int(b)
-                    remote_capabilities = cap
-
-                    i = {"local_interface": local_interface, "neighbors": []}
-                    n = {
-                        "remote_chassis_id_subtype": remote_chassis_id_subtype,
-                        "remote_chassis_id": remotechassisid,
-                        "remote_port_subtype": remote_port_subtype,
-                        "remote_port": remote_port,
-                        "remote_capabilities": remote_capabilities,
-                        }
-                    if remote_system_name:
-                        n["remote_system_name"] = remote_system_name
-                    i["neighbors"].append(n)
-                    r.append(i)
-                return r
-
-            except self.snmp.TimeOutError:
-                pass
-
-        # Fallback to CLI
-        raise Exception("Not implemented")
+    @BaseScript.match()
+    def execute_other(self):
         """
         VRP5 style
         :return:
         """
-        """#comment for cli
         r = []
         if self.match_version(version__startswith=r"3."):
             try:
@@ -193,4 +126,3 @@ class Script(BaseScript):
                     "neighbors": neighbors
                 }]
         return r
-        """
