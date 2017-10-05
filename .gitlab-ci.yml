@@ -20,9 +20,12 @@ test:empty:
       alias: postgres 
     - name: registry.getnoc.com/infrastructure/mongo:master
       alias: mongo
+    - name: yandex/clickhouse-server:latest
+      alias: clickhouse
   script:
     - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
     - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
+    - export NOC_CLICKHOUSE_ADDRESSES=clickhouse:8123
     - mkdir /opt/noc/collections
     - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
@@ -30,6 +33,7 @@ test:empty:
     - python manage.py syncdb --noinput
     - python manage.py migrate
     - python commands/collection.py sync
+    - python commands/migrate-ch.py --host clickhouse
   tags:
     - docker
 
