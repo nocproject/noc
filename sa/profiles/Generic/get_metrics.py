@@ -74,7 +74,7 @@ class OIDRule(object):
     name = "oid"
     default_type = "gauge"
 
-    def __init__(self, oid, type=None, scale=1):
+    def __init__(self, oid, type=None, scale=1, path=None):
         self.oid = oid
         self.is_complex = not isinstance(oid, six.string_types)
         self.type = type or self.default_type
@@ -84,6 +84,7 @@ class OIDRule(object):
             )
         else:
             self.scale = scale
+        self.path = path or []
 
     def iter_oids(self, script, metric):
         """
@@ -93,9 +94,9 @@ class OIDRule(object):
         :return:
         """
         if self.is_complex:
-            yield tuple(self.oid), self.type, self.scale, {}
+            yield tuple(self.oid), self.type, self.scale, self.path
         else:
-            yield self.oid, self.type, self.scale, {}
+            yield self.oid, self.type, self.scale, self.path
 
     @classmethod
     def load(cls, data):
@@ -164,6 +165,32 @@ class BooleanRule(OIDRule):
     """
     name = "bool"
     default_type = "bool"
+
+
+@six.add_metaclass(OIDRuleBase)
+class OIDsRule(object):
+    """
+    Multiple items for single metric
+    """
+    name = "oids"
+
+    def __init__(self, oids):
+        self.oids = oids
+
+    def iter_oids(self, script, metric):
+        for rule in self.oids:
+            for r in rule.iter_oids(script, metric):
+                yield r
+
+    @classmethod
+    def from_json(cls, data):
+        if "oids" not in data:
+            raise ValueError("oids is required")
+        if type(data["oids"]) != list:
+            raise ValueError("oids must be list")
+        return OIDsRule(
+            oids=[OIDRule.from_json(d) for d in data["oids"]]
+        )
 
 
 @six.add_metaclass(OIDRuleBase)

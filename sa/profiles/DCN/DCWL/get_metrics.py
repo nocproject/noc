@@ -18,6 +18,8 @@ class Script(GetMetricsScript):
                        "Interface | Packets | OUT", "Interface | Errors | In", "Interface | Errors | Out",
                        "Radio | Channel | Util", "Radio | Channel | Free", "Radio | Channel | Busy",
                        "Radio | Channel | TxFrame", "Radio | Channel | RxFrame"])
+    MEMORY = set(["Memory | Usage"])
+    CPU = set(["CPU | Usage"])
 
     TYPE = {
         "Radio | TxPower": "gauge",
@@ -44,6 +46,12 @@ class Script(GetMetricsScript):
         if self.ALL_METRICS.intersection(set(m.metric for m in metrics)):
             # check
             self.collect_cli_metrics(metrics)
+        if self.MEMORY.intersection(set(m.metric for m in metrics)):
+            # check
+            self.collect_memory_metrics(metrics)
+        if self.CPU.intersection(set(m.metric for m in metrics)):
+            # check
+            self.collect_cpu_metrics(metrics)
 
     def collect_cli_metrics(self, metrics):
         ts = self.get_ts()
@@ -61,6 +69,32 @@ class Script(GetMetricsScript):
                         path=bv.path,
                     )
 
+    def collect_memory_metrics(self, metrics):
+        ts = self.get_ts()
+        m = self.get_memory_metrics()
+        for bv in metrics:
+            if bv.metric in self.MEMORY:
+                for slot in m:
+                    self.set_metric(
+                        id=bv.id,
+                        metric=bv.metric,
+                        value=m[slot],
+                        ts=ts,
+                        #path=["", slot, ""]
+                    )
+    def collect_cpu_metrics(self, metrics):
+        ts = self.get_ts()
+        m = self.get_cpu_metrics()
+        for bv in metrics:
+            if bv.metric in self.CPU:
+                for slot in m:
+                    self.set_metric(
+                        id=bv.id,
+                        metric=bv.metric,
+                        value=m[slot],
+                        ts=ts,
+                        #path=["", slot, ""]
+                    )
     def get_cli_metrics(self):
         res = {}
         wres = {}
@@ -77,13 +111,7 @@ class Script(GetMetricsScript):
                 channelutil = wr[1].strip()
             elif wr[0] == "channel-free":
                 channelfree = wr[1].strip()
-            elif wr[0] == "channel-busy":
-                channelbusy = wr[1].strip()
-            elif wr[0] == "channel-tx-frame":
-                channeltxframe = wr[1].strip()
-            elif wr[0] == "channel-rx-frame":
-                channelrxframe = wr[1].strip()
-                wres[wname] = {"txpower": txpower, "channelutil": channelutil, "channelfree": channelfree, "channelbusy": channelbusy, "channeltxframe": channeltxframe, "channelrxframe": channelrxframe}
+                wres[wname] = {"txpower": txpower, "channelutil": channelutil, "channelfree": channelfree}
         c = self.cli("get interface all detail")
         for vline in c.splitlines():
             rr = vline.split(' ', 1)
@@ -134,9 +162,6 @@ class Script(GetMetricsScript):
                         txpower = w[1]["txpower"]
                         cu = w[1]["channelutil"]
                         cf = w[1]["channelfree"]
-                        cb = w[1]["channelbusy"]
-                        ctf = w[1]["channeltxframe"]
-                        crf = w[1]["channelrxframe"]
                         txbytes = o[1]["txbytes"]
                         rxbytes = o[1]["rxbytes"]
                         rxpackets = o[1]["rxpackets"]
@@ -146,9 +171,6 @@ class Script(GetMetricsScript):
                         r[("", "", "", wiface, "Radio | TxPower")] = txpower
                         r[("", "", "", wiface, "Radio | Channel | Util")] = cu
                         r[("", "", "", wiface, "Radio | Channel | Free")] = cf
-                        r[("", "", "", wiface, "Radio | Channel | Busy")] = cb
-                        r[("", "", "", wiface, "Radio | Channel | TxFrame")] = ctf
-                        r[("", "", "", wiface, "Radio | Channel | RxFrame")] = crf
                         r[("", "", "", wiface, "Interface | Load | In")] = rxbytes
                         r[("", "", "", wiface, "Interface | Load | Out")] = txbytes
                         r[("", "", "", wiface, "Interface | Packets | In")] = rxpackets
@@ -175,4 +197,27 @@ class Script(GetMetricsScript):
                 r[("", "", "", iface, "Interface | Packets | Out")] = txpackets
                 r[("", "", "", iface, "Interface | Errors | In")] = rxerrors
                 r[("", "", "", iface, "Interface | Errors | Out")] = txerrors
+
         return r
+
+    def get_memory_metrics(self):
+        r = {}
+        with self.profile.shell(self):
+            m = self.cli("cat /proc/meminfo")
+            for mline in m.splitlines():
+                mr = mline.split(":", 1)
+                if mr[0] == "MemTotal":
+                    mtotal = mr[1].strip().split(" ")[0]
+                if mr[0] == "MemFree":
+                    mfree = mr[1].strip().split(" ")[0]
+                    memory = (100/int(mtotal))*int(mfree)
+                    r[("Memory | Usage")] = memory
+            return r
+
+    def get_cpu_metrics(self):
+        r = {}
+        with self.profile.shell(self):
+            c = self.cli("cat /proc/loadavg")
+            cpu = c.split(" ")[1].strip()
+            r[("CPU | Usage")] = round(float(cpu) + 0.5)
+            return r

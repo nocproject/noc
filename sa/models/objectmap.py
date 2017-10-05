@@ -59,7 +59,7 @@ class ObjectMap(Document):
                "trap_source_type", "syslog_source_type",
                "trap_source_ip", "syslog_source_ip"):
             # Process trap sources
-            if mo.trap_source_type == "m":
+            if mo.trap_source_type == "m" and mo.address:
                 trap_sources[aq(mo.address)] = mo.id
             elif mo.trap_source_type == "s" and mo.trap_source_ip:
                 trap_sources[aq(mo.trap_source_ip)] = mo.id
@@ -71,7 +71,7 @@ class ObjectMap(Document):
                     mo.name
                 )
             # Process syslog sources
-            if mo.syslog_source_type == "m":
+            if mo.syslog_source_type == "m" and mo.address:
                 syslog_sources[aq(mo.address)] = mo.id
             elif mo.syslog_source_type == "s" and mo.syslog_source_ip:
                 syslog_sources[aq(mo.syslog_source_ip)] = mo.id
@@ -102,7 +102,7 @@ class ObjectMap(Document):
             "object_profile__report_ping_rtt",
             "object_profile__report_ping_attempts"
         ):
-            if mo.object_profile.ping_interval and mo.object_profile.ping_interval > 0:
+            if mo.address and mo.object_profile.ping_interval and mo.object_profile.ping_interval > 0:
                 rr = {
                     "id": mo.id,
                     "interval": mo.object_profile.ping_interval,
@@ -125,7 +125,7 @@ class ObjectMap(Document):
         for o in [x for x, y in ObjectStatus.get_statuses(list(oids)).iteritems() if not y]:
             ping_sources[oids[o]]["status"] = False
         # Update mappings
-        ObjectMap._get_collection().update({
+        ObjectMap._get_collection().update_one({
             "pool": pool.id
         }, {
             "$set": {
