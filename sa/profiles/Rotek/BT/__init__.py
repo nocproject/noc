@@ -13,3 +13,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Rotek.BT"
+    # to one SNMP GET request
+    snmp_metrics_get_chunk = 4
+    # Timeout for snmp GET request
+    snmp_metrics_get_timeout = 3
