@@ -326,7 +326,7 @@ class ReportTraffic(SimpleReport):
                 res += data
                 if "load_interfaces" in reporttype:
                     i_d = iface_dict.get((mo, l[1]), ["", "", ""])
-                    res.insert(1, i_d[0])
+                    res.insert(3, i_d[0])
                     if percent:
                         in_p = float(data[0])
                         in_p = round((in_p / 1000.0) / (i_d[1] / 100.0), 2) if i_d[1] and in_p > 0 else 0
