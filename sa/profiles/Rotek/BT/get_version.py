@@ -24,11 +24,15 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                oid = self.snmp.get("1.3.6.1.2.1.1.1.0",
-                                        cached=True)
-                sn = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.10")
-                platform = "%s.%s" % (oid.split(" ")[0].strip(), oid.split(" ")[1].strip())
-                version = oid.split(" ")[3].strip().replace(",", "")
+                oid = self.snmp.get("1.3.6.1.2.1.1.1.0")
+                sn = self.snmp.get("1.3.6.1.4.1.41752.5.15.1.10.0")
+                o = oid.split(",", 1)[0].strip()
+                if "REV2" in o:
+                    platform = "%s.%s" % (o.split(" ")[0].strip(), o.split(" ")[1].strip())
+                    version = o.split(" ")[3].strip()
+                else:
+                    platform = o.split(" ")[0].strip()
+                    version = o.split(" ")[1].strip()
                 result = {
                     "vendor": "Rotek",
                     "version": version,
