@@ -15,6 +15,7 @@ from noc.main.models.pool import Pool
 from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
@@ -24,8 +25,14 @@ from noc.core.profile.loader import GENERIC_PROFILE
 class ReportForm(forms.Form):
     pool = forms.ModelChoiceField(
         label=_("Managed Objects Pool"),
-        required=True,
+        required=False,
+        help_text="Pool for choice",
         queryset=Pool.objects.order_by("name"))
+    selector = forms.ModelChoiceField(
+        label=_("Managed Objects Selector"),
+        required=False,
+        help_text="Selector for choice",
+        queryset=ManagedObjectSelector.objects.order_by("name"))
 
 
 class ReportFilterApplication(SimpleReport):
@@ -43,16 +50,30 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
-    def get_data(self, request, pool=Pool.objects.filter()[0], avail_status=None, **kwargs):
+    def get_data(self, request, pool=None,
+                 selector=None, avail_status=None, **kwargs):
         data = []
 
-        data += [SectionRow(name=pool.name)]
-
         mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
+        if pool:
+            base = ManagedObject.objects.filter(pool=pool)
+            data += [SectionRow(name=pool.name)]
+        elif selector:
+            base = ManagedObject.objects.filter(selector.Q)
+            data += [SectionRow(name=selector.name)]
+        else:
+            return self.from_dataset(
+                title=self.title,
+                columns=[
+                    _("Managed Object"), _("Address"), _("Profile"), _("Hostname"),
+                    _("Auth Profile"), _("Username"), _("SNMP Community"),
+                    _("Avail"), _("Error")
+                ],
+                data=data)
 
-        is_managed = ManagedObject.objects.filter(is_managed=True, pool=pool).exclude(object_profile__in=mnp_in)
-        is_not_man = ManagedObject.objects.filter(is_managed=False, pool=pool)
-        is_not_resp = ManagedObject.objects.filter(is_managed=True, pool=pool, object_profile__in=mnp_in)
+        is_managed = base.filter(is_managed=True).exclude(object_profile__in=mnp_in)
+        is_not_man = base.filter(is_managed=False)
+        is_not_resp = base.filter(is_managed=True, object_profile__in=mnp_in)
         if not request.user.is_superuser:
             is_managed = is_managed.filter(administrative_domain__in=UserAccess.get_domains(request.user))
             is_not_man = is_not_man.filter(administrative_domain__in=UserAccess.get_domains(request.user))
