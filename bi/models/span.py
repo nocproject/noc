@@ -33,3 +33,7 @@ class Span(Model):
     error_text = StringField(description=_("Error text"))
     in_label = StringField(description=_("Input arguments"))
     out_label = StringField(description=_("Output results"))
+
+    @classmethod
+    def transform_query(cls, query, user):
+        return query
