@@ -9,7 +9,9 @@
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.queryset import Q
-from mongoengine.fields import IntField, ObjectIdField, StringField, BooleanField
+from mongoengine.fields import IntField, ObjectIdField, StringField, BooleanField, ReferenceField
+# NOC modules
+from noc.main.models.remotesystem import RemoteSystem
 
 
 class ExtNRILink(Document):
@@ -24,6 +26,8 @@ class ExtNRILink(Document):
         "auto_create_index": False,
         "indexes": ["src_mo", "dst_mo", "link"]
     }
+    # Source links on remote system
+    source = StringField(required=False)
     # Source managed object (NOC's ManagedObject.id)
     src_mo = IntField()
     # Source interface name in remote system notation
@@ -40,6 +44,11 @@ class ExtNRILink(Document):
     error = StringField(required=False)
     # Do not try to create NRI link
     ignore = BooleanField(default=False)
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
 
     @classmethod
     def get_connected(self, mo):
