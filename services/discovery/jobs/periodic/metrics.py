@@ -352,7 +352,7 @@ class MetricsCheck(DiscoveryCheck):
         alarms = []
         data = defaultdict(dict)
         n_metrics = 0
-        mo_id = self.object.get_bi_id()
+        mo_id = self.object.bi_id
         ts_cache = {}  # timestamp -> (date, ts)
         #
         for m in result:
@@ -362,11 +362,11 @@ class MetricsCheck(DiscoveryCheck):
                 # Counter type
                 if path:
                     key = "%x|%s" % (
-                        cfg.metric_type.get_bi_id(),
+                        cfg.metric_type.bi_id,
                         "|".join(str(p) for p in path)
                     )
                 else:
-                    key = "%x" % cfg.metric_type.get_bi_id()
+                    key = "%x" % cfg.metric_type.bi_id
                 # Restore old value and save new
                 r = counters.get(key)
                 counters[key] = (m.ts, m.value)
@@ -529,11 +529,11 @@ class MetricsCheck(DiscoveryCheck):
         # Build window state key
         if m.path:
             key = "%x|%s" % (
-                cfg.metric_type.get_bi_id(),
+                cfg.metric_type.bi_id,
                 "|".join(str(p) for p in m.path)
             )
         else:
-            key = "%x" % cfg.metric_type.get_bi_id()
+            key = "%x" % cfg.metric_type.bi_id
         #
         states = self.job.context["metric_windows"]
         value = m.abs_value

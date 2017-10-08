@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8000S"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_prompt = r"^\S+?#"
     pattern_more = [
         (r"^More: <space>,  Quit: q, One line: <return>", " "),

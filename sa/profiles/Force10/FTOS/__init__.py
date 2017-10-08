@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Force10.FTOS"
     pattern_more = "^ ?--More--"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Error: Invalid input at"
     pattern_operation_error = r"% Error: "
     command_disable_pager = "terminal length 0"

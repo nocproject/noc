@@ -19,7 +19,7 @@ class Profile(BaseProfile):
         (r"<return>, Quit: q or <ctrl>", " "),
         (r"q or <ctrl>+z", " ")
     ]
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>\s*"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = \
         r"^% (Unrecognized command|Incomplete command|" \
         r"Wrong number of parameters or invalid range, size or " \

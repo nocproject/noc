@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DxS_Cisco_CLI"
     pattern_more = "^ --More-- "
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at"
     command_disable_pager = "terminal length 0"
     command_more = " "

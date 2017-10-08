@@ -30,6 +30,7 @@ from noc.core.defer import call_later
 from .objectmap import ObjectMap
 from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
                                     IntParameter, StringParameter)
+from noc.core.bi.decorator import bi_sync
 
 m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
                                    "is_active": BooleanParameter(default=False),
@@ -57,6 +58,7 @@ id_lock = Lock()
 
 @on_init
 @on_save
+@bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
@@ -258,7 +260,7 @@ class ManagedObjectProfile(models.Model):
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.BigIntegerField(null=True, blank=True)
+    bi_id = models.BigIntegerField(unique=True)
     # Object alarms can be escalated
     escalation_policy = models.CharField(
         "Escalation Policy",
@@ -325,12 +327,23 @@ class ManagedObjectProfile(models.Model):
         ],
         default="E"
     )
+    # CLI privilege policy
+    cli_privilege_policy = models.CharField(
+        "CLI Privilege Policy",
+        max_length=1,
+        choices=[
+            ("E", "Raise privileges"),
+            ("D", "Do not raise")
+        ],
+        default="E"
+    )
     #
     metrics = PickledField(blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -338,9 +351,19 @@ class ManagedObjectProfile(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return ManagedObjectProfile.objects.get(id=id)
-        except ManagedObjectProfile.DoesNotExist:
+        mop = ManagedObjectProfile.objects.filter(id=id)[:1]
+        if mop:
+            return mop[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        mop = ManagedObjectProfile.objects.filter(bi_id=id)[:1]
+        if mop:
+            return mop[0]
+        else:
             return None
 
     def iter_pools(self):

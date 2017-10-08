@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Linksys.SPS2xx"
     pattern_more = r"^More: <space>,  Quit: q, One line: <return>$"
-    pattern_unpriveleged_prompt = r"^\S+> "
+    pattern_unprivileged_prompt = r"^\S+> "
     pattern_syntax_error = r"^% (Unrecognized command|Incomplete command|Wrong number of parameters or invalid range, size or characters entered)$"
     command_disable_pager = "terminal datadump"
     command_super = "enable"

@@ -19,7 +19,7 @@ class CHManagedObjectDataSource(BaseDataSource):
     def extract(self):
         for mo in ManagedObject.objects.all().order_by("id"):
             yield (
-                mo.get_bi_id(),
+                mo.bi_id,
                 mo.id,
                 mo.name,
                 mo.address

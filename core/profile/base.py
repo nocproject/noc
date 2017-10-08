@@ -2,17 +2,17 @@
 # ---------------------------------------------------------------------
 # SA Profile Base
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+import functools
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
-import functools
 
 
 class BaseProfile(object):
@@ -47,7 +47,7 @@ class BaseProfile(object):
     pattern_prompt = r"^\S*[>#]"
     # Regular expression to catch unpriveleged mode command prompt
     # (CLI Session)
-    pattern_unpriveleged_prompt = None
+    pattern_unprivileged_prompt = None
     # Regular expression to catch pager
     # (Used in command results)
     # If pattern_more is string, send command_more
@@ -306,7 +306,6 @@ class BaseProfile(object):
             if match:
                 return int(match.group("number"))
         return None
-
 
     def generate_prefix_list(self, name, pl):
         """

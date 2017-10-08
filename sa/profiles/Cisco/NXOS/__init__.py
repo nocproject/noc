@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Cisco.NXOS"
     pattern_more = "^--More--"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
     command_enter_config = "configure terminal"

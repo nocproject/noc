@@ -17,6 +17,8 @@ from .fields import BaseField
 from .connect import connection
 from noc.core.bi.query import to_sql, escape_field
 from noc.config import config
+from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.managedobject import ManagedObject
 
 __all__ = ["Model"]
 
@@ -202,6 +204,37 @@ class Model(six.with_metaclass(ModelBase)):
         :param user:
         :return: query dict or None if access denied
         """
+        if not user or user.is_superuser:
+            return query  # No restrictions
+        # Get user domains
+        domains = UserAccess.get_domains(user)
+        # Resolve domains against dict
+        mos_bi = [int(bi_id) for bi_id in ManagedObject.objects.filter(
+            administrative_domain__in=domains).values_list("bi_id", flat=True)]
+        filter = query.get("filter", {})
+        dl = len(mos_bi)
+        if not dl:
+            return None
+        elif dl == 1:
+            q = {
+                "$eq": [
+                    {"$field": "managed_object"},
+                    mos_bi
+                ]
+            }
+        else:
+            q = {
+                "$in": [
+                    {"$field": "managed_object"},
+                    mos_bi
+                ]
+            }
+        if filter:
+            query["filter"] = {
+                "$and": [query["filter"], q]
+            }
+        else:
+            query["filter"] = q
         return query
 
     @classmethod

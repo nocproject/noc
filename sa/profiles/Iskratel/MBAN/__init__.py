@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Iskratel.MBAN"
     # Iskratel do not have "enable_super" command
-    # pattern_unpriveleged_prompt = r"^\S+?>"
+    # pattern_unprivileged_prompt = r"^\S+?>"
     pattern_username = r"^user id :"
     pattern_prompt = r"^\S+?>"
     pattern_more = r"^Press any key"

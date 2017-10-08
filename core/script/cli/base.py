@@ -80,6 +80,7 @@ class CLI(object):
         self.is_closed = False
         self.close_timeout = None
         self.setup_complete = False
+        self.to_raise_privileges = script.credentials.get("raise_privileges", True)
 
     def close(self):
         if self.script.session:
@@ -448,25 +449,30 @@ class CLI(object):
     @tornado.gen.coroutine
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
-        if not self.profile.command_super:
-            self.on_failure(data, match, CLINoSuperCommand)
-        self.send(
-            self.profile.command_super +
-            (self.profile.command_submit or "\n")
-        )
-        """
-        Do not remove `pager` section
-        It fixes this situation on Huawei MA5300:
-        xxx>enable
-        { <cr>|level-value<U><1,15> }:
-        xxx#
-        """
-        self.expect({
-            "username": self.on_super_username,
-            "password": self.on_super_password,
-            "prompt": self.on_prompt,
-            "pager": self.send_pager_reply
-        }, self.profile.cli_timeout_super)
+        if self.to_raise_privileges:
+            # Start privilege raising sequence
+            if not self.profile.command_super:
+                self.on_failure(data, match, CLINoSuperCommand)
+            self.send(
+                self.profile.command_super +
+                (self.profile.command_submit or "\n")
+            )
+            # Do not remove `pager` section
+            # It fixes this situation on Huawei MA5300:
+            # xxx>enable
+            # { <cr>|level-value<U><1,15> }:
+            # xxx#
+            self.expect({
+                "username": self.on_super_username,
+                "password": self.on_super_password,
+                "prompt": self.on_prompt,
+                "pager": self.send_pager_reply
+            }, self.profile.cli_timeout_super)
+        else:
+            # Do not raise privileges
+            # Use unprivileged prompt as primary prompt
+            self.patterns["prompt"] = self.patterns["unprivileged_prompt"]
+            return self.on_prompt(data, match)
 
     @tornado.gen.coroutine
     def on_failure(self, data, match, error_cls=None):
@@ -562,9 +568,9 @@ class CLI(object):
             "prompt": re.compile(self.profile.pattern_prompt,
                                  re.DOTALL | re.MULTILINE)
         }
-        if self.profile.pattern_unpriveleged_prompt:
+        if self.profile.pattern_unprivileged_prompt:
             patterns["unprivileged_prompt"] = re.compile(
-                self.profile.pattern_unpriveleged_prompt,
+                self.profile.pattern_unprivileged_prompt,
                 re.DOTALL | re.MULTILINE
             )
         if self.profile.pattern_super_password:

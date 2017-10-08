@@ -99,11 +99,12 @@ class AlarmClass(nosql.Document):
     # will not clear itself in *recover_time*
     recover_time = fields.IntField(required=False, default=300)
     #
-    bi_id = fields.LongField()
+    bi_id = fields.LongField(unique=True)
     #
     category = nosql.ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     _handlers_cache = {}
@@ -116,6 +117,11 @@ class AlarmClass(nosql.Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return AlarmClass.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        return AlarmClass.objects.filter(bi_id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

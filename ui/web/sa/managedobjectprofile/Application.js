@@ -204,6 +204,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["D", __("Disable")]
                                     ],
                                     value: "E"
+                                },
+                                {
+                                    name: "cli_privilege_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("CLI Privilege Policy"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["D", __("Do not raise")],
+                                        ["E", __("Raise Privileges")]
+                                    ],
+                                    value: "E"
                                 }
                             ]
                         },

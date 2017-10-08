@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "OS.ESXi"
     # pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
-    pattern_unpriveleged_prompt = r"^([\w\~\-\.\/]*\s+)\$\s*"
+    pattern_unprivileged_prompt = r"^([\w\~\-\.\/]*\s+)\$\s*"
     pattern_prompt = r"^([\w\~\-\.\/]*\s+)#\s*"
     pattern_syntax_error = \
         r"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory" \

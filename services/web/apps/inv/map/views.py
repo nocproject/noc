@@ -256,7 +256,7 @@ class MapApplication(ExtApplication):
         for mo in o:
             for i in o[mo]:
                 where += [(mo, i)]
-        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(mo.get_bi_id()), q(i.name))
+        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(mo.bi_id), q(i.name))
                              for mo, i in where])
         query = ["select  managed_object, path[4], anyLast(load_in), anyLast(load_out) ",
                  "from interface",
@@ -268,7 +268,7 @@ class MapApplication(ExtApplication):
         for row in ch.execute(" ".join(query)):
             mo_in[row[0]] += float(row[2])
             mo_out[row[0]] += float(row[3])
-        mos = [str(ManagedObject.get_by_id(mo["id"]).get_bi_id()) for mo in r["objects"]]
+        mos = [str(ManagedObject.get_by_id(mo["id"]).bi_id) for mo in r["objects"]]
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
@@ -415,7 +415,7 @@ class MapApplication(ExtApplication):
                             m["tags"]["interface"]
                         )
                     ] = m["id"]
-                    object_bi = str(ManagedObject.objects.get(name=m["tags"]["object"]).get_bi_id())
+                    object_bi = str(ManagedObject.objects.get(name=m["tags"]["object"]).bi_id)
                     tag_id[object_bi, m["tags"]["interface"]] = m["id"]
                     mlst += [(m["metric"], object_bi, m["tags"]["interface"])]
                 except KeyError:

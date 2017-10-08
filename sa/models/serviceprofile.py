@@ -51,7 +51,7 @@ class ServiceProfile(Document):
     # Object id in remote system
     remote_id = StringField()    
     # Object id in BI
-    bi_id = LongField()
+    bi_id = LongField(unique=True)
     # Tags
     tags = ListField(StringField())
 

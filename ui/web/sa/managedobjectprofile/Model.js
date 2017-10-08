@@ -292,6 +292,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "cli_privilege_policy",
+            type: "string"
+        },
+        {
             name: "enable_periodic_discovery",
             xtype: "boolean",
             defaultValue: false
@@ -417,7 +421,6 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "escalation_policy",
             type: "string"
-        },
+        }
     ]
-})
-;
+});
