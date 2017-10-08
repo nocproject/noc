@@ -66,7 +66,7 @@ from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 
 # Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 3
+MANAGEDOBJECT_CACHE_VERSION = 4
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
@@ -307,7 +307,7 @@ class ManagedObject(Model):
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = BigIntegerField(null=True, blank=True)
+    bi_id = BigIntegerField(unique=True)
     # Object alarms can be escalated
     escalation_policy = CharField(
         "Escalation Policy",
@@ -388,6 +388,17 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # CLI privilege policy
+    cli_privilege_policy = CharField(
+        "CLI Privilege Policy",
+        max_length=1,
+        choices=[
+            ("E", "Raise privileges"),
+            ("D", "Do not raise"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -410,6 +421,7 @@ class ManagedObject(Model):
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -421,6 +433,16 @@ class ManagedObject(Model):
                   version=MANAGEDOBJECT_CACHE_VERSION)
     def get_by_id(cls, id):
         mo = ManagedObject.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
+                  lock=lambda _: id_lock)
+    def get_by_bi_id(cls, id):
+        mo = ManagedObject.objects.filter(bi_id=id)[:1]
         if mo:
             return mo[0]
         else:
@@ -1227,6 +1249,16 @@ class ManagedObject(Model):
             return self.tt_system.shard_name
         else:
             return DEFAULT_TTSYSTEM_SHARD
+
+    @property
+    def to_raise_privileges(self):
+        if self.cli_privilege_policy == "E":
+            return True
+        elif self.cli_privilege_policy == "P":
+            return self.object_profile.cli_privilege_policy == "E"
+        else:
+            return False
+
 
 @on_save
 class ManagedObjectAttribute(Model):

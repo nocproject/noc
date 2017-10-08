@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Orion.NOS"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)\s*>"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_prompt = r"^(?P<hostname>\S+)\s*#"
     pattern_syntax_error = r"^% \" .+ \"  Unknown command."
     command_super = "enable"

@@ -161,7 +161,8 @@ class Command(BaseCommand):
             "user": creds.user,
             "password": creds.password,
             "super_password": creds.super_password,
-            "path": obj.remote_path
+            "path": obj.remote_path,
+            "raise_privileges": obj.to_raise_privileges
         }
         if creds.snmp_ro:
             credentials["snmp_version"] = "v2c"

@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Cisco.ASA"
     pattern_more = "^<--- More --->"
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     command_super = "enable"
     command_enter_config = "configure terminal"

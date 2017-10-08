@@ -77,7 +77,7 @@ class Alarms(Model):
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
         domain_ids = [
-            x.get_bi_id()
+            x.bi_id
             for x in AdministrativeDomainM.objects.filter(id__in=domains)
         ]
         filter = query.get("filter", {})

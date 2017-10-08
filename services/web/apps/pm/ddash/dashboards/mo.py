@@ -95,7 +95,7 @@ class MODashboard(BaseDashboard):
             "firmare_version": self.object.version.version if self.object.version else None,
             "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown version",
-            "bi_id": self.object.get_bi_id(),
+            "bi_id": self.object.bi_id,
             "pool": self.object.pool.name,
             "ping_interval": self.object.object_profile.ping_interval,
             "discovery_interval": self.object.object_profile.periodic_discovery_interval

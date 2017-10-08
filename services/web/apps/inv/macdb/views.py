@@ -67,10 +67,11 @@ class MACApplication(ExtApplication):
 
         for p in m:
             # mo = self.managedobject_name_to_id(int(p["managed_object"]))
-            mo = ManagedObject.objects.filter()[0]
+            mo = ManagedObject.objects.filter(bi_id=int(p["managed_object"]))
             if not mo:
                 self.logger.warning("Managed object does not exists: %s" % p["managed_object"])
                 continue
+            mo = mo[0]
             iface = self.field_description(mo, p["interface"])
             current += [{
                 "last_changed": p["timestamp"],
@@ -143,10 +144,12 @@ class MACApplication(ExtApplication):
         # m = MACDB.objects.filter(mac=mac).order_by("-timestamp")
         for p in m:
             # mo = self.managedobject_name_to_id(int(p["managed_object"]))
-            mo = self.bi_c[p["managed_object"]]
+            # mo = self.bi_c[p["managed_object"]]
+            mo = ManagedObject.objects.filter(bi_id=int(p["managed_object"]))
             if not mo:
                 self.logger.warning("Managed object does not exists: %s" % p["managed_object"])
                 continue
+            mo = mo[0]
             iface = Interface.objects.filter(managed_object=mo, name=p["interface"])
             if not iface:
                 iface = ":%s" % p["interface"]

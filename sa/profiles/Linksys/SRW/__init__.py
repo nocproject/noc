@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     name = "Linksys.SWR"
     pattern_prompt = r"(ArrowKey/TAB/BACK=Move  SPACE=Toggle  ENTER=Select  ESC=Back)|^>"
     command_super = "lcli"
-    # pattern_unpriveleged_prompt = "^>"
+    # pattern_unprivileged_prompt = "^>"
     pattern_username = "User Name:"
     username_submit = "\t"
     pattern_password = "Password:"

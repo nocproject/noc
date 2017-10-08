@@ -17,7 +17,7 @@ class Profile(BaseProfile):
         (r"^More:", " "),
         (r"^Overwrite file \[startup-config\]", "y")
     ]
-    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = \
         r"% Invalid input detected at|% Ambiguous command:|" \
         r"% Incomplete command.|% Unrecodnezed command"
