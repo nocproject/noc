@@ -12,6 +12,7 @@ import inspect
 import datetime
 # Third-party modules
 import bson
+from pymongo import ReadPreference
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
@@ -65,6 +66,8 @@ class AlarmApplication(ExtApplication):
         config={}
     )
 
+    DEFAULT_ARH_ALARM = datetime.timedelta(days=7)
+
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         from plugins.base import AlarmPlugin
@@ -91,9 +94,8 @@ class AlarmApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (
-            self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param,
-            self.only_param):
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param, self.only_param):
             if p in q:
                 del q[p]
         # Normalize parameters
@@ -136,6 +138,8 @@ class AlarmApplication(ExtApplication):
             del q["collapse"]
             if c != "0":
                 q["root__exists"] = False
+        if "timestamp__gte" not in q and "timestamp__lte" not in q:
+            q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARH_ALARM
         return q
 
     def instance_to_dict(self, o, fields=None):
@@ -192,10 +196,10 @@ class AlarmApplication(ExtApplication):
             raise Exception("Invalid status")
         model = self.model_map[status]
         if request.user.is_superuser:
-            return model.objects.all()
+            return model.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all()
         else:
             return model.objects.filter(
-                adm_path__in=UserAccess.get_domains(request.user)
+                adm_path__in=UserAccess.get_domains(request.user), read_preference=ReadPreference.SECONDARY_PREFERRED
             )
 
     @view(url=r"^$", access="launch", method=["GET"], api=True)
