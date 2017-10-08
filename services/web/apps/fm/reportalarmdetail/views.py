@@ -14,6 +14,7 @@ import tempfile
 from django.http import HttpResponse
 import xlsxwriter
 import bson
+from pymongo import ReadPreference
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, IntParameter
@@ -106,7 +107,8 @@ class ReportAlarmDetailApplication(ExtApplication):
             "tt",
             "escalation_ts",
             "container_address"
-        ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+        ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
+            "segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         header_row = [
          "ID",
@@ -126,7 +128,8 @@ class ReportAlarmDetailApplication(ExtApplication):
          _("TT"),
          _("ESCALATION_TS"),
          _("CONTAINER_ADDRESS")
-        ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+        ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
+            "SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         if columns:
             cmap = []
@@ -192,7 +195,8 @@ class ReportAlarmDetailApplication(ExtApplication):
         attr_res = ReportAttrResolver([])
         if source in ["archive", "both"]:
             # Archived Alarms
-            for a in ArchivedAlarm._get_collection().find(q).sort(
+            for a in ArchivedAlarm._get_collection().with_options(
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort(
                     [("timestamp", 1)]):
                 dt = a["clear_timestamp"] - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
@@ -241,7 +245,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                 ], container_path, segment_path), cmap)]
         # Active Alarms
         if source in ["active", "both"]:
-            for a in ActiveAlarm._get_collection().find(q).sort(
+            for a in ActiveAlarm._get_collection().with_options(
+                    read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort(
                     [("timestamp", 1)]):
                 dt = datetime.datetime.now() - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
