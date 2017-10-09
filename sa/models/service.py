@@ -20,18 +20,19 @@ from noc.crm.models.subscriber import Subscriber
 from noc.main.models.remotesystem import RemoteSystem
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete
 
 logger = logging.getLogger(__name__)
 
 
+@bi_sync
 @on_save
 @on_delete
 class Service(Document):
     meta = {
         "collection": "noc.services",
         "strict": False,
-        "auto_create_index": False,
         "auto_create_index": False,
         "indexes": [
             "subscriber",
