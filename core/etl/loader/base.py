@@ -108,7 +108,7 @@ class BaseLoader(object):
             unique_fields = [
                 f.name
                 for f in self.model._fields.itervalues()
-                if f.unique]
+                if f.unique and f.name not in self.ignore_unique]
             self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
             # Third-party modules
@@ -117,7 +117,8 @@ class BaseLoader(object):
             unique_fields = [
                 f.name for f in self.model._meta.fields
                 if f.unique and
-                f.name != self.model._meta.pk.name]
+                f.name != self.model._meta.pk.name and
+                f.name not in self.ignore_unique]
             self.integrity_exception = django.db.utils.IntegrityError
         if unique_fields:
             self.unique_field = unique_fields[0]
