@@ -12,6 +12,7 @@ import gzip
 import os
 import csv
 import time
+from collections import namedtuple
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.config import config
@@ -24,9 +25,11 @@ class BaseExtractor(object):
     Data extractor interface. Subclasses must provide
     *iter_data* method
     """
+    Problem = namedtuple("Problem", ["line", "p_class", "message", "row"])
     name = None
     PREFIX = config.path.etl_import
     REPORT_INTERVAL = 1000
+    PROBLEM_PRINT = "/tmp/extract_problems.tsv"
     # List of rows to be used as constant data
     data = []
     # Suppress deduplication message
@@ -39,6 +42,10 @@ class BaseExtractor(object):
             logger, "%s][%s" % (system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
+        self.problems = []
+
+    def register_problem(self, line, p_class, message, row):
+        self.problems += [self.Problem(line=line + 1, p_class=p_class, message=message, row=row)]
 
     def get_new_state(self):
         if not os.path.isdir(self.import_dir):
@@ -51,6 +58,9 @@ class BaseExtractor(object):
     def iter_data(self):
         for row in self.data:
             yield row
+
+    def filter(self, row):
+        return True
 
     def clean(self, row):
         return row
@@ -72,6 +82,8 @@ class BaseExtractor(object):
         n = 0
         seen = set()
         for row in self.iter_data():
+            if not self.filter(row):
+                continue
             row = self.clean(row)
             if row[0] in seen:
                 if not self.suppress_deduplication_log:
@@ -97,3 +109,13 @@ class BaseExtractor(object):
         writer = csv.writer(f)
         writer.writerows(data)
         f.close()
+        if self.problems:
+            f = open(self.PROBLEM_PRINT, "w")
+            writer = csv.writer(f, delimiter=";")
+            self.logger.warning("Обнаруженные проблемы")
+            self.logger.warning("Строка\tТип\tПроблема")
+            for p in self.problems:
+                # self.logger.warning("%s\t%s\t%s" % (p.line, p.p_class, p.message))
+                # writer.writerow([p.line, p.p_class] + p.row + [p.message])
+                writer.writerow([p.line, p.p_class] + list(p.row) + [p.message])
+            f.close()
