@@ -138,8 +138,9 @@ class AlarmApplication(ExtApplication):
             del q["collapse"]
             if c != "0":
                 q["root__exists"] = False
-        if "timestamp__gte" not in q and "timestamp__lte" not in q:
-            q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARH_ALARM
+        if "status" in q and q["status"] == "C":
+            if "timestamp__gte" not in q and "timestamp__lte" not in q:
+                q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARH_ALARM
         return q
 
     def instance_to_dict(self, o, fields=None):
