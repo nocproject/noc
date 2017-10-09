@@ -77,7 +77,7 @@ class ReportNode(object):
         """
         return ""
 
-    def to_csv(self):
+    def to_csv(self, delimiter=","):
         """
         Return CSV presentation of Node
         """
@@ -116,12 +116,12 @@ class Report(ReportNode):
         """
         return "\n".join([s.to_html() for s in self.sections])
 
-    def to_csv(self):
+    def to_csv(self, delimiter=","):
         """
         Return CSV for report
         :return:
         """
-        return "\n".join([x for x in [s.to_csv() for s in self.sections] if x])
+        return "\n".join([x for x in [s.to_csv(delimiter=delimiter) for s in self.sections] if x])
 
 
 class ReportSection(ReportNode):
@@ -593,13 +593,13 @@ class TableSection(ReportSection):
         s += ["</script>"]
         return "\n".join(s)
 
-    def to_csv(self):
+    def to_csv(self, delimiter=","):
         """
         Return CSV representation of table
         :return:
         """
         f = six.StringIO()
-        writer = csv.writer(f)
+        writer = csv.writer(f, delimiter=delimiter)
         if self.enumerate:
             writer.writerow(["#"] + [c.title for c in self.columns])
         else:
@@ -619,6 +619,46 @@ class TableSection(ReportSection):
                         writer.writerow([row.name])
                         continue
                     writer.writerow(row)
+        return f.getvalue()
+
+    def to_ssv2(self, delimiter=";", mrf="center", date=None):
+        """
+        Return CSV representation of table
+        :return:
+        """
+        f = six.StringIO()
+        writer = csv.writer(f, delimiter=delimiter)
+        section = "default"
+        prefix = [mrf, section]
+        prefix_c = ["mrf", "pool"]
+        if date:
+            prefix_c += ["date"]
+            prefix += [date]
+        if self.enumerate:
+            writer.writerow(["#"] + prefix_c + [c.title for c in self.columns])
+        else:
+            writer.writerow(prefix_c + [c.title for c in self.columns])
+        if self.data:
+            if self.enumerate:
+                n = 1
+                for row in self.data:
+                    if type(row) == SectionRow:
+                        # writer.writerow([row.name])
+                        prefix = [mrf, row.name]
+                        if date:
+                            prefix += [date]
+                        continue
+                    writer.writerow([n] + prefix + list(row))
+                    n += 1
+            else:
+                for row in self.data:
+                    if type(row) == SectionRow:
+                        # writer.writerow([row.name])
+                        prefix = [mrf, row.name]
+                        if date:
+                            prefix += [date]
+                        continue
+                    writer.writerow(prefix + list(row))
         return f.getvalue()
 
 

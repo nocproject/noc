@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import logging
 import datetime
 import csv
 import tempfile
@@ -18,6 +19,7 @@ from pymongo import ReadPreference
 import xlsxwriter
 import bson
 # NOC modules
+from noc.lib.app.simplereport import SectionRow
 from noc.lib.nosql import get_db
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
@@ -37,6 +39,47 @@ from noc.inv.models.vendor import Vendor
 
 # @todo ThreadingCount
 # @todo ReportDiscovery Problem
+
+logger = logging.getLogger(__name__)
+
+
+class ReportObjectBuild(object):
+
+    def __init__(self, site, report, user):
+        # Predefined report id
+        # <app id>:<variant>
+        # "fm.reportavailability:1d"
+        self.report = report
+        self.site = site
+        self.run_as = user
+        pass
+
+    class RequestStub(object):
+        def __init__(self, user):
+            self.user = user
+
+    def build_report(self, format_r="raw"):
+        """
+        Generate report
+        :return:
+        """
+        t0 = datetime.datetime.now()
+        logger.info("[%s] Building report", self.report)
+        app_id, variant = self.report.split(":")
+        if app_id not in self.site.apps:
+            logger.error("[%s] Invalid application %s. Skipping",
+                         self.report, app_id)
+            return None
+        #
+        app = self.site.apps[app_id]
+        args = app.get_predefined_args(variant)
+        request = self.RequestStub(user=self.run_as)
+        report = app.get_data(request, **args)
+        if format_r == "csv":
+            data = report.to_csv(delimiter=";")
+        else:
+            data = report
+        return data
 
 
 class ReportObjectCaps(object):
@@ -684,3 +727,25 @@ class ReportObjectDetailApplication(ExtApplication):
                 with open(f.name) as ff:
                     response.write(ff.read())
                 return response
+
+    @view("^rep_download/$", method=["GET"], access="launch", api=True,
+          validate={
+              "administrative_domain": StringParameter(required=False),
+              "report": StringParameter(required=True),
+              "query": StringParameter(required=False, default=""),
+              "format": StringParameter(choices=["csv", "xlsx", "raw"], default="csv")
+          })
+    def api_report(self, request, format="csv", administrative_domain=None, report="", query="default", columns=None):
+        logger.info("Request report: %s" % report)
+        rep_build = ReportObjectBuild(self.site, ":".join([report, query]), request.user)
+        if format == "csv":
+            r = rep_build.build_report(format_r="csv")
+        else:
+            r = rep_build.build_report()
+            r = r.sections[-1].to_ssv2(date=datetime.datetime.now().strftime("%d/%m/%YY"))
+
+        response = HttpResponse(content_type="text/csv")
+        response[
+            "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % report
+        response.write(r)
+        return response
