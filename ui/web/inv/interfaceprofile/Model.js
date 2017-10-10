@@ -90,6 +90,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "bi_id",
             type: "string"
         },
+        {
+            name: "allow_autosegmentation",
+            type: "boolean"
+        },
         // CSS
         {
             name: "row_class",

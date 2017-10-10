@@ -155,6 +155,8 @@ class InterfaceProfile(Document):
     # User network interface
     # MAC discovery can be restricted to UNI
     is_uni = BooleanField(default=False)
+    # Allow automatic segmentation
+    allow_autosegmentation = BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)

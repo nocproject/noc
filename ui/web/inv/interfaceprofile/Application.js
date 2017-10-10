@@ -189,6 +189,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        name: "allow_autosegmentation",
+                        xtype: "checkbox",
+                        boxLabel: __("Allow Autosegmentation"),
+                        allowBlank: true
+                    },
+                    {
                         xtype: "fieldset",
                         layout: "hbox",
                         title: __("Integration"),

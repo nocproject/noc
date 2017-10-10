@@ -404,6 +404,18 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             xtype: "boolean"
         },
         {
+            name: "autosegmentation_policy",
+            type: "string"
+        },
+        {
+            name: "autosegmentation_level_limit",
+            type: "int"
+        },
+        {
+            name: "autosegmentation_segment_name",
+            type: "string"
+        },
+        {
             name: "hk_handler",
             xtype: "string"
         },

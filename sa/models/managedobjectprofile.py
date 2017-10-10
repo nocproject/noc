@@ -264,6 +264,33 @@ class ManagedObjectProfile(models.Model):
     mac_collect_multicast = models.BooleanField(default=False)
     # Collect MAC from designated VLANs (NetworkSegment/NetworkSegmentProfile)
     mac_collect_vcfilter = models.BooleanField(default=False)
+    # Autosegmentation policy
+    autosegmentation_policy = models.CharField(
+        max_length=1,
+        choices=[
+            # Do not allow to move object by autosegmentation
+            ("d", "Do not segmentate"),
+            # Allow moving of object to another segment
+            # by autosegmentation process
+            ("e", "Allow autosegmentation"),
+            # Create additional segment, related to this object,
+            # and move all satisfying objects to it
+            ("o", "Segmentate for object"),
+            # Create additional segment for each interface
+            # and move all satisfying objects to it
+            ("i", "Segmentate for interface")
+        ],
+        default="d"
+    )
+    # Objects can be autosegmented by *o* and *i* policy
+    # only if their level below *autosegmentation_level_limit*
+    autosegmentation_level_limit = models.IntegerField(_("Level"), default=999)
+    # Jinja2 tempplate for segment name
+    # object and interface context variables are exist
+    autosegmentation_segment_name = models.CharField(
+        max_length=255,
+        default="{{object.name}}{% if object.profile.autosegmentation_policy == 'i' %}-{{interface.name}}{% endif %}"
+    )
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem,
