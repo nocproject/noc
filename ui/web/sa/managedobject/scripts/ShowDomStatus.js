@@ -17,27 +17,45 @@ Ext.define("NOC.sa.managedobject.scripts.ShowDomStatus", {
         {
             text: __("Temp, C"),
             dataIndex: "temp_c",
-            width: 70,
+            xtype: "numbercolumn",
+            format: "0.0000",
+            width: 100,
+            align: "right"
         },
         {
             text: __("Voltage, V"),
             dataIndex: "voltage_v",
-            width: 70,
+            xtype: "numbercolumn",
+            format: "0.0000",
+            width: 100,
+            align: "right"
         },
         {
             text: __("Current, mA"),
             dataIndex: "current_ma",
-            width: 70,
+            xtype: "numbercolumn",
+            format: "0.0000",
+            width: 100,
+            align: "right"
         },
         {
-            text: __("Optical Tx, bBm"),
+            text: __("Optical Tx, dBm"),
             dataIndex: "optical_tx_dbm",
-            width: 90,
+            xtype: "numbercolumn",
+            format: "0.0000",
+            width: 110,
+            align: "right"
         },
         {
-            text: __("Optical Rx, bBm"),
+            text: __("Optical Rx, dBm"),
             dataIndex: "optical_rx_dbm",
-            width: 90,
+            xtype: "numbercolumn",
+            format: "0.0000",
+            width: 110,
+            align: "right",
+        },
+        {
+            text: "",
             flex: 1
         }
     ],

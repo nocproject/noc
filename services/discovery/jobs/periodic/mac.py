@@ -28,26 +28,26 @@ class MACCheck(DiscoveryCheck):
 
     def handler(self):
         # Build filter policy
-        if self.object.profile.mac_collect_all:
+        if self.object.object_profile.mac_collect_all:
             mf = self.filter_all
         else:
             mf = []
             self.allowed_vlans = set()
             # Filter by interface profile
-            if self.object.profile.mac_collect_interface_profile:
+            if self.object.object_profile.mac_collect_interface_profile:
                 mf += [self.filter_interface_profile]
             # Filter by management vlan
-            if self.object.profile.mac_collect_management:
+            if self.object.object_profile.mac_collect_management:
                 vlan = self.object.segment.get_management_vlan()
                 if vlan:
                     self.allowed_vlans.add(vlan)
             # Filter by multicast vlan
-            if self.object.profile.mac_collect_multicast:
+            if self.object.object_profile.mac_collect_multicast:
                 vlan = self.object.segment.get_multicast_vlan()
                 if vlan:
                     self.allowed_vlans.add(vlan)
             # Filter by VC Filter (not implemented yet)
-            if self.object.profile.mac_collect_vcfilter:
+            if self.object.object_profile.mac_collect_vcfilter:
                 self.logger.info("VC Filters are not implemented yet")
             # Apply VLAN filter
             if self.allowed_vlans:
@@ -71,13 +71,15 @@ class MACCheck(DiscoveryCheck):
         for v in result:
             total_macs += 1
             if v["type"] != "D" or not v["interfaces"]:
+                self.logger.debug("Ignored not dynamic MAC: %s" % v["mac"])
                 continue
             ifname = str(v["interfaces"][0])
             iface = self.get_interface_by_name(ifname)
             if not iface:
                 unknown_interfaces.add(ifname)
                 continue  # Interface not found
-            if not mf(iface, v["vlan"], v["mac"]):
+            if not mf(iface, v["vlan_id"], v["mac"]):
+                self.logger.debug("Filtered: Iface: %s, Vlan: %s, MAC: %s" % (iface, v["vlan_id"], v["mac"]))
                 continue
             ifprofile = iface.get_profile()
             data += ["\t".join((
@@ -113,7 +115,7 @@ class MACCheck(DiscoveryCheck):
         return True
 
     def filter_interface_profile(self, interface, vlan, mac):
-        return interface.get_profile().mac_discovery_policy != "e"
+        return interface.get_profile().mac_discovery_policy != "d"
 
     def filter_vlan(self, interface, vlan, mac):
         return vlan in self.allowed_vlans
