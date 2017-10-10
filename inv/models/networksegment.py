@@ -381,3 +381,27 @@ class NetworkSegment(Document):
             return self.profile.horizontal_transit_policy
         else:
             return "D"
+
+    def get_management_vlan(self):
+        """
+        Returns Management VLAN for segment
+        :return: vlan (integer) or None
+        """
+        if self.management_vlan_policy == "e":
+            return self.management_vlan or None
+        elif self.management_vlan_policy == "p":
+            return self.profile.management_vlan or None
+        else:
+            return None
+
+    def get_multicast_vlan(self):
+        """
+        Returns Multicast VLAN for segment
+        :return: vlan (integer) or None
+        """
+        if self.multicast_vlan_policy == "e":
+            return self.multicast_vlan or None
+        elif self.multicast_vlan_policy == "p":
+            return self.profile.multicast_vlan or None
+        else:
+            return None

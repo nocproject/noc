@@ -384,6 +384,26 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             persist: false
         },
         {
+            name: "mac_collect_all",
+            xtype: "boolean"
+        },
+        {
+            name: "mac_collect_interface_profile",
+            xtype: "boolean"
+        },
+        {
+            name: "mac_collect_management",
+            xtype: "boolean"
+        },
+        {
+            name: "mac_collect_multicast",
+            xtype: "boolean"
+        },
+        {
+            name: "mac_collect_vcfilter",
+            xtype: "boolean"
+        },
+        {
             name: "hk_handler",
             xtype: "string"
         },

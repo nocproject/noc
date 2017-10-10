@@ -253,6 +253,17 @@ class ManagedObjectProfile(models.Model):
         max_length=255,
         null=True, blank=True
     )
+    # MAC collection settings
+    # Collect all MAC addresses
+    mac_collect_all = models.BooleanField(default=False)
+    # Collect MAC addresses if permitted by interface profile
+    mac_collect_interface_profile = models.BooleanField(default=True)
+    # Collect MAC addresses from management VLAN
+    mac_collect_management = models.BooleanField(default=False)
+    # Collect MAC addresses from multicast VLAN
+    mac_collect_multicast = models.BooleanField(default=False)
+    # Collect MAC from designated VLANs (NetworkSegment/NetworkSegmentProfile)
+    mac_collect_vcfilter = models.BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem,
