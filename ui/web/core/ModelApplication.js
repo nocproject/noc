@@ -1126,10 +1126,17 @@ Ext.define("NOC.core.ModelApplication", {
     // "clone" button pressed
     onClone: function() {
         var me = this;
-        // Reset UUID
-        if(me.currentRecord && me.currentRecord.get("uuid")) {
-            me.currentRecord.set("uuid", null);
-            me.form.setValues({uuid: null});
+        if(me.currentRecord) {
+            // Reset UUID
+            if(me.currentRecord.get("uuid")) {
+                me.currentRecord.set("uuid", null);
+                me.form.setValues({uuid: null});
+            }
+            // Reset bi_id
+            if(me.currentRecord.get("bi_id")) {
+                me.currentRecord.set("bi_id", null);
+                me.form.setValues({bi_id: null});
+            }
         }
         // Reset parents of inline stores
         Ext.each(me.inlineStores, function(s) {
