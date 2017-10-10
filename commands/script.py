@@ -270,6 +270,7 @@ class JSONObject(object):
         self.creds = data.get("credentials", {})
         self.caps = data.get("caps")
         self.remote_path = None
+        self.to_raise_privileges = data.get("raise_privileges", True)
         self.pool = PoolStub("default")
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
