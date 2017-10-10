@@ -29,7 +29,8 @@ DATABASES = {
         "PORT": config.pg.addresses[0].port,
         "TEST_NAME": "test_" + config.pg.db,
         "OPTIONS": {
-            "autocommit": True
+            "autocommit": True,
+            "connect_timeout": 5
         }
     }
 }
