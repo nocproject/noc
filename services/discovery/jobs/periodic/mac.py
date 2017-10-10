@@ -71,6 +71,7 @@ class MACCheck(DiscoveryCheck):
         for v in result:
             total_macs += 1
             if v["type"] != "D" or not v["interfaces"]:
+                self.logger.debug("Ignored not dynamic MAC: %s" % v["mac"])
                 continue
             ifname = str(v["interfaces"][0])
             iface = self.get_interface_by_name(ifname)
@@ -78,6 +79,7 @@ class MACCheck(DiscoveryCheck):
                 unknown_interfaces.add(ifname)
                 continue  # Interface not found
             if not mf(iface, v["vlan_id"], v["mac"]):
+                self.logger.debug("Filtered: Iface: %s, Vlan: %s, MAC: %s" % (iface, v["vlan_id"], v["mac"]))
                 continue
             ifprofile = iface.get_profile()
             data += ["\t".join((
@@ -113,7 +115,7 @@ class MACCheck(DiscoveryCheck):
         return True
 
     def filter_interface_profile(self, interface, vlan, mac):
-        return interface.get_profile().mac_discovery_policy != "e"
+        return interface.get_profile().mac_discovery_policy != "d"
 
     def filter_vlan(self, interface, vlan, mac):
         return vlan in self.allowed_vlans
