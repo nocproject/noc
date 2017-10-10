@@ -376,6 +376,13 @@ class Interface(Document):
         else:
             return self
 
+    def get_profile(self):
+        if self.profile:
+            return self.profile
+        else:
+            return InterfaceProfile.get_default_profile()
+
+
 # Avoid circular references
 from link import Link
 from macdb import MACDB

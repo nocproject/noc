@@ -1142,6 +1142,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
+                            title: __("MAC"),
+                            items: [
+                                {
+                                    name: "mac_collect_all",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Collect All"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "mac_collect_interface_profile",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Collect if permitted by interface profile"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "mac_collect_management",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Collect from management VLAN"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "mac_collect_multicast",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Collect from multicast VLAN"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "mac_collect_vcfilter",
+                                    xtype: "checkbox",
+                                    boxLabel: __("Collect from VLAN matching VC Filter"),
+                                    allowBlank: true
+                                }
+                            ]
+                        },
+                        {
                             title: __("Integration"),
                             items: [
                                 {
