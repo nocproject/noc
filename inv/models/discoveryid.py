@@ -177,22 +177,6 @@ class DiscoveryID(Document):
             r = cls.get_by_mac(mac)
             if r:
                 return ManagedObject.get_by_id(r["object"])
-            # Fallback to interface search
-            metrics["discoveryid_mac_interface"] += 1
-            o = set(
-                d["managed_object"]
-                for d in Interface._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED
-                ).find({
-                    "mac": mac
-                }, {
-                    "_id": 0,
-                    "managed_object": 1
-                })
-            )
-            if len(o) == 1:
-                return ManagedObject.get_by_id(list(o)[0])
-            metrics["discoveryid_mac_failed"] += 1
         if ipv4_address:
             metrics["discoveryid_ip_requests"] += 1
             # Try router_id
