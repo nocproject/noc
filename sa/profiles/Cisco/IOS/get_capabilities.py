@@ -132,5 +132,3 @@ class Script(BaseScript):
             np = self.get_ip_sla_probes()
             if np:
                 caps["Cisco | IP | SLA | Probes"] = np
-            if self.has_lacp():
-                caps["Network | LACP"] = True

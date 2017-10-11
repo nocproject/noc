@@ -89,8 +89,6 @@ class Script(BaseScript):
     def execute_platform(self, caps):
         if self.has_ndp():
             caps["Huawei | NDP"] = True
-        if self.has_lacp():
-            caps["Network | LACP"] = True
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0

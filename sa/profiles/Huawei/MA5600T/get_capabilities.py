@@ -35,7 +35,3 @@ class Script(BaseScript):
         """
         cmd = self.cli("display lacp link-aggregation summary")
         return self.rx_lacp_id.search(cmd) is not None
-
-    def execute_platform(self, caps):
-        if self.has_lacp():
-            caps["Network | LACP"] = True
