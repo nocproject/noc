@@ -57,6 +57,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
     ])
 
     def handler(self, **kwargs):
+        # Additional interface/subinterface MACs
+        self.interface_macs = set()
         with Span(sample=self.object.box_telemetry_sample):
             if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestSNMPCheck(self).run()

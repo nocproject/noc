@@ -29,14 +29,17 @@ class IDCheck(DiscoveryCheck):
             )
         self.logger.info(
             "Identity found: "
-            "Chassis MACs = %s, hostname = %s, router-id = %s",
+            "Chassis MACs = %s, hostname = %s, router-id = %s,"
+            "additional MACs = %s",
             cm,
             result.get("hostname"),
-            result.get("router_id")
+            result.get("router_id"),
+            ", ".join(self.job.interface_macs)
         )
         DiscoveryID.submit(
             object=self.object,
             chassis_mac=result.get("chassis_mac"),
             hostname=result.get("hostname"),
-            router_id=result.get("router_id")
+            router_id=result.get("router_id"),
+            additional_macs=self.job.interface_macs
         )

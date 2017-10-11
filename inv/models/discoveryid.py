@@ -72,7 +72,41 @@ class DiscoveryID(Document):
 
     @classmethod
     def submit(cls, object, chassis_mac=None,
-               hostname=None, router_id=None):
+               hostname=None, router_id=None, additional_macs=None):
+        chassis_mac = chassis_mac or []
+        if additional_macs:
+            # Strip additional_macs intersected with chassis_mac
+            additional_macs = sorted(additional_macs)
+            for cm in chassis_mac:
+                first = cm["first_chassis_mac"]
+                last = cm["last_chassis_mac"]
+                ll = len(additional_macs)
+                start = bisect.bisect_left(additional_macs, first)
+                while start < ll and first <= additional_macs[start] <= last:
+                    del additional_macs[start]
+                    ll -= 1
+            # Append remaining additional macs as ranges
+            if additional_macs:
+                first = None
+                last = None
+                while additional_macs:
+                    n = int(MAC(additional_macs.pop(0)))
+                    if first is None:
+                        first = n
+                        last = n
+                    elif n - last == 1:
+                        last = n
+                    else:
+                        chassis_mac += [{
+                            "first_chassis_mac": MAC(first),
+                            "last_chassis_mac": MAC(last)
+                        }]
+                        first = None
+                if first:
+                    chassis_mac += [{
+                        "first_chassis_mac": MAC(first),
+                        "last_chassis_mac": MAC(last)
+                    }]
         if chassis_mac:
             chassis_mac = [
                 MACRange(

@@ -180,6 +180,8 @@ class InterfaceCheck(DiscoveryCheck):
             )
             iface.save()
             self.set_interface(name, iface)
+        if mac:
+            self.job.interface_macs.add(mac)
         return iface
 
     def submit_subinterface(self, forwarding_instance, interface,
@@ -236,6 +238,8 @@ class InterfaceCheck(DiscoveryCheck):
                 ifindex=ifindex
             )
             si.save()
+        if mac:
+            self.job.interface_macs.add(mac)
         return si
 
     def cleanup_forwarding_instances(self, fi):
