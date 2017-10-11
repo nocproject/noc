@@ -9,6 +9,7 @@
 # Python modules
 import operator
 from threading import Lock
+import bisect
 # Third-party modules
 from mongoengine.queryset import DoesNotExist
 import cachetools
@@ -259,3 +260,44 @@ class DiscoveryID(Document):
             mo = mo.id
         for d in DiscoveryID.objects.filter(object=mo):
             d.delete()
+
+    @classmethod
+    def find_objects(cls, macs):
+        """
+        Find objects for list of macs
+        :param macs: List of MAC addresses
+        :return: dict of MAC -> ManagedObject for resolved MACs
+        """
+        r = {}
+        if not macs:
+            return r
+        # Build list of macs to search
+        mlist = sorted(int(MAC(m)) for m in macs)
+        # Search for macs
+        obj_ranges = {}  # (first, last) -> mo
+        for d in DiscoveryID._get_collection().find({
+            "macs": {
+                "$in": mlist
+            }
+        }, {
+            "_id": 0,
+            "object": 1,
+            "chassis_mac": 1
+        }):
+            mo = ManagedObject.get_by_id(d["object"])
+            if mo:
+                for dd in d.get("chassis_mac", []):
+                    obj_ranges[int(MAC(dd["first_mac"])), int(MAC(dd["last_mac"]))] = mo
+        n = 1
+        for s, e in obj_ranges:
+            n += 1
+        # Resolve ranges
+        start = 0
+        ll = len(mlist)
+        for s, e in sorted(obj_ranges):
+            mo = obj_ranges[s, e]
+            start = bisect.bisect_left(mlist, s, start, ll)
+            while start < ll and s <= mlist[start] <= e:
+                r[MAC(mlist[start])] = mo
+                start += 1
+        return r
