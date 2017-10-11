@@ -41,6 +41,7 @@ class ExtDocApplication(ExtApplication):
     clean_fields = {}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
     parent_model = None
+    ignored_fields = set(["id", "bi_id"])
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -167,14 +168,16 @@ class ExtDocApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
-        if "id" in data:
-            del data["id"]
-        for f in data:
-            if data[f] == "":
-                data[f] = None
-            elif f in self.clean_fields:
+        # Strip ignored fields and convert empty strings to None
+        data = dict(
+            (str(k), data[k] if data[k] != "" else None)
+            for k in data if k not in self.ignored_fields
+        )
+        # Clean up fields
+        for f in self.clean_fields:
+            if f in data:
                 data[f] = self.clean_fields[f].clean(data[f])
-        return dict((str(k), data[k]) for k in data)
+        return data
 
     def cleaned_query(self, q):
         q = q.copy()

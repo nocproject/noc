@@ -41,6 +41,7 @@ class ExtModelApplication(ExtApplication):
     clean_fields = {}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
     order_map = {}  # field name -> SQL query for ordering
+    ignored_fields = set(["id", "bi_id"])
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -167,10 +168,10 @@ class ExtModelApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
-        # Strip "id" and convert empty strings to None
+        # Strip ignored fields and convert empty strings to None
         data = dict(
-            (k, data[k] if data[k] != "" else None)
-            for k in data if k != "id"
+            (str(k), data[k] if data[k] != "" else None)
+            for k in data if k not in self.ignored_fields
         )
         # Clean up fields
         for f in self.clean_fields:
@@ -188,7 +189,7 @@ class ExtModelApplication(ExtApplication):
                     data[l] = self.clean_fields[l].clean(0)
                 del data[r]  # Dereferenced
         # Clone data
-        return dict((str(k), data[k]) for k in data)
+        return data
 
     def cleaned_query(self, q):
         nq = {}

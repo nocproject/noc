@@ -308,7 +308,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "bi_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "tt_system",
