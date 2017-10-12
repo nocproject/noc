@@ -41,5 +41,5 @@ class IDCheck(DiscoveryCheck):
             chassis_mac=result.get("chassis_mac"),
             hostname=result.get("hostname"),
             router_id=result.get("router_id"),
-            additional_macs=self.job.interface_macs
+            additional_macs=self.get_artefact("interface_macs")
         )

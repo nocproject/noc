@@ -29,7 +29,6 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             if self.object.auth_profile and self.object.auth_profile.type == "S":
                 self.logger.info("Invalid credentials. Stopping")
                 return
-            self.reboot_detected = False
             if self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
                 with self.object.open_session():

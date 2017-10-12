@@ -57,8 +57,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
     ])
 
     def handler(self, **kwargs):
-        # Additional interface/subinterface MACs
-        self.interface_macs = set()
         with Span(sample=self.object.box_telemetry_sample):
             if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestSNMPCheck(self).run()
@@ -81,8 +79,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
                     continue
                 self.topology_methods += [self.TOPOLOGY_METHODS[ms.method]]
             self.topology_names = [m.name for m in self.topology_methods]
-            #
-            self.reboot_detected = False
             # Run remaining checks
             if self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
