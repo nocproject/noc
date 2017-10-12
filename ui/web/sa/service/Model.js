@@ -34,7 +34,8 @@ Ext.define("NOC.sa.service.Model", {
         },
         {
             name: "bi_id",
-            type: "int"
+            type: "string",
+            persist: false
         },
         {
             name: "cpe_model",

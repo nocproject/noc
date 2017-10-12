@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MA4000.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -33,6 +33,16 @@ class Script(BaseScript):
         """
         cmd = self.cli("show spanning-tree active")
         return "spanning tree: off" not in cmd
+
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check box has STP enabled
+        """
+        for ch in self.scripts.get_portchannel():
+            if ch["type"] == "L":
+                return True
+        return False
 
     def execute_platform(self, caps):
         try:

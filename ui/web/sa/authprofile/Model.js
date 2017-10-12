@@ -62,7 +62,8 @@ Ext.define("NOC.sa.authprofile.Model", {
         },
         {
             name: "bi_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "tags",

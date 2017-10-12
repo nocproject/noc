@@ -448,7 +448,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "bi_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "escalation_policy",

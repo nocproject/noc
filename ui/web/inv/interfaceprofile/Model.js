@@ -88,7 +88,8 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
         },
         {
             name: "bi_id",
-            type: "string"
+            type: "string",
+            persist: false
         },
         {
             name: "allow_autosegmentation",

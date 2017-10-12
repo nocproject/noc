@@ -32,7 +32,7 @@ class Script(BaseScript):
         r"^\s+Alloc IDs:\s+(?P<alloc_ids>.+)\s*\n"
         r"^\s+Hardware state:\s+(?P<hw_state>\S+)\s*\n"
         r"^\s+State:\s+(?P<state>\S+)\s*\n"
-        r"^\s+ONT distance:\s+(?P<ont_dist>.+)\s*\n"
+        r"^\s+ONT distance:\s+(?P<ont_dist>\S+).*\n"
         r"^\s+RSSI:\s+(?P<rssi>.+)\s*\n",
         re.MULTILINE
     )
@@ -53,12 +53,19 @@ class Script(BaseScript):
                     match.group("ont_id")
                 )
                 r += [{
+                    "id": cpe_id,
+                    "global_id": match.group("serial"),
+                    "status": self.state_map[match.group("state")],
+                    "type": "ont",
+                    "interface": "ont %s/%s/%s" % (
+                        match.group("slot"),
+                        match.group("port"),
+                        match.group("ont_id")
+                    ),
                     "model": match.group("model"),
                     "serial": match.group("serial"),
                     "version": match.group("sw_version"),
-                    "status": self.state_map[match.group("state")],
-                    "id": cpe_id,
-                    "global_id": match.group("serial"),
-                    "type": "ont",
+                    "distance": float(match.group("ont_dist")) * 1000
                 }]
+
         return r

@@ -45,7 +45,3 @@ class Script(BaseScript):
         """
         r = self.cli("show lacp partner all")
         return "ACT|AGG" in r
-
-    def execute_platform(self, caps):
-        if self.has_lacp():
-            caps["Network | LACP"] = True
