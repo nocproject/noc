@@ -212,7 +212,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                             },
                             {
                                 name: "bi_id",
-                                xtype: "textfield",
+                                xtype: "displayfield",
                                 fieldLabel: __("BI ID"),
                                 allowBlank: true,
                                 uiStyle: "medium"
