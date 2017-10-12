@@ -8,6 +8,7 @@
 
 # Python
 import datetime
+import dateutil.parser
 import operator
 from threading import Lock
 # Third-party modules
@@ -87,7 +88,7 @@ class Maintainance(Document):
             if self.is_completed:
                 call_later(
                     "noc.services.escalator.maintenance.start_maintenance",
-                    delay=self.start - datetime.datetime.now(),
+                    delay=(dateutil.parser.parse(self.start) - datetime.datetime.now()).seconds,
                     scheduler="escalator",
                     pool=self.escalate_managed_object.escalator_shard,
                     maintenance_id=self.id
