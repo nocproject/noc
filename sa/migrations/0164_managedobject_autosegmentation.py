@@ -41,7 +41,7 @@ class Migration:
                     # names like {{object.name}}-{{interface.name}}
                     ("c", "Segmentate to child segment")
                 ],
-                default="d"
+                default="p"
             )
         )
 
