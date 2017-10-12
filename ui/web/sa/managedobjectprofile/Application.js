@@ -1187,8 +1187,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     store: [
                                         ["d", __("Do not segmentate")],
                                         ["e", __("Allow autosegmentation")],
-                                        ["o", __("Segmentate for object")],
-                                        ["i", __("Segmentate for interface")]
+                                        ["o", __("Segmentate for object's segment")],
+                                        ["c", __("Segmentate for child segment")]
                                     ],
                                     uiStyle: "medium"
                                 },

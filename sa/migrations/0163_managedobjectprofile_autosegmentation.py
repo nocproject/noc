@@ -25,12 +25,19 @@ class Migration:
                     # Allow moving of object to another segment
                     # by autosegmentation process
                     ("e", "Allow autosegmentation"),
-                    # Create additional segment, related to this object,
-                    # and move all satisfying objects to it
-                    ("o", "Segmentate for object"),
-                    # Create additional segment for each interface
-                    # and move all satisfying objects to it
-                    ("i", "Segmentate for interface")
+                    # Move seen objects to this object's segment
+                    ("o", "Segmentate to existing segment"),
+                    # Expand autosegmentation_segment_name template,
+                    # ensure that children segment with same name exists
+                    # then move seen objects to this segment.
+                    # Following context variables are availale:
+                    # * object - this object
+                    # * interface - interface on which remote_object seen from object
+                    # * remote_object - remote object name
+                    # To create single segment use templates like {{object.name}}
+                    # To create segments on per-interface basic use
+                    # names like {{object.name}}-{{interface.name}}
+                    ("c", "Segmentate to child segment")
                 ],
                 default="d"
             )
@@ -45,7 +52,7 @@ class Migration:
             "autosegmentation_segment_name",
             models.CharField(
                 max_length=255,
-                default="{{object.name}}{% if object.profile.autosegmentation_policy == 'i' %}-{{interface.name}}{% endif %}"
+                default="{{object.name}}"
             ))
 
     def backwards(self):

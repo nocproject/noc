@@ -80,6 +80,10 @@ class NetworkSegmentProfile(Document):
             ("D", "Disable")
         ], default="D"
     )
+    # Default profile for autocreated children segments
+    # (i.e. during autosegmentation)
+    # Copy this segment profile otherwise
+    autocreated_profile = PlainReferenceField("self")
     # List of enabled topology method
     # in order of preference (most preferable first)
     topology_methods = ListField(EmbeddedDocumentField(SegmentTopologySettings))
