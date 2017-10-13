@@ -9,7 +9,8 @@ console.debug("Defining NOC.inv.networksegmentprofile.Application");
 Ext.define("NOC.inv.networksegmentprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.inv.networksegmentprofile.Model"
+        "NOC.inv.networksegmentprofile.Model",
+        "NOC.inv.networksegmentprofile.LookupField"
     ],
     model: "NOC.inv.networksegmentprofile.Model",
     initComponent: function() {
@@ -43,6 +44,12 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     fieldLabel: __("MAC discovery interval"),
                     allowBlank: false,
                     uiStyle: "medium"
+                },
+                {
+                    name: "autocreated_profile",
+                    xtype: "inv.networksegmentprofile.LookupField",
+                    fieldLabel: __("Autocreated Profile"),
+                    allowBlank: true
                 },
                 {
                     name: "mac_restrict_to_management_vlan",
