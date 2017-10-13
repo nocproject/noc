@@ -12,6 +12,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 
+
 class Script(BaseScript):
     name = "DCN.DCWL.get_interfaces"
     cache = True
@@ -33,11 +34,11 @@ class Script(BaseScript):
 
     @classmethod
     def get_interface_type(cls, name):
-         c = cls.INTERFACE_TYPES2.get(name[:3])
-         if c:
+        c = cls.INTERFACE_TYPES2.get(name[:3])
+        if c:
             return c
-         c = cls.INTERFACE_TYPES.get(name[:2])
-         return c
+        c = cls.INTERFACE_TYPES.get(name[:2])
+        return c
 
     FREQ = {
         "bg-n": "2400GHz",
@@ -46,8 +47,8 @@ class Script(BaseScript):
 
     @classmethod
     def get_interface_freq(cls, name):
-         c = cls.FREQ.get(name)
-         return c
+        c = cls.FREQ.get(name)
+        return c
 
     IEEE = {
         "bg-n": "IEEE 802.11b/g/n",
@@ -56,9 +57,8 @@ class Script(BaseScript):
 
     @classmethod
     def get_interface_ieee(cls, name):
-         c = cls.IEEE.get(name)
-         return c
-
+        c = cls.IEEE.get(name)
+        return c
 
     def execute(self):
         interfaces = []
@@ -77,10 +77,11 @@ class Script(BaseScript):
             if wr[0].strip() == "n-bandwidth":
                 channelbandwidth = wr[1].strip()
                 wres[wname] = {"ieee_mode": ieee_mode,
-                        "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
+                               "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
         c = self.cli("get interface all detail")
         for line in c.splitlines():
             r = line.split(' ', 1)
+            ip_address = None
             if r[0] == "name":
                 name = r[1].strip()
                 iftype = self.get_interface_type(name)
@@ -95,7 +96,7 @@ class Script(BaseScript):
                 ip_address = r[1].strip()
             if r[0] == "mask":
                 ip_subnet = r[1].strip()
-                #ip address + ip subnet
+                # ip address + ip subnet
                 if ip_subnet or ip_address:
                     ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
                     iface = {
@@ -110,7 +111,7 @@ class Script(BaseScript):
                         }]
                     }
                     interfaces += [iface]
-                #no ip address + ip subnet
+                # no ip address + ip subnet
                 else:
                     iface = {
                         "type": iftype,
@@ -123,6 +124,7 @@ class Script(BaseScript):
                         }]
                     }
                     interfaces += [iface]
+        descr_template = "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz"
         for line in c.splitlines():
             r = line.split(' ', 1)
             if r[0] == "name":
@@ -143,14 +145,17 @@ class Script(BaseScript):
                             sb = rb[1].strip()
                             if sb == "off":
                                 ssid_broadcast = "Enable"
+                            else:
+                                ssid_broadcast = "Disable"
                             for ri in wres.items():
                                 if ri[0] == radio:
                                     iface = {
                                         "type": "physical",
                                         "name": "%s.%s" % (name, ssid),
                                         "mac": mac,
-                                        "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz" % (ssid_broadcast,
-                                    ri[1]["ieee_mode"], ri[1]["channel"], ri[1]["freq"], ri[1]["channelbandwidth"]),
+                                        "description": descr_template % (ssid_broadcast, ri[1]["ieee_mode"],
+                                                                         ri[1]["channel"], ri[1]["freq"],
+                                                                         ri[1]["channelbandwidth"]),
                                         "subinterfaces": [{
                                             "name": "%s.%s" % (name, ssid),
                                             "mac": mac,

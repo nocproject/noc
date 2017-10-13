@@ -200,6 +200,13 @@ class Script(BaseScript):
         """
         return False
 
+    def has_lacp(self):
+        """
+        Returns True when LACP is enabled
+        :return:
+        """
+        return False
+
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
@@ -260,6 +267,8 @@ class Script(BaseScript):
             caps["Network | LDP"] = True
         if self.has_rsvp():
             caps["Network | RSVP"] = True
+        if self.has_lacp():
+            caps["Network | LACP"] = True
         self.execute_platform(caps)
         return caps
 

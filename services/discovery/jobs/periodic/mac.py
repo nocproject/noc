@@ -8,6 +8,7 @@
 
 # Python modules
 import time
+from functools import reduce
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -26,13 +27,40 @@ class MACCheck(DiscoveryCheck):
                     ".interface.interface_profile.segment.vlan.is_uni"
 
     def handler(self):
+        # Build filter policy
+        if self.object.object_profile.mac_collect_all:
+            mf = self.filter_all
+        else:
+            mf = []
+            self.allowed_vlans = set()
+            # Filter by interface profile
+            if self.object.object_profile.mac_collect_interface_profile:
+                mf += [self.filter_interface_profile]
+            # Filter by management vlan
+            if self.object.object_profile.mac_collect_management:
+                vlan = self.object.segment.get_management_vlan()
+                if vlan:
+                    self.allowed_vlans.add(vlan)
+            # Filter by multicast vlan
+            if self.object.object_profile.mac_collect_multicast:
+                vlan = self.object.segment.get_multicast_vlan()
+                if vlan:
+                    self.allowed_vlans.add(vlan)
+            # Filter by VC Filter (not implemented yet)
+            if self.object.object_profile.mac_collect_vcfilter:
+                self.logger.info("VC Filters are not implemented yet")
+            # Apply VLAN filter
+            if self.allowed_vlans:
+                mf += [self.filter_vlan]
+            if not mf:
+                self.logger.info("MAC collection is not enabled by any policy")
+                return
+            mf = reduce(lambda x, y: x or y, mf)
+        # Collect macs
         now = time.localtime()
         date = time.strftime("%Y-%m-%d", now)
         ts = time.strftime("%Y-%m-%d %H:%M:%S", now)
-        mo_id = str(self.object.bi_id)
-        seg_id = str(self.object.segment.bi_id)
         unknown_interfaces = set()
-        disabled_by_profile = set()
         total_macs = 0
         processed_macs = 0
         data = []
@@ -43,19 +71,17 @@ class MACCheck(DiscoveryCheck):
         for v in result:
             total_macs += 1
             if v["type"] != "D" or not v["interfaces"]:
+                self.logger.debug("Ignored not dynamic MAC: %s" % v["mac"])
                 continue
             ifname = str(v["interfaces"][0])
             iface = self.get_interface_by_name(ifname)
             if not iface:
                 unknown_interfaces.add(ifname)
                 continue  # Interface not found
-            ifprofile = iface.profile
-            if not ifprofile:
-                ifprofile = InterfaceProfile.get_default_profile()
-            if ifprofile.mac_discovery_policy != "e":
-                # @todo: Management VLAN processing
-                disabled_by_profile.add(ifname)
-                continue  # MAC discovery disabled on interface
+            if not mf(iface, v["vlan_id"], v["mac"]):
+                self.logger.debug("Filtered: Iface: %s, Vlan: %s, MAC: %s" % (iface, v["vlan_id"], v["mac"]))
+                continue
+            ifprofile = iface.get_profile()
             data += ["\t".join((
                 date,  # date
                 ts,  # ts
@@ -72,10 +98,6 @@ class MACCheck(DiscoveryCheck):
             self.logger.info(
                 "Ignoring unknown interfaces: %s",
                 ", ".join(unknown_interfaces))
-        if disabled_by_profile:
-            self.logger.info(
-                "MAC collection disabled on interfaces: %s",
-                ", ".join(disabled_by_profile))
         metrics["discovery_mac_total_macs"] += total_macs
         metrics["discovery_mac_processed_macs"] += processed_macs
         metrics["discovery_mac_ignored_macs"] += total_macs - processed_macs
@@ -88,3 +110,12 @@ class MACCheck(DiscoveryCheck):
             )
         else:
             self.logger.info("No MAC addresses collected")
+
+    def filter_all(self, interface, vlan, mac):
+        return True
+
+    def filter_interface_profile(self, interface, vlan, mac):
+        return interface.get_profile().mac_discovery_policy != "d"
+
+    def filter_vlan(self, interface, vlan, mac):
+        return vlan in self.allowed_vlans

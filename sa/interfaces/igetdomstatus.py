@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IGetDOMStatus interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,15 +24,15 @@ class IGetDOMStatus(BaseInterface):
     interface = InterfaceNameParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
         "interface": InterfaceNameParameter(),
-        "temp_c": (FloatParameter(required=False) |
-                   NoneParameter(required=False)),
-        "voltage_v": (FloatParameter(required=False) |
-                      NoneParameter(required=False)),
-        "current_ma": (FloatParameter(required=False) |
-                       NoneParameter(required=False)),
-        "optical_rx_dbm": (FloatParameter(required=False) |
-                           NoneParameter(required=False)),
-        "optical_tx_dbm": (FloatParameter(required=False) |
-                           NoneParameter(required=False)),
+        "temp_c": (NoneParameter(required=False) |
+                   FloatParameter(required=False)),
+        "voltage_v": (NoneParameter(required=False) |
+                      FloatParameter(required=False)),
+        "current_ma": (NoneParameter(required=False) |
+                       FloatParameter(required=False)),
+        "optical_rx_dbm": (NoneParameter(required=False) |
+                           FloatParameter(required=False)),
+        "optical_tx_dbm": (NoneParameter(required=False) |
+                           FloatParameter(required=False)),
         }))
     preview = "NOC.sa.managedobject.scripts.ShowDomStatus"

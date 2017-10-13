@@ -62,7 +62,3 @@ class Script(BaseScript):
         """
         r = self.cli("show lag statistics")
         return r
-
-    def execute_platform(self, caps):
-        if self.has_lacp():
-            caps["Network | LACP"] = True

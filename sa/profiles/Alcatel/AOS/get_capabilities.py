@@ -64,5 +64,3 @@ class Script(BaseScript):
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
-        if self.has_lacp():
-            caps["Network | LACP"] = True

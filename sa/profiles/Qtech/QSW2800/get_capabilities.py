@@ -71,8 +71,6 @@ class Script(BaseScript):
         return "active" in r
 
     def execute_platform(self, caps):
-        if self.has_lacp():
-            caps["Network | LACP"] = True
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
