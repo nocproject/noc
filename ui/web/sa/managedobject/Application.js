@@ -396,6 +396,22 @@ Ext.define("NOC.sa.managedobject.Application", {
                             fieldLabel: __("VC Domain"),
                             allowBlank: true,
                             groupEdit: true
+                        },
+                        {
+                            name: "autosegmentation_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Autosegmentation Policy"),
+                            width: 200,
+                            allowBlank: true,
+                            groupEdit: true,
+                            store: [
+                                ["p", __("Profile")],
+                                ["d", __("Do not segmentate")],
+                                ["e", __("Allow autosegmentation")],
+                                ["o", __("Segmentate to existing segment")],
+                                ["c", __("Segmentate to child segment")]
+                            ],
+                            value: "p"
                         }
                     ]
                 },
