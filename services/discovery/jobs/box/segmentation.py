@@ -101,7 +101,7 @@ class SegmentationCheck(DiscoveryCheck):
         return jinja2.Template(tpl)
 
     def get_segment(self, **kwargs):
-        tpl = self.get_template(self.object_profile.autosegmentation_segment_name)
+        tpl = self.get_template(self.object.object_profile.autosegmentation_segment_name)
         name = tpl.render(**kwargs)
         return self.ensure_segment(name)
 
