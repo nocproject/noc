@@ -136,7 +136,7 @@ class MACCheck(DiscoveryCheck):
         :return: interface -> [managed objects]
         """
         # Resolve MACs
-        all_macs = reduce(lambda x, y: x.update(y),
+        all_macs = reduce(lambda x, y: x | y,
                           six.itervalues(if_mac))
         mmap = DiscoveryID.find_objects(all_macs)
         if not mmap:
