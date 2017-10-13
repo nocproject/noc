@@ -412,7 +412,7 @@ class DiscoveryCheck(object):
             return True
         for ra in self.required_artefacts:
             if not self.has_artefact(ra):
-                self.loggrer.info("Job has not '%s' artefact. Skipping", ra)
+                self.logger.info("Job has not '%s' artefact. Skipping", ra)
                 return False
         return True
 
