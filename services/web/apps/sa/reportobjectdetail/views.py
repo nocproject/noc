@@ -743,25 +743,3 @@ class ReportObjectDetailApplication(ExtApplication):
                 with open(f.name) as ff:
                     response.write(ff.read())
                 return response
-
-    @view("^rep_download/$", method=["GET"], access="launch", api=True,
-          validate={
-              "administrative_domain": StringParameter(required=False),
-              "report": StringParameter(required=True),
-              "query": StringParameter(required=False, default=""),
-              "format": StringParameter(choices=["csv", "xlsx", "raw"], default="csv")
-          })
-    def api_rep_report(self, request, format="csv", administrative_domain=None, report="", query="default", columns=None):
-        logger.info("Request report: %s" % report)
-        rep_build = ReportObjectBuild(self.site, ":".join([report, query]), request.user)
-        if format == "csv":
-            r = rep_build.build_report(format_r="csv")
-        else:
-            r = rep_build.build_report()
-            r = r.sections[-1].to_ssv2(date=datetime.datetime.now().strftime("%d/%m/%YY"))
-
-        response = HttpResponse(content_type="text/csv")
-        response[
-            "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % report
-        response.write(r)
-        return response
