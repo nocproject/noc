@@ -36,7 +36,8 @@ class Script(BaseScript):
         r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
 
     platforms = {
-        "1466": "WGSD-1022"
+        "1466": "WGSD-1022",
+        "89": "WGSD-1022"
     }
 
     def execute(self):
