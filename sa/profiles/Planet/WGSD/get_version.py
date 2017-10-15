@@ -45,7 +45,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
-                platform = platform.split('.')[8]
+                platform = platform.split('.')[-1]
                 platform = self.platforms.get(platform.split(')')[0])
                 version = self.snmp.get("1.3.6.1.4.1.89.2.4.0",
                                         cached=True)
