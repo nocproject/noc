@@ -381,6 +381,7 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter()
         password = SecretParameter()
+        connect_timeout = IntParameter(default=5)
 
     class ping(ConfigSection):
         throttle_threshold = FloatParameter()
