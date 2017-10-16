@@ -35,7 +35,7 @@ class SegmentationCheck(DiscoveryCheck):
         seen_objects = self.get_artefact("seen_objects")
         s_objects = {}
         for iface in seen_objects:
-            if iface.get_profile().enable_segmentation:
+            if iface.get_profile().allow_autosegmentation:
                 s_objects[iface] = seen_objects[iface]
         return self.segmentation(s_objects)
 
