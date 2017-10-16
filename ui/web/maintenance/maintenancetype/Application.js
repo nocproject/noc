@@ -1,17 +1,17 @@
 //---------------------------------------------------------------------
-// maintainance.maintainancetype application
+// maintenance.maintenancetype application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.maintainance.maintainancetype.Application");
+console.debug("Defining NOC.maintenance.maintenancetype.Application");
 
-Ext.define("NOC.maintainance.maintainancetype.Application", {
+Ext.define("NOC.maintenance.maintenancetype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.maintainance.maintainancetype.Model"
+        "NOC.maintenance.maintenancetype.Model"
     ],
-    model: "NOC.maintainance.maintainancetype.Model",
+    model: "NOC.maintenance.maintenancetype.Model",
     initComponent: function() {
         var me = this;
         Ext.apply(me, {

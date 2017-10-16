@@ -24,7 +24,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
@@ -178,7 +178,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                     )
                 else:
                     pre_reason = escalation.get_pre_reason(mo.tt_system)
-                    active_maintenance = Maintainance.get_object_maintenance(mo)
+                    active_maintenance = Maintenance.get_object_maintenance(mo)
                     if active_maintenance:
                         for m in active_maintenance:
                             log("Object is under maintenance: %s (%s-%s)",

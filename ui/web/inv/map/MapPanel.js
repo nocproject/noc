@@ -686,7 +686,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             if(!node) {
                 return;
             }
-            node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintainance bit
+            node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintenance bit
             var embeddedCells = node.getEmbeddedCells();
             if(data[s] & 0x20) {
                 if(embeddedCells.length === 0) {
@@ -934,8 +934,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             objectId = Number(me.nodeMenuObject);
 
         NOC.run(
-            'NOC.inv.map.Maintainance',
-            __('Add To Maintainance'),
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
             {
                 args: [
                     {mode: 'Object'},
@@ -951,8 +951,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             elements.push({object: item.get('object'), object__label: item.get('object__label')});
         });
         NOC.run(
-            'NOC.inv.map.Maintainance',
-            __('Add To Maintainance'),
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
             {
                 args: [
                     {mode: 'Object'},
@@ -973,7 +973,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             suppress_alarms: true
         };
 
-        Ext.create('NOC.maintainance.maintainancetype.LookupField')
+        Ext.create('NOC.maintenance.maintenancetype.LookupField')
             .getStore()
             .load({
                 params: {__query: 'РНР'},
@@ -983,7 +983,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                             type: records[0].id
                         })
                     }
-                    NOC.launch("maintainance.maintainance", "new", {
+                    NOC.launch("maintenance.maintenance", "new", {
                         args: args
                     });
                 }

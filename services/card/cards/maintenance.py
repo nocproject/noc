@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Maintainance card handler
+# Maintenance card handler
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
@@ -12,15 +12,15 @@ import datetime
 import jinja2
 # NOC modules
 from base import BaseCard
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.servicesummary import ServiceSummary
 
 
-class MaintainanceCard(BaseCard):
-    name = "maintainance"
-    default_template_name = "maintainance"
-    model = Maintainance
-    default_title_template = "Maintainance: {{ object.subject }}"
+class MaintenanceCard(BaseCard):
+    name = "maintenance"
+    default_template_name = "maintenance"
+    model = Maintenance
+    default_title_template = "Maintenance: {{ object.subject }}"
 
     def get_data(self):
         def update_dict(s, d):

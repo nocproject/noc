@@ -1868,18 +1868,18 @@ msgstr "Профиль пользователя"
 msgid "Welcome"
 msgstr "Добро пожаловать"
 
-#: services/web/apps/maintainance/__init__.py:12
-#: services/web/apps/maintainance/maintainance/views.py:20
-#: services/web/apps/maintainance/maintainance/views.py:21
-msgid "Maintainance"
+#: services/web/apps/maintenance/__init__.py:12
+#: services/web/apps/maintenance/maintenance/views.py:20
+#: services/web/apps/maintenance/maintenance/views.py:21
+msgid "Maintenance"
 msgstr "РНР"
 
-#: services/web/apps/maintainance/maintainancetype/views.py:19
-msgid "Maintainance Type"
+#: services/web/apps/maintenance/maintenancetype/views.py:19
+msgid "Maintenance Type"
 msgstr "Тип РНР"
 
-#: services/web/apps/maintainance/maintainancetype/views.py:20
-msgid "Maintainance Types"
+#: services/web/apps/maintenance/maintenancetype/views.py:20
+msgid "Maintenance Types"
 msgstr "Типы РНР"
 
 #: services/web/apps/peer/__init__.py:13
@@ -1996,7 +1996,7 @@ msgstr "Группы пиров"
 #: services/web/apps/main/template/views.py:20
 #: services/web/apps/main/timepattern/views.py:25
 #: services/web/apps/main/user/views.py:74
-#: services/web/apps/maintainance/maintainancetype/views.py:20
+#: services/web/apps/maintenance/maintenancetype/views.py:20
 #: services/web/apps/peer/communitytype/views.py:20
 #: services/web/apps/peer/maintainer/views.py:22
 #: services/web/apps/peer/organisation/views.py:20

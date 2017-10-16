@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------
-// NOC.maintainance.maintainancetype.Lookup
+// NOC.maintenance.maintenancetype.Lookup
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.maintainance.maintainancetype.LookupField");
+console.debug("Defining NOC.maintenance.maintenancetype.LookupField");
 
-Ext.define("NOC.maintainance.maintainancetype.LookupField", {
+Ext.define("NOC.maintenance.maintenancetype.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.maintainance.maintainancetype.LookupField"
+    alias: "widget.maintenance.maintenancetype.LookupField"
 });

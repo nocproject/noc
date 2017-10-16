@@ -25,7 +25,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.lib.stencil import stencil_registry
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
@@ -54,7 +54,7 @@ class MapApplication(ExtApplication):
     ST_ALARM = 2  # Object is reachable, Active alarms
     ST_UNREACH = 3  # Object is unreachable due to other's object failure
     ST_DOWN = 4  # Object is down
-    ST_MAINTAINANCE = 32  # Maintainance bit
+    ST_MAINTENANCE = 32  # Maintenance bit
 
     # Maximum object to be shown
     MAX_OBJECTS = 300
@@ -314,16 +314,16 @@ class MapApplication(ExtApplication):
                 r.update([d["_id"] for d in a])
             return r
 
-        def get_maintainance(objects):
+        def get_maintenance(objects):
             """
-            Returns a set of objects currently in maintainance
+            Returns a set of objects currently in maintenance
             :param objects:
             :return:
             """
             now = datetime.datetime.now()
             so = set(objects)
             r = set()
-            for m in Maintainance._get_collection().find({
+            for m in Maintenance._get_collection().find({
                 "is_completed": False,
                 "start": {
                     "$lte": now
@@ -340,7 +340,7 @@ class MapApplication(ExtApplication):
         r = dict((o, self.ST_UNKNOWN) for o in objects)
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
-        mo = get_maintainance(objects)
+        mo = get_maintenance(objects)
         for o in sr:
             if sr[o]:
                 # Check for alarms
@@ -351,7 +351,7 @@ class MapApplication(ExtApplication):
             else:
                 r[o] = self.ST_DOWN
             if o in mo:
-                r[o] |= self.ST_MAINTAINANCE
+                r[o] |= self.ST_MAINTENANCE
         return r
 
     @classmethod

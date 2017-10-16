@@ -9,7 +9,7 @@
 # Python modules
 import logging
 # NOC modules
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.ttsystem import TTSystem
 from noc.core.perf import metrics
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 def start_maintenance(maintenance_id):
     logger.info("[%s] Start maintenance")
-    m = Maintainance.get_by_id(maintenance_id)
+    m = Maintenance.get_by_id(maintenance_id)
     if not m:
         logger.info("[%s] Not found, skipping")
         return
@@ -58,7 +58,7 @@ def start_maintenance(maintenance_id):
         logger.info("[%s] TT %s created", maintenance_id, tt_id)
         if tts.promote_group_tt:
             gtt = tts.create_group_tt(tt_id, m.start)
-            d = Maintainance._get_collection().find_one({
+            d = Maintenance._get_collection().find_one({
                 "_id": m.id
             }, {
                 "_id": 0,
@@ -85,7 +85,7 @@ def start_maintenance(maintenance_id):
 
 def close_maintenance(maintenance_id):
     logger.info("[%s] Start maintenance")
-    m = Maintainance.get_by_id(maintenance_id)
+    m = Maintenance.get_by_id(maintenance_id)
     if not m:
         logger.info("[%s] Not found, skipping", maintenance_id)
         return

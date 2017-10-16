@@ -4,11 +4,11 @@
 // Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.maintainance.maintainance.ObjectsPanel");
+console.debug("Defining NOC.maintenance.maintenance.ObjectsPanel");
 
-Ext.define("NOC.maintainance.maintainance.ObjectsPanel", {
+Ext.define("NOC.maintenance.maintenance.ObjectsPanel", {
     extend: "NOC.core.ApplicationPanel",
-    requires: ["NOC.maintainance.maintainance.ObjectsModel"],
+    requires: ["NOC.maintenance.maintenance.ObjectsModel"],
     mixins: [
         "NOC.core.Export"
     ],
@@ -36,7 +36,7 @@ Ext.define("NOC.maintainance.maintainance.ObjectsPanel", {
         me.totalField = Ext.create("Ext.form.field.Display");
 
         me.store = Ext.create("Ext.data.Store", {
-            model: "NOC.maintainance.maintainance.ObjectsModel"
+            model: "NOC.maintenance.maintenance.ObjectsModel"
         });
 
         me.grid = Ext.create("Ext.grid.Panel", {
@@ -101,7 +101,7 @@ Ext.define("NOC.maintainance.maintainance.ObjectsPanel", {
         var me = this;
         me.callParent(arguments);
         Ext.Ajax.request({
-            url: "/maintainance/maintainance/" + record.get("id") + "/objects/",
+            url: "/maintenance/maintenance/" + record.get("id") + "/objects/",
             method: "GET",
             scope: me,
             success: function(response) {

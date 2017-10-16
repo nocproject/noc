@@ -25,7 +25,7 @@ id_lock = Lock()
     ("fm.EventTrigger", "time_pattern"),
     ("main.Schedule", "time_pattern"),
     ("main.TimePatternTerm", "time_pattern"),
-    ("maintainance.Maintainance", "time_pattern"),
+    ("maintenance.Maintenance", "time_pattern"),
     ("sa.ManagedObject", "time_pattern")
 ])
 class TimePattern(models.Model):
