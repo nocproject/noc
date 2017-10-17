@@ -109,3 +109,13 @@ template {
     max = "60s"
   }
 }
+template {
+  source = "{{consul_template_ch_dictionaries_dir}}/interfacedescription.xml.ctmpl"
+  destination = "{{ ch_dictionaries_path }}/interfacedescription.xml"
+  perms = 0644
+  backup = false
+  wait {
+    min = "2s"
+    max = "60s"
+  }
+}
