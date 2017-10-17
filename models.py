@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NOC models lazy loading and utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -278,8 +278,9 @@ _MODELS = {
     "kb.KBEntryTemplate": "noc.kb.models.kbentrytemplate.KBEntryTemplate",
     "kb.KBGlobalBookmark": "noc.kb.models.kbglobalbookmark.KBGlobalBookmark",
     "kb.KBUserBookmark": "noc.kb.models.kbuserbookmark.KBUserBookmark",
-    # Maintainance
-    "maintainance.Maintainance": "noc.maintainance.models.maintainance.Maintainance",
+    # Maintenance
+    "maintenance.Maintenance": "noc.maintenance.models.maintenance.Maintenance",
+    "maintenance.MaintenanceType": "noc.maintenance.models.maintenancetype.MaintenanceType",
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
     # crm models

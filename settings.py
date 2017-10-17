@@ -30,7 +30,7 @@ DATABASES = {
         "TEST_NAME": "test_" + config.pg.db,
         "OPTIONS": {
             "autocommit": True,
-            "connect_timeout": 5
+            "connect_timeout": config.pg.connect_timeout
         }
     }
 }
@@ -137,7 +137,7 @@ INSTALLED_APPS = [
     "noc.dns",
     "noc.peer",
     "noc.kb",
-    "noc.maintainance",
+    "noc.maintenance",
     "noc.support",
     "noc.bi",
     "noc.sla",
