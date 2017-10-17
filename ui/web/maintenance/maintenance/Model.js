@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// maintainance.maintainance Model
+// maintenance.maintenance Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.maintainance.maintainance.Model");
+console.debug("Defining NOC.maintenance.maintenance.Model");
 
-Ext.define("NOC.maintainance.maintainance.Model", {
+Ext.define("NOC.maintenance.maintenance.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/maintainance/maintainance/",
+    rest_url: "/maintenance/maintenance/",
 
     fields: [
         {

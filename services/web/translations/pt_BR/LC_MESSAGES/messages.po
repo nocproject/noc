@@ -1305,18 +1305,18 @@ msgstr "Perfil de Usuário"
 msgid "Welcome"
 msgstr "Bem vindo!"
 
-#: services/web/apps/maintainance/__init__.py:12
-#: services/web/apps/maintainance/maintainance/views.py:19
-#: services/web/apps/maintainance/maintainance/views.py:20
-msgid "Maintainance"
+#: services/web/apps/maintenance/__init__.py:12
+#: services/web/apps/maintenance/maintenance/views.py:19
+#: services/web/apps/maintenance/maintenance/views.py:20
+msgid "Maintenance"
 msgstr "Manutenção"
 
-#: services/web/apps/maintainance/maintainancetype/views.py:19
-msgid "Maintainance Type"
+#: services/web/apps/maintenance/maintenancetype/views.py:19
+msgid "Maintenance Type"
 msgstr "Tipo de Manutenção"
 
-#: services/web/apps/maintainance/maintainancetype/views.py:20
-msgid "Maintainance Types"
+#: services/web/apps/maintenance/maintenancetype/views.py:20
+msgid "Maintenance Types"
 msgstr "Tipos de Manutenção"
 
 #: services/web/apps/peer/__init__.py:13
@@ -1425,7 +1425,7 @@ msgstr "Grupos de Peers"
 #: services/web/apps/main/template/views.py:20
 #: services/web/apps/main/timepattern/views.py:25
 #: services/web/apps/main/user/views.py:74
-#: services/web/apps/maintainance/maintainancetype/views.py:20
+#: services/web/apps/maintenance/maintenancetype/views.py:20
 #: services/web/apps/peer/communitytype/views.py:20
 #: services/web/apps/peer/maintainer/views.py:22
 #: services/web/apps/peer/organisation/views.py:20

@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Maintainance
+# Maintenance
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python
+from __future__ import absolute_import
 import datetime
+import dateutil.parser
 import operator
 from threading import Lock
 # Third-party modules
@@ -18,7 +20,7 @@ from mongoengine.fields import (
 )
 import cachetools
 # NOC modules
-from maintainancetype import MaintainanceType
+from .maintenancetype import MaintenanceType
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
 from noc.lib.nosql import ForeignKeyField
@@ -30,27 +32,28 @@ from noc.core.defer import call_later
 id_lock = Lock()
 
 
-class MaintainanceObject(EmbeddedDocument):
+class MaintenanceObject(EmbeddedDocument):
     object = ForeignKeyField(ManagedObject)
 
 
-class MaintainanceSegment(EmbeddedDocument):
+class MaintenanceSegment(EmbeddedDocument):
     segment = ReferenceField(NetworkSegment)
 
 
 @on_save
-class Maintainance(Document):
+class Maintenance(Document):
     meta = {
-        "collection": "noc.maintainance",
+        "collection": "noc.maintenance",
         "strict": False,
         "auto_create_index": False,
         "indexes": [
             "affected_objects.object",
             ("start", "is_completed")
-        ]
+        ],
+        "legacy_collections": ["noc.maintainance"]
     }
 
-    type = ReferenceField(MaintainanceType)
+    type = ReferenceField(MaintenanceType)
     subject = StringField(required=True)
     description = StringField()
     start = DateTimeField()
@@ -64,11 +67,11 @@ class Maintainance(Document):
     # None - active all the time
     time_pattern = ForeignKeyField(TimePattern)
     # Objects declared to be affected by maintenance
-    direct_objects = ListField(EmbeddedDocumentField(MaintainanceObject))
+    direct_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
     # Segments declared to be affected by maintenance
-    direct_segments = ListField(EmbeddedDocumentField(MaintainanceSegment))
+    direct_segments = ListField(EmbeddedDocumentField(MaintenanceSegment))
     # All objects affected by maintenance
-    affected_objects = ListField(EmbeddedDocumentField(MaintainanceObject))
+    affected_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_tt = StringField(required=False)
@@ -79,7 +82,7 @@ class Maintainance(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        return Maintainance.objects.filter(id=id).first()
+        return Maintenance.objects.filter(id=id).first()
 
     def on_save(self):
         self.update_affected_objects()
@@ -87,7 +90,7 @@ class Maintainance(Document):
             if self.is_completed:
                 call_later(
                     "noc.services.escalator.maintenance.start_maintenance",
-                    delay=self.start - datetime.datetime.now(),
+                    delay=(dateutil.parser.parse(self.start) - datetime.datetime.now()).seconds,
                     scheduler="escalator",
                     pool=self.escalate_managed_object.escalator_shard,
                     maintenance_id=self.id
@@ -157,7 +160,7 @@ class Maintainance(Document):
 
         # @todo: Calculate affected objects considering topology
         affected = [{"object": o} for o in sorted(affected)]
-        Maintainance._get_collection().update(
+        Maintenance._get_collection().update(
             {
                 "_id": self.id
             },
@@ -198,11 +201,11 @@ class Maintainance(Document):
         """
         Returns a list of active maintenance for object
         :param mo: Managed Object instance
-        :return: List of Maintainance instances or empty list
+        :return: List of Maintenance instances or empty list
         """
         r = []
         now = datetime.datetime.now()
-        for m in Maintainance.objects.filter(
+        for m in Maintenance.objects.filter(
                 start__lte=now,
                 is_completed=False,
                 affected_objects__object=mo.id

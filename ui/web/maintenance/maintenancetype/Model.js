@@ -1,13 +1,14 @@
 //---------------------------------------------------------------------
-// sa.maintainance Objects Model
+// maintenance.maintenancetype Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.maintainance.maintainance.ObjectsModel");
+console.debug("Defining NOC.maintenance.maintenancetype.Model");
 
-Ext.define("NOC.maintainance.maintainance.ObjectsModel", {
+Ext.define("NOC.maintenance.maintenancetype.Model", {
     extend: "Ext.data.Model",
+    rest_url: "/maintenance/maintenancetype/",
 
     fields: [
         {
@@ -15,28 +16,20 @@ Ext.define("NOC.maintainance.maintainance.ObjectsModel", {
             type: "string"
         },
         {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "is_managed",
-            type: "boolean"
-        },
-        {
-            name: "profile",
-            type: "string"
-        },
-        {
-            name: "address",
-            type: "string"
-        },
-        {
             name: "description",
             type: "string"
         },
         {
-            name: "tags",
-            type: "auto"
+            name: "name",
+            type: "string"
+        },
+        {
+            name: "suppress_alarms",
+            type: "boolean"
+        },
+        {
+            name: "card_template",
+            type: "string"
         }
     ]
 });

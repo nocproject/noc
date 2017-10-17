@@ -1,26 +1,26 @@
 //---------------------------------------------------------------------
-// maintainance.maintainance application
+// maintenance.maintenance application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.maintainance.maintainance.Application");
+console.debug("Defining NOC.maintenance.maintenance.Application");
 
-Ext.define("NOC.maintainance.maintainance.Application", {
+Ext.define("NOC.maintenance.maintenance.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.maintainance.maintainance.Model",
-        "NOC.maintainance.maintainancetype.LookupField",
+        "NOC.maintenance.maintenance.Model",
+        "NOC.maintenance.maintenancetype.LookupField",
         "NOC.sa.managedobject.LookupField",
         "NOC.inv.networksegment.LookupField",
         "NOC.main.timepattern.LookupField"
     ],
-    model: "NOC.maintainance.maintainance.Model",
+    model: "NOC.maintenance.maintenance.Model",
     initComponent: function() {
         var me = this;
 
         me.ITEM_OBJECTS = me.registerItem(
-            "NOC.maintainance.maintainance.ObjectsPanel"
+            "NOC.maintenance.maintenance.ObjectsPanel"
         );
 
         me.cardButton = Ext.create("Ext.button.Button", {
@@ -83,7 +83,7 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                 },
                 {
                     name: "type",
-                    xtype: "maintainance.maintainancetype.LookupField",
+                    xtype: "maintenance.maintenancetype.LookupField",
                     fieldLabel: __("Type"),
                     allowBlank: false
                 },
@@ -250,7 +250,7 @@ Ext.define("NOC.maintainance.maintainance.Application", {
         var me = this;
         if(me.currentRecord) {
             window.open(
-                "/api/card/view/maintainance/" + me.currentRecord.get("id") + "/"
+                "/api/card/view/maintenance/" + me.currentRecord.get("id") + "/"
             );
         }
     },

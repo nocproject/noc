@@ -1902,11 +1902,11 @@
         null,
         "Скрыто"
     ],
-    "Hide alarms covered by maintainance": [
+    "Hide alarms covered by maintenance": [
         null,
         "Скрывать аварии, накрытые РНР"
     ],
-    "Hide maintainance": [
+    "Hide maintenance": [
         null,
         "Скрыть РНР"
     ],
@@ -3694,7 +3694,7 @@
         null,
         "Объект"
     ],
-    "Show only alarms covered by maintainance": [
+    "Show only alarms covered by maintenance": [
         null,
         "Показывать только аварии, накрытые РНР"
     ],
@@ -4430,7 +4430,7 @@
         null,
         "Да/Нет"
     ],
-    "Your must select maintainance!": [
+    "Your must select maintenance!": [
         null,
         "Вы должны выбрать РНР!"
     ],
@@ -4566,7 +4566,7 @@
         null,
         "состояния"
     ],
-    "to maintainance": [
+    "to maintenance": [
         null,
         "в РНР"
     ],

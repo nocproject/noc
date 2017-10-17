@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2015 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.log('Defining NOC.inv.map.Maintainance');
+console.log('Defining NOC.inv.map.Maintenance');
 
-Ext.define('NOC.inv.map.Maintainance', {
+Ext.define('NOC.inv.map.Maintenance', {
     extend: 'NOC.core.Application',
     layout: 'fit',
     defaultListenerScope: true,
@@ -15,13 +15,13 @@ Ext.define('NOC.inv.map.Maintainance', {
         'Ext.grid.Panel',
         'Ext.ux.form.SearchField',
 
-        "NOC.maintainance.maintainance.Model",
-        "NOC.maintainance.maintainancetype.LookupField",
+        "NOC.maintenance.maintenance.Model",
+        "NOC.maintenance.maintenancetype.LookupField",
         "NOC.sa.managedobject.LookupField",
         "NOC.inv.networksegment.LookupField"
     ],
 
-    model: 'NOC.maintainance.maintainance.Model',
+    model: 'NOC.maintenance.maintenance.Model',
 
     initComponent: function() {
         var me = this;
@@ -32,7 +32,7 @@ Ext.define('NOC.inv.map.Maintainance', {
             data: []
         });
         me.modeLabel = me.noc.args[1].length > 1 ? me.noc.args[0].mode + 's' : me.noc.args[0].mode;
-        me.dockMaintainance = Ext.create('Ext.form.Panel', {
+        me.dockMaintenance = Ext.create('Ext.form.Panel', {
             dock: 'top',
             bodyPadding: 10,
             items: [
@@ -48,7 +48,7 @@ Ext.define('NOC.inv.map.Maintainance', {
                         '<tpl for="elements">',
                             '<div style="padding-left: 20px">{object__label}</div>',
                         '</tpl>',
-                        '<div style="padding-top: 5px">' + __("to maintainance") + '</div>'
+                        '<div style="padding-top: 5px">' + __("to maintenance") + '</div>'
                     ],
                     data: {mode: me.modeLabel, elements: me.noc.args[1]}
                 },
@@ -87,7 +87,7 @@ Ext.define('NOC.inv.map.Maintainance', {
                 }
             ]
         });
-        me.gridMaintainance = Ext.create('Ext.grid.Panel', {
+        me.gridMaintenance = Ext.create('Ext.grid.Panel', {
             bodyPadding: 5,
             // width: 350,
             store: me.store,
@@ -101,7 +101,7 @@ Ext.define('NOC.inv.map.Maintainance', {
             },
             listeners: {
                 scope: me,
-                rowdblclick: me.addToMaintainance
+                rowdblclick: me.addToMaintenance
             },
             columns: [
                 {
@@ -129,25 +129,25 @@ Ext.define('NOC.inv.map.Maintainance', {
         });
         me.buttons = [{
             scope: me,
-            handler: me.addToMaintainance,
+            handler: me.addToMaintenance,
             text: __('Add ') + me.modeLabel
         }];
         Ext.apply(me, {
             buttonAlign: 'center',
-            dockedItems: me.dockMaintainance,
-            items: me.gridMaintainance,
+            dockedItems: me.dockMaintenance,
+            items: me.gridMaintenance,
             buttons: me.buttons
         });
         me.loadData();
         this.callParent(arguments);
     },
 
-    addToMaintainance: function() {
+    addToMaintenance: function() {
         var me = this,
-            selected = me.gridMaintainance.getSelection();
+            selected = me.gridMaintenance.getSelection();
 
         if(selected.length === 0) {
-            NOC.error(__('Your must select maintainance!'));
+            NOC.error(__('Your must select maintenance!'));
             return;
         }
         if('Object' === me.noc.args[0].mode) {
@@ -175,8 +175,8 @@ Ext.define('NOC.inv.map.Maintainance', {
 
     loadData: function() {
         var me = this,
-            filterValue = me.dockMaintainance.down('#filterField') ? me.dockMaintainance.down('#filterField').getValue() : '',
-            isCompletedValue = me.dockMaintainance.down('#isCompleted') ? me.dockMaintainance.down('#isCompleted').getValue() : true;
+            filterValue = me.dockMaintenance.down('#filterField') ? me.dockMaintenance.down('#filterField').getValue() : '',
+            isCompletedValue = me.dockMaintenance.down('#isCompleted') ? me.dockMaintenance.down('#isCompleted').getValue() : true;
 
         var params = {};
         if(filterValue.length > 0) {
@@ -193,7 +193,7 @@ Ext.define('NOC.inv.map.Maintainance', {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 me.store.loadData(data);
-                me.dockMaintainance.down('#status').update({count: data.length});
+                me.dockMaintenance.down('#status').update({count: data.length});
             },
             failure: function() {
                 NOC.msg.failed(__("Failed to load data"))

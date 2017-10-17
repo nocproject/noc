@@ -569,6 +569,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "link_count",
             "discovery_problem"
             # "object_tags"
+            # "sorted_tags"
             # "object_caps"
             # "interface_type_count"
         ]
@@ -592,6 +593,7 @@ class ReportObjectDetailApplication(ExtApplication):
          "LINK_COUNT",
          "DISCOVERY_PROBLEM"
          # "OBJECT_TAGS"
+         # "SORTED_TAGS"
          # "OBJECT_CAPS"
          # "INTERFACE_TYPE_COUNT"
         ]
@@ -641,6 +643,7 @@ class ReportObjectDetailApplication(ExtApplication):
         discovery_problem = {}
         iface_type_count = {}
         object_caps = {}
+        tags_o = []
         container_lookup = ReportContainer(mos_id)
         if "segment" in columns.split(","):
             segment_lookup = dict(NetworkSegment.objects.all().values_list("id", "name"))
@@ -658,6 +661,12 @@ class ReportObjectDetailApplication(ExtApplication):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.caps.values()
             r[-1].extend(caps_columns)
+        if "sorted_tags" in columns.split(","):
+            tags = set()
+            for s in ManagedObject.objects.filter(is_managed=True).exclude(tags=None).values_list('tags', flat=True).distinct():
+                tags.update(set(s))
+            tags_o = sorted([t for t in tags if "{" not in t])
+            r[-1].extend(tags_o)
         # if "object_tags" in columns.split(","):
         #    r[-1].extend(["tags"])
 
@@ -700,7 +709,14 @@ class ReportObjectDetailApplication(ExtApplication):
             if "object_caps" in columns.split(","):
                 r[-1].extend(object_caps[mo][:])
             if "object_tags" in columns.split(","):
-                r[-1].extend(sorted(moss[7].split(";") if moss[7] else []))
+                r[-1].extend([moss[7]] if moss[7] else [])
+            if "sorted_tags" in columns.split(","):
+                out_tags = [""] * len(tags_o)
+                if moss[7]:
+                    for m in moss[7].split(";"):
+                        out_tags[tags_o.index(m)] = m
+                r[-1].extend(out_tags)
+                # r[-1].extend(sorted(moss[7].split(";") if moss[7] else []))
             pass
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
@@ -727,25 +743,3 @@ class ReportObjectDetailApplication(ExtApplication):
                 with open(f.name) as ff:
                     response.write(ff.read())
                 return response
-
-    @view("^rep_download/$", method=["GET"], access="launch", api=True,
-          validate={
-              "administrative_domain": StringParameter(required=False),
-              "report": StringParameter(required=True),
-              "query": StringParameter(required=False, default=""),
-              "format": StringParameter(choices=["csv", "xlsx", "raw"], default="csv")
-          })
-    def api_report(self, request, format="csv", administrative_domain=None, report="", query="default", columns=None):
-        logger.info("Request report: %s" % report)
-        rep_build = ReportObjectBuild(self.site, ":".join([report, query]), request.user)
-        if format == "csv":
-            r = rep_build.build_report(format_r="csv")
-        else:
-            r = rep_build.build_report()
-            r = r.sections[-1].to_ssv2(date=datetime.datetime.now().strftime("%d/%m/%YY"))
-
-        response = HttpResponse(content_type="text/csv")
-        response[
-            "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % report
-        response.write(r)
-        return response

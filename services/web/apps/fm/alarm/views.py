@@ -29,8 +29,8 @@ from noc.main.models import User
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
-from noc.maintainance.models.maintainance import Maintainance
-from noc.maintainance.models.maintainance import MaintainanceObject
+from noc.maintenance.models.maintenance import Maintenance
+from noc.maintenance.models.maintenance import MaintenanceObject
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
@@ -103,14 +103,14 @@ class AlarmApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
-        # Exclude maintainance
-        if "maintainance" not in q:
-            q["maintainance"] = "hide"
-        if q["maintainance"] == "hide":
-            q["managed_object__nin"] = Maintainance.currently_affected()
-        elif q["maintainance"] == "only":
-            q["managed_object__in"] = Maintainance.currently_affected()
-        del q["maintainance"]
+        # Exclude maintenance
+        if "maintenance" not in q:
+            q["maintenance"] = "hide"
+        if q["maintenance"] == "hide":
+            q["managed_object__nin"] = Maintenance.currently_affected()
+        elif q["maintenance"] == "only":
+            q["managed_object__in"] = Maintenance.currently_affected()
+        del q["maintenance"]
         if "administrative_domain" in q:
             q["adm_path"] = int(q["administrative_domain"])
             q.pop("administrative_domain")
@@ -147,12 +147,12 @@ class AlarmApplication(ExtApplication):
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())
-        mtc = o.managed_object.id in Maintainance.currently_affected()
+        mtc = o.managed_object.id in Maintenance.currently_affected()
         if o.status == "C":
             # For archived alarms
-            mtc = Maintainance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
+            mtc = Maintenance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
                                               affected_objects__in=[
-                                                       MaintainanceObject(object=o.managed_object)]).count() > 0
+                                                       MaintenanceObject(object=o.managed_object)]).count() > 0
 
         d = {
             "id": str(o.id),

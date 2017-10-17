@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import operator
 # NOC modules
-from base import BaseCard
+from .base import BaseCard
 from noc.fm.models.utils import get_alarm
 from noc.inv.models.object import Object
 from noc.fm.models.activealarm import ActiveAlarm
@@ -18,8 +19,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
-from noc.maintainance.models.maintainance import Maintainance
-from noc.maintainance.models.maintainance import MaintainanceObject
+from noc.maintenance.models.maintenance import Maintenance, MaintenanceObject
 
 
 class AlarmCard(BaseCard):
@@ -72,12 +72,12 @@ class AlarmCard(BaseCard):
             "service": SummaryItem.items_to_dict(self.object.total_services),
             "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
         }
-        # Maintainance
-        mainteinance = Maintainance.objects.filter(
+        # Maintenance
+        mainteinance = Maintenance.objects.filter(
             is_completed=False,
             start__lte=datetime.datetime.now(),
             affected_objects__in=[
-                MaintainanceObject(object=self.object.managed_object)
+                MaintenanceObject(object=self.object.managed_object)
             ]
         )
         mo = self.object.managed_object

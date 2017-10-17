@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# maintainance.maintainance application
+# maintenance.maintenance application
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -8,25 +8,25 @@
 
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.translation import ugettext as _
 
 
-class MaintainanceApplication(ExtDocApplication):
+class MaintenanceApplication(ExtDocApplication):
     """
-    Maintainance application
+    Maintenance application
     """
-    title = _("Maintainance")
-    menu = _("Maintainance")
-    model = Maintainance
+    title = _("Maintenance")
+    menu = _("Maintenance")
+    model = Maintenance
     query_condition = "icontains"
     query_fields = ["subject"]
 
     @view(url="(?P<id>[0-9a-f]{24})/objects/", method=["GET"],
           access="read", api=True)
     def api_test(self, request, id):
-        o = self.get_object_or_404(Maintainance, id=id)
+        o = self.get_object_or_404(Maintenance, id=id)
         r = []
         for mao in o.affected_objects:
             mo = mao.object

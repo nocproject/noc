@@ -8,9 +8,9 @@
         </span>
     </th>
 </tr>
-{% if maintainance %}
+{% if maintenance %}
 <tr>
-    <th scope="row" class="col-sm-1">{{ _("Maintainance") }}</th>
+    <th scope="row" class="col-sm-1">{{ _("Maintenance") }}</th>
     <td>
         <table>
             <thead>
@@ -21,9 +21,9 @@
                 </tr>
             </thead>
             <tbody>
-                {% for m in maintainance %}
+                {% for m in maintenance %}
                 <tr class="{{ {True: "danger", False: "warning"}[m["in_progress"]] }}">
-                    <td><a href="/api/card/view/maintainance/{{ m["id"] }}/">{{ m["subject"] }}</a></td>
+                    <td><a href="/api/card/view/maintenance/{{ m["id"] }}/">{{ m["subject"] }}</a></td>
                     <td>{{ m["start"] | timestamp }}</td>
                     <td>{{ m["stop"] | timestamp }}</td>
                 </tr>

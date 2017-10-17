@@ -42,7 +42,8 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["discovery_problem", __("Discovery Problem"), false],
                 ["interface_type_count", __("Interface count by type"), false],
                 ["object_caps", __("Object capabilities"), false],
-                ["object_tags", __("Object Tags"), false]
+                ["object_tags", __("Object Tags"), false],
+                ["sorted_tags", __("Sorted Tags"), false]
             ]
         });
 

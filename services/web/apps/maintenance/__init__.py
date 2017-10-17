@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Settings for "maintainance" module
+# Settings for "maintenance" module
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
@@ -9,4 +9,4 @@
 # NOC modules
 from noc.core.translation import ugettext as _
 
-MODULE_NAME = _("Maintainance")
+MODULE_NAME = _("Maintenance")

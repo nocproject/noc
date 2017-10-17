@@ -18,7 +18,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.maintainance.models.maintainance import Maintainance
+from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 
 
@@ -80,7 +80,7 @@ class AlarmHeatCard(BaseCard):
             qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
         if ms == 0:
             # Filter out equipment under maintenance
-            qs = qs.filter(managed_object__nin=Maintainance.currently_affected())
+            qs = qs.filter(managed_object__nin=Maintenance.currently_affected())
         for a in qs.only("id", "managed_object", "direct_subscribers", "direct_services"):
             s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
             s_service = SummaryItem.items_to_dict(a.direct_services)

@@ -26,7 +26,7 @@ Ext.define('NOC.fm.alarm.Application', {
         me.sounds = {};  // url -> audio object
         me.currentQuery = {
             status: 'A',
-            maintainance: 'hide'
+            maintenance: 'hide'
         };
         me.store = Ext.create('NOC.core.ModelStore', {
             model: 'NOC.fm.alarm.Model',
@@ -426,11 +426,11 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
 
-        me.maintainanceButton = Ext.create('Ext.button.Segmented', {
+        me.maintenanceButton = Ext.create('Ext.button.Segmented', {
             items: [
                 {
-                    text: __('Hide maintainance'),
-                    tooltip: __('Hide alarms covered by maintainance'),
+                    text: __('Hide maintenance'),
+                    tooltip: __('Hide alarms covered by maintenance'),
                     pressed: true,
                     filterExpression: 'hide'
                 },
@@ -441,7 +441,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 },
                 {
                     text: __('Only'),
-                    tooltip: __('Show only alarms covered by maintainance'),
+                    tooltip: __('Show only alarms covered by maintenance'),
                     filterExpression: 'only'
                 }
             ],
@@ -753,7 +753,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 me.typeButton,
                 me.expandButton,
                 me.ttConfirmButton,
-                me.maintainanceButton,
+                me.maintenanceButton,
                 me.objectCombo,
                 me.segmentCombo,
                 me.admdomCombo,
@@ -869,9 +869,9 @@ Ext.define('NOC.fm.alarm.Application', {
         if(me.ttConfirmButton.items.first().pressed) {
             q.wait_tt = 1;
         }
-        me.maintainanceButton.items.each(function(b) {
+        me.maintenanceButton.items.each(function(b) {
             if(b.pressed) {
-                q['maintainance'] = b.filterExpression;
+                q['maintenance'] = b.filterExpression;
                 return false;
             }
             return true;
