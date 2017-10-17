@@ -29,6 +29,7 @@ class InterfaceCheck(DiscoveryCheck):
         self.get_interface_profile = InterfaceClassificationRule.get_classificator()
 
     def handler(self):
+        self.interface_macs = set()
         self.logger.info("Checking interfaces")
         result = self.object.scripts.get_interfaces()
         self.seen_interfaces = []
@@ -109,6 +110,7 @@ class InterfaceCheck(DiscoveryCheck):
                 managed_object=self.object.id
             ).count()
         }, source="interface")
+        self.set_artefact("interface_macs", self.interface_macs)
 
     def submit_forwarding_instance(self, name, type, rd, vr):
         if name == "default":
@@ -180,6 +182,8 @@ class InterfaceCheck(DiscoveryCheck):
             )
             iface.save()
             self.set_interface(name, iface)
+        if mac:
+            self.interface_macs.add(mac)
         return iface
 
     def submit_subinterface(self, forwarding_instance, interface,
@@ -236,6 +240,8 @@ class InterfaceCheck(DiscoveryCheck):
                 ifindex=ifindex
             )
             si.save()
+        if mac:
+            self.interface_macs.add(mac)
         return si
 
     def cleanup_forwarding_instances(self, fi):

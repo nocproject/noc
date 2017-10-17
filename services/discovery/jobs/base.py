@@ -58,6 +58,8 @@ class MODiscoveryJob(PeriodicJob):
         self.caps = None
         self.has_fatal_error = False
         self.service = self.scheduler.service
+        # Additional artefacts can be passed between checks in one session
+        self.artefacts = {}
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -288,15 +290,46 @@ class MODiscoveryJob(PeriodicJob):
     def get_alarm_weight(self):
         return 1
 
+    def set_artefact(self, name, value=None):
+        """
+        Set artefact (opaque structure to be passed to following checks)
+        :param name: Artefact name
+        :param value: Opaque value
+        :return:
+        """
+        if not value:
+            if name in self.artefacts:
+                del self.artefacts[name]
+        else:
+            self.artefacts[name] = value or None
+
+    def get_artefact(self, name):
+        """
+        Get artefact by name
+        :param name: artefact name
+        :return: artefact
+        """
+        return self.artefacts.get(name)
+
+    def has_artefact(self, name):
+        """
+        Check job has existing artefact
+        :param name: artefact name
+        :return: True, if artefact exists, False otherwise
+        """
+        return name in self.artefacts
+
 
 class DiscoveryCheck(object):
     name = None
     # If not none, check required script is available
     # before running check
     required_script = None
-    # If not none, check object has all required capablities
+    # If not None, check object has all required capablities
     # from list
     required_capabilities = None
+    # If not None, check job has all required artefacts
+    required_artefacts = None
     #
     fatal_errors = set([
         ERR_CLI_AUTH_FAILED,
@@ -374,12 +407,23 @@ class DiscoveryCheck(object):
                 return False
         return True
 
+    def has_required_artefacts(self):
+        if not self.required_artefacts:
+            return True
+        for ra in self.required_artefacts:
+            if not self.has_artefact(ra):
+                self.logger.info("Job has not '%s' artefact. Skipping", ra)
+                return False
+        return True
+
     def run(self):
         if not self.is_enabled():
             self.logger.info("Check is disabled. Skipping")
             return
         if self.has_fatal_error():
             self.logger.info("Check is disabled due to previous fatal error. Skipping")
+            return
+        if not self.has_required_artefacts():
             return
         with Span(server="discovery", service=self.name) as span, self.job.check_timer(self.name):
             # Check required scripts
@@ -595,6 +639,31 @@ class DiscoveryCheck(object):
             message=message,
             fatal=fatal
         )
+
+    def set_artefact(self, name, value=None):
+        """
+        Set artefact (opaque structure to be passed to following checks)
+        :param name: Artefact name
+        :param value: Opaque value
+        :return:
+        """
+        self.job.set_artefact(name, value)
+
+    def get_artefact(self, name):
+        """
+        Get artefact by name
+        :param name: artefact name
+        :return: artefact
+        """
+        return self.job.get_artefact(name)
+
+    def has_artefact(self, name):
+        """
+        Check job has existing artefact
+        :param name: artefact name
+        :return: True, if artefact exists, False otherwise
+        """
+        return self.job.has_artefact(name)
 
 
 class TopologyDiscoveryCheck(DiscoveryCheck):

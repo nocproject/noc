@@ -343,7 +343,7 @@ class MetricsCheck(DiscoveryCheck):
         :return:
         """
         # Restore last counter state
-        if self.job.reboot_detected:
+        if self.has_artefact("reboot"):
             self.logger.info(
                 "Resetting counter context due to detected reboot"
             )

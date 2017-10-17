@@ -27,16 +27,20 @@ class IDCheck(DiscoveryCheck):
                 "%s - %s" % (m["first_chassis_mac"], m["last_chassis_mac"])
                 for m in cm if "first_chassis_mac" in m and "last_chassis_mac" in m
             )
+        interface_macs = self.get_artefact("interface_macs")
         self.logger.info(
             "Identity found: "
-            "Chassis MACs = %s, hostname = %s, router-id = %s",
+            "Chassis MACs = %s, hostname = %s, router-id = %s,"
+            "additional MACs = %s",
             cm,
             result.get("hostname"),
-            result.get("router_id")
+            result.get("router_id"),
+            ", ".join(interface_macs or [])
         )
         DiscoveryID.submit(
             object=self.object,
             chassis_mac=result.get("chassis_mac"),
             hostname=result.get("hostname"),
-            router_id=result.get("router_id")
+            router_id=result.get("router_id"),
+            additional_macs=interface_macs
         )

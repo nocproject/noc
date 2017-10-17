@@ -25,6 +25,10 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
             defaultValue: 86400
         },
         {
+            name: "autocreated_profile",
+            type: "string"
+        },
+        {
             name: "enable_lost_redundancy",
             type: "boolean"
         },

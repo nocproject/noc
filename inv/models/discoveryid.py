@@ -9,6 +9,7 @@
 # Python modules
 import operator
 from threading import Lock
+import bisect
 # Third-party modules
 from mongoengine.queryset import DoesNotExist
 import cachetools
@@ -71,7 +72,41 @@ class DiscoveryID(Document):
 
     @classmethod
     def submit(cls, object, chassis_mac=None,
-               hostname=None, router_id=None):
+               hostname=None, router_id=None, additional_macs=None):
+        chassis_mac = chassis_mac or []
+        if additional_macs:
+            # Strip additional_macs intersected with chassis_mac
+            additional_macs = sorted(additional_macs)
+            for cm in chassis_mac:
+                first = cm["first_chassis_mac"]
+                last = cm["last_chassis_mac"]
+                ll = len(additional_macs)
+                start = bisect.bisect_left(additional_macs, first)
+                while start < ll and first <= additional_macs[start] <= last:
+                    del additional_macs[start]
+                    ll -= 1
+            # Append remaining additional macs as ranges
+            if additional_macs:
+                first = None
+                last = None
+                while additional_macs:
+                    n = int(MAC(additional_macs.pop(0)))
+                    if first is None:
+                        first = n
+                        last = n
+                    elif n - last == 1:
+                        last = n
+                    else:
+                        chassis_mac += [{
+                            "first_chassis_mac": MAC(first),
+                            "last_chassis_mac": MAC(last)
+                        }]
+                        first = None
+                if first:
+                    chassis_mac += [{
+                        "first_chassis_mac": MAC(first),
+                        "last_chassis_mac": MAC(last)
+                    }]
         if chassis_mac:
             chassis_mac = [
                 MACRange(
@@ -142,22 +177,6 @@ class DiscoveryID(Document):
             r = cls.get_by_mac(mac)
             if r:
                 return ManagedObject.get_by_id(r["object"])
-            # Fallback to interface search
-            metrics["discoveryid_mac_interface"] += 1
-            o = set(
-                d["managed_object"]
-                for d in Interface._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED
-                ).find({
-                    "mac": mac
-                }, {
-                    "_id": 0,
-                    "managed_object": 1
-                })
-            )
-            if len(o) == 1:
-                return ManagedObject.get_by_id(list(o)[0])
-            metrics["discoveryid_mac_failed"] += 1
         if ipv4_address:
             metrics["discoveryid_ip_requests"] += 1
             # Try router_id
@@ -259,3 +278,44 @@ class DiscoveryID(Document):
             mo = mo.id
         for d in DiscoveryID.objects.filter(object=mo):
             d.delete()
+
+    @classmethod
+    def find_objects(cls, macs):
+        """
+        Find objects for list of macs
+        :param macs: List of MAC addresses
+        :return: dict of MAC -> ManagedObject for resolved MACs
+        """
+        r = {}
+        if not macs:
+            return r
+        # Build list of macs to search
+        mlist = sorted(int(MAC(m)) for m in macs)
+        # Search for macs
+        obj_ranges = {}  # (first, last) -> mo
+        for d in DiscoveryID._get_collection().find({
+            "macs": {
+                "$in": mlist
+            }
+        }, {
+            "_id": 0,
+            "object": 1,
+            "chassis_mac": 1
+        }):
+            mo = ManagedObject.get_by_id(d["object"])
+            if mo:
+                for dd in d.get("chassis_mac", []):
+                    obj_ranges[int(MAC(dd["first_mac"])), int(MAC(dd["last_mac"]))] = mo
+        n = 1
+        for s, e in obj_ranges:
+            n += 1
+        # Resolve ranges
+        start = 0
+        ll = len(mlist)
+        for s, e in sorted(obj_ranges):
+            mo = obj_ranges[s, e]
+            start = bisect.bisect_left(mlist, s, start, ll)
+            while start < ll and s <= mlist[start] <= e:
+                r[MAC(mlist[start])] = mo
+                start += 1
+        return r

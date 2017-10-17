@@ -9,11 +9,14 @@
 # Python modules
 import time
 from functools import reduce
+from collections import defaultdict
+# Third-party modules
+import six
 # NOC modules
-from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.perf import metrics
 from noc.core.mac import MAC
+from noc.inv.models.discoveryid import DiscoveryID
 
 
 class MACCheck(DiscoveryCheck):
@@ -66,6 +69,8 @@ class MACCheck(DiscoveryCheck):
         data = []
         mo_bi_id = str(self.object.bi_id)
         seg_bi_id = str(self.object.segment.bi_id)
+        collect_if_objects = self.object.enable_autosegmentation
+        if_mac = defaultdict(set)  # interface -> [macs]
         # Collect and process MACs
         result = self.object.scripts.get_mac_address_table()
         for v in result:
@@ -78,6 +83,8 @@ class MACCheck(DiscoveryCheck):
             if not iface:
                 unknown_interfaces.add(ifname)
                 continue  # Interface not found
+            if collect_if_objects:
+                if_mac[iface].add(v["mac"])
             if not mf(iface, v["vlan_id"], v["mac"]):
                 self.logger.debug("Filtered: Iface: %s, Vlan: %s, MAC: %s" % (iface, v["vlan_id"], v["mac"]))
                 continue
@@ -108,6 +115,8 @@ class MACCheck(DiscoveryCheck):
                 self.METRIC_FIELDS,
                 data
             )
+            if collect_if_objects:
+                self.build_seen_objects(if_mac)
         else:
             self.logger.info("No MAC addresses collected")
 
@@ -119,3 +128,27 @@ class MACCheck(DiscoveryCheck):
 
     def filter_vlan(self, interface, vlan, mac):
         return vlan in self.allowed_vlans
+
+    def build_seen_objects(self, if_mac):
+        """
+        Build seen_objects artefact
+        :param if_mac: interface -> [macs]
+        :return: interface -> [managed objects]
+        """
+        # Resolve MACs
+        all_macs = reduce(lambda x, y: x | y,
+                          six.itervalues(if_mac))
+        mmap = DiscoveryID.find_objects(all_macs)
+        if not mmap:
+            self.logger.info("Cannot build seen_objects artefact: Cannot resolve any MACs")
+            return
+        # Bind resolved MACs to interfaces
+        seen_objects = defaultdict(set)  # interface -> [ManagedObject]
+        for iface in if_mac:
+            rr = set(mmap[m] for m in if_mac[iface] if m in mmap)
+            if rr:
+                seen_objects[iface] = rr
+        # Update artifact
+        current = self.get_artefact("seen_objects") or {}
+        current.update(seen_objects)
+        self.set_artefact("seen_objects", current)

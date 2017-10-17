@@ -33,6 +33,7 @@ from .nri import NRICheck
 from .sla import SLACheck
 from .cpe import CPECheck
 from .hk import HouseKeepingCheck
+from .segmentation import SegmentationCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
 from noc.core.span import Span
@@ -79,8 +80,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
                     continue
                 self.topology_methods += [self.TOPOLOGY_METHODS[ms.method]]
             self.topology_names = [m.name for m in self.topology_methods]
-            #
-            self.reboot_detected = False
             # Run remaining checks
             if self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
@@ -110,6 +109,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             CPECheck(self).run()
         if self.object.object_profile.enable_box_discovery_mac:
             MACCheck(self).run()
+        if self.object.enable_autosegmentation:
+            SegmentationCheck(self).run()
         # Topology discovery
         # Most preferable methods first
         for check in self.topology_methods:

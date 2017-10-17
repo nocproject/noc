@@ -66,7 +66,7 @@ from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 
 # Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 4
+MANAGEDOBJECT_CACHE_VERSION = 5
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
@@ -398,6 +398,33 @@ class ManagedObject(Model):
             ("P", "From Profile")
         ],
         default="P"
+    )
+    #
+    autosegmentation_policy = CharField(
+        max_length=1,
+        choices=[
+            # Inherit from profile
+            ("p", "Profile"),
+            # Do not allow to move object by autosegmentation
+            ("d", "Do not segmentate"),
+            # Allow moving of object to another segment
+            # by autosegmentation process
+            ("e", "Allow autosegmentation"),
+            # Move seen objects to this object's segment
+            ("o", "Segmentate to existing segment"),
+            # Expand autosegmentation_segment_name template,
+            # ensure that children segment with same name exists
+            # then move seen objects to this segment.
+            # Following context variables are availale:
+            # * object - this object
+            # * interface - interface on which remote_object seen from object
+            # * remote_object - remote object name
+            # To create single segment use templates like {{object.name}}
+            # To create segments on per-interface basic use
+            # names like {{object.name}}-{{interface.name}}
+            ("c", "Segmentate to child segment")
+        ],
+        default="p"
     )
     #
     tags = TagsField("Tags", null=True, blank=True)
@@ -1259,6 +1286,19 @@ class ManagedObject(Model):
         else:
             return False
 
+    def get_autosegmentation_policy(self):
+        if self.autosegmentation_policy == "p":
+            return self.object_profile.autosegmentation_policy
+        else:
+            return self.autosegmentation_policy
+
+    @property
+    def enable_autosegmentation(self):
+        return self.get_autosegmentation_policy() in ("o", "c")
+
+    @property
+    def allow_autosegmentation(self):
+        return self.get_autosegmentation_policy() == "e"
 
 @on_save
 class ManagedObjectAttribute(Model):

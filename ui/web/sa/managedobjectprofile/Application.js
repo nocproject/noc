@@ -1177,6 +1177,38 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
+                            title: __("Autosegmentation"),
+                            items: [
+                                {
+                                    name: "autosegmentation_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Policy"),
+                                    allowBlank: false,
+                                    store: [
+                                        ["d", __("Do not segmentate")],
+                                        ["e", __("Allow autosegmentation")],
+                                        ["o", __("Segmentate for object's segment")],
+                                        ["c", __("Segmentate for child segment")]
+                                    ],
+                                    uiStyle: "medium"
+                                },
+                                {
+                                    name: "autosegmentation_level_limit",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Level Limit"),
+                                    allowBlank: false,
+                                    uiStyle: "small"
+                                },
+                                {
+                                    name: "autosegmentation_segment_name",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Segment Name"),
+                                    allowBlank: true,
+                                    uiStyle: "extra"
+                                }
+                            ]
+                        },
+                        {
                             title: __("Integration"),
                             items: [
                                 {

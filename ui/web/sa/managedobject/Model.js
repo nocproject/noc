@@ -308,8 +308,11 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "bi_id",
-            type: "string",
-            persist: false
+            type: "string"
+        },
+        {
+            name: "autosegmentation_policy",
+            type: "string"
         },
         {
             name: "tt_system",
