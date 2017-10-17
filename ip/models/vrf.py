@@ -2,16 +2,19 @@
 # ---------------------------------------------------------------------
 # VRF model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import hashlib
 import struct
-# Django modules
+import operator
+from threading import Lock
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from noc.main.models import ResourceState
@@ -23,6 +26,9 @@ from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check
+
+id_lock = Lock()
+
 
 @full_text_search
 @on_delete_check(check=[
@@ -98,6 +104,31 @@ class VRF(models.Model):
             return u"global"
         else:
             return self.name
+
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _rd_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_id_cache"),
+        lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        mo = VRF.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_rd_cache"),
+        lock=lambda _: id_lock)
+    def get_by_rd(cls, rd):
+        mo = VRF.objects.filter(rd=rd)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
 
     def get_absolute_url(self):
         return site.reverse("ip:vrf:change", self.id)
