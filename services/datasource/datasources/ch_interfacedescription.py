@@ -25,7 +25,7 @@ class CHManagedObjectDataSource(BaseDataSource):
                                                                                 "name",
                                                                                 "description").order_by("managed_object"):
             yield (
-                mos_id[sub.managed_object.id],
-                sub.name,
-                sub.description.replace("\t", "")
+                mos_id[sub[0].id],
+                sub[1],
+                sub[2].replace("\t", "")
             )
