@@ -405,3 +405,40 @@ class NetworkSegment(Document):
             return self.profile.multicast_vlan or None
         else:
             return None
+
+    def get_nested_ids(self):
+        """
+        Return id of this and all nested segments
+        :return:
+        """
+        r = [self.id]
+        r += [
+            d["_id"] for d in
+            NetworkSegment._get_collection().aggregate([
+                {
+                    "$match": {
+                        "_id": self.id
+                    }
+                },
+                {
+                    "$graphLookup": {
+                        "from": "noc.networksegments",
+                        "startWith": "$_id",
+                        "connectFromField": "_id",
+                        "connectToField": "parent",
+                        "as": "nested",
+                        "maxDepth": 10
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$nested"
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": "$nested._id"
+                    }
+                }
+            ])]
+        return r
