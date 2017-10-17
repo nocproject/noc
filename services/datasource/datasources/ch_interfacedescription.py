@@ -20,12 +20,11 @@ class CHManagedObjectDataSource(BaseDataSource):
 
     def extract(self):
         mos_id = dict(ManagedObject.objects.filter().values_list("id", "bi_id"))
-        for sub in SubInterface.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED,
-                                               description__exists=True).scalar("managed_object",
-                                                                                "name",
-                                                                                "description").order_by("managed_object"):
+        si = SubInterface._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+        for sub in si.find({"description": {"exists": True}},
+                           {"_id": 0, "managed_object": 1, "name": 1, "description": 1}).sort("managed_object"):
             yield (
-                mos_id[sub[0].id],
-                sub[1],
-                sub[2].replace("\t", "")
+                mos_id[sub["managed_object"]],
+                sub["name"],
+                sub["description"].replace("\t", "")
             )
