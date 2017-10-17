@@ -166,7 +166,27 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_vrf",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_box_discovery_prefix",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_prefix_interface",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_address",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_address_interface",
             xtype: "boolean",
             defaultValue: false
         },
