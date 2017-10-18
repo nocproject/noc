@@ -26,5 +26,5 @@ class CHManagedObjectDataSource(BaseDataSource):
             yield (
                 mos_id[sub["managed_object"]],
                 sub["name"],
-                sub["description"].replace("\t", "")
+                sub["description"].replace("\t", "").replace("\\", "")
             )
