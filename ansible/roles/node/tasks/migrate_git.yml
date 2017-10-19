@@ -4,6 +4,24 @@
     dest: "{{noc_root}}/../noc_before_git_migrations.tbz"
     format: bz2
 
+- name: add everything to mercurial
+  shell: hg add .
+  args:
+    chdir: "{{noc_root}}"
+
+- name: make diff
+  shell: hg diff > /tmp/noc_diff.diff
+  args:
+    chdir: "{{noc_root}}"
+
+- name: reset current dir
+  hg:
+    repo: "{{noc_repo}}"
+    dest: "{{noc_root}}"
+    revision: "{{noc_revision}}"
+    force: yes
+    purge: yes
+
 - name: remove .hg
   file:
     path: "{{noc_root}}/.hg"
@@ -33,3 +51,8 @@
     chdir: "{{noc_root}}"
   environment:
     https_proxy: "{{http_proxy}}"
+
+- name: patch new dir with old hg
+  shell: patch -f -p 1 < /tmp/noc_diff.diff
+  args:
+    chdir: "{{noc_root}}"

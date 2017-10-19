@@ -37,6 +37,7 @@
    - man
    - mercurial
    - git
+   - patch
    - python-virtualenv
    - telnet
    - gcc
