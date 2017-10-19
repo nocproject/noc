@@ -1300,6 +1300,32 @@ class ManagedObject(Model):
     def allow_autosegmentation(self):
         return self.get_autosegmentation_policy() == "e"
 
+    @classmethod
+    def get_bi_selector(cls, cfg):
+        qs = {}
+        print cfg
+        if "administrative_domain" in cfg:
+            d = AdministrativeDomain.get_by_id(cfg["administrative_domain"])
+            if d:
+                qs["administrative_domain__in"] = d.get_nested()
+        if "pool" in cfg:
+            qs["pool__in"] = [cfg["pool"]]
+        if "profile" in cfg:
+            qs["profile__in"] = [cfg["profile"]]
+        if "segment" in cfg:
+            qs["segment__in"] = [cfg["segment"]]
+        if "container" in cfg:
+            qs["container__in"] = [cfg["container"]]
+        if "platform" in cfg:
+            qs["platform__in"] = [cfg["pool"]]
+        if "version" in cfg:
+            qs["version__in"] = [cfg["version"]]
+        return [
+            r.bi_id
+            for r in ManagedObject.objects.filter(**qs).only("id", "bi_id")
+        ]
+
+
 @on_save
 class ManagedObjectAttribute(Model):
 
