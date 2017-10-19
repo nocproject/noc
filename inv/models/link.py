@@ -170,7 +170,7 @@ class Link(Document):
         List of segments connected by link
         :return:
         """
-        return list(set(i.managed_object.segment for i in self.managed_objects))
+        return list(set(i.segment for i in self.managed_objects))
 
     def update_topology(self):
         for mo in self.managed_objects:
