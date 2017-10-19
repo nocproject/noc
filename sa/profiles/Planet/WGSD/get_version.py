@@ -37,7 +37,8 @@ class Script(BaseScript):
 
     platforms = {
         "1466": "WGSD-1022",
-        "89": "WGSD-1022"
+        "89": "WGSD-1022",
+        "89.1.1": "WGSD-1022"
     }
 
     def execute(self):
