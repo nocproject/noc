@@ -25,7 +25,7 @@ id_lock = Lock()
     ("ip.Address", "project"),
     ("ip.Prefix", "project"),
     ("ip.VRF", "project"),
-    ("peer.ASN", "project"),
+    ("peer.AS", "project"),
     ("peer.ASSet", "project"),
     ("peer.Peer", "project"),
     ("phone.PhoneNumber", "project"),
