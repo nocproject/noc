@@ -131,6 +131,9 @@ class Script(GetMetricsScript):
                 res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes, "txpackets": txpackets, "txerrors": txerrors}
             elif rr[0] == "ssid":
                 ssid = rr[1].strip().replace(" ", "").replace("Managed", "")
+                if ssid.startswith("2a2d"):
+                    # 2a2d - hex string
+                    ssid = ssid.decode("hex")
             elif rr[0] == "bss":
                 bss = rr[1].strip()
             if ssid:
