@@ -93,7 +93,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
                     up_fib[mo] = fib[mo][iface]
                 else:
                     coverage[mo] |= fib[mo][iface]
-            if not uplinks[mo]:
+            if mo not in uplinks:
                 self.logger.info(
                     "[%s] Cannot detect uplinks. Topology may be imprecise",
                     mo.name
@@ -111,13 +111,24 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         # Build topology
         for mo in fib:
             for iface in fib[mo]:
-                if iface == uplinks[mo]:
+                if iface == uplinks.get(mo):
                     continue
                 for ro in fib[mo][iface]:
-                    if not fib[mo][iface] - coverage[ro]:
+                    cvr = coverage.get(ro)
+                    if not cvr:
+                        cvr = set([ro])
+                        coverage[ro] = cvr
+                    if not fib[mo][iface] - cvr:
                         # All objects from mo:iface are seen via ro
-                        self.confirm_link(mo, iface, ro, uplinks[ro])
-                        break
+                        uplink = uplinks.get(ro)
+                        if uplink:
+                            self.confirm_link(mo, iface, ro, uplink)
+                            break
+                        else:
+                            self.logger.info(
+                                "[%s] No uplinks. Cannot link to %s:%s. Topology may be imprecise",
+                                ro.name, mo.name, iface
+                            )
 
     def is_preferable_over(self, link):
         segments = link.segments
