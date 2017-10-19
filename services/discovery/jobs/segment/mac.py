@@ -88,7 +88,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         for mo in fib:
             coverage[mo] = set([mo])
             for iface in fib[mo]:
-                if any(x for x in fib[mo][iface] if x.segment.id not in segments):
+                if self.is_uplink(mo, fib[mo][iface], segments):
                     uplinks[mo] = iface
                     up_fib[mo] = fib[mo][iface]
                 else:
@@ -136,3 +136,26 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
             # @todo: Order segments, most specific first
             pass
         return segments[0].profile.is_preferable_method(self.name, link.discovery_method)
+
+    def is_uplink(self, mo, if_fib, segments):
+        """
+        Check if if_fib belongs to uplink interface
+        :param mo: managed object instance
+        :param if_fib: set of managed object seen via interface
+        :param segments: Set of segment ids belonging to segment tree
+        :return: True, if uplink, False otherwise
+        """
+        for ro in if_fib:
+            # Check if objects belong to same segment
+            if ro.segment.id == mo.segment.id:
+                continue  # Same segment, no preference
+            # Check if object is outside of segment tree
+            if ro.segment.id not in segments:
+                return True  # Leads outside of segment tree
+            # Check if ro's segment is ancestor of mo's one
+            if ro.segment.id in mo.segment.get_path():
+                return True
+            # Compare object's levels
+            if ro.object_profile.level > mo.object_profile.level:
+                return True
+        return False
