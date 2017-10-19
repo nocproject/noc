@@ -86,7 +86,7 @@ class BIAPI(API):
                 "name": ms.table_name,
                 "description": ms.description,
                 "tags": [],
-                "sample": True,
+                "sample": False,
                 "fields": [
                     {
                         "name": "date",
