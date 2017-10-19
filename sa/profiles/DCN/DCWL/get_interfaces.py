@@ -133,6 +133,9 @@ class Script(BaseScript):
                 mac = r[1].strip()
             if r[0] == "ssid":
                 ssid = r[1].strip().replace(" ", "").replace("Managed", "")
+                if ssid.startswith("2a2d"):
+                    # 2a2d - hex string
+                    ssid = ssid.decode("hex")
             if r[0] == "bss":
                 bss = r[1].strip()
                 if ssid:
