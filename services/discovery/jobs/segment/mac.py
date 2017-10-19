@@ -39,14 +39,13 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         # @todo: Apply vlan restrictions
         t0 = datetime.datetime.now() - datetime.timedelta(seconds=self.MAC_WINDOW)
         t0 = t0.replace(microsecond=0)
-        SQL = """SELECT managed_object, mac, max(ts), argMax(interface, ts)
+        SQL = """SELECT managed_object, mac, argMax(ts, ts), argMax(interface, ts)
         FROM mac
         WHERE
           date >= toDate('%s')
           AND ts >= toDateTime('%s')
           AND managed_object IN (%s)
         GROUP BY ts, managed_object, mac
-        ORDER BY ts
         """ % (t0.date().isoformat(), t0.isoformat(sep=" "),
                ", ".join(bi_map))
         ch = connection()
