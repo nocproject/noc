@@ -22,6 +22,14 @@
     path: "{{noc_root}}"
   register: noc_root_state
 
+- name:
+  git_config:
+    name: user.email
+    repo: "{{noc_root}}"
+  register: git_user_email
+
+- debug: var=git_user_email
+
 - block:
   - name: check if noc under mercurial control
     stat:

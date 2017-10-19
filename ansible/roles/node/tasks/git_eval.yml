@@ -1,8 +1,26 @@
-- name: Clone NOC
-  shell: git clone https://code.getnoc.com/noc/noc.git "{{noc_root}}"
+- block:
+  - name: Clone NOC
+    shell: git clone https://code.getnoc.com/noc/noc.git "{{noc_root}}"
+    environment:
+      https_proxy: "{{http_proxy}}"
+
+  - name: set up dummy git user email
+    git_config:
+      name: user.email
+      repo: "{{noc_root}}"
+      scope: local
+      value: 'noc_user@{{ ansible_fqdn }}'
+    when: not git_user_email.stdout
+
+  - name: set up dummy git user name
+    git_config:
+      name: user.name
+      repo: "{{noc_root}}"
+      scope: local
+      value: 'Noc User {{ansible_fqdn}}'
+    when: not git_user_email.stdout
+
   when: noc_root_state.stat.exists is defined and not noc_root_state.stat.exists
-  environment:
-    https_proxy: "{{http_proxy}}"
 
 - name: Pull NOC
   shell: git pull https://code.getnoc.com/noc/noc.git
