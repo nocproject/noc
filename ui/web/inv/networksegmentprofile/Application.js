@@ -36,14 +36,14 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
-                    name: "mac_discovery_interval",
+                    name: "discovery_interval",
                     xtype: "numberfield",
-                    fieldLabel: __("MAC discovery interval"),
+                    fieldLabel: __("Discovery interval"),
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "small"
                 },
                 {
                     name: "autocreated_profile",

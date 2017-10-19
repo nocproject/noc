@@ -27,12 +27,14 @@ class InterfaceCheck(DiscoveryCheck):
     def __init__(self, *args, **kwargs):
         super(InterfaceCheck, self).__init__(*args, **kwargs)
         self.get_interface_profile = InterfaceClassificationRule.get_classificator()
+        self.interface_macs = set()
+        self.seen_interfaces = []
+        self.vrf_artefact = {}  # name -> {name:, type:, rd:}
+        self.prefix_artefact = {}
 
     def handler(self):
-        self.interface_macs = set()
         self.logger.info("Checking interfaces")
         result = self.object.scripts.get_interfaces()
-        self.seen_interfaces = []
         # Process forwarding instances
         for fi in result:
             # Apply forwarding instance
@@ -111,6 +113,7 @@ class InterfaceCheck(DiscoveryCheck):
             ).count()
         }, source="interface")
         self.set_artefact("interface_macs", self.interface_macs)
+        self.set_artefact("vrf", self.vrf_artefact)
 
     def submit_forwarding_instance(self, name, type, rd, vr):
         if name == "default":
@@ -145,6 +148,11 @@ class InterfaceCheck(DiscoveryCheck):
                 virtual_router=vr
             )
             forwarding_instance.save()
+        self.vrf_artefact[name] = {
+            "name": name,
+            "type": type,
+            "rd": rd
+        }
         return forwarding_instance
 
     def submit_interface(self, name, type,

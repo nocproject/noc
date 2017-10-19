@@ -159,8 +159,6 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_caps = models.BooleanField(default=False)
     # Collect interface settings
     enable_box_discovery_interface = models.BooleanField(default=False)
-    # Extract interface prefixes and synchronize with ipam
-    enable_box_discovery_prefix = models.BooleanField(default=False)
     # Collect chassis ID information
     enable_box_discovery_id = models.BooleanField(default=False)
     # Collect config
@@ -169,8 +167,16 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_asset = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_nri = models.BooleanField(default=False)
-    # Collect interface IP addresses
-    # enable_box_discovery_ip = models.BooleanField(default=False)
+    # VRF discovery
+    enable_box_discovery_vrf = models.BooleanField(default=False)
+    # IP discovery (neighbbors)
+    enable_box_discovery_address = models.BooleanField(default=False)
+    # IP discovery (interface)
+    enable_box_discovery_address_interface = models.BooleanField(default=False)
+    # IP discovery (neighbbors)
+    enable_box_discovery_prefix = models.BooleanField(default=False)
+    # IP discovery (interface)
+    enable_box_discovery_prefix_interface = models.BooleanField(default=False)
     # Collect static vlans
     enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD

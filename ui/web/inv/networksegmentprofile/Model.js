@@ -20,9 +20,9 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
             type: "string"
         },
         {
-            name: "mac_discovery_interval",
+            name: "discovery_interval",
             type: "int",
-            defaultValue: 86400
+            defaultValue: 0
         },
         {
             name: "autocreated_profile",

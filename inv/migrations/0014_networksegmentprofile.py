@@ -19,7 +19,7 @@ class Migration(object):
         result = coll.insert({
             "name": "default",
             "description": "Default segment profile",
-            "mac_discovery_interval": 86400,
+            "discovery_interval": 0,
             "mac_restrict_to_management_vlan": False,
             "enable_lost_redundancy": True,
             "topology_methods": [

@@ -679,6 +679,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
+                                    title: __("IPAM"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "0 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_box_discovery_vrf",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("VRF")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_prefix_interface",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Prefix (Interface)")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_prefix",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Prefix (Neighbors)")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_interface",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Address (Interface)")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Address (Neighbors)")
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
                                     title: __("Clear links"),
                                     layout: "hbox",
                                     defaults: {

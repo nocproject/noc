@@ -53,8 +53,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         LLDPCheck,
         CDPCheck,
         HuaweiNDPCheck,
-        STPCheck,
-        NRICheck
+        STPCheck
     ])
 
     def handler(self, **kwargs):
@@ -70,16 +69,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
                     "Cannot choose valid credentials. Stopping"
                 )
                 return
-            # Build topology methods
-            self.topology_methods = []
-            for ms in self.object.segment.profile.topology_methods:
-                if ms.method not in self.TOPOLOGY_METHODS or not ms.is_active:
-                    continue
-                if ms.method in ("custom", "handler"):
-                    # @todo: Implement
-                    continue
-                self.topology_methods += [self.TOPOLOGY_METHODS[ms.method]]
-            self.topology_names = [m.name for m in self.topology_methods]
             # Run remaining checks
             if self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
@@ -113,9 +102,12 @@ class BoxDiscoveryJob(MODiscoveryJob):
             SegmentationCheck(self).run()
         # Topology discovery
         # Most preferable methods first
-        for check in self.topology_methods:
+        for m in self.object.segment.profile.get_topology_methods():
+            check = self.TOPOLOGY_METHODS.get(m)
+            if not check:
+                continue
             if getattr(self.object.object_profile,
-                       "enable_box_discovery_%s" % check.name) and check.name != "nri":
+                       "enable_box_discovery_%s" % check.name):
                 check(self).run()
         if self.object.object_profile.enable_box_discovery_sla:
             SLACheck(self).run()
@@ -143,14 +135,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         Returns True if m1 topology discovery method is
         preferable over m2
         """
-        if m1 == m2:
-            return True
-        try:
-            i1 = self.topology_names.index(m1)
-            i2 = self.topology_names.index(m2)
-        except ValueError:
-            return False
-        return i1 <= i2
+        return self.object.segment.profile.is_preferable_method(m1, m2)
 
     def can_update_alarms(self):
         return self.object.can_create_box_alarms()

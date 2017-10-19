@@ -22,10 +22,11 @@ from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.defer import call_later
 from noc.core.bi.decorator import bi_sync
 from .networksegmentprofile import NetworkSegmentProfile
+from noc.core.scheduler.job import Job
 
 id_lock = Lock()
 
@@ -35,6 +36,7 @@ id_lock = Lock()
     ("sa.ManagedObject", "segment"),
     ("inv.NetworkSegment", "parent")
 ])
+@on_save
 class NetworkSegment(Document):
     meta = {
         "collection": "noc.networksegments",
@@ -126,6 +128,8 @@ class NetworkSegment(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    DISCOVERY_JOB = "noc.services.discovery.jobs.segment.job.SegmentDiscoveryJob"
 
     def __unicode__(self):
         return self.name
@@ -405,3 +409,59 @@ class NetworkSegment(Document):
             return self.profile.multicast_vlan or None
         else:
             return None
+
+    def get_nested_ids(self):
+        """
+        Return id of this and all nested segments
+        :return:
+        """
+        r = [self.id]
+        r += [
+            d["_id"] for d in
+            NetworkSegment._get_collection().aggregate([
+                {
+                    "$match": {
+                        "_id": self.id
+                    }
+                },
+                {
+                    "$graphLookup": {
+                        "from": "noc.networksegments",
+                        "startWith": "$_id",
+                        "connectFromField": "_id",
+                        "connectToField": "parent",
+                        "as": "nested",
+                        "maxDepth": 10
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": "$nested"
+                    }
+                },
+                {
+                    "$project": {
+                        "_id": "$nested._id"
+                    }
+                }
+            ])]
+        return r
+
+    def ensure_discovery_jobs(self):
+        if self.profile and self.profile.discovery_interval > 0:
+            Job.submit(
+                "scheduler",
+                self.DISCOVERY_JOB,
+                key=self.id,
+                keep_ts=True
+            )
+        else:
+            Job.remove(
+                "scheduler",
+                self.DISCOVERY_JOB,
+                key=self.id
+            )
+
+    def on_save(self):
+        if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
+            self.ensure_discovery_jobs()
