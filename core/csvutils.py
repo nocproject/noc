@@ -130,8 +130,8 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     integers = set([ff.name for ff in model._meta.fields if
                     isinstance(ff, models.IntegerField)])
     # Search for foreign keys and required fields
-    ir = set(getattr(model, "csv_ignored_fields", []))
-    ir.add("id")
+    ir = set(["id", "bi_id"])
+    ir.update(getattr(model, "csv_ignored_fields", []))
     for name, required, rel, rname in get_model_fields(model):
         field_names.add(name)
         if rel:
