@@ -38,15 +38,16 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         # Fetch latest MAC tables snapshots from ClickHouse
         # @todo: Apply vlan restrictions
         t0 = datetime.datetime.now() - datetime.timedelta(seconds=self.MAC_WINDOW)
+        t0 = t0.replace(microsecond=0)
         SQL = """SELECT managed_object, mac, max(ts), argMax(interface, ts)
         FROM mac
         WHERE
-          date >= '%s'
-          AND ts >= '%s'
+          date >= toDate('%s')
+          AND ts >= toDateTime('%s')
           AND managed_object IN (%s)
-        GROUP BY managed_object, mac
+        GROUP BY ts, managed_object, mac
         ORDER BY ts
-        """ % (t0.date().isoformat(), t0.isoformat(),
+        """ % (t0.date().isoformat(), t0.isoformat(sep=" "),
                ", ".join(bi_map))
         ch = connection()
         # Fill FIB
@@ -55,7 +56,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         for mo_bi_id, mac, ts, iface in ch.execute(post=SQL):
             mo = bi_map.get(mo_bi_id)
             if mo:
-                mtable += [mo, MAC(int(mac)), iface, ts]
+                mtable += [[mo, MAC(int(mac)), iface, ts]]
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
         # Filter out aged MACs
         mtable = [m for m in mtable if m[3] == last_ts[m[0]]]
@@ -79,7 +80,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
             if iface in fib[mo]:
                 fib[mo][iface].add(ro)
             else:
-                fib[mo][iface] = set(ro)
+                fib[mo][iface] = set([ro])
         # Find uplinks and coverage
         coverage = {}  # mo -> covered objects
         uplinks = {}  # mo -> uplink interface
@@ -87,7 +88,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         for mo in fib:
             coverage[mo] = set([mo])
             for iface in fib[mo]:
-                if any(x for x in mo[iface] if x.segment.id not in segments):
+                if any(x for x in fib[mo][iface] if x.segment.id not in segments):
                     uplinks[mo] = iface
                     up_fib[mo] = fib[mo][iface]
                 else:
