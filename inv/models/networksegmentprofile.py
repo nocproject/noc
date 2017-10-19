@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 import cachetools
 from threading import Lock
@@ -16,7 +17,7 @@ from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 LongField)
 # NOC modules
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.lib.nosql import PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
@@ -53,6 +54,7 @@ class SegmentTopologySettings(EmbeddedDocument):
 @on_delete_check(check=[
     ("inv.NetworkSegment", "profile")
 ])
+@on_save
 class NetworkSegmentProfile(Document):
     meta = {
         "collection": "noc.networksegmentprofiles",
@@ -63,7 +65,7 @@ class NetworkSegmentProfile(Document):
     name = StringField(unique=True)
     description = StringField(required=False)
     #
-    mac_discovery_interval = IntField(default=86400)
+    discovery_interval = IntField(default=86400)
     # Restrict MAC discovery to management vlan
     mac_restrict_to_management_vlan = BooleanField(default=False)
     # Management vlan, to restrict MAC search for MAC topology discovery
@@ -112,3 +114,33 @@ class NetworkSegmentProfile(Document):
                              lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return NetworkSegmentProfile.objects.filter(bi_id=id).first()
+
+    def on_save(self):
+        if hasattr(self, "_changed_fields") and "discovery_interval" in self._changed_fields:
+            from .networksegment import NetworkSegment
+            for ns in NetworkSegment.objects.filter(profile=self.id):
+                ns.ensure_discovery_jobs()
+
+    def get_topology_methods(self):
+        ml = getattr(self, "_topology_methods", None)
+        if not ml:
+            ml = [m.method for m in self.topology_methods
+                  if m.is_active and m not in ("custom", "handler")]
+            self._topology_methods = ml
+        return ml
+
+    def is_preferable_method(self, m1, m2):
+        """
+        Returns True if m1 topology discovery method is
+        preferable over m2
+        """
+        if m1 == m2:
+            # Method can refine itself
+            return True
+        try:
+            methods = self.get_topology_methods()
+            i1 = methods.index(m1)
+            i2 = methods.index(m2)
+        except ValueError:
+            return False
+        return i1 <= i2

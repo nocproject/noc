@@ -16,6 +16,6 @@ class NetworkSegmentProfileApplication(ExtDocApplication):
     """
     NetworkSegmentProfile application
     """
-    title = "NetworkSegmentProfile"
-    menu = [_("Setup"), _("Network Segment Profile")]
+    title = "Network Segment Profile"
+    menu = [_("Setup"), _("Network Segment Profiles")]
     model = NetworkSegmentProfile

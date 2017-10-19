@@ -968,7 +968,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             if (
                 llink.discovery_method != self.name and
                 (llink.discovery_method is None or
-                     self.is_preferable_over(llink.discovery_method))
+                     self.is_preferable_over(llink))
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)
@@ -979,7 +979,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         # Check method preferences
         if llink:
-            if self.is_preferable_over(llink.discovery_method):
+            if self.is_preferable_over(llink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     llink, self.name, llink.discovery_method
@@ -994,7 +994,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 return
         if rlink:
-            if self.is_preferable_over(rlink.discovery_method):
+            if self.is_preferable_over(rlink):
                 self.logger.info(
                     "Relinking %s: %s method is preferable over %s",
                     rlink, self.name, rlink.discovery_method
@@ -1237,11 +1237,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_object.name, remote_interface,
             )
 
-    def is_preferable_over(self, method):
+    def is_preferable_over(self, link):
         """
-        Check current discovery method is preferable over *method*
+        Check current discovery method is preferable over link's one
         """
-        return self.job.is_preferable_method(self.name, method)
+        return self.job.is_preferable_method(self.name, link.discovery_method)
 
     def set_interface_alias(self, object, interface_name, alias):
         """

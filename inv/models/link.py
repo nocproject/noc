@@ -164,6 +164,14 @@ class Link(Document):
         """
         return list(set(i.managed_object for i in self.interfaces))
 
+    @property
+    def segments(self):
+        """
+        List of segments connected by link
+        :return:
+        """
+        return list(set(i.managed_object.segment for i in self.managed_objects))
+
     def update_topology(self):
         for mo in self.managed_objects:
             mo.update_topology()
