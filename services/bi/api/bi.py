@@ -86,6 +86,7 @@ class BIAPI(API):
                 "name": ms.table_name,
                 "description": ms.description,
                 "tags": [],
+                "sample": True,
                 "fields": [
                     {
                         "name": "date",
@@ -128,6 +129,7 @@ class BIAPI(API):
                 "name": model._meta.db_table,
                 "description": model._meta.description,
                 "tags": model._meta.tags,
+                "sample": False,
                 "fields": []
             }
             for fn in model._fields_order:
