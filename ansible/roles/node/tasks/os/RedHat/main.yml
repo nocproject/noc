@@ -39,6 +39,7 @@
    - net-tools
    - man
    - mercurial
+   - git
    - python-virtualenv
    - telnet
    - gcc

@@ -2,6 +2,7 @@
 ## Do not forget to sync with main/management/commands/build-manifest.py
 ##
 syntax: glob
+!ansible/roles/custom/
 *.pyc
 *.pyo
 *.swp

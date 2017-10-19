@@ -1,0 +1,12 @@
+- name: Pull NOC
+  git:
+    repo: https://code.getnoc.com/noc/noc.git
+    dest: "{{noc_root}}"
+    version: microservices
+    force: yes
+    clone: yes
+    purge: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - mercurial

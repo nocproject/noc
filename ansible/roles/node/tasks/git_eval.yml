@@ -1,0 +1,14 @@
+- name: Clone NOC
+  shell: git clone https://code.getnoc.com/noc/noc.git "{{noc_root}}"
+  when: noc_root_state.stat.exists is defined and not noc_root_state.stat.exists
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: Pull NOC
+  shell: git pull https://code.getnoc.com/noc/noc.git
+  args:
+    chdir: "{{noc_root}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+  register: git_pill_status
+  changed_when: "'Already up-to-date.' not in git_pill_status.stdout"

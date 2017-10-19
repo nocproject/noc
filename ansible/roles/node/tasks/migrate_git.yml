@@ -1,0 +1,35 @@
+- name: archive current noc dir
+  archive:
+    path: "{{noc_root}}"
+    dest: "{{noc_root}}/../noc_before_git_migrations.tbz"
+    format: bz2
+
+- name: remove .hg
+  file:
+    path: "{{noc_root}}/.hg"
+    state: absent
+
+- name: git init
+  shell: git init "{{noc_root}}"
+
+- name: add correct origin
+  shell: git remote add origin https://code.getnoc.com/noc/noc.git
+  args:
+    chdir: "{{noc_root}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: git reset branch
+  shell: git pull origin microservices
+  args:
+    chdir: "{{noc_root}}"
+  ignore_errors: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: git reset branch
+  shell: git checkout microservices -f
+  args:
+    chdir: "{{noc_root}}"
+  environment:
+    https_proxy: "{{http_proxy}}"

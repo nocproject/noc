@@ -17,6 +17,26 @@
     comment: "NOC user"
     state: present
 
+- name: check if noc_root exists
+  stat:
+    path: "{{noc_root}}"
+  register: noc_root_state
+
+- block:
+  - name: check if noc under mercurial control
+    stat:
+      path: "{{noc_root}}/.hg"
+    register: noc_hg_state
+
+  - name: migrate to git
+    include: "migrate_git.yml"
+    when: noc_hg_state.stat.exists is defined and noc_hg_state.stat.exists
+  when: noc_root_state.stat.exists is defined and noc_root_state.stat.exists
+
+- name: switch install_method to "git_{{noc_env_type}}"
+  set_fact:
+    install_method: "git_{{noc_env_type}}"
+
 - name: Include {{install_method}} install method
   include: "{{install_method}}.yml"
 
