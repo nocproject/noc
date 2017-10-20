@@ -23,9 +23,10 @@ class Script(BaseScript):
         r"^Device ID: (?P<chassis_id>\S+)\s*\n"
         r"^Port ID: (?P<port_id>\S+)\s*\n"
         r"^Time To Live: \S+\s*\n\n"
-        r"^Port description:(?P<port_descr>.*)\n"
-        r"^System name:(?P<system_name>.*)\n"
-        r"^System description:(?P<system_descr>.*)\n"
+        r"(^Port description:(?P<port_descr>.*)\n)?"
+        r"(^System name:(?P<system_name>.*)\n)?"
+        r"(^System description:(?P<system_descr>.*)\n)?"
+        r"(\n)?"
         r"^Capabilities:(?P<caps>.*?)\n\n",
         re.MULTILINE | re.DOTALL
     )
