@@ -203,7 +203,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         ["SC", __("SNMP, CLI")],
                                         ["CS", __("CLI, SNMP")]
                                     ],
-                                    value: "P"
+                                    value: "SC"
                                 },
                                 {
                                     name: "cli_session_policy",
