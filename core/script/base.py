@@ -751,6 +751,18 @@ class BaseScript(object):
             stream.shutdown_session()
             stream.close()
 
+    def has_cli_access(self):
+        return "C" in self.credentials.get("access_preference", "SC")
+
+    def has_snmp_access(self):
+        return "S" in self.credentials.get("access_preference", "SC") and self.has_snmp()
+
+    def has_cli_only_access(self):
+        return self.has_cli_access() and not self.has_snmp_access()
+
+    def has_snmp_only_access(self):
+        return not self.has_cli_access() and self.has_snmp_access()
+
     def has_snmp(self):
         """
         Check whether equipment has SNMP enabled
