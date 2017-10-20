@@ -12,13 +12,12 @@ from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.mib import mib
 
-HIGH_SPEED = 4294967295
-
 
 class Script(BaseScript):
     name = "Generic.get_interface_status_ex"
     interface = IGetInterfaceStatusEx
     requires = []
+    HIGH_SPEED = 4294967295
 
     def get_iftable(self, oid):
         if "::" in oid:
@@ -61,7 +60,7 @@ class Script(BaseScript):
             ri = r.get(ifindex)
             if ri:
                 s = int(s)
-                if s == HIGH_SPEED:
+                if self.is_high_speed(ri, s):
                     highspeed.add(ifindex)
                 elif s:
                     ri["in_speed"] = s // 1000
@@ -79,6 +78,15 @@ class Script(BaseScript):
             self.logger.info("%d unknown interfaces has been ignored",
                              len(unknown_interfaces))
         return r.values()
+
+    def is_high_speed(self, data, speed):
+        """
+        Detect should we check ifHighSpeed
+        :param data: dict with
+        :param speed:
+        :return:
+        """
+        return speed == self.HIGH_SPEED
 
     def execute(self):
         r = []
