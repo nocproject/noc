@@ -1317,7 +1317,7 @@ class ManagedObject(Model):
         if "container" in cfg:
             qs["container__in"] = [cfg["container"]]
         if "platform" in cfg:
-            qs["platform__in"] = [cfg["pool"]]
+            qs["platform__in"] = [cfg["platform"]]
         if "version" in cfg:
             qs["version__in"] = [cfg["version"]]
         return [
