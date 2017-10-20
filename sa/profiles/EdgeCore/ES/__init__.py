@@ -22,7 +22,8 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"---?More---?", " "),
         (r"--- \[Space\] Next page, \[Enter\] Next line, \[A\] All, Others to exit ---", " "),
-        (r"Startup configuration file name", "\n")
+        (r"Are you sure to delete non-active file", "Y\n\n"),
+        (r"Startup configuration file name", "\n\n\n")
     ]
     config_volatile = ["\x08+"]
     rogue_chars = ["\r"]
