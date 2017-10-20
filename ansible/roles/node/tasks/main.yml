@@ -25,6 +25,7 @@
 - name:
   git_config:
     name: user.email
+    scope: global
     repo: "{{noc_root}}"
   register: git_user_email
 

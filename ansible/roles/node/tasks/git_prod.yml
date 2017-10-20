@@ -5,8 +5,7 @@
     repo: "{{noc_root}}"
     scope: local
     value: 'noc_user@{{ ansible_fqdn }}'
-  when: not git_user_email.stdout
-
+  when: git_user_email.stdout is defined and not git_user_email.stdout
 
 - name: set up dummy git user name
   git_config:
@@ -14,7 +13,7 @@
     repo: "{{noc_root}}"
     scope: local
     value: 'Noc User {{ansible_fqdn}}'
-  when: not git_user_email.stdout
+  when: git_user_email.stdout is defined and not git_user_email.stdout
 
 - name: Pull NOC
   git:
