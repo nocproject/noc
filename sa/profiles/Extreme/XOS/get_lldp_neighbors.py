@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_lldp_nei = re.compile(
-        r"^(?P<interface>\d+(\:\d+)?)\s+(?P<chassis_id>\S+)\s+"
+        r"^(?P<interface>\d+(\:\d+)?)\s+(\(\d\.\d\))?(?P<chassis_id>\S+)\s+"
         r"(?P<port_id>\S+)\s+\d+\s+\d+", re.DOTALL | re.MULTILINE)
     rx_edp_nei = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)\s+(?P<name>\S+)\s+"
