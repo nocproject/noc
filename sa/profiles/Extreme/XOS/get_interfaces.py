@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,32 +26,44 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_ifidx_phys = re.compile(
-        "^X\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.IGNORECASE)
+        "^[XS]\S+\s+Port\s+(?P<port>\d+(\:\d+)?)", re.MULTILINE
+    )
     rx_ifidx_vlan = re.compile(
-        "^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.IGNORECASE)
-
+        "^VLAN\s+\S+\s+\((?P<port>\S+)\)", re.MULTILINE
+    )
     rx_status = re.compile(
         r"^(?P<interface>\d+(\:\d+)?)\s+(\S+)?(\s+\S+)?(\s+)?"
         r"(?P<admin_status>\S)\s+(?P<oper_status>\S)(\s+\S+)?(\s+\S+)?$",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE
+    )
     rx_sh_ipcfg = re.compile(
         r"^(?P<interface>\S+)\s+(?P<ipaddr>\S+)\s+(?P<ipmask>\S+)\s+"
         r"(?P<ifflags>\S+)\s+(?P<numseconary>\d)",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE
+    )
     rx_status_tag = re.compile(
         r"^Admin\s+State:\s+(?P<admin_status>\S+)\s+Tagging:(\s+)?"
-        r"(?P<tagmode>.+?)$", re.IGNORECASE | re.DOTALL)
-    rx_tag = re.compile(r"^802.1Q\s+Tag\s+(?P<tag>\d+)\s*$", re.IGNORECASE)
+        r"(?P<tagmode>.+?)$", re.MULTILINE | re.IGNORECASE | re.DOTALL
+    )
+    rx_tag = re.compile(
+        r"^802.1Q\s+Tag\s+(?P<tag>\d+)\s*$", re.MULTILINE | re.IGNORECASE
+    )
     rx_tagloop = re.compile(
-        r"^Untagged\s+\(Internal\s+tag\s+(?P<tag>\d+)\)*$", re.IGNORECASE)
+        r"^Untagged\s+\(Internal\s+tag\s+(?P<tag>\d+)\)*$",
+        re.MULTILINE | re.IGNORECASE
+    )
     rx_svidescr = re.compile(
-        r"^Description:\s+(?P<description>.+?)$", re.IGNORECASE)
+        r"^Description:\s+(?P<description>.+?)$",
+        re.MULTILINE | re.IGNORECASE
+    )
     rx_ip = re.compile(
         r"^Primary\s+IP(\s+)?:\s+(?P<address>\S+)$",
-        re.IGNORECASE | re.MULTILINE)
+        re.MULTILINE | re.IGNORECASE
+    )
     rx_sec_ip = re.compile(
         r"^Secondary\s+IPs(\s+)?:\s+(?P<address>.+?)$",
-        re.IGNORECASE | re.MULTILINE)
+        re.MULTILINE | re.IGNORECASE
+    )
 
     def execute(self):
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
@@ -209,7 +221,9 @@ class Script(BaseScript):
                             "oper_status": o_stat,
                             "enabled_afi": ["BRIDGE"],
                             "mac": mac,
-                            "snmp_ifindex": (ifidxs[ifname] if ifidxs else None)
+                            "snmp_ifindex": (
+                                ifidxs[ifname] if ifidxs else None
+                            )
                         }]
                     }
 
