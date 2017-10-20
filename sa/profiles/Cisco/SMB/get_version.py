@@ -43,7 +43,7 @@ class Script(BaseScript):
                 "platform": pmatch.group("platform"),
                 "version": vmatch.group("version"),
                 "attributes": {
-                    "image": match.group("image"),
+                    "image": vmatch.group("image"),
                 }
             }
         try:
