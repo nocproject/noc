@@ -67,15 +67,18 @@ class Script(BaseScript):
                 "remote_port_subtype": port_id_subtype,
                 "remote_capabilities": caps
             }
-            port_descr = match.group("port_descr").strip()
-            if port_descr:
-                neighbor["remote_port_description"] = port_descr
-            system_name = match.group("system_name").strip()
-            if system_name:
-                neighbor["remote_system_name"] = system_name
-            system_descr = match.group("system_descr").strip()
-            if system_descr:
-                neighbor["remote_system_description"] = system_descr
+            if match.group("port_descr"):
+                port_descr = match.group("port_descr").strip()
+                if port_descr:
+                    neighbor["remote_port_description"] = port_descr
+            if match.group("system_name"):
+                system_name = match.group("system_name").strip()
+                if system_name:
+                    neighbor["remote_system_name"] = system_name
+            if match.group("system_descr"):
+                system_descr = match.group("system_descr").strip()
+                if system_descr:
+                    neighbor["remote_system_description"] = system_descr
             r += [{
                 "local_interface": i[0],
                 "neighbors": [neighbor]
