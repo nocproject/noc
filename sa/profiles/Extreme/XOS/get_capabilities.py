@@ -17,7 +17,7 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "Extreme.XOS.get_capabilities"
 
-    rx_lldp = re.compile(r"^\s*\d+\s+Enabled\s+Enabled", re.MULTILINE)
+    rx_lldp = re.compile(r"^\s*\d+(\:\d+)?\s+Enabled\s+Enabled", re.MULTILINE)
     rx_cdp = re.compile(r"^\s*CDP \S+ enabled ports\s+:\s+\d+", re.MULTILINE)
 
     @false_on_cli_error
