@@ -66,7 +66,7 @@ from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 
 # Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 5
+MANAGEDOBJECT_CACHE_VERSION = 6
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
@@ -209,6 +209,18 @@ class ManagedObject(Model):
     snmp_rw = CharField(
         "RW Community",
         blank=True, null=True, max_length=64
+    )
+    access_preference = CharField(
+        "CLI Privilege Policy",
+        max_length=8,
+        choices=[
+            ("P", "Profile"),
+            ("S", "SNMP Only"),
+            ("C", "CLI Only"),
+            ("SC", "SNMP, CLI"),
+            ("CS", "CLI, SNMP")
+        ],
+        default="P"
     )
     #
     vc_domain = ForeignKey(
@@ -1300,10 +1312,15 @@ class ManagedObject(Model):
     def allow_autosegmentation(self):
         return self.get_autosegmentation_policy() == "e"
 
+    def get_access_preference(self):
+        if self.access_preference == "P":
+            return self.object_profile.access_preference
+        else:
+            return self.access_preference
+
     @classmethod
     def get_bi_selector(cls, cfg):
         qs = {}
-        print cfg
         if "administrative_domain" in cfg:
             d = AdministrativeDomain.get_by_id(cfg["administrative_domain"])
             if d:

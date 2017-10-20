@@ -478,6 +478,21 @@ Ext.define("NOC.sa.managedobject.Application", {
                             },
                             items: [
                                 {
+                                    name: "access_preference",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Access Preference"),
+                                    allowBlank: false,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["P", __("Profile")],
+                                        ["S", __("SNMP Only")],
+                                        ["C", __("CLI Only")],
+                                        ["SC", __("SNMP, CLI")],
+                                        ["CS", __("CLI, SNMP")]
+                                    ],
+                                    value: "P"
+                                },
+                                {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
                                     fieldLabel: __("Scheme"),

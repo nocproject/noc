@@ -352,6 +352,10 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
+            name: "access_preference",
+            type: "string"
+        },
+        {
             name: "box_discovery_telemetry_policy",
             type: "string"
         },

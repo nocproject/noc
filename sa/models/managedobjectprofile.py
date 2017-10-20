@@ -270,6 +270,18 @@ class ManagedObjectProfile(models.Model):
     mac_collect_multicast = models.BooleanField(default=False)
     # Collect MAC from designated VLANs (NetworkSegment/NetworkSegmentProfile)
     mac_collect_vcfilter = models.BooleanField(default=False)
+    #
+    access_preference = models.CharField(
+        "Access Preference",
+        max_length=8,
+        choices=[
+            ("S", "SNMP Only"),
+            ("C", "CLI Only"),
+            ("SC", "SNMP, CLI"),
+            ("CS", "CLI, SNMP")
+        ],
+        default="SC"
+    )
     # Autosegmentation policy
     autosegmentation_policy = models.CharField(
         max_length=1,

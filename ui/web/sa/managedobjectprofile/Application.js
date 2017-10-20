@@ -192,11 +192,24 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             title: __("Access"),
                             items: [
                                 {
+                                    name: "access_preference",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Access Preference"),
+                                    allowBlank: false,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["S", __("SNMP Only")],
+                                        ["C", __("CLI Only")],
+                                        ["SC", __("SNMP, CLI")],
+                                        ["CS", __("CLI, SNMP")]
+                                    ],
+                                    value: "P"
+                                },
+                                {
                                     name: "cli_session_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Session Policy"),
                                     allowBlank: true,
-                                    labelWidth: 60,
                                     labelAlign: "left",
                                     uiStyle: "medium",
                                     store: [
