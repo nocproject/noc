@@ -40,7 +40,8 @@ class SAEAPI(API):
             mo.auth_profile_id,
             ap.user, ap.password, ap.super_password,
             ap.snmp_ro, ap.snmp_rw,
-            mo.cli_privilege_policy, mop.cli_privilege_policy
+            mo.cli_privilege_policy, mop.cli_privilege_policy,
+            mo.access_preference, mop.access_preference
         FROM
             sa_managedobject mo
             JOIN sa_managedobjectprofile mop ON (mo.object_profile_id = mop.id)
@@ -140,7 +141,8 @@ class SAEAPI(API):
          auth_profile_id,
          ap_user, ap_password, ap_super_password,
          ap_snmp_ro, ap_snmp_rw,
-         privilege_policy, p_privilege_policy) = data[0]
+         privilege_policy, p_privilege_policy,
+         access_preference, p_access_preference) = data[0]
         # Check object is managed
         if not is_managed:
             raise APIError("Object is not managed")
@@ -157,6 +159,8 @@ class SAEAPI(API):
             raise_privileges = p_privilege_policy == "E"
         else:
             raise_privileges = False
+        if access_preference == "P":
+            access_preference = p_access_preference
         # Build credentials
         credentials = {
             "name": name,
@@ -165,7 +169,8 @@ class SAEAPI(API):
             "password": password,
             "super_password": super_password,
             "path": remote_path,
-            "raise_privileges": raise_privileges
+            "raise_privileges": raise_privileges,
+            "access_preference": access_preference
         }
         if snmp_ro:
             credentials["snmp_version"] = "v2c"
