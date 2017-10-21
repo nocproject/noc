@@ -54,7 +54,7 @@
     https_proxy: "{{http_proxy}}"
 
 - name: git reset branch
-  shell: git pull origin microservices
+  shell: git pull origin
   args:
     chdir: "{{noc_root}}"
   ignore_errors: yes
