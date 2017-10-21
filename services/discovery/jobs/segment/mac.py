@@ -35,6 +35,9 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
                 segment__in=[str(x) for x in segments]
         ):
             bi_map[str(mo.bi_id)] = mo
+        if not bi_map:
+            self.logger.info("Empty segment tree. Skipping")
+            return
         # Fetch latest MAC tables snapshots from ClickHouse
         # @todo: Apply vlan restrictions
         t0 = datetime.datetime.now() - datetime.timedelta(seconds=self.MAC_WINDOW)
