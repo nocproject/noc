@@ -16,9 +16,9 @@
 
 - name: reset current dir
   hg:
-    repo: "{{noc_repo}}"
+    repo: "{{noc_root}}"
     dest: "{{noc_root}}"
-    revision: "{{noc_revision}}"
+    revision: "feature/microservices"
     force: yes
     purge: yes
 
@@ -47,7 +47,7 @@
   when: not git_user_email.config_value
 
 - name: add correct origin
-  shell: git remote add origin https://code.getnoc.com/noc/noc.git
+  shell: "git remote add origin {{noc_repo}}"
   args:
     chdir: "{{noc_root}}"
   environment:
@@ -62,7 +62,7 @@
     https_proxy: "{{http_proxy}}"
 
 - name: git reset branch
-  shell: git checkout microservices -f
+  shell: git checkout {{noc_revision}} -f
   args:
     chdir: "{{noc_root}}"
   environment:

@@ -63,7 +63,10 @@ patroni_enabled: "{{groups['svc-patroni'] | count > 1}}"
 
 web_ui_language: "{% if noc_config['config'].get('web-global-%s' % groups['svc-web'][0], {}).get('language', 'en-us') == 'en' %}en-us{%else%}{{noc_config['config'].get('web-global-%s' % groups['svc-web'][0], {}).get('language')}}{%endif%}"
 
-install_method: hg
+install_method: "git_{{noc_env_type}}"
+
+noc_repo: "https://github.com/nocproject/noc.git"
+noc_revision: "microservices"
 
 clickhouse_user: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0]).get('user', 'noc')}}"
 clickhouse_password: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0]).get('password', 'noc')}}"
