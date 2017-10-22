@@ -1,3 +1,0 @@
----
-- name: Install FreeBSD system packages
-  pkgng: name="libzmq3" state=present
