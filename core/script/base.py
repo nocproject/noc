@@ -382,7 +382,11 @@ class BaseScript(object):
                 if m == "C":
                     handler = self.execute_cli
                 elif m == "S":
-                    handler = self.execute_snmp
+                    if self.has_snmp():
+                        handler = self.execute_snmp
+                    else:
+                        self.logger.debug("SNMP is not enabled. Passing to next method")
+                        continue
                 else:
                     raise self.NotSupportedError("Invalid access method '%s'" % m)
                 try:
