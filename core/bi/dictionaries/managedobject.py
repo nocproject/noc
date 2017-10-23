@@ -18,3 +18,6 @@ class ManagedObject(Dictionary):
 
     name = StringField()
     address = StringField()
+    profile = StringField()
+    platform = StringField()
+    version = StringField()
