@@ -33,6 +33,7 @@ from .error import (ScriptError, CLISyntaxError, CLIOperationError,
                     NotSupportedError, UnexpectedResultError)
 from noc.config import config
 from noc.core.span import Span
+from noc.core.matcher import match
 
 
 class BaseScript(object):
@@ -83,6 +84,9 @@ class BaseScript(object):
     # * True - keep CLI session for next script
     # * False - close CLI session
     keep_cli_session = True
+    # Script-level matchers.
+    # Override profile one
+    matchers = {}
 
     # Error classes shortcuts
     ScriptError = ScriptError
@@ -169,6 +173,9 @@ class BaseScript(object):
                 {},
                 version
             )
+        # Fill matchers
+        if not self.name.endswith(".get_version"):
+            self.apply_matchers()
         #
         if self.profile.setup_script:
             self.profile.setup_script(self)
@@ -176,6 +183,28 @@ class BaseScript(object):
     def __call__(self, *args, **kwargs):
         self.args = kwargs
         return self.run()
+
+    def apply_matchers(self):
+        """
+        Process matchers and apply is_XXX properties
+        :return:
+        """
+        def get_matchers(c, matchers):
+            return dict(
+                (m, match(c, matchers[m]))
+                for m in matchers
+            )
+
+        # Match context
+        # @todo: Add capabilities
+        ctx = self.version or {}
+        # Calculate matches
+        v = get_matchers(ctx, self.profile.matchers)
+        v.update(get_matchers(ctx, self.matchers))
+        # 
+        for k in v:
+            self.logger.debug("%s = %s", k, v[k])
+            setattr(self, k, v[k])
 
     def clean_input(self, args):
         """
@@ -327,7 +356,7 @@ class BaseScript(object):
     def execute(self, **kwargs):
         """
         Default script behavior:
-        Pass through _execute_chain and call appropriative handler
+        Pass through _execute_chain and call appropriate handler
         """
         if self._execute_chain and not self.name.endswith(".get_version"):
             # Get version information
