@@ -260,7 +260,7 @@ class Script(BaseScript):
         if self.has_ospf_v2():
             caps["Network | OSPF | v2"] = True
         if self.has_ospf_v3():
-            caps["Network | VRRP | v3"] = True
+            caps["Network | OSPF | v3"] = True
         if self.has_isis():
             caps["Network | ISIS"] = True
         if self.has_ldp():
