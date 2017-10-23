@@ -98,26 +98,26 @@ class Script(BaseScript):
                 if c:
                     cap |= self.CAPS_MAP[c]
 
-            if is_mac(remote_chassis_id):
+            if (is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id)):
+                remote_chassis_id_subtype = 5
+            elif is_mac(remote_chassis_id):
                 remote_chassis_id = MACAddressParameter().clean(
                     remote_chassis_id
                 )
                 remote_chassis_id_subtype = 4
-            elif (is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id)):
-                remote_chassis_id_subtype = 5
             else:
                 remote_chassis_id_subtype = 7
 
             # Get remote port subtype
             remote_port_subtype = 1
-            if is_mac(remote_port):
+            if is_ipv4(remote_port):
+                # Actually networkAddress(4)
+                remote_port_subtype = 4
+            elif is_mac(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
                 remote_port_subtype = 3
-            elif is_ipv4(remote_port):
-                # Actually networkAddress(4)
-                remote_port_subtype = 4
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = 7
@@ -146,16 +146,16 @@ class Script(BaseScript):
                 match = self.rx_detail.search(c)
                 if match:
                     remote_chassis_id = match.group("dev_id")
-                    if is_mac(remote_chassis_id):
-                        remote_chassis_id = MACAddressParameter().clean(
-                            remote_chassis_id
-                        )
-                        remote_chassis_id_subtype = 4
-                    elif (
+                    if (
                         is_ipv4(remote_chassis_id) or
                         is_ipv6(remote_chassis_id)
                     ):
                         remote_chassis_id_subtype = 5
+                    elif is_mac(remote_chassis_id):
+                        remote_chassis_id = MACAddressParameter().clean(
+                            remote_chassis_id
+                        )
+                        remote_chassis_id_subtype = 4
                     else:
                         remote_chassis_id_subtype = 7
                     n["remote_chassis_id"] = remote_chassis_id

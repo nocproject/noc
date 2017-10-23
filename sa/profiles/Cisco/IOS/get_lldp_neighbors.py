@@ -72,14 +72,14 @@ class Script(BaseScript):
             match = self.re_search(self.rx_remote_port, v)
             remote_port = match.group("remote_if")
             remote_port_subtype = 1
-            if is_mac(remote_port):
+            if is_ipv4(remote_port):
+                # Actually networkAddress(4)
+                remote_port_subtype = 4
+            elif is_mac(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
                 remote_port_subtype = 3
-            elif is_ipv4(remote_port):
-                # Actually networkAddress(4)
-                remote_port_subtype = 4
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = 7
