@@ -201,7 +201,7 @@ class BaseScript(object):
         # Calculate matches
         v = get_matchers(ctx, self.profile.matchers)
         v.update(get_matchers(ctx, self.matchers))
-        # 
+        #
         for k in v:
             self.logger.debug("%s = %s", k, v[k])
             setattr(self, k, v[k])
