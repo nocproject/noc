@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | MES | MES5448 sysDescr.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "da921dbe-9104-4cf2-82f7-f273edfa16f3",
+    "description": null,
+    "preference": 1001,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265",
+    "action": "match",
+    "profile__name": "Eltex.MES5448"
+}
