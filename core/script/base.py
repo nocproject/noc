@@ -390,7 +390,7 @@ class BaseScript(object):
                 else:
                     raise self.NotSupportedError("Invalid access method '%s'" % m)
                 try:
-                    r =  handler(**kwargs)
+                    r = handler(**kwargs)
                     if isinstance(r, PartialResult):
                         if self.partial_result:
                             self.partial_result = r.result

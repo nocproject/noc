@@ -162,7 +162,8 @@ class Command(BaseCommand):
             "password": creds.password,
             "super_password": creds.super_password,
             "path": obj.remote_path,
-            "raise_privileges": obj.to_raise_privileges
+            "raise_privileges": obj.to_raise_privileges,
+            "access_preference": obj.access_preference
         }
         if creds.snmp_ro:
             credentials["snmp_version"] = "v2c"
@@ -271,6 +272,7 @@ class JSONObject(object):
         self.caps = data.get("caps")
         self.remote_path = None
         self.to_raise_privileges = data.get("raise_privileges", True)
+        self.access_preference = data.get("access_preference", "SC")
         self.pool = PoolStub("default")
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
