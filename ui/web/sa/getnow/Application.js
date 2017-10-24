@@ -84,8 +84,7 @@ Ext.define('NOC.sa.getnow.Application', {
             resizable: true,
             stateful: true,
             stateId: 'getnow.filterPanel',
-            selectionStore: 'getnow.objectsStore',
-            listAlign: 'right'
+            selectionStore: 'getnow.objectsStore'
         }
     ]
 });
