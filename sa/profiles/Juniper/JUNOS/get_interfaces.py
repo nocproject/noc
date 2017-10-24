@@ -10,7 +10,7 @@
 import re
 import time
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -61,7 +61,7 @@ class Script(BaseScript):
         r"^\s+Donor interface: (?P<name>\S+)", re.IGNORECASE | re.MULTILINE)
     rx_mtu = re.compile(r", MTU: (?P<mtu>\d+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         untagged = {}
         tagged = {}
         vlans_requested = False
