@@ -7,7 +7,8 @@ console.debug('Defining NOC.core.filter.Filter');
 Ext.define('NOC.core.filter.Filter', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.NOC.Filter',
-
+    controller: 'core.filter',
+    viewModel: 'core.filter',
     requires: [
         'Ext.ux.form.SearchField',
         'NOC.sa.profile.LookupField',
@@ -26,8 +27,17 @@ Ext.define('NOC.core.filter.Filter', {
         'NOC.core.filter.ViewModel',
         'NOC.core.filter.FilterController'
     ],
-    controller: 'core.filter',
-    viewModel: 'core.filter',
+    initComponent: function() {
+        this.defaults = {
+            labelAlign: 'top',
+            minWidth: 270,
+            width: '100%',
+            margin: '5 10 0 18',
+            uiStyle: undefined,
+            listAlign: this.treeAlign
+        };
+        this.callParent();
+    },
     scrollable: 'y',
     minWidth: 300,
     title: __('Filter'),
@@ -35,13 +45,6 @@ Ext.define('NOC.core.filter.Filter', {
     layout: {
         type: 'vbox',
         align: 'right'
-    },
-    defaults: {
-        labelAlign: 'top',
-        minWidth: 270,
-        width: '100%',
-        margin: '5 10 0 18',
-        uiStyle: undefined
     },
     items: [
         {
