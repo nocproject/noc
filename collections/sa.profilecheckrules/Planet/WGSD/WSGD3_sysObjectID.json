@@ -1,0 +1,13 @@
+{
+    "name": "Planet | WGSD | WSGD sysObjectID.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "9f637618-5a7b-49df-8b0e-f0102e053ad3",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.10456",
+    "action": "match",
+    "profile__name": "Planet.WGSD"
+}
