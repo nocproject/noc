@@ -33,6 +33,7 @@ from .error import (ScriptError, CLISyntaxError, CLIOperationError,
                     NotSupportedError, UnexpectedResultError)
 from noc.config import config
 from noc.core.span import Span
+from noc.core.matcher import match
 
 
 class BaseScript(object):
@@ -55,8 +56,10 @@ class BaseScript(object):
     name = None
     # Default script timeout
     TIMEOUT = config.script.timeout
-    # Defeault session timeout
+    # Default session timeout
     SESSION_IDLE_TIMEOUT = config.script.session_idle_timeout
+    # Default access preferene
+    DEFAULT_ACCESS_PREFERENCE = "SC"
     # Enable call cache
     # If True, script result will be cached and reused
     # during lifetime of parent script
@@ -83,6 +86,9 @@ class BaseScript(object):
     # * True - keep CLI session for next script
     # * False - close CLI session
     keep_cli_session = True
+    # Script-level matchers.
+    # Override profile one
+    matchers = {}
 
     # Error classes shortcuts
     ScriptError = ScriptError
@@ -160,6 +166,8 @@ class BaseScript(object):
         # Cached results of self.cli calls
         self.cli_cache = {}
         #
+        self.partial_result = None
+        #
         if not parent and version and not name.endswith(".get_version"):
             self.logger.debug("Filling get_version cache with %s",
                               version)
@@ -169,6 +177,9 @@ class BaseScript(object):
                 {},
                 version
             )
+        # Fill matchers
+        if not self.name.endswith(".get_version"):
+            self.apply_matchers()
         #
         if self.profile.setup_script:
             self.profile.setup_script(self)
@@ -176,6 +187,28 @@ class BaseScript(object):
     def __call__(self, *args, **kwargs):
         self.args = kwargs
         return self.run()
+
+    def apply_matchers(self):
+        """
+        Process matchers and apply is_XXX properties
+        :return:
+        """
+        def get_matchers(c, matchers):
+            return dict(
+                (m, match(c, matchers[m]))
+                for m in matchers
+            )
+
+        # Match context
+        # @todo: Add capabilities
+        ctx = self.version or {}
+        # Calculate matches
+        v = get_matchers(ctx, self.profile.matchers)
+        v.update(get_matchers(ctx, self.matchers))
+        #
+        for k in v:
+            self.logger.debug("%s = %s", k, v[k])
+            setattr(self, k, v[k])
 
     def clean_input(self, args):
         """
@@ -327,9 +360,13 @@ class BaseScript(object):
     def execute(self, **kwargs):
         """
         Default script behavior:
-        Pass through _execute_chain and call appropriative handler
+        Pass through _execute_chain and call appropriate handler
         """
         if self._execute_chain and not self.name.endswith(".get_version"):
+            # Deprecated @match chain
+            self.logger.info(
+                "WARNING: Using deprecated @BaseScript.match() decorator. "
+                "Consider porting to the new matcher API")
             # Get version information
             if not self.version:
                 self.version = self.scripts.get_version()
@@ -339,6 +376,53 @@ class BaseScript(object):
                     return f(self, **kwargs)
                 # Raise error
             raise self.NotSupportedError()
+        else:
+            # New SNMP/CLI API
+            for m in self.get_access_preference():
+                if m == "C":
+                    handler = self.execute_cli
+                elif m == "S":
+                    if self.has_snmp():
+                        try:
+                            handler = self.execute_snmp
+                        except self.snmp.TimeOutError:
+                            self.logger.info("SNMP timeout. Passing to next method")
+                            continue
+                    else:
+                        self.logger.debug("SNMP is not enabled. Passing to next method")
+                        continue
+                else:
+                    raise self.NotSupportedError("Invalid access method '%s'" % m)
+                try:
+                    r = handler(**kwargs)
+                    if isinstance(r, PartialResult):
+                        if self.partial_result:
+                            self.partial_result = r.result
+                        else:
+                            self.partial_result.update(r.result)
+                        self.logger.debug("Partial result: %r. Passing to next method", self.partial_result)
+                    else:
+                        return r
+                except NotImplementedError as e:
+                    self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
+            raise self.NotSupportedError("Access preference '%s' is not supported", self.get_access_preference())
+
+    def execute_cli(self, **kwargs):
+        """
+        Process script using CLI
+        :param kwargs:
+        :return:
+        """
+        raise NotImplementedError("execute_cli() is not implemented")
+
+    def execute_snmp(self, **kwargs):
+        """
+        Process script using SNMP
+        :param kwargs:
+        :return:
+        """
+        raise NotImplementedError("execute_snmp() is not implemented")
+
 
     def cleaned_config(self, config):
         """
@@ -751,11 +835,15 @@ class BaseScript(object):
             stream.shutdown_session()
             stream.close()
 
+    def get_access_preference(self):
+        return self.credentials.get("access_preference",
+                                    self.DEFAULT_ACCESS_PREFERENCE)
+
     def has_cli_access(self):
-        return "C" in self.credentials.get("access_preference", "SC")
+        return "C" in self.get_access_preference()
 
     def has_snmp_access(self):
-        return "S" in self.credentials.get("access_preference", "SC") and self.has_snmp()
+        return "S" in self.get_access_preference() and self.has_snmp()
 
     def has_cli_only_access(self):
         return self.has_cli_access() and not self.has_snmp_access()
@@ -873,3 +961,10 @@ class ScriptsHub(object):
             # Normalize to full name
             item = "%s.%s" % (self._script.profile.name, item)
         return script_loader.has_script(item)
+
+
+class PartialResult(object):
+    __slots__ = ["result"]
+
+    def __int__(self, **kwargs):
+        self.result = kwargs

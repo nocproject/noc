@@ -26,6 +26,24 @@ class Profile(BaseProfile):
     command_submit = "\r"
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 
+    matchers = {
+        "is_s": {
+            "platform": {
+                "$regex": "^S"
+            }
+        },
+        "is_c": {
+            "platform": {
+                "$regex": "^C"
+            }
+        },
+        "is_e": {
+            "platform": {
+                "$regex": "^E"
+            }
+        }
+    }
+
     def generate_prefix_list(self, name, pl):
         """
         Generate prefix list _name_. pl is a list of (prefix, min_len, max_len)
@@ -69,21 +87,3 @@ class Profile(BaseProfile):
             if r != 0:
                 return r
         return 0
-
-
-#
-# Platform matching helpers
-#
-def SSeries(v):
-    """S-series matching heler"""
-    return v["platform"].startswith("S")
-
-
-def CSeries(v):
-    """C-series matching helper"""
-    return v["platform"].startswith("C")
-
-
-def ESeries(v):
-    """E-series matching helper"""
-    return v["platform"].startswith("E")
