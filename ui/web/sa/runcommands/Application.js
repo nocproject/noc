@@ -200,6 +200,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                         xtype: 'splitter',
                         width: 1
                     },
+                    treeAlign: 'left',
                     resizable: true,
                     selectionStore: 'runcommands.selectionStore'
                 }
