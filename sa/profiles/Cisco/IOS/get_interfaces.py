@@ -11,7 +11,7 @@
 import re
 from collections import defaultdict
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.profiles.Cisco.IOS import uBR
@@ -220,7 +220,7 @@ class Script(BaseScript):
                     pvm[port] += ["%s" % vlan_id]
         return pvm
 
-    def execute(self):
+    def execute_cli(self):
         # Get port-to-vlan mappings
         pvm = {}
         switchports = {}  # interface -> (untagged, tagged)

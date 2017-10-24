@@ -155,6 +155,9 @@ class BaseProfile(object):
     snmp_metrics_get_timeout = 3
     # Allow CLI sessions by default
     enable_cli_session = True
+    # Matchers are helper expressions to calculate and fill
+    # script's is_XXX properties
+    matchers = {}
 
     def convert_prefix(self, prefix):
         """

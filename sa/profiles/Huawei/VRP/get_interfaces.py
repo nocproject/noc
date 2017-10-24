@@ -5,13 +5,13 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -146,7 +146,7 @@ class Script(BaseScript):
             lldp += [match.group("name")]
         return lldp
 
-    def execute(self):
+    def execute_cli(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = {}
         for sp in self.scripts.get_switchport():
