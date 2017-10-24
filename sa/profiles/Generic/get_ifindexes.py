@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Generic.get_ifindexes
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,26 +18,22 @@ class Script(BaseScript):
     interface = IGetIfindexes
     requires = []
 
-    def execute(self):
+    def execute_snmp(self):
         r = {}
         unknown_interfaces = []
-        if self.has_snmp():
+        for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
             try:
-                for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
-                    try:
-                        v = self.profile.convert_interface_name(name)
-                    except InterfaceTypeError, why:
-                        self.logger.debug(
-                            "Ignoring unknown interface %s: %s",
-                            name, why
-                        )
-                        unknown_interfaces += [name]
-                        continue
-                    ifindex = int(oid.split(".")[-1])
-                    r[v] = ifindex
-                if unknown_interfaces:
-                    self.logger.info("%d unknown interfaces has been ignored",
-                                     len(unknown_interfaces))
-            except self.snmp.TimeOutError:
-                pass
+                v = self.profile.convert_interface_name(name)
+            except InterfaceTypeError as e:
+                self.logger.debug(
+                    "Ignoring unknown interface %s: %s",
+                    name, e
+                )
+                unknown_interfaces += [name]
+                continue
+            ifindex = int(oid.split(".")[-1])
+            r[v] = ifindex
+        if unknown_interfaces:
+            self.logger.info("%d unknown interfaces has been ignored",
+                             len(unknown_interfaces))
         return r
