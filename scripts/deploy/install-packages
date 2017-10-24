@@ -36,8 +36,12 @@ class NPkg(object):
         return version
 
     def read_config(self):
-        with open(self.config) as f:
+        if 'https://' in self.config:
+            f = urllib2.urlopen(self.config)
             cfg = json.load(f)
+        else:
+            with open(self.config) as f:
+                cfg = json.load(f)
         self.url = cfg["url"]
         self.required_versions = {}
         for r in cfg["packages"]:
