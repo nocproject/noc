@@ -383,7 +383,11 @@ class BaseScript(object):
                     handler = self.execute_cli
                 elif m == "S":
                     if self.has_snmp():
-                        handler = self.execute_snmp
+                        try:
+                            handler = self.execute_snmp
+                        except self.snmp.TimeOutError:
+                            self.logger.info("SNMP timeout. Passing to next method")
+                            continue
                     else:
                         self.logger.debug("SNMP is not enabled. Passing to next method")
                         continue
