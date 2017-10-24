@@ -38,10 +38,11 @@ class NPkg(object):
     def read_config(self):
         if 'https://' in self.config:
             f = urllib2.urlopen(self.config)
-            cfg = json.load(f)
+        elif 'http://' in self.config:
+            raise urllib2.URLError("https url required")
         else:
-            with open(self.config) as f:
-                cfg = json.load(f)
+            f = open(sys.argv[1])
+        cfg = json.load(f)
         self.url = cfg["url"]
         self.required_versions = {}
         for r in cfg["packages"]:
