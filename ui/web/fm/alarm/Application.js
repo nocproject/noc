@@ -503,6 +503,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 layout: 'hbox',
                 items: {
                     xtype: 'combo',
+                    itemId: 'combo',
                     width: '100%',
                     queryMode: 'local',
                     valueField: 'value',
@@ -832,7 +833,9 @@ Ext.define('NOC.fm.alarm.Application', {
             me.recentStore.setFilterParams(recentQuery);
         }
         me.store.load();
-        me.recentStore.load();
+        if(me.recentShow.down('#combo').getValue()) {
+            me.recentStore.load();
+        }
     },
     //
     onChangeFilter: function() {
@@ -963,7 +966,9 @@ Ext.define('NOC.fm.alarm.Application', {
         // Poll only if polling is not locked
         if(!me.isPollLocked()) {
             me.store.load();
-            me.recentStore.load();
+            if(me.recentShow.down('#combo').getValue()) {
+                me.recentStore.load();
+            }
         }
     },
     //
@@ -1032,7 +1037,9 @@ Ext.define('NOC.fm.alarm.Application', {
         var me = this;
         if(me.autoreloadButton.pressed) {
             me.store.load();
-            me.recentStore.load();
+            if(me.recentShow.down('#combo').getValue()) {
+                me.recentStore.load();
+            }
         }
     },
     //
