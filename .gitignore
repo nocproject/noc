@@ -1,6 +1,5 @@
 ##
 ##
-!.gitlab-ci.yml
 syntax: glob
 *.pyc
 *.pyo
@@ -21,6 +20,8 @@ contrib/lib/*
 contrib/bin/*
 contrib/share/*
 .*
+!/.gitlab-ci.yml
+!/.gitignore
 ext_*
 etc/requirements/local.txt
 static/pkg/

@@ -1,0 +1,18 @@
+stages:
+  - build
+  - test
+
+job1:
+  stage: build
+  image: registry.getnoc.com/noc/nocmc/microservices:build
+  vars:
+    BRANCH: microservices
+  script:
+    - mkdir -p /opt/noc
+    - cp -r $PWD/ /opt/noc
+    - cd /opt/noc
+#    - python ./scripts/deploy/install-packages requirements/web.json
+#    - python ./scripts/deploy/install-packages requirements/card.json
+#    - python ./scripts/deploy/install-packages requirements/bi.json
+    - /usr/bin/cythonize -i speedup/*.pyx
+
