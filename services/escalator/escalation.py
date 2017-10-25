@@ -354,6 +354,10 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                         metrics["escalation_tt_close_retry"] += 1
                         Job.retry_after(get_next_retry(), str(e))
                         cts.register_failure()
+                        if alarm:
+                            alarm.set_escalation_close_error(
+                                "[%s] %s" % (alarm.managed_object.tt_system.name, e)
+                            )
                     except TTError as e:
                         log("Failed to close tt %s: %s",
                             tt_id, e)

@@ -52,7 +52,12 @@ Ext.define('NOC.core.filter.ViewModel', {
             var selection = get('capabilitiesTree.selection');
 
             if(selection && selection.get('leaf')) {
-                return __('Selected') + ' (' + selection.get('type') + '): ' + selection.getPath('text').replace(/^\/Root/, '');
+                return __('Selected') + ' (' + selection.get('type') + '): '
+                    + selection.getPath('text')
+                    .split('/')
+                    .filter(function(e) {
+                        return e.length > 0 && e !== 'Root'
+                    }).join(' | ');
             }
             return __('No leaf selected');
         },

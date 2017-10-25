@@ -40,3 +40,4 @@ ujson>=1.35
 yappi==0.94
 XlsxWriter==0.9.3
 pylibmc==1.5.1
+demjson==2.2.4

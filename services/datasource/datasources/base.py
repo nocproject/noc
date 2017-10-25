@@ -6,8 +6,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import logging
+import six
 # NOC modules
 from noc.main.models.datasourcecache import DataSourceCache
+from noc.core.perf import metrics
 from noc.config import config
 
 
@@ -17,6 +20,20 @@ class BaseDataSource(object):
     lock = None
     ttl = config.datasource.default_ttl
 
+    logger = logging.getLogger(__name__)
+
+    @staticmethod
+    def rogue_replace(s):
+        return s.replace("\n", "\\n").replace("\t", "\\t").replace("\\", "\\\\")
+
+    def clean(self, row):
+        s = "\t".join(str(x) for x in row)
+        if "\n" in s or "\\" in s or row.count("\t") >= len(row):
+            metrics["ch_datasource_rogue_charts"] += 1
+            self.logger.error("Rogue charts in row %s", row)
+            row = map(lambda x: self.rogue_replace(x) if isinstance(x, six.string_types) else x, list(row))
+        return row
+
     def get(self):
         try:
             if self.lock:
@@ -24,7 +41,7 @@ class BaseDataSource(object):
             # Try to get cached data
             data = DataSourceCache.get_data(self.name)
             if not data:
-                data = ["\t".join(str(x) for x in row)
+                data = ["\t".join(str(x) for x in self.clean(row))
                         for row in self.extract()]
                 data += [""]
                 data = "\n".join(data)

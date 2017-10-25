@@ -7,7 +7,8 @@ console.debug('Defining NOC.core.filter.Filter');
 Ext.define('NOC.core.filter.Filter', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.NOC.Filter',
-
+    controller: 'core.filter',
+    viewModel: 'core.filter',
     requires: [
         'Ext.ux.form.SearchField',
         'NOC.sa.profile.LookupField',
@@ -26,8 +27,17 @@ Ext.define('NOC.core.filter.Filter', {
         'NOC.core.filter.ViewModel',
         'NOC.core.filter.FilterController'
     ],
-    controller: 'core.filter',
-    viewModel: 'core.filter',
+    initComponent: function() {
+        this.defaults = {
+            labelAlign: 'top',
+            minWidth: 270,
+            width: '100%',
+            margin: '5 10 0 18',
+            uiStyle: undefined,
+            listAlign: this.treeAlign
+        };
+        this.callParent();
+    },
     scrollable: 'y',
     minWidth: 300,
     title: __('Filter'),
@@ -35,13 +45,6 @@ Ext.define('NOC.core.filter.Filter', {
     layout: {
         type: 'vbox',
         align: 'right'
-    },
-    defaults: {
-        labelAlign: 'top',
-        minWidth: 270,
-        width: '100%',
-        margin: '5 10 0 18',
-        uiStyle: undefined
     },
     items: [
         {
@@ -62,10 +65,10 @@ Ext.define('NOC.core.filter.Filter', {
         },
         {
             xtype: 'sa.profile.LookupField',
-            itemId: 'profile_name', // name of http request query param
+            itemId: 'profile', // name of http request query param
             fieldLabel: __('By SA Profile:'),
             listeners: {
-                change: 'setFilter'
+                select: 'setFilter'
             }
         },
         {
@@ -73,7 +76,7 @@ Ext.define('NOC.core.filter.Filter', {
             itemId: 'object_profile', // name of http request query param
             fieldLabel: __('By Obj. Profile:'),
             listeners: {
-                change: 'setFilter'
+                select: 'setFilter'
             }
         },
         {
@@ -101,7 +104,7 @@ Ext.define('NOC.core.filter.Filter', {
             itemId: 'selector', // name of http request query param
             fieldLabel: __('By Selector:'),
             listeners: {
-                change: 'setFilter'
+                select: 'setFilter'
             }
         },
         {
@@ -109,7 +112,7 @@ Ext.define('NOC.core.filter.Filter', {
             itemId: 'pool', // name of http request query param
             fieldLabel: __('By Pool:'),
             listeners: {
-                change: 'setFilter'
+                select: 'setFilter'
             }
         },
         {
@@ -117,7 +120,7 @@ Ext.define('NOC.core.filter.Filter', {
             itemId: 'vendor',  // name of http request query param
             fieldLabel: __('By Vendor:'),
             listeners: {
-                change: 'setFilter'
+                select: 'setFilter'
             }
         },
         {
@@ -125,7 +128,7 @@ Ext.define('NOC.core.filter.Filter', {
             itemId: 'platform',  // name of http request query param
             fieldLabel: __('By Platform:'),
             listeners: {
-                change: 'setFilter'
+                select: 'setFilter'
             }
         },
         {
@@ -133,7 +136,7 @@ Ext.define('NOC.core.filter.Filter', {
             itemId: 'version',  // name of http request query param
             fieldLabel: __('By Version:'),
             listeners: {
-                change: 'setFilter'
+                select: 'setFilter'
             }
         },
         {
