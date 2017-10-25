@@ -8,6 +8,7 @@ job1:
   variables:
     BRANCH: microservices
   script:
+    - env | sort
     - mkdir -p /opt/noc
     - cp -r $PWD/ /opt/noc
     - cd /opt/noc
