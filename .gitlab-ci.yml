@@ -19,12 +19,11 @@ job1:
     - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
     - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
   script:
-    - env | sort
-    - mkdir -p /opt/noc
-#    - python ./scripts/deploy/install-packages requirements/web.json
-#    - python ./scripts/deploy/install-packages requirements/card.json
-#    - python ./scripts/deploy/install-packages requirements/bi.json
+    - find . -type f -name "*.py" -print0 | xargs -0 python -m py_compile
     - /usr/bin/cythonize -i speedup/*.pyx
     - python ./manage.py migrate
+    - python ./scripts/deploy/install-packages requirements/web.json
+    - python ./scripts/deploy/install-packages requirements/card.json
+    - python ./scripts/deploy/install-packages requirements/bi.json
   tags:
     - docker
