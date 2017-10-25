@@ -10,7 +10,7 @@
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (DateField, DateTimeField,
                                         UInt16Field,
-                                        Int32Field, Int64Field,
+                                        Int32Field, BooleanField,
                                         StringField,
                                         Float64Field, ReferenceField,
                                         IPv4Field, UInt8Field)
@@ -52,7 +52,7 @@ class ManagedObject(Model):
     pool = ReferenceField(Pool, description=_("Pool Name"))
     name = StringField(description=_("Name"))
     address = IPv4Field(description=_("Address"))
-    is_managed = UInt8Field(description=_("Is Managed"))
+    is_managed = BooleanField(description=_("Is Managed"))
     # Platform
     profile = ReferenceField(Profile, description=_("Profile"))
     vendor = ReferenceField(Vendor, description=_("Vendor"))
@@ -70,9 +70,12 @@ class ManagedObject(Model):
     lldp_links = Int32Field(description=_("Links (LLDP)"))
     cdp_links = Int32Field(description=_("Links (CDP)"))
     # Capabilities
-    has_stp = UInt8Field(description=_("Has STP"))
-    has_lldp = UInt8Field(description=_("Has LLDP"))
-    has_cdp = UInt8Field(description=_("Has CDP"))
+    has_stp = BooleanField(description=_("Has STP"))
+    has_lldp = BooleanField(description=_("Has LLDP"))
+    has_cdp = BooleanField(description=_("Has CDP"))
+    has_snmp = BooleanField(description=_("Has SNMP"))
+    has_snmp_v1 = BooleanField(description=_("Has SNMP v1"))
+    has_snmp_v2c = BooleanField(description=_("Has SNMP v2c"))
 
     @classmethod
     def transform_query(cls, query, user):
