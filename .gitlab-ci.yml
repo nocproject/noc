@@ -16,4 +16,5 @@ job1:
 #    - python ./scripts/deploy/install-packages requirements/card.json
 #    - python ./scripts/deploy/install-packages requirements/bi.json
     - /usr/bin/cythonize -i speedup/*.pyx
-
+  tags:
+    - docker
