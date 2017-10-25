@@ -1,6 +1,6 @@
 ##
-## Do not forget to sync with main/management/commands/build-manifest.py
 ##
+!.gitlab-ci.yml
 syntax: glob
 *.pyc
 *.pyo
