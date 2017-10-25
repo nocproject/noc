@@ -5,7 +5,7 @@ stages:
 job1:
   stage: build
   image: registry.getnoc.com/noc/nocmc/microservices:build
-  vars:
+  variables:
     BRANCH: microservices
   script:
     - mkdir -p /opt/noc
