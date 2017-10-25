@@ -44,12 +44,12 @@ class ManagedObjectsExtractor(BaseExtractor):
 
     def extract(self):
         ts = datetime.datetime.now()
-        # Extract links
-        link_totals, link_methods, neighbors = self.get_links()
-        # Extract caps
-        caps = self.get_caps()
-        # Extract interfaces
-        interfaces = self.get_interfaces()
+        # External data
+        x_data = [
+            self.get_interfaces(),
+            self.get_links(),
+            self.get_caps()
+        ]
         # Extract managed objects
         for mo in ManagedObject.objects.all():
             r = {
@@ -69,23 +69,15 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "name": mo.name,
                 "address": mo.address,
                 "is_managed": mo.is_managed,
-                # Topology
-                "n_neighbors": neighbors[mo.id],
-                "n_links": link_totals[mo.id],
-                "nri_links": link_methods[mo.id, "nri"],
-                "mac_links": link_methods[mo.id, "mac"],
-                "stp_links": link_methods[mo.id, "stp"],
-                "lldp_links": link_methods[mo.id, "lldp"],
-                "cdp_links": link_methods[mo.id, "cdp"],
-                #
-                "n_interfaces": interfaces.get(mo.id, 0),
                 # subscribers
                 # services
             }
-            # Update capabilities
-            ocaps = caps.get(mo.id) or {}
-            if ocaps:
-                r.update(ocaps)
+            # Apply external data
+            for data in x_data:
+                d = data.get(mo.id)
+                if d:
+                    r.update(d)
+            # Submit
             self.stream.push(r)
 
     def get_links(self):
@@ -103,8 +95,15 @@ class ManagedObjectsExtractor(BaseExtractor):
                 r[o, method] += 1
                 t[o] += 1
                 neighbors[o].update(linked)
-        n = dict((o, len(neighbors[o]) - 1) for o in neighbors)
-        return t, r, n
+        return dict((o, {
+            "n_neighbors": neighbors[o],
+            "n_links": t[o],
+            "nri_links": r[o, "nri"],
+            "mac_links": r[o, "mac"],
+            "stp_links": r[o, "stp"],
+            "lldp_links": r[o, "lldp"],
+            "cdp_links": r[o, "cdp"]
+        }) for o in t)
 
     def get_interfaces(self):
         """
@@ -126,7 +125,9 @@ class ManagedObjectsExtractor(BaseExtractor):
                 }
             }
         ])
-        return dict((d["_id"], d["total"]) for d in r)
+        return dict((d["_id"], {
+            "n_interfaces": d["total"]
+        }) for d in r)
 
     def get_caps(self):
         # name -> id map
