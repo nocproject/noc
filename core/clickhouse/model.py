@@ -106,7 +106,7 @@ class Model(six.with_metaclass(ModelBase)):
     @classmethod
     def to_tsv(cls, **kwargs):
         return "\t".join(
-            cls._fields[f].to_tsv(kwargs[f]) for f in cls._fields_order
+            cls._fields[f].to_tsv(kwargs.get(f)) for f in cls._fields_order
         ) + "\n"
 
     @classmethod
