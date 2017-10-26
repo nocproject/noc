@@ -44,22 +44,20 @@ class NRICheck(DiscoveryCheck):
         #
         self.interface_ops = {}  # id -> update op
         # Get NRI portmapper
-        src_tags = [t[4:] for t in self.object.tags
-                    if t.startswith("src:")]
-        if len(src_tags) == 0:
+        if not self.object.remote_system:
             self.logger.info("Created directly. No NRI integration")
             return
-        elif len(src_tags) > 1:
+        if not self.object.remote_system.enable_link:
             self.logger.info(
                 "Ambiguous NRI information (%s). Skipping checks",
-                ", ".join(src_tags)
+                self.object.remote_system
             )
             return
-        self.nri = src_tags[0]
+        self.nri = self.object.remote_system.name
         pm = portmapper_loader.get_loader(self.nri)
         if not pm:
             self.logger.info("No portmapper for %s. Skipping checks",
-                             src_tags[0])
+                             self.object.remote_system.name)
             return
         self.portmapper = pm(self.object)
         # Load interfaces
