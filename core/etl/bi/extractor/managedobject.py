@@ -25,8 +25,7 @@ class ManagedObjectsExtractor(BaseExtractor):
     name = "managedobjects"
     extract_delay = config.bi.extract_delay_alarms
     clean_delay = config.bi.clean_delay_alarms
-    reboot_interval = datetime.timedelta(
-        seconds=config.bi.reboot_interval)
+    is_snapshot = True
 
     # Caps to field mapping
     CAPS_MAP = {
@@ -163,7 +162,3 @@ class ManagedObjectsExtractor(BaseExtractor):
                 {"$project": project_expr}
             ])
         )
-
-    @classmethod
-    def get_start(cls):
-        return "Untime"

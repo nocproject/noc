@@ -88,9 +88,6 @@ class Command(BaseCommand):
                 if not start:
                     self.print("[%s] No data, skipping" % ecls.name)
                     continue
-                elif start == "Untime":
-                    self.print("[%s] No time needed, use one second" % ecls.name)
-                    start = now - datetime.timedelta(seconds=ecls.extract_delay + 1)
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
             while start < stop:
                 end = min(start + window, stop)
