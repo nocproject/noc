@@ -12,6 +12,7 @@ from collections import defaultdict
 # NOC modules
 from base import BaseExtractor
 from noc.sa.models.managedobject import ManagedObject
+from noc.bi.models.managedobject import ManagedObject as ManagedObjectBI
 from noc.core.etl.bi.stream import Stream
 from noc.config import config
 from noc.inv.models.interface import Interface
@@ -40,9 +41,10 @@ class ManagedObjectsExtractor(BaseExtractor):
     def __init__(self, prefix, start, stop):
         super(ManagedObjectsExtractor, self).__init__(prefix, start,
                                                       stop)
-        self.stream = Stream(ManagedObject, prefix)
+        self.mo_stream = Stream(ManagedObjectBI, prefix)
 
     def extract(self):
+        nr = 0
         ts = datetime.datetime.now()
         # External data
         x_data = [
@@ -62,6 +64,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "level": mo.object_profile.level,
                 "x": mo.x,
                 "y": mo.y,
+                "pool": mo.pool,
                 # "object_profile": mo.object_profile,
                 "vendor": mo.vendor,
                 "platform": mo.platform,
@@ -78,7 +81,10 @@ class ManagedObjectsExtractor(BaseExtractor):
                 if d:
                     r.update(d)
             # Submit
-            self.stream.push(r)
+            self.mo_stream.push(**r)
+            nr += 1
+        self.mo_stream.finish()
+        return nr
 
     def get_links(self):
         """
@@ -157,3 +163,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 {"$project": project_expr}
             ])
         )
+
+    @classmethod
+    def get_start(cls):
+        return "Untime"
