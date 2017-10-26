@@ -16,7 +16,7 @@ Ext.define('NOC.fm.alarm.Application', {
         A: 'Active',
         C: 'Archived'
     },
-    pollingInterval: 30000,
+    pollingInterval: 120000,
     //
     initComponent: function() {
         var me = this,
