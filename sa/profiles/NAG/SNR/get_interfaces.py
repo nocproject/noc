@@ -56,7 +56,8 @@ class Script(BaseScript):
         "Fast-Ethernet": "physical",
         "Gigabit-Combo": "physical",
         "Gigabit-TX": "physical",
-        "EtherSVI": "SVI"
+        "EtherSVI": "SVI",
+        "SFP": "physical"
     }
 
     def execute(self):
