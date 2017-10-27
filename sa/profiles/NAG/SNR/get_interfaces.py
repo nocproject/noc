@@ -55,6 +55,7 @@ class Script(BaseScript):
     HW_TYPES = {
         "Fast-Ethernet": "physical",
         "Gigabit-Combo": "physical",
+        "Gigabit-TX": "physical",
         "EtherSVI": "SVI"
     }
 
