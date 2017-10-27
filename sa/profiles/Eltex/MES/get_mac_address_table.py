@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -104,6 +104,7 @@ class Script(BaseScript):
                     "type": {
                         "dynamic": "D",
                         "static": "S",
+                        "secure": "S",
                         "permanent": "S",
                         "self": "C"
                         }[match.group("type").lower()],
