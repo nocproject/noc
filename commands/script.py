@@ -48,6 +48,11 @@ class Command(BaseCommand):
             help="Collect beef to file"
         )
         parser.add_argument(
+            "--access-preference",
+            dest="access_preference",
+            help="Alter access method preference"
+        )
+        parser.add_argument(
             "script",
             nargs=1,
             help="Script name"
@@ -64,7 +69,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, script, object_name, arguments, pretty,
-               yaml, use_snmp, beef,
+               yaml, use_snmp, beef, access_preference,
                *args, **options):
         # Get object
         obj = self.get_object(object_name[0])
@@ -87,6 +92,8 @@ class Command(BaseCommand):
                 del credentials["snmp_ro"]
             if "SNMP" in caps:
                 del caps["SNMP"]
+        if access_preference:
+            credentials["access_preference"] = access_preference
         # Get version info
         v = obj.version
         p = obj.platform
@@ -163,7 +170,7 @@ class Command(BaseCommand):
             "super_password": creds.super_password,
             "path": obj.remote_path,
             "raise_privileges": obj.to_raise_privileges,
-            "access_preference": obj.access_preference
+            "access_preference": obj.get_access_preference()
         }
         if creds.snmp_ro:
             credentials["snmp_version"] = "v2c"

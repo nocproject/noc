@@ -17,6 +17,7 @@ from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
+from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
 from noc.core.clickhouse.dictionary import Dictionary
 from noc.config import config
 from noc.core.service.shard import Sharder
@@ -31,7 +32,8 @@ class Command(BaseCommand):
 
     EXTRACTORS = [
         RebootsExtractor,
-        AlarmsExtractor
+        AlarmsExtractor,
+        ManagedObjectsExtractor
     ]
 
     # Extract by 1-day chunks
@@ -84,7 +86,7 @@ class Command(BaseCommand):
             if not start:
                 start = ecls.get_start()
                 if not start:
-                    self.print("[%s] No data, skipping" % e.name)
+                    self.print("[%s] No data, skipping" % ecls.name)
                     continue
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
             while start < stop:
