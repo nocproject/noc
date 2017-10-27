@@ -35,28 +35,37 @@ class EventSummaryReport(SimpleReport):
     title = _("Event Summary")
     form = ReportForm
 
-    def get_by_event_class(self):
+    @staticmethod
+    def get_by_event_class():
         """ Summary by event class """
         c = ActiveEvent.objects.item_frequencies("event_class")
         r = []
         for k, v in c.items():
+            if not k:
+                continue
             r += [[EventClass.objects.filter(id=k).first(), int(v)]]
         return sorted(r, key=lambda x: -x[1])
 
-    def get_by_object(self):
+    @staticmethod
+    def get_by_object():
         """Summary by managed object"""
         c = ActiveEvent.objects.item_frequencies("managed_object")
         r = []
         for k, v in c.items():
+            if not k:
+                continue
             r += [[ManagedObject.objects.get(id=k), int(v)]]
         return sorted(r, key=lambda x: -x[1])
 
-    def get_by_profile(self):
+    @staticmethod
+    def get_by_profile():
         """Summary by managed object's profile"""
         c = ActiveEvent.objects.item_frequencies("managed_object")
         pc = {}
         mo_map = {}  # managed object id -> profile name
         for k, v in c.items():
+            if not k:
+                continue
             try:
                 p = mo_map[k]
             except KeyError:
@@ -68,7 +77,8 @@ class EventSummaryReport(SimpleReport):
                 pc[p] = v
         return sorted(pc.items(), key=lambda x: -x[1])
 
-    def get_by_status(self):
+    @staticmethod
+    def get_by_status():
         return [
             ("New", NewEvent.objects.count()),
             ("Failed", FailedEvent.objects.count()),
@@ -76,7 +86,7 @@ class EventSummaryReport(SimpleReport):
             ("Archived", ArchivedEvent.objects.count())
         ]
 
-    def get_data(self, request, report_type, **kwargs):
+    def get_data(self, request, report_type=None, **kwargs):
         if report_type == "class":
             # Summary by class
             columns = ["Event Class"]
@@ -95,9 +105,10 @@ class EventSummaryReport(SimpleReport):
             data = self.get_by_status()
         else:
             raise Exception("Invalid report type: %s" % report_type)
+        title = self.title
         for r, t in report_types:
             if r == report_type:
-                title = self.title + ": " + t
+                title += ": " + t
                 break
         columns += [TableColumn("Quantity", align="right",
                                 total="sum", format="integer")]
