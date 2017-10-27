@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,23 +17,25 @@ class Script(BaseScript):
     name = "Qtech.QSW2800.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_mode = re.compile(r"^Standard\s+:\s+IEEE (?P<mode>\S+)",
-                        re.MULTILINE)
-    rx_inst_id = re.compile(r"^#+ Instance (?P<inst_id>\d+) #+")
+    rx_mode = re.compile(
+        r"^Standard\s+:\s+IEEE (?P<mode>\S+)", re.MULTILINE)
+    rx_inst_id = re.compile(r"^#+ Instance (?P<inst_id>\d+) #+", re.MULTILINE)
     rx_vlans = re.compile(r"^vlans mapped\s+: (?P<vlans>\S+)$")
-    rx_root = re.compile(r"^(?:Region )?Root Id\s+:\s+"
-                        r"(?P<root>\d*\.?\S+\s?\S*)")
-    rx_bridge = re.compile(r"Self Bridge Id\s+:\s+(?P<priority>\d+)\."
-                        r"(?P<id>\S+)")
-    rx_interface = re.compile(r"^\s*(?P<ifname>\S+)\s+(?P<port>\d+\.\d+)\s+"
-                        r"(?:\d+\s+)?\d+\s+(?P<state>\S+)\s+(?P<role>\S+)\s+"
-                        r"(?P<dsg_bridge>\d+\.\S+)\s+(?P<dsg_port>\d+\.\d+)")
-    rx_edge = re.compile(r"^Edge port\s+: (?P<edge>\S+)$",
-                        re.MULTILINE)
-    rx_p2p = re.compile(r"^Link type\s+: (?P<p2p>.+)$",
-                        re.MULTILINE)
-    rx_mst_conf = re.compile("Name\s+(?P<name>\S+)\n"
-                        r"Revision\s+(?P<rev>\d+)")
+    rx_root = re.compile(
+        r"^(?:Region )?Root Id\s+:\s+(?P<root>\d*\.?\S+\s?\S*)")
+    rx_bridge = re.compile(
+        r"Self Bridge Id\s+:\s+(?P<priority>\d+)\.(?P<id>\S+)")
+    rx_interface = re.compile(
+        r"^\s*(?P<ifname>\S+)\s+(?P<port>\d+\.\d+)\s+"
+        r"(?:\d+\s+)?\d+\s+(?P<state>\S+)\s+(?P<role>\S+)\s+"
+        r"(?P<dsg_bridge>\d+\.\S+)\s+(?P<dsg_port>\d+\.\d+)")
+    rx_edge = re.compile(
+        r"^Edge port\s+: (?P<edge>\S+)$", re.MULTILINE)
+    rx_p2p = re.compile(
+        r"^Link type\s+: (?P<p2p>.+)$", re.MULTILINE)
+    rx_mst_conf = re.compile(
+        "Name\s+(?P<name>\S+)\n"
+        r"Revision\s+(?P<rev>\d+)")
 
     def execute(self):
         def q_port(s):
@@ -63,9 +65,14 @@ class Script(BaseScript):
                 "802.1w": "RSTP",
                 "802.1s": "MSTP"
             }[match.group("mode")]
+        vlans = "1-4095"
         # get instances
-        cmd = self.cli("show spanning-tree mst 0")
-        for inst in cmd.split("#\n")[1:]:
+        if r["mode"] == "MSTP":
+            instances = self.rx_inst_id.findall(cmd)
+        else:
+            instances = ['0']
+        for i in instances:
+            inst = self.cli("show spanning-tree mst %s" % i)
             if "does not exist!" in inst:
                 continue
             for l in inst.splitlines():
@@ -105,7 +112,9 @@ class Script(BaseScript):
                     dsg_port = q_port(match.group("dsg_port"))
                     iface = match.group("ifname")
                     # get interface details
-                    if_details = self.cli("show spanning-tree interface %s detail" % iface)
+                    if_details = self.cli(
+                        "show spanning-tree interface %s detail" % iface
+                    )
                     e_match = self.rx_edge.search(if_details)
                     if e_match:
                         edge = (e_match.group("edge") == "Yes")
