@@ -118,6 +118,8 @@ class Script(BaseScript):
                 sub["vlan_ids"] = [int(name[4:])]
             match1 = self.rx_ip.search(other)
             if match1:
+                if "NULL" in match1.group("ip"):
+                    continue
                 ip_address = "%s/%s" % (
                     match1.group("ip"),
                     IPv4.netmask_to_len(match1.group("mask"))
