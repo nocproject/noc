@@ -19,9 +19,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
-
     rx_lldp = re.compile(r"LLDP enabled port : (?P<local_if>\S*.+)$", re.MULTILINE)
-
     rx_sh_int = re.compile(
         r"^\s*(?P<interface>\S+)\s+is\s+(?P<admin_status>up|down),\s+"
         r"line protocol is\s+(?P<oper_status>up|down)"
