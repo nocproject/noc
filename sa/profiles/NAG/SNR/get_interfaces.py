@@ -18,6 +18,10 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
+    rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
+
+    rx_lldp = re.compile(r"LLDP enabled port : (?P<local_if>\S*.+)$", re.MULTILINE)
+
     rx_sh_int = re.compile(
         r"^\s*(?P<interface>\S+)\s+is\s+(?P<admin_status>up|down),\s+"
         r"line protocol is\s+(?P<oper_status>up|down)"
@@ -56,12 +60,17 @@ class Script(BaseScript):
         "Fast-Ethernet": "physical",
         "Gigabit-Combo": "physical",
         "Gigabit-TX": "physical",
-        "EtherSVI": "SVI",
-        "SFP": "physical"
+        "EtherSVI": "SVI"
     }
 
     def execute(self):
         interfaces = []
+        # Get LLDP interfaces
+        lldp = []
+        c = self.cli("show lldp", ignore_errors=True)
+        if self.rx_lldp_en.search(c):
+            l = self.rx_lldp.search(c)
+            lldp = l.group("local_if").split()
         v = self.cli("show interface", cached=True)
         for match in self.rx_sh_int.finditer(v):
             name = match.group("interface")
@@ -81,6 +90,9 @@ class Script(BaseScript):
                 "admin_status": a_stat,
                 "oper_status": o_stat
             }
+            # LLDP protocol
+            if name in lldp:
+                iface["enabled_protocols"] = ["LLDP"]
             if iface["type"] == "physical":
                 sub["enabled_afi"] = ["BRIDGE"]
             if match1.group("mac"):
