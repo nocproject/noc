@@ -156,6 +156,7 @@ class ManagedObjectCard(BaseCard):
                 "name": i.name,
                 "admin_status": i.admin_status,
                 "oper_status": i.oper_status,
+                "mac": i.mac,
                 "full_duplex": i.full_duplex,
                 "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
                 "untagged_vlan": None,
