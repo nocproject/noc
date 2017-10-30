@@ -22,8 +22,7 @@ job1:
     - find . -type f -name "*.py" -print0 | xargs -0 python -m py_compile
     - /usr/bin/cythonize -i speedup/*.pyx
     - python ./manage.py migrate
-    - python ./scripts/deploy/install-packages requirements/web.json
-    - python ./scripts/deploy/install-packages requirements/card.json
-    - python ./scripts/deploy/install-packages requirements/bi.json
+  only:
+    - microservices
   tags:
     - docker
