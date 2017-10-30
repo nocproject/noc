@@ -14,6 +14,7 @@ import datetime
 import bson
 from pymongo import ReadPreference
 # NOC modules
+from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
@@ -66,7 +67,7 @@ class AlarmApplication(ExtApplication):
         config={}
     )
 
-    DEFAULT_ARH_ALARM = datetime.timedelta(days=4)
+    DEFAULT_ARCH_ALARM = datetime.timedelta(days=config.web.api_arch_alarm_limit)
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -141,7 +142,7 @@ class AlarmApplication(ExtApplication):
                 q["root__exists"] = False
         if status == "C":
             if "timestamp__gte" not in q and "timestamp__lte" not in q:
-                q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARH_ALARM
+                q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
         return q
 
     def instance_to_dict(self, o, fields=None):

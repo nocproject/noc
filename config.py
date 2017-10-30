@@ -477,6 +477,7 @@ class Config(BaseConfig):
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
+        api_arch_alarm_limit = IntParameter(default=4)
         language = StringParameter(default="en")
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
