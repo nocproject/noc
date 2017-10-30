@@ -32,8 +32,7 @@ class Command(BaseCommand):
 
     EXTRACTORS = [
         RebootsExtractor,
-        AlarmsExtractor,
-        ManagedObjectsExtractor
+        AlarmsExtractor
     ]
 
     # Extract by 1-day chunks
