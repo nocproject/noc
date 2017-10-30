@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.base import (IntParameter,
                                     MACAddressParameter,
                                     InterfaceTypeError)
@@ -51,8 +51,13 @@ class Script(BaseScript):
          r"Port \S+\s+:\s(?P<p_id>.+)"
     ]
 
+    def execute_cli(self):
+        if self.is_ex:
+            return self.execute_ex()
+        else:
+            return self.execute_other()
+
     # Match mx, ex and qfx
-    @BaseScript.match(platform__regex="[em]x|qfx|acx")
     def execute_ex(self):
         r = []
         # Collect data
@@ -170,6 +175,5 @@ class Script(BaseScript):
     #
     # No lldp on M/T
     #
-    @BaseScript.match()
     def execute_other(self):
         raise self.NotSupportedError()
