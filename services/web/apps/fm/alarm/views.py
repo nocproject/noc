@@ -67,7 +67,7 @@ class AlarmApplication(ExtApplication):
         config={}
     )
 
-    DEFAULT_ARCH_ALARM = datetime.timedelta(days=config.web.api_arch_alarm_limit)
+    DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
