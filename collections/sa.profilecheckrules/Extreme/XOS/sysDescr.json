@@ -1,0 +1,13 @@
+{
+    "name": "Extreme | XOS | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ea663a3a-652d-466d-9c34-ee37fec9f2fc",
+    "description": "Examples:\nSNMPv2-MIB::sysDescr.0 = STRING: ExtremeXOS (X440-48p) version 15.3.1.4 v1531b4-patch1-19 by release-manager on Fri Sep 20 14:57:37 EDT 2013",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^ExtremeXOS",
+    "action": "match",
+    "profile__name": "Extreme.XOS"
+}
