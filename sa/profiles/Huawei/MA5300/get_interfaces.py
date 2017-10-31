@@ -55,6 +55,7 @@ class Script(BaseScript):
     rx_mac = re.compile(r"Hardware address is (?P<mac>\S+)")
     types = {
         "Aux": "other",
+        "Loo": "loopback",
         "M-E": "management",
         "NUL": "null",
         "Vla": "SVI"
