@@ -21,7 +21,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = \
         r"% Invalid input detected at|% Ambiguous command:|" \
         r"% Incomplete command.|% Unrecodnezed command"
-    pattern_operation_error = r"^%\s*bad"
+    pattern_operation_error = r"\n%\s*bad"
     command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure terminal"

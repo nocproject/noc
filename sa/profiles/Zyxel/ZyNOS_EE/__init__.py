@@ -20,4 +20,4 @@ class Profile(BaseProfile):
     command_exit = "exit"
     enable_cli_session = False
     command_save_config = "config save"
-    pattern_syntax_error = r"^Valid commands are:"
+    pattern_syntax_error = r"\nValid commands are:"

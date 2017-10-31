@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_username = r"(?<!Login in progress\.\.\.)Username: "
     pattern_prompt = r"^(\S+)# "
     pattern_more = r"^---More---\n"
-    pattern_syntax_error = r"^(Invalid command|\*Incomplete command)"
+    pattern_syntax_error = r"\n(Invalid command|\*Incomplete command)"
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"

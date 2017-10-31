@@ -23,7 +23,7 @@ class Profile(BaseProfile):
     ]
     pattern_prompt = r"^[<\[]\S+[>\]]"
     pattern_syntax_error = \
-        r"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
+        r"\n\s+% (Unrecognized|Incomplete) command found at '\^' position.\n"
     command_save_config = "save"
     command_enter_config = "system-view"
     command_leave_config = "return"

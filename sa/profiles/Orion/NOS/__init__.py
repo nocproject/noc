@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     name = "Orion.NOS"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_prompt = r"^(?P<hostname>\S+)\s*#"
-    pattern_syntax_error = r"^% \" .+ \"  Unknown command."
+    pattern_syntax_error = r"\n% \" .+ \"  Unknown command."
     command_super = "enable"
     command_disable_pager = "terminal page-break disable"
     pattern_more = " --More-- "

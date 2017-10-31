@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^\S+ >"
     pattern_prompt = r"^\S+ #"
     pattern_more = r"^--More-- or \(q\)uit$"
-    pattern_syntax_error = r"^(% Invalid input detected at|Command not found)"
+    pattern_syntax_error = r"\n(% Invalid input detected at|Command not found)"
     command_super = "enable"
     command_exit = "exit\nexit"
 

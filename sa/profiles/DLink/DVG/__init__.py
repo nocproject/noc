@@ -21,7 +21,7 @@ class Profile(BaseProfile):
         (r"^Disconnect Now? (Y/N)", "Y"),
         (r"^More: <space>,  Quit: q, One line: <return>$", " ")
     ]
-    pattern_syntax_error = r"^\s+\^\s+(\[Command Not Found\]|Option Not Found)$"
+    pattern_syntax_error = r"\n\s+\^\s+(\[Command Not Found\]|Option Not Found)"
     command_enter_config = "CD /"
     command_leave_config = "SUBMIT"
     command_save_config = "SAVE"

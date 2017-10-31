@@ -12,7 +12,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Rotek.RTBS"
     pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"
-    pattern_syntax_error = r"^\(ERROR\)"
+    pattern_syntax_error = r"\n\(ERROR\)"
     command_submit = "\r"
     command_exit = "logout"
 

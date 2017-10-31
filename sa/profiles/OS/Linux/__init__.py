@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
     pattern_unprivileged_prompt = r"^\[?\s*\w+@(?P<hostname>\S+)\]?(\s+|:)\S+\s*\]?\$\s*"
     pattern_prompt = r"^(\[?\s*root@(?P<hostname>\S+)\]?(\s+|:)\S+\s*(#|\$)\s*|\S+:~>\s+|\[admin@\S+:/root\])"
-    pattern_syntax_error = r"^(-\w+: \w+: not found|-\w+: \w+: No such file or directory|\w+: \w+: command not found|\w+: \w+: \w+: No such file or directory)"
+    pattern_syntax_error = r"\n(-\w+: \w+: not found|-\w+: \w+: No such file or directory|\w+: \w+: command not found|\w+: \w+: \w+: No such file or directory)"
     command_disable_pager = "export LANG=en_GB.UTF-8"
     command_super = "su"
     command_exit = "exit"

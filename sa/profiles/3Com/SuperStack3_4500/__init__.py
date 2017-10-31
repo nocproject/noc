@@ -20,7 +20,7 @@ class Profile(BaseProfile):
         (r"flash:/startup.cfg exists, overwrite? [Y/N]:", "Y")
     ]
     pattern_prompt = r"^[<\[]\S+[>\]]"
-    pattern_syntax_error = r"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
+    pattern_syntax_error = r"\n\s+% (Unrecognized|Incomplete) command found at '\^' position."
     command_save_config = "save"
     command_enter_config = "system-view"
     command_leave_config = "return"

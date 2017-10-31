@@ -25,7 +25,7 @@ class Profile(BaseProfile):
         re.compile(r"^\s+VLAN Table\r\n\s+\~+\r\n", re.MULTILINE),
         "\r"
     ]
-    pattern_syntax_error = r"^Unknown command"
+    pattern_syntax_error = r"\nUnknown command"
     pattern_prompt = r"^(?P<hostname>\S+)# "
     command_exit = "exit"
     telnet_naws = "\x00\x7f\x00\x7f"

@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
-    pattern_syntax_error = r"^Unknown command"
+    pattern_syntax_error = r"\nUnknown command"
     command_disable_pager = ["terminal length 0", "terminal width 0"]
     command_super = "enable"
     command_enter_config = "config"
