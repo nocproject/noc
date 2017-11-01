@@ -18,13 +18,15 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^VRP.+Software, Version (?P<version>[^ ,]+),? .*?\n"
-        r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]+uptime",
+        r"\s*(?:Quidway|Huawei) (Technologies Co., Ltd.\n)?"
+        r"(?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]+uptime",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
     rx_ver_snmp = re.compile(
         r"Versatile Routing Platform Software.*?"
         r"Version (?P<version>[^ ,]+),? .*?\n"
-        r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+)?"
+        r"\s*(?:Quidway|Huawei) (Technologies Co., Ltd.\n)"
+        r"(?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?"
         r"[^ \t\n\r\f\v\-]+)[^\n]+",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
