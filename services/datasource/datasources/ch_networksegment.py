@@ -18,10 +18,14 @@ class CHAdministrativeDomainDataSource(BaseDataSource):
     name = "ch_networksegment"
 
     def extract(self):
-        for ns in NetworkSegment.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
+        ns_id = dict(NetworkSegment.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).scalar("id", "bi_id"))
+        ns = NetworkSegment._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+
+        for sub in ns.find({},
+                           {"_id": 1, "bi_id": 1, "name": 1, "parent": 1}).sort("parent"):
             yield (
-                ns.bi_id,
-                ns.id,
-                ns.name,
-                ns.parent.bi_id if ns.parent else ""
+                sub["bi_id"],
+                sub["id"],
+                sub["name"],
+                ns_id.get(sub["parent"], "") if sub.get("parent") else ""
             )
