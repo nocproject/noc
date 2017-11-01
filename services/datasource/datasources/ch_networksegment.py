@@ -25,7 +25,7 @@ class CHAdministrativeDomainDataSource(BaseDataSource):
                            {"_id": 1, "bi_id": 1, "name": 1, "parent": 1}).sort("parent"):
             yield (
                 sub["bi_id"],
-                sub["id"],
+                sub["_id"],
                 sub["name"],
                 ns_id.get(sub["parent"], "") if sub.get("parent") else ""
             )
