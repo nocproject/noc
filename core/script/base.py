@@ -378,34 +378,56 @@ class BaseScript(object):
             raise self.NotSupportedError()
         else:
             # New SNMP/CLI API
-            for m in self.get_access_preference():
-                if m == "C":
-                    handler = self.execute_cli
-                elif m == "S":
-                    if self.has_snmp():
-                        try:
-                            handler = self.execute_snmp
-                        except self.snmp.TimeOutError:
-                            self.logger.info("SNMP timeout. Passing to next method")
-                            continue
-                    else:
-                        self.logger.debug("SNMP is not enabled. Passing to next method")
-                        continue
+            return self.call_method(
+                cli_handler=self.execute_cli,
+                snmp_handler=self.execute_snmp,
+                **kwargs
+            )
+
+    def call_method(self, cli_handler=None, snmp_handler=None, **kwargs):
+        """
+        Call function depending on access_preference
+        :param cli_handler:
+        :param snmp_handler:
+        :param kwargs:
+        :return:
+        """
+        # Select proper handler
+        access_preference = self.get_access_preference()
+        for m in access_preference:
+            # Select proper handler
+            if m == "C":
+                handler = cli_handler
+            elif m == "S":
+                if self.has_snmp():
+                    handler = snmp_handler
                 else:
-                    raise self.NotSupportedError("Invalid access method '%s'" % m)
-                try:
-                    r = handler(**kwargs)
-                    if isinstance(r, PartialResult):
-                        if self.partial_result:
-                            self.partial_result = r.result
-                        else:
-                            self.partial_result.update(r.result)
-                        self.logger.debug("Partial result: %r. Passing to next method", self.partial_result)
+                    self.logger.debug("SNMP is not enabled. Passing to next method")
+                    continue
+            else:
+                raise self.NotSupportedError("Invalid access method '%s'" % m)
+            # Resolve handler when necessary
+            if isinstance(handler, six.string_types):
+                handler = getattr(self, handler, None)
+            if handler is None:
+                self.logger.debug("No '%s' handler. Passing to next method" % m)
+                continue
+            # Call handler
+            try:
+                r = handler(**kwargs)
+                if isinstance(r, PartialResult):
+                    if self.partial_result:
+                        self.partial_result.update(r.result)
                     else:
-                        return r
-                except NotImplementedError as e:
-                    self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
-            raise self.NotSupportedError("Access preference '%s' is not supported", self.get_access_preference())
+                        self.partial_result = r.result
+                    self.logger.debug("Partial result: %r. Passing to next method", self.partial_result)
+                else:
+                    return r
+            except self.snmp.TimeOutError:
+                self.logger.info("SNMP timeout. Passing to next method")
+            except NotImplementedError:
+                self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
+        raise self.NotSupportedError("Access preference '%s' is not supported" % access_preference)
 
     def execute_cli(self, **kwargs):
         """
@@ -422,7 +444,6 @@ class BaseScript(object):
         :return:
         """
         raise NotImplementedError("execute_snmp() is not implemented")
-
 
     def cleaned_config(self, config):
         """
