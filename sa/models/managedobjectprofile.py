@@ -280,7 +280,7 @@ class ManagedObjectProfile(models.Model):
             ("SC", "SNMP, CLI"),
             ("CS", "CLI, SNMP")
         ],
-        default="SC"
+        default="CS"
     )
     # Autosegmentation policy
     autosegmentation_policy = models.CharField(

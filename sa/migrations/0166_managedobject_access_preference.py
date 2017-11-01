@@ -24,7 +24,7 @@ class Migration:
                     ("SC", "SNMP, CLI"),
                     ("CS", "CLI, SNMP")
                 ],
-                default="SC"
+                default="CS"
             )
         )
         # Profile settings
