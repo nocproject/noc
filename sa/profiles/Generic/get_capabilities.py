@@ -56,19 +56,19 @@ class Script(BaseScript):
             r = self.snmp.getnext(oid, bulk=bulk,
                                   only_first=only_first,
                                   version=version)
-            if not r:
-                return False
-            for k, v in r:
-                return True
+            return r and any(r)
         except (self.snmp.TimeOutError, SNMPError):
-            pass
-        return False
+            return False
 
     def has_snmp(self):
         """
         Check basic SNMP support
         """
-        return self.check_snmp_get(self.SNMP_GET_CHECK_OID)
+        r = getattr(self, "_has_snmp", None)
+        if r is None:
+            r = self.check_snmp_get(self.SNMP_GET_CHECK_OID)
+            self._has_snmp = r
+        return r
 
     def get_snmp_versions(self):
         """
@@ -101,111 +101,178 @@ class Script(BaseScript):
                                        only_first=True,
                                        version=version)
 
+    def return_false(self, **kwargs):
+        return False
+
     def has_lldp(self):
         """
         Returns True when LLDP is enabled
         """
-        return False
+        return self.call_method(
+            cli_handler="has_lldp_cli",
+            snmp_handler="has_lldp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_cdp(self):
         """
         Returns True when CDP is enabled
         """
-        return False
+        return self.call_method(
+            cli_handler="has_cdp_cli",
+            snmp_handler="has_cdp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_oam(self):
         """
         Returns True when OAM is enabled
         """
-        return False
+        return self.call_method(
+            cli_handler="has_oam_cli",
+            snmp_handler="has_oam_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_stp(self):
         """
         Returns True when STP is enabled
         """
-        return False
+        return self.call_method(
+            cli_handler="has_stp_cli",
+            snmp_handler="has_stp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_udld(self):
         """
         Returns True when UDLD is enabled
         """
-        return False
+        return self.call_method(
+            cli_handler="has_udld_cli",
+            snmp_handler="has_udld_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_ipv6(self):
         """
         Returns True when IPv6 ND is enabled
         """
-        return False
+        return self.call_method(
+            cli_handler="has_ipv6_cli",
+            snmp_handler="has_ipv6_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_hsrp(self):
         """
         Returns True when HSRP is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_hsrp_cli",
+            snmp_handler="has_hsrp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_vrrp_v2(self):
         """
         Returns True when VRRP v2 is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_vrrp_v2_cli",
+            snmp_handler="has_vrrp_v2_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_vrrp_v3(self):
         """
         Returns True when VRRP v3 is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_vrrp_v3_cli",
+            snmp_handler="has_vrrp_v3_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_bgp(self):
         """
         Returns True when BGP is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_bgp_cli",
+            snmp_handler="has_bgp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_ospf_v2(self):
         """
         Returns True when OSPF v2 is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_ospf_v2_cli",
+            snmp_handler="has_ospf_v2_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_ospf_v3(self):
         """
         Returns True when OSPF v3 is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_ospf_v3_cli",
+            snmp_handler="has_ospf_v3_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_isis(self):
         """
         Returns True when ISIS is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_isis_cli",
+            snmp_handler="has_isis_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_ldp(self):
         """
         Returns True when LDP is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_ldp_cli",
+            snmp_handler="has_ldp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_rsvp(self):
         """
         Returns True when RSVP is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_rsvp_cli",
+            snmp_handler="has_rsvp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def has_lacp(self):
         """
         Returns True when LACP is enabled
         :return:
         """
-        return False
+        return self.call_method(
+            cli_handler="has_lacp_cli",
+            snmp_handler="has_lacp_snmp",
+            fallback_handler=self.return_false
+        )
 
     def execute_platform(self, caps):
         """
