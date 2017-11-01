@@ -176,13 +176,12 @@ class SAEAPI(API):
             "raise_privileges": raise_privileges,
             "access_preference": access_preference
         }
-        if snmp_ro and "SNMP" in capabilities:
+        if snmp_ro:
+            credentials["snmp_ro"] = snmp_ro
             if "SNMP | v2c" in capabilities:
                 credentials["snmp_version"] = "v2c"
-                credentials["snmp_ro"] = snmp_ro
             elif "SNMP | v1" in capabilities:
                 credentials["snmp_version"] = "v1"
-                credentials["snmp_ro"] = snmp_ro
         if scheme in (1, 2):
             credentials["cli_protocol"] = {
                 1: "telnet",
