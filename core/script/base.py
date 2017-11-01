@@ -384,16 +384,18 @@ class BaseScript(object):
                 **kwargs
             )
 
-    def call_method(self, cli_handler=None, snmp_handler=None, **kwargs):
+    def call_method(self, cli_handler=None, snmp_handler=None,
+                    fallback_handler=None, **kwargs):
         """
         Call function depending on access_preference
-        :param cli_handler:
-        :param snmp_handler:
+        :param cli_handler: String or callable to call on CLI access method
+        :param snmp_handler: String or callable to call on SNMP access method
+        :param fallback_handler: String or callable to call if no access method matched
         :param kwargs:
         :return:
         """
         # Select proper handler
-        access_preference = self.get_access_preference()
+        access_preference = self.get_access_preference() + "*"
         for m in access_preference:
             # Select proper handler
             if m == "C":
@@ -404,6 +406,8 @@ class BaseScript(object):
                 else:
                     self.logger.debug("SNMP is not enabled. Passing to next method")
                     continue
+            elif m == "*":
+                handler = fallback_handler
             else:
                 raise self.NotSupportedError("Invalid access method '%s'" % m)
             # Resolve handler when necessary
@@ -427,7 +431,7 @@ class BaseScript(object):
                 self.logger.info("SNMP timeout. Passing to next method")
             except NotImplementedError:
                 self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
-        raise self.NotSupportedError("Access preference '%s' is not supported" % access_preference)
+        raise self.NotSupportedError("Access preference '%s' is not supported" % access_preference[:-1])
 
     def execute_cli(self, **kwargs):
         """
