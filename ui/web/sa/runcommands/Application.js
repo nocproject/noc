@@ -62,7 +62,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 selection: '{selectionRow}'
                             },
                             selModel: {
-                                mode: 'SIMPLE',
+                                mode: 'MULTI',
                                 // pruneRemoved: false,
                                 selType: 'checkboxmodel'
                             },
