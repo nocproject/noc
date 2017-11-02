@@ -18,9 +18,8 @@ class Script(BaseScript):
 
     rx_lacp_id = re.compile("^\s+(?P<id>\d+)\s+\d+", re.MULTILINE)
 
-
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -29,7 +28,7 @@ class Script(BaseScript):
         return "stp enable" in cmd
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check box has LACP enabled
         """

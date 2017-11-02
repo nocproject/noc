@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Juniper.JUNOS.get_capabilities"
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -23,7 +23,7 @@ class Script(BaseScript):
         return "?STP" in r
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -31,7 +31,7 @@ class Script(BaseScript):
         return "Enabled" in r
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """
@@ -46,6 +46,6 @@ class Script(BaseScript):
             i += len(p["tests"])
         return i
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         np = self.get_rpm_probes()
         caps["Juniper | RPM | Probes"] = np

@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "Cisco.IOSXR.get_capabilities"
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -23,7 +23,7 @@ class Script(BaseScript):
         return "% LLDP is not enabled" not in r
 
     @false_on_cli_error
-    def has_cdp(self):
+    def has_cdp_cli(self):
         """
         Check box has cdp enabled
         """
@@ -31,7 +31,7 @@ class Script(BaseScript):
         return "% CDP is not enabled" not in r
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """

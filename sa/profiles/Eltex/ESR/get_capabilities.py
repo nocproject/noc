@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Eltex.ESR.get_capabilities"
 
     @false_on_cli_error
-    def has_ipv6(self):
+    def has_ipv6_cli(self):
         """
         Check box has IPv6 ND enabled
         """

@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "HP.Comware.get_capabilities"
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -29,7 +29,7 @@ class Script(BaseScript):
             return "?STP" in r
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -45,6 +45,6 @@ class Script(BaseScript):
         r = self.cli("display ndp")
         return "enabled" in r
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         if self.has_ndp():
             caps["Huawei | NDP"] = True
