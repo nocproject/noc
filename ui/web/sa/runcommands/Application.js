@@ -141,7 +141,10 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectedStore}',
                                 selection: '{selectedRow}'
                             },
-                            selModel: 'checkboxmodel',
+                            selModel: {
+                                mode: 'MULTI',
+                                selType: 'checkboxmodel'
+                            },
                             listeners: {
                                 itemdblclick: 'onSelectedDblClick',
                                 afterrender: 'setRowClass'
