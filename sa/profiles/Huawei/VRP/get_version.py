@@ -18,15 +18,13 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^VRP.+Software, Version (?P<version>[^ ,]+),? .*?\n"
-        r"\s*(?:Quidway|Huawei) (Technologies Co., Ltd.\n)?"
-        r"(?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]+uptime",
+        r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]+uptime",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
     rx_ver_snmp = re.compile(
         r"Versatile Routing Platform Software.*?"
         r"Version (?P<version>[^ ,]+),? .*?\n"
-        r"\s*(?:Quidway|Huawei) (Technologies Co., Ltd.\n)"
-        r"(?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?"
+        r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+)?"
         r"[^ \t\n\r\f\v\-]+)[^\n]+",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
@@ -43,10 +41,10 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
-    rx_ver_snmp4 = re.compile(
+    rx_ver_snmp4_ne_me = re.compile(
         r"Huawei Versatile Routing Platform Software.*?"
         r"Version (?P<version>\S+) .*?"
-        r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]\d",
+        r"\s*(?P<platform>NetEngine\s+|MultiserviceEngine\s+\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
@@ -61,6 +59,13 @@ class Script(BaseScript):
 
     def execute(self):
         v = ""
+        match_re_list = [
+            self.rx_ver,
+            self.rx_ver_snmp,
+            self.rx_ver_snmp2,
+            self.rx_ver_snmp3,
+            self.rx_ver_snmp5
+        ]
         if self.has_snmp():
             # Trying SNMP
             try:
@@ -74,14 +79,10 @@ class Script(BaseScript):
                 v = self.cli("display version", cached=True)
             except self.CLISyntaxError:
                 raise self.NotSupportedError()
-        rx = self.find_re([
-            self.rx_ver,
-            self.rx_ver_snmp,
-            self.rx_ver_snmp2,
-            self.rx_ver_snmp3,
-            self.rx_ver_snmp4,
-            self.rx_ver_snmp5
-        ], v)
+        if "NetEngine" in v or "MultiserviceEngine" in v:
+            # Use specified regex for this platform
+            match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
+        rx = self.find_re(match_re_list, v)
         match = rx.search(v)
         platform = match.group("platform")
         # Convert NetEngine to NE
