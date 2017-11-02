@@ -21,6 +21,7 @@ from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
 from noc.config import config
 
+
 class SAEAPI(API):
     """
     SAE API
@@ -133,6 +134,9 @@ class SAEAPI(API):
             data = cursor.fetchall()
         if not data:
             raise APIError("Object is not found")
+        # Build capabilities
+        capabilities = ObjectCapabilities.get_capabilities(object_id)
+        # Get object credentials
         (name, is_managed, profile,
          vendor, platform, version,
          scheme, address, port, user, password,
@@ -173,8 +177,11 @@ class SAEAPI(API):
             "access_preference": access_preference
         }
         if snmp_ro:
-            credentials["snmp_version"] = "v2c"
             credentials["snmp_ro"] = snmp_ro
+            if "SNMP | v2c" in capabilities:
+                credentials["snmp_version"] = "v2c"
+            elif "SNMP | v1" in capabilities:
+                credentials["snmp_version"] = "v1"
         if scheme in (1, 2):
             credentials["cli_protocol"] = {
                 1: "telnet",
@@ -197,8 +204,6 @@ class SAEAPI(API):
                 version["image"] = sw_image
         else:
             version = None
-        # Build capabilities
-        capabilities = ObjectCapabilities.get_capabilities(object_id)
         return dict(
             profile=Profile.get_by_id(profile).name,
             pool_id=pool_id,
