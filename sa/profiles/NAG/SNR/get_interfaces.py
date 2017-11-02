@@ -58,6 +58,7 @@ class Script(BaseScript):
         "Fast-Ethernet": "physical",
         "Gigabit-Combo": "physical",
         "Gigabit-TX": "physical",
+        "SFP": "physical",
         "EtherSVI": "SVI"
     }
 
