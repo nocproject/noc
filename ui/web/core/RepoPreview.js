@@ -16,9 +16,9 @@ Ext.define('NOC.core.RepoPreview', {
     syntax: null,
     restUrl: null,
     historyHashPrefix: null,
-    preview_theme: NOC.settings.preview_theme,
-    // preview_theme: 'monokai',
-    // mode: 'groovy',
+    // preview_theme: NOC.settings.preview_theme,
+    preview_theme: 'monokai',
+    mode: 'groovy',
 
     initComponent: function() {
         var me = this;
@@ -261,11 +261,11 @@ Ext.define('NOC.core.RepoPreview', {
             css.style.height = '100%';
         }
         me.setTheme(me.preview_theme);
-        // me.viewer.setOption('mode', me.mode);
+        me.viewer.setOption('mode', me.mode);
         me.sideBySideModeButton.setDisabled(true);
         // me.compareModeButton.toggle(false);
         me.sideBySideModeButton.toggle(false);
-        // CodeMirror.autoLoadMode(me.viewer, me.mode);
+        CodeMirror.autoLoadMode(me.viewer, me.mode);
     },
     //
     removeViewer: function() {
@@ -470,7 +470,7 @@ Ext.define('NOC.core.RepoPreview', {
                 value: text,
                 theme: theme
             });
-            // CodeMirror.autoLoadMode(me.viewer, me.mode);
+            CodeMirror.autoLoadMode(me.viewer, me.mode);
         } else {
             if(!Ext.isFunction(me.viewer.getMode)) {
                 me.removeViewer();
