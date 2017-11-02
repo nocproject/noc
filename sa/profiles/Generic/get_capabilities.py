@@ -274,6 +274,20 @@ class Script(BaseScript):
             fallback_handler=self.return_false
         )
 
+    def execute_platform_cli(self, caps):
+        """
+        Method to be overriden in subclasses. Execute if C preffered
+        :param caps: Dict of capabilities, can be modified
+        """
+        pass
+
+    def execute_platform_snmp(self, caps):
+        """
+        Method to be overriden in subclasses. Execute if S prefferd
+        :param caps: Dict of capabilities, can be modified
+        """
+        pass
+
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
@@ -336,7 +350,12 @@ class Script(BaseScript):
             caps["Network | RSVP"] = True
         if self.has_lacp():
             caps["Network | LACP"] = True
-        self.execute_platform(caps)
+        self.call_method(
+            cli_handler="execute_platform_cli",
+            snmp_handler="execute_platform_snmp",
+            fallback_handler="execute_platform",
+            **{"caps": caps}
+        )
         return caps
 
     def get_syntax_variant(self, commands):
