@@ -381,6 +381,7 @@ class Script(BaseScript):
         """
         self.capabilities[name] = value
 
+
 def false_on_cli_error(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
