@@ -25,8 +25,7 @@ class Script(BaseScript):
     rx_vlan_au = re.compile(r"^\s*Untagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
 
     rx_description = re.compile(
-        r"^\s*(?P<interface>e\S+)\s+((?P<description>[A-Za-z0-9-=_ \.\,'\(\)]+|\S+ \S+|\S+|))$",
-        re.MULTILINE)
+        r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
 #    rx_channel_description = re.compile(
 #        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
 #    rx_vlan_stack = re.compile(
@@ -295,7 +294,7 @@ class Script(BaseScript):
                     tagged = port_vlans[name]["tagged"]
                 swp = {
                         "status": status,
-                        "description": description,
+                        "description": description.strip(),
                         "802.1Q Enabled": len(port_vlans.get(name, [])) > 0,
                         "802.1ad Tunnel": vlan_stack_status.get(name, False),
                         "tagged": tagged,
