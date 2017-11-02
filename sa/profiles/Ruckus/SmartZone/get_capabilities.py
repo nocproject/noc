@@ -7,12 +7,17 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript, false_on_cli_error
+from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
+
 
 class Script(BaseScript):
     name = "Ruckus.SmartZone.get_capabilities"
     cache = True
 
-    def execute_platform(self, caps):
+    def execute_platform_snmp(self, caps):
+        if self.match_version(platform__regex="^SmartZone"):
+            caps["CPE | Controller"] = True
+
+    def execute_platform_cli(self, caps):
         if self.match_version(platform__regex="^SmartZone"):
             caps["CPE | Controller"] = True

@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_stack = re.compile(r"^\s*\*?(?P<box_id>\d+)\s+", re.MULTILINE)
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -27,7 +27,7 @@ class Script(BaseScript):
         return "LLDP state: Enabled" in cmd
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -35,7 +35,7 @@ class Script(BaseScript):
         return "spanning tree: off" not in cmd
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check box has STP enabled
         """
@@ -44,7 +44,7 @@ class Script(BaseScript):
                 return True
         return False
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         try:
             cmd = self.cli("show stack")
             s = []

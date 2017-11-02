@@ -21,7 +21,7 @@ class Script(BaseScript):
     rx_cdp = re.compile(r"^\s*CDP \S+ enabled ports\s+:\s+\d+", re.MULTILINE)
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -29,14 +29,14 @@ class Script(BaseScript):
         return self.rx_lldp.search(cmd) is not None
 
     @false_on_cli_error
-    def has_cdp(self):
+    def has_cdp_cli(self):
         """
         Check box has CDP enabled
         """
         cmd = self.cli("show cdp")
         return self.rx_cdp.search(cmd) is not None
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         try:
             s = []
             cmd = self.cli("show stacking")

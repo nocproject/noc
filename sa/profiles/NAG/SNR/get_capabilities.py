@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_lldp_en = re.compile(r"LLDP has been enabled globally?")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled on SNR
         """

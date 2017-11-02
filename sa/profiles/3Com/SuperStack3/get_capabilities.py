@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_stp = re.compile(r"stpState\s*:\s+disable")
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """

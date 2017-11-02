@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "Alstec.7200.get_capabilities"
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """

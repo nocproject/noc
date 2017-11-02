@@ -28,7 +28,7 @@ class Script(BaseScript):
         return "LLDP has been enabled globally" in cmd
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -37,7 +37,7 @@ class Script(BaseScript):
         return "STP is disabled" not in cmd
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has OAM enabled
         """
@@ -62,7 +62,7 @@ class Script(BaseScript):
         return [l.splitlines()[0].split(":")[1].strip("-") for l in r.split("\n----") if l]
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check stack members
         :return:
@@ -70,7 +70,7 @@ class Script(BaseScript):
         r = self.cli("show port-group brief")
         return "active" in r
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
