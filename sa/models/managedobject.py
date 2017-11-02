@@ -439,6 +439,17 @@ class ManagedObject(Model):
         default="p"
     )
     #
+    event_processing_policy = CharField(
+        "Event Processing Policy",
+        max_length=1,
+        choices=[
+            ("P", "Profile"),
+            ("E", "Process Events"),
+            ("D", "Drop events")
+        ],
+        default="P"
+    )
+    #
     tags = TagsField("Tags", null=True, blank=True)
 
     # Event ids
@@ -1319,6 +1330,12 @@ class ManagedObject(Model):
             return self.object_profile.access_preference
         else:
             return self.access_preference
+
+    def get_event_processing_policy(self):
+        if self.event_processing_policy == "P":
+            return self.object_profile.event_processing_policy
+        else:
+            return self.event_processing_policy
 
     @classmethod
     def get_bi_selector(cls, cfg):

@@ -401,6 +401,16 @@ class ManagedObjectProfile(models.Model):
         ],
         default="E"
     )
+    # Event processing policy
+    event_processing_policy = models.CharField(
+        "Event Processing Policy",
+        max_length=1,
+        choices=[
+            ("E", "Process Events"),
+            ("D", "Drop events")
+        ],
+        default="E"
+    )
     #
     metrics = PickledField(blank=True)
     #
