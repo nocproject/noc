@@ -19,10 +19,11 @@ class CHContainerDataSource(BaseDataSource):
     name = "ch_container"
 
     def extract(self):
-        for obj in Object.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
+        o = Object._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+        for obj in o.find({}, {"_id": 1, "bi_id": 1, "name": 1, "parent": 1}, no_cursor_timeout=True):
             yield (
-                obj.bi_id,
-                obj.id,
-                obj.name,
-                bi_hash(obj.container) if obj.container else ""
+                obj["bi_id"],
+                obj["_id"],
+                obj.get("name", ""),
+                bi_hash(obj["container"]) if obj.get("container") else ""
             )
