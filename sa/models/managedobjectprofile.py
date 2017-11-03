@@ -481,7 +481,8 @@ class ManagedObjectProfile(models.Model):
             self.initial_data["ping_size"] != self.ping_size or
             self.initial_data["ping_count"] != self.ping_count or
             self.initial_data["ping_timeout_ms"] != self.ping_timeout_ms or
-            self.initial_data["report_ping_attempts"] != self.ping_interval
+            self.initial_data["report_ping_attempts"] != self.ping_interval or
+            self.initial_data["event_processing_policy"] != self.event_processing_policy
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
