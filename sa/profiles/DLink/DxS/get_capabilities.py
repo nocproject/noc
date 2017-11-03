@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_stack = re.compile(r"^\s*(?P<box_id>\d+)\s+", re.MULTILINE)
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -30,7 +30,7 @@ class Script(BaseScript):
         return self.rx_lldp.search(cmd) is not None
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has STP enabled
         """
@@ -39,14 +39,14 @@ class Script(BaseScript):
         return self.rx_stp.search(cmd) is not None
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has OAM supported
         """
         cmd = self.cli("show ethernet_oam ports status")
         return self.rx_oam.search(cmd) is not None
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         try:
             cmd = self.cli("show stack_device")
             s = []
