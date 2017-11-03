@@ -483,7 +483,7 @@ class ExtModelApplication(ExtApplication):
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         # Tags
-        if getattr(o, "tags") is not None and "tags" in attrs:
+        if hasattr(o, "tags") is not None and "tags" in attrs:
             for t in set(getattr(o, "tags", [])).symmetric_difference(set(attrs.get("tags", []))):
                 r = Tag.register_tag(t, repr(self.model))
                 self.logger.info("Update tag: %s" % t)
