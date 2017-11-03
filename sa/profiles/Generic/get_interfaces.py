@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Linux.SNMP.get_interfaces
+# Generic.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
@@ -116,9 +116,9 @@ class Script(BaseScript):
                     "oper_status": iface["oper_status"],
                     "snmp_ifindex": l,
                 }
-                iface_name, num = iface["interface"].split(".")
+                iface_name, num = iface["interface"].rsplit(".", 1)
                 if num.isdigit():
-                    vlan_ids = int(iface["interface"].split(".")[-1])
+                    vlan_ids = int(iface["interface"].rsplit(".", 1)[-1])
                     if vlan_ids < 4000:
                         s["vlan_ids"] = vlan_ids
                 if l in ip_ifaces:
