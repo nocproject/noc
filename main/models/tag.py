@@ -35,7 +35,7 @@ class Tag(Document):
         :param model:
         :return:
         """
-        cls._get_collection().update(
+        r = cls._get_collection().update(
             {"tag": tag},
             {
                 "$addToSet": {
@@ -47,6 +47,7 @@ class Tag(Document):
             },
             upsert=True
         )
+        return r
 
     @classmethod
     def unregister_tag(cls, tag, model):

@@ -29,6 +29,7 @@ from noc.sa.interfaces.base import (
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.models import is_document
+from noc.main.models.tag import Tag
 
 
 class ExtModelApplication(ExtApplication):
@@ -457,6 +458,7 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
+        print request
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
@@ -480,6 +482,15 @@ class ExtModelApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+        # Tags
+        if getattr(o, "tags") is not None and "tags" in attrs:
+            for t in set(getattr(o, "tags", [])).symmetric_difference(set(attrs.get("tags", []))):
+                r = Tag.register_tag(t, repr(self.model))
+                self.logger.info("Update tag: %s" % t)
+                if not r.get("updatedExisting"):
+                    # Tags not in collections deny remove
+                    self.logger.warning("Update unregistered tag not allowed %s" % t)
+                    attrs["tags"] += [t]
         # Update attributes
         for k, v in attrs.items():
             setattr(o, k, v)

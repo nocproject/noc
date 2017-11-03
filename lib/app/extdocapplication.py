@@ -30,6 +30,7 @@ from noc.sa.interfaces.base import (
 from noc.lib.validators import is_int, is_uuid
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
+from noc.main.models.tag import Tag
 
 
 class ExtDocApplication(ExtApplication):
@@ -357,6 +358,14 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
+        if getattr(o, "tags") is not None and "tags" in attrs:
+            for t in set(getattr(o, "tags", [])).difference(set(attrs.get("tags", []))):
+                r = Tag.register_tag(t, repr(self.model))
+                self.logger.info("Update tag: %s" % t)
+                if not r.get("updatedExisting"):
+                    # Tags not in collections not removed
+                    self.logger.warning("Tags not in collections not removed %s" % t)
+                    attrs["tags"] += [t]
         # @todo: Check for duplicates
         for k in attrs:
             if k != self.pk and "__" not in k:
