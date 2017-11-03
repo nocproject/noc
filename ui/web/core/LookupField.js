@@ -44,7 +44,7 @@ Ext.define("NOC.core.LookupField", {
         }
 
         Ext.apply(me, {
-            store: Ext.create("Ext.data.Store", {
+            store: {
                 fields: ["id", "label"],
                 pageSize: 25,
                 proxy: {
@@ -64,7 +64,7 @@ Ext.define("NOC.core.LookupField", {
                         successProperty: "success"
                     }
                 }
-            })
+            }
         });
         if(me.query) {
             Ext.apply(me.store.proxy.extraParams, me.query);

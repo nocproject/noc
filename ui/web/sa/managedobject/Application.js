@@ -324,6 +324,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                     uiStyle: "extra"
                 },
                 {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Tags"),
+                    allowBlank: true,
+                    uiStyle: "extra"
+                },
+                {
                     xtype: "fieldset",
                     layout: "hbox",
                     title: __("Role"),
@@ -972,13 +979,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                             uiStyle: "medium"
                         }
                     ]
-                },
-                {
-                    name: "tags",
-                    xtype: "tagsfield",
-                    fieldLabel: __("Tags"),
-                    allowBlank: true,
-                    uiStyle: "extra"
                 }
             ],
             formToolbar: [
