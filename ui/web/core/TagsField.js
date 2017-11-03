@@ -11,13 +11,14 @@ Ext.define("NOC.core.TagsField", {
     extend: "Ext.form.field.Tag",
     alias: ["widget.tagsfield"],
     displayField: "label",
-    valueField: "label",
-    queryParam: "__q",
+    valueField: "id",
+    queryParam: "__query",
     queryMode: "remote",
     autoLoadOnValue: true,
-    // forceSelection: false,
-    // triggerAction: 'query',
-    // createNewOnEnter: true,
+    filterPickList: true,
+    forceSelection: false,
+    createNewOnEnter: true,
+    // triggerAction: 'all',
     // createNewOnBlur: true,
 
     initComponent: function() {
@@ -25,8 +26,8 @@ Ext.define("NOC.core.TagsField", {
 
         Ext.apply(me, {
             store: {
-                fields: ["label"],
-                // pageSize: 25,
+                fields: ["id", "label"],
+                pageSize: 25,
                 proxy: {
                     type: "rest",
                     url: '/main/tag/ac_lookup/',
