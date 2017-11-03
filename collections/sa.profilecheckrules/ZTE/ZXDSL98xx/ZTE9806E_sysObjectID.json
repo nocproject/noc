@@ -1,0 +1,13 @@
+{
+    "name": "ZTE | ZXDSL | ZTE9806E sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "7a795a55-a9f9-402d-a965-4e053e356a50",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.3902.1008.1.4.2",
+    "action": "match",
+    "profile__name": "ZTE.ZXDSL98xx"
+}
