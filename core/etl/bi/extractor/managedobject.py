@@ -12,7 +12,7 @@ from collections import defaultdict
 # NOC modules
 from base import BaseExtractor
 from noc.sa.models.managedobject import ManagedObject
-from noc.bi.models.managedobject import ManagedObject as ManagedObjectBI
+from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.core.etl.bi.stream import Stream
 from noc.config import config
 from noc.inv.models.interface import Interface
