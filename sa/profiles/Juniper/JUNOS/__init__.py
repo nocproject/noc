@@ -30,9 +30,9 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
     matchers = {
-        "is_ex": {
+        "is_switch": {
             "platform": {
-                "$regex": "[em]x|qfx|acx"
+                "$regex": "ex|mx|qfx|acx"
             }
         }
     }

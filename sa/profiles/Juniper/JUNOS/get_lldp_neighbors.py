@@ -52,13 +52,13 @@ class Script(BaseScript):
     ]
 
     def execute_cli(self):
-        if self.is_ex:
-            return self.execute_ex()
+        if self.is_switch:
+            return self.execute_switch()
         else:
             return self.execute_other()
 
-    # Match mx, ex and qfx
-    def execute_ex(self):
+    # Match mx, ex, qfx, afx
+    def execute_switch(self):
         r = []
         # Collect data
         local_port_ids = {}  # name -> id
