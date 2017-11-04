@@ -62,7 +62,7 @@ class Script(BaseScript):
                     "remote_chassis_id_subtype": chassis_id_subtype,
                     "remote_chassis_id": chassis_id,
                     "remote_port_subtype": port_subtype,
-                    "remote_port": port.replace("GigaEthernet","Gig"),
+                    "remote_port": port,
                     "remote_capabilities": caps,
                 }]
             }
