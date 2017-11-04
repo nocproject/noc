@@ -178,9 +178,9 @@ class SAEAPI(API):
         }
         if snmp_ro:
             credentials["snmp_ro"] = snmp_ro
-            if "SNMP | v2c" in capabilities:
+            if capabilities.get("SNMP | v2c"):
                 credentials["snmp_version"] = "v2c"
-            elif "SNMP | v1" in capabilities:
+            elif capabilities.get("SNMP | v1"):
                 credentials["snmp_version"] = "v1"
         if scheme in (1, 2):
             credentials["cli_protocol"] = {
