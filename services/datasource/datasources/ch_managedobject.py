@@ -22,5 +22,8 @@ class CHManagedObjectDataSource(BaseDataSource):
                 mo.bi_id,
                 mo.id,
                 mo.name,
-                mo.address
+                mo.address,
+                mo.profile.name if mo.profile else "",
+                mo.platform.name if mo.platform else "",
+                mo.version.version if mo.version else ""
             )

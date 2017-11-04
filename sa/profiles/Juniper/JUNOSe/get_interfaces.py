@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_interfases
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 import re
 import copy
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 
@@ -192,7 +192,7 @@ class Script(BaseScript):
         else:
             return []
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         v = self.cli("show running-configuration | include interface")
         for l in v.split("\n"):
             match = self.rx_conf_iface.match(l)

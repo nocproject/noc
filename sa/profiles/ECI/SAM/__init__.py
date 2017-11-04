@@ -19,6 +19,7 @@ class Profile(BaseProfile):
     password_submit = "\r\n"
     command_submit = "\r\n"
     pattern_prompt = r"^( >>|\S+ >(?: \S+ >)?|\S+ (?:\- SHOW(?:\\\S+)?)?>)"
+    pattern_syntax_error = r": no such command"
 
     #pattern_prompt = r"^Select menu option.*:"
     pattern_more = [

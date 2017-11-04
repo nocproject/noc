@@ -18,11 +18,13 @@ from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
 from noc.core.model.decorator import on_delete_check
 from noc.core.model.fields import TagsField, DocumentReferenceField
+from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 
 
 @on_save
+@bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "auth_profile"),
     ("sa.ManagedObjectProfile", "cpe_auth_profile")

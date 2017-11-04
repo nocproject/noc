@@ -62,7 +62,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 selection: '{selectionRow}'
                             },
                             selModel: {
-                                mode: 'SIMPLE',
+                                mode: 'MULTI',
                                 // pruneRemoved: false,
                                 selType: 'checkboxmodel'
                             },
@@ -141,7 +141,10 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 store: '{selectedStore}',
                                 selection: '{selectedRow}'
                             },
-                            selModel: 'checkboxmodel',
+                            selModel: {
+                                mode: 'MULTI',
+                                selType: 'checkboxmodel'
+                            },
                             listeners: {
                                 itemdblclick: 'onSelectedDblClick',
                                 afterrender: 'setRowClass'
@@ -200,6 +203,7 @@ Ext.define('NOC.sa.runcommands.Application', {
                         xtype: 'splitter',
                         width: 1
                     },
+                    treeAlign: 'left',
                     resizable: true,
                     selectionStore: 'runcommands.selectionStore'
                 }

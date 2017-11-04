@@ -14,21 +14,21 @@ class Script(BaseScript):
     name = "MikroTik.RouterOS.get_capabilities"
     cache = True
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         c = self.scripts.get_license()
         caps["MikroTik | RouterOS | License | SoftwareID"] = c["software-id"]
         caps["MikroTik | RouterOS | License | Level"] = c["nlevel"]
         if c.get("upgradable-to"):
             caps["MikroTik | RouterOS | License | Upgradable To"] = c["upgradable-to"]
 
-    def has_cdp(self):
+    def has_cdp_cli(self):
         """
         Check box has cdp enabled
         """
         return True
 
     @false_on_cli_error
-    def has_ipv6(self):
+    def has_ipv6_cli(self):
         """
         Check box has lldp enabled
         """

@@ -120,6 +120,14 @@ class Float64Field(Float32Field):
     db_type = "Float64"
 
 
+class BooleanField(UInt8Field):
+    def to_tsv(self, value):
+        return "1" if value else "0"
+
+    def to_tsv_array(self, value):
+        return "'1'" if value else "'0'"
+
+
 class ArrayField(BaseField):
     def __init__(self, field_type, description=None):
         super(ArrayField, self).__init__(description=description)

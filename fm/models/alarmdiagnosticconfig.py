@@ -191,6 +191,8 @@ class AlarmDiagnosticConfig(Document):
     @staticmethod
     def get_diag(alarm, cfg, state):
         mo = alarm.managed_object
+        if not mo:
+            return
         result = []
         for c in cfg:
             if c.get("header"):

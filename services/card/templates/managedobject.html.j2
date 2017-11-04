@@ -256,6 +256,7 @@
         <th class="col-sm-1">{{ _("Port") }}</th>
         <th class="col-sm-1">{{ _("Admin") }}/{{ _("Oper") }}</th>
         <th class="col-sm-1">{{ _("Speed") }}/{{ _("Duplex") }}</th>
+        <th class="col-sm-1">{{ _("MAC") }}</th>
         <th class="col-sm-1">{{ _("VLAN") }}</th>
         <th class="col-sm-1">{{ _("Errors") }}</th>
         <th class="col-sm-1">{{ _("Status") }}</th>
@@ -275,6 +276,9 @@
                     {% else %}
                         -
                     {% endif %}
+                </td>
+                <td>
+                    {{ i["mac"] }}
                 </td>
                 <td>
                     {% if i["untagged_vlan"] %}U: {{ i["untagged_vlan"] }}{% endif %}

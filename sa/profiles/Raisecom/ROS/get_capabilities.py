@@ -19,7 +19,7 @@ class Script(BaseScript):
     rx_lldp = re.compile(r"LLDP enable status:\s+enable")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -27,7 +27,7 @@ class Script(BaseScript):
         return self.rx_lldp.search(cmd) is not None
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has lldp enabled
         """

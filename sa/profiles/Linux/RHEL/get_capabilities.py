@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "Linux.RHEL.get_capabilities"
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp\ladvd daemon enabled
         """
@@ -29,7 +29,7 @@ class Script(BaseScript):
             return False
         
     @false_on_cli_error
-    def has_cdp(self):
+    def has_cdp_cli(self):
         """
         Check box has cdp enabled
         """

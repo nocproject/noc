@@ -41,7 +41,7 @@ class Script(BaseScript):
     ]
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -49,7 +49,7 @@ class Script(BaseScript):
         return "% LLDP is not enabled" not in r
 
     @false_on_cli_error
-    def has_cdp(self):
+    def has_cdp_cli(self):
         """
         Check box has cdp enabled
         """
@@ -57,7 +57,7 @@ class Script(BaseScript):
         return "% CDP is not enabled" not in r
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """
@@ -65,7 +65,7 @@ class Script(BaseScript):
         return "% OAM is not enabled" not in r  # @todo:  not tested
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has stp enabled
         """
@@ -76,7 +76,7 @@ class Script(BaseScript):
         return True
 
     @false_on_cli_error
-    def has_ipv6(self):
+    def has_ipv6_cli(self):
         """
         Check box has IPv6 ND enabled
         """
@@ -110,7 +110,7 @@ class Script(BaseScript):
         return sum(1 for _ in self.rx_ip_sla_probe_entry.finditer(r))
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check LACP Status
         :return:
@@ -118,7 +118,7 @@ class Script(BaseScript):
         r = self.cli("show lacp counters")
         return r
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
         if sla_v is not None:

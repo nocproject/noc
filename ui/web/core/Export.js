@@ -27,6 +27,8 @@ Ext.define("NOC.core.Export", {
                 output = "";
             } else if(t === "string") {
                 output = sDelimiter + theValue + sDelimiter;
+            } else if(Ext.isArray(theValue)) {
+                output = sDelimiter + theValue.join(" ") + sDelimiter;
             } else {
                 output = String(theValue);
             }

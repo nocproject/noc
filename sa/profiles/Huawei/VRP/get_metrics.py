@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-"""
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_metrics
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
+
 
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 from noc.sa.profiles.Generic.get_metrics import OIDRule
 from noc.core.mib import mib
-from noc.core.script.metrics import percent
 
 
 class Script(GetMetricsScript):
@@ -50,3 +48,32 @@ class SlotRule(OIDRule):
                 path = ["0", "0", i, ""] if "CPU" in metric.metric else ["0", i, "0"]
                 if oid:
                     yield oid, self.type, self.scale, path
+
+    class SlotRule(OIDRule):
+
+        name = "sslot"
+
+        def iter_oids(self, script, metric):
+
+            hwSlotIndex = [0]
+            hwModIndex = [0, 1]
+
+            if script.has_capability("Slot | Member Ids"):
+                hwSlotIndex = script.capabilities["Slot | Member Ids"].split(" | ")
+            r = {}
+
+            for si in hwSlotIndex:
+                for cp in hwModIndex:
+                    r[(int(si), cp)] = "%d.%d" % (int(si), cp)
+
+            for si, cp in r:
+                if self.is_complex:
+                    gen = [mib[self.expand(o, {"hwSlotIndex": r[(si, cp)]})] for o in self.oid]
+                    path = ["0", si, cp]
+                    if gen:
+                        yield tuple(gen), self.type, self.scale, path
+                else:
+                    oid = mib[self.expand(self.oid, {"hwSlotIndex": r[(si, cp)]})]
+                    path = ["0", si, cp]
+                    if oid:
+                        yield oid, self.type, self.scale, path

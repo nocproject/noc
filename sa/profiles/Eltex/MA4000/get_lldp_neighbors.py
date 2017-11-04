@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"(^System name:(?P<system_name>.*)\n)?"
         r"(^System description:(?P<system_descr>.*)\n)?"
         r"(\n)?"
-        r"^Capabilities:(?P<caps>.*?)\n\n",
+        r"(^Capabilities:(?P<caps>.*?)\n\n)?",
         re.MULTILINE | re.DOTALL
     )
 
@@ -52,14 +52,15 @@ class Script(BaseScript):
             else:
                 port_id_subtype = 7
             caps = 0
-            for c in match.group("caps").split(","):
-                c = c.strip()
-                if c:
-                    caps |= {
-                        "Other": 1, "Repeater": 2, "Bridge": 4,
-                        "Access Point": 8, "Router": 16, "Telephone": 32,
-                        "Cable Device": 64, "Station only": 128
-                    }[c]
+            if match.group("caps"):
+                for c in match.group("caps").split(","):
+                    c = c.strip()
+                    if c:
+                        caps |= {
+                            "Other": 1, "Repeater": 2, "Bridge": 4,
+                            "Access Point": 8, "Router": 16, "Telephone": 32,
+                            "Cable Device": 64, "Station only": 128
+                        }[c]
             neighbor = {
                 "remote_chassis_id": chassis_id,
                 "remote_chassis_id_subtype": chassis_id_subtype,

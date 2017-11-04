@@ -14,6 +14,7 @@ import datetime
 import bson
 from pymongo import ReadPreference
 # NOC modules
+from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
@@ -66,7 +67,7 @@ class AlarmApplication(ExtApplication):
         config={}
     )
 
-    DEFAULT_ARH_ALARM = datetime.timedelta(days=7)
+    DEFAULT_ARCH_ALARM = datetime.timedelta(seconds=config.web.api_arch_alarm_limit)
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -90,6 +91,7 @@ class AlarmApplication(ExtApplication):
 
     def cleaned_query(self, q):
         q = q.copy()
+        status = q["status"] if "status" in q else "A"
         for p in self.ignored_params:
             if p in q:
                 del q[p]
@@ -120,7 +122,7 @@ class AlarmApplication(ExtApplication):
         if "managedobjectselector" in q:
             s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
             if "managed_object__in" in q:
-                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
+                q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
                 q["managed_object__in"] = s
             q.pop("managedobjectselector")
@@ -138,9 +140,9 @@ class AlarmApplication(ExtApplication):
             del q["collapse"]
             if c != "0":
                 q["root__exists"] = False
-        if "status" in q and q["status"] == "C":
+        if status == "C":
             if "timestamp__gte" not in q and "timestamp__lte" not in q:
-                q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARH_ALARM
+                q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
         return q
 
     def instance_to_dict(self, o, fields=None):
@@ -151,8 +153,8 @@ class AlarmApplication(ExtApplication):
         if o.status == "C":
             # For archived alarms
             mtc = Maintenance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
-                                              affected_objects__in=[
-                                                       MaintenanceObject(object=o.managed_object)]).count() > 0
+                                             affected_objects__in=[
+                                                 MaintenanceObject(object=o.managed_object)]).count() > 0
 
         d = {
             "id": str(o.id),

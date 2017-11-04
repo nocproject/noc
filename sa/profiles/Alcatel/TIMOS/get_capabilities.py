@@ -27,7 +27,7 @@ class Script(BaseScript):
     rx_oam = re.compile("Admin State\s+: up", re.MULTILINE)
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
@@ -35,7 +35,7 @@ class Script(BaseScript):
         return self.rx_lldp.search(cmd) is not None
 
     @false_on_cli_error
-    def has_oam(self):
+    def has_oam_cli(self):
         """
         Check box has oam enabled
         """
@@ -47,7 +47,7 @@ class Script(BaseScript):
         return False
 
     @false_on_cli_error
-    def has_bfd(self):
+    def has_bfd_cli(self):
         """
         Check box has bfd enabled
         """
@@ -55,7 +55,7 @@ class Script(BaseScript):
         return not "No Matching Entries Found" in cmd
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check stack members
         :return:

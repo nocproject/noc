@@ -26,7 +26,7 @@ class Script(BaseScript):
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled on Eltex
         """
@@ -34,7 +34,7 @@ class Script(BaseScript):
         return self.rx_lldp_en.search(cmd) is not None
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check box has lacp enabled on Eltex
         """
@@ -42,7 +42,7 @@ class Script(BaseScript):
         return self.rx_lacp_en.search(cmd) is not None
 
     @false_on_cli_error
-    def has_stp(self):
+    def has_stp_cli(self):
         """
         Check box has stp enabled on Eltex
         """
@@ -50,7 +50,7 @@ class Script(BaseScript):
         return self.rx_stp_en.search(cmd) is not None
 
     @false_on_cli_error
-    def has_gvrp(self):
+    def has_gvrp_cli(self):
         """
         Check box has gvrp enabled on Eltex
         """
@@ -67,7 +67,7 @@ class Script(BaseScript):
         r = self.cli("show version")
         return [e[0] for e in parse_table(r)]
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0

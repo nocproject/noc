@@ -6,7 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-import json
+import demjson
 
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
@@ -105,5 +105,5 @@ class MODashboard(BaseDashboard):
         tmpl = j2_env.get_template("dash_mo.j2")
         data = tmpl.render(context)
 
-        render = json.loads(data)
+        render = demjson.decode(data)
         return render

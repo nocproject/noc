@@ -52,6 +52,7 @@ class Profile(BaseProfile):
         )
 
     def convert_interface_name(self, interface):
+        interface = str(interface)
         if " efp_id " in interface:
             l, r = interface.split(" efp_id ", 1)
             return "%s.SI.%d" % (

@@ -8,7 +8,7 @@
 # ---------------------------------------------------------------------
 """
 
-import json
+import demjson
 
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
@@ -43,5 +43,5 @@ class IPSLADashboard(BaseDashboard):
         tmpl = j2_env.get_template("dash_ipsla.j2")
         data = tmpl.render(context)
 
-        render = json.loads(data)
+        render = demjson.decode(data)
         return render

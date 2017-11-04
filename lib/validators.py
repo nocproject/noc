@@ -51,6 +51,30 @@ def is_int(v):
     return True
 
 
+def is_float(v):
+    """
+    Check for valid float
+
+    >>> is_float(10)
+    True
+    >>> is_float(10.2)
+    True
+    >>> is_float("10.2")
+    True
+    >>> is_float("Ten")
+    False
+    >>> is_float(None)
+    False
+    """
+    try:
+        v = float(v)
+    except ValueError:
+        return False
+    except TypeError:
+        return False
+    return True
+
+
 def is_asn(v):
     """
     Check value is valid 2-byte or 4-byte autonomous system number

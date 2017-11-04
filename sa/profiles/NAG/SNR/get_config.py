@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,10 +20,9 @@ class Script(BaseScript):
         #
         #
         # See bug NOC-291: http://bt.nocproject.org/browse/NOC-291
-        raise Exception("Not implemented")
         #
         #
-        if self.snmp and self.access_profile.snmp_rw and TFTP_IP and file_name:
+        """        if self.snmp and self.access_profile.snmp_rw and TFTP_IP and file_name:
             try:
                 # The ConfigCopyProtocol is set to TFTP
                 self.snmp.set('1.3.6.1.4.1.9.9.96.1.1.1.1.2.111', 1)
@@ -44,6 +43,7 @@ class Script(BaseScript):
                 return self.cleaned_config(config)
             except self.snmp.TimeOutError:
                 pass
-
+        """
         # Fallback to CLI
-        raise Exception("Not implemented")
+        config = self.cli("show running-config")
+        return self.cleaned_config(config)

@@ -1,5 +1,4 @@
 ##
-## Do not forget to sync with main/management/commands/build-manifest.py
 ##
 syntax: glob
 *.pyc
@@ -21,6 +20,8 @@ contrib/lib/*
 contrib/bin/*
 contrib/share/*
 .*
+!/.gitlab-ci.yml
+!/.gitignore
 ext_*
 etc/requirements/local.txt
 static/pkg/

@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_udld = re.compile("Global UDLD Status\s*:\s*(?P<status>\S+)")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has LLDP enabled
         """
@@ -30,7 +30,7 @@ class Script(BaseScript):
         return self.rx_lldp.search(cmd) is not None
 
     @false_on_cli_error
-    def has_udld(self):
+    def has_udld_cli(self):
         """
         Check box has UDLD enabled
         """
@@ -49,7 +49,7 @@ class Script(BaseScript):
         return [l[0].split("-")[1] for l in v if "NI-" in l[0]]
 
     @false_on_cli_error
-    def has_lacp(self):
+    def has_lacp_cli(self):
         """
         Check lacp ports
         @todo scripts.get_portchannel
@@ -59,7 +59,7 @@ class Script(BaseScript):
         # r = self.scripts.get_portchannel()
         return r
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
