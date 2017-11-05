@@ -157,6 +157,8 @@ class InterfaceProfile(Document):
     is_uni = BooleanField(default=False)
     # Allow automatic segmentation
     allow_autosegmentation = BooleanField(default=False)
+    # Allow collecting metrics from subinterfaces
+    allow_subinterface_metrics = BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)

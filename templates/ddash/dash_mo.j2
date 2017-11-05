@@ -38,6 +38,11 @@
       {% endfor -%},
       {% endif %}
 
+      {% if subifaces %}
+        {% from "template_subiface.j2" import subiface -%}
+          {{ subiface(subifaces) }},
+      {% endif %}
+
       {% include "template_device.j2" with context -%},
       {% include "template_vendor.j2" with context -%},
       {% include "template_platform.j2" with context -%},
@@ -133,6 +138,23 @@
             }
         {%- endfor %}
     {%endif%}
+
+    {%if subifaces %}
+    ,
+        {% set comma = joiner(",") -%}
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "250px",
+          "showTitle": true,
+          "title": "SubInterfaces",
+          "internal_comment": "subif_row",
+          "panels": [
+            {% from "graph_subinterface_load.j2" import subinterface -%}
+            {{subinterface()}}
+          ]
+        }
+    {%endif%}
     {%if lags %}
     ,
         {% set comma = joiner(",") -%}
@@ -157,6 +179,8 @@
     ,
         {% include "row_errors.j2" with context -%}
     {%endif%}
+
+
     {%if object_metrics%}
         ,
         {

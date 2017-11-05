@@ -6,10 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import os
+
 import ujson
-import logging
+
+BAD_CHARS = u'!"%\'()+,:;<>?@\^`{|}~\\\n\r'
 
 
 class BaseDashboard(object):
@@ -79,3 +82,8 @@ class BaseDashboard(object):
                         self.logger.error("Dashboard template file %s not contains valid JSON" % fl)
                         continue
         return t
+
+    def str_cleanup(self, data, translate_to=None):
+        remove_letters = BAD_CHARS
+        translate_table = dict((ord(char), translate_to) for char in remove_letters)
+        return data.translate(translate_table)

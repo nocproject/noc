@@ -1,0 +1,105 @@
+{% macro subinterface() -%}
+{
+  "title": "$SubInterfaces",
+  "aliasColors": {},
+  "bars": false,
+  "internal_comment":"graph_subinterface_load.j2",
+  "datasource": null,
+  "repeat": "SubInterfaces",
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": "",
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "minSpan": 6,
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "scopedVars": {
+  },
+  "seriesOverrides": [
+    {
+      "alias": "Input",
+      "transform": "negative-Y"
+    },
+    {
+      "alias": "Oper status",
+      "yaxis": 2,
+      "fill": 0
+    },
+    {
+      "alias": "Admin status",
+      "yaxis": 2,
+      "fill": 0
+    }
+  ],
+  "span": 12,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, avg(load_in) as Input, avg(load_out) as Output FROM $table WHERE managed_object = $bi_id and path[5]=toString($SubInterfaces) and $timeFilter GROUP BY t ORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "interface",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "format": "bps",
+      "label": "bit/s",
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    },
+    {
+      "logBase": 1,
+      "show": false,
+      "max": null,
+      "format": "short",
+      "min": null,
+      "label": null
+    }
+  ]
+}
+{%- endmacro %}
