@@ -16,8 +16,8 @@
             "description": "Reason"
         }
     ],
-    "subject_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
-    "body_template": "Linecard {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "subject_template": "Linecard in slot {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
+    "body_template": "Linecard in slot {{number}} Failed{% if reason %}: {{reason}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""
