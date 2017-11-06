@@ -29,10 +29,17 @@ class Script(BaseScript):
         r"MTU:(?P<mtu>\S+)\s+\S+\s+\S+\s+ifindex:(?P<ifindex>\S+)",
         re.MULTILINE)
     rx_sh_int3 = re.compile(
-        r"^(?P<ifname>\S+)\s+\(unit number\s(?P<unit>\S+)\):\s+[\S ]+\s+[\S ]+\s+\S+"
-        r"\s\S+:\s(?P<ip>\S+)\s+(?:.*\s*)Netmask\s(?P<nmask>\S+)\sSubnetmask\s(?P<smask>\S+)"
-        r"\s+(?:Ethernet\saddress\sis\s(?P<mac>\S+))?",
+        r"^(?P<ifname>\S+)\s+\(unit number (?P<unit>\S+)\):\s*\n"
+        r"^.+?\n"
+        r"^.+?\n"
+        r"(^\s+Internet address: (?P<ip>\S+)\s*\n)?"
+        r"(^\s+Broadcast address: \S+\s*\n)?"
+        r"(^\s+Netmask (?P<nmask>\S+) Subnetmask (?P<smask>\S+)\s*\n)?"
+        r"(^\s+Ethernet address is (?P<mac>\S+)\s*\n)?"
+        r"(^\s+Metric is \d+\s*\n)?"
+        r"(^\s+Maximum Transfer Unit size is (?P<mtu>\d+)\s*\n)?",
         re.MULTILINE)
+
     def execute(self):
         self.cli("IFSHOW ?")
         cmd = self.cli("IFSHOW")
@@ -49,6 +56,8 @@ class Script(BaseScript):
                     mac = match.group("mac")
                 else:
                     match = self.rx_sh_int2.search(i)
+                    if not match:
+                        continue
                 ifname = match.group("ifname")
                 typ = self.profile.get_interface_type(ifname)
                 mtu = match.group("mtu")
@@ -84,42 +93,46 @@ class Script(BaseScript):
                     iface["mac"] = mac
                     iface["subinterfaces"][0]["mac"] = mac
                 interfaces += [iface]
-        else:
+        if not interfaces:
             for match in self.rx_sh_int3.finditer(cmd):
                 mac = match.group("mac")
+                mtu = match.group("mtu")
                 name = match.group("ifname")
                 unit = match.group("unit")
-                ifname = "%s/%s" % (name, unit)
+                ifname = "%s%s" % (name, unit)
                 typ = self.profile.get_interface_type(name)
-                ip = match.group("ip")
-                n = match.group("nmask")
-                nn = [int(n[2:][i:i+2],16) for i in range(0,len(n[2:]),2)]
-                netmask = "%d.%d.%d.%d" % (nn[0], nn[1], nn[2], nn[3],)
-                mask = str(IPv4.netmask_to_len(netmask))
-                ip = ip + '/' + mask
-                ip_list = [ip]
-                enabled_afi = []
-                if ":" in ip:
-                    ip_interfaces = "ipv6_addresses"
-                    enabled_afi += ["IPv6"]
-                else:
-                    ip_interfaces = "ipv4_addresses"
-                    enabled_afi += ["IPv4"]
                 iface = {
                     "name": ifname,
                     "type": typ,
-                    "admin_status": True,
-                    "oper_status": True,
                     "subinterfaces": [{
                         "name": ifname,
-                        "admin_status": True,
-                        "oper_status": True,
-                        ip_interfaces: ip_list,
-                        "enabled_afi": enabled_afi
                     }]
                 }
+                ip = match.group("ip")
+                if ip:
+                    try:
+                        n = match.group("nmask")
+                        nn = [int(n[2:][i:i+2],16) for i in range(0,len(n[2:]),2)]
+                    except:
+                        print "%s %s %s\n" % (iface, n, mac)
+                        quit()
+                    netmask = "%d.%d.%d.%d" % (nn[0], nn[1], nn[2], nn[3],)
+                    mask = str(IPv4.netmask_to_len(netmask))
+                    ip = ip + '/' + mask
+                    ip_list = [ip]
+                    enabled_afi = []
+                    if ":" in ip:
+                        ip_interfaces = "ipv6_addresses"
+                        enabled_afi += ["IPv6"]
+                    else:
+                        ip_interfaces = "ipv4_addresses"
+                        enabled_afi += ["IPv4"]
+                    iface["subinterfaces"][0][ip_interfaces] = ip_list
+                    iface["subinterfaces"][0]["enabled_afi"] = enabled_afi
                 if mac:
                     iface["mac"] = mac
                     iface["subinterfaces"][0]["mac"] = mac
+                if mtu:
+                    iface["subinterfaces"][0]["mtu"] = mtu
                 interfaces += [iface]
         return [{"interfaces": interfaces}]
