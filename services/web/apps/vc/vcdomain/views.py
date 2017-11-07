@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.vc.models import VCDomain
+from noc.vc.models.vcdomain import VCDomain
 from noc.core.translation import ugettext as _
 
 

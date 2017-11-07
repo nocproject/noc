@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.vc.models import VCBindFilter
+from noc.vc.models.vcbindfilter import VCBindFilter
 from noc.core.translation import ugettext as _
 
 

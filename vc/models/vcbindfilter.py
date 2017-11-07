@@ -2,16 +2,18 @@
 # ---------------------------------------------------------------------
 # VCBindFilter model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Django modules
 from django.db import models, connection
 # NOC modules
-from vcdomain import VCDomain
-from vcfilter import VCFilter
-from vc import VC
+from .vcdomain import VCDomain
+from .vcfilter import VCFilter
+from .vc import VC
 from noc.ip.models.afi import AFI_CHOICES
 from noc.core.model.fields import CIDRField
 

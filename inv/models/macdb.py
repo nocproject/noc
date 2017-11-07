@@ -14,7 +14,7 @@ from noc.lib.nosql import (Document, StringField, ForeignKeyField,
                            IntField)
 from interface import Interface
 from noc.sa.models.managedobject import ManagedObject
-from noc.vc.models import VCDomain
+from noc.vc.models.vcdomain import VCDomain
 from maclog import MACLog
 from noc.core.mac import MAC
 
