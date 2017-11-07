@@ -1,5 +1,5 @@
 {
-    "name": "Cisco | WLC | WLC2500",
+    "name": "Cisco | WLC | physDescr",
     "$collection": "sa.profilecheckrules",
     "uuid": "69f288c0-e852-47b4-9e28-059219bffc41",
     "description": "Examples:\nCisco 2500 Series Wireless LAN Controller",
