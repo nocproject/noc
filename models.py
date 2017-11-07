@@ -244,6 +244,8 @@ _MODELS = {
     "ip.VRF": "noc.ip.models.vrf.VRF",
     "ip.VRFGroup": "noc.ip.models.vrfgroup.VRFGroup",
     # vc models
+    "vc.VCDomainProfile": "noc.vc.models.vcdomainprofile.VCDomainProfile",
+    "vc.VCProfile": "noc.vc.models.vcprofile.VCProfile",
     "vc.VC": "noc.vc.models.vc.VC",
     "vc.VCBindFilter": "noc.vc.models.vcbindfilter.VCBindFilter",
     "vc.VCDomain": "noc.vc.models.vcdomain.VCDomain",
