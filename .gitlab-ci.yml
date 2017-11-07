@@ -1,28 +1,12 @@
 stages:
-  - build
-  - test
+  - lint
 
-job1:
-  stage: build
-  image: registry.getnoc.com/noc/nocmc/microservices:build
-  variables:
-    NOC_PG_DB: noc
-    NOC_PG_USER: noc
-    NOC_PG_PASSWORD: noc
-    BRANCH: microservices
-  services:
-    - name: registry.getnoc.com/infrastructure/postgres:dev
-      alias: postgres
-    - name: registry.getnoc.com/infrastructure/mongo:dev
-      alias: mongo
+job_lint:
+  stage: lint
+  image: hoto/flake8
   before_script:
-    - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
-    - export NOC_MONGO_ADDRESSES=registry.getnoc.com-infrastructure-mongo:27017
+    - apk add --update git
   script:
-    - find . -type f -name "*.py" -print0 | xargs -0 python -m py_compile
-    - /usr/bin/cythonize -i speedup/*.pyx
-    - python ./manage.py migrate
-  only:
-    - microservices
+    - env 
   tags:
     - docker
