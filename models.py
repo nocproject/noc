@@ -297,6 +297,10 @@ _MODELS = {
     "phone.PhoneNumberProfile": "noc.phone.models.phonenumberprofile.PhoneNumberProfile",
     "phone.PhoneRange": "noc.phone.models.phonerange.PhoneRange",
     "phone.PhoneRangeProfile": "noc.phone.models.phonerangeprofile.PhoneRangeProfile",
+    # wf models
+    "wf.Workflow": "noc.wf.models.workflow.Workflow",
+    "wf.State": "noc.wf.models.state.State",
+    "wf.Transition": "noc.wf.models.transition.Transition"
 }
 
 FTS_MODELS = [
