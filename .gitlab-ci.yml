@@ -8,5 +8,6 @@ job_lint:
     - apk add --update git
   script:
     - env 
+    - git --no-pager diff --pretty="" --name-only $CI_BUILD_REF_SLUG..microservices
   tags:
     - docker
