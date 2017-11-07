@@ -13,7 +13,7 @@ import operator
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, LongField,
-                                ListField)
+                                ListField, BooleanField)
 import cachetools
 # NOC modules
 from .state import State
@@ -30,21 +30,26 @@ class Transition(Document):
     meta = {
         "collection": "transitions",
         "indexes": [
-            "to_state",
-            {
-                "fields": ["from_state", "code"],
-                "unique": True
-            }
+            "from_state",
+            "to_state"
         ],
         "strict": False,
         "auto_create_index": False
     }
     from_state = PlainReferenceField(State)
     to_state = PlainReferenceField(State)
-    # Code name
-    code = StringField()
+    # Event name
+    # Some predefined names exists:
+    # seen -- discovery confirms resource usage
+    # expired - TTL expired
+    event = StringField(choices=[
+        ("seen", "Resource is seen"),
+        ("expired", "Resource is expired")
+    ])
     # Text label
     label = StringField()
+    # Enable manual transition
+    enable_manual = BooleanField(default=True)
     # Handler to be called on starting transitions
     on_enter_handlers = ListField(StringField())
     # Job to be started on entering transition

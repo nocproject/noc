@@ -13,7 +13,7 @@ import operator
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, ListField,
-                                ReferenceField, LongField)
+                                ReferenceField, LongField, IntField)
 import cachetools
 # NOC modules
 from .workflow import Workflow
@@ -50,10 +50,15 @@ class State(Document):
     is_default = BooleanField(default=False)
     # Resource is in productive usage
     is_productive = BooleanField(default=False)
-    # Resource in state which must be monitored
-    enable_monitoring = BooleanField(default=False)
-    # Cooldown state until resource's *allocated_till* expired
-    enable_cooldown = BooleanField(default=False)
+    # Discovery should update last_seen field
+    update_last_seen = BooleanField(default=False)
+    # State time-to-live in seconds
+    # 0 - infinitive TTL
+    # >0 - Set *expires* field to now + ttl
+    #      Send *expires* signal when TTL expired
+    ttl = IntField(default=0)
+    # Update ttl every time when object is discovered
+    update_ttl = BooleanField(default=False)
     # Handler to be called on entering state
     on_enter_handlers = ListField(StringField())
     # Job to be started when entered state (jcls)
