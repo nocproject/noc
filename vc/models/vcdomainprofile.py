@@ -11,13 +11,15 @@ from threading import Lock
 import operator
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField,
-                                ReferenceField, LongField)
+from mongoengine.fields import StringField, BooleanField, LongField
 import cachetools
 # NOC modules
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
+from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.style import Style
+from noc.wf.models.workflow import Workflow
 
 id_lock = Lock()
 
@@ -37,9 +39,13 @@ class VCDomainProfile(Document):
     description = StringField()
     # Permit VLAN discovery
     enable_vlan_discovery = BooleanField(default=False)
+    # Style
+    style = ForeignKeyField(Style)
+    # Workflow
+    workflow = PlainReferenceField(Workflow)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
+    remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI
