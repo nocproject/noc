@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // wf.workflow Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.wf.workflow.Model");
@@ -16,7 +16,7 @@ Ext.define("NOC.wf.workflow.Model", {
             type: "string"
         },
         {
-            name: "display_name",
+            name: "remote_id",
             type: "string"
         },
         {
@@ -24,29 +24,21 @@ Ext.define("NOC.wf.workflow.Model", {
             type: "string"
         },
         {
+            name: "remote_system",
+            type: "string"
+        },
+        {
             name: "is_active",
             type: "boolean"
         },
         {
-            name: "solution",
-            type: "string"
-        },
-        {
-            name: "solution__label",
-            type: "string",
+            name: "bi_id",
+            type: "int",
             persist: false
-        },
-        {
-            name: "version",
-            type: "int"
         },
         {
             name: "description",
             type: "string"
-        },
-        {
-            name: "trace",
-            type: "boolean"
         }
     ]
 });
