@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 class ProxyNode:
     pass
 
-HTTP_METHODS = set(["GET", "POST", "PUT", "DELETE"])
+HTTP_METHODS = {"GET", "POST", "PUT", "DELETE"}
 
 
 class URL(object):

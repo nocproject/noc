@@ -55,7 +55,7 @@ class SlotRule(OIDRule):
 class Script(GetMetricsScript):
     name = "Juniper.JUNOSe.get_metrics"
 
-    CLI_METRICS = set(["Subscribers | Summary"])
+    CLI_METRICS = {"Subscribers | Summary"}
 
     def collect_profile_metrics(self, metrics):
         if self.has_capability("BRAS | PPTP"):

@@ -43,10 +43,7 @@ class Script(BaseScript):
         "bond": "aggregated"
     }
 
-    ignored_types = set([
-        "mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte",
-        "cap", "vrrp", "vif"
-    ])
+    ignored_types = {"mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte", "cap", "vrrp", "vif"}
     si = {}
 
     def get_tunnel(self, tun_type, f, afi, ipif):

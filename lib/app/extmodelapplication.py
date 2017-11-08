@@ -41,7 +41,7 @@ class ExtModelApplication(ExtApplication):
     clean_fields = {}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
     order_map = {}  # field name -> SQL query for ordering
-    ignored_fields = set(["id", "bi_id"])
+    ignored_fields = {"id", "bi_id"}
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)

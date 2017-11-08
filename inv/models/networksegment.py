@@ -224,7 +224,7 @@ class NetworkSegment(Document):
 
     def get_siblings(self, seen=None):
         seen = seen or set()
-        ss = set([self])
+        ss = {self}
         seen |= ss
         if self.sibling and self.sibling not in seen:
             ss |= self.sibling.get_siblings(seen)

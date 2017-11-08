@@ -14,12 +14,12 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 class Script(GetMetricsScript):
     name = "DCN.DCWL.get_metrics"
 
-    ALL_METRICS = set(["Radio | TxPower", "Radio | Quality", "Interface | Load | In", "Interface | Load | Out", "Interface | Packets | In",
-                       "Interface | Packets | OUT", "Interface | Errors | In", "Interface | Errors | Out",
-                       "Radio | Channel | Util", "Radio | Channel | Free", "Radio | Channel | Busy",
-                       "Radio | Channel | TxFrame", "Radio | Channel | RxFrame"])
-    MEMORY = set(["Memory | Usage"])
-    CPU = set(["CPU | Usage"])
+    ALL_METRICS = {"Radio | TxPower", "Radio | Quality", "Interface | Load | In", "Interface | Load | Out",
+                   "Interface | Packets | In", "Interface | Packets | OUT", "Interface | Errors | In",
+                   "Interface | Errors | Out", "Radio | Channel | Util", "Radio | Channel | Free",
+                   "Radio | Channel | Busy", "Radio | Channel | TxFrame", "Radio | Channel | RxFrame"}
+    MEMORY = {"Memory | Usage"}
+    CPU = {"CPU | Usage"}
 
     TYPE = {
         "Radio | TxPower": "gauge",

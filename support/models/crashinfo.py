@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import os
-import logging
 import uuid
+
+import dateutil.parser
+import mongoengine.signals
+import ujson
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (UUIDField, DateTimeField, StringField)
-import mongoengine.signals
-import dateutil.parser
-import ujson
 # NOC modules
 from noc.support.cp import CPClient
 
@@ -146,6 +147,7 @@ class Crashinfo(Document):
         cp.report_crashinfo(ci)
         self.status = "R"
         self.save()
+
 
 #
 mongoengine.signals.pre_delete.connect(

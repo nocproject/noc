@@ -41,7 +41,7 @@ class ExtDocApplication(ExtApplication):
     clean_fields = {}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
     parent_model = None
-    ignored_fields = set(["id", "bi_id"])
+    ignored_fields = {"id", "bi_id"}
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)

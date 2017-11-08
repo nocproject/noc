@@ -9,8 +9,9 @@
 
 # Python modules
 import logging
-from optparse import OptionParser
 import sys
+from optparse import OptionParser
+
 # NOC modules
 from noc.support.cp import CPClient
 
@@ -96,6 +97,7 @@ def main():
         ttl=parse_ttl(options.expire),
         public=bool(options.public)
     )["url"]
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.CRITICAL)

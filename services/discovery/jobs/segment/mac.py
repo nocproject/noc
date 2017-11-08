@@ -82,13 +82,13 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
             if iface in fib[mo]:
                 fib[mo][iface].add(ro)
             else:
-                fib[mo][iface] = set([ro])
+                fib[mo][iface] = {ro}
         # Find uplinks and coverage
         coverage = {}  # mo -> covered objects
         uplinks = {}  # mo -> uplink interface
         up_fib = {}  # mo -> {seen via uplinks}
         for mo in fib:
-            coverage[mo] = set([mo])
+            coverage[mo] = {mo}
             for iface in fib[mo]:
                 if self.is_uplink(mo, fib[mo][iface], segments):
                     uplinks[mo] = iface
@@ -118,7 +118,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
                 for ro in fib[mo][iface]:
                     cvr = coverage.get(ro)
                     if not cvr:
-                        cvr = set([ro])
+                        cvr = {ro}
                         coverage[ro] = cvr
                     if not fib[mo][iface] - cvr:
                         # All objects from mo:iface are seen via ro

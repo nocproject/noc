@@ -30,7 +30,7 @@ IAC_CMD = {
     WONT: "WONT"
 }
 
-IGNORED_CMD = set([AO, AYT])
+IGNORED_CMD = {AO, AYT}
 
 TELNET_OPTIONS = {
     0: "BINARY",

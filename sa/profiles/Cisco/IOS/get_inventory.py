@@ -50,23 +50,13 @@ class Script(BaseScript):
         r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)(?P<slot_id>[\d|\w]+).*", re.IGNORECASE)
     slot_id = 0
 
-    IGNORED_SERIAL = set([
-        "H22L714"
-    ])
+    IGNORED_SERIAL = {"H22L714"}
 
-    IGNORED_NAMES = set([
-        "c7201"
-    ])
+    IGNORED_NAMES = {"c7201"}
 
-    GBIC_MODULES = set([
-        "WS-X6K-SUP2-2GE",
-        "WS-X6724-SFP"
-    ])
+    GBIC_MODULES = {"WS-X6K-SUP2-2GE", "WS-X6724-SFP"}
 
-    ISR_MB = set([
-        "CISCO2801",
-        "CISCO2811"
-    ])
+    ISR_MB = {"CISCO2801", "CISCO2811"}
 
 
     def get_inv(self):
@@ -96,7 +86,7 @@ class Script(BaseScript):
                 if not part_no:
                     if type and "XCVR" in type:
                         # Last chance to get idprom
-                        if match.group("name").startswith("Transceiver"): 
+                        if match.group("name").startswith("Transceiver"):
                             int = match.group("name").split()[1]
                         elif match.group("name").startswith("GigabitEthernet"):
                             int = match.group("name").split()[0]

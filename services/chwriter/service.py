@@ -22,7 +22,7 @@ class CHWriterService(Service):
     name = "chwriter"
     require_nsq_writer = True
 
-    CH_SUSPEND_ERRORS = set([598, 599])
+    CH_SUSPEND_ERRORS = {598, 599}
 
     def __init__(self):
         super(CHWriterService, self).__init__()

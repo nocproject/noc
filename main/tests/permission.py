@@ -11,7 +11,7 @@ from noc.main.models import *
 #
 #
 class AccessTestCase(TestCase):
-    permissions=set(["mod1:app1:p1","mod1:app1:p2","mod1:app2:p1"])
+    permissions= {"mod1:app1:p1", "mod1:app1:p2", "mod1:app2:p1"}
     def setUp(self):
         User(username="superuser",is_active=True,is_superuser=True).save()
         User(username="disabled",is_active=False).save()

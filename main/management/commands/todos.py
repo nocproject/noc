@@ -17,7 +17,7 @@ from noc.core.fileutils import read_file
 
 class Command(BaseCommand):
     help = "Display todo's left in code"
-    exclude = set(["main/management/commands/todos.py"])
+    exclude = {"main/management/commands/todos.py"}
 
     def handle(self, *args, **options):
         dirs = ["lib"] + [a[4:] for a in INSTALLED_APPS if a.startswith("noc.")]

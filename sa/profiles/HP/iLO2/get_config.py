@@ -10,10 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
 
-EXCLUDE_TARGETS = set([
-    "/map1/firmware1",
-    "/map1/log1"
-])
+EXCLUDE_TARGETS = {"/map1/firmware1", "/map1/log1"}
 
 
 class Script(BaseScript):

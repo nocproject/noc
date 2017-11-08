@@ -331,13 +331,8 @@ class DiscoveryCheck(object):
     # If not None, check job has all required artefacts
     required_artefacts = None
     #
-    fatal_errors = set([
-        ERR_CLI_AUTH_FAILED,
-        ERR_CLI_NO_SUPER_COMMAND,
-        ERR_CLI_LOW_PRIVILEGES,
-        ERR_CLI_CONNECTION_REFUSED,
-        ERR_CLI_SSH_PROTOCOL_ERROR
-    ])
+    fatal_errors = {ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND, ERR_CLI_LOW_PRIVILEGES, ERR_CLI_CONNECTION_REFUSED,
+                    ERR_CLI_SSH_PROTOCOL_ERROR}
     # Error -> Alarm class mappings
     error_map = {
         ERR_CLI_AUTH_FAILED: "Discovery | Error | Auth Failed",

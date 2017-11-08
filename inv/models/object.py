@@ -119,7 +119,7 @@ class Object(Document):
 
     def on_save(self):
         def get_coordless_objects(o):
-            r = set([str(o.id)])
+            r = {str(o.id)}
             for co in Object.objects.filter(container=o.id):
                 g = co.data.get("geopoint")
                 if g and g.get("x") and g.get("y"):

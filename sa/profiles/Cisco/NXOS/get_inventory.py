@@ -35,10 +35,7 @@ class Script(BaseScript):
     rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
 
     # set of pids GEM modules w/o transceivers
-    gem_w_o_sfp = set([
-        "N55-M160L3",
-        "N55-M160L3-V2"
-    ])
+    gem_w_o_sfp = {"N55-M160L3", "N55-M160L3-V2"}
 
     def execute(self):
         objects = []
@@ -55,7 +52,7 @@ class Script(BaseScript):
                         parts = [match.group("partno")]
                     elif "BASE" in match.group("partno").upper():
                         parts = [match.group("type")]
-                    else:    
+                    else:
                         parts = [match.group("partno"), match.group("type")]
                 else:
                     parts = [match.group("partno")]
@@ -93,7 +90,7 @@ class Script(BaseScript):
                     "builtin": builtin
                 }]
                 # Add transceivers
-                if (objects[-1]["type"] == "SUP" or 
+                if (objects[-1]["type"] == "SUP" or
                     (objects[-1]["type"] == "GEM" and
                      objects[-1]["part_no"][0] not in self.gem_w_o_sfp)):
 

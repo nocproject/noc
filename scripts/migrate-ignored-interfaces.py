@@ -29,6 +29,7 @@ def migrate(profile):
             )
             a.delete()
 
+
 if __name__ == "__main__":
     import sys
 

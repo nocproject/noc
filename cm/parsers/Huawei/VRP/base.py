@@ -23,12 +23,10 @@ class BaseVRPParser(BaseParser):
     def __init__(self, managed_object):
         super(BaseVRPParser, self).__init__(managed_object)
 
-    STATUSES = set(["sntp"])
-    SERVICES = set(["telnet", "web", "ssh", "cluster",
-                    "ntdp", "ndp", "lldp", "dhcp",
-                    "http server", "http secure-server",
-                    "telnet server", "stp", "info-center"])
-    PROTOCOLS = set(["ntdp", "ndp", "bpdu"])
+    STATUSES = {"sntp"}
+    SERVICES = {"telnet", "web", "ssh", "cluster", "ntdp", "ndp", "lldp", "dhcp", "http server", "http secure-server",
+                "telnet server", "stp", "info-center"}
+    PROTOCOLS = {"ntdp", "ndp", "bpdu"}
 
     def parse(self, config):
         # Various protocol statuses
@@ -251,7 +249,7 @@ class BaseVRPParser(BaseParser):
         self.get_system_fact().location = " ".join(tokens[3:])
 
     def on_system_login_user_class(self, tokens):
-        if not self.undo:	
+        if not self.undo:
             self.get_user_fact(tokens[1])
             if "privilege" == tokens[2]:
                 self.get_user_fact(tokens[1]).level = tokens[4]

@@ -18,8 +18,8 @@ from noc.lib.validators import is_ipv4, is_int
 
 
 class BaseDLinkParser(BaseParser):
-    STATUSES = set(["sntp"])
-    SERVICES = set(["telnet", "web", "ssh", "password_recovery"])
+    STATUSES = {"sntp"}
+    SERVICES = {"telnet", "web", "ssh", "password_recovery"}
 
     def parse(self, config):
         # Various protocol statuses

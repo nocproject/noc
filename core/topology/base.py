@@ -16,9 +16,7 @@ from noc.lib.text import split_alnum
 
 
 class BaseTopology(object):
-    CAPS = set([
-        "Network | STP"
-    ])
+    CAPS = {"Network | STP"}
 
     def __init__(self, node_hints=None, link_hints=None):
         self.node_hints = node_hints or {}

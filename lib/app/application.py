@@ -448,7 +448,7 @@ class Application(object):
         Return a set of permissions, used by application
         """
         prefix = self.get_app_id().replace(".", ":")
-        p = set(["%s:launch" % prefix])
+        p = {"%s:launch" % prefix}
         # View permissions from HasPerm
         for view in self.get_views():
             if isinstance(view.access, HasPerm):

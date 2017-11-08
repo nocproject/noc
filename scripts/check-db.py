@@ -13,7 +13,7 @@ def check_pg():
     import psycopg2
     from django.db import connection
     try:
-        c = connection.cursor()
+        c = connection.cursor()  # noqa
     except psycopg2.OperationalError, why:
         sys.stderr.write("ERROR: %s\n" % why)
         sys.exit(1)
@@ -34,6 +34,7 @@ def check_mongo():
     if major < 2 or (major == 2 and minor < 4):
         sys.stderr.write("ERROR: MongoDB 2.4 or later required")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     if sys.argv[1] == "--pg":

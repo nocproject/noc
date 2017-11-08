@@ -73,7 +73,7 @@ class BaseLoader(object):
     # Discard records which cannot be dereferenced
     discard_deferred = False
     # Ignore auto-generated unique fields
-    ignore_unique = set(["bi_id"])
+    ignore_unique = {"bi_id"}
 
     REPORT_INTERVAL = 1000
 

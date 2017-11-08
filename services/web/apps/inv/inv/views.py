@@ -27,10 +27,7 @@ class InvApplication(ExtApplication):
     menu = _("Inventory")
 
     # Undeletable nodes
-    UNDELETABLE = set([
-        # Global Lost&Found
-        "b0fae773-b214-4edf-be35-3468b53b03f2"
-    ])
+    UNDELETABLE = {"b0fae773-b214-4edf-be35-3468b53b03f2"}
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)

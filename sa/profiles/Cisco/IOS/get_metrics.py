@@ -16,7 +16,7 @@ from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 class Script(GetMetricsScript):
     name = "Cisco.IOS.get_metrics"
 
-    ALL_SLA_METRICS = set(["SLA | ICMP RTT", "SLA | JITTER", "SLA | UDP RTT"])
+    ALL_SLA_METRICS = {"SLA | ICMP RTT", "SLA | JITTER", "SLA | UDP RTT"}
 
     def collect_profile_metrics(self, metrics):
         if self.has_capability("Cisco | IP | SLA | Probes"):

@@ -67,14 +67,13 @@ class AuditTrail(Document):
     changes = ListField(EmbeddedDocumentField(FieldChange))
     expires = DateTimeField()
 
-    EXCLUDE = set([
-        "admin.logentry",
-        "main.audittrail",
-        "kb.kbentryhistory",
-        "kb.kbentrypreviewlog",
-        "sa.maptask",
-        "sa.reducetask",
-    ])
+    EXCLUDE = {"admin.logentry",
+               "main.audittrail",
+               "kb.kbentryhistory",
+               "kb.kbentrypreviewlog",
+               "sa.maptask",
+               "sa.reducetask"
+               }
 
     DEFAULT_TTL = config.audit.db_ttl
     _model_ttls = {}

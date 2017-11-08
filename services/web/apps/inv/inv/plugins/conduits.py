@@ -27,7 +27,7 @@ class ConduitsPlugin(InvPlugin):
 
     # %fixme have to be configured ?
     MAX_CONDUIT_LENGTH = 1000
-    SINGLE_CONNECTION_MODELS = set(["Ducts | Cable Entry"])
+    SINGLE_CONNECTION_MODELS = {"Ducts | Cable Entry"}
     CONDUITS_MODEL = "Ducts | Conduits"
 
     def init_plugin(self):

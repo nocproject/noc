@@ -305,7 +305,7 @@ class Script(BaseScript):
             for v in self.SNMP_CAPS:
                 caps[self.SNMP_CAPS[v]] = v in svs
                 self.capabilities[self.SNMP_CAPS[v]] = v in svs
-            if svs & set([SNMP_v2c, SNMP_v3]) and self.has_snmp_bulk():
+            if svs & {SNMP_v2c, SNMP_v3} and self.has_snmp_bulk():
                 caps["SNMP | Bulk"] = True
             if self.has_snmp_ifmib(version=list(svs)[-1]):
                 caps["SNMP | IF-MIB"] = True
