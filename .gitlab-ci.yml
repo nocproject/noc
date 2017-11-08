@@ -9,6 +9,9 @@ job_lint:
   before_script:
     - apk add --update git
   script:
+    - git rev-parse --abbrev-ref HEAD
+    - git merge-base origin/HEAD HEAD
+    - git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD)
     - flake8 $(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD))
   except:
     - microservices
