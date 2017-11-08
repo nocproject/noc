@@ -1,6 +1,18 @@
 stages:
+  - lint
   - build
   - test
+
+job_lint:
+  stage: lint
+  image: hoto/flake8
+  before_script:
+    - apk add --update git
+  script:
+    - env
+    - flake8 $(git --no-pager diff --pretty="" --name-only microservices --)
+  tags:
+    - docker
 
 job1:
   stage: build
