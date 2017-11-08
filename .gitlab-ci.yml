@@ -9,7 +9,6 @@ job_lint:
   before_script:
     - apk add --update git
   script:
-    - env
     - flake8 $(git --no-pager diff --pretty="" --name-only microservices --)
   tags:
     - docker
