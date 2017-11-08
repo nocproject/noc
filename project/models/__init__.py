@@ -5,4 +5,4 @@
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from project import Project
+from project import Project  # noqa
