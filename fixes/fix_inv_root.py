@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
+
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
-import logging
 
 
 def fix():
@@ -45,10 +46,11 @@ def fix():
     elif lf == 1:
         logging.info("Global Lost&Found object found")  # OK
         # check container
-        #print Object.objects.filter(name="Global Lost&Found") , "Root: ", Object.objects.filter(name="Root")
-        #print Object.objects.get(name="Global Lost&Found").container , Object.objects.get(name="Root").id
+        # print Object.objects.filter(name="Global Lost&Found") , "Root: ", Object.objects.filter(name="Root")
+        # print Object.objects.get(name="Global Lost&Found").container , Object.objects.get(name="Root").id
 
-        if Object.objects.get(name="Global Lost&Found").container != Object.objects.get(name="Root",model=root_model).id:
+        if Object.objects.get(name="Global Lost&Found").container != Object.objects.get(name="Root",
+                                                                                        model=root_model).id:
             logging.info("Global Lost&Found object not valid container - fix")  # fix
             o = Object.objects.get(name="Global Lost&Found")
             o.container = Object.objects.get(name="Root").id
@@ -69,17 +71,11 @@ def fix():
             logging.info("   ... removing duplicated Lost&Found %s", l)
             l.delete()
 
-        if Object.objects.get(name="Global Lost&Found").container != Object.objects.get(name="Root",model=root_model).id:
+        if Object.objects.get(name="Global Lost&Found").container != Object.objects.get(name="Root",
+                                                                                        model=root_model).id:
             logging.info("Global Lost&Found object not valid container - fix")  # fix
             o = Object.objects.get(name="Global Lost&Found")
             o.container = Object.objects.get(name="Root").id
             o.save()
         else:
             logging.info("Global Lost&Found object container is valid")
-
-
-
-
-
-
-

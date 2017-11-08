@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 # NOC modules
 from noc.inv.models.networksegment import NetworkSegment
 
