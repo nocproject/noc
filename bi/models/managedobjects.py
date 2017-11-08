@@ -13,7 +13,7 @@ from noc.core.clickhouse.fields import (DateField, DateTimeField,
                                         Int32Field, BooleanField,
                                         StringField,
                                         Float64Field, ReferenceField,
-                                        IPv4Field, UInt8Field)
+                                        IPv4Field)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject as ManagedObjectDict
 from noc.core.bi.dictionaries.pool import Pool
