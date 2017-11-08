@@ -8,9 +8,10 @@
 
 # Python modules
 from mercurial import ui, localrepo
+
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.core.translation import ugettext as _
 
 
 class UpdateApplication(ExtApplication):

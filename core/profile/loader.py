@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import glob
+import inspect
+import logging
+import os
 # Python modules
 import sys
-import glob
-import logging
-import inspect
-import os
 import threading
+
 # NOC modules
 from base import BaseProfile
 
@@ -48,9 +49,9 @@ class ProfileLoader(object):
                     for n in dir(sm):
                         o = getattr(sm, n)
                         if (
-                            inspect.isclass(o) and
-                            issubclass(o, BaseProfile) and
-                            o.__module__ == sm.__name__
+                                        inspect.isclass(o) and
+                                        issubclass(o, BaseProfile) and
+                                        o.__module__ == sm.__name__
                         ):
                             profile = o
                             break

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -118,7 +119,7 @@ class Script(BaseScript):
                 "MSTP": {
                     "region": match.group("region"),
                     "revision": int(match.group("revision")),
-                    }
+                }
             }
         }
         iv = {}  # instance -> vlans
@@ -161,7 +162,7 @@ class Script(BaseScript):
                     "root_priority": match.group("root_priority"),
                     "bridge_id": match.group("bridge_id"),
                     "bridge_priority": match.group("bridge_priority"),
-                    }]
+                }]
                 if instance_id not in interfaces:
                     interfaces[instance_id] = []
                 for match in v2:
@@ -187,7 +188,7 @@ class Script(BaseScript):
                         "designated_port_id": match.group("designated_port_id"),
                         "point_to_point": ptop,
                         "edge": edge
-                        }]
+                    }]
         for st in r["instances"]:
             st["interfaces"] = interfaces[st["id"]]
         return r

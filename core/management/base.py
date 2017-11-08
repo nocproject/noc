@@ -8,11 +8,13 @@
 
 # Python modules
 from __future__ import print_function
-import sys
+
 import argparse
+import sys
+
+from noc.config import config
 # NOC modules
 from noc.core.debug import error_report
-from noc.config import config
 from noc.core.tz import setup_timezone
 
 

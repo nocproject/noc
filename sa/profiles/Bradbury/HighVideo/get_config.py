@@ -1,19 +1,21 @@
 __author__ = 'FeNikS'
 # -*- coding: utf-8 -*-
 
-import urllib2
 import json
+import urllib2
 
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
 
 datas = ['load-Servers', 'load-Channels', 'load-Profiles', 'load-Multiplexes']
 
+
 def get_response_json(url, req_data):
     req = urllib2.Request(url, req_data)
     response = urllib2.urlopen(req)
     data = response.read()
     return json.loads(data)
+
 
 def json2xml(obj, line_padding=''):
     result_list = list()
@@ -33,9 +35,10 @@ def json2xml(obj, line_padding=''):
                 result_list.append(json2xml(sub_obj, '\t' + line_padding))
                 result_list.append('%s</%s>' % (line_padding, tag_name))
             else:
-                result_list.append('%s<%s>%s</%s>' %\
+                result_list.append('%s<%s>%s</%s>' % \
                                    (line_padding, tag_name, sub_obj, tag_name))
         return '\n'.join(result_list)
+
 
 def have_sub_elements(obj):
     obj_type = type(obj)
@@ -45,6 +48,7 @@ def have_sub_elements(obj):
         if len(obj) > 1:
             return True
     return False
+
 
 class Script(noc.sa.script.Script):
     name = "Bradbury.HighVideo.get_config"

@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------
 
 from django.utils.translation import ugettext_lazy as _
-# NOC Modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.inv.models.newprefixdiscoverylog import NewPrefixDiscoveryLog
+# NOC Modules
+from noc.lib.app.simplereport import SimpleReport
 
 
 class ReportDiscoveredPrefixes(SimpleReport):
@@ -21,7 +21,7 @@ class ReportDiscoveredPrefixes(SimpleReport):
                 p.timestamp, p.vrf, p.prefix, p.description,
                 p.managed_object, p.interface
             ) for p in
-              NewPrefixDiscoveryLog.objects.order_by("-timestamp")
+            NewPrefixDiscoveryLog.objects.order_by("-timestamp")
         ]
 
         return self.from_dataset(

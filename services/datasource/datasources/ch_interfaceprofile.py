@@ -8,17 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
-from noc.inv.models.interfaceprofile import InterfaceProfile
 
 
 class CHInterfaceProfileDataSource(BaseDataSource):
     name = "ch_interfaceprofile"
 
     def extract(self):
-        for p in InterfaceProfile.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by("id"):
+        for p in InterfaceProfile.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).all().order_by(
+                "id"):
             yield (
                 p.bi_id,
                 p.id,

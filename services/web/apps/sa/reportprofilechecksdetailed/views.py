@@ -7,19 +7,19 @@
 # ---------------------------------------------------------------------
 
 from django import forms
+from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.nosql import get_db
-from pymongo import ReadPreference
 from noc.main.models.pool import Pool
-from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
+from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
-from noc.core.profile.loader import GENERIC_PROFILE
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
+from pymongo import ReadPreference
 
 
 class ReportForm(forms.Form):

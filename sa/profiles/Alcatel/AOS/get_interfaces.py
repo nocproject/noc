@@ -8,11 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IPv4, IPv6
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4, IPv6
 
 
 def ranges_to_list_str(s):
@@ -36,7 +36,7 @@ def ranges_to_list_str(s):
             raise SyntaxError
         for i in range(f, t + 1):
             r += [str(i)]
-        #    return sorted(r)
+            #    return sorted(r)
     return (r)
 
 
@@ -217,8 +217,8 @@ class Script(BaseScript):
         switchports = {}
         for swp in self.scripts.get_switchport():
             switchports[swp["interface"]] = (
-            swp["untagged"] if "untagged" in swp else None,
-            swp["tagged"]
+                swp["untagged"] if "untagged" in swp else None,
+                swp["tagged"]
             )
 
         portchannel_members = {}

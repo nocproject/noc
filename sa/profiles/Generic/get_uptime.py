@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetuptime import IGetUptime
 from noc.lib.validators import is_float
-from noc.core.mib import mib
+from noc.sa.interfaces.igetuptime import IGetUptime
 
 
 class Script(BaseScript):

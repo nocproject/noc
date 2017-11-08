@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.contrib.auth.models import User
+from django.db import models, connection
 # Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models, connection
-from django.contrib.auth.models import User
-# NOC modules
-from vrf import VRF
-from prefix import Prefix
-from afi import AFI_CHOICES
 from noc.core.model.fields import CIDRField
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
+
+from afi import AFI_CHOICES
+from prefix import Prefix
+# NOC modules
+from vrf import VRF
 
 
 class PrefixAccess(models.Model):
@@ -44,8 +45,8 @@ class PrefixAccess(models.Model):
         if self.can_change:
             perms += ["Change"]
         return u"%s: %s(%s): %s: %s" % (
-        self.user.username, self.vrf.name, self.afi, self.prefix,
-        ", ".join(perms))
+            self.user.username, self.vrf.name, self.afi, self.prefix,
+            ", ".join(perms))
 
     def clean(self):
         """
@@ -85,7 +86,7 @@ class PrefixAccess(models.Model):
                         AND user_id=%%s
                         AND can_view=TRUE
                  """ % PrefixAccess._meta.db_table,
-            [str(prefix), vrf.id, afi, user.id])
+                  [str(prefix), vrf.id, afi, user.id])
         return c.fetchall()[0][0] > 0
 
     @classmethod
@@ -111,5 +112,5 @@ class PrefixAccess(models.Model):
                         AND user_id=%%s
                         AND can_change=TRUE
                  """ % PrefixAccess._meta.db_table,
-            [str(prefix), vrf.id, afi, user.id])
+                  [str(prefix), vrf.id, afi, user.id])
         return c.fetchall()[0][0] > 0

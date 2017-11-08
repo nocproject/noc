@@ -7,9 +7,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-import re
 
 
 class Script(BaseScript):

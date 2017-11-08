@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
@@ -28,7 +29,8 @@ class Script(BaseScript):
     ##
     ## Other (3.03 and newer)
     ##
-    rx_ifc_line = re.compile(r"\w*LLDP neighbor-information of port \d+\[(?P<local_if>[^\n]+)\]:\n(?P<tail>.*)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ifc_line = re.compile(r"\w*LLDP neighbor-information of port \d+\[(?P<local_if>[^\n]+)\]:\n(?P<tail>.*)",
+                             re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     @BaseScript.match()
     def execute_other(self):
@@ -56,8 +58,11 @@ class Script(BaseScript):
 
 
 def parse_neighbor(text):
-    rx_ngh_line = re.compile(r"\s+Neighbor[^\n]+\n\s+Update[^\n]+\n(?P<neighbor>.*\n\n)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    rx_neigh = re.compile(r"\s+Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>[\w\s]+)\n\s+Port\s*ID\s*:\s*(?P<p_id>.+?)\n.+?Sys.*?name\s*:\s*(?P<name>[^\n]+)\n.*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)", re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_ngh_line = re.compile(r"\s+Neighbor[^\n]+\n\s+Update[^\n]+\n(?P<neighbor>.*\n\n)",
+                             re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_neigh = re.compile(
+        r"\s+Chassis\s*ID\s*:\s*(?P<id>\S+).*?Port\s*ID\s*(sub)*type\s*:\s*(?P<p_type>[\w\s]+)\n\s+Port\s*ID\s*:\s*(?P<p_id>.+?)\n.+?Sys.*?name\s*:\s*(?P<name>[^\n]+)\n.*?Sys.*?cap.*?enabled\s*:\s*(?P<capability>[^\n]+)",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
     n = []
     for match_n in rx_ngh_line.finditer(text):
         for match_data in rx_neigh.finditer(match_n.group("neighbor")):

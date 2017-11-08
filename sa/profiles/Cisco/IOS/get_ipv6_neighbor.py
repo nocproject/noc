@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetipv6neighbor import IGetIPv6Neighbor
@@ -35,7 +36,7 @@ class Script(BaseScript):
     def execute(self, vrf=None):
         # Get states
         cmd = "show ipv6 neighbor"
-        r =  self.cli(cmd, list_re=self.rx_line)
+        r = self.cli(cmd, list_re=self.rx_line)
         # Remap states
         for n in r:
             n["state"] = self.s_map[n["state"]]

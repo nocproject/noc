@@ -8,18 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import operator
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField, ListField, EmbeddedDocumentField, UUIDField,
     BooleanField)
-import cachetools
 # NOC Modules
 from noc.config import config
-from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
+from noc.lib.prettyjson import to_json
 
 id_lock = Lock()
 
@@ -182,14 +184,14 @@ class MetricScope(Document):
             # Alter when necessary
             existing = {}
             for name, type in ch.execute(
-                """
-                SELECT name, type
-                FROM system.columns
-                WHERE
-                  database=%s
-                  AND table=%s
-                """,
-                [config.clickhouse.db, table_name]
+                    """
+                    SELECT name, type
+                    FROM system.columns
+                    WHERE
+                      database=%s
+                      AND table=%s
+                    """,
+                    [config.clickhouse.db, table_name]
             ):
                 existing[name] = type
             after = None

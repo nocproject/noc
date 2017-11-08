@@ -6,10 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.inv.models.networksegment import NetworkSegment
+
 ## NOC modules
 from base import BaseLoader
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.networksegment import NetworkSegment
 
 
 class NetworkSegmentLoader(BaseLoader):

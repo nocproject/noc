@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.iping import IPing
-from noc.lib.validators import is_int, is_ipv4
 import re
+
+from noc.core.script.base import BaseScript
+from noc.lib.validators import is_ipv4
+from noc.sa.interfaces.iping import IPing
 
 
 class Script(BaseScript):
@@ -21,7 +22,7 @@ class Script(BaseScript):
         r"round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms")
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+                df=None, vrf=None):
         cmd = "ping"
         if is_ipv4(address):
             cmd += " ip"

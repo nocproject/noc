@@ -6,8 +6,10 @@
 
 # Python modules
 import datetime
+
 # NOC modules
 from noc.lib.nosql import get_db
+
 
 class Migration:
     def forwards(self):

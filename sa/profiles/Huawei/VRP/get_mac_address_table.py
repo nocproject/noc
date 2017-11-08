@@ -7,13 +7,17 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
-rx_vrp3line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>Learned|Config static)\s+(?P<interfaces>[^ ]+)\s{2,}")
-rx_vrp5line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)(?:\s+|/)\-\s+(?:\-\s+)?(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)(?:\s+\-)?")
-rx_vrp53line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+")
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+
+rx_vrp3line = re.compile(
+    r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>Learned|Config static)\s+(?P<interfaces>[^ ]+)\s{2,}")
+rx_vrp5line = re.compile(
+    r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)(?:\s+|/)\-\s+(?:\-\s+)?(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)(?:\s+\-)?")
+rx_vrp53line = re.compile(
+    r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static|security)\s+")
 
 
 class Script(BaseScript):

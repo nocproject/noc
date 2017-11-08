@@ -8,6 +8,7 @@
 """
 """
 from noc.core.interface.base import BaseInterface
+
 from base import (ListOfParameter, DictParameter, StringParameter, IntParameter,
                   InterfaceNameParameter, MACAddressParameter, IPv4Parameter)
 
@@ -47,7 +48,8 @@ class IGetLLDPNeighbors(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "local_interface": InterfaceNameParameter(),
         # Should be set when platform advertises not LldpPortIdSubtype==5
-        "local_interface_id": IntParameter(required=False) | MACAddressParameter(required=False) | IPv4Parameter(required=False),
+        "local_interface_id": IntParameter(required=False) | MACAddressParameter(required=False) | IPv4Parameter(
+            required=False),
         "neighbors": ListOfParameter(element=DictParameter(attrs={
             # LldpChassisIdSubtype TC, macAddress(4)
             "remote_chassis_id_subtype": IntParameter(default=4),

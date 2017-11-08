@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -34,20 +33,21 @@ class Script(BaseScript):
                     for i in range(len(c)):
                         p += bin[int(c[i], 16)]
                 return p
+
             try:
                 pmib = self.profile.get_pmib(self.scripts.get_version())
                 if pmib is None:
                     raise NotImplementedError()
                 for v in self.snmp.get_tables([
-                        pmib + ".8.1.3.1.1",
-                        pmib + ".8.1.3.1.2",
-                        pmib + ".8.1.3.1.3"], bulk=True):
+                            pmib + ".8.1.3.1.1",
+                            pmib + ".8.1.3.1.2",
+                            pmib + ".8.1.3.1.3"], bulk=True):
                     oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
                     port = self.snmp.get(oid, cached=True)  # IF-MIB
                     if not port:
                         oid = "1.3.6.1.2.1.2.2.1.2." + str(v[1])
                         port = self.snmp.get(oid, cached=True)
-#                    s = self.hex_to_bin(v[2])
+                    #                    s = self.hex_to_bin(v[2])
                     s = hex2bin(v[2])
                     members = []
                     for i in range(len(s)):

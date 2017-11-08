@@ -7,16 +7,15 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import operator
 from django import forms
+from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.interface import Interface
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):

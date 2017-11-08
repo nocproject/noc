@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -74,12 +75,12 @@ class Script(BaseScript):
             if match:
                 skip = 0
                 if (mac is not None and
-                    match.group("mac").replace("-", ":") != mac):
+                            match.group("mac").replace("-", ":") != mac):
                     skip = 1
                 if interface is not None and match.group("port") != interface:
                     skip = 1
                 if (vlan is not None and
-                   int(pvids.get(match.group("port"))) != int(vlan)):
+                            int(pvids.get(match.group("port"))) != int(vlan)):
                     skip = 1
                 if not skip:
                     r += [{

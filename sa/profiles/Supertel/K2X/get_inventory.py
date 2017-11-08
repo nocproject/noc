@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -65,12 +66,12 @@ class Script(BaseScript):
         serial = self.rx_serial.search(serial)
 
         return [{
-                "type": "CHASSIS",
-                "number": "1",
-                "builtin": False,
-                "vendor": "Supertel",
-                "part_no": [platform],
-                "description": description.group("description"),
-                "revision": hardware.group("hardware"),
-                "serial": serial.group("serial")
-                }]
+            "type": "CHASSIS",
+            "number": "1",
+            "builtin": False,
+            "vendor": "Supertel",
+            "part_no": [platform],
+            "description": description.group("description"),
+            "revision": hardware.group("hardware"),
+            "serial": serial.group("serial")
+        }]

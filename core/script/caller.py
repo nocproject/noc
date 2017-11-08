@@ -6,17 +6,18 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import itertools
+import uuid
 # Python modules
 from threading import Lock
-import uuid
-import itertools
+
+from noc.config import config
+from noc.core.dcs.error import ResolutionError
+from noc.core.script.loader import loader
 # NOC modules
 from noc.core.service.client import open_sync_rpc
-from noc.core.script.loader import loader
-from noc.core.service.loader import get_dcs
-from noc.core.dcs.error import ResolutionError
 from noc.core.service.error import RPCNoService
-from noc.config import config
+from noc.core.service.loader import get_dcs
 
 CALLING_SERVICE = config.script.calling_service
 DEFAULT_IDLE_TIMEOUT = config.script.caller_timeout
@@ -54,11 +55,11 @@ class Session(object):
 
     def __iter__(self):
         return itertools.imap(
-                lambda y: y.split(".")[-1],
-                itertools.ifilter(
-                        lambda x: x.startswith(self._object.profile.name + "."),
-                        loader.iter_scripts()
-                )
+            lambda y: y.split(".")[-1],
+            itertools.ifilter(
+                lambda x: x.startswith(self._object.profile.name + "."),
+                loader.iter_scripts()
+            )
         )
 
     @classmethod

@@ -17,6 +17,7 @@ class DatabaseStorage(models.Model):
     """
     Database Storage
     """
+
     class Meta:
         app_label = "main"
         db_table = "main_databasestorage"
@@ -47,6 +48,8 @@ class DatabaseStorage(models.Model):
         Get DatabaseStorage instance
         """
         return DBS(cls.dbs_options())
+
+
 #
 # Default database storage
 #

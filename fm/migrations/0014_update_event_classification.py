@@ -1,16 +1,15 @@
-
 from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.execute(PROC)
 
     def backwards(self):
         pass
 
-PROC="""
+
+PROC = """
 CREATE OR REPLACE
 FUNCTION update_event_classification(INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT[][])
 RETURNS VOID

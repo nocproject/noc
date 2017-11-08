@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from base import (DictParameter, ListOfParameter,
                   InterfaceNameParameter, StringParameter, IntParameter)
 
@@ -60,7 +61,7 @@ class IGetCopperTDRDiag(BaseInterface):
                 "T",  # Terminated
                 "O",  # Open
                 "S",  # Short
-                "N"   # N/A
+                "N"  # N/A
             ]),
             # Measured distance in centimeters.
             # Interpretation depends on status.

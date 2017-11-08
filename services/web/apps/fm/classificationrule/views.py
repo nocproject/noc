@@ -8,16 +8,17 @@
 
 # Python modules
 import re
+
 # Django modules
 from django.template import Template, Context
+from noc.core.translation import ugettext as _
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventclassificationrule import EventClassificationRule, EventClassificationRuleCategory
+from noc.fm.models.mib import MIB
+from noc.fm.models.utils import get_event
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.fm.models.eventclassificationrule import EventClassificationRule, EventClassificationRuleCategory
-from noc.fm.models.eventclass import EventClass
-from noc.fm.models.mib import MIB
 from noc.lib.validators import is_objectid, is_oid
-from noc.fm.models.utils import get_event
-from noc.core.translation import ugettext as _
 
 
 class EventClassificationRuleApplication(ExtDocApplication):
@@ -212,11 +213,11 @@ class EventClassificationRuleApplication(ExtDocApplication):
         data = {
             "name": event_name,
             "preference": 1000
-            }
+        }
         if event.raw_vars["source"] == "syslog":
             data["description"] = event.raw_vars["message"]
         elif (event.raw_vars["source"] == "SNMP Trap" and
-              "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
+                      "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
         patterns = {}
         for k in event.raw_vars:
@@ -225,8 +226,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if hasattr(event, "resolved_vars"):
             for k in event.resolved_vars:
                 if k not in (
-                    "RFC1213-MIB::sysUpTime.0",
-                    "SNMPv2-MIB::sysUpTime.0") and not is_oid(k):
+                        "RFC1213-MIB::sysUpTime.0",
+                        "SNMPv2-MIB::sysUpTime.0") and not is_oid(k):
                     patterns[k] = event.resolved_vars[k]
         data["patterns"] = [
             {

@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.inv.models.link import Link
 from noc.sa.models.managedobject import ManagedObject
@@ -28,6 +29,7 @@ def get_segment_path(start, goal):
     :param goal: Managed Object instance
     :return: List of NetworkSegments
     """
+
     def merge_path(l1, l2, cross):
         ci = list(cross)[0]
         i1 = l1.index(ci)
@@ -65,6 +67,7 @@ def get_shortest_path(start, goal):
     :param goal:
     :return:
     """
+
     def reconstruct_path(came_from, current):
         total_path = [current]
         while True:

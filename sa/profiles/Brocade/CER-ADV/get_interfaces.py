@@ -10,21 +10,24 @@
 """
 # Python modules
 import re
-import string
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
     name = 'Brocade.CER-ADV.get_interfaces'
     interface = IGetInterfaces
-    rx_sh_int = re.compile('^(?P<interface>.+?)\\s+is\\s+(?P<admin_status>up|down),\\s+line\\s+protocol\\s+is\\s+(?P<oper_status>up|down)', re.MULTILINE | re.IGNORECASE)
+    rx_sh_int = re.compile(
+        '^(?P<interface>.+?)\\s+is\\s+(?P<admin_status>up|down),\\s+line\\s+protocol\\s+is\\s+(?P<oper_status>up|down)',
+        re.MULTILINE | re.IGNORECASE)
     rx_int_alias = re.compile('^(Description|Vlan alias name is)\\s*(?P<alias>.*?)$', re.MULTILINE | re.IGNORECASE)
     rx_int_mac = re.compile('address\\s+is\\s+(?P<mac>\\S+)', re.MULTILINE | re.IGNORECASE)
     rx_int_ipv4 = re.compile('Internet address is (?P<address>[0-9\\.\\/]+)', re.MULTILINE | re.IGNORECASE)
-    rx_vlan_list = re.compile('untagged|(?P<from>\\w+\\s[0-9\\.\\/]+)(?P<to>\\sto\\s[0-9\\.\\/]+)?', re.MULTILINE | re.IGNORECASE)
+    rx_vlan_list = re.compile('untagged|(?P<from>\\w+\\s[0-9\\.\\/]+)(?P<to>\\sto\\s[0-9\\.\\/]+)?',
+                              re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         rip = []
@@ -188,7 +191,7 @@ class Script(BaseScript):
                             else:
                                 untagged[ifc] = vlan
 
-# deal with VPLS and VLL vlans
+                            # deal with VPLS and VLL vlans
         shmplsconf = self.cli('sh mpls config | excl vp|vll')
         r = []
         for v in shmplsconf.split('!'):
@@ -264,13 +267,13 @@ class Script(BaseScript):
                     if ifname.find('n') > 0:
                         ift = 'tunnel'
                     i = {'name': ifname,
-                     'type': ift,
-                     'admin_status': port[1] == 'up',
-                     'oper_status': port[1] == 'up',
-                     'enabled_protocols': [],
-                     'subinterfaces': [{'name': ifname,
-                                        'admin_status': port[1] == 'up',
-                                        'oper_status': port[1] == 'up'}]}
+                         'type': ift,
+                         'admin_status': port[1] == 'up',
+                         'oper_status': port[1] == 'up',
+                         'enabled_protocols': [],
+                         'subinterfaces': [{'name': ifname,
+                                            'admin_status': port[1] == 'up',
+                                            'oper_status': port[1] == 'up'}]}
                     if ift == 'SVI':
                         i['subinterfaces'][0].update({'vlan_ids': [untagged[ifname]]})
                         ipa = self.cli('show run int %s | inc ip addr' % ifname)

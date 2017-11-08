@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 ## Python modules
-import os
 import argparse
+
 ## Third-party modules
 ## NOC modules
 from noc.core.management.base import BaseCommand
@@ -39,6 +39,7 @@ class Command(BaseCommand):
                 out
             ) + "\n"
         )
+
 
 if __name__ == "__main__":
     Command().run()

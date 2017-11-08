@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.mib import mib
+from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 
 
 class Script(BaseScript):
@@ -49,7 +49,7 @@ class Script(BaseScript):
                 )
                 unknown_interfaces += [name]
                 continue
-            ifindex =  int(oid.split(".")[-1])
+            ifindex = int(oid.split(".")[-1])
             r[ifindex] = {
                 "interface": v
             }
@@ -91,7 +91,7 @@ class Script(BaseScript):
         r = {}  # ifindex -> data
         unknown_interfaces = []
         ver = self.snmp.get("1.3.6.1.2.1.1.2.0")
-        #check sysObjectID
+        # check sysObjectID
         obj = ver.split(".")[-1]
         for soid, sname in self.snmp.getnext("1.3.6.1.4.1.%s.3.5.1.2.1.1.4" % obj):
             sifindex = int(soid.split(".")[-1])

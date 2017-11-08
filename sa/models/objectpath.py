@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import ListField, ObjectIdField, IntField
-import cachetools
 
 id_lock = Lock()
 

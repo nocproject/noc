@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmtrigger import AlarmTrigger
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 
 
 class AlarmTriggerApplication(ExtModelApplication):

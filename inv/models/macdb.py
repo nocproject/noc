@@ -8,15 +8,17 @@
 
 # Python modules
 import datetime
+
+from noc.core.mac import MAC
 # NOC modules
 from noc.lib.nosql import (Document, StringField, ForeignKeyField,
                            PlainReferenceField, DateTimeField,
                            IntField)
-from interface import Interface
 from noc.sa.models.managedobject import ManagedObject
 from noc.vc.models import VCDomain
+
+from interface import Interface
 from maclog import MACLog
-from noc.core.mac import MAC
 
 
 class MACDB(Document):
@@ -68,7 +70,7 @@ class MACDB(Document):
         m = MACDB.objects.filter(mac=mac, vc_domain=vcd).first()
         if m:
             if (managed_object != m.managed_object or
-                interface != m.interface or vlan != m.vlan):
+                        interface != m.interface or vlan != m.vlan):
                 # Database change, write history
                 MACLog(
                     timestamp=m.last_changed,

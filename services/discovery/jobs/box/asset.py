@@ -6,21 +6,22 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import base64
+import hashlib
 # Python modules
 from collections import defaultdict
-import hashlib
-import base64
+
 # Third-party modules
 import six
+from noc.inv.models.error import ConnectionError
+from noc.inv.models.modelmapping import ModelMapping
+from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
+from noc.inv.models.unknownmodel import UnknownModel
+from noc.inv.models.vendor import Vendor
+from noc.lib.text import str_dict
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.unknownmodel import UnknownModel
-from noc.inv.models.modelmapping import ModelMapping
-from noc.inv.models.error import ConnectionError
-from noc.lib.text import str_dict
 
 
 class AssetCheck(DiscoveryCheck):
@@ -338,7 +339,7 @@ class AssetCheck(DiscoveryCheck):
                             t_type, t_ctx["N"], t_c
                         )
                         if (object.get_data("twinax", "twinax") and
-                                m_c == object.get_data("twinax", "alias")):
+                                    m_c == object.get_data("twinax", "alias")):
                             self.connect_twinax(object, m_c, t_object, t_c)
                         else:
                             self.connect_p2p(object, m_c, t_object, t_c)
@@ -540,7 +541,7 @@ class AssetCheck(DiscoveryCheck):
         c, object, c_name = t_object.get_p2p_connection(t_c)
         if c is not None:
             if (c_name == m_c and
-                    object.get_data("asset", "serial") == serial):
+                        object.get_data("asset", "serial") == serial):
                 # Object with same serial number exists
                 return object
             else:

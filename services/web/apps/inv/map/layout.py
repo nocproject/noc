@@ -9,12 +9,13 @@
 # Python modules
 import math
 from collections import defaultdict
+
 # Third-party modules
 import networkx as nx
 
 
 class Layout(object):
-    #@ fixme have to be configured ?
+    # @ fixme have to be configured ?
     SCALE_FACTOR = 130
     LINK_SPACING = 10
 

@@ -7,19 +7,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
-from collections import defaultdict
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
 # NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
-from noc.lib.text import ranges_to_list
 
 
 class BaseJUNOSParser(BaseParser):
-
     def __init__(self, managed_object):
         super(BaseJUNOSParser, self).__init__(managed_object)
 

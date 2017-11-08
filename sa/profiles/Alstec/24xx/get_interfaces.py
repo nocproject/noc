@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -19,9 +20,9 @@ class Script(BaseScript):
 
     rx_port = re.compile(
         r"^\s*(?P<port>\d+/\d+)\s+(?P<admin_status>\S+)\s+\S+\s+"
-        r"(?P<oper_status>\S+)",  re.MULTILINE)
+        r"(?P<oper_status>\S+)", re.MULTILINE)
     rx_desc = re.compile(r"^\s*(?P<port>\d+/\d+)\s+(?:Enable|Disable)\s+(?:Up|Down)\s+"
-        r"(?P<desc>\S+)$", re.MULTILINE)
+                         r"(?P<desc>\S+)$", re.MULTILINE)
     rx_vlan = re.compile(
         r"^interface (?P<port>\d+/\d+)\s*\n"
         r"(^vlan pvid (?P<pvid>\d+)\s*\n)?"
@@ -104,6 +105,6 @@ class Script(BaseScript):
         if match:
             iface["subinterfaces"][0]["enabled_afi"] += ['IPv6']
             iface["subinterfaces"][0]["ipv6_addresses"] = \
-              [match.group("ipv6_address")]
+                [match.group("ipv6_address")]
         interfaces += [iface]
         return [{"interfaces": interfaces}]

@@ -9,11 +9,12 @@
 
 # Python modules
 from collections import defaultdict
+
+from django.db.models import Model
+from django.db.models import get_models
 # Third-party modules
 from mongoengine.base.common import _document_registry
 from mongoengine.document import Document
-from django.db.models import get_models
-from django.db.models import Model
 # NOC modules
 from noc.lib.app.site import site
 from noc.settings import INSTALLED_APPS
@@ -58,6 +59,7 @@ def build():
     out[-1] = out[-1][:-1]  # Remove last comma
     out += ["}"]
     print "\n".join(out)
+
 
 if __name__ == "__main__":
     build()

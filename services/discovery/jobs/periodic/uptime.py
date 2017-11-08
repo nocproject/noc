@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.fm.models.uptime import Uptime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.fm.models.uptime import Uptime
 
 
 class UptimeCheck(DiscoveryCheck):

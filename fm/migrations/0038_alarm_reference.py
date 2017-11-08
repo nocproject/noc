@@ -5,7 +5,6 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from south.db import db
 # NOC modules
 from noc.lib.nosql import get_db
 

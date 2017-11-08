@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Script loader
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
-# Python modules
-import sys
 import glob
-import logging
 import inspect
-import threading
+import logging
 import os
 import re
+# Python modules
+import sys
+import threading
+
+from noc.core.profile.loader import GENERIC_PROFILE
+
 # NOC modules
 from base import BaseScript
-from noc.core.profile.loader import GENERIC_PROFILE
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +53,7 @@ class ScriptLoader(object):
                 if os.path.exists(
                         os.path.join(
                             "custom", "sa", "profiles", vendor, system,
-                            "%s.py" % sn
+                                    "%s.py" % sn
                         )
                 ):
                     # Custom script
@@ -59,7 +61,7 @@ class ScriptLoader(object):
                 elif os.path.exists(
                         os.path.join(
                             "sa", "profiles", vendor, system,
-                            "%s.py" % sn
+                                    "%s.py" % sn
                         )
                 ):
                     # Common script
@@ -72,9 +74,9 @@ class ScriptLoader(object):
                     for n in dir(sm):
                         o = getattr(sm, n)
                         if (
-                            inspect.isclass(o) and
-                            issubclass(o, BaseScript) and
-                            o.__module__ == sm.__name__
+                                        inspect.isclass(o) and
+                                        issubclass(o, BaseScript) and
+                                        o.__module__ == sm.__name__
                         ):
                             script = o
                             break
@@ -171,6 +173,7 @@ class ScriptLoader(object):
         if not self.all_scripts:
             self.find_scripts()
         return name in self.all_scripts
+
 
 # Create singleton object
 loader = ScriptLoader()

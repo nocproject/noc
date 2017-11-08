@@ -8,6 +8,7 @@
 """
 """
 from noc.core.interface.base import BaseInterface
+
 from base import (ListOfParameter, DictParameter, IPv4Parameter,
                   MACAddressParameter, DateTimeParameter, StringParameter)
 

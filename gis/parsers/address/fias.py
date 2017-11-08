@@ -6,21 +6,23 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import csv
 # Python modules
 import os
-from collections import namedtuple
 import re
-import csv
+from collections import namedtuple
+
 # Third-party modules
 import dbf
+from noc.gis.models.address import Address
+from noc.gis.models.building import Building
 # NOC modules
 from noc.gis.models.division import Division
-from noc.gis.models.building import Building
 from noc.gis.models.street import Street
-from noc.gis.models.address import Address
-from base import AddressParser
-from noc.lib.nosql import get_db
 from noc.gis.utils.addr.ru import normalize_division
+from noc.lib.nosql import get_db
+
+from base import AddressParser
 
 
 class FIASParser(AddressParser):
@@ -232,7 +234,7 @@ class FIASParser(AddressParser):
         Refine OKTMO by OKATO
         """
         if (okato and len(oktmo) == 8 and len(okato) == 11 and
-                okato[-3:] != "000"):
+                    okato[-3:] != "000"):
             o = self.okato.get(okato)
             if o:
                 return o.oktmo
@@ -427,6 +429,7 @@ class FIASParser(AddressParser):
         self.load_oktmo()
         self.sync_buildings()
         self.update_levels()
+
 
 #
 OKTMO = namedtuple("OKTMO", ["okato", "oktmo", "name", "parent"])

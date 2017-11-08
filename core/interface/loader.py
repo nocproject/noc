@@ -6,14 +6,15 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import sys
 import glob
-import logging
 import inspect
-import threading
+import logging
 import os
 import re
+## Python modules
+import sys
+import threading
+
 ## NOC modules
 from base import BaseInterface
 
@@ -61,9 +62,9 @@ class InterfaceLoader(object):
                 for n in dir(sm):
                     o = getattr(sm, n)
                     if (
-                        inspect.isclass(o) and
-                        issubclass(o, BaseInterface) and
-                        o.__module__ == sm.__name__
+                                    inspect.isclass(o) and
+                                    issubclass(o, BaseInterface) and
+                                    o.__module__ == sm.__name__
                     ):
                         self.interfaces[name] = o
                         return o
@@ -122,6 +123,7 @@ class InterfaceLoader(object):
         if not self.all_interfaces:
             self.find_interfaces()
         return name in self.all_interfaces
+
 
 # Create singleton object
 loader = InterfaceLoader()

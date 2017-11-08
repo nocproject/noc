@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.handler import get_handler
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.handler import get_handler
 
 
 class HouseKeepingCheck(DiscoveryCheck):

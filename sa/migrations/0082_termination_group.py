@@ -11,15 +11,13 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
-
         # Model "TerminationGroup"
         db.create_table("sa_terminationgroup", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
             ("name", models.CharField("Name", max_length=64, unique=True)),
             ("description", models.TextField("Description", null=True, blank=True))
-        ))        
+        ))
         db.send_create_signal("sa", ["TerminationGroup"])
         TerminationGroup = db.mock_model(
             model_name="TerminationGroup",

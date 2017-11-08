@@ -8,16 +8,17 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, DictField,
                                 ListField, EmbeddedDocumentField)
 from mongoengine.signals import pre_delete
+from noc.core.handler import get_handler
+from noc.lib.nosql import ForeignKeyField
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.nosql import ForeignKeyField
-from noc.core.handler import get_handler
 
 logger = logging.getLogger(__name__)
 

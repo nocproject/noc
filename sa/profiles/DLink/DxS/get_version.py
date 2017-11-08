@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -48,8 +49,8 @@ class Script(BaseScript):
         }
         ser = self.rx_ser.search(s)
         if (
-            ser and ser.group("serial") != "System" and
-            ser.group("serial") != "Power"
+                        ser and ser.group("serial") != "System" and
+                        ser.group("serial") != "Power"
         ):
             r["attributes"]["Serial Number"] = ser.group("serial")
         fwt = self.rx_fwt.search(s)

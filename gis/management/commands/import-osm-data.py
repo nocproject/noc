@@ -6,21 +6,22 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import os
+import re
+import subprocess
 # Python modules
 from optparse import make_option
 from urllib2 import urlopen
-import os
-import subprocess
-import re
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
+from noc.core.fileutils import search_path, temporary_file
+from noc.gis.geo import MIN_ZOOM, MAX_ZOOM
+from noc.gis.models import Area
+from noc.gis.utils import parse_osm_bounds
+from noc.lib.db import check_postgis, check_srs
 # NOC modules
 from noc.settings import config
-from noc.lib.db import check_postgis, check_srs
-from noc.core.fileutils import search_path, temporary_file
-from noc.gis.models import Area
-from noc.gis.geo import MIN_ZOOM, MAX_ZOOM
-from noc.gis.utils import parse_osm_bounds
 
 
 class Command(BaseCommand):
@@ -30,7 +31,7 @@ class Command(BaseCommand):
         make_option("-b", "--bbox", dest="bbox"),
         make_option("-f", "--file", dest="file"),
         make_option("-a", "--area", dest="area")
-        )
+    )
 
     OSM_API_URL = "http://api.openstreetmap.org/api/0.6/map?bbox="
 
@@ -41,18 +42,18 @@ class Command(BaseCommand):
         db_name = config.get("database", "name")
         # Check PostGIS is enabled
         if not check_postgis():
-            raise CommandError("PostGIS is not installed. "\
+            raise CommandError("PostGIS is not installed. " \
                                "Install PostGIS into '%s' database" % db_name)
             # Check spatial references are loaded
         if not check_srs():
-            raise CommandError("Spatial references not loaded. "\
-                               "Load spatial_ref_sys.sql into "\
+            raise CommandError("Spatial references not loaded. " \
+                               "Load spatial_ref_sys.sql into " \
                                "'%s' database" % db_name)
             # Check osm2pgsql tool present
         options["osm2pgsql"] = search_path("osm2pgsql")
         if not options["osm2pgsql"]:
-            raise CommandError("osm2pgsql not found. "\
-                               "Install osm2pgsql and ensure "\
+            raise CommandError("osm2pgsql not found. " \
+                               "Install osm2pgsql and ensure " \
                                "it is in system $PATH")
             # Check --file or --bbox option is set
         if not options["file"] and not options["bbox"]:
@@ -71,10 +72,10 @@ class Command(BaseCommand):
             if len(bbox) != 4:
                 raise CommandError("Invalid bounding box format")
             if not ((-180 <= bbox[0] <= 180) and (-180 <= bbox[2] <= 180)):
-                raise CommandError("Invalid bounding box:"\
+                raise CommandError("Invalid bounding box:" \
                                    "Latitude must be between -180 and 180")
             if not ((-90 <= bbox[1] <= 90) and (-90 <= bbox[3] <= 90)):
-                raise CommandError("Invalid bounding box:"\
+                raise CommandError("Invalid bounding box:" \
                                    "Longiture must be between -90 and 90")
             bbox = [min(bbox[0], bbox[2]), min(bbox[1], bbox[3]),
                     max(bbox[0], bbox[2]), max(bbox[1], bbox[3])]
@@ -124,7 +125,7 @@ class Command(BaseCommand):
         if config.get("database", "user"):
             args += ["-U", config.get("database", "user")]
         if config.get("database", "password"):
-            args += ["-W"]  #, config.get("database", "password")]
+            args += ["-W"]  # , config.get("database", "password")]
         if config.get("database", "host"):
             args += ["-H", config.get("database", "host")]
         if config.get("database", "port"):

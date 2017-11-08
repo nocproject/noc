@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -90,7 +91,7 @@ class Script(BaseScript):
                 "oper_status": oper_status,
                 "type": ift,
                 "enabled_protocols": []
-                }
+            }
             # Get description
             description = None
             match = self.rx_int_alias.search(s)
@@ -115,7 +116,7 @@ class Script(BaseScript):
                     "oper_status": oper_status,
                     "enabled_afi": [],
                     "enabled_protocols": []
-                    }
+                }
                 # Description
                 if iface.get("description"):
                     sub["description"] = iface["description"]

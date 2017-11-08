@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from base import (DictListParameter, StringParameter, BooleanParameter, FloatParameter,
                   StringListParameter, REStringParameter)
 

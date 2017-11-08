@@ -8,13 +8,13 @@
 
 # Python modules
 import urllib
+
+import six
 # Third-party modules
 import ujson
-import six
+from noc.config import config
 # NOC modules
-from noc.config import config
 from noc.core.http.client import fetch_sync
-from noc.config import config
 
 
 class InfluxDBClient(object):

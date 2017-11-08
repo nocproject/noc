@@ -6,16 +6,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 # NOC modules
 from noc.core.ioloop.snmp import (snmp_get, snmp_count, snmp_getnext,
                                   snmp_set)
+from noc.core.ioloop.udp import UDPSocket
+from noc.core.log import PrefixLoggerAdapter
 from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
-from noc.core.log import PrefixLoggerAdapter
-from noc.core.ioloop.udp import UDPSocket
 
 
 class SNMP(object):
@@ -89,6 +89,7 @@ class SNMP(object):
         :param cached: True if get results can be cached during session
         :returns: eigther result scalar or dict of name -> value
         """
+
         @tornado.gen.coroutine
         def run():
             try:
@@ -125,6 +126,7 @@ class SNMP(object):
         :param oid: string or list of oids
         :returns: eigther result scalar or dict of name -> value
         """
+
         @tornado.gen.coroutine
         def run():
             try:
@@ -157,6 +159,7 @@ class SNMP(object):
         :param oid: OID
         :param filter: Callable accepting oid and value and returning boolean
         """
+
         @tornado.gen.coroutine
         def run():
             try:
@@ -250,6 +253,7 @@ class SNMP(object):
         :param cached:
         :return:
         """
+
         def gen_table(oid):
             l = len(oid) + 1
             for o, v in self.getnext(oid, community_suffix=community_suffix,

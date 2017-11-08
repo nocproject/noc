@@ -10,32 +10,32 @@
 from noc.lib.nosql import (Document, PlainReferenceField,
                            ForeignKeyField, StringField,
                            ListField, IntField)
+from noc.project.models.project import Project
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.models.managedobject import ManagedObject
+
 from forwardinginstance import ForwardingInstance
 from interface import Interface
 from interfaceprofile import InterfaceProfile
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.project.models.project import Project
-
 
 SUBINTERFACE_AFI = (
     IGetInterfaces.returns
-    .element.attrs["interfaces"]
-    .element.attrs["subinterfaces"]
-    .element.attrs["enabled_afi"].element.choices)
+        .element.attrs["interfaces"]
+        .element.attrs["subinterfaces"]
+        .element.attrs["enabled_afi"].element.choices)
 
 SUBINTERFACE_PROTOCOLS = (
     IGetInterfaces.returns
-    .element.attrs["interfaces"]
-    .element.attrs["subinterfaces"]
-    .element.attrs["enabled_protocols"].element.choices)
+        .element.attrs["interfaces"]
+        .element.attrs["subinterfaces"]
+        .element.attrs["enabled_protocols"].element.choices)
 
 TUNNEL_TYPES = (
     IGetInterfaces.returns
-    .element.attrs["interfaces"]
-    .element.attrs["subinterfaces"]
-    .element.attrs["tunnel"]
-    .attrs["type"].choices
+        .element.attrs["interfaces"]
+        .element.attrs["subinterfaces"]
+        .element.attrs["tunnel"]
+        .attrs["type"].choices
 )
 
 
@@ -63,7 +63,7 @@ class SubInterface(Document):
     name = StringField()
     description = StringField(required=False)
     profile = PlainReferenceField(InterfaceProfile,
-        default=InterfaceProfile.get_default_profile)
+                                  default=InterfaceProfile.get_default_profile)
     mtu = IntField(required=False)
     mac = StringField(required=False)
     vlan_ids = ListField(IntField(), default=[])

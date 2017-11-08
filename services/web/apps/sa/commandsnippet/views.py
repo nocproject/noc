@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.sa.models.commandsnippet import CommandSnippet
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.sa.models.commandsnippet import CommandSnippet
 
 
 class CommandSnippetApplication(ExtModelApplication):
@@ -22,4 +22,3 @@ class CommandSnippetApplication(ExtModelApplication):
     query_fields = ["name__icontains"]
 
 # @todo: syntax checking of snippet
-

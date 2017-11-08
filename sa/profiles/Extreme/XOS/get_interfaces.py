@@ -8,11 +8,12 @@
 
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
+
+
 #
 # @todo: IPv6 Support, only SNMP version, vrf support
 #
@@ -98,11 +99,11 @@ class Script(BaseScript):
         switchports = {}  # interface -> (untagged, tagged)
         for swp in self.scripts.get_switchport():
             switchports[swp["interface"]] = (
-                    swp["untagged"] if "untagged" in swp else None,
-                    swp["tagged"],
-                    swp["description"],
-                    swp["status"]
-                    )
+                swp["untagged"] if "untagged" in swp else None,
+                swp["tagged"],
+                swp["description"],
+                swp["status"]
+            )
 
         interfaces = []
         aggrifaces = []
@@ -150,15 +151,15 @@ class Script(BaseScript):
                 "mac": mac,
                 "description": description,
                 "subinterfaces": [{
-                        "name": sviintrf,
-                        "description": description,
-                        "admin_status": a_stat,
-                        "oper_status": a_stat,
-                        "enabled_afi": enabled_afi,
-                        ip_interfaces: ip_list,
-                        "mac": mac,
-                        "vlan_ids": self.expand_rangelist(vltag),
-                        }]
+                    "name": sviintrf,
+                    "description": description,
+                    "admin_status": a_stat,
+                    "oper_status": a_stat,
+                    "enabled_afi": enabled_afi,
+                    ip_interfaces: ip_list,
+                    "mac": mac,
+                    "vlan_ids": self.expand_rangelist(vltag),
+                }]
             }
             interfaces += [iface]
         # Get L2 interfaces

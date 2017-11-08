@@ -8,42 +8,47 @@
 
 # Python modules
 from __future__ import absolute_import
-import re
-import logging
-import time
+
 import itertools
+import logging
 import operator
-from threading import Lock
+import re
+import time
 from functools import reduce
+from threading import Lock
+
 # Third-party modules
 import six
+from noc.config import config
+from noc.core.handler import get_handler
+from noc.core.log import PrefixLoggerAdapter
+from noc.core.mac import MAC
+from noc.core.matcher import match
+from noc.core.profile.loader import loader as profile_loader
+from noc.core.span import Span
+from noc.lib.validators import is_int
+
+from .beef import Beef
+from .context import (ConfigurationContextManager, CacheContextManager,
+                      IgnoredExceptionsContextManager)
+from .error import (ScriptError, CLISyntaxError, CLIOperationError,
+                    NotSupportedError, UnexpectedResultError)
+from .http.base import HTTP
 # NOC modules
 from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
-from .http.base import HTTP
-from noc.core.log import PrefixLoggerAdapter
-from noc.lib.validators import is_int
-from .context import (ConfigurationContextManager, CacheContextManager,
-                      IgnoredExceptionsContextManager)
-from noc.core.profile.loader import loader as profile_loader
-from noc.core.handler import get_handler
-from noc.core.mac import MAC
-from .beef import Beef
-from .error import (ScriptError, CLISyntaxError, CLIOperationError,
-                    NotSupportedError, UnexpectedResultError)
-from noc.config import config
-from noc.core.span import Span
-from noc.core.matcher import match
 
 
 class BaseScript(object):
     """
     Service Activation script base class
     """
+
     class __metaclass__(type):
         """
         Process @match decorators
         """
+
         def __new__(mcs, name, bases, attrs):
             n = type.__new__(mcs, name, bases, attrs)
             n._execute_chain = sorted(
@@ -193,6 +198,7 @@ class BaseScript(object):
         Process matchers and apply is_XXX properties
         :return:
         """
+
         def get_matchers(c, matchers):
             return dict(
                 (m, match(c, matchers[m]))
@@ -331,11 +337,14 @@ class BaseScript(object):
         """
         execute method decorator
         """
+
         def wrap(f):
             # Append to the execute chain
             if hasattr(f, "_match"):
                 old_filter = f._match
-                f._match = lambda self, v, old_filter=old_filter, new_filter=new_filter: new_filter(self, v) or old_filter(self, v)
+                f._match = lambda self, v, old_filter=old_filter, new_filter=new_filter: new_filter(self,
+                                                                                                    v) or old_filter(
+                    self, v)
             else:
                 f._match = new_filter
             f._seq = next(cls._x_seq)
@@ -374,7 +383,7 @@ class BaseScript(object):
             for f in self._execute_chain:
                 if f._match(self, self.version):
                     return f(self, **kwargs)
-                # Raise error
+                    # Raise error
             raise self.NotSupportedError()
         else:
             # New SNMP/CLI API
@@ -738,6 +747,7 @@ class BaseScript(object):
         if list_re is regular expression object, return a list of dicts (group name -> value),
             one dict per matched line
         """
+
         def format_result(result):
             if list_re:
                 x = []
@@ -944,6 +954,7 @@ class ScriptsHub(object):
     Object representing Script.scripts structure.
     Returns initialized child script which can be used ans callable
     """
+
     class _CallWrapper(object):
         def __init__(self, script_class, parent):
             self.parent = parent

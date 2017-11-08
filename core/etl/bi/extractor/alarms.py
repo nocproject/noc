@@ -7,19 +7,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import bisect
 import datetime
-# NOC modules
-from base import BaseExtractor
+
+from noc.bi.models.alarms import Alarms
+from noc.config import config
+from noc.core.etl.bi.stream import Stream
+from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.reboot import Reboot
-from noc.fm.models.alarmclass import AlarmClass
-from noc.sa.models.managedobject import ManagedObject
-from noc.bi.models.alarms import Alarms
-from noc.core.etl.bi.stream import Stream
-from noc.lib.dateutils import total_seconds
-from noc.config import config
 from noc.lib.dateutils import hits_in_range
+from noc.lib.dateutils import total_seconds
+from noc.sa.models.managedobject import ManagedObject
+
+# NOC modules
+from base import BaseExtractor
 
 
 class AlarmsExtractor(BaseExtractor):

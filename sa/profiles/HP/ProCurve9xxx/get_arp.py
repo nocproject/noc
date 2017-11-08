@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 rx_line = re.compile(r"^\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\d+\s+(?P<interface>\S+)")
 
@@ -28,7 +29,7 @@ class Script(BaseScript):
             type = match.group("type")
             mac = match.group("mac")
             if mac.lower() in ("incomplete" or "none") or \
-            type.lower() in ("pending", "invalid"):
+                            type.lower() in ("pending", "invalid"):
                 continue
             else:
                 r.append({

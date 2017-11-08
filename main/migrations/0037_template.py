@@ -5,8 +5,9 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
+
 
 class Migration:
     def forwards(self):
@@ -18,8 +19,8 @@ class Migration:
         ))
 
         Template = db.mock_model(model_name="Template",
-            db_table="main_template", db_tablespace="", pk_field_name="id",
-            pk_field_type=models.AutoField)
+                                 db_table="main_template", db_tablespace="", pk_field_name="id",
+                                 pk_field_type=models.AutoField)
 
         db.create_table("main_systemtemplate", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),

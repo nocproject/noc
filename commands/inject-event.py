@@ -9,14 +9,16 @@
 """
 # Python modules
 from __future__ import with_statement
-import sys
+
+import argparse
 import datetime
 import json
-import argparse
+import sys
+
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.newevent import NewEvent
+from noc.sa.models.managedobject import ManagedObject
 
 
 class Command(BaseCommand):
@@ -91,6 +93,7 @@ class Command(BaseCommand):
         )
         ne.save()
         self.stdout.write(ne.id)
+
 
 if __name__ == "__main__":
     Command().run()

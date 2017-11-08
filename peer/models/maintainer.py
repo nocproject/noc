@@ -8,11 +8,12 @@
 
 # Django modules
 from django.db import models
-# NOC modules
-from rir import RIR
 from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
+
 from person import Person
+# NOC modules
+from rir import RIR
 
 
 class Maintainer(models.Model):

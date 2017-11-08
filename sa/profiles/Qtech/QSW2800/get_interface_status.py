@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
@@ -36,7 +37,7 @@ class Script(BaseScript):
             if iface.startswith("Vlan"):
                 continue
             r.append({
-                    "interface": iface,
-                    "oper_status": match.group("status").lower() == "up"
+                "interface": iface,
+                "oper_status": match.group("status").lower() == "up"
             })
         return r

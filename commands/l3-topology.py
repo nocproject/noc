@@ -8,17 +8,18 @@
 
 # Python modules
 import os
-import tempfile
 import subprocess
+import tempfile
 from collections import namedtuple, defaultdict
+
+from noc.core.ip import IP
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
-from noc.ip.models.vrf import VRF
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
-from noc.core.ip import IP
+from noc.ip.models.vrf import VRF
 from noc.lib.validators import is_rd
+from noc.sa.models.managedobject import ManagedObject
 
 
 class Command(BaseCommand):
@@ -138,6 +139,7 @@ class Command(BaseCommand):
         """
         Returns a list of SI
         """
+
         def check_ipv4(a):
             if (a.startswith("127.") or a.startswith("169.254") or
                     a.endswith("/32") or a.startswith("0.0.0.0")):
@@ -213,6 +215,7 @@ class Command(BaseCommand):
                     rd = None  # Missed data
             self.rd_cache[object, fi] = rd
         return rd
+
 
 if __name__ == "__main__":
     Command().run()

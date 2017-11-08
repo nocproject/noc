@@ -10,7 +10,6 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -23,16 +22,16 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
 
-# lldpRemLocalPortNum
-# lldpRemChassisIdSubtype lldpRemChassisId
-# lldpRemPortIdSubtype lldpRemPortId
-# lldpRemSysName lldpRemSysCapEnabled
+                # lldpRemLocalPortNum
+                # lldpRemChassisIdSubtype lldpRemChassisId
+                # lldpRemPortIdSubtype lldpRemPortId
+                # lldpRemSysName lldpRemSysCapEnabled
                 for v in self.snmp.get_tables(
-                    ["1.0.8802.1.1.2.1.4.1.1.2",
-                    "1.0.8802.1.1.2.1.4.1.1.4", "1.0.8802.1.1.2.1.4.1.1.5",
-                    "1.0.8802.1.1.2.1.4.1.1.6", "1.0.8802.1.1.2.1.4.1.1.7",
-                    "1.0.8802.1.1.2.1.4.1.1.9", "1.0.8802.1.1.2.1.4.1.1.12"
-                    ], bulk=True):
+                        ["1.0.8802.1.1.2.1.4.1.1.2",
+                         "1.0.8802.1.1.2.1.4.1.1.4", "1.0.8802.1.1.2.1.4.1.1.5",
+                         "1.0.8802.1.1.2.1.4.1.1.6", "1.0.8802.1.1.2.1.4.1.1.7",
+                         "1.0.8802.1.1.2.1.4.1.1.9", "1.0.8802.1.1.2.1.4.1.1.12"
+                         ], bulk=True):
                     local_interface = self.snmp.get(
                         "1.3.6.1.2.1.31.1.1.1.1." + v[1], cached=True)
                     remote_chassis_id_subtype = v[2]
@@ -51,7 +50,7 @@ class Script(BaseScript):
                         "remote_port_subtype": remote_port_subtype,
                         "remote_port": remote_port,
                         "remote_capabilities": remote_capabilities,
-                        }
+                    }
                     if remote_system_name:
                         n["remote_system_name"] = remote_system_name
                     i["neighbors"].append(n)

@@ -8,9 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+
 #
 # SNMP OIDs to get FW version for some platforms
 #
@@ -37,11 +39,11 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_fwver = re.compile(r"^ZyNOS F/W Version\s+:\s+V?(?P<version>\S+).+$",
-                re.MULTILINE)
+                          re.MULTILINE)
     rx_platform = re.compile(r"^Product Model\s+:\s+(?P<platform>\S+)$",
-                re.MULTILINE)
+                             re.MULTILINE)
     rx_prom = re.compile(r"^Bootbase Version\s+:\s+V?(?P<bootprom>\S+).+$",
-                re.MULTILINE)
+                         re.MULTILINE)
 
     def execute(self):
         if self.has_snmp():
@@ -53,18 +55,18 @@ class Script(BaseScript):
                 # and version control number
                 if oid:
                     fwmaj = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.1.0"
-                                            % oid)
+                                          % oid)
                     fwmin = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.2.0"
-                                            % oid)
+                                          % oid)
                     fwmod = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.3.0"
-                                            % oid)
+                                          % oid)
                     fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0"
-                                            % oid)
+                                          % oid)
                     fwser = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.10.0"
-                                            % oid)
+                                          % oid)
                 else:
                     self.logger.error("Cannot find base OID for model '%s'"
-                                % platform)
+                                      % platform)
                     raise self.snmp.TimeOutError  # Fallback to CLI
                 return {
                     "vendor": "Zyxel",

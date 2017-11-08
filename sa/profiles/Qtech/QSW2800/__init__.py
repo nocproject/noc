@@ -11,6 +11,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -20,9 +21,9 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^ --More-- $", " "),
         (r"^Confirm to overwrite current startup-config configuration "
-            r"[Y/N]:", "\nY\n"),
+         r"[Y/N]:", "\nY\n"),
         (r"^Confirm to overwrite current startup-config configuration",
-            "\ny\n"),
+         "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
     ]
     pattern_unprivileged_prompt = r"^\S+>"
@@ -111,8 +112,8 @@ class Profile(BaseProfile):
             r[part_name] = dict(k_v_list)
             if row:
                 r[part_name]["table"] = row
-            # r[part_name] = dict(k_v_list)
-            # r[part_name]["table"] = row
+                # r[part_name] = dict(k_v_list)
+                # r[part_name]["table"] = row
         return r
 
     @staticmethod
@@ -120,7 +121,7 @@ class Profile(BaseProfile):
         print sfp_type, distance, bit_rate, wavelength
         if " m" in distance:
             # convert to km
-            distance = str(int(distance.split(" ")[0])/1000)
+            distance = str(int(distance.split(" ")[0]) / 1000)
         if " nm" in wavelength:
             wavelength = wavelength.split(" ")[0]
         if sfp_type and sfp_type != "unknown":

@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import csv
+import glob
 # Python modules
 import os
-import glob
 import subprocess
-import csv
 import sys
+
 # Third-party modules
 import six
 from django.core.management.base import BaseCommand, CommandError
@@ -127,6 +128,7 @@ class Command(BaseCommand):
 
         def package_files(f):
             " Return a list of package files"
+
             def is_child(ff):
                 pp = ff.split(os.sep)
                 if pp[-1] == INIT and len(pp) == lp + 2 and pp[:-2] == p:
@@ -176,7 +178,7 @@ class Command(BaseCommand):
             if dn[-1] == "code":
                 self.update_code_toc(d)
             target = os.path.abspath(os.path.join(d, "..", "..", "..", "..",
-                                            "static", "doc", dn[-2], dn[-1]))
+                                                  "static", "doc", dn[-2], dn[-1]))
             doctrees = os.path.join(target, "doctrees")
             html = os.path.join(target, "html")
             for p in [doctrees, html]:
@@ -188,7 +190,7 @@ class Command(BaseCommand):
             cmd = ["sphinx-build"]
             cmd += opts
             cmd += ["-b", "html", "-d", doctrees, "-D",
-                     "latex_paper_size=a4", ".", html]
+                    "latex_paper_size=a4", ".", html]
             try:
                 subprocess.call(cmd, cwd=d, env=env)
             except OSError:

@@ -8,9 +8,10 @@
 
 # Python modules
 import re
+
+from noc.core.script.base import BaseScript
 # NOC modules
 from noc.lib.text import parse_table
-from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 

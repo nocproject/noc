@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import functools
 # Python modules
 import re
-import functools
+
+from noc.core.ecma48 import strip_control_sequences
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.ecma48 import strip_control_sequences
 
 
 class BaseProfile(object):
@@ -319,6 +320,7 @@ class BaseProfile(object):
         or should be more specific as well
         """
         raise NotImplementedError()
+
     #
     # Volatile strings:
     # A list of strings can be changed over time, which

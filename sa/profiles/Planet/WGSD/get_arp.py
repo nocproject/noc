@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -53,11 +54,11 @@ class Script(BaseScript):
                     "ip": match.group("ip"),
                     "mac": None,
                     "interface": None
-                    })
+                })
             else:
                 r.append({
                     "ip": match.group("ip"),
                     "mac": match.group("mac"),
                     "interface": match.group("interface")
-                    })
+                })
         return r

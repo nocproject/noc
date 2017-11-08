@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from base import InvPlugin
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import ObjectIdParameter, IntParameter
+
+# NOC modules
+from base import InvPlugin
 
 
 class RackPlugin(InvPlugin):
@@ -111,5 +112,5 @@ class RackPlugin(InvPlugin):
             co.set_data("rackmount", "shift", shift)
             co.save()
             co.log("Set position shift to %d holes" % shift,
-                user=request.user.username, system="WEB",
-                op="CHANGE")
+                   user=request.user.username, system="WEB",
+                   op="CHANGE")

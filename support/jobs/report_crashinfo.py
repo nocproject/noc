@@ -8,8 +8,8 @@
 
 # NOC modules
 from noc.lib.scheduler.autointervaljob import AutoIntervalJob
-from noc.support.models.crashinfo import Crashinfo
 from noc.support.cp import CPClient
+from noc.support.models.crashinfo import Crashinfo
 
 
 class ReportCrashinfoJob(AutoIntervalJob):

@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.iping import IPing
-from noc.lib.validators import is_ipv4, is_ipv6
 import re
+
+from noc.core.script.base import BaseScript
+from noc.lib.validators import is_ipv4, is_ipv6
+from noc.sa.interfaces.iping import IPing
 
 
 class Script(BaseScript):
@@ -20,7 +21,7 @@ class Script(BaseScript):
         r"Sent (?P<count>\d+) packets, received (?P<success>\d+) OK, \d+ bad")
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+                df=None, vrf=None):
         if is_ipv4(address):
             cmd = "ping ip %s" % address
         elif is_ipv6(address):

@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -46,7 +45,7 @@ class Script(BaseScript):
                  "platform": rr[0],
                  "version": rr[2],
                  "attributes": {
-                    "HW version": rr[1],
+                     "HW version": rr[1],
                  }
                  }
         return r

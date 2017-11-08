@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -65,6 +66,7 @@ class Script(BaseScript):
                     for i in range(len(c)):
                         p += bin[int(c[i], 16)]
                 return p
+
             try:
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
@@ -76,7 +78,7 @@ class Script(BaseScript):
                     tagged = v[2]
                     untagged = v[3]
 
-#                    s = self.hex_to_bin(untagged)
+                    #                    s = self.hex_to_bin(untagged)
                     s = hex2bin(untagged)
                     un = []
                     for i in range(len(s)):
@@ -93,7 +95,7 @@ class Script(BaseScript):
                             port_vlans[iface]["untagged"] = v[1]
                             un += [str(i + 1)]
 
-#                    s = self.hex_to_bin(tagged)
+                        #                    s = self.hex_to_bin(tagged)
                     s = hex2bin(tagged)
                     for i in range(len(s)):
                         if s[i] == '1' and str(i + 1) not in un:
@@ -224,7 +226,7 @@ class Script(BaseScript):
                             if interface_status.get(interface):
                                 status = True
                         cmd = "show interfaces description port-channel %s" \
-                        % name
+                              % name
                         desc = self.cli(cmd)
                         match = self.rx_channel_description.search(desc)
                         if match:

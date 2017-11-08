@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.lib.sysutils import *
 # NOC modules
 from noc.lib.test import NOCTestCase
-from noc.lib.sysutils import *
 
 
 class SysutilsTestCase(NOCTestCase):

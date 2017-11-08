@@ -6,14 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+
 from dashboards.base import BaseDashboard
+from dashboards.ipsla import IPSLADashboard
+from dashboards.link import LinkDashboard
 from dashboards.managedobject import ManagedObjectDashboard
 from dashboards.mo import MODashboard
-from dashboards.link import LinkDashboard
-from dashboards.ipsla import IPSLADashboard
-from noc.core.translation import ugettext as _
 
 
 class DynamicDashboardApplication(ExtApplication):

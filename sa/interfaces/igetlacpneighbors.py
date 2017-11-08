@@ -8,6 +8,7 @@
 
 # NOc modules
 from noc.core.interface.base import BaseInterface
+
 from base import (IntParameter, InterfaceNameParameter,
                   MACAddressParameter, DictListParameter)
 

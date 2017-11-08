@@ -8,12 +8,13 @@
 
 # Django modules
 from django.db import models, connection
+from noc.core.model.fields import CIDRField
+from noc.ip.models.afi import AFI_CHOICES
+
+from vc import VC
 # NOC modules
 from vcdomain import VCDomain
 from vcfilter import VCFilter
-from vc import VC
-from noc.ip.models.afi import AFI_CHOICES
-from noc.core.model.fields import CIDRField
 
 
 class VCBindFilter(models.Model):
@@ -32,7 +33,7 @@ class VCBindFilter(models.Model):
 
     def __unicode__(self):
         return u"%s %s %s %s" % (
-        self.vc_domain, self.vrf, self.prefix, self.vc_filter)
+            self.vc_domain, self.vrf, self.prefix, self.vc_filter)
 
     @classmethod
     def get_vcs(cls, vrf, afi, prefix):

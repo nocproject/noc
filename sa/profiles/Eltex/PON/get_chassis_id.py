@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -38,11 +39,11 @@ class Script(BaseScript):
         # Fallback to CLI
         with self.profile.switch(self):
             mac = self.cli("show interfaces mac-address front-port 0\r",
-                cached=True)
+                           cached=True)
             match = self.rx_mac.search(mac)
             mac1 = match.group("mac")
             mac = self.cli("show interfaces mac-address pon-port 7\r",
-                cached=True)
+                           cached=True)
             match = self.rx_mac.search(mac)
             mac2 = match.group("mac")
         return {

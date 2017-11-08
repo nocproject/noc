@@ -6,27 +6,28 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import operator
-from threading import Lock
 from collections import defaultdict
-import logging
+from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
-import cachetools
+from noc.core.debug import error_report
+from noc.core.defer import call_later
+from noc.core.handler import get_handler
+from noc.lib.nosql import ForeignKeyField
+from noc.sa.models.action import Action
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.selectorcache import SelectorCache
+
 # NOC modules
 from alarmclass import AlarmClass
 from alarmdiagnostic import AlarmDiagnostic
 from utils import get_alarm
-from noc.sa.models.action import Action
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.nosql import ForeignKeyField
-from noc.sa.models.selectorcache import SelectorCache
-from noc.core.defer import call_later
-from noc.core.handler import get_handler
-from noc.core.debug import error_report
-
 
 ac_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -143,7 +144,7 @@ class AlarmDiagnosticConfig(Document):
                 alarm=alarm.id,
                 cfg=r_cfg[delay]
             )
-        # @todo: Submit periodic job
+            # @todo: Submit periodic job
 
     @classmethod
     def on_clear(cls, alarm):

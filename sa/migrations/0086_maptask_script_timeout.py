@@ -11,7 +11,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.add_column(
             "sa_maptask", "script_timeout",

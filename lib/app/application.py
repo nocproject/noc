@@ -8,34 +8,35 @@
 
 # Python modules
 from __future__ import absolute_import
-import logging
-import os
+
 import datetime
 import functools
-# Django modules
-from django.template import RequestContext
+import logging
+import os
+
+import six
+import ujson
+from django import forms
+from django.contrib import messages
+from django.db import connection
+from django.http import Http404
 from django.http import (HttpResponse, HttpResponseRedirect,
                          HttpResponseForbidden, HttpResponseNotFound)
-from django.shortcuts import render_to_response
-from django.db import connection
 from django.shortcuts import get_object_or_404
-from django.contrib import messages
-from django.utils.html import escape
+from django.shortcuts import render_to_response
+# Django modules
+from django.template import RequestContext
 from django.template import loader
-from django import forms
 from django.utils.datastructures import SortedDict
+from django.utils.html import escape
 from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
-from django.http import Http404
-import ujson
-import six
+from noc import settings
+from noc.lib.forms import NOCForm
+from noc.sa.interfaces.base import DictParameter
+
 # NOC modules
 from .access import HasPerm, Permit, Deny
-from noc.lib.forms import NOCForm
-from noc import settings
-from noc.sa.interfaces.base import DictParameter
-from noc.core.fileutils import safe_append
-from .site import site
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -77,6 +78,7 @@ class FormErrorsContext(object):
     """
     Catch ValueError exception and populate form's _errors fields
     """
+
     def __init__(self, form):
         self.form = form
 
@@ -125,7 +127,7 @@ class Application(object):
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
-    config = settings.config # @fixme remove
+    config = settings.config  # @fixme remove
 
     TZ = get_current_timezone()
 
@@ -144,7 +146,7 @@ class Application(object):
             ["MODULE_NAME"]
         ).MODULE_NAME
         self.app_id = "%s.%s" % (self.module, self.app)
-        self.menu_url = None   # Set by site.autodiscover()
+        self.menu_url = None  # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
 
     @classmethod

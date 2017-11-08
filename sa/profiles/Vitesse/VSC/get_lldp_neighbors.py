@@ -8,12 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.lib.validators import is_ipv4, is_ipv6, is_mac
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -63,13 +62,13 @@ class Script(BaseScript):
             }
             if match.group("system_name"):
                 neighbor["remote_system_name"] = \
-                match.group("system_name").strip()
+                    match.group("system_name").strip()
             if match.group("system_description"):
                 neighbor["remote_system_description"] = \
-                match.group("system_description").strip()
+                    match.group("system_description").strip()
             if match.group("port_description"):
                 neighbor["remote_port_description"] = \
-                match.group("port_description").strip()
+                    match.group("port_description").strip()
             r += [{
                 "local_interface": match.group("port"),
                 "neighbors": [neighbor]

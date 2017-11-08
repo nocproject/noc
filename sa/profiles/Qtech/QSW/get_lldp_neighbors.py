@@ -8,11 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_mac
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):
@@ -101,7 +101,7 @@ class Script(BaseScript):
             # Build neighbor data
             # Get capability
             cap = 0
-#            for c in match.group("capabilities").split(","):
+            #            for c in match.group("capabilities").split(","):
             if cap:
                 c = c.strip()
                 if c:
@@ -130,7 +130,7 @@ class Script(BaseScript):
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
-                }
+            }
             if remote_system_name and remote_system_name != "NULL":
                 n["remote_system_name"] = remote_system_name
             if system_description and system_description != "NULL":
@@ -138,8 +138,8 @@ class Script(BaseScript):
             if port_description and port_description != "NULL":
                 n["remote_port_description"] = port_description
 
-            # TODO:
-#            n["remote_chassis_id_subtype"] = 4
+                # TODO:
+            #            n["remote_chassis_id_subtype"] = 4
 
             i["neighbors"].append(n)
             r.append(i)

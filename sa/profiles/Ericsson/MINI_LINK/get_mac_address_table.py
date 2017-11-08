@@ -8,8 +8,8 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-address-table"
-        #if mac is not None:
+        # if mac is not None:
         #    cmd += " address %s" % mac
         if interface is not None:
             cmd += " port %s" % interface

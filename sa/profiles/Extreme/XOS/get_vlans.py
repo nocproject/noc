@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
-import re
 
 rx_vlan_line = re.compile(r"^(?P<name>\S+)\s+(?P<vlan_id>\d{1,4})\s")
 
@@ -29,5 +30,5 @@ class Script(BaseScript):
                 r.append({
                     "vlan_id": vlan_id,
                     "name": name
-                    })
+                })
         return r

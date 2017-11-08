@@ -7,11 +7,12 @@
 # ---------------------------------------------------------------------
 
 from __future__ import with_statement
-from distutils.core import setup
+
 import distutils.command.sdist
-from distutils.command.install import INSTALL_SCHEMES
-import subprocess
 import os
+import subprocess
+from distutils.command.install import INSTALL_SCHEMES
+from distutils.core import setup
 
 #
 # Prefix to where noc to be installed
@@ -27,6 +28,7 @@ def get_version():
     with open("VERSION") as f:
         return f.read().strip()
 
+
 MANIFEST = []
 
 
@@ -40,7 +42,7 @@ def get_manifest():
         if os.path.exists(".hg"):
             # Rebuild MANIFEST file every time mercurial repo found
             proc = subprocess.Popen(["hg", "locate"], stdout=subprocess.PIPE,
-                                                    stderr=subprocess.PIPE)
+                                    stderr=subprocess.PIPE)
             stdout, stderr = proc.communicate()
             mf = stdout.splitlines()
             if os.path.exists(".hgsub"):
@@ -92,8 +94,10 @@ class noc_sdist(distutils.command.sdist.sdist):
     """
     Get file list for sdist from MANIFEST
     """
+
     def get_file_list(self):
         self.filelist.files = get_manifest()
+
 
 #
 # Monkeypatch distutils to install noc to the desired location

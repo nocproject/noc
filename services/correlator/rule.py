@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.lib.datasource import datasource_registry
 # NOC modules
 from noc.main.models import PyRule
-from noc.lib.datasource import datasource_registry
 
 
 class Rule(object):
@@ -86,7 +86,7 @@ class Rule(object):
             ds_vars = vars.copy()
             ds_vars["managed_object"] = e.managed_object
             context = dict((k, v(ds_vars))
-                for k, v in self.datasources.items())
+                           for k, v in self.datasources.items())
             context.update(vars)
             for k, v in self.d_defaults.items():
                 x = eval(v, {}, context)

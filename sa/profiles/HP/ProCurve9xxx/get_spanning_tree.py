@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
@@ -21,8 +21,10 @@ class Script(BaseScript):
         sep = "Global STP (IEEE 802.1D) Parameters:"
         dsep = "======================================================================"
         port_rx = re.compile("\d+\/\d+")
-        glob_stp_rx = re.compile("(?P<vlan_id>\d+)\s+(?P<root_id>[0-9a-f]+)\s+(?P<root_cost>\d+)\s+(?P<root_port>[0-9a-z/]+)\s+"
-                                r"(?P<priority>[0-9a-f]+)\s+(\d+\s+){6}\s+(?P<bridge_address>[0-9a-f]+)", re.DOTALL | re.IGNORECASE | re.MULTILINE)
+        glob_stp_rx = re.compile(
+            "(?P<vlan_id>\d+)\s+(?P<root_id>[0-9a-f]+)\s+(?P<root_cost>\d+)\s+(?P<root_port>[0-9a-z/]+)\s+"
+            r"(?P<priority>[0-9a-f]+)\s+(\d+\s+){6}\s+(?P<bridge_address>[0-9a-f]+)",
+            re.DOTALL | re.IGNORECASE | re.MULTILINE)
         dpi_rx = re.compile("Interface:\s(?P<dpi>[0-9/]+)")
         r = {
             "mode": proto,
@@ -47,11 +49,11 @@ class Script(BaseScript):
                         dpi = dpi_rx.search(v[p:]).group("dpi")
                     else:
                         dpi = 0
-#                    if not state == "disabled":
-#                        di = self.cli("show span detail vlan %s ethernet %s" % (vlan,interface))
-#                        dpi = dpi_rx.search(di).group('dpi')
-#                    else:
-#                        dpi = 0
+                    #                    if not state == "disabled":
+                    #                        di = self.cli("show span detail vlan %s ethernet %s" % (vlan,interface))
+                    #                        dpi = dpi_rx.search(di).group('dpi')
+                    #                    else:
+                    #                        dpi = 0
                     interfaces += [{
                         "interface": interface,
                         "port_id": 0,

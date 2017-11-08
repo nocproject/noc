@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link

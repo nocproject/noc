@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
-import re
 
 rx_vlan_line = re.compile(
     r"^\s*(?P<vlan_id>\d{1,4})(\s+\S+){9}\s+o(?:n|ff)\s+(?P<name>(\S+\s*)+?)"

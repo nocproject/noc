@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-import re
 
 
 class Script(BaseScript):
@@ -24,7 +25,7 @@ class Script(BaseScript):
     def execute(self):
         r = []
         c = self.cli("show interfaces switchport")
-        c = self.rx_cont.sub("," , c)  # Unwind continuation lines
+        c = self.rx_cont.sub(",", c)  # Unwind continuation lines
 
         for match in self.rx_line.finditer(c):
             trunk = match.group("mode") == "TRUNK"
@@ -52,11 +53,11 @@ class Script(BaseScript):
             r += [{
                 "interface": interface,
                 "status": match.group("status") == "enabled",
-                #"description"    : "Dummy";
+                # "description"    : "Dummy";
                 "802.1Q Enabled": trunk,
                 "802.1ad Tunnel": False,
                 "untagged": pvid,
                 "tagged": tagged,
                 "members": members
-                }]
+            }]
         return r

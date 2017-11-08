@@ -9,6 +9,7 @@
 # Python modules
 import re
 import types
+
 # NOC modules
 from noc.lib.registry import Registry
 

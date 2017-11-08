@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from optparse import make_option
 import csv
 import sys
+# Python modules
+from optparse import make_option
+
 # Django modules
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 # NOC modules
 from noc.lib.scheduler.scheduler import Scheduler
 
@@ -21,27 +22,27 @@ class Command(BaseCommand):
     Manage Jobs
     """
     help = "Manage Jobs"
-    option_list=BaseCommand.option_list+(
+    option_list = BaseCommand.option_list + (
         make_option("--scheduler", "-s",
-            dest="scheduler",
-            default="main.jobs",
-            choices=[
-                "main.jobs",
-                "inv.discovery"
-                ],
-            help="Select scheduler"),
+                    dest="scheduler",
+                    default="main.jobs",
+                    choices=[
+                        "main.jobs",
+                        "inv.discovery"
+                    ],
+                    help="Select scheduler"),
         make_option("--list", "-l",
-            action="store_const",
-            const="list",
-            dest="action",
-            help="List active jobs"
-        ),
+                    action="store_const",
+                    const="list",
+                    dest="action",
+                    help="List active jobs"
+                    ),
         make_option("--format", "-f",
-            action="store",
-            dest="format",
-            choices=["json", "csv"],
-            help="Set output format"
-        ),
+                    action="store",
+                    dest="format",
+                    choices=["json", "csv"],
+                    help="Set output format"
+                    ),
     )
 
     def get_scheduler(self, **options):
@@ -56,7 +57,7 @@ class Command(BaseCommand):
             "Run", "ID", "Name", "Key", "Status", "Last Status",
             "Runs", "Last Run", "Last Duration",
             "Interval", "Failed Interval", "Offset"
-            ])
+        ])
 
     def format_json(self, job):
         print job
@@ -69,7 +70,7 @@ class Command(BaseCommand):
             job.get("last", ""), job.get("ldur", ""),
             s.get("interval", ""), s.get("failed_interval", ""),
             s.get("offset", "")
-            ])
+        ])
 
     def handle(self, *args, **options):
         action = options["action"] or "list"

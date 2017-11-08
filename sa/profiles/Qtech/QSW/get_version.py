@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -35,7 +36,7 @@ class Script(BaseScript):
     rx_bootprom1 = re.compile(
         r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
     rx_hardware1 = re.compile(
-         r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE)
+        r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE)
     rx_serial1 = re.compile(
         r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$",
         re.MULTILINE)
@@ -45,7 +46,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0",
-                                        cached=True)
+                                         cached=True)
                 if platform == '' or platform == None:
                     raise self.snmp.TimeOutError
                 if " " in platform:
@@ -62,15 +63,15 @@ class Script(BaseScript):
                 serial = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.19.0",
                                        cached=True)
                 return {
-                        "vendor": "Qtech",
-                        "platform": platform,
-                        "version": version,
-                        "attributes": {
-                            "Boot PROM": bootprom,
-                            "HW version": hardware,
-                            "Serial Number": serial
-                            }
-                        }
+                    "vendor": "Qtech",
+                    "platform": platform,
+                    "version": version,
+                    "attributes": {
+                        "Boot PROM": bootprom,
+                        "HW version": hardware,
+                        "Serial Number": serial
+                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -91,12 +92,12 @@ class Script(BaseScript):
             hardware = self.re_search(self.rx_hardware1, ver)
             serial = self.re_search(self.rx_serial1, ver)
         return {
-                "vendor": "Qtech",
-                "platform": platform,
-                "version": version,
-                "attributes": {
-                    "Boot PROM": bootprom.group("bootprom").strip(),
-                    "HW version": hardware.group("hardware").strip(),
-                    "Serial Number": serial.group("serial").strip()
-                    }
-                }
+            "vendor": "Qtech",
+            "platform": platform,
+            "version": version,
+            "attributes": {
+                "Boot PROM": bootprom.group("bootprom").strip(),
+                "HW version": hardware.group("hardware").strip(),
+                "Serial Number": serial.group("serial").strip()
+            }
+        }

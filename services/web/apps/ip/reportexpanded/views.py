@@ -6,14 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django import forms
 # Django Modules
 from django.utils.translation import ugettext_lazy as _
-from django import forms
+from noc.ip.models import VRF, Prefix
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.ip.models import VRF, Prefix
-from noc.main.models import CustomField
 from noc.lib.validators import *
+from noc.main.models import CustomField
 
 
 class ReportForm(forms.Form):
@@ -50,7 +50,7 @@ class ExpandedReport(SimpleReport):
         def get_row(p, level=0):
             s = "--" * level
             r = [s + p.prefix, p.state.name,
-                unicode(p.vc) if p.vc else ""]
+                 unicode(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]

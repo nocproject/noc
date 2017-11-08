@@ -4,9 +4,10 @@
 # ----------------------------------------------------------------------
 # Writen by Boba boba@boba.su
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 
 class Script(BaseScript):

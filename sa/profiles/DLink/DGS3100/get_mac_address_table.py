@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.sa.profiles.DLink.DGS3100 import DGS3100
-import re
 
 
 class Script(BaseScript):

@@ -8,11 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -94,7 +94,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
             if match.group("vlan_id") != "0":
                 iface["subinterfaces"][0]["vlan_ids"] = \
-                  [match.group("vlan_id")]
+                    [match.group("vlan_id")]
             interfaces += [iface]
 
         match = self.rx_inband2.search(v)

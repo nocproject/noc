@@ -19,4 +19,3 @@ class Script(BaseScript):
         conf = self.cli("sh")
         conf = self.cli("cat /etc/config/cfg.yaml")
         return self.cleaned_config(conf)
-

@@ -6,7 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-#Python modules
+# Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -14,7 +14,6 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import (IntParameter,
                                     MACAddressParameter,
                                     InterfaceTypeError)
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -86,8 +85,8 @@ class Script(BaseScript):
                 }
                 n = {"remote_chassis_id_subtype": match.group("rem_cid_type")}
                 n["remote_port_subtype"] = {
-                    #"Interface alias": 1,
-                    #"Port component": 2,
+                    # "Interface alias": 1,
+                    # "Port component": 2,
                     "MAC address": 3,
                     "Interface": 5,
                     "Local": 7
@@ -110,4 +109,3 @@ class Script(BaseScript):
                 i["neighbors"] += [n]
                 r += [i]
         return r
-

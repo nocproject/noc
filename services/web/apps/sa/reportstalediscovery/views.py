@@ -8,14 +8,15 @@
 
 # Python modules
 import datetime
+
+from noc.core.scheduler.scheduler import Scheduler
+from noc.core.translation import ugettext as _
 # Django modules
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.lib.dateutils import humanize_distance
-from noc.core.scheduler.scheduler import Scheduler
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.translation import ugettext as _
 
 
 class ReportStaleDiscoveryJob(SimpleReport):

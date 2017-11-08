@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -34,8 +35,8 @@ class Script(BaseScript):
                     for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1"):
                         o = oid.split(".")[-1]
                         result += [{
-                            "vlan_id":int(oids[o]),
-                            "name":v.strip().rstrip('\x00')
+                            "vlan_id": int(oids[o]),
+                            "name": v.strip().rstrip('\x00')
                         }]
                 else:
                     tmp_vlan = []

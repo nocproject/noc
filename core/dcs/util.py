@@ -8,11 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import sys
+
+import six
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
-import six
+
 # NOC modules
 from .loader import get_dcs_url, get_dcs_class
 
@@ -30,6 +33,7 @@ def resolve(name, hint=None, wait=True, timeout=None,
     :param near:
     :return:
     """
+
     @tornado.gen.coroutine
     def _resolve():
         try:

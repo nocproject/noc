@@ -6,26 +6,28 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import re
-import operator
 from threading import Lock
+
+import cachetools
 # Django modules
 from django.db import models
 # Third-party modules
 from mongoengine.queryset import Q as MEQ
-import cachetools
+from noc.core.cache.decorator import cachedmethod
+from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import TagsField
+from noc.lib.app.site import site
+from noc.main.models import ResourceState
+from noc.main.models.style import Style
+from noc.main.models.textindex import full_text_search
+from noc.project.models.project import Project
+
 # NOC modules
 from error import InvalidLabelException, MissedLabelException
 from vcdomain import VCDomain
-from noc.main.models.style import Style
-from noc.main.models import ResourceState
-from noc.project.models.project import Project
-from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
-from noc.main.models.textindex import full_text_search
-from noc.core.cache.decorator import cachedmethod
-from noc.core.model.decorator import on_delete_check
 
 # Regular expressions
 rx_vc_underline = re.compile("\s+")
@@ -42,6 +44,7 @@ class VC(models.Model):
     """
     Virtual circuit
     """
+
     class Meta:
         verbose_name = "VC"
         verbose_name_plural = "VCs"
@@ -53,7 +56,7 @@ class VC(models.Model):
     vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
     name = models.CharField("Name", max_length=64)
     state = models.ForeignKey(ResourceState, verbose_name="State",
-        default=ResourceState.get_default)
+                              default=ResourceState.get_default)
     project = models.ForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
@@ -100,12 +103,12 @@ class VC(models.Model):
         Enforce additional checks
         """
         if (self.l1 < self.vc_domain.type.label1_min or
-            self.l1 > self.vc_domain.type.label1_max):
+                    self.l1 > self.vc_domain.type.label1_max):
             raise InvalidLabelException("Invalid value for L1")
         if self.vc_domain.type.min_labels > 1 and self.l2 is None:
             raise MissedLabelException("L2 required")
         if (self.vc_domain.type.min_labels > 1 and
-            not (self.vc_domain.type.label2_min <= self.l2 <= self.vc_domain.type.label2_max)):
+                not (self.vc_domain.type.label2_min <= self.l2 <= self.vc_domain.type.label2_max)):
             raise InvalidLabelException("Invalid value for L2")
         # Format name
         if self.name:
@@ -154,7 +157,7 @@ class VC(models.Model):
                 managed_object__in=objects,
                 enabled_afi="BRIDGE").filter(si_q):
             if (si.interface.vc_domain is None or
-                    si.interface.vc_domain.id == self.vc_domain.id):
+                        si.interface.vc_domain.id == self.vc_domain.id):
                 r += [si]
         # Explicit interfaces
         for i in Interface.objects.filter(vc_domain=self.vc_domain.id):

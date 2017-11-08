@@ -8,14 +8,15 @@
 
 # Python modules
 import re
-# Third-party modules
-from pyparsing import *
+
+from noc.cm.parsers.pyparser import BasePyParser
+from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 # NOC modules
 from noc.core.ip import IPv4
-from noc.cm.parsers.pyparser import BasePyParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS, RD
 from noc.lib.text import ranges_to_list
 from noc.lib.validators import is_ipv4, is_int
+# Third-party modules
+from pyparsing import *
 
 
 class BaseASAParser(BasePyParser):
@@ -34,16 +35,20 @@ class BaseASAParser(BasePyParser):
         DOMAIN_NAME = LineStart() + Literal("domain-name") + REST.copy().setParseAction(self.on_domain_name)
         TIMEZONE = LineStart() + Literal("clock timezone") + REST.copy().setParseAction(self.on_timezone)
         # NAMESERVER = LineStart() + Literal("ip name-server") + REST.copy().setParseAction(self.on_nameserver)
-        USER = LineStart() + Literal("username") + (Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
-        SERVICE = LineStart() + (Optional(Literal("no")) + Literal("service") + Word(alphanums) + restOfLine).setParseAction(self.on_service)
-        SSH_VERSION = LineStart() + Literal("ssh version") + (Word(nums) + restOfLine).setParseAction(self.on_ssh_version)
-        HTTP_SERVER = LineStart() + Optional(Literal("no")) + Literal("http server") + (Literal("enable") + Optional(DIGITS).copy() + restOfLine).setParseAction(self.on_http_server)
+        USER = LineStart() + Literal("username") + (
+        Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
+        SERVICE = LineStart() + (
+        Optional(Literal("no")) + Literal("service") + Word(alphanums) + restOfLine).setParseAction(self.on_service)
+        SSH_VERSION = LineStart() + Literal("ssh version") + (Word(nums) + restOfLine).setParseAction(
+            self.on_ssh_version)
+        HTTP_SERVER = LineStart() + Optional(Literal("no")) + Literal("http server") + (
+        Literal("enable") + Optional(DIGITS).copy() + restOfLine).setParseAction(self.on_http_server)
 
         SYSTEM_BLOCK = (
             HOSTNAME |
             DOMAIN_NAME |
             TIMEZONE |
-        #    NAMESERVER |
+            #    NAMESERVER |
             USER |
             SERVICE |
             SSH_VERSION |
@@ -56,14 +61,18 @@ class BaseASAParser(BasePyParser):
         # VLAN_BLOCK = VLAN + ZeroOrMore(INDENT + (VLAN_NAME | LINE))
         # Interface
         INTERFACE = LineStart() + Literal("interface") + REST.copy().setParseAction(self.on_interface)
-        INTERFACE_ENCVLAN = (Optional(Literal("no")) + Literal("vlan") + Optional(DIGITS).copy()).setParseAction(self.on_interface_encvlan)
+        INTERFACE_ENCVLAN = (Optional(Literal("no")) + Literal("vlan") + Optional(DIGITS).copy()).setParseAction(
+            self.on_interface_encvlan)
         INTERFACE_NAMEIF = Literal("nameif") + REST.copy().setParseAction(self.on_interface_nameif)
-        INTERFACE_ADDRESS = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask")).setParseAction(self.on_interface_address)
-        INTERFACE_ADDRESS_SECONDARY = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask") + Literal("secondary")).setParseAction(self.on_interface_address)
+        INTERFACE_ADDRESS = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask")).setParseAction(
+            self.on_interface_address)
+        INTERFACE_ADDRESS_SECONDARY = Literal("ip address") + (
+        IPv4_ADDRESS("address") + IPv4_ADDRESS("mask") + Literal("secondary")).setParseAction(self.on_interface_address)
         INTERFACE_SHUTDOWN = (Optional(Literal("no")) + Literal("shutdown")).setParseAction(self.on_interface_shutdown)
         INTERFACE_SPEED = Literal("speed") + ALPHANUMS.copy().setParseAction(self.on_interface_speed)
         INTERFACE_DUPLEX = Literal("duplex") + ALPHANUMS.copy().setParseAction(self.on_interface_duplex)
-        INTERFACE_UNTAGGED = Literal("switchport") + Literal("access") + Literal("vlan") + DIGITS.copy().setParseAction(self.on_interface_untagged)
+        INTERFACE_UNTAGGED = Literal("switchport") + Literal("access") + Literal("vlan") + DIGITS.copy().setParseAction(
+            self.on_interface_untagged)
         INTERFACE_TAGGED = (
             Literal("switchport") + Literal("trunk") +
             Literal("allowed") + Literal("vlan") +
@@ -76,26 +85,28 @@ class BaseASAParser(BasePyParser):
             INTERFACE_ADDRESS_SECONDARY |
             INTERFACE_ADDRESS |
             INTERFACE_SHUTDOWN |
-        #    INTERFACE_REDIRECTS |
-        #    INTERFACE_PROXY_ARP |
+            #    INTERFACE_REDIRECTS |
+            #    INTERFACE_PROXY_ARP |
             INTERFACE_SPEED |
             INTERFACE_DUPLEX |
             INTERFACE_UNTAGGED |
             INTERFACE_TAGGED |
-        #    INTERFACE_CDP |
-        #    INTERFACE_ISIS |
-        #    INTERFACE_ISIS_METRIC |
-        #    INTERFACE_ISIS_PTP |
-        #    INTERFACE_MPLS_IP |
-        #    INTERFACE_ACL |
+            #    INTERFACE_CDP |
+            #    INTERFACE_ISIS |
+            #    INTERFACE_ISIS_METRIC |
+            #    INTERFACE_ISIS_PTP |
+            #    INTERFACE_MPLS_IP |
+            #    INTERFACE_ACL |
             LINE
         ))
 
         # Logging
-        LOGGING_HOST = LineStart() + Literal("logging host") + Word(alphanums) + IPv4_ADDRESS.copy().setParseAction(self.on_logging_host)
+        LOGGING_HOST = LineStart() + Literal("logging host") + Word(alphanums) + IPv4_ADDRESS.copy().setParseAction(
+            self.on_logging_host)
         LOGGING_BLOCK = LOGGING_HOST
         # NTP
-        NTP_SERVER = LineStart() + Literal("ntp") + Literal("server") + IPv4_ADDRESS.copy().setParseAction(self.on_ntp_server)
+        NTP_SERVER = LineStart() + Literal("ntp") + Literal("server") + IPv4_ADDRESS.copy().setParseAction(
+            self.on_ntp_server)
         NTP_BLOCK = NTP_SERVER
         # VRF
         # Static Route
@@ -104,12 +115,12 @@ class BaseASAParser(BasePyParser):
         CONFIG = (
             INTERFACE_BLOCK |
             SYSTEM_BLOCK |
-        #    VLAN_RANGE |
-        #    VLAN_BLOCK |
+            #    VLAN_RANGE |
+            #    VLAN_BLOCK |
             LOGGING_BLOCK |
             NTP_BLOCK |
-        #    VRF_BLOCK |
-        #    STATIC_ROUTE |
+            #    VRF_BLOCK |
+            #    STATIC_ROUTE |
             LINE
         )
         return CONFIG

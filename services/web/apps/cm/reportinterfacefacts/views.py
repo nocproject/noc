@@ -7,16 +7,16 @@
 # ---------------------------------------------------------------------
 
 from django import forms
+from noc.cm.models.objectfact import ObjectFact
+from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interface import Interface
-from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.cm.models.objectfact import ObjectFact
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):

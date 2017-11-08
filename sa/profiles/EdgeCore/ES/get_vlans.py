@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -31,11 +32,11 @@ class Script(BaseScript):
                         bulk=True):  # dot1qVlanStaticName
                     o = oid.split(".")[-1]
                     result += [{
-                        "vlan_id":int(o),
-                        "name":v.strip().rstrip('\x00')
+                        "vlan_id": int(o),
+                        "name": v.strip().rstrip('\x00')
                     }]
                 return sorted(result, lambda x, y: cmp(x["vlan_id"],
-                              y["vlan_id"]))
+                                                       y["vlan_id"]))
             except self.snmp.TimeOutError:
                 # SNMP failed, continue with CLI
                 pass
@@ -58,7 +59,7 @@ class Script(BaseScript):
         ## ES4612 or 3526S
         ##
         elif (self.match_version(platform__contains="4612") or
-              self.match_version(platform__contains="3526S")):
+                  self.match_version(platform__contains="3526S")):
             rx_vlan_line_4612 = re.compile(
                 r"^\s*(?P<vlan_id>\d{1,4})"
                 r"\s+\S+\s+(?P<name>\S+)\s+",

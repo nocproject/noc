@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.inv.models.extnrilink import ExtNRILink
+
 ## NOC modules
 from base import BaseLoader
-from noc.inv.models.extnrilink import ExtNRILink
 
 
 class LinkLoader(BaseLoader):

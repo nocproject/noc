@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfdpneighbors import IGetFDPNeighbors
@@ -19,7 +20,8 @@ class Script(BaseScript):
     interface = IGetFDPNeighbors
 
     rx_entry = re.compile(r"Device ID: (?P<device_id>\S+).+?"
-        "Interface:\s(?P<local_interface>\S+)\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                          "Interface:\s(?P<local_interface>\S+)\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",
+                          re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):
         device_id = self.scripts.get_fqdn()

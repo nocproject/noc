@@ -7,10 +7,12 @@
 """
 import noc.lib.periodic
 
+
 class Task(noc.lib.periodic.Task):
-    name="cm.prefix_list_pull"
-    description=""
-    wait_for=["peer.update_whois_cache","peer.prefix_list_provisioning"]
+    name = "cm.prefix_list_pull"
+    description = ""
+    wait_for = ["peer.update_whois_cache", "peer.prefix_list_provisioning"]
+
     def execute(self):
         from noc.cm.models import PrefixList
         PrefixList.global_pull()

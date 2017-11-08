@@ -8,30 +8,31 @@
 
 # Python modules
 import logging
+
+from noc.cm.models.objectfact import ObjectFact
+from noc.cm.models.validationrule import ValidationRule
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
-from noc.inv.models.forwardinginstance import ForwardingInstance
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.link import Link
-from noc.inv.models.macdb import MACDB
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.fm.models.newevent import NewEvent
-from noc.fm.models.failedevent import FailedEvent
-from noc.fm.models.activeevent import ActiveEvent
-from noc.fm.models.archivedevent import ArchivedEvent
+from noc.core.scheduler.job import Job
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.archivedevent import ArchivedEvent
+from noc.fm.models.failedevent import FailedEvent
+from noc.fm.models.newevent import NewEvent
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.fm.models.uptime import Uptime
-from noc.sa.models.objectstatus import ObjectStatus
-from noc.cm.models.objectfact import ObjectFact
-from noc.cm.models.validationrule import ValidationRule
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.forwardinginstance import ForwardingInstance
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
+from noc.inv.models.macdb import MACDB
+from noc.inv.models.subinterface import SubInterface
 from noc.ip.models import Address
-from noc.core.scheduler.job import Job
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.models.objectstatus import ObjectStatus
 
 logger = logging.getLogger(__name__)
 

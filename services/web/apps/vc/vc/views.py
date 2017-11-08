@@ -8,20 +8,21 @@
 
 # Python modules
 from collections import defaultdict
+
 # Third-party modules
 from mongoengine import Q
+from noc.config import config
+from noc.core.cache.decorator import cachedmethod
+from noc.core.ip import IP
+from noc.core.translation import ugettext as _
+from noc.inv.models.subinterface import SubInterface
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter, \
+    IntParameter, StringParameter
+from noc.vc.models.vc import VC
 from noc.vc.models.vcdomain import VCDomain
 from noc.vc.models.vcfilter import VCFilter
-from noc.vc.models.vc import VC
-from noc.inv.models.subinterface import SubInterface
-from noc.core.ip import IP
-from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter,\
-    IntParameter, StringParameter
-from noc.core.translation import ugettext as _
-from noc.core.cache.decorator import cachedmethod
-from noc.config import config
 
 
 class VCApplication(ExtModelApplication):
@@ -102,16 +103,16 @@ class VCApplication(ExtModelApplication):
         ipv6 = set()
         # @todo: Exact match on vlan_ids
         for si in SubInterface.objects.filter(
-            Q(managed_object__in=objects) &
-            Q(vlan_ids=vc.l1) &
-            (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
+                                Q(managed_object__in=objects) &
+                                Q(vlan_ids=vc.l1) &
+                        (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
         ).only("enabled_afi", "ipv4_addresses", "ipv6_addresses"):
             if "IPv4" in si.enabled_afi:
                 ipv4.update([IP.prefix(ip).first
-                          for ip in si.ipv4_addresses])
+                             for ip in si.ipv4_addresses])
             if "IPv6" in si.enabled_afi:
                 ipv6.update([IP.prefix(ip).first
-                          for ip in si.ipv6_addresses])
+                             for ip in si.ipv6_addresses])
         p = [str(x.first) for x in sorted(ipv4)]
         p += [str(x.first) for x in sorted(ipv6)]
         return p
@@ -178,9 +179,9 @@ class VCApplication(ExtModelApplication):
         # Find untagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
-            managed_object__in=objects,
-            untagged_vlan=l1,
-            enabled_afi="BRIDGE"):
+                managed_object__in=objects,
+                untagged_vlan=l1,
+                enabled_afi="BRIDGE"):
             si_objects[si.managed_object] += [{"name": si.name}]
         untagged = [{
             "managed_object_id": o.id,
@@ -190,9 +191,9 @@ class VCApplication(ExtModelApplication):
         # Find tagged interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
-            managed_object__in=objects,
-            tagged_vlans=l1,
-            enabled_afi="BRIDGE"):
+                managed_object__in=objects,
+                tagged_vlans=l1,
+                enabled_afi="BRIDGE"):
             si_objects[si.managed_object] += [{"name": si.name}]
         tagged = [{
             "managed_object_id": o.id,
@@ -202,8 +203,8 @@ class VCApplication(ExtModelApplication):
         # Find l3 interfaces
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
-            managed_object__in=objects,
-            vlan_ids=l1):
+                managed_object__in=objects,
+                vlan_ids=l1):
             si_objects[si.managed_object] += [{
                 "name": si.name,
                 "ipv4_addresses": si.ipv4_addresses,
@@ -212,7 +213,7 @@ class VCApplication(ExtModelApplication):
         l3 = [{"managed_object_id": o.id,
                "managed_object_name": o.name,
                "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
-        } for o in si_objects]
+               } for o in si_objects]
         # Update caches
         ic = sum(len(x["interfaces"]) for x in untagged)
         ic += sum(len(x["interfaces"]) for x in tagged)

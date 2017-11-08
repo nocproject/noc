@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -44,5 +45,5 @@ class Script(BaseScript):
                     "2": "operator",
                     "1": "operator"}[match.group("privilege")],
                 "is_active": (match.group("state") == "Active")
-                }]
+            }]
         return r

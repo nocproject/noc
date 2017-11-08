@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.config import config
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication
-from noc.core.translation import ugettext as _
-from noc.config import config
 
 
 class TotalOutageApplication(ExtApplication):

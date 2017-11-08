@@ -8,11 +8,12 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import (StringField, BooleanField, IntField)
-# NOC modules
-from coverage import Coverage
+from mongoengine.fields import (StringField, IntField)
 from noc.gis.models.building import Building
 from noc.lib.nosql import PlainReferenceField
+
+# NOC modules
+from coverage import Coverage
 
 
 class CoveredBuilding(Document):

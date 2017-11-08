@@ -11,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -90,7 +88,7 @@ class Script(BaseScript):
                     }[c]
                 # Get remote port subtype
                 remote_port_subtype = 5
-#                remote_port_subtype = 7
+                #                remote_port_subtype = 7
 
                 i = {"local_interface": local_interface, "neighbors": []}
                 n = {
@@ -98,7 +96,7 @@ class Script(BaseScript):
                     "remote_port": remote_port,
                     "remote_capabilities": cap,
                     "remote_port_subtype": remote_port_subtype,
-                    }
+                }
                 if remote_system_name:
                     n["remote_system_name"] = remote_system_name
 

@@ -13,6 +13,7 @@ import socket
 import sys
 import urllib
 from collections import namedtuple
+
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
@@ -208,7 +209,8 @@ class Config(BaseConfig):
         traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
         telemetry = BooleanParameter(default=False, help="Enable internal telemetry export to Clickhouse")
-        consul_healthchecks = BooleanParameter(default=True, help="While registering serive in consul also register health check")
+        consul_healthchecks = BooleanParameter(default=True,
+                                               help="While registering serive in consul also register health check")
         service_registration = BooleanParameter(default=True, help="Permit consul self registration")
 
     class fm(ConfigSection):

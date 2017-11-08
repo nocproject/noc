@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.main.models.tag import Tag
-from noc.core.translation import ugettext as _
 
 
 class TagApplication(ExtDocApplication):

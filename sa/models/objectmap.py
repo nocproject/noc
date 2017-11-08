@@ -9,14 +9,14 @@
 # Python modules
 import datetime
 import logging
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import ReferenceField, DictField
+from noc.core.defer import call_later
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.sa.models.objectstatus import ObjectStatus
-from noc.core.defer import call_later
-
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +51,8 @@ class ObjectMap(Document):
         trap_sources = {}
         ping_sources = {}
         for mo in ManagedObject.objects.filter(
-            pool=pool,
-            is_managed=True
+                pool=pool,
+                is_managed=True
         ).exclude(
             trap_source_type="d", syslog_source_type="d"
         ).select_related(
@@ -90,9 +90,9 @@ class ObjectMap(Document):
                 )
         # Get ping settings
         for mo in ManagedObject.objects.filter(
-            pool=pool,
-            object_profile__enable_ping=True,
-            is_managed=True
+                pool=pool,
+                object_profile__enable_ping=True,
+                is_managed=True
         ).select_related(
             "object_profile"
         ).only(

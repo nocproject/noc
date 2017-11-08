@@ -6,30 +6,30 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
-import cachetools
-import datetime
 import operator
 import threading
+
+import cachetools
+from noc.config import config
+from noc.core.perf import metrics
+from noc.core.scheduler.job import Job
+from noc.core.span import Span, PARENT_SAMPLE
+from noc.core.tt.error import TTError, TemporaryTTError
+from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.ttsystem import TTSystem
 # NOC modules
 from noc.fm.models.utils import get_alarm
-from noc.fm.models.ttsystem import TTSystem
-from noc.sa.models.selectorcache import SelectorCache
-from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.sa.models.serviceprofile import ServiceProfile
-from noc.crm.models.subscriberprofile import SubscriberProfile
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.maintenance.models.maintenance import Maintenance
-from noc.config import config
-from noc.core.tt.error import TTError, TemporaryTTError
-from noc.core.scheduler.job import Job
-from noc.core.span import Span, PARENT_SAMPLE, get_current_span
-
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.selectorcache import SelectorCache
+from noc.sa.models.serviceprofile import ServiceProfile
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 continue  # Try other type
             # Check administrative domain
             if (a.administrative_domain and
-                    a.administrative_domain.id not in alarm.adm_path):
+                        a.administrative_domain.id not in alarm.adm_path):
                 continue
             # Check severity
             if a.min_severity and alarm.severity < a.min_severity:

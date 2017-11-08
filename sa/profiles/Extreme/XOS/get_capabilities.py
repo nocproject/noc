@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.lib.text import parse_table
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):

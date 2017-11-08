@@ -5,11 +5,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from noc.peer.models import *
+from south.db import db
+
 
 class Migration:
-
     def forwards(self):
         db.delete_table('peer_lgquerycommand')
         db.delete_table('peer_lgquerytype')

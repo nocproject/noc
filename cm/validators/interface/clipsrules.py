@@ -8,7 +8,7 @@
 
 # Python modules
 import logging
-import re
+
 # NOC modules
 from noc.cm.validators.object.clipsrules import CLIPSRulesValidator
 

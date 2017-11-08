@@ -8,14 +8,15 @@
 
 # Python modules
 import operator
+
 # Third-party modules
 import cachetools
+from noc.core.etl.portmapper.loader import loader
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.extnrilink import ExtNRILink
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
-from noc.core.etl.portmapper.loader import loader
+from noc.sa.models.managedobject import ManagedObject
 
 
 class Command(BaseCommand):

@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.sa.models.service import Service
+
 ## NOC modules
 from base import BaseLoader
-from noc.sa.models.service import Service
 
 
 class ServiceLoader(BaseLoader):

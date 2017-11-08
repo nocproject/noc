@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -26,7 +25,7 @@ class Script(BaseScript):
                         "1.3.6.1.2.1.31.1.1.1.1",
                         "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
                     if n[:3] == 'Aux' or n[:4] == 'Vlan' \
-                    or n[:11] == 'InLoopBack':
+                            or n[:11] == 'InLoopBack':
                         continue
                     if n[:6] == "Slot0/":
                         n = n[6:]

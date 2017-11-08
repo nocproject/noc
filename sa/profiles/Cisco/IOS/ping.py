@@ -5,9 +5,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-import re
 
 
 class Script(BaseScript):
@@ -19,7 +20,7 @@ class Script(BaseScript):
         r" ms)?", re.MULTILINE | re.DOTALL)
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+                df=None, vrf=None):
         cmd = "ping ip %s" % address
         if count:
             cmd += " count %d" % int(count)
@@ -34,9 +35,9 @@ class Script(BaseScript):
         pr = self.cli(cmd)
         match = self.rx_result.search(pr)
         return {
-                "success": match.group("success"),
-                "count": match.group("count"),
-                "min": match.group("min") if match.group("min") else 0.0,
-                "avg": match.group("avg") if match.group("avg") else 0.0,
-                "max": match.group("max") if match.group("max") else 0.0,
-            }
+            "success": match.group("success"),
+            "count": match.group("count"),
+            "min": match.group("min") if match.group("min") else 0.0,
+            "avg": match.group("avg") if match.group("avg") else 0.0,
+            "max": match.group("max") if match.group("max") else 0.0,
+        }

@@ -8,9 +8,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -18,7 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
     rx_ver = re.compile(r"^\s*(?:\w*\s+){1,2}\s*(?P<version>v?[\d.]+)\s",
-        re.MULTILINE | re.DOTALL)
+                        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         if self.has_snmp():

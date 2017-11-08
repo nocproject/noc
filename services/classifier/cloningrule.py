@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.services.classifier.exception import InvalidPatternException
 

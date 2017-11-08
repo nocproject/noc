@@ -8,16 +8,16 @@
 
 # Django modules
 from django.db import connection
+from noc.core.ip import IP
+from noc.ip.models import VRFGroup, Prefix
 # NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
-from noc.ip.models import VRFGroup, Prefix
-from noc.core.ip import IP
 
 prefix_fields = [f for f in CustomField.table_fields("ip_prefix")
                  if not f.is_hidden]
 
-#% fixme rewrite to separate file
+# % fixme rewrite to separate file
 CSS = """
 <style>
 TABLE {
@@ -80,7 +80,6 @@ TABLE TR TD {
 
 
 class Node(object):
-
     def __init__(self, app):
         self.app = app
         self.children = []
@@ -173,7 +172,6 @@ class VRFNode(Node):
 
 
 class PrefixNode(Node):
-
     show_vrf = False
 
     def __init__(self, app, prefix):
@@ -241,7 +239,6 @@ class PrefixNode(Node):
 
 
 class GPrefixNode(PrefixNode):
-
     show_vrf = True
 
     def __init__(self, app, prefix, vrfs):

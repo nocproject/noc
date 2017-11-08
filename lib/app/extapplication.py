@@ -8,15 +8,17 @@
 
 # Python modules
 import os
+
+import ujson
 # Django modules
 from django.http import HttpResponse
-import ujson
-# NOC modules
-from application import Application, view
-from access import HasPerm, PermitLogged
+from noc.config import config
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
-from noc.config import config
+
+from access import HasPerm, PermitLogged
+# NOC modules
+from application import Application, view
 
 
 class ExtApplication(Application):

@@ -6,15 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from noc.sa.profiles.Generic.get_metrics import OIDRule
 from noc.core.mib import mib
 from noc.lib.text import parse_table
-from noc.core.script.metrics import percent_usage
+from noc.sa.profiles.Generic.get_metrics import OIDRule
+from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 
 
 class SlotRule(OIDRule):
-
     name = "slot"
 
     def iter_oids(self, script, metric):

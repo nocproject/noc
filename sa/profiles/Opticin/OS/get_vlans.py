@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -26,16 +27,16 @@ class Script(BaseScript):
                 oids = {}
                 # Get OID -> VLAN ID mapping
                 for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    bulk=True):  # dot1qVlanFdbId
+                                                bulk=True):  # dot1qVlanFdbId
                     oids[oid.split(".")[-1]] = v
                 # Get VLAN names
                 result = []
                 for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1",
-                    bulk=True):  # dot1qVlanStaticName
+                                                bulk=True):  # dot1qVlanStaticName
                     o = oid.split(".")[-1]
                     result += [{
-                        "vlan_id":int(oids[o]),
-                        "name":v.strip().rstrip('\x00')
+                        "vlan_id": int(oids[o]),
+                        "name": v.strip().rstrip('\x00')
                     }]
                 return sorted(
                     result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"])

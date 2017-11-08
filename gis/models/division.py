@@ -65,6 +65,7 @@ class Division(Document):
         """
         Update divisions levels
         """
+
         def _update(root, level):
             if root.level != level:
                 root.level = level

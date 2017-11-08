@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -18,29 +19,23 @@ class Script(BaseScript):
     name = "Linux.RHEL.get_vlans"
     interface = IGetVlans
 
-    
     def execute(self):
-
-
-    	rx_iface = re.compile(
+        rx_iface = re.compile(
             r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
             r"    link\/ether (?P<mac>\S+) brd .*\n"
             r"    vlan protocol 802.1Q id (?P<vlan_number>\d+)\s"
-            , re.I | re.S 
+            , re.I | re.S
         )
-        
 
         r = [{'vlan_id': 1}]
         vlans = self.cli("ip -details link show")
 
         for match in re.finditer(rx_iface, vlans):
-            #print match.group("status")
-            #print match.group("vlan_number")
+            # print match.group("status")
+            # print match.group("vlan_number")
             r += [{'vlan_id': match.group("vlan_number")}]
 
-
         return r
-
 
 
 '''
@@ -53,4 +48,3 @@ $ ip -details link show
     bridge_slave addrgenmode eui64 
 
 '''
-

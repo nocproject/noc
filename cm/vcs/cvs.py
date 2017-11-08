@@ -9,12 +9,15 @@
 # ---------------------------------------------------------------------
 """
 """
-import noc.cm.vcs
 import os
 
+import noc.cm.vcs
+
+
 class VCS(noc.cm.vcs.VCS):
-    name="CVS"
+    name = "CVS"
+
     def check_repository(self):
         super(VCS, self).check_repository()
-        if not os.path.exists(os.path.join(self.repo,"CVSROOT")):
-            self.cmd("init",check=False)
+        if not os.path.exists(os.path.join(self.repo, "CVSROOT")):
+            self.cmd("init", check=False)

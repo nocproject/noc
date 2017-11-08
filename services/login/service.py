@@ -7,13 +7,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.config import config
 # NOC modules
 from noc.core.service.ui import UIService
-from noc.services.login.auth import AuthRequestHandler
-from noc.services.login.logout import LogoutRequestHandler
 from noc.services.login.api.login import LoginAPI
+from noc.services.login.auth import AuthRequestHandler
 from noc.services.login.backends.base import BaseAuthBackend
-from noc.config import config
+from noc.services.login.logout import LogoutRequestHandler
 
 
 class LoginService(UIService):

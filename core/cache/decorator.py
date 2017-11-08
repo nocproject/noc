@@ -8,8 +8,10 @@
 
 # NOC modules
 from __future__ import absolute_import
-from .base import cache as x_cache
+
 from noc.core.perf import metrics
+
+from .base import cache as x_cache
 
 
 def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
@@ -25,6 +27,7 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
     :param version: External cache version
     :return:
     """
+
     def decorator(method):
         if lock:
             def wrapper(self, *args, **kwargs):

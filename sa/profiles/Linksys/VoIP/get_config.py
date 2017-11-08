@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetconfig import IGetConfig
 from noc.lib.text import strip_html_tags
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):

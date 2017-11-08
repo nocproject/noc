@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -37,7 +38,7 @@ class Script(BaseScript):
         "1.2016.1": "SRW-2016",
         "1.2048.1": "SRW-2048",
         "3955.6.5048": "SRW-248G",
-        }
+    }
 
     def execute(self):
         # Try snmp first
@@ -47,7 +48,7 @@ class Script(BaseScript):
                 platform = platform.split('.')
                 N = len(platform)
                 platform = platform[N - 3] + '.' + platform[N - 2] + '.' \
-                    + platform[N - 1]
+                           + platform[N - 1]
                 platform = self.platforms.get(platform.split(')')[0], '????')
                 version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
                                         cached=True)
@@ -76,7 +77,7 @@ class Script(BaseScript):
         platform = match.group("platform").split('.')
         N = len(platform)
         platform = platform[N - 3] + '.' + platform[N - 2] + '.' \
-            + platform[N - 1]
+                   + platform[N - 1]
         platform = self.platforms.get(platform.split(')')[0], '????')
 
         ver = self.cli("show version", cached=True)
@@ -88,7 +89,7 @@ class Script(BaseScript):
             "version": version.group("version"),
             "attributes": {
                 "Boot PROM": bootprom.group("bootprom"),
-                }
+            }
         }
         hardware = self.rx_hardware.search(ver)
         if hardware:

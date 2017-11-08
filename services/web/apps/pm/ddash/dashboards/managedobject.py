@@ -7,12 +7,14 @@
 # ---------------------------------------------------------------------
 
 import string
-# NOC modules
-from noc.sa.models.managedobject import ManagedObject
-from base import BaseDashboard
+
 from noc.inv.models.interface import Interface
 from noc.lib.text import split_alnum
 from noc.pm.models.metrictype import MetricType
+# NOC modules
+from noc.sa.models.managedobject import ManagedObject
+
+from base import BaseDashboard
 
 
 class ManagedObjectDashboard(BaseDashboard):
@@ -36,6 +38,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 ):
                     return True
             return False
+
         refId = string.uppercase[:14]
         # Basic setup
         r = {
@@ -265,24 +268,24 @@ class ManagedObjectDashboard(BaseDashboard):
                 tags = []
                 id = 0
                 if iface.type == u"aggregated":
-                        agg = Interface.objects.filter(managed_object=self.object.id,
-                                                       aggregated_interface=iface)
-                        for agg_iface in agg:
-                            tags = [{
-                                        "key": "object",
-                                        "operator": "=",
-                                        "value": self.object.name
-                                    },
-                                    {
-                                        "condition": "AND",
-                                        "key": "interface",
-                                        "operator": "=",
-                                        "value": agg_iface.name
-                                    }]
+                    agg = Interface.objects.filter(managed_object=self.object.id,
+                                                   aggregated_interface=iface)
+                    for agg_iface in agg:
+                        tags = [{
+                            "key": "object",
+                            "operator": "=",
+                            "value": self.object.name
+                        },
+                            {
+                                "condition": "AND",
+                                "key": "interface",
+                                "operator": "=",
+                                "value": agg_iface.name
+                            }]
 
-                            targets += [{"alias": "Input",
-                                         "measurement": "Interface | Load | In",
-                                         "query": "SELECT mean(\"value\") "
+                        targets += [{"alias": "Input",
+                                     "measurement": "Interface | Load | In",
+                                     "query": "SELECT mean(\"value\") "
                                               "FROM \"Interface | Load | In\" "
                                               "WHERE "
                                               "  \"object\" = '%s' "
@@ -292,12 +295,12 @@ class ManagedObjectDashboard(BaseDashboard):
                                               "fill(null)" % (
                                                   self.object.name,
                                                   agg_iface.name),
-                                         "refId": refId[id],
-                                         "tags": tags
-                                         }]
-                            targets += [{"alias": "Output",
-                                         "measurement": "Interface | Load | Out",
-                                         "query": "SELECT mean(\"value\") "
+                                     "refId": refId[id],
+                                     "tags": tags
+                                     }]
+                        targets += [{"alias": "Output",
+                                     "measurement": "Interface | Load | Out",
+                                     "query": "SELECT mean(\"value\") "
                                               "FROM \"Interface | Load | Out\" "
                                               "WHERE "
                                               "  \"object\" = '%s' "
@@ -307,23 +310,22 @@ class ManagedObjectDashboard(BaseDashboard):
                                               "fill(null)" % (
                                                   self.object.name,
                                                   agg_iface.name),
-                                         "refId": refId[id+1],
-                                         "tags": tags
-                                         }]
-                        seriesoverrides += [{
-                            "alias": "Input",
-                            "stack": "B",
-                            "transform": "negative-Y"
-                        }]
-                        seriesoverrides += [{
-                            "alias": "Output",
-                            "stack": "A",
-                        }]
-                        r["rows"][-1]["panels"][-1]["seriesOverrides"] = seriesoverrides
-                        r["rows"][-1]["panels"][-1]["targets"] = targets
-                        r["rows"][-1]["panels"][-1]["tags"] = tags
-                        r["rows"][-1]["panels"][-1]["tooltip"]["value_type"] = "individual"
-
+                                     "refId": refId[id + 1],
+                                     "tags": tags
+                                     }]
+                    seriesoverrides += [{
+                        "alias": "Input",
+                        "stack": "B",
+                        "transform": "negative-Y"
+                    }]
+                    seriesoverrides += [{
+                        "alias": "Output",
+                        "stack": "A",
+                    }]
+                    r["rows"][-1]["panels"][-1]["seriesOverrides"] = seriesoverrides
+                    r["rows"][-1]["panels"][-1]["targets"] = targets
+                    r["rows"][-1]["panels"][-1]["tags"] = tags
+                    r["rows"][-1]["panels"][-1]["tooltip"]["value_type"] = "individual"
 
         r["rows"] += [{
             "title": "Метрики объекта",
@@ -535,10 +537,10 @@ class ManagedObjectDashboard(BaseDashboard):
         ann = {
             "datasource": "NocDS",
             "enable": False,
-                    "iconColor": "rgba(255, 96, 96, 1)",
-                    "name": "Alarm",
-                    "query": str(self.object.id)
-                }
+            "iconColor": "rgba(255, 96, 96, 1)",
+            "name": "Alarm",
+            "query": str(self.object.id)
+        }
 
         r["annotations"]["list"] += [ann]
         if not r["rows"][-1]["panels"]:

@@ -8,18 +8,21 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import datetime
 import operator
-# NOC modules
-from .base import BaseCard
+
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.utils import get_alarm
 from noc.inv.models.object import Object
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.sa.models.servicesummary import SummaryItem
-from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
 from noc.maintenance.models.maintenance import Maintenance, MaintenanceObject
+from noc.sa.models.servicesummary import SummaryItem
+
+# NOC modules
+from .base import BaseCard
 
 
 class AlarmCard(BaseCard):

@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-import re
 
 
 class Script(BaseScript):
@@ -41,7 +42,6 @@ class Script(BaseScript):
         r"^\s+Manufacture\s*:.*\n"  # Need more examples
         r"^\s+S/N\s*:(?P<serial>.+)\n",
         re.MULTILINE)
-
 
     def execute(self):
         r = []

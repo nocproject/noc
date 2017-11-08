@@ -5,9 +5,9 @@
 # Copyright (C) 2007-2010 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from django import forms
 from noc.lib.convert import dbm2mw, mw2dbm
+from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 
 
 class CalculatorForm(forms.Form):
@@ -23,6 +23,6 @@ class Calculator(CalculatorBase):
     def calculate(self, value, measure):
         if measure == "dbm":
             r = [("dBm", value), ("mW", dbm2mw(value))]
-        else: # mW
+        else:  # mW
             r = [("dBm", mw2dbm(value)), ("mW", value)]
         return r

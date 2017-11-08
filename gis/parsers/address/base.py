@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 import gzip
 import os
+
 # Third-party modules
 import requests
 # NOC modules

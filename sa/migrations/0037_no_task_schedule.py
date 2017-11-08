@@ -9,9 +9,10 @@ from south.db import db
 
 
 class Migration:
-    depends_on=[
+    depends_on = [
         ("main", "0032_schedule_migrate"),
     ]
+
     def forwards(self):
         db.delete_table("sa_taskschedule")
 

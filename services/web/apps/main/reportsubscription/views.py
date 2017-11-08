@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.lib.app.site import site
 from noc.main.models.reportsubscription import ReportSubscription
-from noc.core.translation import ugettext as _
 
 
 class ReportSubscriptionApplication(ExtDocApplication):

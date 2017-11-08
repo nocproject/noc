@@ -6,27 +6,28 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import bisect
 # Python modules
 import operator
 from threading import Lock
-import bisect
-# Third-party modules
-from mongoengine.queryset import DoesNotExist
+
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField, LongField,
                                 EmbeddedDocumentField)
-from pymongo import ReadPreference
+# Third-party modules
+from mongoengine.queryset import DoesNotExist
+from noc.core.cache.base import cache
+from noc.core.cache.decorator import cachedmethod
+from noc.core.mac import MAC
+from noc.core.model.decorator import on_delete
+from noc.core.perf import metrics
+from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
-from noc.core.perf import metrics
-from noc.core.cache.decorator import cachedmethod
-from noc.core.cache.base import cache
-from noc.core.mac import MAC
-from noc.core.model.decorator import on_delete
+from pymongo import ReadPreference
 
 mac_lock = Lock()
 
@@ -163,6 +164,7 @@ class DiscoveryID(Document):
         :param cls:
         :return: Managed object instance or None
         """
+
         def has_ip(ip, addresses):
             x = ip + "/"
             for a in addresses:
@@ -189,17 +191,17 @@ class DiscoveryID(Document):
                 d["managed_object"]
                 for d in SubInterface._get_collection().with_options(
                     read_preference=ReadPreference.SECONDARY_PREFERRED).find({
-                       "ipv4_addresses": {
+                    "ipv4_addresses": {
                         "$gt": ipv4_address + "/",
                         "$lt": ipv4_address + "/99"
-                        }
-                    }, {
-                        "_id": 0,
-                        "managed_object": 1,
-                        "ipv4_addresses": 1
-                    })
+                    }
+                }, {
+                    "_id": 0,
+                    "managed_object": 1,
+                    "ipv4_addresses": 1
+                })
                 if has_ip(ipv4_address, d["ipv4_addresses"])
-                )
+            )
             if len(o) == 1:
                 metrics["discoveryid_ip_interface"] += 1
                 return ManagedObject.get_by_id(list(o)[0])

@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.project.models.project import Project
+from noc.core.translation import ugettext as _
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models.resourcestate import ResourceState
-from noc.core.translation import ugettext as _
+from noc.project.models.project import Project
 
 
 class ProjectApplication(ExtModelApplication):
@@ -39,6 +39,7 @@ class ProjectApplication(ExtModelApplication):
                 "state_id": state.id,
                 "state__label": state.name
             }
+
         project = self.get_object_or_404(Project, id=id)
         default_state = ResourceState.get_default()
         r = {

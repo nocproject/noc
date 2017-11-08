@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -30,12 +31,15 @@ class Script(BaseScript):
         s = self.cli("show interfaces description", cached=True)
         for l in s.split("\n"):
             match = self.rx_descr_if.match(l.strip())
-            if not match: continue
+            if not match:
+                continue
             else:
                 interface = match.group("interface")
                 if interface in ("Port", "Ch", "-------"): continue
-                try: description = match.group("description")
-                except: description = None
+                try:
+                    description = match.group("description")
+                except:
+                    description = None
             r += [{
                 "interface": self.profile.convert_interface_name(interface),
                 "description": description
@@ -49,11 +53,11 @@ class Script(BaseScript):
 
         # Get descriptions
         descriptions = {}  # interface name -> description
-        interfaces = {}   # interface name -> status (True - up, False - down)
+        interfaces = {}  # interface name -> status (True - up, False - down)
         # Prepare interface statuses
         for p in self.get_description():
             descriptions[p["interface"]] = p["description"]
-            interfaces[p["interface"]] = False # default is down
+            interfaces[p["interface"]] = False  # default is down
         for po in portchannels.keys(): interfaces[po] = False
         if not interfaces: return []
 
@@ -65,7 +69,7 @@ class Script(BaseScript):
             if intstatus['interface'] in interfaces.keys():
                 interfaces[intstatus['interface']] = intstatus['status']
 
-        r = []                  # reply
+        r = []  # reply
         # For each interface
         for interface in interfaces.keys():
             v = self.cli("show interfaces switchport %s" % interface)
@@ -77,7 +81,7 @@ class Script(BaseScript):
             # Parse header
             match = self.re_search(self.rx_body, v)
             amode = match.group("amode").strip().lower()
-            untagged = int(match.group("nvlan")) # can native vlan mismatch with untagged?
+            untagged = int(match.group("nvlan"))  # can native vlan mismatch with untagged?
             if amode in ("trunk", "general"):
                 is_trunk = True
                 is_qnq = False

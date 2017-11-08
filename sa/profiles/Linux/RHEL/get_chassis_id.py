@@ -7,11 +7,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -22,13 +20,13 @@ class Script(BaseScript):
     def execute(self):
         # Try SNMP first
         if self.snmp:
-            try:                     
+            try:
                 mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.2", cached=True)
                 if mac is not None:
                     return {
                         "first_chassis_mac": mac,
                         "last_chassis_mac": mac
-                        }
+                    }
                 else:
                     return [{
                         "first_chassis_mac": "00:00:00:00:00:00",
@@ -38,5 +36,3 @@ class Script(BaseScript):
             except self.snmp.TimeOutError:
                 pass
                 return
-
-

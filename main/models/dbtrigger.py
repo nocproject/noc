@@ -8,6 +8,7 @@
 
 # Django modules
 from django.db import models
+
 # NOC modules
 from pyrule import PyRule
 
@@ -31,29 +32,29 @@ class DBTrigger(models.Model):
     order = models.IntegerField("Order", default=100)
     description = models.TextField("Description", null=True, blank=True)
     pre_save_rule = models.ForeignKey(PyRule,
-            verbose_name="Pre-Save Rule",
-            related_name="dbtrigger_presave_set",
-            limit_choices_to={"interface": "IDBPreSave"},
-            blank=True, null=True)
+                                      verbose_name="Pre-Save Rule",
+                                      related_name="dbtrigger_presave_set",
+                                      limit_choices_to={"interface": "IDBPreSave"},
+                                      blank=True, null=True)
     post_save_rule = models.ForeignKey(PyRule,
-            verbose_name="Post-Save Rule",
-            related_name="dbtrigger_postsave_set",
-            limit_choices_to={"interface": "IDBPostSave"},
-            blank=True, null=True)
+                                       verbose_name="Post-Save Rule",
+                                       related_name="dbtrigger_postsave_set",
+                                       limit_choices_to={"interface": "IDBPostSave"},
+                                       blank=True, null=True)
     pre_delete_rule = models.ForeignKey(PyRule,
-            verbose_name="Pre-Delete Rule",
-            related_name="dbtrigger_predelete_set",
-            limit_choices_to={"interface": "IDBPreDelete"},
-            blank=True, null=True)
+                                        verbose_name="Pre-Delete Rule",
+                                        related_name="dbtrigger_predelete_set",
+                                        limit_choices_to={"interface": "IDBPreDelete"},
+                                        blank=True, null=True)
     post_delete_rule = models.ForeignKey(PyRule,
-            verbose_name="Post-Delete Rule",
-            related_name="dbtrigger_postdelete_set",
-            limit_choices_to={"interface": "IDBPostDelete"},
-            blank=True, null=True)
+                                         verbose_name="Post-Delete Rule",
+                                         related_name="dbtrigger_postdelete_set",
+                                         limit_choices_to={"interface": "IDBPostDelete"},
+                                         blank=True, null=True)
     ## State cache
-    _pre_save_triggers = {}     # model.meta.db_table -> [rules]
-    _post_save_triggers = {}    # model.meta.db_table -> [rules]
-    _pre_delete_triggers = {}   # model.meta.db_table -> [rules]
+    _pre_save_triggers = {}  # model.meta.db_table -> [rules]
+    _post_save_triggers = {}  # model.meta.db_table -> [rules]
+    _pre_delete_triggers = {}  # model.meta.db_table -> [rules]
     _post_delete_triggers = {}  # model.meta.db_table -> [rules]
 
     def __unicode__(self):
@@ -128,4 +129,4 @@ class DBTrigger(models.Model):
     def x(cls):
         f = cls._meta.get_field_by_name("model")[0]
         f.choices = [(m._meta.db_table, m._meta.db_table)
-            for m in models.get_models()]
+                     for m in models.get_models()]

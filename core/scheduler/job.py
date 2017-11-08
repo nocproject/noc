@@ -8,17 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
+import datetime
 import logging
 import time
-import datetime
+
 # Third-party modules
 import tornado.gen
+from noc.core.debug import error_report
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.debug import error_report
-from noc.lib.dateutils import total_seconds
-from .error import RetryAfter
 from noc.core.span import Span
+from noc.lib.dateutils import total_seconds
+
+from .error import RetryAfter
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +65,7 @@ class Job(object):
 
     # Job states
     S_WAIT = "W"  # Waiting to run
-    S_RUN = "R"   # Running
+    S_RUN = "R"  # Running
     S_STOP = "S"  # Stopped by operator
     S_DISABLED = "D"  # Disabled by system
     S_SUSPEND = "s"  # Suspended by system

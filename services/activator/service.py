@@ -9,6 +9,7 @@
 
 # NOC modules
 from noc.core.service.base import Service
+
 from api.activator import ActivatorAPI
 
 

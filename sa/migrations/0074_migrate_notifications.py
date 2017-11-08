@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Django modules
-from django.db import models
 # Third-party modules
 from south.db import db
 

@@ -6,26 +6,26 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
-import subprocess
-import re
-import datetime
 import os
-# Django modules
-from django.db.models import Q
+import re
+import subprocess
+
+import noc.settings
 # Third-party modules
 import pytz
+# Django modules
+from django.db.models import Q
+from noc.core.gridvcs.manager import GridVCS
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.pool import Pool
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.profile import Profile
-from noc.sa.models.managedobject import ManagedObject
-from noc.core.gridvcs.manager import GridVCSField
-from noc.core.gridvcs.manager import GridVCS
-import noc.settings
 
 
 class Command(BaseCommand):
@@ -391,6 +391,7 @@ class Command(BaseCommand):
         """
         Import CVS file revisions
         """
+
         def write_file(path, data):
             with open(path, "w") as f:
                 f.write(data)
@@ -428,6 +429,7 @@ class Command(BaseCommand):
                 gridvcs.put(mo.id, data, ts=ts)
         if os.path.exists(path):
             os.unlink(path)
+
 
 if __name__ == "__main__":
     Command().run()

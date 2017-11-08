@@ -8,14 +8,16 @@
 
 # Python modules
 from __future__ import print_function
-import os
+
 import argparse
+import os
+
 # Third-party modules
 import ujson
-# NOC modules
-from noc.core.management.base import BaseCommand
 from noc.core.collection.base import Collection
 from noc.core.fileutils import safe_rewrite
+# NOC modules
+from noc.core.management.base import BaseCommand
 from noc.models import COLLECTIONS, get_model
 
 
@@ -121,8 +123,8 @@ class Command(BaseCommand):
             if remove:
                 os.unlink(fp)
 
-    def handle_export(self, list_collection=False, 
-                      export_path=None, export_collections=None, 
+    def handle_export(self, list_collection=False,
+                      export_path=None, export_collections=None,
                       export_model_names=None, export_model_uuids=None):
         MODELS = {}
         for c in COLLECTIONS:
@@ -170,6 +172,7 @@ class Command(BaseCommand):
                         o.to_json(),
                         mode=0o644
                     )
+
 
 if __name__ == "__main__":
     Command().run()

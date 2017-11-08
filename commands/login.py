@@ -8,7 +8,9 @@
 
 # Python modules
 from __future__ import print_function
+
 import getpass
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.services.login.backends.base import BaseAuthBackend
@@ -46,6 +48,7 @@ class Command(BaseCommand):
         except backend.LoginError as e:
             self.die("Failed to login: %s" % e)
         self.print("Login successful")
+
 
 if __name__ == "__main__":
     Command().run()

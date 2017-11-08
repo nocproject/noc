@@ -8,12 +8,13 @@
 
 # Python modules
 import datetime
-# NOC modules
-from noc.lib.scheduler.autointervaljob import AutoIntervalJob
+
 from noc.config import config
-from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
+from noc.fm.models.eventclass import EventClass
+# NOC modules
+from noc.lib.scheduler.autointervaljob import AutoIntervalJob
 
 
 class ArchiveJob(AutoIntervalJob):
@@ -31,28 +32,28 @@ class ArchiveJob(AutoIntervalJob):
         # Drop all events with event class action L
         to_drop = [c.id for c in EventClass.objects.filter(action="L")]
         dc = ActiveEvent.objects.filter(event_class__in=to_drop,
-            timestamp__lte=border).count()
+                                        timestamp__lte=border).count()
         if dc:
             ActiveEvent.objects.filter(event_class__in=to_drop,
-                timestamp__lte=border).delete()
+                                       timestamp__lte=border).delete()
             self.logger.info("%d active events cleaned (requested by event class)" % dc)
         ## Events without alarms
         if woa == 0:
             # Drop all events not contributing to alarms
             dc = ActiveEvent.objects.filter(alarms__exists=False,
-                timestamp__lte=border).count()
+                                            timestamp__lte=border).count()
             if dc:
                 ActiveEvent.objects.filter(alarms__exists=False,
-                    timestamp__lte=border).delete()
+                                           timestamp__lte=border).delete()
                 self.logger.info("%d active events cleaned (no related alarms)" % dc)
         ## Events with alarms
         if wa == 0:
             # Drop all events contributing to alarms
             dc = ActiveEvent.objects.filter(alarms__exists=True,
-                timestamp__lte=border).count()
+                                            timestamp__lte=border).count()
             if dc:
                 ActiveEvent.objects.filter(alarms__exists=True,
-                    timestamp__lte=border).delete()
+                                           timestamp__lte=border).delete()
                 self.logger.info("%d active events cleaned (with related alarms)" % dc)
         # Archive left events
         n = 0

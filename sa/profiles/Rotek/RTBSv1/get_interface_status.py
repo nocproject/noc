@@ -28,15 +28,14 @@ class Script(BaseScript):
                     if interface is not None:
                         if interface == iface:
                             r = [{
-                                    "interface": iface,
-                                    "status": int(s) == 1
-                                }]
+                                "interface": iface,
+                                "status": int(s) == 1
+                            }]
                     else:
                         r.append({
-                                    "interface": iface,
-                                    "status": int(s) == 1
-                                })
+                            "interface": iface,
+                            "status": int(s) == 1
+                        })
                 return r
             except self.snmp.TimeOutError:
                 pass
-

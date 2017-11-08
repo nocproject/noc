@@ -17,6 +17,7 @@ class KBGlobalBookmark(models.Model):
     Global Bookmarks
     @todo: Replace with boolean flag in KBEntry
     """
+
     class Meta:
         verbose_name = "KB Global Bookmark"
         verbose_name_plural = "KB Global Bookmarks"

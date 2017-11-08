@@ -8,17 +8,18 @@
 
 # Python modules
 from __future__ import with_statement
-import os
-import subprocess
+
 import datetime
+import os
 import re
 import shutil
+import subprocess
+
+from noc import settings
+from noc.config import config
+from noc.core.fileutils import safe_rewrite
 # NOC modules
 from noc.lib.periodic import Task as PeriodicTask
-from noc.settings import config
-from noc import settings
-from noc.core.fileutils import safe_rewrite
-from noc.config import config
 
 
 class Task(PeriodicTask):
@@ -45,7 +46,8 @@ class Task(PeriodicTask):
                 self.error("Permission denied: %s" % path)
         return True
 
-    rx_backup = re.compile(r"^noc-(?:(?:etc|repo|db|mongo)-)(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})-\d{2}-\d{2}.(?:dump|tar\.gz)$")
+    rx_backup = re.compile(
+        r"^noc-(?:(?:etc|repo|db|mongo)-)(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})-\d{2}-\d{2}.(?:dump|tar\.gz)$")
 
     def clean_backups(self):
         """
@@ -119,7 +121,7 @@ class Task(PeriodicTask):
         tar_cmd = [config.get("path", "tar"), "cf", "-"] + files
         gzip_cmd = [config.get("path", "gzip")]
         self.debug(("cd %s &&" % cwd if cwd else ".") + " ".join(tar_cmd) +
-            " | " + " ".join(gzip_cmd))
+                   " | " + " ".join(gzip_cmd))
         with open(archive, "w") as f:
             try:
                 p1 = subprocess.Popen(tar_cmd, cwd=cwd, stdout=subprocess.PIPE)
@@ -133,6 +135,7 @@ class Task(PeriodicTask):
         """
         Backup postgresql database
         """
+
         def pgpass_quote(s):
             return s.replace("\\", "\\\\").replace(":", "\\:")
 
@@ -213,7 +216,7 @@ class Task(PeriodicTask):
         now = datetime.datetime.now()
         repo_root = config.get("cm", "repo")
         repo_out = "noc-repo-%04d-%02d-%02d-%02d-%02d.tar.gz" % (now.year,
-                                    now.month, now.day, now.hour, now.minute)
+                                                                 now.month, now.day, now.hour, now.minute)
         repo_out = os.path.join(config.get("path", "backup_dir"), repo_out)
         self.info("dumping repo into %s" % repo_out)
         self.tar(repo_out, [f for f in os.listdir(repo_root)
@@ -226,7 +229,7 @@ class Task(PeriodicTask):
         """
         now = datetime.datetime.now()
         etc_out = "noc-etc-%04d-%02d-%02d-%02d-%02d.tar.gz" % (now.year,
-                                    now.month, now.day, now.hour, now.minute)
+                                                               now.month, now.day, now.hour, now.minute)
         etc_out = os.path.join(config.get("path", "backup_dir"), etc_out)
         self.info("dumping etc/ into %s" % etc_out)
         try:
@@ -241,7 +244,6 @@ class Task(PeriodicTask):
         return self.tar(etc_out, files)
 
     def execute(self):
-        from django.conf import settings
 
         if not self.check_paths():
             return False

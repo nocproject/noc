@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.config import config
+
 # NOC modules
 from intervaljob import IntervalJob
-from noc.config import config
 
 
 class AutoIntervalJob(IntervalJob):

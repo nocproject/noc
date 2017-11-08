@@ -7,17 +7,18 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-import re
 import datetime
 import json
+# Third-party modules
+import re
 import time
 import urllib
-# NOC modules
-from noc.core.service.base import Service
+
+from noc.config import config
 from noc.core.http.client import fetch_sync
 from noc.core.perf import metrics
-from noc.config import config
+# NOC modules
+from noc.core.service.base import Service
 
 RETRY_TIME = config.tgsender.retry_timeout
 TOKEN = config.tgsender.token
@@ -80,6 +81,7 @@ class TgSenderService(Service):
             self.logger.error("HTTP GET %s failed: %s %s", get, code, body)
             metrics["telegram_proxy_failed_httperror"] += 1
             return False
+
 
 if __name__ == "__main__":
     TgSenderService().start()

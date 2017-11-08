@@ -8,10 +8,10 @@
 
 # Python modules
 from xml.dom.minidom import Document
+
 # NOC modules
 from noc.gis.models import Style, FontSet
 from noc.settings import config
-
 
 SYMBOLIZERS = dict((s.lower()[:-10], s) for s in (
     "PointSymbolizer", "LinePatternSymbolizer", "PolygonPatternSymbolizer",

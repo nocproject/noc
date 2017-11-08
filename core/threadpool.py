@@ -6,22 +6,22 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import os
-import threading
-import thread
-import logging
-import itertools
-import time
 import datetime
-from collections import deque
+import itertools
+import logging
 import sys
+import thread
+# Python modules
+import threading
+import time
+from collections import deque
+
 # Third-party modules
 from concurrent.futures import Future
-from tornado.gen import with_timeout
 from noc.config import config
-from noc.core.span import Span, get_current_span
 from noc.core.error import NOCError, ERR_UNKNOWN
+from noc.core.span import Span, get_current_span
+from tornado.gen import with_timeout
 
 logger = logging.getLogger(__name__)
 

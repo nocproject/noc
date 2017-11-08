@@ -9,5 +9,4 @@
 ## NOC modules
 from collections import namedtuple
 
-
 Revision = namedtuple("Revision", ["id", "ts", "ft"])

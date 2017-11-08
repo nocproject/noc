@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.gis.models import SRS
 # NOC modules
 from noc.lib.test import NOCTestCase
-from noc.gis.models import SRS
 
 
 class GeoTestCase(NOCTestCase):

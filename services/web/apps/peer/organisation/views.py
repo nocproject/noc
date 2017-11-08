@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.peer.models import Organisation
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.peer.models import Organisation
 
 
 class OrganisationApplication(ExtModelApplication):
@@ -19,5 +19,4 @@ class OrganisationApplication(ExtModelApplication):
     title = _("Organisations")
     menu = [_("Setup"), _("Organisations")]
     model = Organisation
-    query_fields = ["organisation__icontains","org_name__icontains"]
-
+    query_fields = ["organisation__icontains", "org_name__icontains"]

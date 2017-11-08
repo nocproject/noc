@@ -8,21 +8,23 @@
 
 # Python modules
 from __future__ import absolute_import
+
+import operator
 import re
 import threading
-import operator
+
+import cachetools
+import jinja2
+import six
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField, ListField,
                                 EmbeddedDocumentField)
-import six
-import jinja2
-import cachetools
+from noc.core.ip import IP
+from noc.lib.prettyjson import to_json
 # NOC modules
 from noc.lib.text import quote_safe_path
-from noc.lib.prettyjson import to_json
-from noc.core.ip import IP
 
 id_lock = threading.Lock()
 
@@ -77,7 +79,7 @@ class Action(Document):
     params = ListField(EmbeddedDocumentField(ActionParameter))
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
-    
+
     def __unicode__(self):
         return self.name
 
@@ -126,14 +128,14 @@ class Action(Document):
                 return ac
             for m in ac.match:
                 if (
-                    not m.platform_re or (
-                        obj.platform and
-                        re.search(m.platform_re, obj.platform.name)
-                    )
+                            not m.platform_re or (
+                                    obj.platform and
+                                    re.search(m.platform_re, obj.platform.name)
+                        )
                 ) and (
-                    not m.version_re or (
-                        obj.version and
-                        re.search(m.version_re, obj.version.version))
+                            not m.version_re or (
+                                    obj.version and
+                                    re.search(m.version_re, obj.version.version))
                 ):
                     return ac
         return None

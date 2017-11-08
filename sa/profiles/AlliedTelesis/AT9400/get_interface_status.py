@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
-import re
 
 
 class Script(BaseScript):
@@ -32,7 +33,7 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
                     if not n.startswith("802.1Q Encapsulation Tag") \
-                      and (interface is not None and interface == n):
+                            and (interface is not None and interface == n):
                         # ifOperStatus up(1)
                         r += [{"interface": n, "status": int(s) == 1}]
                 return r
@@ -59,5 +60,5 @@ class Script(BaseScript):
             r += [{
                 "interface": iface,
                 "status": status.lower() == "up"
-                }]
+            }]
         return r

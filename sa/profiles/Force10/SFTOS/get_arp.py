@@ -8,8 +8,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetarp import IGetARP
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetarp import IGetARP
 
 
 class Script(BaseScript):

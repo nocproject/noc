@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.vc.models import VCFilter
-from noc.sa.interfaces.base import IntParameter
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.sa.interfaces.base import IntParameter
+from noc.vc.models import VCFilter
 
 
 class VCFilterApplication(ExtModelApplication):

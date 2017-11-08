@@ -8,12 +8,14 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import jinja2
-# NOC modules
-from base import BaseCard
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.servicesummary import ServiceSummary
+
+# NOC modules
+from base import BaseCard
 
 
 class MaintenanceCard(BaseCard):

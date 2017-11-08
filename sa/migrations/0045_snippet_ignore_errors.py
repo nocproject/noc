@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from south.db import db
 # NOC modules
 from django.db import models
+# Third-party modules
+from south.db import db
 
 
 class Migration:

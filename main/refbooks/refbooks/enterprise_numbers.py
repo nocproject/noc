@@ -17,4 +17,4 @@ class ISO3166(RefBook):
     fields = [
         Field(name="Number", search_method="string"),
         Field(name="Organization", search_method="substring"),
-        ]
+    ]

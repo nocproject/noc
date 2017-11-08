@@ -8,6 +8,7 @@
 """
 """
 from __future__ import with_statement
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iremovevlan import IRemoveVlan
 

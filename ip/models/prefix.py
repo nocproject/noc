@@ -6,25 +6,25 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.contrib.auth.models import User
+from django.db import models, connection
 # Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models, connection
-from django.db.models import Q
-from django.contrib.auth.models import User
-# NOC modules
-from noc.project.models.project import Project
-from vrf import VRF
-from afi import AFI_CHOICES
-from noc.peer.models import AS
-from noc.vc.models.vc import VC
-from noc.main.models.style import Style
-from noc.main.models import ResourceState
+from noc.core.ip import IP, IPv4
 from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
-from noc.core.ip import IP, IPv4
+from noc.main.models import ResourceState
+from noc.main.models.style import Style
 from noc.main.models.textindex import full_text_search
+from noc.peer.models import AS
+# NOC modules
+from noc.project.models.project import Project
+from noc.vc.models.vc import VC
+
+from afi import AFI_CHOICES
+from vrf import VRF
 
 
 @full_text_search
@@ -32,6 +32,7 @@ class Prefix(models.Model):
     """
     Allocated prefix
     """
+
     class Meta:
         verbose_name = _("Prefix")
         verbose_name_plural = _("Prefixes")
@@ -159,7 +160,7 @@ class Prefix(models.Model):
                 ORDER BY masklen(prefix) DESC
                 LIMIT 1
                 """,
-            [vrf.id, str(afi), str(prefix)]))
+                                    [vrf.id, str(afi), str(prefix)]))
         if not r:
             return None
         return r[0]
@@ -170,7 +171,7 @@ class Prefix(models.Model):
         Returns true if the prefix is a root of VRF
         """
         return (self.afi == "4" and self.prefix == "0.0.0.0/0") or (
-        self.afi == "6" and self.prefix == "::/0")
+            self.afi == "6" and self.prefix == "::/0")
 
     def clean(self):
         """
@@ -213,9 +214,9 @@ class Prefix(models.Model):
                 AND prefix << %%s
                 AND parent_id=%%s
         """ % Prefix._meta.db_table,
-            [self.id, self.vrf.id, self.afi, self.prefix,
-             self.parent.id if self.parent else None]
-        )
+                  [self.id, self.vrf.id, self.afi, self.prefix,
+                   self.parent.id if self.parent else None]
+                  )
         # Reconnect children addresses
         c.execute("""
             UPDATE %s
@@ -224,12 +225,12 @@ class Prefix(models.Model):
                     prefix_id=%%s
                 AND address << %%s
                 """ % Address._meta.db_table,
-            [
-                self.id,
-                self.parent.id if self.parent else None,
-                self.prefix
-            ]
-        )
+                  [
+                      self.id,
+                      self.parent.id if self.parent else None,
+                      self.prefix
+                  ]
+                  )
 
     def delete(self, *args, **kwargs):
         """
@@ -305,8 +306,8 @@ class Prefix(models.Model):
                                 AND can_change=TRUE
                            ))
             ORDER BY username""" % (
-        User._meta.db_table, PrefixAccess._meta.db_table),
-            [self.vrf.id, self.afi, self.prefix])
+            User._meta.db_table, PrefixAccess._meta.db_table),
+                                [self.vrf.id, self.afi, self.prefix])
 
     ##
     ## First line of description
@@ -446,7 +447,7 @@ class Prefix(models.Model):
                     )
             ORDER BY from_address, to_address
             """,
-            [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
+                                             [self.vrf.id, self.afi, self.prefix, self.prefix, self.prefix]))
 
     @property
     def ippools(self):
@@ -489,7 +490,7 @@ class Prefix(models.Model):
         # Rebase prefix and all nested prefixes
         # Parents are left untouched
         for p in Prefix.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-            where=["prefix <<= %s"], params=[self.prefix]):
+                where=["prefix <<= %s"], params=[self.prefix]):
             np = IP.prefix(p.prefix).rebase(b, nb).prefix
             # Prefix.objects.filter(pk=p.pk).update(prefix=np, vrf=vrf)
             p.prefix = np
@@ -498,7 +499,7 @@ class Prefix(models.Model):
         # Rebase addresses
         # Parents are left untouched
         for a in Address.objects.filter(vrf=self.vrf, afi=self.afi).extra(
-            where=["address <<= %s"], params=[self.prefix]):
+                where=["address <<= %s"], params=[self.prefix]):
             na = IP.prefix(a.address).rebase(b, nb).address
             # Address.objects.filter(pk=a.pk).update(address=na, vrf=vrf)
             a.address = na
@@ -507,16 +508,16 @@ class Prefix(models.Model):
         # Rebase permissions
         # move all permissions to the nested blocks
         for pa in PrefixAccess.objects.filter(vrf=self.vrf).extra(
-            where=["prefix <<= %s"], params=[self.prefix]):
+                where=["prefix <<= %s"], params=[self.prefix]):
             np = IP.prefix(pa.prefix).rebase(b, nb).prefix
             PrefixAccess.objects.filter(pk=pa.pk).update(
                 prefix=np, vrf=vrf)
         # create permissions for covered blocks
         for pa in PrefixAccess.objects.filter(vrf=self.vrf).extra(
-            where=["prefix >> %s"], params=[self.prefix]):
+                where=["prefix >> %s"], params=[self.prefix]):
             PrefixAccess(user=pa.user, vrf=vrf, afi=pa.afi,
-                prefix=new_prefix,  can_view=pa.can_view,
-                can_change=pa.can_change).save()
+                         prefix=new_prefix, can_view=pa.can_view,
+                         can_change=pa.can_change).save()
         # @todo: Rebase bookmarks
         # Return rebased prefix
         return Prefix.objects.get(pk=self.pk)  # Updated object
@@ -581,6 +582,7 @@ class Prefix(models.Model):
             return ""
         else:
             return "%.2f%%" % u
+
 
 # Avoid circular references
 from address import Address

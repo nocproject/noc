@@ -13,11 +13,11 @@ from south.db import db
 class Migration:
     def forwards(self):
         db.add_column("sa_managedobject", "snmp_ro",
-            models.CharField("RO Community", blank=True, null=True,
-                max_length=64))
+                      models.CharField("RO Community", blank=True, null=True,
+                                       max_length=64))
         db.add_column("sa_managedobject", "snmp_rw",
-            models.CharField("RW Community", blank=True, null=True,
-                max_length=64))
+                      models.CharField("RW Community", blank=True, null=True,
+                                       max_length=64))
 
     def backwards(self):
         db.delete_column("sa_managedobject", "snmp_ro")

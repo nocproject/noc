@@ -11,6 +11,7 @@ import os
 import shutil
 from optparse import make_option
 from xml.parsers import expat
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
@@ -252,8 +253,8 @@ class Command(BaseCommand):
                         s = {"type": cctag[:-10]}
                         if cccdata:
                             s["cdata"] = cccdata
-                        for ccctag, cccattrs, cccchildren,\
-                                ccccdata in ccchildren:
+                        for ccctag, cccattrs, cccchildren, \
+                            ccccdata in ccchildren:
                             if ccctag == "cssparameter":
                                 s[cccattrs["name"]] = ccccdata
                         for k, v in ccattrs.items():

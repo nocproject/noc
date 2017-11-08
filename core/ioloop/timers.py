@@ -7,20 +7,21 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import os
 import random
+
+from noc.config import config
 ## Third-party modules
 from tornado.ioloop import IOLoop, PeriodicCallback
-from noc.config import config
-
 
 if config.features.use_uvlib:
     import pyuv
+
 
     class PeriodicOffsetCallback(object):
         """Schedules the given callback to be called periodically
         with random offset.
         """
+
         def __init__(self, callback, callback_time, io_loop=None):
             self.callback = callback
             if callback_time <= 0:
@@ -67,6 +68,7 @@ else:
         """Schedules the given callback to be called periodically
         with random offset.
         """
+
         def start(self):
             """Starts the timer."""
             self._running = True

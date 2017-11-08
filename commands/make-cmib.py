@@ -6,17 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import argparse
+import datetime
+import logging
+import os
 # Python modules
 import sys
-import os
-import logging
-import datetime
-import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
-
 
 logger = logging.getLogger("make-cmib")
 
@@ -28,7 +28,7 @@ class Command(BaseCommand):
         parser.add_argument("-o", "--output",
                             dest="output", default="")
         parser.add_argument("args",
-                            nargs=argparse.REMAINDER,)
+                            nargs=argparse.REMAINDER, )
 
     def handle(self, *args, **options):
         if len(args) != 1:
@@ -86,6 +86,7 @@ class Command(BaseCommand):
         if not os.path.isdir(d):
             logger.info("Creating directory %s", d)
             os.makedirs(d)
+
 
 if __name__ == "__main__":
     Command().run()

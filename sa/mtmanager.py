@@ -8,9 +8,9 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.core.service.client import open_sync_rpc
-
 
 logger = logging.getLogger(__name__)
 

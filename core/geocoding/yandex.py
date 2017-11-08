@@ -8,13 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import urllib
+
 # Third-party modules
 import ujson
+from noc.config import config
+
 # NOC modules
 from .base import (BaseGeocoder, GeoCoderError, GeoCoderLimitExceeded,
-                  GeoCoderResult)
-from noc.config import config
+                   GeoCoderResult)
 
 
 class YandexGeocoder(BaseGeocoder):
@@ -63,11 +66,16 @@ class YandexGeocoder(BaseGeocoder):
                 lon, lat = None, None
             path = [
                 self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.CountryName"),
-                self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName"),
-                self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.SubAdministrativeAreaName"),
-                self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName"),
-                self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName"),
-                self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.Premise.PremiseNumber")
+                self.get_path(rr,
+                              "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName"),
+                self.get_path(rr,
+                              "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.SubAdministrativeAreaName"),
+                self.get_path(rr,
+                              "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName"),
+                self.get_path(rr,
+                              "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName"),
+                self.get_path(rr,
+                              "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.Premise.PremiseNumber")
             ]
             path = [p for p in path if p]
             is_exact = self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.precision") == "exact"

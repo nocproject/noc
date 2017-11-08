@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.lib.datasource import DataSource
-from noc.vc.models import VCDomain, VC
+from noc.vc.models import VC
 
 
 class VCDS(DataSource):

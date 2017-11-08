@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.lib.validators import is_int
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
 class Script(BaseScript):
@@ -22,7 +23,8 @@ class Script(BaseScript):
 
     def execute(self):
         rx_line = re.compile(
-            r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
+            r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)",
+            re.MULTILINE)
         rx_descr = re.compile(
             r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
 
@@ -36,7 +38,7 @@ class Script(BaseScript):
                 r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
                 r"(?P<duplex>.+?)\s+"
                 r"(?P<mode>access|trunk|hybrid|trunking|A|T|H)\s+"
-                r"(?P<pvid>\d+)\s*(?P<description>.*)$" , re.MULTILINE)
+                r"(?P<pvid>\d+)\s*(?P<description>.*)$", re.MULTILINE)
             try:
                 v = self.cli("display brief interface")
             except self.CLISyntaxError:
@@ -68,16 +70,16 @@ class Script(BaseScript):
             v = self.cli("display port allow-vlan")
         elif version.startswith("3.10"):
             rx_line = re.compile(
-               r"""
-               (?P<interface>\S+)\scurrent\sstate
-               .*?
-               PVID:\s(?P<pvid>\d+)
-               .*?
-               Port\slink-type:\s(?P<mode>access|trunk|hybrid|trunking)
-               .*?
-               (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
-               """,
-               re.MULTILINE | re.DOTALL | re.VERBOSE)
+                r"""
+                (?P<interface>\S+)\scurrent\sstate
+                .*?
+                PVID:\s(?P<pvid>\d+)
+                .*?
+                Port\slink-type:\s(?P<mode>access|trunk|hybrid|trunking)
+                .*?
+                (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
+                """,
+                re.MULTILINE | re.DOTALL | re.VERBOSE)
             v = self.cli("display interface")
         else:
             try:
@@ -95,7 +97,7 @@ class Script(BaseScript):
             if trunk:
                 vlans = match.group("vlans").strip()
                 if vlans and (vlans not in ["-", "none"]) \
-                  and is_int(vlans[0]):
+                        and is_int(vlans[0]):
                     vlans = self.rx_vlan_comment.sub("", vlans)
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)

@@ -10,10 +10,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -29,8 +29,8 @@ class Script(BaseScript):
         r = []
         for line in s.splitlines():
             if self.dataline.match(line):
-               l = line.split()
-               r.append([l[0], l[1], l[3]])
+                l = line.split()
+                r.append([l[0], l[1], l[3]])
         return r
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -43,17 +43,17 @@ class Script(BaseScript):
             rmac = mac.replace(":", "").lower()
         r = []
         for v in vlans:
-#            try:
-                for m, port, type in self.parse_mac_table(self.cli("show mac-address vlan %d" % v)):
-                    rrmac = m.replace(".", "").lower()
-                    if (not interface or port == interface) \
-                    and (not mac or rmac == rrmac):
-                        r += [{
-                            "vlan_id": v,
-                            "mac": m,
-                            "interfaces": [port],
-                            "type": type
-                        }]
-#            except TypeError:
-#                r = []
+            #            try:
+            for m, port, type in self.parse_mac_table(self.cli("show mac-address vlan %d" % v)):
+                rrmac = m.replace(".", "").lower()
+                if (not interface or port == interface) \
+                        and (not mac or rmac == rrmac):
+                    r += [{
+                        "vlan_id": v,
+                        "mac": m,
+                        "interfaces": [port],
+                        "type": type
+                    }]
+                #            except TypeError:
+                #                r = []
         return r

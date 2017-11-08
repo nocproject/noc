@@ -16,16 +16,16 @@ class Migration:
     def forwards(self):
         # Mock Models
         ManagedObjectSelector = db.mock_model(model_name="ManagedObjectSelector",
-            db_table="sa_managedobjectselector", db_tablespace="",
-            pk_field_name="id", pk_field_type=models.AutoField)
+                                              db_table="sa_managedobjectselector", db_tablespace="",
+                                              pk_field_name="id", pk_field_type=models.AutoField)
         NotificationGroup = db.mock_model(model_name="NotificationGroup",
-            db_table="main_notificationgroup", db_tablespace="",
-            pk_field_name="id", pk_field_type=models.AutoField)
+                                          db_table="main_notificationgroup", db_tablespace="",
+                                          pk_field_name="id", pk_field_type=models.AutoField)
         # Model "Activator"
         db.create_table("sa_objectnotification", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True,
                                     auto_created=True)),
-            ("selector",  models.ForeignKey(ManagedObjectSelector)),
+            ("selector", models.ForeignKey(ManagedObjectSelector)),
             ("notification_group", models.ForeignKey(NotificationGroup)),
             # Events
             ("config_changed", models.BooleanField("Config changed")),
@@ -43,4 +43,3 @@ class Migration:
 
     def backwards(self):
         db.delete_table("sa_objectnotification")
-

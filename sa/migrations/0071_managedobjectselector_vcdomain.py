@@ -15,26 +15,27 @@ class Migration:
         ("ip", "0001_initial"),
         ("vc", "0001_initial")
     ]
+
     def forwards(self):
         VRF = db.mock_model(model_name='VRF',
-            db_table='ip_vrf', db_tablespace='',
-            pk_field_name='id', pk_field_type=models.AutoField)
+                            db_table='ip_vrf', db_tablespace='',
+                            pk_field_name='id', pk_field_type=models.AutoField)
         VCDomain = db.mock_model(model_name='VCDomain',
-            db_table='vc_vcdomain', db_tablespace='',
-            pk_field_name='id', pk_field_type=models.AutoField)
+                                 db_table='vc_vcdomain', db_tablespace='',
+                                 pk_field_name='id', pk_field_type=models.AutoField)
         db.add_column(
             "sa_managedobjectselector", "filter_vrf",
             models.ForeignKey(VRF,
-                verbose_name="Filter by VRF", null=True,
-                blank=True))
+                              verbose_name="Filter by VRF", null=True,
+                              blank=True))
         db.add_column(
             "sa_managedobjectselector", "filter_vc_domain",
             models.ForeignKey(VCDomain,
-                verbose_name="Filter by VC Domain", null=True,
-                blank=True))
+                              verbose_name="Filter by VC Domain", null=True,
+                              blank=True))
 
     def backwards(self):
         db.delete_column("sa_managedobjectselector",
-            "filter_vc_domain")
+                         "filter_vc_domain")
         db.delete_column("sa_managedobjectselector",
-            "filter_vrf")
+                         "filter_vrf")

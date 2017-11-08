@@ -4,10 +4,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from south.db import db
 # NOC models
 from noc.lib.nosql import get_db
+# Third-party modules
+from south.db import db
 
 
 class Migration:

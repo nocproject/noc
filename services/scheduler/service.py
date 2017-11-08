@@ -7,13 +7,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.base import Service
 
 
 class SchedulerService(Service):
@@ -30,6 +30,7 @@ class SchedulerService(Service):
             ioloop=self.ioloop
         )
         self.scheduler.run()
+
 
 if __name__ == "__main__":
     SchedulerService().start()

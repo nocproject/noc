@@ -14,6 +14,7 @@ class BaseParameter(object):
     """
     Abstract parameter
     """
+
     def __init__(self, required=True, default=None):
         self.required = required
         self.default = default
@@ -127,6 +128,7 @@ class ORParameter(BaseParameter):
         ...
     InterfaceTypeError: IPv4Parameter: None.
     """
+
     def __init__(self, left, right):
         super(ORParameter, self).__init__()
         self.left = left

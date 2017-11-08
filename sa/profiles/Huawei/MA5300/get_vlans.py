@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -29,6 +30,6 @@ class Script(BaseScript):
         vlans = match.group("vlans").strip().replace("(default)", "")
         for vlan_id in self.expand_rangelist(vlans):
             r += [{
-                    "vlan_id": vlan_id
-                }]
+                "vlan_id": vlan_id
+            }]
         return r

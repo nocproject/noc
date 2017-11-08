@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import inspect
+import os
 # Python modules
 from ConfigParser import SafeConfigParser
-import os
-import inspect
 from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
+from noc.core.debug import error_report
 # NOC modules
 from noc.gis.parsers.address.base import AddressParser
-from noc.core.debug import error_report
 
 
 class Command(BaseCommand):

@@ -12,9 +12,7 @@ from collections import defaultdict
 # Third-party modules
 from pyparsing import *
 # NOC modules
-from noc.core.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 from noc.lib.text import ranges_to_list
 
 
@@ -43,7 +41,8 @@ class RouterOSParser(BasePyParser):
         KVP = Group(KEY + EQ + VALUE)
         BEGIN = LineStart() + SLASH + restOfLine.setParseAction(self.on_begin)
         ADD_OP = LineStart() + Literal("add") + ZeroOrMore(KVP).setParseAction(self.on_add)
-        SET_OP = LineStart() + Literal("set") + (Optional(FIND | KEY + ~FollowedBy(EQ) | QuotedString("\"")) + ZeroOrMore(KVP)).setParseAction(self.on_set)
+        SET_OP = LineStart() + Literal("set") + (
+        Optional(FIND | KEY + ~FollowedBy(EQ) | QuotedString("\"")) + ZeroOrMore(KVP)).setParseAction(self.on_set)
         CONFIG = ZeroOrMore(BEGIN | ADD_OP | SET_OP)
         return CONFIG
 

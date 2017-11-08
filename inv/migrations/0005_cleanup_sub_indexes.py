@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 from noc.lib.nosql import get_db
 
+
 class Migration:
     def forwards(self):
         c = get_db().noc.subinterfaces

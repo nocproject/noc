@@ -7,15 +7,14 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.add_column("sa_managedobject", "max_scripts",
-                models.IntegerField("Max. Scripts", null=True, blank=True))
+                      models.IntegerField("Max. Scripts", null=True, blank=True))
 
     def backwards(self):
         db.delete_column("sa_managedobject", "max_scripts")

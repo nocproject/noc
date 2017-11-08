@@ -8,10 +8,11 @@
 
 # Python modules
 import datetime
-# NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
+# NOC modules
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class CPECheck(DiscoveryCheck):

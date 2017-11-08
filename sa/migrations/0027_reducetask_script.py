@@ -7,12 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.execute("DELETE FROM sa_maptask")
         db.execute("DELETE FROM sa_reducetask")

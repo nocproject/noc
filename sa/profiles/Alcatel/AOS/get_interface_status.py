@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -31,7 +32,7 @@ class Script(BaseScript):
                     mib["IF-MIB::ifName"],
                     mib["IF-MIB::ifOperStatus"]
                 ]):
-                    r += [{"interface": n, "status":int(s) == 1}]
+                    r += [{"interface": n, "status": int(s) == 1}]
                 return r
             except self.snmp.TimeOutError:
                 pass

@@ -8,26 +8,29 @@
 
 # Python
 from __future__ import absolute_import
+
 import datetime
-import dateutil.parser
 import operator
 from threading import Lock
+
+import cachetools
+import dateutil.parser
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField, BooleanField, ReferenceField, DateTimeField,
     ListField, EmbeddedDocumentField
 )
-import cachetools
-# NOC modules
-from .maintenancetype import MaintenanceType
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.defer import call_later
+from noc.core.model.decorator import on_save
 from noc.inv.models.networksegment import NetworkSegment
 from noc.lib.nosql import ForeignKeyField
-from noc.core.model.decorator import on_save
-from noc.sa.models.objectdata import ObjectData
 from noc.main.models.timepattern import TimePattern
-from noc.core.defer import call_later
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectdata import ObjectData
+
+# NOC modules
+from .maintenancetype import MaintenanceType
 
 id_lock = Lock()
 
@@ -107,6 +110,7 @@ class Maintenance(Document):
         """
         Calculate and fill affected objects
         """
+
         def get_downlinks(objects):
             r = set()
             # Get all additional objects which may be affected

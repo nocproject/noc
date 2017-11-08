@@ -8,17 +8,19 @@
 
 # Python modules
 from __future__ import print_function
+
 import argparse
 import time
 from collections import defaultdict
+
+from noc.core.cache.base import cache
+from noc.core.handler import get_handler
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.handler import get_handler
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
-from noc.core.cache.base import cache
+from noc.core.scheduler.scheduler import Scheduler
 from noc.core.span import Span, get_spans
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
 
 class Command(BaseCommand):
@@ -150,6 +152,7 @@ class ServiceStub(object):
 
     def register_metrics(self, fields, data):
         self.metrics[fields] += data
+
 
 if __name__ == "__main__":
     Command().run()

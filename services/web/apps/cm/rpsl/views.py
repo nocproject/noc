@@ -6,20 +6,24 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from django.contrib import admin
-from noc.cm.repoapp import RepoApplication
 from noc.cm.models import RPSL
+from noc.cm.repoapp import RepoApplication
 from noc.core.translation import ugettext as _
+
+
 #
 # RPSL admin
 #
 class RPSLAdmin(admin.ModelAdmin):
-    list_display=["repo_path","last_modified","status"]
-    search_fields=["repo_path"]
+    list_display = ["repo_path", "last_modified", "status"]
+    search_fields = ["repo_path"]
+
+
 #
 # RPSL application
 #
 class RPSLApplication(RepoApplication):
-    repo="rpsl"
-    model=RPSL
-    model_admin=RPSLAdmin
+    repo = "rpsl"
+    model = RPSL
+    model_admin = RPSLAdmin
     menu = _("RPSL Objects")

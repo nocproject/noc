@@ -8,14 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
+
+import operator
+import threading
+
+import cachetools
+import tornado.gen
 # Third-party modules
 import tornado.web
-import tornado.gen
-import cachetools
-import threading
-import operator
+
 # NOC modules
-from noc.config import config
 from .loader import get_datasource
 
 ds_lock = threading.Lock()

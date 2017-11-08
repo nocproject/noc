@@ -8,17 +8,19 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetarp import IGetARP
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetarp import IGetARP
 
 
 class Script(BaseScript):
     name = "Cisco.SMB.get_arp"
     interface = IGetARP
     rx_line_l2 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
-    rx_line_l3 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
+    rx_line_l3 = re.compile(
+        r"^vlan\s(?P<vlanid>\d+)\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
 
     def execute(self, vrf=None):
         if vrf:
@@ -49,7 +51,7 @@ class Script(BaseScript):
         for row in parse_table(self.cli("show mac address-table")):
             mac = row[1]
             port = row[2].strip()
-            if port == '0':     # self
+            if port == '0':  # self
                 continue
             interface = self.profile.convert_interface_name(port)
             for l in reply:

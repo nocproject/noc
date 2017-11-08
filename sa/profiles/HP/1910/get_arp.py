@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -54,7 +55,7 @@ class Script(BaseScript):
                     "ip": match.group("ip"),
                     "mac": None,
                     "interface": None
-                    })
+                })
             else:
                 iface = match.group("interface")
                 iface = iface.replace('GE', 'Gi ')
@@ -63,5 +64,5 @@ class Script(BaseScript):
                     "ip": match.group("ip"),
                     "mac": match.group("mac"),
                     "interface": iface
-                    })
+                })
         return r

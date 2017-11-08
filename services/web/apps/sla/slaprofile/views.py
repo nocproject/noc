@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app import ExtDocApplication, view
-from noc.sla.models.slaprofile import SLAProfile
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app import ExtDocApplication
+from noc.sla.models.slaprofile import SLAProfile
 
 
 class SLAProfileApplication(ExtDocApplication):

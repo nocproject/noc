@@ -4,11 +4,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.model.fields import TagsField
 # Django modules
-from django.db import models
 # Third-party modules
 from south.db import db
-from noc.core.model.fields import TagsField
 
 
 class Migration:

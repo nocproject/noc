@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -29,8 +30,8 @@ class Script(BaseScript):
         v = self.cli("show inventory raw")
         for match in self.rx_item.finditer(v):
             vendor = None
-            #Internal containers, bays, links, ports, processors
-            #Not needed
+            # Internal containers, bays, links, ports, processors
+            # Not needed
             if match.group("pid") == '""':
                 continue
             type, number, part_no = self.get_type(
@@ -53,10 +54,10 @@ class Script(BaseScript):
                 continue
             else:
                 if not vendor:
-                     if "NoName" in part_no or "Unknown" in part_no:
-                         vendor = "NONAME"
-                     else:
-                         vendor = "CISCO"
+                    if "NoName" in part_no or "Unknown" in part_no:
+                        vendor = "NONAME"
+                    else:
+                        vendor = "CISCO"
                 objects += [{
                     "type": type,
                     "number": number,
@@ -77,16 +78,15 @@ class Script(BaseScript):
             elif "SPA" in i.get("type"):
                 for p in objects:
                     if ("XCVR" in p.get("type") and
-                        i.get("number") == p.get("number").split("/")[1]):
-                           t = p.copy()
-                           t["number"] = p.get("number").split("/")[2]
-                           r += [i]
-                           r += [t]
+                                i.get("number") == p.get("number").split("/")[1]):
+                        t = p.copy()
+                        t["number"] = p.get("number").split("/")[2]
+                        r += [i]
+                        r += [t]
             else:
                 r += [i]
 
         return r
-
 
     def get_type(self, name, pid, descr, lo):
         """

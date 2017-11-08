@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import glob
 # Python modules
 import os
-import glob
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
+
 from noc import settings
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
 
 
 class ReportLOC(SimpleReport):
@@ -52,7 +53,7 @@ class ReportLOC(SimpleReport):
                   m.startswith("noc.")]:
             m = m[4:]
             module_name = __import__("noc.%s" % m, {}, {},
-                ["MODULE_NAME"]).MODULE_NAME
+                                     ["MODULE_NAME"]).MODULE_NAME
             data += [SectionRow(module_name)]
             # Scan models
             models_path = os.path.join(m, "models.py")
@@ -75,7 +76,7 @@ class ReportLOC(SimpleReport):
             data += [["Migrations", "", py_loc, 0, 0]]
             # Scan Management
             for dirpath, dirnames, filenames in os.walk(
-                os.path.join(m, "management", "commands")):
+                    os.path.join(m, "management", "commands")):
                 for f in [f for f in filenames if
                           f.endswith(".py") and f != "__init__.py"]:
                     py_loc = lines(os.path.join(dirpath, f))
@@ -117,25 +118,25 @@ class ReportLOC(SimpleReport):
                     py_loc, html_loc, tests_loc = dir_loc(d)
                     data += [["Profile", profile, py_loc, html_loc,
                               tests_loc]]
-                # Scan other
+                    # Scan other
             py_loc = 0
             for dirpath, dirnames, filenames in os.walk(m):
-                if os.sep + "tests" in dirpath or os.sep + "templates" in dirpath or os.sep + "apps" in dirpath\
-                   or os.sep + "management" in dirpath or os.sep + "migrations" in dirpath:
+                if os.sep + "tests" in dirpath or os.sep + "templates" in dirpath or os.sep + "apps" in dirpath \
+                        or os.sep + "management" in dirpath or os.sep + "migrations" in dirpath:
                     continue
                 for f in [f for f in filenames if f.endswith(".py") if
                           f != "models.py"]:
                     py_loc += lines(os.path.join(dirpath, f))
             data += [["Other", "", py_loc, 0, 0]]
         return self.from_dataset(title=self.title,
-            columns=[
-                "Type",
-                TableColumn("Name", total_label="Total"),
-                TableColumn("Python", format="numeric", align="right",
-                    total="sum"),
-                TableColumn("HTML", format="numeric", align="right",
-                    total="sum"),
-                TableColumn("Tests", format="numeric", align="right",
-                    total="sum"),
-                ],
-            data=data)
+                                 columns=[
+                                     "Type",
+                                     TableColumn("Name", total_label="Total"),
+                                     TableColumn("Python", format="numeric", align="right",
+                                                 total="sum"),
+                                     TableColumn("HTML", format="numeric", align="right",
+                                                 total="sum"),
+                                     TableColumn("Tests", format="numeric", align="right",
+                                                 total="sum"),
+                                 ],
+                                 data=data)

@@ -8,26 +8,29 @@
 
 # Python modules
 from __future__ import absolute_import
-from threading import Lock
+
 import operator
+from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.errors import ValidationError
 from mongoengine.fields import (StringField, DateTimeField, ListField,
                                 EmbeddedDocumentField)
-from mongoengine.errors import ValidationError
-import cachetools
-# NOC modules
-from .phonerange import PhoneRange
-from .numbercategory import NumberCategory
-from noc.sa.models.service import Service
-from .dialplan import DialPlan
-from .phonenumberprofile import PhoneNumberProfile
-from .phonelinktype import PhoneLinkType
-from noc.project.models.project import Project
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.lib.text import clean_number
+from noc.project.models.project import Project
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.service import Service
+from noc.sa.models.terminationgroup import TerminationGroup
+
+from .dialplan import DialPlan
+from .numbercategory import NumberCategory
+from .phonelinktype import PhoneLinkType
+from .phonenumberprofile import PhoneNumberProfile
+# NOC modules
+from .phonerange import PhoneRange
 
 id_lock = Lock()
 

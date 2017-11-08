@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import os
-import datetime
+
 # Third-party modules
 from jinja2 import Template, Environment
 # NOC modules

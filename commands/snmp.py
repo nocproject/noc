@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Pretty command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Pretty command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 ## Python modules
 import argparse
-# Third-party modules
-from tornado.ioloop import IOLoop
+
 import tornado.gen
 import tornado.queues
+from noc.core.ioloop.snmp import snmp_get, SNMPError
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
-from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.sa.interfaces.base import MACAddressParameter
+# Third-party modules
+from tornado.ioloop import IOLoop
 
 
 class Command(BaseCommand):
@@ -69,7 +70,7 @@ class Command(BaseCommand):
             "--version",
             type=int,
             help="version snmp check"
-        )  
+        )
 
     def handle(self, input, addresses, jobs, community, oid, timeout, convert, version,
                *args, **options):
@@ -144,8 +145,8 @@ class Command(BaseCommand):
                 if self.convert:
                     try:
                         r = MACAddressParameter().clean(r)
-                    except ValueError:    
-                        pass 
+                    except ValueError:
+                        pass
                 self.stdout.write(
                     "%s,%s,%s,%s,%r\n" % (a, s, dt, mc, r)
                 )

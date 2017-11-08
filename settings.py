@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import sys
-import os
-import logging
+
 from noc.config import config
 
 DEBUG = False

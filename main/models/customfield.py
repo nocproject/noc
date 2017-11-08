@@ -8,16 +8,18 @@
 
 # Python modules
 import logging
+
+import mongoengine.signals
 # Django modules
 from django.db import models, connection
 from django.db.models import signals as django_signals
+from mongoengine import fields
 # Third-party modules
 from mongoengine.base.common import _document_registry
-from mongoengine import fields
-import mongoengine.signals
+from noc.lib.validators import is_int
+
 # NOC modules
 from customfieldenumgroup import CustomFieldEnumGroup
-from noc.lib.validators import is_int
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +28,7 @@ class CustomField(models.Model):
     """
     Custom field description
     """
+
     class Meta:
         verbose_name = "Custom Field"
         verbose_name_plural = "Custom Fields"
@@ -89,9 +92,9 @@ class CustomField(models.Model):
         :return:
         """
         if self.enum_group:
-            qs = self.enum_group.enumvalue_set\
-                                .filter(is_active=True)\
-                                .order_by("value")
+            qs = self.enum_group.enumvalue_set \
+                .filter(is_active=True) \
+                .order_by("value")
             if self.type == "int":
                 return [(int(e.key), e.value) for e in qs]
             else:
@@ -430,7 +433,7 @@ class CustomField(models.Model):
     def table_search_Q(cls, table, query):
         q = []
         for f in CustomField.objects.filter(is_active=True,
-            table=table, is_searchable=True):
+                                            table=table, is_searchable=True):
             if f.type == "str":
                 q += [{"%s__icontains" % f.name: query}]
             elif f.type == "int":
@@ -438,7 +441,7 @@ class CustomField(models.Model):
                     q += [{f.name: int(query)}]
         if q:
             return reduce(lambda x, y: x | models.Q(**y), q,
-                models.Q(**q[0]))
+                          models.Q(**q[0]))
         else:
             return None
 

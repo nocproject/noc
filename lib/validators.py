@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 import re
 import uuid
+
 try:
     from django.forms import ValidationError
 except:  # pragma: no cover
@@ -394,6 +395,7 @@ def is_vlan(v):
     except:
         return False
 
+
 def is_mac(v):
     """
     >>> is_mac("1234.5678.9ABC")
@@ -432,6 +434,7 @@ def is_mac(v):
         return True
     except ValueError:
         return False
+
 
 def is_email(v):
     """
@@ -516,12 +519,15 @@ def generic_validator(check, error_message):
     ...
     ValidationError: [u'invalid int']
     """
+
     # Validator closure
     def inner_validator(value, *args, **kwargs):
         if not check(value):
             raise ValidationError(error_message)
         return value
+
     return inner_validator
+
 
 #
 # Validators

@@ -8,9 +8,10 @@
 
 # Python modules
 import re
+
+from noc.core.script.base import BaseScript
 # NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
-from noc.core.script.base import BaseScript
 
 
 class Script(BaseScript):
@@ -24,8 +25,8 @@ class Script(BaseScript):
             try:
                 r = []
                 for vid, name in self.snmp.join_tables(
-                    "1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    "1.3.6.1.2.1.17.7.1.4.3.1.1"):
+                        "1.3.6.1.2.1.17.7.1.4.2.1.3",
+                        "1.3.6.1.2.1.17.7.1.4.3.1.1"):
                     r += [{"vlan_id": vid, "name": name}]
                 return r
             except self.snmp.TimeOutError:
@@ -35,6 +36,6 @@ class Script(BaseScript):
         for match in self.rx_vlan.finditer(svlan):
             r += [{
                 "vlan_id": int(match.group('vlanid')),
-                "name":match.group('vlanname')
-                }]
+                "name": match.group('vlanname')
+            }]
         return r

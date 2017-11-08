@@ -8,8 +8,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
 
 
 class Script(BaseScript):

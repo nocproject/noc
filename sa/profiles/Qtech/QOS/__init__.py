@@ -7,10 +7,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-#SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.27514.6.178
+# SNMPv2-MIB::sysObjectID.0 = OID: SNMPv2-SMI::enterprises.27514.6.178
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -20,9 +21,9 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^ --More-- $", " "),
         (r"^Confirm to overwrite current startup-config configuration "
-            r"[Y/N]:", "\nY\n"),
+         r"[Y/N]:", "\nY\n"),
         (r"^Confirm to overwrite current startup-config configuration",
-            "\ny\n"),
+         "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
     ]
     pattern_unprivileged_prompt = r"^\S+>"

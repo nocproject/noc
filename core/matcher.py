@@ -8,9 +8,9 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.lib.text import split_alnum
-
 
 __all__ = ["match"]
 

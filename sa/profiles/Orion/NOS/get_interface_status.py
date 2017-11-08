@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -19,7 +20,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_port = re.compile(
-        r"^\s*(?P<port>\d+)\s+\S+\s+(?P<oper_status>\S+)",re.MULTILINE)
+        r"^\s*(?P<port>\d+)\s+\S+\s+(?P<oper_status>\S+)", re.MULTILINE)
 
     def execute(self, interface=None):
         r = []

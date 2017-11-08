@@ -8,7 +8,6 @@
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-import re
 
 
 class Script(BaseScript):

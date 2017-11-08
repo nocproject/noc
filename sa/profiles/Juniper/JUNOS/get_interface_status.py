@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -35,7 +36,7 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
                     if interface \
-                      and interface == self.profile.convert_interface_name(n):
+                            and interface == self.profile.convert_interface_name(n):
                         return [{"interface": n, "status": int(s) == 1}]
                     if not self.profile.valid_interface_name(n, platform):
                         continue

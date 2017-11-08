@@ -8,10 +8,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -30,7 +30,7 @@ class Script(BaseScript):
         r = {
             "mode": proto,
             "instances": [],
-            }
+        }
         detail = self.cli("show span detail")
         for E in cli_stp.split(sep)[1:]:
             match = glob_stp_rx.search(E)
@@ -61,7 +61,7 @@ class Script(BaseScript):
                         "point_to_point": 0,
                         "edge": 0,
                         "role": "unknown",
-                        }]
+                    }]
             r["instances"] += [{
                 "id": vlan,
                 "vlans": vlan,

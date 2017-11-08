@@ -10,7 +10,6 @@ from collections import namedtuple
 
 RR = namedtuple("RR", ["fqdn", "type", "content", "ttl", "prio"])
 
-
 HEADER = """;;
 ;; %s
 ;; WARNING: Auto-generated zone file
@@ -22,6 +21,7 @@ FOOTER = """;;
 ;; End of auto-generated zone
 ;;
 """
+
 
 class ZoneFile(object):
     TABSTOP = 8

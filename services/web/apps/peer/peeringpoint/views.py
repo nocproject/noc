@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.peer.models import PeeringPoint
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.peer.models import PeeringPoint
 
 
 class PeeringPointApplication(ExtModelApplication):
@@ -20,4 +20,3 @@ class PeeringPointApplication(ExtModelApplication):
     menu = [_("Setup"), _("Peering Points")]
     model = PeeringPoint
     query_fields = ["hostname__icontains", "router_id__icontains"]
-

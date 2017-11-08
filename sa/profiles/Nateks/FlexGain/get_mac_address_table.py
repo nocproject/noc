@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -37,6 +38,6 @@ class Script(BaseScript):
                 "vlan_id": int(match.group("vlan_id")),
                 "mac": mac if mac else match.group("mac"),
                 "interfaces": [match.group("interface")],
-                "type": {"DYNAMIC":"D", "STATIC":"S"}[match.group("type")]
+                "type": {"DYNAMIC": "D", "STATIC": "S"}[match.group("type")]
             }]
         return r

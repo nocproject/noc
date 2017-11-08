@@ -8,18 +8,21 @@
 
 # Python modules
 from __future__ import absolute_import
-from collections import defaultdict
+
 import logging
+from collections import defaultdict
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (IntField, ObjectIdField,
                                 EmbeddedDocumentField, ListField)
+from noc.core.defer import call_later
 # NOC modules
 from noc.crm.models.subscriber import Subscriber
-from noc.core.defer import call_later
-from .serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
+from .serviceprofile import ServiceProfile
 
 logger = logging.getLogger(__name__)
 
@@ -171,7 +174,6 @@ class ServiceSummary(Document):
 
     @classmethod
     def _refresh_object(cls, managed_object):
-        from noc.inv.models.networksegment import NetworkSegment
         from noc.sa.models.managedobject import ManagedObject
 
         def to_dict(v):

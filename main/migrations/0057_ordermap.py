@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from django.db import models
 # encoding: utf-8
 from south.db import db
-from django.db import models
 
 
 class Migration:

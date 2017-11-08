@@ -8,14 +8,15 @@
 
 # Python modules
 import os
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField,
                                 ListField, EmbeddedDocumentField)
+from noc.core.model.decorator import on_delete_check
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
-from noc.core.model.decorator import on_delete_check
 
 
 class Context(EmbeddedDocument):

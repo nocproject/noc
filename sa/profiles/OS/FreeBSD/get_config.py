@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
-import re
 
 
 class Script(BaseScript):
@@ -17,7 +18,7 @@ class Script(BaseScript):
     interface = IGetConfig
     rx_not_found = re.compile(r"^cat:.+?No (?:match|such file or directory)")
     configs = ["/etc/rc.conf", "/etc/rc.conf.d/*",
-        "/usr/local/etc/rc.conf.d/*", "/etc/rc.local"]
+               "/usr/local/etc/rc.conf.d/*", "/etc/rc.local"]
 
     def execute(self):
         config = ""

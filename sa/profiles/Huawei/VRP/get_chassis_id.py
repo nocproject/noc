@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -20,9 +21,9 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
     rx_mac1 = re.compile(r"CIST Bridge\s+:\d+\s*\.(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                         re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         v = self.cli("display stp")

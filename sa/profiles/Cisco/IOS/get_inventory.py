@@ -9,10 +9,10 @@
 # Python modules
 import re
 from itertools import groupby
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -68,7 +68,6 @@ class Script(BaseScript):
         "CISCO2811"
     ])
 
-
     def get_inv(self):
         objects = []
         try:
@@ -96,14 +95,14 @@ class Script(BaseScript):
                 if not part_no:
                     if type and "XCVR" in type:
                         # Last chance to get idprom
-                        if match.group("name").startswith("Transceiver"): 
+                        if match.group("name").startswith("Transceiver"):
                             int = match.group("name").split()[1]
                         elif match.group("name").startswith("GigabitEthernet"):
                             int = match.group("name").split()[0]
                         else:
                             int = match.group("name")
                         vendor, t_sn, t_rev, part_no = self.get_idprom(
-                        int, match.group("descr").upper()
+                            int, match.group("descr").upper()
                         )
                         if not serial:
                             serial = t_sn
@@ -135,10 +134,10 @@ class Script(BaseScript):
 
                 # if gbic slots in module
                 if (part_no in self.GBIC_MODULES or
-                    "GBIC ETHERNET" in match.group("descr").upper()):
-                        # Need get transceivers from idprom
-                        objects += self.get_transceivers("sh int " +
-                            "status module " + str(number))
+                            "GBIC ETHERNET" in match.group("descr").upper()):
+                    # Need get transceivers from idprom
+                    objects += self.get_transceivers("sh int " +
+                                                     "status module " + str(number))
         except self.CLISyntaxError:
             c = self.cli("show version", cached=True)
             match = self.rx_ver.search(c)
@@ -165,7 +164,6 @@ class Script(BaseScript):
                     raise self.NotSupportedError()
         return objects
 
-
     def get_transceivers(self, cmd):
         try:
             # Get phy interfaces
@@ -173,7 +171,7 @@ class Script(BaseScript):
             objects = []
             for s in i.split("\n"):
                 if (not s or "BaseTX" in s or s.startswith("Po")
-                or "No Transceiver" in s):
+                    or "No Transceiver" in s):
                     continue
                 else:
                     t_num = s.split()[0].split("/")[-1]
@@ -201,9 +199,9 @@ class Script(BaseScript):
                 if v and "SYSTEMS" not in v.group("ven"):
                     t_vendor = v.group("ven")
                 elif ("SYSTEMS" in match.group("t_vendor").upper()
-                    and "CISCO" in match.group("t_vendor").upper()):
-                        # Different variations of "CISCO@/-/_SYSTEMS" vendor
-                        t_vendor = "CISCO"
+                      and "CISCO" in match.group("t_vendor").upper()):
+                    # Different variations of "CISCO@/-/_SYSTEMS" vendor
+                    t_vendor = "CISCO"
                 else:
                     # Others vendors
                     t_vendor = match.group("t_vendor").upper().strip()
@@ -220,8 +218,8 @@ class Script(BaseScript):
                     pid = self.get_transceiver_pid(match.group("t_part_no"))
                 else:
                     if ("GBIC" in match.group("t_part_no") and
-                       "Gi" in int):
-                            pid = self.get_transceiver_pid("1000BASE" + match.group("t_part_no")[5:].strip())
+                                "Gi" in int):
+                        pid = self.get_transceiver_pid("1000BASE" + match.group("t_part_no")[5:].strip())
                     else:
                         if "NONAME" in t_vendor and self.rx_trans.search(descr):
                             pid = self.get_transceiver_pid(descr)
@@ -232,7 +230,6 @@ class Script(BaseScript):
                 return None, None, None, None
         except self.CLISyntaxError:
             return None, None, None, None
-
 
     def get_type(self, name, pid, descr, lo):
         """
@@ -275,7 +272,7 @@ class Script(BaseScript):
             else:
                 number = None
             if pid in ("", "N/A", "Unspecified") or self.rx_trans.search(pid) \
-            or len(list(groupby(pid))) == 1:
+                    or len(list(groupby(pid))) == 1:
                 # Non-Cisco transceivers
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
@@ -285,7 +282,7 @@ class Script(BaseScript):
             else:
                 # Normalization of pids "GBIC_LX/LH/BX"
                 if (pid.startswith("GBIC_") and ("gigabit" in descr.lower()
-                or "gigabit" in name.lower())):
+                                                 or "gigabit" in name.lower())):
                     pid = self.get_transceiver_pid("1000BASE" + pid[5:])
                 return "XCVR", number, pid
         elif ("Motherboard" in name or "motherboard" in name
@@ -308,8 +305,8 @@ class Script(BaseScript):
             return "CHASSIS", self.slot_id, pid
         elif (("SUP" in pid or "S2U" in pid)
               and "supervisor" in descr):
-                # Sup2
-                return "SUP", self.slot_id, pid
+            # Sup2
+            return "SUP", self.slot_id, pid
         elif name.startswith("module "):
             # Linecards or supervisors
             if (pid.startswith("RSP")
@@ -321,10 +318,10 @@ class Script(BaseScript):
                     # 2-port 100BASE-TX Fast Ethernet port adapter
                     pid = "CISCO7100-MB"
                 if pid in ("ASR1001", "ASR1001-X"):
-                    return "RP", self.slot_id, pid+"-RP"
+                    return "RP", self.slot_id, pid + "-RP"
                 return "MOTHERBOARD", self.slot_id, pid
         elif ((pid.startswith("WS-X64") or pid.startswith("WS-X67")
-              or pid.startswith("WS-X65")) and "port" in descr):
+               or pid.startswith("WS-X65")) and "port" in descr):
             return "LINECARD", self.slot_id, pid
         elif (((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
                and "Supervisor Engine" in descr)
@@ -370,8 +367,8 @@ class Script(BaseScript):
               or pid.startswith("VWIC-") or pid.startswith("VWIC2-")
               or pid.startswith("EHWIC-") or pid.startswith("VWIC3-")
               or pid.startswith("VIC2-") or pid.startswith("VIC3-")):
-                # DaughterCard
-                return "DCS", self.slot_id, pid
+            # DaughterCard
+            return "DCS", self.slot_id, pid
         elif pid.startswith("AIM-"):
             # Network Module
             return "AIM", self.slot_id, pid

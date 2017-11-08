@@ -6,14 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django Modules
-from django.utils.translation import ugettext_lazy as _
 from django import forms
 from django.db.models import Q
+# Django Modules
+from django.utils.translation import ugettext_lazy as _
+from noc.ip.models import VRF, Prefix
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.validators import *
-from noc.ip.models import VRF, Prefix
 from noc.main.models import CustomField
 
 
@@ -55,7 +55,7 @@ class ReportAllocated(SimpleReport):
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_row(p):
             r = [p.prefix, p.state.name,
-                unicode(p.vc) if p.vc else ""]
+                 unicode(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
@@ -92,4 +92,4 @@ class ReportAllocated(SimpleReport):
             columns=columns,
             data=[get_row(p)
                   for p in prefix.children_set.filter(q).order_by("prefix")],
-        enumerate=True)
+            enumerate=True)

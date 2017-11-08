@@ -10,14 +10,15 @@
 import datetime
 import itertools
 import operator
-from cachetools import TTLCache, cachedmethod
 from collections import defaultdict
+
+from cachetools import TTLCache, cachedmethod
 from django.db import connection
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_timedelta
-from noc.core.translation import ugettext as _
+from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
 
 
@@ -25,6 +26,7 @@ class PoolConvert(object):
     """
     Convert PoolID to PoolName.
     """
+
     def __init__(self):
         self.convert = self.load()
 

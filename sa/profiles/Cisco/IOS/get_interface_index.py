@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetifindex import IGetIfIndex
-import re
 
 
 class Script(BaseScript):

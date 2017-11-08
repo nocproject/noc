@@ -6,15 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.lib.app.application import view
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication
-from noc.lib.app.application import view
-from noc.core.translation import ugettext as _
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.commandsnippet import CommandSnippet
-from noc.sa.models.action import Action
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     DictParameter)
+from noc.sa.models.action import Action
+from noc.sa.models.commandsnippet import CommandSnippet
+from noc.sa.models.managedobject import ManagedObject
 
 
 class RunCommandsApplication(ExtApplication):

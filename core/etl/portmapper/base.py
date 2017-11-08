@@ -28,6 +28,7 @@ class BasePortMapper(object):
         """
         Process @match decorators
         """
+
         def __new__(mcs, name, bases, attrs):
             n = type.__new__(mcs, name, bases, attrs)
             for m in dir(n):

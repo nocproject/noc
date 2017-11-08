@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -47,7 +48,7 @@ class Script(BaseScript):
         for match in self.rx_vlan_ubr.finditer(vlans):
             r += [{
                 "vlan_id": int(match.group("vlan_id")),
-                 "name": match.group("name")
+                "name": match.group("name")
             }]
         return r
 
@@ -60,7 +61,7 @@ class Script(BaseScript):
         re.MULTILINE)
 
     @BaseScript.match(platform__regex=r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
-        r"C[23][69]00[a-z]?$|C8[7859]0|C1700|C18[01]X|C1900|C2951|ASR\d+)")
+                                      r"C[23][69]00[a-z]?$|C8[7859]0|C1700|C18[01]X|C1900|C2951|ASR\d+)")
     def execute_vlan_switch(self):
         try:
             vlans = self.cli("show vlan-switch")

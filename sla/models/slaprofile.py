@@ -6,19 +6,20 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField, BooleanField, FloatField, ReferenceField, ListField,
     EmbeddedDocumentField, IntField)
-import cachetools
+from noc.lib.nosql import ForeignKeyField
 # NOC modules
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
-from noc.lib.nosql import ForeignKeyField
 
 id_lock = Lock()
 

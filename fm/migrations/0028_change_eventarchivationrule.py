@@ -4,7 +4,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.create_unique('fm_eventarchivationrule', ['event_class_id', 'action'])
         try:

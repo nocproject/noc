@@ -8,11 +8,13 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
-rx_interface_status = re.compile(r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)
+rx_interface_status = re.compile(r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$",
+                                 re.IGNORECASE)
 rx_interface_status = re.compile(r"^(?P<interface>\S+).+\s+(?P<status>up|down)\s+.*$", re.IGNORECASE)
 
 
@@ -31,7 +33,7 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
                     # ifOperStatus up(1)
-                    if re.match("^[0-9]+$",n):
+                    if re.match("^[0-9]+$", n):
                         n = "Vlan" + n
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r

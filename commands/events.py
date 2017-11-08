@@ -6,25 +6,27 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import hashlib
 # Python modules
 import re
-import hashlib
 from htmlentitydefs import name2codepoint
+
 # Third-party modules
 from bson import ObjectId
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.profile import Profile
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
-from noc.lib.validators import is_oid
 from noc.lib.escape import json_escape
+from noc.lib.validators import is_oid
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.profile import Profile
 
 name2codepoint["#39"] = 39
 rx_cp = re.compile("&(%s);" % "|".join(name2codepoint))
+
 
 def unescape(s):
     """
@@ -113,14 +115,14 @@ class Command(BaseCommand):
                     continue
             if trap_oid:
                 if ("source" in e.raw_vars and
-                    e.raw_vars["source"] == "SNMP Trap" and
-                    "1.3.6.1.6.3.1.1.4.1.0" in e.raw_vars and
+                            e.raw_vars["source"] == "SNMP Trap" and
+                            "1.3.6.1.6.3.1.1.4.1.0" in e.raw_vars and
                             e.raw_vars["1.3.6.1.6.3.1.1.4.1.0"] == trap_oid):
                     yield e
             elif syslog_re:
                 if ("source" in e.raw_vars and
-                    e.raw_vars["source"] == "syslog" and
-                    "message" in e.raw_vars and
+                            e.raw_vars["source"] == "syslog" and
+                            "message" in e.raw_vars and
                         syslog_re.search(e.raw_vars["message"])):
                     yield e
             else:
@@ -192,8 +194,8 @@ class Command(BaseCommand):
                 spool = "\n".join(s)
             else:
                 self.stdout.write("%s, %s, %s, %s\n" % (e.id, e.managed_object.name,
-                                          e.event_class.name,
-                                          subject))
+                                                        e.event_class.name,
+                                                        subject))
             if limit:
                 limit -= 1
                 if not limit:
@@ -216,6 +218,7 @@ class Command(BaseCommand):
                 limit -= 1
                 if not limit:
                     break
+
 
 if __name__ == "__main__":
     Command().run()

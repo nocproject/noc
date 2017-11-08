@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+
 ## NOC modules
 from base import BaseLoader
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
 class ManagedObjectProfileLoader(BaseLoader):

@@ -8,8 +8,10 @@
 
 # Python modules
 import logging
+
 # Django modules
 from django.template import Template, Context
+
 # NOC modules
 from base import BaseValidator
 

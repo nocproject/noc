@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -53,10 +54,10 @@ class Script(BaseScript):
                     i = i + 1
                     match = self.rx_bridge_int.search(br[i])
 
-## This will work only when name of bridge looks like: "'br'+vlan_id"
-## We need found more universal way for bind VLAN to bridge, but how???
-## Configuration file for vlans is in difirent place in eche
-## Linux distribution. Also I don't find any commands or records in /proc...
+                ## This will work only when name of bridge looks like: "'br'+vlan_id"
+                ## We need found more universal way for bind VLAN to bridge, but how???
+                ## Configuration file for vlans is in difirent place in eche
+                ## Linux distribution. Also I don't find any commands or records in /proc...
         r = []
         if mac is not None:
             mac = mac.lower()
@@ -88,7 +89,7 @@ class Script(BaseScript):
                     "mac": chassis,
                     "interfaces": [interfaces],
                     "type": typ,
-                    })
+                })
             return r
 
         for vlan_id in vlans:
@@ -119,5 +120,5 @@ class Script(BaseScript):
                     "mac": match.group("mac"),
                     "interfaces": [interfaces],
                     "type": typ,
-                    })
+                })
         return r

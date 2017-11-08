@@ -8,6 +8,7 @@
 
 # Python modules
 import os
+
 # NOC modules
 from noc.cm.facts.error import Error
 
@@ -41,6 +42,7 @@ class ValidatorRegistry(object):
             return
         handler = "%s.%s" % (c.__module__, c.__name__)
         self.validators[handler] = c
+
 
 validator_registry = ValidatorRegistry()
 
@@ -134,6 +136,7 @@ class BaseValidator(object):
         When can_run returns True new Validator fact
         is installed to engine
         """
+
         def check_match(value, expr):
             if isinstance(expr, (list, tuple)):
                 # List
@@ -211,6 +214,7 @@ class BaseValidator(object):
     def assert_error(self, type, obj=None, msg=None):
         self.engine.assert_fact(Error(type, obj=obj, msg=msg,
                                       rule=self.rule_id))
+
 
 #
 validator_registry.load_all()

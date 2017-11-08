@@ -8,11 +8,10 @@
 
 # Python modules
 import re
-import itertools
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):

@@ -8,11 +8,11 @@
 
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -23,21 +23,21 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     inttypes = {
-           "Et": "physical",    # Ethernet
-           "Fa": "physical",    # FastEthernet
-           "Gi": "physical",    # GigabitEthernet
-           "Lo": "loopback",    # Loopback
-           "Po": "aggregated",  # Port-channel/Portgroup
-           "Tu": "tunnel",      # Tunnel
-           "Vl": "SVI",         # Vlan
-           "oo": "management",  # oob
-           }
+        "Et": "physical",  # Ethernet
+        "Fa": "physical",  # FastEthernet
+        "Gi": "physical",  # GigabitEthernet
+        "Lo": "loopback",  # Loopback
+        "Po": "aggregated",  # Port-channel/Portgroup
+        "Tu": "tunnel",  # Tunnel
+        "Vl": "SVI",  # Vlan
+        "oo": "management",  # oob
+    }
 
     def execute(self):
 
         reply = [{"forwarding_instance": "default",
-            "type": "ip",
-            "interfaces": [],}]
+                  "type": "ip",
+                  "interfaces": [], }]
 
         interfaces = []
         # IPv4 interfaces:
@@ -50,13 +50,13 @@ class Script(BaseScript):
                 # skip gateway activity status for switch-mode
                 continue
             for key in self.inttypes.keys():
-                if re.match(key,iface,re.IGNORECASE):
+                if re.match(key, iface, re.IGNORECASE):
                     inttype = self.inttypes[key]
                     break
             status = row[2].strip()
             try:
                 admin_status = status.split("/")[0].lower() == 'up'
-                oper_status  = status.split("/")[1].lower() == 'up'
+                oper_status = status.split("/")[1].lower() == 'up'
             except:
                 # just blind guess for some models like sf300
                 # that haven't command to show vlan interface status
@@ -73,8 +73,8 @@ class Script(BaseScript):
                     "oper_status": oper_status,
                     "enabled_afi": ["IPv4"],
                     "ipv4_addresses": [ipv4],
-                    }],
-                }
+                }],
+            }
             interfaces.append(interface)
 
         # TODO: ipv6 interfaces
@@ -89,7 +89,7 @@ class Script(BaseScript):
                 # skip header for Port-Channel section
                 continue
             for key in self.inttypes.keys():
-                if re.match(key,iface,re.IGNORECASE):
+                if re.match(key, iface, re.IGNORECASE):
                     inttype = self.inttypes[key]
                     break
             oper_status = row[6].strip().lower() == 'up'
@@ -106,7 +106,9 @@ class Script(BaseScript):
             phys_int.append(interface)
 
         # refine admin status:
-        show_int_conf = self.cli("show interfaces configuration",list_re=re.compile(r"^(?P<name>\S+)\s+(?P<type>\S+)\s+((?P<duplex>\S+)\s+)?(?P<speed>\S+)\s+(?P<neg>\S+)\s+(?P<flow>\S+)\s+(?P<admin_state>(up|down))\s*((?P<back_pressure>\S+)\s+(?P<mdix_mode>\S+)\s*)?$",re.IGNORECASE))
+        show_int_conf = self.cli("show interfaces configuration", list_re=re.compile(
+            r"^(?P<name>\S+)\s+(?P<type>\S+)\s+((?P<duplex>\S+)\s+)?(?P<speed>\S+)\s+(?P<neg>\S+)\s+(?P<flow>\S+)\s+(?P<admin_state>(up|down))\s*((?P<back_pressure>\S+)\s+(?P<mdix_mode>\S+)\s*)?$",
+            re.IGNORECASE))
         for interface in show_int_conf:
             iface = self.profile.convert_interface_name(interface["name"])
             for key in phys_int:
@@ -132,7 +134,7 @@ class Script(BaseScript):
             found = False
             for i in interfaces:
                 if i["name"] == interface["name"]:
-                    found = True # already exists
+                    found = True  # already exists
             if not found:
                 interfaces.append(interface)
 

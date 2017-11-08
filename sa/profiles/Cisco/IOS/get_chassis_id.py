@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.mac import MAC
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -91,7 +92,7 @@ class Script(BaseScript):
         v = self.cli("show diag chassis eeprom detail")
         macs = []
         for f, t in [(mac, MAC(mac).shift(int(count) - 1))
-                for mac, count in self.rx_iosxe.findall(v)]:
+                     for mac, count in self.rx_iosxe.findall(v)]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
@@ -114,7 +115,7 @@ class Script(BaseScript):
         v = self.cli("show c%s | i MAC" % self.version["platform"])
         macs = []
         for f, t in [(mac, MAC(mac).shift(int(count) - 1))
-                for count, mac in self.rx_7200.findall(v)]:
+                     for count, mac in self.rx_7200.findall(v)]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:

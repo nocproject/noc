@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IRemoveVlan
 
     def execute(self, vlan_id):
-        for v in  self.scripts.get_vlans():
+        for v in self.scripts.get_vlans():
             if v["vlan_id"] == vlan_id:
                 with self.configure():
                     self.cli("no vlan %s" % v["vlan_id"])

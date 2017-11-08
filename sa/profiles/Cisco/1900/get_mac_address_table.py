@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-import noc.sa.profiles
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
+
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 rx_line = re.compile(
     r"^(?P<mac>\S+)\s+(?P<interface>\S+ \d\/\d+)\s+(?P<type>\S+)\s+All")

@@ -8,25 +8,28 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import itertools
 import logging
-import time
 import random
-import threading
 import sys
+import threading
+import time
+
+import six
 # Third-party modules
 import tornado.concurrent
 import tornado.gen
 import ujson
-import six
+from noc.config import config
+from noc.core.http.client import fetch
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.perf import metrics
+from noc.core.span import Span, get_current_span
+
 from .client import (RPCError, RPCNoService, RPCHTTPError,
                      RPCException, RPCRemoteError)
-from noc.core.http.client import fetch
-from noc.core.perf import metrics
-from noc.config import config
-from noc.core.span import Span, get_current_span
 
 logger = logging.getLogger(__name__)
 

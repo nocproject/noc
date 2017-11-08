@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -28,7 +29,7 @@ class Script(BaseScript):
                          "^  Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
                          "^  Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
                          "^  Trunking VLANs Allowed: (?P<vlans>.+?)$",
-                         #"Pruning VLANs Enabled:",
+                         # "Pruning VLANs Enabled:",
                          re.MULTILINE | re.DOTALL)
 
     rx_body_name = re.compile(r"^(?P<interface>\S+).+", re.MULTILINE)

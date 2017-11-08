@@ -10,5 +10,6 @@
 class ConnectionError(Exception):
     """Failed to connect"""
 
+
 class ModelDataError(Exception):
     """ModelInterface violation"""

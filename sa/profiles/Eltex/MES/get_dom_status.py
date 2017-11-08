@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -23,8 +24,8 @@ class Script(BaseScript):
     def execute(self, interface=None):
         cmd = "show fiber-ports optical-transceiver detailed"
         if interface is not None:
-            cmd = "show fiber-ports optical-transceiver interface %s detailed"\
-                % interface
+            cmd = "show fiber-ports optical-transceiver interface %s detailed" \
+                  % interface
         try:
             v = self.cli(cmd)
         except self.CLISyntaxError:

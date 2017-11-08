@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = \
         r"% invalid input |% Ambiguous command:|% Incomplete command."
-#    command_disable_pager = "terminal length 0"
+    #    command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "exit"

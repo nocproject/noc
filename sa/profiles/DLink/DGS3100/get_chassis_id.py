@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -17,7 +18,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
     rx_mac = re.compile(r"^MAC Address\s+\:\s+(?P<mac>\S+)\s*$",
-        re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         v = self.cli("show switch", cached=True)

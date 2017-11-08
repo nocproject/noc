@@ -8,20 +8,21 @@
 
 # Third-party modules
 from mongoengine import Q
+from noc.config import config
+from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.subinterface import SubInterface
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
-    DocumentParameter, ModelParameter)
+from noc.lib.text import split_alnum
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
+from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
+                                    DocumentParameter, ModelParameter)
+from noc.sa.models.managedobject import ManagedObject
 from noc.vc.models.vcdomain import VCDomain
-from noc.lib.text import split_alnum
-from noc.core.translation import ugettext as _
-from noc.config import config
+
 
 class InterfaceAppplication(ExtApplication):
     """
@@ -39,13 +40,14 @@ class InterfaceAppplication(ExtApplication):
     }
 
     @view(url="^(?P<managed_object>\d+)/$", method=["GET"],
-        access="view", api=True)
+          access="view", api=True)
     def api_get_interfaces(self, request, managed_object):
         """
         GET interfaces
         :param managed_object:
         :return:
         """
+
         def sorted_iname(s):
             return sorted(s, key=lambda x: split_alnum(x["name"]))
 
@@ -83,7 +85,7 @@ class InterfaceAppplication(ExtApplication):
                 # Broadcast
                 label = ", ".join(
                     "%s:%s" % (ii.managed_object.name, ii.name)
-                               for ii in link.other(i))
+                    for ii in link.other(i))
             return {
                 "id": str(link.id),
                 "label": label
@@ -118,8 +120,8 @@ class InterfaceAppplication(ExtApplication):
                 "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i)
             } for i in
-              Interface.objects.filter(managed_object=o.id,
-                                       type="physical")
+            Interface.objects.filter(managed_object=o.id,
+                                     type="physical")
         ]
         # LAG
         lag = [
@@ -140,8 +142,8 @@ class InterfaceAppplication(ExtApplication):
                 "vc_domain__label": unicode(i.vc_domain) if i.vc_domain else None,
                 "row_class": get_style(i)
             } for i in
-              Interface.objects.filter(managed_object=o.id,
-                                       type="aggregated")
+            Interface.objects.filter(managed_object=o.id,
+                                     type="aggregated")
         ]
         # L2 interfaces
         l2 = [
@@ -151,8 +153,8 @@ class InterfaceAppplication(ExtApplication):
                 "untagged_vlan": i.untagged_vlan,
                 "tagged_vlans": i.tagged_vlans
             } for i in
-              SubInterface.objects.filter(managed_object=o.id,
-                  enabled_afi="BRIDGE")
+            SubInterface.objects.filter(managed_object=o.id,
+                                        enabled_afi="BRIDGE")
         ]
         # L3 interfaces
         q = Q(enabled_afi="IPv4") | Q(enabled_afi="IPv6")
@@ -166,7 +168,7 @@ class InterfaceAppplication(ExtApplication):
                 "vlan": i.vlan_ids,
                 "vrf": i.forwarding_instance.name if i.forwarding_instance else ""
             } for i in
-              SubInterface.objects.filter(managed_object=o.id).filter(q)
+            SubInterface.objects.filter(managed_object=o.id).filter(q)
         ]
         return {
             "l1": sorted_iname(l1),
@@ -176,11 +178,11 @@ class InterfaceAppplication(ExtApplication):
         }
 
     @view(url="^link/$", method=["POST"],
-        validate={
-            "type": StringParameter(choices=["ptp"]),
-            "interfaces": ListOfParameter(element=DocumentParameter(Interface))
-        },
-        access="link", api=True)
+          validate={
+              "type": StringParameter(choices=["ptp"]),
+              "interfaces": ListOfParameter(element=DocumentParameter(Interface))
+          },
+          access="link", api=True)
     def api_link(self, request, type, interfaces):
         if type == "ptp":
             if len(interfaces) == 2:
@@ -195,7 +197,7 @@ class InterfaceAppplication(ExtApplication):
         }
 
     @view(url="^unlink/(?P<iface_id>[0-9a-f]{24})/$", method=["POST"],
-        access="link", api=True)
+          access="link", api=True)
     def api_unlink(self, request, iface_id):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
@@ -213,7 +215,7 @@ class InterfaceAppplication(ExtApplication):
             }
 
     @view(url="^unlinked/(?P<object_id>\d+)/$", method=["GET"],
-        access="link", api=True)
+          access="link", api=True)
     def api_unlinked(self, request, object_id):
         def get_label(i):
             if i.description:
@@ -223,16 +225,16 @@ class InterfaceAppplication(ExtApplication):
 
         o = self.get_object_or_404(ManagedObject, id=int(object_id))
         r = [{"id": str(i.id), "label": get_label(i)}
-            for i in Interface.objects.filter(managed_object=o.id,
-                                        type="physical").order_by("name")
-            if not i.link]
+             for i in Interface.objects.filter(managed_object=o.id,
+                                               type="physical").order_by("name")
+             if not i.link]
         return sorted(r, key=lambda x: split_alnum(x["label"]))
 
     @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_profile/$",
-        validate={
-            "profile": DocumentParameter(InterfaceProfile)
-        },
-        method=["POST"], access="profile", api=True)
+          validate={
+              "profile": DocumentParameter(InterfaceProfile)
+          },
+          method=["POST"], access="profile", api=True)
     def api_change_profile(self, request, iface_id, profile):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
@@ -244,10 +246,10 @@ class InterfaceAppplication(ExtApplication):
         return True
 
     @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_state/$",
-        validate={
-            "state": ModelParameter(ResourceState)
-        },
-        method=["POST"], access="profile", api=True)
+          validate={
+              "state": ModelParameter(ResourceState)
+          },
+          method=["POST"], access="profile", api=True)
     def api_change_state(self, request, iface_id, state):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
@@ -258,10 +260,10 @@ class InterfaceAppplication(ExtApplication):
         return True
 
     @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_project/$",
-        validate={
-            "project": ModelParameter(Project, required=False)
-        },
-        method=["POST"], access="profile", api=True)
+          validate={
+              "project": ModelParameter(Project, required=False)
+          },
+          method=["POST"], access="profile", api=True)
     def api_change_project(self, request, iface_id, project):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:
@@ -272,10 +274,10 @@ class InterfaceAppplication(ExtApplication):
         return True
 
     @view(url="^l1/(?P<iface_id>[0-9a-f]{24})/change_vc_domain/$",
-        validate={
-            "vc_domain": ModelParameter(VCDomain, required=False)
-        },
-        method=["POST"], access="profile", api=True)
+          validate={
+              "vc_domain": ModelParameter(VCDomain, required=False)
+          },
+          method=["POST"], access="profile", api=True)
     def api_change_vc_domain(self, request, iface_id, vc_domain):
         i = Interface.objects.filter(id=iface_id).first()
         if not i:

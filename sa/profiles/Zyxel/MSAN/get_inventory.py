@@ -5,14 +5,14 @@
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
- 
+
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
@@ -53,7 +53,7 @@ class Script(BaseScript):
         version = self.scripts.get_version()
         if slots > 1:
             if version["platform"] not in [
-                    "IES-2000", "IES-2000M", "IES-3000", "IES-3000M"
+                "IES-2000", "IES-2000M", "IES-3000", "IES-3000M"
             ]:
                 for i in range(1, slots):
                     match = self.rx_slot.search(self.cli("lcman show %s" % i))

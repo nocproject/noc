@@ -8,7 +8,6 @@
 import datetime
 
 from django.utils.dateformat import DateFormat
-
 from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 
 
@@ -21,6 +20,7 @@ from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 #
 class Macro(MacroBase):
     name = "now"
+
     @classmethod
     def handle(cls, args, text):
         if "format" in args:

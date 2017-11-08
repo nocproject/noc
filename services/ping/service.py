@@ -7,23 +7,25 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import functools
-import time
-import datetime
+import os
 import socket
 import struct
-import os
+import time
+
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
-from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
-from probesetting import ProbeSetting
+from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.perf import metrics
+from noc.core.service.base import Service
+
+from probesetting import ProbeSetting
 
 
 class PingService(Service):
@@ -129,6 +131,7 @@ class PingService(Service):
         """
         Periodic task to request object mappings
         """
+
         def is_my_task(d):
             x = struct.unpack("!L", socket.inet_aton(d))[0]
             return x % self.total_slots == self.slot_number
@@ -202,6 +205,7 @@ class PingService(Service):
         """
         Perform ping check and set result
         """
+
         def q(s):
             return s.replace(" ", "\\ ").replace(",", "\\,").replace("=", "\\=")
 

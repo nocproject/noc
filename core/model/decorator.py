@@ -9,6 +9,7 @@
 # Third-party modules
 from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals
+
 # NOC modules
 from models import get_model
 
@@ -161,6 +162,7 @@ def on_delete_check(check=None, clean=None, delete=None):
 
     :return:
     """
+
     def on_delete_handler(sender, instance=None, *args, **kwargs):
         if not instance:
             # If mongo document instance

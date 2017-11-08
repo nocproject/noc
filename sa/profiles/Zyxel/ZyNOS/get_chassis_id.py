@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -19,7 +20,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_chassis_id = re.compile(r"Ethernet Address\s+:\s*(?P<id>\S+)",
-                            re.IGNORECASE | re.MULTILINE)
+                               re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         v = self.cli("show system-information")

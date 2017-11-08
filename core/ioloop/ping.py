@@ -6,24 +6,25 @@
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
+import errno
+import functools
+import itertools
+import logging
+import os
 # Python modules
 import socket
-from errno import EINTR, EAGAIN
 import struct
-import os
-import itertools
-import functools
-import errno
-import logging
-# Third-party modules
-from tornado.ioloop import IOLoop
-import tornado.gen
+from errno import EINTR, EAGAIN
+
 import tornado.concurrent
-from tornado.util import errno_from_exception
+import tornado.gen
+from noc.config import config
+from noc.core.perf import metrics
 # NOC modules
 from noc.speedup.ip import build_icmp_echo_request
-from noc.core.perf import metrics
-from noc.config import config
+# Third-party modules
+from tornado.ioloop import IOLoop
+from tornado.util import errno_from_exception
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +85,7 @@ class PingSocket(object):
         """
         Set send and receive buffers
         """
+
         def set_buffer_size(sock, direction, start_size):
             s = start_size
             while s:
@@ -150,7 +152,8 @@ class PingSocket(object):
             # Check for negative RTT
             if rtt < 0:
                 metrics["ping_time_stepbacks"] += 1
-                logger.info("[%s] Negative RTT detected (%s). Possible timer stepback. Check system time synchronization", rtt)
+                logger.info(
+                    "[%s] Negative RTT detected (%s). Possible timer stepback. Check system time synchronization", rtt)
                 rtt = None
             # Resolve future
             f.set_result(rtt)
@@ -253,7 +256,7 @@ class Ping4Socket(PingSocket):
             return
         icmp_header = msg[20:28]
         (icmp_type, icmp_code, icmp_checksum,
-            req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
+         req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
         if icmp_type == ICMPv4_ECHOREPLY:
             rtt = None
             if len(msg) > 36:

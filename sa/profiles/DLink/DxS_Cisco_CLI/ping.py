@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-import re
 
 
 class Script(BaseScript):
@@ -21,7 +22,7 @@ class Script(BaseScript):
         r" ms)?", re.MULTILINE | re.DOTALL)
 
     def execute(self, address, count=None, source_address=None, size=None, \
-        df=None):
+                df=None):
         if ":" in address:
             cmd = "ping ipv6 %s" % address
             if count:
@@ -39,15 +40,15 @@ class Script(BaseScript):
             if size:
                 cmd += " length %d" % int(size)
         # Don't implemented, may be in future firmware revisions ?
-        #if df:
+        # if df:
         #    cmd+=" df-bit"
         match = self.rx_result.search(self.cli(cmd))
         if not match:
             raise self.NotSupportedError()
         return {
-                "success": int(match.group("success")),
-                "count": int(match.group("count")),
-                "min": match.group("min"),
-                "avg": match.group("avg"),
-                "max": match.group("max")
-            }
+            "success": int(match.group("success")),
+            "count": int(match.group("count")),
+            "min": match.group("min"),
+            "avg": match.group("avg"),
+            "max": match.group("max")
+        }

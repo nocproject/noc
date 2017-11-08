@@ -9,7 +9,6 @@
 ## Third-party modules
 from django.db.backends.postgresql_psycopg2.base import \
     DatabaseWrapper as PGDatabaseWrapper
-from django.conf import settings
 
 
 class DatabaseWrapper(PGDatabaseWrapper):

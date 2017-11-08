@@ -9,11 +9,11 @@
 # Python Modules
 import datetime
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.core.validators import MaxLengthValidator
 from django.db import models
-from django.db.models.signals import pre_save, pre_delete,\
-                                     post_save, post_delete
+from django.db.models.signals import pre_save, pre_delete, \
+    post_save, post_delete
 from django.utils.translation import ugettext_lazy as _
 from noc import settings
 from noc.lib.periodic import periodic_registry
@@ -36,6 +36,7 @@ class SystemNotification(models.Model):
     """
     System Notifications
     """
+
     class Meta:
         verbose_name = "System Notification"
         verbose_name_plural = "System Notifications"
@@ -63,6 +64,7 @@ class SystemNotification(models.Model):
         if n:
             n.notify(subject=subject, body=body, link=link)
 
+
 from userprofile import UserProfile, UserProfileManager
 from userprofilecontact import UserProfileContact
 from dbtrigger import DBTrigger, model_choices
@@ -79,9 +81,9 @@ class Schedule(models.Model):
     time_pattern = models.ForeignKey(TimePattern,
                                      verbose_name=_("Time Pattern"))
     run_every = models.PositiveIntegerField(_("Run Every (secs)"),
-                                     default=86400)
+                                            default=86400)
     timeout = models.PositiveIntegerField(_("Timeout (secs)"),
-                                     null=True, blank=True)
+                                          null=True, blank=True)
     last_run = models.DateTimeField(_("Last Run"), blank=True, null=True)
     last_status = models.BooleanField(_("Last Status"), default=True)
 
@@ -104,8 +106,8 @@ class Schedule(models.Model):
         now = datetime.datetime.now()
         return [s for s in Schedule.objects.filter(is_enabled=True)
                 if (s.time_pattern.match(now) and
-                   (s.last_run is None or
-                    s.last_run + datetime.timedelta(seconds=s.run_every) <= now))]
+                    (s.last_run is None or
+                     s.last_run + datetime.timedelta(seconds=s.run_every) <= now))]
 
     @classmethod
     def reschedule(cls, name, days=0, minutes=0, seconds=0):
@@ -116,6 +118,7 @@ class Schedule(models.Model):
                                          seconds=seconds))
         t.save()
 
+
 from prefixtable import PrefixTable, PrefixTablePrefix
 from template import Template
 from systemtemtemplate import SystemTemplate
@@ -125,6 +128,7 @@ class Checkpoint(models.Model):
     """
     Checkpoint is a marked moment in time
     """
+
     class Meta:
         verbose_name = _("Checkpoint")
         verbose_name_plural = _("Checkpoints")
@@ -147,6 +151,7 @@ class Checkpoint(models.Model):
                         private=private)
         cp.save()
         return cp
+
 
 from favorites import Favorites
 from tag import Tag

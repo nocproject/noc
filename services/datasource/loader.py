@@ -8,8 +8,10 @@
 
 # Python modules
 from __future__ import absolute_import
-import os
+
 import inspect
+import os
+
 # NOC modules
 from .datasources.base import BaseDataSource
 
@@ -44,9 +46,9 @@ def load_datasources():
             for n in dir(m):
                 o = getattr(m, n)
                 if (
-                    inspect.isclass(o) and
-                    issubclass(o, BaseDataSource) and
-                    o.__module__ == m.__name__
+                                inspect.isclass(o) and
+                                issubclass(o, BaseDataSource) and
+                                o.__module__ == m.__name__
                 ):
                     DS_MAP[o.name] = o
                     break

@@ -8,7 +8,7 @@
 
 # Python modules
 import re
-import datetime
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
@@ -37,5 +37,5 @@ class Script(BaseScript):
                     "username": name.group("username"),
                     "class": user_class,
                     "is_active": True
-                    }]
+                }]
         return r

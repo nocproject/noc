@@ -7,11 +7,13 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 import re
 
-rx_interface_status = re.compile(r"^(?P<interface>\S+\s+\S+)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
+
+rx_interface_status = re.compile(
+    r"^(?P<interface>\S+\s+\S+)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)
 
 
 class Script(BaseScript):
@@ -25,7 +27,7 @@ class Script(BaseScript):
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"):
+                                                  "1.3.6.1.2.1.2.2.1.8"):
                     # ifOperStatus up(1)
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r

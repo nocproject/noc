@@ -9,9 +9,10 @@
 """
 # Python modules
 import re
-from collections import defaultdict
-from StringIO import StringIO
 import xml.etree.ElementTree as ElementTree
+from StringIO import StringIO
+from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError

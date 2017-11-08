@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -18,7 +19,7 @@ class Script(BaseScript):
     name = "MikroTik.RouterOS.get_version"
     cache = True
     interface = IGetVersion
-    #Some versions of Mikrotik return parameter values in quotes
+    # Some versions of Mikrotik return parameter values in quotes
     rx_ver = re.compile(
         r"version: (?P<q>\"?)(?P<version>\d+\.\d+(\.\d+)?)(?P=q).+board-name: (?P<qp>\"?)(?P<platform>\D+?.\S+?)(?P=qp)\n",
         re.MULTILINE | re.DOTALL)

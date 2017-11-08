@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableSection, SectionRow
 from noc.cm.validators.base import validator_registry
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, SectionRow
 
 
 class ReportvalidationmethodsApplication(SimpleReport):

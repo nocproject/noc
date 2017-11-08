@@ -6,28 +6,29 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
-from collections import defaultdict
-import datetime
-import uuid
 import threading
+import uuid
+from collections import defaultdict
+
+import clips
 # Third-party modules
 import six
-import clips
-from pymongo.errors import BulkWriteError
-from pymongo import UpdateOne, InsertOne, DeleteOne
 # NOC modules
 from noc.cm.facts.error import Error
 from noc.cm.facts.role import Role
-from noc.core.log import PrefixLoggerAdapter
+from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.validationpolicysettings import ValidationPolicySettings
-from noc.inv.models.interface import Interface as InvInterface
-from noc.inv.models.subinterface import SubInterface as InvSubInterface
 from noc.core.debug import error_report
 from noc.core.handler import get_handler
-from noc.cm.models.objectfact import ObjectFact
+from noc.core.log import PrefixLoggerAdapter
+from noc.inv.models.interface import Interface as InvInterface
+from noc.inv.models.subinterface import SubInterface as InvSubInterface
 from noc.lib.clipsenv import CLIPSEnv
+from pymongo import UpdateOne, InsertOne, DeleteOne
+from pymongo.errors import BulkWriteError
 
 logger = logging.getLogger(__name__)
 
@@ -463,6 +464,7 @@ class Engine(object):
             "?rx ?s",
             "(return (python-call py-match-re ?rx ?s))"
         )
+
 
 #
 from noc.cm.validators.base import BaseValidator

@@ -9,13 +9,13 @@
 # Python modules
 import logging
 import time
+
+from noc.config import config
 # NOC modules
 from noc.core.ioloop.udpserver import UDPServer
-from noc.lib.escape import fm_escape
-from noc.core.snmp.trap import decode_trap
 from noc.core.snmp.ber import DecodeError
-from noc.config import config
-
+from noc.core.snmp.trap import decode_trap
+from noc.lib.escape import fm_escape
 
 logger = logging.getLogger(__name__)
 

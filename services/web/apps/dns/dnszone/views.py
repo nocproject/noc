@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.dns.models.dnszone import DNSZone
+from noc.dns.models.dnszonerecord import DNSZoneRecord
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
-from noc.dns.models.dnszone import DNSZone
-from noc.dns.models.dnszonerecord import DNSZoneRecord
-from noc.core.translation import ugettext as _
 
 
 class DNSZoneApplication(ExtModelApplication):

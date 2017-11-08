@@ -10,6 +10,7 @@
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, BooleanField, DateTimeField)
 from noc.lib.nosql import PlainReferenceField
+
 # NOC modules
 from division import Division
 

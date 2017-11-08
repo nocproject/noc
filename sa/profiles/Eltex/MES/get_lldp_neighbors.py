@@ -8,12 +8,13 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.lib.text import parse_table
+from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):
@@ -147,8 +148,8 @@ class Script(BaseScript):
                 if match:
                     remote_chassis_id = match.group("dev_id")
                     if (
-                        is_ipv4(remote_chassis_id) or
-                        is_ipv6(remote_chassis_id)
+                                is_ipv4(remote_chassis_id) or
+                                is_ipv6(remote_chassis_id)
                     ):
                         remote_chassis_id_subtype = 5
                     elif is_mac(remote_chassis_id):

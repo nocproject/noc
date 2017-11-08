@@ -8,25 +8,28 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import operator
-import cachetools
 from threading import Lock
+
+import cachetools
+from django.db.models.aggregates import Count
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 ListField, BooleanField, IntField,
                                 EmbeddedDocumentField, LongField)
-from django.db.models.aggregates import Count
+from noc.core.bi.decorator import bi_sync
+from noc.core.defer import call_later
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.scheduler.job import Job
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.core.model.decorator import on_delete_check, on_save
-from noc.core.defer import call_later
-from noc.core.bi.decorator import bi_sync
+
 from .networksegmentprofile import NetworkSegmentProfile
-from noc.core.scheduler.job import Job
 
 id_lock = Lock()
 
@@ -290,6 +293,7 @@ class NetworkSegment(Document):
         Update summaries
         :return:
         """
+
         def update_dict(d1, d2):
             for k in d2:
                 if k in d1:

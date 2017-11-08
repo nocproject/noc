@@ -6,8 +6,9 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-#Noc module
+# Noc module
 from noc.core.profile.base import BaseProfile
+
 
 class Profile(BaseProfile):
     name = "Rotek.RTBS"

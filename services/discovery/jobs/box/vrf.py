@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.ip.models.vrf import VRF
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.ip.models.vrf import VRF
 
 
 class VRFCheck(DiscoveryCheck):

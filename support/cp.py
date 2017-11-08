@@ -6,14 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import ConfigParser
 # Python modules
 import logging
+# Python modules
+import os
+
 # Third-party modules
 import requests
 import ujson
-# Python modules
-import os
-import ConfigParser
 from noc.lib.version import (get_branch, get_tip,
                              get_os_brand, get_os_version,
                              get_versions)

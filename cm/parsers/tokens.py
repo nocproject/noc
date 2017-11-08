@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from pyparsing import (alphanums, Combine, Group, LineEnd, nums, Suppress, Word,
+from pyparsing import (alphanums, Combine, LineEnd, nums, Suppress, Word,
                        restOfLine)
 
 # Match \s+
@@ -29,4 +29,3 @@ OCTET = Word(nums, max=3)
 IPv4_ADDRESS = Combine(OCTET + "." + OCTET + "." + OCTET + "." + OCTET)
 # RD
 RD = Combine(Word(nums) + Word(":") + Word(nums))
-

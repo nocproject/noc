@@ -8,10 +8,11 @@
 
 # Python modules
 from __future__ import print_function
+
+from noc.main.models.language import Language
 # NOC modules
 from noc.main.models.refbook import RefBook as RB
 from noc.main.models.refbookfield import RefBookField
-from noc.main.models.language import Language
 
 lang_cache = {}
 
@@ -96,6 +97,7 @@ class Field(object):
     """
     RefBook fields
     """
+
     def __init__(self, name, description=None, is_required=True,
                  search_method=None):
         self.name = name

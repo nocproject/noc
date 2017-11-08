@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.main.models.pool import Pool
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.main.models.pool import Pool
 
 
 class PoolApplication(ExtDocApplication):

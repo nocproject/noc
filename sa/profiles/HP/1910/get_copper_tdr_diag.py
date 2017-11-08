@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
@@ -35,7 +36,7 @@ class Script(BaseScript):
         else:
             raise self.NotSupportedError()
         return {"pair": pair, "status": st, "distance_cm": int(distance),
-            "variance_cm": self.variance}
+                "variance_cm": self.variance}
 
     def execute(self, interface=None):
         r = []
@@ -56,7 +57,7 @@ class Script(BaseScript):
                         r.append({
                             "interface": iface['interface'],
                             "pairs": pairs
-                            })
+                        })
             else:
                 diag = self.cli("interface %s" % interface.replace('Ge ', 'GigabitEthernet '))
                 diag = self.cli("virtual-cable-test")
@@ -70,5 +71,5 @@ class Script(BaseScript):
                     r.append({
                         "interface": interface,
                         "pairs": pairs
-                        })
+                    })
         return r

@@ -9,7 +9,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.drop_column("sa_managedobject", "is_configuration_managed")
         db.drop_column("sa_managedobject", "repo_path")

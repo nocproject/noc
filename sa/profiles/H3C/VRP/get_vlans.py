@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -28,4 +29,4 @@ class Script(BaseScript):
         return [{
             "vlan_id": int(match.group("vlan_id")),
             "name": match.group("name")
-            } for match in self.rx_vlan_line_vrp3.finditer(vlans)]
+        } for match in self.rx_vlan_line_vrp3.finditer(vlans)]

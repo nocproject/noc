@@ -9,10 +9,11 @@
 
 # Python modules
 from xml.dom.minidom import Document
+
 # NOC modules
 from noc.core.fileutils import read_file
-from noc.lib.app.extapplication import ExtApplication, view
 from noc.gis.models import TileCache, Map
+from noc.lib.app.extapplication import ExtApplication, view
 
 
 class TMSApplication(ExtApplication):
@@ -66,7 +67,7 @@ class TMSApplication(ExtApplication):
         tmsv1.appendChild(title)
         # <Abstract>
         abstract = doc.createElement("Abstract")
-        abstract.appendChild(doc.createTextNode("NOC Tile Map Service. "\
+        abstract.appendChild(doc.createTextNode("NOC Tile Map Service. " \
                                                 "http://nocproject.org/"))
         tmsv1.appendChild(abstract)
         # <TileMaps>
@@ -103,7 +104,7 @@ class TMSApplication(ExtApplication):
             return self.response_bad_request("Invalid zoom")
         m = 2 ** zoom
         x = int(x)
-        y = m - 1 - int(y)   # Flip Y
+        y = m - 1 - int(y)  # Flip Y
         return self.render_tile(map, zoom, x, y)
 
     @view(url=r"^(?P<map>[0-9a-f]{24})/(?P<zoom>\d\d?)/(?P<x>\d+)/(?P<y>\d+).png",
@@ -136,6 +137,7 @@ class TMSApplication(ExtApplication):
         :param y: Y tile index [0 .. 2 ** zoom )
         :return:
         """
+
         def get_img(attr, path):
             try:
                 return getattr(self, attr)

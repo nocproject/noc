@@ -8,18 +8,18 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import pytest
-# NOC modules
-from noc.tests.util.jsonloader import json_loader
-from noc.services.classifier.ruleset import RuleSet
+from noc.config import config
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
-from noc.fm.models.eventclass import EventClass
-from noc.fm.models.activeevent import ActiveEvent
-from noc.config import config
-
+from noc.services.classifier.ruleset import RuleSet
+# NOC modules
+from noc.tests.util.jsonloader import json_loader
 
 COLLECTION_NAME = "test.events"
 DEFAULT_EVENT_CLASS = "Unknown | Default"

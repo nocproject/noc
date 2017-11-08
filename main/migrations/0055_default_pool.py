@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from south.db import db
 # NOC modules
 from noc.lib.nosql import get_db
+# Third-party modules
+from south.db import db
+
 
 class Migration:
     depends_on = [

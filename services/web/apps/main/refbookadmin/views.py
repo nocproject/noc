@@ -8,10 +8,10 @@
 # ---------------------------------------------------------------------
 """
 from django.contrib import admin
-from noc.lib.app.modelapplication import ModelApplication
-from noc.main.models.refbookfield import RefBookField
-from noc.main.models.refbook import RefBook
 from noc.core.translation import ugettext as _
+from noc.lib.app.modelapplication import ModelApplication
+from noc.main.models.refbook import RefBook
+from noc.main.models.refbookfield import RefBookField
 
 
 class RefBookFieldAdmin(admin.TabularInline):

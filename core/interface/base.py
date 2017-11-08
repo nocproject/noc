@@ -6,8 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
+
+from error import InterfaceTypeError
 
 
 class BaseInterface(object):

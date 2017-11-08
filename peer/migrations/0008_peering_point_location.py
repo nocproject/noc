@@ -5,14 +5,14 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from noc.peer.models import *
+from south.db import db
+
 
 class Migration:
-
     def forwards(self):
-        db.add_column("peer_peeringpoint","location",models.CharField("Location",max_length=64,blank=True,null=True))
-
+        db.add_column("peer_peeringpoint", "location",
+                      models.CharField("Location", max_length=64, blank=True, null=True))
 
     def backwards(self):
-        db.delete_column("peer_peeringpoint","location")
+        db.delete_column("peer_peeringpoint", "location")

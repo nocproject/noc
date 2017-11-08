@@ -8,15 +8,17 @@
 
 # Third-party modules
 from django.db import models
+from noc.core.model.fields import TextArrayField
+
 # NOC modules
 from refbook import RefBook
-from noc.core.model.fields import TextArrayField
 
 
 class RBDManader(models.Manager):
     """
     Ref Book Data Manager
     """
+
     # Order by first field
     def get_query_set(self):
         return super(RBDManader, self).get_query_set().extra(order_by=["main_refbookdata.value[1]"])
@@ -26,6 +28,7 @@ class RefBookData(models.Model):
     """
     Ref. Book Data
     """
+
     class Meta:
         app_label = "main"
         verbose_name = "Ref Book Data"

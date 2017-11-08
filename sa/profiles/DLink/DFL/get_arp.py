@@ -7,16 +7,18 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 
 class Script(BaseScript):
     name = "DLink.DFL.get_arp"
     interface = IGetARP
     rx_iface = re.compile(r"^ARP cache of iface (?P<interface>\S+)")
-    rx_line = re.compile(r"^\s+\S+\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+=\s+(?P<mac>\S+)\s+Expire=\d+$", re.MULTILINE)
+    rx_line = re.compile(r"^\s+\S+\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+=\s+(?P<mac>\S+)\s+Expire=\d+$",
+                         re.MULTILINE)
 
     def execute(self):
         r = []

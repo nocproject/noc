@@ -8,16 +8,19 @@
 
 # Python modules
 from __future__ import absolute_import
+
 from functools import reduce
-# Third-party modules
-from django.utils.translation import ugettext_lazy as _
+
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
+# Third-party modules
+from django.utils.translation import ugettext_lazy as _
+
+from .administrativedomain import AdministrativeDomain
+from .groupaccess import GroupAccess
 # NOC modules
 from .managedobjectselector import ManagedObjectSelector
-from .groupaccess import GroupAccess
-from .administrativedomain import AdministrativeDomain
 
 
 class UserAccess(models.Model):

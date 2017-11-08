@@ -13,13 +13,13 @@ from south.db import db
 class Migration:
     def forwards(self):
         ManagedObjectProfile = db.mock_model(model_name='ManagedObjectProfile',
-            db_table='sa_managedobjectprofile', db_tablespace='',
-            pk_field_name='id', pk_field_type=models.AutoField)
+                                             db_table='sa_managedobjectprofile', db_tablespace='',
+                                             pk_field_name='id', pk_field_type=models.AutoField)
         db.add_column("sa_managedobjectselector", "filter_object_profile",
-            models.ForeignKey(ManagedObjectProfile,
-                verbose_name="Filter by Object Profile", null=True,
-                blank=True))
+                      models.ForeignKey(ManagedObjectProfile,
+                                        verbose_name="Filter by Object Profile", null=True,
+                                        blank=True))
 
     def backwards(self):
         db.delete_column("sa_managedobjectselector",
-            "filter_object_profile_id")
+                         "filter_object_profile_id")

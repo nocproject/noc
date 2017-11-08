@@ -47,7 +47,8 @@ DAY_PATTERNS = [
     ),
     (
         RC(r"^(\d{2})\.(\d{2})\.(\d{4})-(\d{2})\.(\d{2})\.(\d{4})$"),
-        lambda from_day, from_month, from_year, to_day, to_month, to_year: "('%s%s%s' <= ('%%04d%%02d%%02d' %% (T.year, T.month, T.day)) <= '%s%s%s')" % (
+        lambda from_day, from_month, from_year, to_day, to_month,
+               to_year: "('%s%s%s' <= ('%%04d%%02d%%02d' %% (T.year, T.month, T.day)) <= '%s%s%s')" % (
             from_year, from_month, from_day, to_year, to_month, to_day
         )
     ),
@@ -158,13 +159,13 @@ class TimePattern(object):
             day_pattern = tp
             time_pattern = ""
         dpl = " or ".join([
-                              compile_pattern(DAY_PATTERNS, x.strip())
-                              for x in day_pattern.split(",") if x
-                              ])
+            compile_pattern(DAY_PATTERNS, x.strip())
+            for x in day_pattern.split(",") if x
+        ])
         tpl = " or ".join([
-                              compile_pattern(TIME_PATTERNS, x.strip())
-                              for x in time_pattern.split(",") if x
-                              ])
+            compile_pattern(TIME_PATTERNS, x.strip())
+            for x in time_pattern.split(",") if x
+        ])
         x = " and ".join(["(%s)" % x for x in [dpl, tpl] if x])
         if not x:
             return "True"

@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -25,7 +26,7 @@ class Script(BaseScript):
         r"Member\s*port\s*:\s*(\S*)\s*\nAdmin.\s*State\s*:\s*"
         r"(?P<admin_state>Enabled|Disabled)\s*\nLink\s*Status\s*:\s*"
         r"(?P<oper_status>Link\s*Up|Link\s*Down)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
     rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled")
     rx_lldp = re.compile(
@@ -124,7 +125,7 @@ class Script(BaseScript):
                 untagged_ports = self.expand_interface_range(
                     self.profile.open_brackets(match.group("untagged_ports")))
                 for p in members:
-                    if not(p in untagged_ports):
+                    if not (p in untagged_ports):
                         tagged_ports += [p]
                 vlans += [{
                     "vlan_id": int(match.group("vlan_id")),

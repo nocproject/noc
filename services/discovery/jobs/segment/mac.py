@@ -9,12 +9,13 @@
 # Python modules
 import datetime
 import logging
-# NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.sa.models.managedobject import ManagedObject
+
 from noc.core.clickhouse.connect import connection
 from noc.core.mac import MAC
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.sa.models.managedobject import ManagedObject
+# NOC modules
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class MACDiscoveryCheck(TopologyDiscoveryCheck):

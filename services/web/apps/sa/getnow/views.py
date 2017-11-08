@@ -8,11 +8,10 @@
 
 #  # NOC modules
 
-from noc.services.web.apps.sa.objectlist.views import ObjectListApplication
-from noc.lib.dateutils import humanize_distance
-from noc.sa.interfaces.base import ModelParameter
 from noc.core.scheduler.job import Job
 from noc.core.translation import ugettext as _
+from noc.lib.dateutils import humanize_distance
+from noc.services.web.apps.sa.objectlist.views import ObjectListApplication
 
 
 class GetNowApplication(ObjectListApplication):

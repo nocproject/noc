@@ -8,15 +8,18 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import datetime
 import time
+
+import six
+from django.db import models
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-import six
+from noc.core.model.fields import PickledField
+
 # NOC modules
 from .managedobject import ManagedObject
-from noc.core.model.fields import PickledField
 
 
 class MapTask(models.Model):
@@ -99,7 +102,7 @@ class MapTask(models.Model):
         sp = script.split(".")
         if (len(sp) != 3 or
                 not script.startswith(object.profile.name + ".") or
-                sp[-1] not in object.get_profile().scripts):
+                    sp[-1] not in object.get_profile().scripts):
             status = "F"
             result = {
                 "code": ERR_INVALID_SCRIPT,

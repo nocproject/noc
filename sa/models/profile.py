@@ -8,18 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
+import operator
 import os
 import threading
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
-import cachetools
 # NOC modules
 from noc.core.bi.decorator import bi_sync
-from noc.lib.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.core.profile.loader import loader, GENERIC_PROFILE
+from noc.lib.prettyjson import to_json
 
 id_lock = threading.Lock()
 

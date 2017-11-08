@@ -6,19 +6,20 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from threading import Lock
 import operator
 from itertools import izip
+# Python modules
+from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, UUIDField)
-import cachetools
+from noc.lib.nosql import ForeignKeyField
+from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
 # NOC modules
 from noc.main.models.style import Style
-from noc.lib.nosql import ForeignKeyField
-from noc.lib.text import quote_safe_path
-from noc.lib.prettyjson import to_json
 
 id_lock = Lock()
 
@@ -116,6 +117,7 @@ class AlarmSeverity(Document):
         Calculate absolute severity for given weight *w*
         :returns: severity as int
         """
+
         def find(weights, w):
             i = 0
             for i, mw in enumerate(weights):

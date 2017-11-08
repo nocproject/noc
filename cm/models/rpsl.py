@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import os
-import logging
+
 # NOC modules
 from object import Object
 

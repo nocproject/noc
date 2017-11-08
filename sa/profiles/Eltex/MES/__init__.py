@@ -33,31 +33,31 @@ class Profile(BaseProfile):
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     INTERFACE_TYPES = {
-        "as": "physical",    # Async
-        "at": "physical",    # ATM
+        "as": "physical",  # Async
+        "at": "physical",  # ATM
         "bv": "aggregated",  # BVI
         "bu": "aggregated",  # Bundle
         # "C": "physical",     # @todo: fix
-        "ca": "physical",    # Cable
-        "cd": "physical",    # CDMA Ix
-        "ce": "physical",    # Cellular
-        "et": "physical",    # Ethernet
-        "fa": "physical",    # FastEthernet
-        "gi": "physical",    # GigabitEthernet
-        "gr": "physical",    # Group-Async
-        "lo": "loopback",    # Loopback
+        "ca": "physical",  # Cable
+        "cd": "physical",  # CDMA Ix
+        "ce": "physical",  # Cellular
+        "et": "physical",  # Ethernet
+        "fa": "physical",  # FastEthernet
+        "gi": "physical",  # GigabitEthernet
+        "gr": "physical",  # Group-Async
+        "lo": "loopback",  # Loopback
         # "M": "management",   # @todo: fix
         "mf": "aggregated",  # Multilink Frame Relay
         "mu": "aggregated",  # Multilink-group interface
         "po": "aggregated",  # Port-channel/Portgroup
         # "R": "aggregated",   # @todo: fix
-        "sr": "physical",    # Spatial Reuse Protocol
-        "se": "physical",    # Serial
-        "te": "physical",    # TenGigabitEthernet
-        "fo": "physical",    # FortyGigabitEthernet
-        "tu": "tunnel",      # Tunnel
-        "vl": "SVI",         # VLAN, found on C3500XL
-        "xt": "SVI"          # Extended Tag ATM
+        "sr": "physical",  # Spatial Reuse Protocol
+        "se": "physical",  # Serial
+        "te": "physical",  # TenGigabitEthernet
+        "fo": "physical",  # FortyGigabitEthernet
+        "tu": "tunnel",  # Tunnel
+        "vl": "SVI",  # VLAN, found on C3500XL
+        "xt": "SVI"  # Extended Tag ATM
     }
 
     @classmethod

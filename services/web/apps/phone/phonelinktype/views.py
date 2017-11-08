@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app import ExtDocApplication, view
-from noc.phone.models.phonelinktype import PhoneLinkType
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app import ExtDocApplication
+from noc.phone.models.phonelinktype import PhoneLinkType
 
 
 class PhoneLinkTypeApplication(ExtDocApplication):

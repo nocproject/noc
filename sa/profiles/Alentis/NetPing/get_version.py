@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -39,10 +40,10 @@ class Script(BaseScript):
                     platform = match.group("platform")
                     version = match.group("version")
                 return {
-                        "vendor": "Alentis",
-                        "platform": platform,
-                        "version": version
-                        }
+                    "vendor": "Alentis",
+                    "platform": platform,
+                    "version": version
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -56,10 +57,10 @@ class Script(BaseScript):
         data = self.profile.var_data(self, "/setup_get.cgi")
 
         return {
-                "vendor": "Alentis",
-                "platform": platform,
-                "version": version,
-                "attributes": {
-                        "Serial Number": data["serialnum"]
-                    }
-                }
+            "vendor": "Alentis",
+            "platform": platform,
+            "version": version,
+            "attributes": {
+                "Serial Number": data["serialnum"]
+            }
+        }

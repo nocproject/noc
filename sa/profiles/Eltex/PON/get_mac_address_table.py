@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -92,16 +93,16 @@ class Script(BaseScript):
             if interfaces == '0':
                 continue
             r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interfaces],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "permanent": "S",
-                        "self": "S"
-                        }[match.group("type").lower()],
-                    })
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
+                "interfaces": [interfaces],
+                "type": {
+                    "dynamic": "D",
+                    "static": "S",
+                    "permanent": "S",
+                    "self": "S"
+                }[match.group("type").lower()],
+            })
         # Switch ports
         cmd = "show mac"
         if vlan is not None:
@@ -125,6 +126,6 @@ class Script(BaseScript):
                         "static": "S",
                         "permanent": "S",
                         "self": "S"
-                        }[match.group("type").lower()],
-                    })
+                    }[match.group("type").lower()],
+                })
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -18,29 +19,29 @@ class Script(BaseScript):
     interface = IGetSpanningTree
 
     rx_config = re.compile(r"Configuration Name:\s+(?P<region>\S+)$\s+"
-            r"Reve?ision Number:\s+(?P<revision>\d+)",
-            re.MULTILINE)
+                           r"Reve?ision Number:\s+(?P<revision>\d+)",
+                           re.MULTILINE)
     rx_inst_vlans = re.compile(r"^\s+(?P<id>\d+)\s+(?P<vlans>\S+)",
-            re.MULTILINE)
+                               re.MULTILINE)
     rx_bridge = re.compile(r"\(a\)BridgeID:\s+(?P<bridge_priority>[0-9a-f]+)"
-            r"-(?P<bridge_id>\S+)")
+                           r"-(?P<bridge_id>\S+)")
     rx_root = re.compile(r"\(e\)DesignatedRoot:\s+(?P<root_priority>\S+)"
-            r"-(?P<root_id>\S+)")
+                         r"-(?P<root_id>\S+)")
     rx_port = re.compile(r"Port \[(?P<iface>\d+)\] Info:."
-            r"(?:\s+\(\S\)MSTID:\s+\d+.)?"
-            r"\s+\(\S\)Uptime:\s+\d+\s+\(seconds\)."
-            r"\s+\(\S\)State:\s+(?P<state>\S+)."
-            r"\s+\(\S\)PortID:\s+(?P<port_id>\S+)."
-            r"\s+\(\S\)PathCost:\s+\d+.\s+\(\S\)DesignatedRoot:\s+\S+."
-            r"\s+\(\S\)DesignatedCost:\s+\d+.\s+\(\S\)"
-            r"DesignatedBridge:\s+(?P<ds_br_pr>[0-9a-f]+)-(?P<ds_br_id>\S+)."
-            r"\s+\(\S\)DesignatedPort:\s+(?P<ds_port_id>\S+)"
-            r"(?:\s+\(\S\)TopoChangeAck:\s+\S+.\s+\(\S\)adminEdgePort:\s+\S+."
-            r"\s+\(\S\)operEdgePort:\s+(?P<edge>\S+)."
-            r"\s+\(\S\)MAC_Operational:\s+\S+."
-            r"\s+\(\S\)adminPointToPointMAC:\s+\S+."
-            r"\s+\(\S\)operPointToPointMAC:\s+(?P<p2p>\S+))?",
-            re.DOTALL)
+                         r"(?:\s+\(\S\)MSTID:\s+\d+.)?"
+                         r"\s+\(\S\)Uptime:\s+\d+\s+\(seconds\)."
+                         r"\s+\(\S\)State:\s+(?P<state>\S+)."
+                         r"\s+\(\S\)PortID:\s+(?P<port_id>\S+)."
+                         r"\s+\(\S\)PathCost:\s+\d+.\s+\(\S\)DesignatedRoot:\s+\S+."
+                         r"\s+\(\S\)DesignatedCost:\s+\d+.\s+\(\S\)"
+                         r"DesignatedBridge:\s+(?P<ds_br_pr>[0-9a-f]+)-(?P<ds_br_id>\S+)."
+                         r"\s+\(\S\)DesignatedPort:\s+(?P<ds_port_id>\S+)"
+                         r"(?:\s+\(\S\)TopoChangeAck:\s+\S+.\s+\(\S\)adminEdgePort:\s+\S+."
+                         r"\s+\(\S\)operEdgePort:\s+(?P<edge>\S+)."
+                         r"\s+\(\S\)MAC_Operational:\s+\S+."
+                         r"\s+\(\S\)adminPointToPointMAC:\s+\S+."
+                         r"\s+\(\S\)operPointToPointMAC:\s+(?P<p2p>\S+))?",
+                         re.DOTALL)
 
     @classmethod
     def hex_to_portid(cls, v):
@@ -94,9 +95,9 @@ class Script(BaseScript):
                 ds_port_id = self.hex_to_portid(match.group("ds_port_id"))
                 # Interface state
                 state = {
-                        "FORWARDING": "forwarding",
-                        "DISCARDING": "discarding",
-                        # etc
+                    "FORWARDING": "forwarding",
+                    "DISCARDING": "discarding",
+                    # etc
                 }[match.group("state")]
                 # get edge and p2p properties from instance 0
                 if i["id"] == 0:
@@ -164,9 +165,9 @@ class Script(BaseScript):
             port_id = self.hex_to_portid(match.group("port_id"))
             ds_port_id = self.hex_to_portid(match.group("ds_port_id"))
             state = {
-                    "FORWARDING": "forwarding",
-                    "DISCARDING": "discarding",
-                    # etc
+                "FORWARDING": "forwarding",
+                "DISCARDING": "discarding",
+                # etc
             }[match.group("state")]
             # detect port role
             if match.group("ds_br_id") == bridge_id:

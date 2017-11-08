@@ -9,9 +9,9 @@
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, UUIDField
+from noc.lib.prettyjson import to_json
 # Python modules
 from noc.lib.text import quote_safe_path
-from noc.lib.prettyjson import to_json
 
 
 class Enumeration(Document):

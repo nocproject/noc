@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -36,18 +37,18 @@ class Script(BaseScript):
         lines = self.cli("walkMIB " + " ".join(lmap.keys())).split(stat)[1:-1]
 
         for l in lines:
-                    inc = 0
-                    leaf, val = l.split(' = ')
-                    type, vlan = leaf.split('.')
-                    lmap[stat+type][int(vlan)] = []
-                    for hex in val.split():
-                        dec = int(hex, 16)
-                        bit = 1
-                        for p in range(8, 0, -1):
-                            if dec & bit == bit:
-                                lmap[stat+type][int(vlan)] += [p + inc]
-                            bit <<= 1
-                        inc = inc + 8
+            inc = 0
+            leaf, val = l.split(' = ')
+            type, vlan = leaf.split('.')
+            lmap[stat + type][int(vlan)] = []
+            for hex in val.split():
+                dec = int(hex, 16)
+                bit = 1
+                for p in range(8, 0, -1):
+                    if dec & bit == bit:
+                        lmap[stat + type][int(vlan)] += [p + inc]
+                    bit <<= 1
+                inc = inc + 8
 
         for i in egr.keys():
             for j in egr[i]:

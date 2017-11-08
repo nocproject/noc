@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import logging
 # Python modules
 import os
-import logging
+
 # NOC modules
 from noc.config import config
 
@@ -55,6 +56,7 @@ def ensure_all_pm_scopes():
         return
     # Replicated configuration
     ch = connection(read_only=False)
-    for host, port in ch.execute("SELECT host_address, port FROM system.clusters WHERE cluster = %s", args=[config.clickhouse.cluster]):
+    for host, port in ch.execute("SELECT host_address, port FROM system.clusters WHERE cluster = %s",
+                                 args=[config.clickhouse.cluster]):
         c = connection(host=host, port=port, read_only=False)
         ensure_pm_scopes(c)

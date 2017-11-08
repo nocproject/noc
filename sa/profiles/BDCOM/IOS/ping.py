@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -26,7 +27,6 @@ class Script(BaseScript):
         r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
         r"received, \d+% packet loss\n",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
-
 
     def execute(self, address, count=None, source_address=None,
                 size=None, df=None, *args, **kwargs):

@@ -7,6 +7,5 @@
 # ---------------------------------------------------------------------
 
 from error import *
-from job import Job
+
 from intervaljob import IntervalJob
-from scheduler import Scheduler

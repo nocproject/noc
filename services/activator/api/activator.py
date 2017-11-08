@@ -7,17 +7,16 @@
 # ---------------------------------------------------------------------
 
 # Python module
-import socket
 # Third-party modules
 import tornado.gen
+from noc.config import config
+from noc.core.http.client import fetch
+from noc.core.ioloop.snmp import snmp_get, SNMPError
+from noc.core.script.base import BaseScript
+from noc.core.script.loader import loader
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
-from noc.core.script.loader import loader
-from noc.core.script.base import BaseScript
-from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
-from noc.core.http.client import fetch
-from noc.config import config
 
 
 class ActivatorAPI(API):

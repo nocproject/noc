@@ -8,21 +8,23 @@
 
 # Django modules
 from django.db import models
+from noc.core.model.fields import INETField, TagsField
+from noc.lib.app.site import site
+from noc.lib.tt import tt_url
 # Peer modules
 from noc.project.models.project import Project
+from noc.settings import config
+
 from asn import AS
 from peergroup import PeerGroup
 from peeringpoint import PeeringPoint
-from noc.core.model.fields import INETField, TagsField
-from noc.lib.tt import tt_url
-from noc.settings import config
-from noc.lib.app.site import site
 
 
 class Peer(models.Model):
     """
     BGP Peering session
     """
+
     class Meta:
         verbose_name = "Peer"
         verbose_name_plural = "Peers"
@@ -66,7 +68,7 @@ class Peer(models.Model):
                                    null=True, blank=True)
     tt = models.IntegerField("TT", blank=True, null=True)
     # In addition to PeerGroup.communities
-    #and PeeringPoint.communities
+    # and PeeringPoint.communities
     communities = models.CharField("Import Communities", max_length=128,
                                    blank=True, null=True)
     max_prefixes = models.IntegerField("Max. Prefixes", default=100)
@@ -134,7 +136,7 @@ class Peer(models.Model):
         if export_med:
             actions += ["med=%d;" % export_med]
         s += "export: to AS%s at %s" % (self.remote_asn,
-                                       self.peering_point.hostname)
+                                        self.peering_point.hostname)
         if actions:
             s += " action " + " ".join(actions)
         s += " announce %s" % self.export_filter

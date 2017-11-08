@@ -8,17 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
-import time
+
 import hashlib
+import time
+
 # Third-party modules
 import six
+from noc.config import config
+from noc.core.bi.query import to_sql, escape_field
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
+
+from .connect import connection
 # NOC modules
 from .fields import BaseField
-from .connect import connection
-from noc.core.bi.query import to_sql, escape_field
-from noc.config import config
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.managedobject import ManagedObject
 
 __all__ = ["Model"]
 
@@ -127,19 +130,20 @@ class Model(six.with_metaclass(ModelBase)):
         :param connect:
         :return: True, if table has been altered, False otherwise
         """
+
         def ensure_columns(table_name):
             c = False
             # Alter when necessary
             existing = {}
             for name, type in ch.execute(
-                """
-                SELECT name, type
-                FROM system.columns
-                WHERE
-                  database=%s
-                  AND table=%s
-                """,
-                [config.clickhouse.db, table_name]
+                    """
+                    SELECT name, type
+                    FROM system.columns
+                    WHERE
+                      database=%s
+                      AND table=%s
+                    """,
+                    [config.clickhouse.db, table_name]
             ):
                 existing[name] = type
             after = None

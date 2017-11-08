@@ -9,17 +9,19 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
 import operator
-from threading import Lock
 import re
+from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField
-import cachetools
-from pymongo import ReadPreference
 # NOC modules
 from noc.core.defer import call_later
+from pymongo import ReadPreference
 
 logger = logging.getLogger(__name__)
 q_lock = Lock()
@@ -99,8 +101,9 @@ class SelectorCache(Document):
             if s.filter_pool and object.pool.id != s.filter_pool.id:
                 continue
             if (
-                s.filter_administrative_domain and
-                object.administrative_domain.id not in AdministrativeDomain.get_nested_ids(s.filter_administrative_domain.id)
+                        s.filter_administrative_domain and
+                            object.administrative_domain.id not in AdministrativeDomain.get_nested_ids(
+                            s.filter_administrative_domain.id)
             ):
                 continue
             if s.filter_name:
@@ -194,6 +197,7 @@ def refresh():
     """
     Rebuild selector cache job
     """
+
     def diff(old, new):
         def getnext(g):
             try:

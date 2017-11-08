@@ -8,26 +8,29 @@
 
 # Python modules
 from __future__ import absolute_import
-import socket
-import urlparse
-import threading
-import ssl
+
 import logging
-import zlib
-import time
+import socket
+import ssl
 import struct
+import threading
+import time
+import urlparse
+import zlib
+
+import cachetools
+import six
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
 from http_parser.parser import HttpParser
-import cachetools
-import six
+from noc.config import config
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
+
 from .proxy import SYSTEM_PROXIES
-from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +99,7 @@ def fetch(url, method="GET",
           password=None,
           content_encoding=None,
           eof_mark=None
-    ):
+          ):
     """
 
     :param url: Fetch URL
@@ -120,6 +123,7 @@ def fetch(url, method="GET",
       eof_mark received (string or list)
     :return: code, headers, body
     """
+
     def get_ssl_options():
         ssl_options = {}
         if validate_cert:
@@ -403,7 +407,6 @@ def fetch_sync(url, method="GET",
                password=None,
                content_encoding=None,
                eof_mark=None):
-
     @tornado.gen.coroutine
     def _fetch():
         result = yield fetch(

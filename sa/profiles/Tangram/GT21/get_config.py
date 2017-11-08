@@ -3,6 +3,7 @@ __author__ = 'FeNikS'
 # Python modules
 import re
 from xml.dom.minidom import parseString
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
@@ -13,6 +14,7 @@ re_html = re.compile(
 re_xml = re.compile(
     r"""<?xml.+><settings.+></settings>""",
     re.VERBOSE | re.MULTILINE | re.DOTALL)
+
 
 class Script(BaseScript):
     name = "Tangram.GT21.get_config"

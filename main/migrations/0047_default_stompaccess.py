@@ -8,6 +8,7 @@
 
 from noc.lib.nosql import get_db
 
+
 class Migration:
     def forwards(self):
         s = get_db().noc.stomp_access

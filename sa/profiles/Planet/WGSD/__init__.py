@@ -32,8 +32,8 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)#"
 
     INTERFACE_TYPES = {
-        "e": "physical",    # Ethernet
-        "g": "physical",    # GigabitEthernet
+        "e": "physical",  # Ethernet
+        "g": "physical",  # GigabitEthernet
         "c": "aggregated",  # Port-channel/Portgroup
 
     }

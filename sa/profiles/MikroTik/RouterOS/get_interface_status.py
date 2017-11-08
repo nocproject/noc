@@ -19,7 +19,7 @@ class Script(BaseScript):
         ifaces = []
         # Fill interfaces
         for n, f, r in self.cli_detail(
-        "/interface print detail without-paging"):
+                "/interface print detail without-paging"):
             iface = {"interface": r["name"], "status": "R" in f}
             if (interface is not None) and (interface == r["name"]):
                 return [iface]

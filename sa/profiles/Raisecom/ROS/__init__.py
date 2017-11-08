@@ -10,6 +10,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -99,8 +100,8 @@ class Profile(BaseProfile):
         if match:
             return match.groupdict()
         else:
-           match = self.rx_ver_2015.search(c)
-           return match.groupdict()
+            match = self.rx_ver_2015.search(c)
+            return match.groupdict()
 
     def get_interface_names(self, name):
         r = []

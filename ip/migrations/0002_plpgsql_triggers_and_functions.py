@@ -5,27 +5,29 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from noc.ip.models import *
+from south.db import db
+
 
 class Migration:
-    depends_on=(
-        ("sa","0002_trigger"),
+    depends_on = (
+        ("sa", "0002_trigger"),
     )
+
     def forwards(self):
-        if not self.has_column("ip_ipv4block","prefix_cidr"):
+        if not self.has_column("ip_ipv4block", "prefix_cidr"):
             db.execute("ALTER TABLE ip_ipv4block ADD prefix_cidr CIDR")
             db.execute("UPDATE ip_ipv4block SET prefix_cidr=prefix::cidr")
             db.execute("ALTER TABLE ip_ipv4block ALTER prefix_cidr SET NOT NULL")
             db.execute("CREATE INDEX x_ip_ipv4block_prefix_cidr ON ip_ipv4block(prefix_cidr)")
-        if not self.has_column("ip_ipv4blockaccess","prefix_cidr"):
+        if not self.has_column("ip_ipv4blockaccess", "prefix_cidr"):
             db.execute("ALTER TABLE ip_ipv4blockaccess ADD prefix_cidr CIDR")
             db.execute("UPDATE ip_ipv4blockaccess SET prefix_cidr=prefix::cidr")
             db.execute("ALTER TABLE ip_ipv4blockaccess ALTER prefix_cidr SET NOT NULL")
         db.execute(RAW_SQL_CREATE)
-        if not self.has_trigger("ip_ipv4block","t_ip_ipv4block_modify"):
+        if not self.has_trigger("ip_ipv4block", "t_ip_ipv4block_modify"):
             db.execute(t_ip_ipv4block_modify)
-        if not self.has_trigger("ip_ipv4blockaccess","t_ip_ipv4blockaccess_modify"):
+        if not self.has_trigger("ip_ipv4blockaccess", "t_ip_ipv4blockaccess_modify"):
             db.execute(t_ip_ipv4blockaccess_modify)
 
     def backwards(self):
@@ -33,15 +35,16 @@ class Migration:
         db.execute("ALTER TABLE ip_ipv4block DROP COLUMN prefix_cidr")
         db.execute("ALTER TABLE ip_ipv4blockaccess DROP COLUMN prefix_cidr")
 
-    def has_column(self,table,name):
-        return db.execute("SELECT COUNT(*)>0 FROM pg_attribute a JOIN pg_class p ON (p.oid=a.attrelid)"\
-            +" WHERE p.relname='%s' AND a.attname='%s'"%(table,name))[0][0]
+    def has_column(self, table, name):
+        return db.execute("SELECT COUNT(*)>0 FROM pg_attribute a JOIN pg_class p ON (p.oid=a.attrelid)" \
+                          + " WHERE p.relname='%s' AND a.attname='%s'" % (table, name))[0][0]
 
-    def has_trigger(self,table,name):
-        return db.execute("SELECT COUNT(*)>0 FROM pg_trigger t JOIN pg_class p ON (p.oid=t.tgrelid)"\
-            +" WHERE p.relname='%s' AND t.tgname='%s'"%(table,name))[0][0]
+    def has_trigger(self, table, name):
+        return db.execute("SELECT COUNT(*)>0 FROM pg_trigger t JOIN pg_class p ON (p.oid=t.tgrelid)" \
+                          + " WHERE p.relname='%s' AND t.tgname='%s'" % (table, name))[0][0]
 
-RAW_SQL_CREATE="""
+
+RAW_SQL_CREATE = """
 CREATE OR REPLACE
 FUNCTION ip_ipv4_block_depth(INTEGER,CIDR,CIDR)
 RETURNS INTEGER
@@ -114,19 +117,19 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;"""
 
-t_ip_ipv4block_modify="""
+t_ip_ipv4block_modify = """
 CREATE TRIGGER t_ip_ipv4block_modify
 BEFORE INSERT OR UPDATE ON ip_ipv4block
 FOR EACH ROW EXECUTE PROCEDURE f_trigger_ip_ipv4block();
 """
 
-t_ip_ipv4blockaccess_modify="""
+t_ip_ipv4blockaccess_modify = """
 CREATE TRIGGER t_ip_ipv4blockaccess_modify
 BEFORE INSERT OR UPDATE ON ip_ipv4blockaccess
 FOR EACH ROW EXECUTE PROCEDURE f_trigger_ip_ipv4blockaccess();
 """
 
-RAW_SQL_DROP="""
+RAW_SQL_DROP = """
 DROP TRIGGER IF EXISTS t_ip_ipv4block_modify ON ip_ipv4block;
 DROP TRIGGER IF EXISTS t_ip_ipv4blockaccess_modify ON ip_ipv4blockaccess;
 DROP FUNCTION f_trigger_ip_ipv4block();

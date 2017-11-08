@@ -1,13 +1,15 @@
-from south.db import db
 from django.db import models
+from south.db import db
+
 
 class Migration:
     depends_on = [
         ("main", "0027_style")
     ]
+
     def forwards(self):
         Style = db.mock_model(model_name="Style", db_table="main_style",
-            db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField)
+                              db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField)
         db.create_table('sa_managedobjectprofile', (
             ('id', models.AutoField(primary_key=True)),
             ('name', models.CharField("Name", max_length=64, unique=True)),
@@ -18,8 +20,8 @@ class Migration:
             ## Name restrictions
             # Regular expression to check name format
             ('name_template', models.CharField("Name template", max_length=256,
-                blank=True, null=True)),
-            #@todo: Name validation function
+                                               blank=True, null=True)),
+            # @todo: Name validation function
             ## FM settings
             ('enable_ping', models.BooleanField(
                 "Enable ping check", default=True)),
@@ -65,7 +67,7 @@ class Migration:
                 "Max. prefix discovery interval", default=86400)),
             # MAC discovery
             ('enable_mac_discovery', models.BooleanField(
-                    "Enable MAC discovery", default=True)),
+                "Enable MAC discovery", default=True)),
             ('mac_discovery_min_interval', models.IntegerField(
                 "Min. MAC discovery interval", default=600)),
             ('mac_discovery_max_interval', models.IntegerField(

@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.cm.models.objectfact import ObjectFact
+from noc.cm.models.validationrule import ValidationRule
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.cm.models.validationrule import ValidationRule
-from noc.cm.models.objectfact import ObjectFact
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.translation import ugettext as _
 
 
 class ValidationRuleApplication(ExtDocApplication):

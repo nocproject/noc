@@ -8,18 +8,19 @@
 
 # Python modules
 import datetime
-import random
 import logging
+import random
 import uuid
+
 # Django modules
 from django.db.models import get_model
+from mongoengine.base import _document_registry
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField,
                                 DateTimeField, DictField)
-from mongoengine.base import _document_registry
+
 # NOC Modules
-from noc import settings
 
 logger = logging.getLogger(__name__)
 
@@ -85,14 +86,14 @@ class SyncCache(Document):
     @classmethod
     def delete_object(cls, object):
         cls._get_collection().update_many({
-                "model_id": cls.get_model_id(object),
-                "object_id": str(object.id)
-            }, {
-                "$set": {
-                    "changed": cls.DELETE_DATE,
-                    "expire": cls.DELETE_DATE
-                }
+            "model_id": cls.get_model_id(object),
+            "object_id": str(object.id)
+        }, {
+            "$set": {
+                "changed": cls.DELETE_DATE,
+                "expire": cls.DELETE_DATE
             }
+        }
         )
 
     @classmethod
@@ -101,14 +102,14 @@ class SyncCache(Document):
         c = cls._get_collection()
         model_id = cls.get_model_id(object)
         c.update_many({
-                "model_id": model_id,
-                "object_id": str(object.id)
-            }, {
-                "$set": {
-                    "changed": now,
-                    "expire": now
-                }
+            "model_id": model_id,
+            "object_id": str(object.id)
+        }, {
+            "$set": {
+                "changed": now,
+                "expire": now
             }
+        }
         )
 
     @classmethod

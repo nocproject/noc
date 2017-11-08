@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 from noc.lib.text import strip_html_tags
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
@@ -33,11 +34,11 @@ class Script(BaseScript):
         platform = self.rx_platform.search(v)
         version = self.rx_version.search(v)
         return {
-                "vendor": "Linksys",
-                "platform": platform.group("platform"),
-                "version": version.group("version"),
-                "attributes": {
-                            "HW version": version.group("hardware"),
-                            "Serial Number": platform.group("serial")
-                            }
-                }
+            "vendor": "Linksys",
+            "platform": platform.group("platform"),
+            "version": version.group("version"),
+            "attributes": {
+                "HW version": version.group("hardware"),
+                "Serial Number": platform.group("serial")
+            }
+        }

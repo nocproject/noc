@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfdpneighbors import IGetFDPNeighbors
@@ -29,7 +30,7 @@ class Script(BaseScript):
         # Get neighbors
         neighbors = []
         for match in self.rx_entry.finditer(
-            self.cli("show fdp neighbors detail")):
+                self.cli("show fdp neighbors detail")):
             neighbors += [{
                 "device_id": match.group("device_id"),
                 "local_interface": match.group("local_interface"),

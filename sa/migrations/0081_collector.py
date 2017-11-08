@@ -23,13 +23,13 @@ class Migration:
         ))
         db.send_create_signal("sa", ["Collector"])
         Collector = db.mock_model(model_name="Collector",
-            db_table="sa_collector", db_tablespace="",
-            pk_field_name="id", pk_field_type=models.AutoField)
+                                  db_table="sa_collector", db_tablespace="",
+                                  pk_field_name="id", pk_field_type=models.AutoField)
         db.add_column("sa_managedobject", "collector",
-            models.ForeignKey(Collector,
-                verbose_name="Collector",
-                null=True, blank=True
-        ))
+                      models.ForeignKey(Collector,
+                                        verbose_name="Collector",
+                                        null=True, blank=True
+                                        ))
 
     def backwards(self):
         db.delete_column("sa_managedobject", "collector_id")

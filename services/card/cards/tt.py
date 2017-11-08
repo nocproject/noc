@@ -8,12 +8,14 @@
 
 # Python modules
 import datetime
-# NOC modules
-from base import BaseCard
-from noc.fm.models.ttsystem import TTSystem
+
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.ttsystem import TTSystem
 from noc.sa.models.servicesummary import SummaryItem
+
+# NOC modules
+from base import BaseCard
 
 
 class TTCard(BaseCard):

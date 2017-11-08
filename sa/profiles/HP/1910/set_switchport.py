@@ -8,8 +8,8 @@
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.isetswitchport import ISetSwitchport
 from noc.lib.text import list_to_ranges
+from noc.sa.interfaces.isetswitchport import ISetSwitchport
 
 
 class Script(BaseScript):
@@ -31,7 +31,7 @@ class Script(BaseScript):
             if protect_switchport and iface not in ports:
                 errors += ["Interface '%s' is not switchport" % iface]
             if (protect_type and
-                is_access(c) != is_access(ports[iface])):
+                        is_access(c) != is_access(ports[iface])):
                 errors += ["Invalid port type for interface '%s'" % iface]
         if errors:
             return {
@@ -46,8 +46,8 @@ class Script(BaseScript):
             p = ports[iface]
             # Check description
             if ("description" in c and c["description"] and
-                ("description" not in p or
-                 c["description"] != p["description"])):
+                    ("description" not in p or
+                             c["description"] != p["description"])):
                 ic += [" description %s" % c["description"]]
             # Check status
             if c["status"] and not p["status"]:
@@ -63,7 +63,7 @@ class Script(BaseScript):
                     # trunk -> access
                     ic += [" switchport mode access"]
                     ic += [" no switchport trunk allowed vlan"]
-#                    ic += [" switchport trunk allowed vlan remove all"]  # ???
+                    #                    ic += [" switchport trunk allowed vlan remove all"]  # ???
                     ic += [" no switchport trunk native vlan"]
                 # @todo: set vlan only when necessary
                 ic += [" switchport access vlan %d" % c["untagged"]]
@@ -75,9 +75,9 @@ class Script(BaseScript):
                     ic += [" switchport mode trunk"]
                     ic += [" no switchport access vlan"]
                 if ("untagged" in c and (
-                    "untagged" not in p or
-                    c["untagged"] != p["untagged"]) or
-                    is_access(p)):
+                                "untagged" not in p or
+                                c["untagged"] != p["untagged"]) or
+                        is_access(p)):
                     # Add native vlan
                     ic += [" switchport trunk native vlan %d" % c["untagged"]]
                 if "untagged" not in c and "untagged" in p:

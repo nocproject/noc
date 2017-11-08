@@ -18,11 +18,14 @@ class DownloaderRegistry(Registry):
     subdir = "refbooks/downloaders"
     classname = "Downloader"
     apps = ["noc.main"]
+
+
 downloader_registry = DownloaderRegistry()
 
 
 class DownloaderBase(type):
     """Metaclass for refbook downloaders"""
+
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
         m.scripts = {}

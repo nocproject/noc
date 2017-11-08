@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -25,8 +26,8 @@ class Script(BaseScript):
             try:
                 r = []
                 for n, s in self.snmp.join_tables(
-                    '1.3.6.1.2.1.31.1.1.1.1',
-                    '1.3.6.1.2.1.2.2.1.8'
+                        '1.3.6.1.2.1.31.1.1.1.1',
+                        '1.3.6.1.2.1.2.2.1.8'
                 ):
                     r += [{'interface': n, 'status': int(s) == 1}]
 

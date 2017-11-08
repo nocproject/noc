@@ -4,14 +4,14 @@
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
 from threading import Lock
-import os
+
+from noc.config import config
 # NOC modules
 from noc.core.handler import get_handler
-from noc.config import config
 
 DEFAULT_DCS = "consul://%s:%s/%s" % (config.consul.host, config.consul.port, config.consul.base)
 

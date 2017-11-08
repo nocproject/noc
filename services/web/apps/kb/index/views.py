@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.application import Application, view
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbglobalbookmark import KBGlobalBookmark
 from noc.kb.models.kbuserbookmark import KBUserBookmark
+# NOC modules
+from noc.lib.app.application import Application, view
 
 
 class IndexAppplication(Application):
@@ -25,11 +25,11 @@ class IndexAppplication(Application):
         Render index page for tab
         """
         return self.render(request, "index.html",
-            tab=tab, entries=entries,
-            tabs=[("bookmarks", "Bookmarks"),
-                ("latest", "Last Changed"),
-                ("popular", "Popular Articles"),
-                ("all", "All Articles")])
+                           tab=tab, entries=entries,
+                           tabs=[("bookmarks", "Bookmarks"),
+                                 ("latest", "Last Changed"),
+                                 ("popular", "Popular Articles"),
+                                 ("all", "All Articles")])
 
     @view(url=r"^$", url_name="index", menu="Knowledge Base", access="launch")
     def view_index(self, request):
@@ -48,7 +48,7 @@ class IndexAppplication(Application):
             "latest": self.view_index_latest,
             "popular": self.view_index_popular,
             "all": self.view_index_all,
-            }
+        }
         if tab not in tabs:
             return self.response_not_found("Tab not found")
         return tabs[tab](request)
@@ -59,10 +59,10 @@ class IndexAppplication(Application):
         Render bookmarks page
         """
         return self.render_index(request,
-                    ([b.kb_entry for b in KBGlobalBookmark.objects.all()] +
-                     [b.kb_entry for b
-                      in KBUserBookmark.objects.filter(user=request.user)]),
-                     "bookmarks")
+                                 ([b.kb_entry for b in KBGlobalBookmark.objects.all()] +
+                                  [b.kb_entry for b
+                                   in KBUserBookmark.objects.filter(user=request.user)]),
+                                 "bookmarks")
 
     @view(url=r"^latest/$", access="launch")
     def view_index_latest(self, request):

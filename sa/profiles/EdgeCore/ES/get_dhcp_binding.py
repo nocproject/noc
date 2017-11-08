@@ -7,17 +7,20 @@
 # ---------------------------------------------------------------------
 """
 """
+import datetime
+import re
+import time
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
-import re
-import datetime
-import time
 
 
 class Script(BaseScript):
     name = "EdgeCore.ES.get_dhcp_binding"
     interface = IGetDHCPBinding
-    rx_line = re.compile(r"^(?P<mac>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<expire>.+?)\s+(?P<type>dhcp-snooping)\s+(?P<vlan>\d+)\s+(?P<interface>.+?)$", re.IGNORECASE)
+    rx_line = re.compile(
+        r"^(?P<mac>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<expire>.+?)\s+(?P<type>dhcp-snooping)\s+(?P<vlan>\d+)\s+(?P<interface>.+?)$",
+        re.IGNORECASE)
 
     def execute(self):
         try:

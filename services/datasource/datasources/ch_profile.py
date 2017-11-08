@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.sa.models.profile import Profile
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
-from noc.sa.models.profile import Profile
 
 
 class CHProfileClassDataSource(BaseDataSource):

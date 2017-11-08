@@ -9,5 +9,4 @@
 # NOC modules
 from noc.core.translation import ugettext as _
 
-
 MODULE_NAME = _("Knowledge Base")

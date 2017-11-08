@@ -8,11 +8,10 @@
 
 # Python modules
 import re
-from itertools import groupby
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -41,7 +40,7 @@ class Script(BaseScript):
                 return "PSU", name[5:], pid
             elif "Fan Module" in descr:
                 if pid == "" and descr.startswith("MDS 9"):
-                    s = descr.split( )
+                    s = descr.split()
                     pid = ("%s-%s-%s" % (s[0], s[1], s[2])).upper()
                 return "FAN", name[5:], pid
             else:
@@ -73,4 +72,3 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         return objects
-

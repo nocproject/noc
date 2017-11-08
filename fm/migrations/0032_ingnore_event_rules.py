@@ -1,11 +1,10 @@
 # encoding: utf-8
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
     def forwards(self):
-
         # Adding model 'IgnoreEvents'
         db.create_table('fm_ignoreeventrules', (
             ('id', models.AutoField(primary_key=True)),

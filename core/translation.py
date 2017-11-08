@@ -6,10 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import gettext
+import logging
 ## Python modules
 import os
-import logging
-import gettext
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,7 @@ def set_translation(service, lang):
                 "No translation for language '%s'. Using 'en' instead",
                 lang
             )
+
 
 _ugettext = lambda x: x
 ugettext = lambda x: _ugettext(x)

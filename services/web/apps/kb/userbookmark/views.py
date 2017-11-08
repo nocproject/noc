@@ -6,36 +6,37 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from django.contrib import admin
-from django import forms
-from noc.lib.app.modelapplication import ModelApplication
-from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbuserbookmark import KBUserBookmark
+from noc.lib.app.modelapplication import ModelApplication
+
+
 #
 
 #
 # KBUserBookmark admin
 #
 class KBUserBookmarkAdmin(admin.ModelAdmin):
-    def queryset(self,request):
+    def queryset(self, request):
         return KBUserBookmark.objects.filter(user=request.user)
 
-    def has_change_permission(self,request,obj=None):
+    def has_change_permission(self, request, obj=None):
         if obj:
             return obj.has_access(request.user)
         else:
-            return admin.ModelAdmin.has_delete_permission(self,request)
+            return admin.ModelAdmin.has_delete_permission(self, request)
 
-    def has_delete_permission(self,request,obj=None):
-        return self.has_change_permission(request,obj)
+    def has_delete_permission(self, request, obj=None):
+        return self.has_change_permission(request, obj)
 
     def save_model(self, request, obj, form, change):
-        obj.user=request.user
+        obj.user = request.user
         obj.save()
+
 
 #
 # KBUserBookmark application
 #
 class KBUserBookmarkApplication(ModelApplication):
-    model=KBUserBookmark
-    model_admin=KBUserBookmarkAdmin
-    menu="Setup | User Bookmark"
+    model = KBUserBookmark
+    model_admin = KBUserBookmarkAdmin
+    menu = "Setup | User Bookmark"

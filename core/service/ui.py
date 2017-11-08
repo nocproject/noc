@@ -8,14 +8,17 @@
 
 # Python modules
 from __future__ import absolute_import
-import os
+
 import hashlib
 import logging
+import os
+
 # Third-party modules
 import tornado.web
+from noc.config import config
+
 # NOC modules
 from .base import Service
-from noc.config import config
 
 logger = logging.getLogger("ui")
 

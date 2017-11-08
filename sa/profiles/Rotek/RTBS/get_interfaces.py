@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -42,7 +43,7 @@ class Script(BaseScript):
                     channel = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.8.%s" % sifindex)
                     channelbandwidth = self.snmp.get("1.3.6.1.4.1.32761.3.5.1.2.1.1.9.%s" % sifindex)
                     ss[sifindex] = {"ssid": sname, "ieee_mode": ieee_mode,
-                        "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
+                                    "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
                 for soid, sname in self.snmp.getnext("1.3.6.1.4.1.41752.3.5.1.2.1.1.4"):
                     sifindex = int(soid.split(".")[-1])
                     ieee_mode = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.2.%s" % sifindex)
@@ -50,7 +51,7 @@ class Script(BaseScript):
                     channel = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.8.%s" % sifindex)
                     channelbandwidth = self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.9.%s" % sifindex)
                     ss[sifindex] = {"ssid": sname, "ieee_mode": ieee_mode,
-                        "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
+                                    "channel": channel, "freq": freq, "channelbandwidth": channelbandwidth}
                 for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
                     ifindex = v[1]
                     name = self.snmp.get("1.3.6.1.2.1.2.2.1.2.%s" % str(ifindex))
@@ -108,8 +109,9 @@ class Script(BaseScript):
                                 "admin_status": admin_status,
                                 "oper_status": oper_status,
                                 "snmp_ifindex": ifindex,
-                                "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz, channelbandwidth=%sMHz" % (ssid_broadcast,
-                                    i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"], i[1]["channelbandwidth"]),
+                                "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%sGHz, channelbandwidth=%sMHz" % (
+                                ssid_broadcast,
+                                i[1]["ieee_mode"], i[1]["channel"], i[1]["freq"], i[1]["channelbandwidth"]),
                                 "subinterfaces": [{
                                     "name": vname,
                                     "mac": mac,
@@ -190,7 +192,7 @@ class Script(BaseScript):
                             "mac": mac,
                             "snmp_ifindex": match.group("ifindex"),
                             "description": "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s" % (
-                            ri[1]["ssid_broadcast"], ri[1]["ieee_mode"], ri[1]["channel"], ri[1]["freq"]),
+                                ri[1]["ssid_broadcast"], ri[1]["ieee_mode"], ri[1]["channel"], ri[1]["freq"]),
                             "subinterfaces": [{
                                 "name": "%s.%s" % (ifname, ri[1]["ssid"]),
                                 "enabled_afi": ["BRIDGE"],

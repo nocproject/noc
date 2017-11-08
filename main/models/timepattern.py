@@ -6,15 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
 # Third-party modules
 import cachetools
 from django.db import models
+from noc.core.model.decorator import on_delete_check
 # NOC modules
 from noc.lib.timepattern import TimePattern as TP
-from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
@@ -32,6 +33,7 @@ class TimePattern(models.Model):
     """
     Time Patterns
     """
+
     class Meta:
         verbose_name = "Time Pattern"
         verbose_name_plural = "Time Patterns"

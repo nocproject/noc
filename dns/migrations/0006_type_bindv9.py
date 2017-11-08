@@ -5,9 +5,10 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 
-NAME="BINDv9"
+NAME = "BINDv9"
+
+
 class Migration:
     def forwards(self):
         pass

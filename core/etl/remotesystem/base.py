@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 
@@ -99,7 +100,7 @@ class BaseRemoteSystem(object):
     def extractor(cls, c):
         """
         Decorator for extractor
-        :return: 
+        :return:
         """
         cls.extractors[c.name] = c
         return c

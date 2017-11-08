@@ -1,16 +1,16 @@
-
-from south.db import db
 from noc.ip.models import *
+from south.db import db
+
 
 class Migration:
-
     def forwards(self):
         db.execute(SQL)
 
     def backwards(self):
         db.execute("DROP FUNCTION free_ip(INTEGER,CIDR)")
 
-SQL="""CREATE OR REPLACE
+
+SQL = """CREATE OR REPLACE
 FUNCTION free_ip(INTEGER,CIDR)
 RETURNS INET
 AS

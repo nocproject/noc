@@ -8,23 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import re
 import shlex
-# Django modules
-from django.utils.translation import ugettext_lazy as _
+
 from django.db import models
 from django.template import Template, Context
-# NOC modules
-from noc.main.models.permission import Permission
-from .managedobjectselector import ManagedObjectSelector
+# Django modules
+from django.utils.translation import ugettext_lazy as _
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
+# NOC modules
+from noc.main.models.permission import Permission
+
+from .managedobjectselector import ManagedObjectSelector
 
 
 class CommandSnippet(models.Model):
     """
     Command snippet
     """
+
     class Meta:
         verbose_name = _("Command Snippet")
         verbose_name_plural = _("Command Snippets")
@@ -32,20 +36,20 @@ class CommandSnippet(models.Model):
         app_label = "sa"
         ordering = ["name"]
 
-    name = models.CharField(_("Name"), max_length = 128, unique = True)
+    name = models.CharField(_("Name"), max_length=128, unique=True)
     description = models.TextField(_("Description"))
     snippet = models.TextField(_("Snippet"),
-            help_text=_("Code snippet template"))
+                               help_text=_("Code snippet template"))
     change_configuration = models.BooleanField(_("Change configuration"),
-            default=False)
+                                               default=False)
     selector = models.ForeignKey(ManagedObjectSelector,
                                  verbose_name=_("Object Selector"))
     is_enabled = models.BooleanField(_("Is Enabled?"), default=True)
     timeout = models.IntegerField(_("Timeout (sec)"), default=60)
     require_confirmation = models.BooleanField(_("Require Confirmation"),
-            default=False)
+                                               default=False)
     ignore_cli_errors = models.BooleanField(_("Ignore CLI errors"),
-            default=False)
+                                            default=False)
     # Restrict access to snippet if set
     # effective permission name will be sa:runsnippet:<permission_name>
     permission_name = models.CharField(_("Permission Name"), max_length=64,

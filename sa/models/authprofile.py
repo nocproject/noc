@@ -9,16 +9,17 @@
 # Python modules
 import operator
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from django.db import models
-import cachetools
-# NOC modules
-from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.decorator import on_save
+from noc.core.bi.decorator import bi_sync
 from noc.core.cache.base import cache
 from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_save
 from noc.core.model.fields import TagsField, DocumentReferenceField
-from noc.core.bi.decorator import bi_sync
+# NOC modules
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 

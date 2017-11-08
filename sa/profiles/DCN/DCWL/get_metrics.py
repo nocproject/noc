@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # DCN.DCWL.get_metrics
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import division
+
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+
 
 class Script(GetMetricsScript):
     name = "DCN.DCWL.get_metrics"
 
-    ALL_METRICS = set(["Radio | TxPower", "Radio | Quality", "Interface | Load | In", "Interface | Load | Out", "Interface | Packets | In",
+    ALL_METRICS = set(["Radio | TxPower", "Radio | Quality", "Interface | Load | In", "Interface | Load | Out",
+                       "Interface | Packets | In",
                        "Interface | Packets | OUT", "Interface | Errors | In", "Interface | Errors | Out",
                        "Radio | Channel | Util", "Radio | Channel | Free", "Radio | Channel | Busy",
                        "Radio | Channel | TxFrame", "Radio | Channel | RxFrame"])
@@ -39,8 +42,8 @@ class Script(GetMetricsScript):
 
     @classmethod
     def get_metric_type(cls, name):
-         c = cls.TYPE.get(name)
-         return c
+        c = cls.TYPE.get(name)
+        return c
 
     def collect_profile_metrics(self, metrics):
         self.logger.debug("Merics %s" % metrics)
@@ -81,8 +84,9 @@ class Script(GetMetricsScript):
                         metric=bv.metric,
                         value=m[slot],
                         ts=ts,
-                        #path=["", slot, ""]
+                        # path=["", slot, ""]
                     )
+
     def collect_cpu_metrics(self, metrics):
         ts = self.get_ts()
         m = self.get_cpu_metrics()
@@ -94,8 +98,9 @@ class Script(GetMetricsScript):
                         metric=bv.metric,
                         value=m[slot],
                         ts=ts,
-                        #path=["", slot, ""]
+                        # path=["", slot, ""]
                     )
+
     def get_cli_metrics(self):
         res = {}
         wres = {}
@@ -128,7 +133,8 @@ class Script(GetMetricsScript):
                 txpackets = rr[1].strip()
             elif rr[0] == "tx-errors":
                 txerrors = rr[1].strip()
-                res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes, "txpackets": txpackets, "txerrors": txerrors}
+                res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes,
+                             "txpackets": txpackets, "txerrors": txerrors}
             elif rr[0] == "ssid":
                 ssid = rr[1].strip().replace(" ", "").replace("Managed", "")
                 if ssid.startswith("2a2d"):
@@ -137,7 +143,8 @@ class Script(GetMetricsScript):
             elif rr[0] == "bss":
                 bss = rr[1].strip()
             if ssid:
-                res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes, "txpackets": txpackets, "txerrors": txerrors, "iface": "%s.%s" % (name, ssid), "bss": bss}
+                res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes,
+                             "txpackets": txpackets, "txerrors": txerrors, "iface": "%s.%s" % (name, ssid), "bss": bss}
         for s in res.items():
             if not "bss" in s[1]:
                 continue
@@ -210,7 +217,7 @@ class Script(GetMetricsScript):
                     mtotal = mr[1].strip().split(" ")[0]
                 if mr[0] == "MemFree":
                     mfree = mr[1].strip().split(" ")[0]
-                    memory = (100/int(mtotal))*int(mfree)
+                    memory = (100 / int(mtotal)) * int(mfree)
                     r[("Memory | Usage")] = memory
             return r
 

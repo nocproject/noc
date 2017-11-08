@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import PrefixAccess
 from noc.core.translation import ugettext as _
+from noc.ip.models import PrefixAccess
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 
 
 class PrefixAccessApplication(ExtModelApplication):

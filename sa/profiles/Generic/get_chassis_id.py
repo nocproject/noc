@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.mac import MAC
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.mac import MAC
-from noc.core.mib import mib
 
 
 class Script(BaseScript):

@@ -10,6 +10,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -26,7 +27,7 @@ class Script(BaseScript):
     rx_ver_new = re.compile(
         r"HP\s+(?:\S+\s+)?(?P<platform>\S+)\s+Switch(?: Stack)?,"
         r"\s+revision\s+(?P<version>\S+),", re.IGNORECASE)
-    #Added for 3500yl
+    # Added for 3500yl
     rx_ver_3500yl = re.compile(
         r"HP\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
         r"\s*revision\s+(?P<version>\S+),", re.IGNORECASE)
@@ -43,7 +44,7 @@ class Script(BaseScript):
         try:
             match = self.re_search(self.rx_ver, v.strip())
         except self.UnexpectedResultError:
-        #Added for 3500yl
+            # Added for 3500yl
             try:
                 match = self.re_search(self.rx_ver_new, v.strip())
             except self.UnexpectedResultError:

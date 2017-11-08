@@ -31,10 +31,10 @@ class Script(BaseScript):
                 else:
                     user_class = "operator"
                 r.append({
-                        "username": name,
-                        "class": user_class,
-                        "is_active": True
-                        })
+                    "username": name,
+                    "class": user_class,
+                    "is_active": True
+                })
         if not r:
-                    raise Exception("Not implemented")
+            raise Exception("Not implemented")
         return r

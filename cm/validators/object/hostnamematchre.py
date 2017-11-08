@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import re
-import logging
+
 # NOC modules
 from noc.cm.validators.base import BaseValidator
 

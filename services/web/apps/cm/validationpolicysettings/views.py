@@ -6,14 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.cm.models.validationpolicy import ValidationPolicy
 from noc.cm.models.validationpolicysettings import (
     ValidationPolicySettings, ValidationPolicyItem)
-from noc.cm.models.validationpolicy import ValidationPolicy
+from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.sa.interfaces.base import (DictListParameter, DocumentParameter,
                                     BooleanParameter)
-from noc.core.translation import ugettext as _
 
 
 class ValidationPolicySettingsApplication(ExtDocApplication):
@@ -55,7 +55,7 @@ class ValidationPolicySettingsApplication(ExtDocApplication):
                   "is_active": BooleanParameter()
               })
           }
-    )
+          )
     def api_save_settings(self, request, model_id, object_id, policies):
         def save_settings(o):
             o.save()

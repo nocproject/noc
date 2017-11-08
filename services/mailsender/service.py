@@ -11,10 +11,11 @@
 import datetime
 import smtplib
 import socket
-from email.mime.text import MIMEText
+from email.header import Header
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
-from email.header import Header
+from email.mime.text import MIMEText
+
 # Third-party modules
 import pytz
 # NOC modules
@@ -167,6 +168,7 @@ class MailSenderService(Service):
                 message_id, e
             )
         return True
+
 
 if __name__ == "__main__":
     MailSenderService().start()

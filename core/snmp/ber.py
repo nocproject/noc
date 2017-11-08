@@ -9,6 +9,7 @@
 # Python modules
 import math
 import struct
+
 # NOC modules
 from noc.speedup.ber import parse_tlv_header, parse_p_oid
 
@@ -260,7 +261,7 @@ class BERDecoder(object):
                 3: parse_int,  # TimeTicks
                 4: parse_p_octetstring,  # Opaque
                 # 5: NsapAddress
-                6: parse_int,   # Counter64
+                6: parse_int,  # Counter64
                 # 7: UInteger32
                 # 14: Uncompressed delta identifier
                 14: parse_p_oid,

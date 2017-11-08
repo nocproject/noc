@@ -7,18 +7,19 @@
 # ---------------------------------------------------------------------
 
 
-# Python modules
-import re
-import hashlib
 import base64
 import datetime
+import hashlib
+# Python modules
+import re
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, FloatField, ListField,
                                 DateTimeField)
+from noc.config import config
 # NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
-from noc.config import config
 from noc.core.handler import get_handler
 
 

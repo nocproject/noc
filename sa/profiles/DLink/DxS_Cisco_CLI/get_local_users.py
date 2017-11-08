@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
-import re
 
 
 class Script(BaseScript):
@@ -31,5 +32,5 @@ class Script(BaseScript):
                 "username": match.group("username"),
                 "class": user_class,
                 "is_active": True
-                }]
+            }]
         return r

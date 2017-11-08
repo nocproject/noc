@@ -7,16 +7,15 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
-
     def forwards(self):
-        db.add_column("fm_eventclass","is_builtin",models.BooleanField("Is Builtin",default=False))
-        db.add_column("fm_eventclassificationrule","is_builtin",models.BooleanField("Is Builtin",default=False))
+        db.add_column("fm_eventclass", "is_builtin", models.BooleanField("Is Builtin", default=False))
+        db.add_column("fm_eventclassificationrule", "is_builtin", models.BooleanField("Is Builtin", default=False))
 
     def backwards(self):
-        db.delete_column("fm_eventclass","is_builtin")
-        db.delete_column("fm_eventclassificationrule","is_builtin")
+        db.delete_column("fm_eventclass", "is_builtin")
+        db.delete_column("fm_eventclassificationrule", "is_builtin")

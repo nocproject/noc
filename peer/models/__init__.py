@@ -7,19 +7,19 @@
 # ---------------------------------------------------------------------
 
 # Django modules
-from django.db import models, connection
+from django.db import models
+from noc.core.ip import IP
+from noc.lib import nosql
+from noc.lib.validators import is_asn
+from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
 # NOC modules
 from noc.settings import config
-from noc.lib.validators import is_asn
-from noc.core.ip import IP
-from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
-from noc.lib import nosql
 
-from rir import RIR
-from person import Person
+from asn import AS
 from maintainer import Maintainer
 from organisation import Organisation
-from asn import AS
+from person import Person
+from rir import RIR
 
 
 class CommunityType(models.Model):
@@ -45,6 +45,7 @@ class Community(models.Model):
     def __unicode__(self):
         return self.community
 
+
 from asset import ASSet
 from peeringpoint import PeeringPoint
 from peergroup import PeerGroup
@@ -57,6 +58,7 @@ class WhoisCache(object):
     """
     Whois cache interface
     """
+
     @classmethod
     def resolve_as_set(cls, as_set, seen=None, collection=None):
         members = set()
@@ -96,7 +98,7 @@ class WhoisCache(object):
         pl_optimize = config.getboolean("peer", "prefix_list_optimization")
         threshold = config.getint("peer", "prefix_list_optimization_threshold")
         if (optimize or
-            (optimize is None and pl_optimize and len(prefixes) >= threshold)):
+                (optimize is None and pl_optimize and len(prefixes) >= threshold)):
             return set(optimize_prefix_list(prefixes))
         return prefixes
 
@@ -111,16 +113,16 @@ class WhoisCache(object):
         threshold = config.getint("peer", "prefix_list_optimization_threshold")
         max_len = config.getint("peer", "max_prefix_length")
         if (optimize or
-            (optimize is None and pl_optimize and len(prefixes) >= threshold)):
+                (optimize is None and pl_optimize and len(prefixes) >= threshold)):
             # Optimization is enabled
             return [(p.prefix, p.mask, m) for p, m
-                in optimize_prefix_list_maxlen(prefixes)
-                if p.mask <= max_len]
+                    in optimize_prefix_list_maxlen(prefixes)
+                    if p.mask <= max_len]
         else:
             # Optimization is disabled
             return [(x.prefix, x.mask, x.mask)
-                for x in sorted([IP.prefix(p) for p in prefixes])
-                if x.mask <= max_len]
+                    for x in sorted([IP.prefix(p) for p in prefixes])
+                    if x.mask <= max_len]
 
     @classmethod
     def cone_power(cls, as_set, mask):
@@ -133,5 +135,6 @@ class WhoisCache(object):
             if m <= mask:
                 n += long(2 * (mask - m))
         return n
+
 
 from prefixlistcache import PrefixListCache, PrefixListCachePrefix

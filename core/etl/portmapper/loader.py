@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import inspect
 ## Python modules
 import logging
-import inspect
+
 ## NOC modules
 from base import BasePortMapper
 
@@ -29,9 +30,9 @@ class PortMapperLoader(object):
                 for n in dir(sm):
                     o = getattr(sm, n)
                     if (
-                        inspect.isclass(o) and
-                        issubclass(o, BasePortMapper) and
-                        o.__module__ == sm.__name__
+                                    inspect.isclass(o) and
+                                    issubclass(o, BasePortMapper) and
+                                    o.__module__ == sm.__name__
                     ):
                         loader = o
                         break
@@ -41,5 +42,6 @@ class PortMapperLoader(object):
                 loader = None
             self.loaders[name] = loader
         return loader
+
 
 loader = PortMapperLoader()

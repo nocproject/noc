@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_kv
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
@@ -322,7 +323,7 @@ class Script(BaseScript):
             day = '0' + str(day)
             need_edit = True
         if len(str(year)) < 4:
-            year = "2" + "0" * (3-len(str(year))) + str(year)
+            year = "2" + "0" * (3 - len(str(year))) + str(year)
             need_edit = True
         if need_edit:
             parts = [year, month, day]

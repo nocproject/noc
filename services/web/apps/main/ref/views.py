@@ -6,25 +6,25 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import os
 import re
-import operator
+
 # Django modules
 from django.db import models
 # Third-party modules
 from mongoengine.base.common import _document_registry
+from noc import settings
+from noc.cm.validators.base import validator_registry
+from noc.core.interface.loader import loader as interface_loader
+from noc.core.profile.loader import loader as profile_loader
+from noc.core.script.loader import loader as script_loader
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.site import site
-from noc.core.interface.loader import loader as interface_loader
 from noc.lib.stencil import stencil_registry
-from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
-from noc.cm.validators.base import validator_registry
-from noc.core.profile.loader import loader as profile_loader
-from noc.core.script.loader import loader as script_loader
-from noc.core.translation import ugettext as _
 
 
 class RefAppplication(ExtApplication):
@@ -87,7 +87,7 @@ class RefAppplication(ExtApplication):
         :return:
         """
         return sorted(({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
-            key=lambda x: x["label"])
+                      key=lambda x: x["label"])
 
     def build_model(self):
         """
@@ -96,8 +96,8 @@ class RefAppplication(ExtApplication):
         """
         return sorted(({"id": m._meta.db_table,
                         "label": m._meta.db_table}
-            for m in models.get_models()),
-            key=lambda x: x["label"])
+                       for m in models.get_models()),
+                      key=lambda x: x["label"])
 
     def build_modcol(self):
         """
@@ -243,4 +243,3 @@ class RefAppplication(ExtApplication):
             }
         else:
             return data
-

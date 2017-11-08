@@ -8,10 +8,11 @@
 
 # Third-party modules
 import ujson
+from noc.core.topology.path import get_shortest_path
+from noc.sa.models.managedobject import ManagedObject
+
 # NOC modules
 from base import BaseCard
-from noc.sa.models.managedobject import ManagedObject
-from noc.core.topology.path import get_shortest_path
 
 
 class PathCard(BaseCard):

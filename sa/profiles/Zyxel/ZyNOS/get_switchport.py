@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -18,20 +19,20 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     rx_portinfo = re.compile(
-            r"Port No\s+:(?P<interface>\d+)\n"
-            r"\s*Active\s+:(?P<admin>\S+)\n"
-            r"\s*Name\s+:(?P<description>.+)?\n"
-            r"\s*PVID\s+:(?P<untag>\d+)\s+Flow Control\s+:\S+$",
-            re.MULTILINE)
+        r"Port No\s+:(?P<interface>\d+)\n"
+        r"\s*Active\s+:(?P<admin>\S+)\n"
+        r"\s*Name\s+:(?P<description>.+)?\n"
+        r"\s*PVID\s+:(?P<untag>\d+)\s+Flow Control\s+:\S+$",
+        re.MULTILINE)
     rx_vlan_stack = re.compile(
-            r"^(?P<interface>\d+)\s+(?P<role>\S+).+$",
-            re.MULTILINE)
+        r"^(?P<interface>\d+)\s+(?P<role>\S+).+$",
+        re.MULTILINE)
     rx_vlan_stack_global = re.compile(r"^Operation:\s+(?P<status>active)$")
     rx_vlan_ports = re.compile(
-            r"\s+\d+\s+(?P<vid>\d+)\s+\S+\s+\S+\s+"
-            r"Untagged\s+:(?P<untagged>[0-9,\-]*)."
-            r"\s+Tagged\s+:(?P<tagged>[0-9,\-]*)",
-            re.MULTILINE | re.DOTALL)
+        r"\s+\d+\s+(?P<vid>\d+)\s+\S+\s+\S+\s+"
+        r"Untagged\s+:(?P<untagged>[0-9,\-]*)."
+        r"\s+Tagged\s+:(?P<tagged>[0-9,\-]*)",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         # Get portchannels
@@ -82,7 +83,7 @@ class Script(BaseScript):
         r = []
         swp = {}
         for match in self.rx_portinfo.finditer(
-            self.cli("show interface config *")):
+                self.cli("show interface config *")):
             name = match.group("interface")
             swp = {
                 "status": interface_status.get(name, False),

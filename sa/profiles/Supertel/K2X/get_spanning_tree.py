@@ -8,10 +8,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -63,7 +63,7 @@ class Script(BaseScript):
                         "??": "learning",
                         "lis": "listen",
                         "lbk": "loopback"
-                        }[I.group("state").lower()],
+                    }[I.group("state").lower()],
                     "role": {
                         "altn": "alternate",
                         "boun": "master",
@@ -74,10 +74,10 @@ class Script(BaseScript):
                         "mstr": "master",
                         "????": "nonstp",
                         "_": "unknown"
-                        }[I.group("role").lower()],
+                    }[I.group("role").lower()],
                     "point_to_point": "p2p" in I.group("p2p").lower(
-                        ).split(' '),
-                    }
+                    ).split(' '),
+                }
         return ports
 
     #
@@ -126,7 +126,7 @@ class Script(BaseScript):
                     "root_priority": match_r.group("root_priority"),
                     "bridge_id": match_b.group("bridge_id"),
                     "bridge_priority": match_b.group("bridge_priority"),
-                    }]
+                }]
             elif match_r:
                 r["instances"] += [{
                     "id": instance_id,
@@ -135,7 +135,7 @@ class Script(BaseScript):
                     "root_priority": match_r.group("root_priority"),
                     "bridge_id": match_r.group("root_id"),
                     "bridge_priority": match_r.group("root_priority"),
-                    }]
+                }]
 
             match = self.rx_pvst_interfaces.search(I)
             if match:
@@ -154,7 +154,7 @@ class Script(BaseScript):
                     "designated_port_id": match.group("designated_port_id"),
                     "point_to_point": port_attrs["point_to_point"],
                     "edge": port_attrs["status"],
-                    }]
+                }]
             for I in r["instances"]:
                 I["interfaces"] = interfaces[I["id"]]
         return r
@@ -207,7 +207,7 @@ class Script(BaseScript):
                 "MSTP": {
                     "region": match.group("region"),
                     "revision": match.group("revision"),
-                    }
+                }
             }
         }
 
@@ -232,7 +232,7 @@ class Script(BaseScript):
                         "root_priority": match_r.group("root_priority"),
                         "bridge_id": match_b.group("bridge_id"),
                         "bridge_priority": match_b.group("bridge_priority"),
-                        }]
+                    }]
                 elif match_r:
                     r["instances"] += [{
                         "id": instance_id,
@@ -241,7 +241,7 @@ class Script(BaseScript):
                         "root_priority": match_r.group("root_priority"),
                         "bridge_id": match_r.group("root_id"),
                         "bridge_priority": match_r.group("root_priority"),
-                        }]
+                    }]
 
                 match = self.rx_mstp_interfaces.search(I)
                 if match:
@@ -261,7 +261,7 @@ class Script(BaseScript):
                             "designated_port_id").replace(' ', '.'),
                         "point_to_point": port_attrs["point_to_point"],
                         "edge": port_attrs["status"],
-                        }]
+                    }]
         for I in r["instances"]:
             I["interfaces"] = interfaces[I["id"]]
         return r

@@ -9,7 +9,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.execute("UPDATE sa_managedobject SET profile_name='Alcatel.OS62xx' WHERE profile_name='Alcatel.AOS'")
 

@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app import ExtDocApplication, view
-from noc.sa.models.profile import Profile
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app import ExtDocApplication
+from noc.sa.models.profile import Profile
 
 
 class ProfileApplication(ExtDocApplication):

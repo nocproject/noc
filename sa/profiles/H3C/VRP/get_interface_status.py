@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -52,7 +53,7 @@ class Script(BaseScript):
         if self.match_version(version__startswith="3."):
             for l in self.cli("display interface").splitlines():
                 if (l.find(" current state :") != -1 \
-                and l.find("Line protocol ") == -1):
+                            and l.find("Line protocol ") == -1):
                     match_int = rx_ifc_status.match(l)
                     if match_int:
                         iface = match_int.group("interface")

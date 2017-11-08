@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC Modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -41,7 +42,7 @@ class Script(BaseScript):
             vlan_id = fdb_vmap[match.group(1)]
             m = ":".join(["%02X" % int(x) for x in match.group(2).split(".")])
             if (interface and interface != port) \
-            or (vlan and vlan != vlan_id) or (mac and mac != m):
+                    or (vlan and vlan != vlan_id) or (mac and mac != m):
                 continue
             r += [{
                 "vlan_id": vlan_id,

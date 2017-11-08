@@ -8,15 +8,16 @@
 
 # Python modules
 from collections import defaultdict
-# NOC modules
-from noc.core.clickhouse.model import Model
+
+from noc.core.bi.dictionaries.interfaceprofile import InterfaceProfile
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.networksegment import NetworkSegment
+from noc.core.clickhouse.engines import MergeTree
 from noc.core.clickhouse.fields import (
     DateField, DateTimeField, UInt64Field, UInt16Field, UInt8Field,
     StringField, ReferenceField)
-from noc.core.clickhouse.engines import MergeTree
-from noc.core.bi.dictionaries.managedobject import ManagedObject
-from noc.core.bi.dictionaries.interfaceprofile import InterfaceProfile
-from noc.core.bi.dictionaries.networksegment import NetworkSegment
+# NOC modules
+from noc.core.clickhouse.model import Model
 from noc.core.translation import ugettext as _
 
 

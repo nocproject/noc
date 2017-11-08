@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -28,7 +29,7 @@ class Script(BaseScript):
                          "^\s*Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
                          "^\s*Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
                          "^\s*Trunking VLANs Enabled: (?P<vlans>.+?)$",
-                         #"Pruning VLANs Enabled:",
+                         # "Pruning VLANs Enabled:",
                          re.MULTILINE | re.DOTALL)
 
     rx_descr_if = re.compile(
@@ -66,7 +67,6 @@ class Script(BaseScript):
             r += [iface]
         return r
 
-
     def get_description(self):
         r = []
         s = self.cli("show interfaces description", cached=True)
@@ -86,7 +86,7 @@ class Script(BaseScript):
             v = self.cli("show interfaces switchport")
         except self.CLISyntaxError:
             # Cisco Catalist 3500 XL do not have this command
-            #raise self.NotSupportedError()
+            # raise self.NotSupportedError()
             return self.parse_config()
         v = "\n" + v
         v = self.rx_cont.sub(",", v)  # Unwind continuation lines
@@ -105,7 +105,7 @@ class Script(BaseScript):
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_body.search(s)
             if not match:
-                continue  #raise self.NotSupportedError()
+                continue  # raise self.NotSupportedError()
 
             interface = self.profile.convert_interface_name(
                 match.group("interface"))

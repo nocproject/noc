@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
@@ -40,7 +41,7 @@ class Script(BaseScript):
             "Open cable": 'O',
             "Short cable": 'S',
             "No cable": 'N'
-            }
+        }
 
         for match in self.rx_tdr.finditer(self.cli(cmd)):
             status_ = match.group("status")
@@ -55,9 +56,9 @@ class Script(BaseScript):
                     "status": status[status_],
                     "distance_cm": int(length),
                     "variance_cm": self.variance
-                    })
+                })
             r.append({
                 "interface": match.group("interface"),
                 "pairs": pairs
-                })
+            })
         return r

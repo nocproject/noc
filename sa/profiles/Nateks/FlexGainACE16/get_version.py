@@ -7,11 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 from noc.lib.text import parse_kv
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):

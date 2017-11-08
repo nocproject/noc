@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 
 class Script(BaseScript):
@@ -24,7 +25,7 @@ class Script(BaseScript):
         r = []
         for match in self.rx_line.finditer(self.cli("show arp")):
             if (interface is not None) \
-            and (interface != match.group("interface")):
+                    and (interface != match.group("interface")):
                 continue
             r += [match.groupdict()]
         return r

@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.dns.models.dnsserver import DNSServer
 from noc.core.translation import ugettext as _
+from noc.dns.models.dnsserver import DNSServer
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 
 
 class DNSServerApplication(ExtModelApplication):

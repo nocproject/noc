@@ -16,7 +16,7 @@ Test on:
 Model Name                   : ES-2310C
 System Description           : 8 Fast Ethernet + 2 Gigabit L2 Managed Switch
 Location                     : skatovka
-Contact                      : 
+Contact                      :
 Device Name                  : ES-2310C
 System Up Time               : 0 Days 0 Hours 22 Mins 51 Secs
 Current Time                 : Wed Dec 21 01:10:15 2016
@@ -37,6 +37,7 @@ Flash Size                   : 2 M
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -55,16 +56,15 @@ class Script(BaseScript):
         r".*Serial Number\s+:\s(?P<sn>[^, ]+)\n"
         , re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-
     def execute(self):
         ver = ""
         self.cli("system", cached=True)
 
         ver = self.cli("show", cached=True)
-#        print (ver)
+        #        print (ver)
         match = self.re_search(self.rx_ver, ver)
 
-#        print (match.group("platform"))
+        #        print (match.group("platform"))
 
         return {
             "vendor": "Rubytech",
@@ -74,5 +74,5 @@ class Script(BaseScript):
                 "HW": match.group("hwversion"),
                 "SN": match.group("sn"),
                 "Bios": match.group("biosversion"),
-                          }
             }
+        }

@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.gis.geo import inverse_mercator
+from noc.gis.models import Overlay
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.gis.models import Overlay
-from noc.gis.geo import inverse_mercator
-from noc.core.translation import ugettext as _
 
 
 class OverlayApplication(ExtDocApplication):

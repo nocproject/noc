@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.sa.models.administrativedomain import AdministrativeDomain
+
 # NOC modules
 from .base import BaseDataSource
-from noc.sa.models.administrativedomain import AdministrativeDomain
 
 
 class CHAdministrativeDomainDataSource(BaseDataSource):

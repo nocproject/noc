@@ -8,19 +8,20 @@
 
 # Python modules
 import re
+
+from noc.core.translation import ugettext as _
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.mib import MIB
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.fm.models.eventclass import EventClass
-from noc.fm.models.activeevent import ActiveEvent
-from noc.fm.models.mib import MIB
-from noc.core.translation import ugettext as _
 
 
 class ReportMissedMIBs(SimpleReport):
     title = _("Missed MIBs")
 
     rx_unclassified = re.compile(r"\.\d+$")
-    
+
     def get_data(self, **kwargs):
         c = EventClass.objects.filter(name="Unknown | SNMP Trap").first()
         # Переделать на agregate Функция считает число OID'ов в переменных аварий

@@ -6,18 +6,19 @@
 
 # Python modules
 import json
-# Third-party modules
-from south.db import db
+
 # NOC modules
 from noc.lib.nosql import get_db, ObjectId
+# Third-party modules
+from south.db import db
 
 
 class Migration(object):
     def forwards(self):
         if db.execute(
-            """
-            select count(*) from pg_class where relname='gis_geodata'
-            """
+                """
+                select count(*) from pg_class where relname='gis_geodata'
+                """
         )[0][0] == 0:
             return  # No PostGIS
         c = get_db().noc.geodata
@@ -29,16 +30,16 @@ class Migration(object):
         """):
             data = json.loads(data)
             bulk.insert({
-                 "layer": ObjectId(layer),
-                 "object": ObjectId(object),
-                 "label": label,
-                 "data": data
+                "layer": ObjectId(layer),
+                "object": ObjectId(object),
+                "label": label,
+                "data": data
             })
             n += 1
         if n:
             bulk.execute()
-        # Leave table for further analisys
-        # db.drop_table("gis_geodata")
+            # Leave table for further analisys
+            # db.drop_table("gis_geodata")
 
     def backwards(self):
         pass

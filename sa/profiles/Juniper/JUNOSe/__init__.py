@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -43,6 +44,7 @@ class Profile(BaseProfile):
         :param v2:
         :return:
         """
+
         def convert(v):
             return v.replace(" patch-", ".").replace(" release-", ".")
 

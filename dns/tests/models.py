@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from unittest import TestCase
+
 from noc.dns.models import *
 from noc.ip.models import VRF, Address
 

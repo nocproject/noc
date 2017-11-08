@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.db import models
 # Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from noc.core.model.decorator import on_delete_check
 # NOC modules
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
-from noc.core.model.decorator import on_delete_check
 
 
 @on_delete_check(check=[
@@ -22,6 +22,7 @@ class VRFGroup(models.Model):
     """
     Group of VRFs with common properties
     """
+
     class Meta:
         verbose_name = _("VRF Group")
         verbose_name_plural = _("VRF Groups")

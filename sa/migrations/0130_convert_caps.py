@@ -2,6 +2,7 @@
 
 from noc.lib.nosql import get_db
 
+
 class Migration:
     def forwards(self):
         def convert(doc):
@@ -34,7 +35,7 @@ class Migration:
         while data:
             chunk, data = data[:CHUNK], data[CHUNK:]
             new_caps.insert(chunk)
-        #old_caps.drop()
+            # old_caps.drop()
 
     def backwards(self):
         pass

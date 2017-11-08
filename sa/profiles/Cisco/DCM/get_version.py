@@ -9,12 +9,14 @@ __author__ = 'FeNikS'
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 rx_version = re.compile(r"BUILD=(?P<ver>.*?)$",
-                        re.DOTALL|re.MULTILINE)
+                        re.DOTALL | re.MULTILINE)
+
 
 class Script(BaseScript):
     name = "Cisco.DCM.get_version"

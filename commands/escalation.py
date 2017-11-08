@@ -8,20 +8,22 @@
 
 # Python modules
 from __future__ import print_function
+
 import argparse
 import operator
 import time
+
+from noc.core.defer import call_later
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.sa.models.selectorcache import SelectorCache
-from noc.fm.models.utils import get_alarm
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.core.defer import call_later
+from noc.fm.models.utils import get_alarm
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.selectorcache import SelectorCache
+from noc.sa.models.serviceprofile import ServiceProfile
 
 
 class Command(BaseCommand):
@@ -196,7 +198,7 @@ class Command(BaseCommand):
                 self.print("    [After %ss]" % e.delay)
             # Check administrative domain
             if (e.administrative_domain and
-                    e.administrative_domain.id not in alarm.adm_path):
+                        e.administrative_domain.id not in alarm.adm_path):
                 self.print("    @ Administrative domain mismatch (%s not in %s)" % (
                     e.administrative_domain.id, alarm.adm_path
                 ))

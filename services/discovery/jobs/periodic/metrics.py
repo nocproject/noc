@@ -6,30 +6,30 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from threading import Lock
-import operator
-from collections import namedtuple
 import itertools
+import operator
 import time
 from collections import defaultdict
+from collections import namedtuple
+# Python modules
+from threading import Lock
+
+import cachetools
 # Third-party modules
 import six
-import cachetools
-from pymongo import ReadPreference
-# NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.interface import Interface
-from noc.inv.models.subinterface import SubInterface
-from noc.pm.models.metrictype import MetricType
-from noc.sla.models.slaprofile import SLAProfile
-from noc.sla.models.slaprobe import SLAProbe
 from noc.core.handler import get_handler
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
-
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.subinterface import SubInterface
+from noc.pm.models.metrictype import MetricType
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+# NOC modules
+from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.sla.models.slaprobe import SLAProbe
+from noc.sla.models.slaprofile import SLAProfile
+from pymongo import ReadPreference
 
 MAX31 = 0x7FFFFFFF
 MAX32 = 0xFFFFFFFF
@@ -267,7 +267,7 @@ class MetricsCheck(DiscoveryCheck):
     def get_subinterfaces(self):
         subs = defaultdict(list)  # interface id -> [{"name":, "ifindex":}]
         for si in SubInterface._get_collection().with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED
+                read_preference=ReadPreference.SECONDARY_PREFERRED
         ).find({
             "managed_object": self.object.id
         }, {
@@ -340,7 +340,7 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.info("SLA not configured, skipping SLA metrics")
         metrics = []
         for p in SLAProbe._get_collection().with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED
+                read_preference=ReadPreference.SECONDARY_PREFERRED
         ).find({
             "managed_object": self.object.id
         }, {
@@ -456,7 +456,7 @@ class MetricsCheck(DiscoveryCheck):
                     ts_cache[m.ts] = tsc
                 if path:
                     pk = "%s\t%s\t%d\t%s" % (tsc[0], tsc[1], mo_id,
-                                          self.quote_path(path))
+                                             self.quote_path(path))
                     table = "%s.date.ts.managed_object.path" % cfg.metric_type.scope.table_name
                 else:
                     pk = "%s\t%s\t%d" % (tsc[0], tsc[1], mo_id)

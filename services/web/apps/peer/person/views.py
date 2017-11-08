@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.peer.models import Person
-from noc.lib.app.repoinline import RepoInline
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.lib.app.repoinline import RepoInline
+from noc.peer.models import Person
 
 
 class PersonApplication(ExtModelApplication):
@@ -20,6 +20,6 @@ class PersonApplication(ExtModelApplication):
     title = _("Persons/Roles")
     menu = [_("Setup"), _("Persons")]
     model = Person
-    query_fields = ["nic_hdl__icontains","person__icontains"]
+    query_fields = ["nic_hdl__icontains", "person__icontains"]
 
     rpsl = RepoInline("rpsl")

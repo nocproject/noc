@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Beef management
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Beef management
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import pprint
 import glob
 import os
-## NOC modules
+# Python modules
+import pprint
+
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
 
@@ -60,7 +61,7 @@ class Command(BaseCommand):
             r += [pprint.pformat(b.input), ""]
         if b.result:
             if (isinstance(b.result, basestring) and
-                    "START OF TRACEBACK" in b.result):
+                        "START OF TRACEBACK" in b.result):
                 r += [
                     "---[ Traceback ]-----------",
                     b.result,
@@ -98,7 +99,7 @@ class Command(BaseCommand):
     def handle_list(self, *options, **args):
         r = ["Provider,Profile,Script,Vendor,Platform,Version,UUID"]
         for path in glob.glob(
-            os.path.join(Beef.BEEF_ROOT, "*/*/*/*/*.json")
+                os.path.join(Beef.BEEF_ROOT, "*/*/*/*/*.json")
         ):
             parts = path.split(os.sep)
             provider = parts[3]
@@ -165,6 +166,7 @@ class ServiceStub(object):
 
     def __init__(self, pool):
         self.config = self.ServiceConfig(pool=pool)
+
 
 if __name__ == "__main__":
     Command().run()

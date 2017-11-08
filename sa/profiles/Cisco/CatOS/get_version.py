@@ -7,11 +7,13 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
-rx_platform = re.compile(r"^Hardware\s+Version:\s+(?:\d|\.)+\s+Model:\s+(?P<platform>\S+)\s+Serial\s+#:\s+\S+$", re.MULTILINE | re.DOTALL)
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
+
+rx_platform = re.compile(r"^Hardware\s+Version:\s+(?:\d|\.)+\s+Model:\s+(?P<platform>\S+)\s+Serial\s+#:\s+\S+$",
+                         re.MULTILINE | re.DOTALL)
 rx_version = re.compile(r"^\S+\s+Software,\s+Version\s+\S+:\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL)
 
 

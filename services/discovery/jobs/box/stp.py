@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 

@@ -8,9 +8,10 @@
 
 # Python modules
 import datetime
+
+from noc.lib.dateutils import *
 # NOC modules
 from noc.lib.test import NOCTestCase
-from noc.lib.dateutils import *
 
 
 class DateutilsTestCase(NOCTestCase):
@@ -33,5 +34,3 @@ class DateutilsTestCase(NOCTestCase):
             datetime.timedelta(days=1, hours=1, minutes=1, microseconds=1)),
             90060.000001
         )
-
-

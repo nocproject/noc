@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -86,7 +87,7 @@ class Script(BaseScript):
                     if pch["interface"] == ifname:
                         swp["members"] = pch["members"]
                         for mmbr in swp["members"]:  # if PC member is QinQ
-                            if mmbr in qinq_ports:   # PC is QinQ too
+                            if mmbr in qinq_ports:  # PC is QinQ too
                                 swp["802.1ad Tunnel"] = True
                                 break
                         break

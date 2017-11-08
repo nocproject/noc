@@ -8,28 +8,29 @@
 
 # Python modules
 import datetime
-import zlib
 import itertools
-import threading
 import operator
+import threading
+import zlib
 from collections import defaultdict
+
 # Third-party modules
 import bson
+import cachetools
 import ujson
 from mongoengine.queryset import Q
-import cachetools
+from noc.bi.models.alarms import Alarms
+from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
+from noc.bi.models.reboots import Reboots
+from noc.bi.models.span import Span
+from noc.core.clickhouse.model import Model
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
-from noc.core.clickhouse.model import Model
+from noc.core.translation import ugettext as _
 from noc.main.models import User, Group
-from noc.bi.models.reboots import Reboots
-from noc.bi.models.alarms import Alarms
-from noc.bi.models.span import Span
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.sa.interfaces.base import (DictListParameter, DictParameter, IntParameter, StringParameter)
-from noc.core.translation import ugettext as _
 
 # Access items validations
 I_VALID = DictListParameter(attrs={
@@ -347,6 +348,7 @@ class BIAPI(API):
         :param params:
         :return:
         """
+
         def search_parent(node, p_id):
             if p_id is None:
                 return node

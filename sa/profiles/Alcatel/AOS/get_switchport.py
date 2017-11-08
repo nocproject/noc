@@ -8,11 +8,12 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
- 
+
 class Script(BaseScript):
     name = "Alcatel.AOS.get_switchport"
     interface = IGetSwitchport
@@ -22,10 +23,11 @@ class Script(BaseScript):
                               re.MULTILINE)
     rx_line_vlan_ag = re.compile(r"^\s+(?P<vlan>\S+)\s+(?P<vlan_type>\S+)\s+(forwarding|inactive)$",
                                  re.MULTILINE)
+
     def execute(self):
         r = []
         members = []
- 
+
         iface_vlans = {}
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -36,12 +38,12 @@ class Script(BaseScript):
                 tagget = []
                 untagged = []
                 for match_ag in self.rx_line_vlan_ag.finditer(cli_ag):
-                     vlan = match_ag.group("vlan")
-                     vlan_type = match_ag.group("vlan_type")
-                     if vlan_type == "default":
+                    vlan = match_ag.group("vlan")
+                    vlan_type = match_ag.group("vlan_type")
+                    if vlan_type == "default":
                         untagged = vlan
-                     if vlan_type == "qtagged":
-                         tagget += [vlan]
+                    if vlan_type == "qtagged":
+                        tagget += [vlan]
                 shortname = self.profile.convert_interface_name(i)
                 for p in self.scripts.get_portchannel():
                     if p["interface"] == shortname:
@@ -54,7 +56,7 @@ class Script(BaseScript):
                        "untagged": untagged,
                        "tagged": tagget,
                        "members": members,
-                    }]
+                       }]
         if members:
             for m in pc["members"]:
                 portchannel_members[m] = (i)
@@ -71,7 +73,7 @@ class Script(BaseScript):
                 iface_vlans[interface]["untagged"] = match.group("vlan")
             if vlan_type == "qtagged":
                 iface_vlans[interface]["tagged"] += [match.group("vlan")]
- 
+
         for match in self.rx_line.finditer(self.cli("show interfaces status")):
             interface = match.group("interface")
             if interface not in portchannel_members:

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -24,8 +25,8 @@ class Script(BaseScript):
     def execute(self, interface=None):
         r = []
         if interface is not None:
-            cmd = "display transceiver diagnosis interface %s"\
-                % interface.replace('Ge ', 'GigabitEthernet ')
+            cmd = "display transceiver diagnosis interface %s" \
+                  % interface.replace('Ge ', 'GigabitEthernet ')
         else:
             cmd = "display transceiver diagnosis interface"
         v = self.cli(cmd)

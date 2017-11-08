@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import cPickle
 # Python modules
 import datetime
 import logging
-import concurrent.futures
-import cPickle
 import time
+
+import concurrent.futures
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, FloatField, StringField

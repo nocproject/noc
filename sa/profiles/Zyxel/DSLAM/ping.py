@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-import re
 
 
 class Script(BaseScript):
@@ -19,7 +20,7 @@ class Script(BaseScript):
         r"^\s*(ip: ping - )?reply (received )?from", re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None):
+                df=None):
         cmd = "ip ping %s" % address
         if count:
             cmd += " %d" % int(count)

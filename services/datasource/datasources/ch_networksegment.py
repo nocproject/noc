@@ -8,17 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.inv.models.networksegment import NetworkSegment
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
-from noc.inv.models.networksegment import NetworkSegment
 
 
 class CHAdministrativeDomainDataSource(BaseDataSource):
     name = "ch_networksegment"
 
     def extract(self):
-        ns_id = dict(NetworkSegment.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).scalar("id", "bi_id"))
+        ns_id = dict(
+            NetworkSegment.objects.filter(read_preference=ReadPreference.SECONDARY_PREFERRED).scalar("id", "bi_id"))
         ns = NetworkSegment._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
 
         for sub in ns.find({},

@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.lib.nosql import Document, StringField, BooleanField, \
+    IntField, ForeignKeyField
 # NOC modules
 from noc.main.models import PyRule
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.nosql import Document, StringField, BooleanField,\
-    IntField, ForeignKeyField
 
 
 class MRTConfig(Document):

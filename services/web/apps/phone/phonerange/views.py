@@ -8,10 +8,10 @@
 
 # Third-party modules
 from mongoengine.queryset import Q
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.phone.models.phonerange import PhoneRange
-from noc.core.translation import ugettext as _
 
 
 class PhoneRangeApplication(ExtDocApplication):

@@ -8,17 +8,19 @@
 
 # Django modules
 from django.db import models
+from noc.main.models import NotificationGroup
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+
 # NOC modules
 from vcdomain import VCDomain
 from vcfilter import VCFilter
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.main.models import NotificationGroup
 
 
 class VCDomainProvisioningConfig(models.Model):
     """
     VCDomain Provisioning Parameters
     """
+
     class Meta:
         verbose_name = "VC Domain Provisioning Config"
         verbose_name_plural = "VC Domain Provisioning Config"

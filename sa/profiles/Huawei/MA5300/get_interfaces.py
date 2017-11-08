@@ -10,7 +10,7 @@
 """
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,9 +21,9 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface_sep = re.compile(r"^ Vlan ID",
-        re.MULTILINE | re.IGNORECASE)
+                              re.MULTILINE | re.IGNORECASE)
     rx_vlan_id = re.compile(r"^: (?P<vlanid>\d+)$",
-        re.MULTILINE | re.IGNORECASE)
+                            re.MULTILINE | re.IGNORECASE)
     rx_iface = re.compile(
         r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
         r"(?P<descr>.*)", re.MULTILINE)
@@ -86,9 +86,9 @@ class Script(BaseScript):
         for match in self.rx_adsl_state.finditer(v):
             adsl_state[match.group("port")] = match.group("state")
         # VDSL ports state
-        #vdsl_state = {}
-        #v = self.cli("show vdsl port state all")
-        #for match in self.rx_vdsl_state.finditer(v):
+        # vdsl_state = {}
+        # v = self.cli("show vdsl port state all")
+        # for match in self.rx_vdsl_state.finditer(v):
         #    vdsl_state[match.group("port")] = match.group("state")
         adsl_line = []
         v = self.cli("show adsl line config all")
@@ -122,7 +122,7 @@ class Script(BaseScript):
                     sub["tagged_vlans"] += [vlan["vlan_id"]]
                 if name in vlan["untagged"]:
                     sub["untagged_vlan"] = vlan["vlan_id"]
-            iface= {
+            iface = {
                 "name": name,
                 "type": "physical",
                 "admin_status": True,
@@ -135,11 +135,11 @@ class Script(BaseScript):
             match = self.rx_snmp.search(name)
             if match:
                 if name.startswith("Adsl"):
-                    snmp_ifindex = 201326592+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 201326592 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 if name.startswith("Ethernet"):
-                    snmp_ifindex = 469762306+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 469762306 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 if name.startswith("Gigabit"):
-                    snmp_ifindex = 503316993+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 503316993 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 iface["snmp_ifindex"] = snmp_ifindex
             interfaces += [iface]
         for v in self.cli("show ip interface\n").split("\n\n"):
@@ -179,4 +179,3 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["mac"] = mac
             interfaces += [iface]
         return [{"interfaces": interfaces}]
-

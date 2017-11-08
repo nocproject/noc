@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -33,10 +34,10 @@ class Script(BaseScript):
                 ]):
                     # ifOperStatus up(1)
                     if n.startswith("Stack") or n.startswith("Voice") \
-                    or n.startswith("SPAN") or n.startswith("VLAN-"):
+                            or n.startswith("SPAN") or n.startswith("VLAN-"):
                         continue
                     if interface \
-                    and interface == self.profile.convert_interface_name(n):
+                            and interface == self.profile.convert_interface_name(n):
                         return [{"interface": n, "status": int(s) == 1}]
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r

@@ -7,11 +7,11 @@
 # ---------------------------------------------------------------------
 
 from django.utils.translation import ugettext_lazy as _
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, SectionRow
-from noc.ip.models import VRF
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
+from noc.ip.models import VRF
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, SectionRow
 
 
 class ReportVPNStatusApplication(SimpleReport):
@@ -24,7 +24,7 @@ class ReportVPNStatusApplication(SimpleReport):
                 continue  # Skip global
             d = []
             for fi in ForwardingInstance.objects.filter(type="VRF",
-                name=vrf.name):
+                                                        name=vrf.name):
                 si = [i.name for i in
                       SubInterface.objects.filter(
                           forwarding_instance=fi.id).only("name")]

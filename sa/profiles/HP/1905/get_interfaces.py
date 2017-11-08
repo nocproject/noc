@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,8 +19,8 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
-                                "Active\s+:(?P<admin>(Yes|No)).*$",
-                                re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                                 "Active\s+:(?P<admin>(Yes|No)).*$",
+                                 re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ipif = re.compile(
         r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
         r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
@@ -39,9 +40,9 @@ class Script(BaseScript):
             try:
                 admin_status = {}
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.7"):  # IF-MIB
+                                                  "1.3.6.1.2.1.2.2.1.7"):  # IF-MIB
                     if n[:3] == 'Aux' or n[:4] == 'Vlan' \
-                    or n[:11] == 'InLoopBack':
+                            or n[:11] == 'InLoopBack':
                         continue
                     else:
                         admin_status.update({n: int(s) == 1})
@@ -55,17 +56,17 @@ class Script(BaseScript):
             iface = {
                 "name": name,
                 "type": "aggregated" if len(swp["members"]) > 0 \
-                else "physical",
+                    else "physical",
                 "admin_status": admin,
                 "oper_status": swp["status"],
-#                "mac": mac,
+                #                "mac": mac,
                 "subinterfaces": [{
                     "name": name,
                     "admin_status": admin,
                     "oper_status": swp["status"],
                     "enabled_afi": ['BRIDGE'],
-#                    "mac": mac,
-                    #"snmp_ifindex": self.scripts.get_ifindex(interface=name)
+                    #                    "mac": mac,
+                    # "snmp_ifindex": self.scripts.get_ifindex(interface=name)
                 }]
             }
             if swp["tagged"]:

@@ -1,9 +1,10 @@
 import uuid
+
 import bson
-from south.db import db
 from django.db import models
 from noc.core.model.fields import DocumentReferenceField
 from noc.lib.nosql import get_db
+from south.db import db
 
 
 class Migration:

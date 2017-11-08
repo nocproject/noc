@@ -6,19 +6,21 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import os
-import datetime
+
 # Django modules
 from django.db import models
 from django.db.models import Q
+from noc.cm.vcs import vcs_registry
 # NOC modules
 from noc.config import config
 from noc.core.fileutils import rewrite_when_differ, read_file, in_dir
-from noc.cm.vcs import vcs_registry
 from noc.lib.validators import is_int
-from objectnotify import ObjectNotify
 from noc.main.models.notificationgroup import NotificationGroup
+
+from objectnotify import ObjectNotify
 
 
 class Object(models.Model):

@@ -17,13 +17,13 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-#	self.cli("cls")
+        #	self.cli("cls")
         self.cli("conf t")
         self.cli("line vty 0 3")
-#        self.cli("length 0")
-#        self.cli("no length")
-        
+        #        self.cli("length 0")
+        #        self.cli("no length")
+
         config = self.cli("show running-config")
         return config
-#        return self.cleaned_config(config)
 
+# return self.cleaned_config(config)

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -24,7 +25,7 @@ class Script(BaseScript):
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         cmd = "show mac-address-table l2-address"
-        #if mac is not None:
+        # if mac is not None:
         #    cmd += "address %s" % mac
         if interface is not None:
             cmd += " port %s" % interface

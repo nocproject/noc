@@ -8,6 +8,7 @@
 
 # Python modules
 from __future__ import with_statement
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iaddvlan import IAddVlan
@@ -48,15 +49,15 @@ class Script(BaseScript):
 
         # Fallback to CLI
         with self.profile.switch(self):
-#            with self.configure():  # Fix BUG...
-                self.cli("configure\r")  # Fix BUG...
-                self.cli("vlan %d\r" % vlan_id)
-                if name:
-                    self.cli("name %s\r" % name)
-                if tagged_ports:
-                    for port in tagged_ports:
-                        self.cli("tagged %s\r" % port)
-                self.cli("exit\r")  # Fix BUG...
-                self.cli("exit\r")  # Fix BUG...
+            #            with self.configure():  # Fix BUG...
+            self.cli("configure\r")  # Fix BUG...
+            self.cli("vlan %d\r" % vlan_id)
+            if name:
+                self.cli("name %s\r" % name)
+            if tagged_ports:
+                for port in tagged_ports:
+                    self.cli("tagged %s\r" % port)
+            self.cli("exit\r")  # Fix BUG...
+            self.cli("exit\r")  # Fix BUG...
         self.save_config()
         return True

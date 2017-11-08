@@ -6,17 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.cm.facts.system import System
 from noc.cm.facts.interface import Interface
+from noc.cm.facts.ntpserver import NTPServer
+from noc.cm.facts.service import Service
+from noc.cm.facts.staticroute import StaticRoute
 from noc.cm.facts.subinterface import SubInterface
 from noc.cm.facts.sysloghost import SyslogHost
-from noc.cm.facts.ntpserver import NTPServer
+# NOC modules
+from noc.cm.facts.system import System
 from noc.cm.facts.user import User
 from noc.cm.facts.vlan import VLAN
-from noc.cm.facts.service import Service
 from noc.cm.facts.vrf import VRF
-from noc.cm.facts.staticroute import StaticRoute
 
 
 class BaseParser(object):

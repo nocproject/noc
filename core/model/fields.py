@@ -6,18 +6,19 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import cPickle
 # Python modules
 import types
-import cPickle
-# Third-party modules
-from django.db import models
-from south.modelsinspector import add_introspection_rules
+
 import six
 from bson import ObjectId
+# Third-party modules
+from django.db import models
 # NOC Modules
 from noc.core.ip import IP
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import ranges_to_list, list_to_ranges
+from noc.sa.interfaces.base import MACAddressParameter
+from south.modelsinspector import add_introspection_rules
 
 
 class CIDRField(models.Field):
@@ -419,6 +420,7 @@ class CachedForeignKey(models.ForeignKey):
         super(CachedForeignKey, self).contribute_to_class(cls, name)
         setattr(cls, self.get_cache_name(),
                 CachedForeignKeyDescriptor(self))
+
 
 #
 add_introspection_rules([], ["^noc\.core\.model\.fields\."])

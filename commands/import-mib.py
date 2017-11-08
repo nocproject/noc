@@ -8,10 +8,11 @@
 
 # Python modules
 import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.fm.models.mib import MIB
 from noc.fm.models.error import MIBRequiredException, OIDCollision
+from noc.fm.models.mib import MIB
 
 
 class Command(BaseCommand):
@@ -37,6 +38,7 @@ class Command(BaseCommand):
             except OIDCollision as e:
                 self.die(str(e))
         self.stdout.write("Import successful\n")
+
 
 if __name__ == "__main__":
     Command().run()

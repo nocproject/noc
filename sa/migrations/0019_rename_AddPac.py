@@ -7,8 +7,8 @@
 # Third-party modules
 from south.db import db
 
-class Migration:
 
+class Migration:
     def forwards(self):
         db.execute("UPDATE sa_managedobject SET profile_name='AddPac.APOS' WHERE profile_name='VoiceFinder.AddPack'")
 

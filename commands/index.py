@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Full-Text search manipulation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Full-Text search manipulation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 ## Python modules
-import os
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.main.models.textindex import TextIndex
+
 from models import FTS_MODELS, get_model
 
 

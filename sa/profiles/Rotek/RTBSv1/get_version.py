@@ -8,11 +8,9 @@
 
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from tornado.iostream import StreamClosedError
 
 
 class Script(BaseScript):
@@ -60,10 +58,10 @@ class Script(BaseScript):
                 "HW version": hwversion}
         }
         with self.profile.shell(self):
-                v = self.cli("cat /etc/product", cached=True)
-                for line in v.splitlines():
-                    l = line.split(":", 1)
-                    if "productName" in l[0]:
-                        platform = l[1].strip().replace(" ",".").replace("\"","").replace(",","")
-                        result["platform"] = platform
+            v = self.cli("cat /etc/product", cached=True)
+            for line in v.splitlines():
+                l = line.split(":", 1)
+                if "productName" in l[0]:
+                    platform = l[1].strip().replace(" ", ".").replace("\"", "").replace(",", "")
+                    result["platform"] = platform
         return result

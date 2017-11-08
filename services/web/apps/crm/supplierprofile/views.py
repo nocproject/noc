@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.crm.models.supplierprofile import SupplierProfile
 from noc.core.translation import ugettext as _
+from noc.crm.models.supplierprofile import SupplierProfile
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class SupplierProfileApplication(ExtDocApplication):

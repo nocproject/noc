@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.api import API, APIError, api
+from noc.core.service.api import API, api
 
 
 class LoginAPI(API):
@@ -33,8 +33,8 @@ class LoginAPI(API):
         Change credentials
         """
         if self.service.change_credentials(
-            self.handler,
-            credentials
+                self.handler,
+                credentials
         ):
             return True
         else:

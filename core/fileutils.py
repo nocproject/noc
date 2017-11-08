@@ -4,12 +4,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import gzip
+import hashlib
 # Python modules
 import os
-import tempfile
-import hashlib
 import tarfile
-import gzip
+import tempfile
+
 # Third-party modules
 import six
 # NOC modules
@@ -118,6 +119,7 @@ class temporary_file(object):
          with temporary_file("line1\nline2") as p:
              subprocess.Popen(["wc","-l",p])
     """
+
     def __init__(self, text=""):
         self.text = text
 

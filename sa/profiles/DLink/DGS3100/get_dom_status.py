@@ -7,15 +7,18 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
-import re
 
 
 class Script(BaseScript):
     name = "DLink.DGS3100.get_dom_status"
     interface = IGetDOMStatus
-    rx_line = re.compile(r"^\s+(?P<interface>\d+:\d+)\s+(?P<temp_c>\S+)\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(?P<optical_rx_dbm>\S+)\s+\S+", re.IGNORECASE | re.MULTILINE)
+    rx_line = re.compile(
+        r"^\s+(?P<interface>\d+:\d+)\s+(?P<temp_c>\S+)\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(?P<optical_rx_dbm>\S+)\s+\S+",
+        re.IGNORECASE | re.MULTILINE)
 
     def execute(self, interface=None):
         if interface is None:

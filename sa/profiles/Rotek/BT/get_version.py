@@ -7,11 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from tornado.iostream import StreamClosedError
+
 
 class Script(BaseScript):
     name = "Rotek.BT.get_version"

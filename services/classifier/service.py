@@ -7,40 +7,41 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
+import operator
+import os
+import re
 # Python modules
 import time
-import datetime
-import os
 from collections import defaultdict
-import operator
-import re
-# Third-party modules
-from cachetools import TTLCache, cachedmethod
+
+import bson
+import noc.inv.models.interface
 import tornado.gen
 import tornado.ioloop
-import bson
+# Third-party modules
+from cachetools import TTLCache, cachedmethod
 # NOC modules
 from noc.config import config
+from noc.core.cache.base import cache
+from noc.core.debug import error_report
+from noc.core.perf import metrics
 from noc.core.service.base import Service
-from noc.fm.models.failedevent import FailedEvent
+from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.eventlog import EventLog
-from noc.fm.models.activeevent import ActiveEvent
-from noc.fm.models.mib import MIB
 from noc.fm.models.eventtrigger import EventTrigger
+from noc.fm.models.failedevent import FailedEvent
+from noc.fm.models.mib import MIB
 from noc.inv.models.interfaceprofile import InterfaceProfile
-import noc.inv.models.interface
-from noc.sa.models.managedobject import ManagedObject
-from noc.lib.version import get_version
-from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
 from noc.lib.nosql import ObjectId
-from noc.services.classifier.trigger import Trigger
-from noc.services.classifier.ruleset import RuleSet
-from noc.core.cache.base import cache
-from noc.core.perf import metrics
+from noc.lib.version import get_version
 from noc.sa.interfaces.base import InterfaceTypeError
+from noc.sa.models.managedobject import ManagedObject
 from noc.services.classifier.exception import EventProcessingFailed
+from noc.services.classifier.ruleset import RuleSet
+from noc.services.classifier.trigger import Trigger
 
 # Patterns
 rx_oid = re.compile(r"^(\d+\.){6,}$")
@@ -148,12 +149,12 @@ class ClassifierService(Service):
             for c_name, c_id in ec:
                 if re.search(t.event_class_re, c_name, re.IGNORECASE):
                     if (
-                        t.handler and
-                        t.condition == "True" and
-                        t.selector is None and
-                        t.time_pattern is None and
-                        t.template is None and
-                        t.notification_group is None
+                                                t.handler and
+                                                    t.condition == "True" and
+                                                t.selector is None and
+                                            t.time_pattern is None and
+                                        t.template is None and
+                                    t.notification_group is None
                     ):
                         # Alter handlers
                         self.alter_handlers += [
@@ -177,6 +178,7 @@ class ClassifierService(Service):
         """
         Load suppression rules
         """
+
         def compile_rule(s):
             """
             Compile suppression rule
@@ -202,11 +204,11 @@ class ClassifierService(Service):
                 to_skip = False
                 for s in suppression:
                     if (
-                        s["condition"] == r.condition and
-                        s["window"] == r.window and
-                        s["suppress"] == r.suppress and
-                        s["match_condition"] == r.match_condition and
-                        r.event_class.id not in s["event_class"]
+                                                s["condition"] == r.condition and
+                                                s["window"] == r.window and
+                                            s["suppress"] == r.suppress and
+                                        s["match_condition"] == r.match_condition and
+                                    r.event_class.id not in s["event_class"]
                     ):
                         s["event_class"] += [r.event_class.id]
                         s["name"] += ", " + r.name
@@ -361,7 +363,8 @@ class ClassifierService(Service):
                 try:
                     v = decoder(event, v)
                 except InterfaceTypeError:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
+                    raise EventProcessingFailed(
+                        "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
             r[ecv.name] = v
         return r
 

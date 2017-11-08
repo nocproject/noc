@@ -4,14 +4,14 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.execute(SQL_PROC)
 
     def backwards(self):
         pass
 
-SQL_PROC="""
+
+SQL_PROC = """
 CREATE OR REPLACE
 FUNCTION delete_event(INTEGER)
 RETURNS VOID

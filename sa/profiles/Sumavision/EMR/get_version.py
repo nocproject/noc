@@ -11,11 +11,12 @@ __author__ = 'FeNikS'
 # Python modules
 import re
 import urllib2
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
-rx_ver = re.compile(r"VID_WEB_VER = \"(?P<ver>.*?)\"", re.DOTALL|re.MULTILINE)
+rx_ver = re.compile(r"VID_WEB_VER = \"(?P<ver>.*?)\"", re.DOTALL | re.MULTILINE)
 
 
 class Script(BaseScript):

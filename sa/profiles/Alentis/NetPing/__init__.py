@@ -10,6 +10,7 @@
 # Python modules
 import json
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 

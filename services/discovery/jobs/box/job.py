@@ -9,34 +9,37 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import random
+
+from noc.core.span import Span
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
-from .suggestsnmp import SuggestSNMPCheck
-from .profile import ProfileCheck
-from .suggestcli import SuggestCLICheck
-from .version import VersionCheck
-from .caps import CapsCheck
-from .interface import InterfaceCheck
-from .id import IDCheck
-from .config import ConfigCheck
-from .asset import AssetCheck
-from .vlan import VLANCheck
-from .cdp import CDPCheck
-from .huawei_ndp import HuaweiNDPCheck
-from .oam import OAMCheck
-from .lldp import LLDPCheck
-from .lacp import LACPCheck
-from .stp import STPCheck
-from .udld import UDLDCheck
-from .nri import NRICheck
-from .sla import SLACheck
-from .cpe import CPECheck
-from .hk import HouseKeepingCheck
-from .segmentation import SegmentationCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
-from noc.core.span import Span
+
+from .asset import AssetCheck
+from .caps import CapsCheck
+from .cdp import CDPCheck
+from .config import ConfigCheck
+from .cpe import CPECheck
+from .hk import HouseKeepingCheck
+from .huawei_ndp import HuaweiNDPCheck
+from .id import IDCheck
+from .interface import InterfaceCheck
+from .lacp import LACPCheck
+from .lldp import LLDPCheck
+from .nri import NRICheck
+from .oam import OAMCheck
+from .profile import ProfileCheck
+from .segmentation import SegmentationCheck
+from .sla import SLACheck
+from .stp import STPCheck
+from .suggestcli import SuggestCLICheck
+from .suggestsnmp import SuggestSNMPCheck
+from .udld import UDLDCheck
+from .version import VersionCheck
+from .vlan import VLANCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):

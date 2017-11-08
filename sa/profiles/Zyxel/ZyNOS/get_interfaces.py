@@ -8,11 +8,12 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IPv4
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -73,7 +74,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return set()
         return set(match.group("ifaddr") for
-            match in self.rx_ospf_status.finditer(v))
+                   match in self.rx_ospf_status.finditer(v))
 
     def get_rip_addresses(self):
         """
@@ -86,8 +87,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return set()
         return set(IPv4(match.group("ip"), netmask=match.group("mask")).prefix
-            for match in self.rx_rip_status.finditer(v)
-            if match.group("direction").lower() != "none")
+                   for match in self.rx_rip_status.finditer(v)
+                   if match.group("direction").lower() != "none")
 
     def execute(self):
         interfaces = []
@@ -201,7 +202,7 @@ class Script(BaseScript):
                 # @todo: get vlan name to form better description
                 "description": "vlan%d" % v if v else "Outband management",
                 "admin_status": True,  # always True, since inactive
-                "oper_status": True,   # SVIs aren't shown at all
+                "oper_status": True,  # SVIs aren't shown at all
                 "subinterfaces": [{
                     "name": "vlan%d" % v if v else "Management",
                     "description": "vlan%d" % v if v else "Outband management",

@@ -31,6 +31,7 @@ class Profile(BaseProfile):
 
     class switch(object):
         """Switch context manager to use with "with" statement"""
+
         def __init__(self, script):
             self.script = script
 

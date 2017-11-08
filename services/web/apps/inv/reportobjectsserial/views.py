@@ -7,20 +7,20 @@
 # ---------------------------------------------------------------------
 
 from django import forms
+from noc.core.translation import ugettext as _
+from noc.inv.models.object import Object
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.object import Object
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.core.translation import ugettext as _
+from noc.sa.models.useraccess import UserAccess
 
 
 class ReportForm(forms.Form):
     sel = forms.ModelChoiceField(
-            label=_("Managed Object Selector"),
-            required=True,
-            queryset=ManagedObjectSelector.objects.order_by("name"))
+        label=_("Managed Object Selector"),
+        required=True,
+        queryset=ManagedObjectSelector.objects.order_by("name"))
 
 
 class ReportFilterApplication(SimpleReport):

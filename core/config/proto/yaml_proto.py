@@ -8,11 +8,14 @@
 
 # Python modules
 from __future__ import print_function
+
 import itertools
 import os
+
 import six
 # Third-party modules
 import yaml
+
 # NOC modules
 from base import BaseProtocol
 

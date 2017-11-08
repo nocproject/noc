@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+
 # NOC modules
 from application import Application, view
-from noc.core.translation import ugettext as _
 
 
 class ReportApplication(Application):
@@ -18,7 +19,7 @@ class ReportApplication(Application):
         "text": "text/plain; charset=utf-8",
         "html": "text/html; charset=utf-8",
         "csv": "text/csv; charser=utf-8",
-        }
+    }
     # List of CSS links
     styles = []
     # Inline CSS

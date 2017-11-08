@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -29,8 +30,8 @@ class Script(BaseScript):
                 v = self.snmp.get('1.3.6.1.2.1.1.1.0')
                 match = self.re_search(self.rx_snmp_ver, v)
                 return {'vendor': 'Brocade',
-                 'platform': match.group('platform'),
-                 'version': match.group('version')}
+                        'platform': match.group('platform'),
+                        'version': match.group('version')}
             except self.snmp.TimeOutError:
                 pass
 
@@ -38,5 +39,5 @@ class Script(BaseScript):
         match1 = self.re_search(self.rx_sw_ver, v)
         match2 = self.re_search(self.rx_hw_ver, v)
         return {'vendor': 'Brocade',
-         'platform': match2.group('version'),
-         'version': match1.group('version')}
+                'platform': match2.group('version'),
+                'version': match1.group('version')}

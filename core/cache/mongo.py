@@ -8,14 +8,17 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import datetime
+
 # Third-party modules
 import bson
+from noc.config import config
+from noc.lib.nosql import get_db
 from six.moves.cPickle import loads, dumps, HIGHEST_PROTOCOL
+
 # NOC modules
 from .base import BaseCache
-from noc.lib.nosql import get_db
-from noc.config import config
 
 
 class MongoCache(BaseCache):

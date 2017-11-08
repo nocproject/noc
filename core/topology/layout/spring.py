@@ -8,8 +8,10 @@
 
 ## Python modules
 import math
+
 ## Third-party modules
 import networkx as nx
+
 ## NOC modules
 from base import LayoutBase
 

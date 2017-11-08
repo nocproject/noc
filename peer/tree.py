@@ -22,6 +22,7 @@ class Node(object):
     Optimizing prefix tree.
     @todo: Merge with PrefixDB
     """
+
     def __init__(self, parent=None, prefix=None, n=0, prefixes=None):
         self.parent = parent
         self.prefix = prefix or []
@@ -152,6 +153,7 @@ def optimize_prefix_list(prefix_list):
     ['192.168.0.0/24']
     """
     return Node(prefixes=prefix_list).get_prefixes()
+
 
 def optimize_prefix_list_maxlen(prefix_list):
     """

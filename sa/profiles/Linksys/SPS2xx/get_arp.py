@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -28,9 +29,9 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.4.22.1.1",
-                     "1.3.6.1.2.1.4.22.1.2",
-                     "1.3.6.1.2.1.4.22.1.3"]):
+                        ["1.3.6.1.2.1.4.22.1.1",
+                         "1.3.6.1.2.1.4.22.1.2",
+                         "1.3.6.1.2.1.4.22.1.3"]):
                     iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True)  # IF-MIB
                     mac = ":".join(["%02x" % ord(c) for c in v[2]])
                     ip = ["%02x" % ord(c) for c in v[3]]

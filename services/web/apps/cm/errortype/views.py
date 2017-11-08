@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.cm.models.errortype import ErrorType
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class ErrorTypeApplication(ExtDocApplication):

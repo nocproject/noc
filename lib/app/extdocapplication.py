@@ -8,28 +8,31 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import uuid
 from functools import reduce
+
 # Django modules
 from django.http import HttpResponse
+from mongoengine.errors import ValidationError
 # Third-party modules
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
                                 BinaryField)
-from mongoengine.errors import ValidationError
 # NOC modules
 from noc.config import config
-from .extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
                            PlainReferenceField, Q)
+from noc.lib.validators import is_int, is_uuid
+from noc.main.models.collectioncache import CollectionCache
+from noc.main.models.doccategory import DocCategory
 from noc.sa.interfaces.base import (
     BooleanParameter, GeoPointParameter,
     ModelParameter, ListOfParameter,
     EmbeddedDocumentParameter, DictParameter,
     InterfaceTypeError, DocumentParameter)
-from noc.lib.validators import is_int, is_uuid
-from noc.main.models.collectioncache import CollectionCache
-from noc.main.models.doccategory import DocCategory
+
+from .extapplication import ExtApplication, view
 
 
 class ExtDocApplication(ExtApplication):
@@ -129,6 +132,7 @@ class ExtDocApplication(ExtApplication):
         """
         Prepare Q statement for query
         """
+
         def get_q(f):
             if f == "uuid":
                 if is_uuid(query):
@@ -185,9 +189,9 @@ class ExtDocApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (
-            self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param,
-            self.only_param
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param,
+                self.only_param
         ):
             if p in q:
                 del q[p]
@@ -344,7 +348,8 @@ class ExtDocApplication(ExtApplication):
         return self.response(self.instance_to_dict(o, fields=only),
                              status=self.OK)
 
-    @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+    @view(method=["PUT"],
+          url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="update", api=True)
     def api_update(self, request, id):
         try:
@@ -376,7 +381,8 @@ class ExtDocApplication(ExtApplication):
             r = self.instance_to_dict(o)
         return self.response(r, status=self.OK)
 
-    @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+    @view(method=["DELETE"],
+          url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="delete", api=True)
     def api_delete(self, request, id):
         try:

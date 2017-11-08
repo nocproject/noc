@@ -8,20 +8,23 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import datetime
 import logging
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField,
                                 ReferenceField, ListField, LongField)
-# NOC modules
-from .serviceprofile import ServiceProfile
-from noc.crm.models.subscriber import Subscriber
-from noc.main.models.remotesystem import RemoteSystem
-from noc.lib.nosql import ForeignKeyField
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete
+from noc.crm.models.subscriber import Subscriber
+from noc.lib.nosql import ForeignKeyField
+from noc.main.models.remotesystem import RemoteSystem
+from noc.sa.models.managedobject import ManagedObject
+
+# NOC modules
+from .serviceprofile import ServiceProfile
 
 logger = logging.getLogger(__name__)
 
@@ -45,17 +48,17 @@ class Service(Document):
     ts = DateTimeField(default=datetime.datetime.now)
     # Logical state of service
     logical_status = StringField(
-            choices=[
-                ("P", "Planned"),
-                ("p", "Provisioning"),
-                ("T", "Testing"),
-                ("R", "Ready"),
-                ("S", "Suspended"),
-                ("r", "Removing"),
-                ("C", "Closed"),
-                ("U", "Unknown")
-            ],
-            default="U"
+        choices=[
+            ("P", "Planned"),
+            ("p", "Provisioning"),
+            ("T", "Testing"),
+            ("R", "Ready"),
+            ("S", "Suspended"),
+            ("r", "Removing"),
+            ("C", "Closed"),
+            ("U", "Unknown")
+        ],
+        default="U"
     )
     logical_status_start = DateTimeField()
     # Parent service

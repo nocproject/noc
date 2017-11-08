@@ -8,15 +8,17 @@
 
 # Python modules
 from __future__ import print_function
-import subprocess
+
 import argparse
 import os
+import subprocess
+
 # Third-party modules
 from babel.util import pathmatch
+from noc.config import config
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.settings import LANGUAGES
-from noc.config import config
 
 
 class Command(BaseCommand):
@@ -209,6 +211,7 @@ class Command(BaseCommand):
             os.path.join(pfx, "messages_js.po")
         ]:
             subprocess.check_call(["open", path])
+
 
 if __name__ == "__main__":
     Command().run()

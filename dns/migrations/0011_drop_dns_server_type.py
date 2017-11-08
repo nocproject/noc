@@ -5,11 +5,9 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         pass
 

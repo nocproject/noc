@@ -8,8 +8,9 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.profile.base import BaseProfile
 import re
+
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
@@ -73,15 +74,15 @@ class Profile(BaseProfile):
         if not match:
             return s
         return "%s%s" % ({
-            "Loop": "LoopBack",
-            "Ten-GigabitEthernet": "XGigabitEthernet",
-            "XGE": "XGigabitEthernet",
-            "GE": "GigabitEthernet",
-            "Eth": "Ethernet",
-            "MEth": "M-Ethernet",
-            "VE": "Virtual-Ethernet"
-            # "Vlanif": "Vlan-interface" - need testing
-        }[match.group("type")], match.group("number"))
+                             "Loop": "LoopBack",
+                             "Ten-GigabitEthernet": "XGigabitEthernet",
+                             "XGE": "XGigabitEthernet",
+                             "GE": "GigabitEthernet",
+                             "Eth": "Ethernet",
+                             "MEth": "M-Ethernet",
+                             "VE": "Virtual-Ethernet"
+                             # "Vlanif": "Vlan-interface" - need testing
+                         }[match.group("type")], match.group("number"))
 
     def convert_mac(self, mac):
         """
@@ -160,6 +161,6 @@ class Profile(BaseProfile):
             r[part_name] = dict(k_v_list)
             if row:
                 r[part_name]["table"] = row
-            # r[part_name] = dict(k_v_list)
-            # r[part_name]["table"] = row
+                # r[part_name] = dict(k_v_list)
+                # r[part_name]["table"] = row
         return r

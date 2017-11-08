@@ -17,6 +17,7 @@ class KBEntryPreviewLog(models.Model):
     """
     Preview Log
     """
+
     class Meta:
         verbose_name = "KB Entry Preview Log"
         verbose_name_plural = "KB Entry Preview Log"

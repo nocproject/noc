@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -71,11 +72,11 @@ class Script(BaseScript):
         version = match.group("version")
 
         return {
-                "vendor": "Eltex",
-                "platform": platform,
-                "version": version,
-                "attributes": {
-                    "HW version": hardware,
-                    "Serial Number": serial
-                    }
-                }
+            "vendor": "Eltex",
+            "platform": platform,
+            "version": version,
+            "attributes": {
+                "HW version": hardware,
+                "Serial Number": serial
+            }
+        }

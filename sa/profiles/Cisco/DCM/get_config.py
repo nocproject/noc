@@ -1,24 +1,26 @@
 # -*- coding: utf-8 -*-
 __author__ = 'boris'
 
-#NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetconfig import IGetConfig
-#Python modules
+# Python modules
 import re
 from xml.dom.minidom import parseString
+
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 rx_config = re.compile(r"=====begin=====\n"
                        r"(?P<path>\[.*?\])(?P<part>\[\d*\])\n"
                        r"(?P<xml>.*?)\n"
                        r"=====end====="
-                       ,re.DOTALL | re.MULTILINE)
+                       , re.DOTALL | re.MULTILINE)
 
 head_str = """<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="8">
 """
 bottom_str = """</boost_serialization>"""
+
 
 class Script(BaseScript):
     name = "Cisco.DCM.get_config"

@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication
-from noc.core.translation import ugettext as _
 
 
 class CardApplication(ExtApplication):

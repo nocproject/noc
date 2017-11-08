@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -19,8 +20,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaceStatus
     rx_link = re.compile(r"^(?P<interface>\d+)\s+([01M HFaulf]+|Auto)\s+" \
-                          "\S+\s+\S+\s+(?P<status>([01M HFaulf]+|Down))$",
-                          re.MULTILINE | re.IGNORECASE)
+                         "\S+\s+\S+\s+(?P<status>([01M HFaulf]+|Down))$",
+                         re.MULTILINE | re.IGNORECASE)
 
     def execute(self, interface=None):
         """
@@ -52,7 +53,7 @@ class Script(BaseScript):
         r = []
         for match in self.rx_link.finditer(s):
             r += [{
-            "interface": match.group("interface").lstrip('0'),
-               "status": match.group("status").lower() != "down"
-         }]
+                "interface": match.group("interface").lstrip('0'),
+                "status": match.group("status").lower() != "down"
+            }]
         return r

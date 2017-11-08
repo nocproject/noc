@@ -6,22 +6,24 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.ip.models import VRF
 # Django Modules
-from django.utils.translation import ugettext_lazy as _
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.ip.models import VRF
-from noc.core.translation import ugettext as _
+
+
 #
 #
 #
 class Reportreportmissedp2p(SimpleReport):
     title = _("Missed Link Addresses")
-    def get_data(self,**kwargs):
-        vrf_id=VRF.get_global().id
+
+    def get_data(self, **kwargs):
+        vrf_id = VRF.get_global().id
         return self.from_query(title=self.title,
-            columns=[_("Prefix")],
-            query="""
+                               columns=[_("Prefix")],
+                               query="""
             SELECT prefix
             FROM   ip_prefix p
             WHERE 
@@ -31,6 +33,5 @@ class Reportreportmissedp2p(SimpleReport):
                 AND NOT EXISTS (SELECT * FROM ip_address WHERE vrf_id=%s AND afi='4' AND prefix=p.prefix)
             ORDER BY prefix
             """,
-            params=[vrf_id,vrf_id],
-            enumerate=True)
-    
+                               params=[vrf_id, vrf_id],
+                               enumerate=True)

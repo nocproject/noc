@@ -8,10 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.main.models.pool import Pool
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
-from noc.main.models.pool import Pool
 
 
 class CHPoolDataSource(BaseDataSource):

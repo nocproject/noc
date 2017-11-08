@@ -7,6 +7,8 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 from noc.sa.profiles.DLink.DxS import DES3200
@@ -16,7 +18,6 @@ from noc.sa.profiles.DLink.DxS import DGS3400
 from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3600
 from noc.sa.profiles.DLink.DxS import DGS3620
-import re
 
 
 class Script(BaseScript):
@@ -36,11 +37,11 @@ class Script(BaseScript):
             cmd += " port %s" % interface
         if vlan is not None:
             if self.match_version(DES3200, version__gte="1.33") \
-            or self.match_version(DGS3120, version__gte="1.00.00") \
-            or self.match_version(DGS3400, version__gte="2.70") \
-            or self.match_version(DGS3420, version__gte="1.00.00") \
-            or self.match_version(DGS3600, version__gte="2.52") \
-            or self.match_version(DGS3620, version__gte="1.00.00"):
+                    or self.match_version(DGS3120, version__gte="1.00.00") \
+                    or self.match_version(DGS3400, version__gte="2.70") \
+                    or self.match_version(DGS3420, version__gte="1.00.00") \
+                    or self.match_version(DGS3600, version__gte="2.52") \
+                    or self.match_version(DGS3620, version__gte="1.00.00"):
                 cmd += " vlanid %d" % vlan
             else:
                 if self.match_version(DES3500, version__gte="6.00"):

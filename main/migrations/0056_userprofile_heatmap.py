@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from south.db import db
 from django.db import models
+from south.db import db
+
 
 class Migration:
-
     def forwards(self):
         db.add_column(
             "main_userprofile",

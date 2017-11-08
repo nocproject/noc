@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 rx_platform = re.compile(
     r"^Hardware\n\s+cisco\s+(?P<platform>MDS\s+\S+)", re.MULTILINE)
@@ -20,6 +21,7 @@ rx_version = re.compile(
 rx_image = re.compile(
     r"system image file is:\s+bootflash:\/(?P<image>\S+)",
     re.MULTILINE | re.DOTALL)
+
 
 class Script(BaseScript):
     name = "Cisco.SANOS.get_version"

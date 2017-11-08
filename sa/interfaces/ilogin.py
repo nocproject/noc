@@ -5,9 +5,9 @@
 # ---------------------------------------------------------------------
 
 from noc.core.interface.base import BaseInterface
+
 from base import BooleanParameter
 
 
 class ILogin(BaseInterface):
     returns = BooleanParameter()
-

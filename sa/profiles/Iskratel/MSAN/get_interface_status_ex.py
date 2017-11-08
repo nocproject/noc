@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.mib import mib
+from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 
 
 class Script(BaseScript):

@@ -7,15 +7,17 @@ __author__ = 'FeNikS'
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-#NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
-#Python modules
+# Python modules
 import re
 from xml.dom.minidom import parseString
 
-re_sub = re.compile('\n\t+\n+', re.DOTALL| re.MULTILINE)
+# NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IGetConfig
+
+re_sub = re.compile('\n\t+\n+', re.DOTALL | re.MULTILINE)
 postfix = "cgi-bin/fullxml?addLicense=yes&addFilelist=yes&addImagelist=yes&addAlarmsCurrent=yes&addAlarmsHistory=yes&addErrors=yes&"
+
 
 class Script(noc.sa.script.Script):
     name = "Harmonic.DiviComElectra.get_config"

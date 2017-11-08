@@ -8,11 +8,12 @@
 
 import itertools
 from collections import defaultdict
+
+from noc.core.translation import ugettext as _
+from noc.inv.models.capability import Capability
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import DocCategory
-from noc.core.translation import ugettext as _
 
 
 class CapabilityApplication(ExtDocApplication):
@@ -41,8 +42,8 @@ class CapabilityApplication(ExtDocApplication):
             { text: 'buy lottery tickets', leaf: true }
         ]
         }
-        :param request: 
-        :return: 
+        :param request:
+        :return:
         """
         root_c = {"text": "root", "children": []}
 

@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -19,12 +20,12 @@ class Profile(BaseProfile):
     pattern_password = r"^Password(\(1-16 chars\)|):"
     pattern_more = [
         (r"^\.\.\.\.press ENTER to next line, CTRL_C to break, other key "
-            r"to next page\.\.\.\.", " "),
+         r"to next page\.\.\.\.", " "),
         (r"^Startup config in flash will be updated, are you sure\(y/n\)\? "
-            r"\[n\]", "y"),
+         r"\[n\]", "y"),
         (r"^ --More-- $", " "),
         (r"^Confirm to overwrite current startup-config configuration",
-            "\ny\n"),
+         "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
         (r"^Begin to receive file, please wait", " "),
         (r"#####", " ")
@@ -34,7 +35,7 @@ class Profile(BaseProfile):
         r"% (Unrecognized command, and error|Invalid input) detected at " \
         r"'\^' marker.|% Ambiguous command:|interface error!|Incomplete " \
         r"command"
-#    command_disable_pager = "terminal datadump"
+    #    command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"

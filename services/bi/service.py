@@ -7,11 +7,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from noc.config import config
+from noc.core.service.authapi import AuthAPIRequestHandler
 # NOC modules
 from noc.core.service.ui import UIService
+
 from api.bi import BIAPI
-from noc.core.service.authapi import AuthAPIRequestHandler
-from noc.config import config
 
 
 class BIService(UIService):
@@ -25,9 +26,9 @@ class BIService(UIService):
         traefik_backend = "bi"
         traefik_frontend_rule = "PathPrefix:/api/bi"
 
-
     def __init__(self):
         super(BIService, self).__init__()
+
 
 if __name__ == "__main__":
     BIService().start()

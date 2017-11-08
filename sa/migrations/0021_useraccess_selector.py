@@ -17,8 +17,8 @@ class Migration:
             model_name="ManagedObjectSelector",
             db_table="sa_managedobjectselector")
         db.add_column('sa_useraccess', 'selector',
-            models.ForeignKey(ManagedObjectSelector,
-                verbose_name="Object Selector", null=True, blank=True))
+                      models.ForeignKey(ManagedObjectSelector,
+                                        verbose_name="Object Selector", null=True, blank=True))
         db.delete_column('sa_useraccess', 'administrative_domain_id')
         db.delete_column('sa_useraccess', 'group_id')
 

@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.core.translation import ugettext as _
+from noc.dns.models.dnszoneprofile import DNSZoneProfile
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 
 
 class DNSZoneProfileApplication(ExtModelApplication):
@@ -25,4 +25,3 @@ class DNSZoneProfileApplication(ExtModelApplication):
 
     def field_slaveslabel(self, o):
         return u", ".join([s.name for s in o.slaves.all()])
-

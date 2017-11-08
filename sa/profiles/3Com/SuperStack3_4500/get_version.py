@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -37,5 +38,5 @@ class Script(BaseScript):
             "attributes": {
                 "Boot PROM": match1.group("bootprom"),
                 "HW version": match1.group("hardware"),
-                }
             }
+        }

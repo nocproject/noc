@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetportchannel import IGetPortchannel
-from noc.lib.text import parse_table
 import re
+
+from noc.core.script.base import BaseScript
+from noc.lib.text import parse_table
+from noc.sa.interfaces.igetportchannel import IGetPortchannel
 
 
 class Script(BaseScript):
@@ -40,7 +41,7 @@ class Script(BaseScript):
                 iface["type"] = "L"
             else:
                 iface["type"] = "S"
-            for ifname in i[len(i)-1].split():
+            for ifname in i[len(i) - 1].split():
                 iface["members"] += [self.extract_iface(ifname)]
             r += [iface]
         return r

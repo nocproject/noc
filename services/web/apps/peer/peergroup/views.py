@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.peer.models import PeerGroup
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.peer.models import PeerGroup
 
 
 class PeerGroupApplication(ExtModelApplication):
@@ -19,5 +19,4 @@ class PeerGroupApplication(ExtModelApplication):
     title = _("Peer Groups")
     menu = [_("Setup"), _("Peer Groups")]
     model = PeerGroup
-    query_fields = ["name__icontains","description__icontains"]
-
+    query_fields = ["name__icontains", "description__icontains"]

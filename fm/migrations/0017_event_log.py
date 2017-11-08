@@ -1,16 +1,14 @@
-
-from south.db import db
 from django.db import models
+from south.db import db
 
-
-EVENT_STATUS_CHOICES = [("U", "Unclassified"), ("A", "Active"), ("C","Closed")]
+EVENT_STATUS_CHOICES = [("U", "Unclassified"), ("A", "Active"), ("C", "Closed")]
 
 
 class Migration:
-
     def forwards(self):
         # Mock Models
-        Event = db.mock_model(model_name='Event', db_table='fm_event', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        Event = db.mock_model(model_name='Event', db_table='fm_event', db_tablespace='', pk_field_name='id',
+                              pk_field_type=models.AutoField)
 
         # Model 'EventLog'
         db.create_table('fm_eventlog', (

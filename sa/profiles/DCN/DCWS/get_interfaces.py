@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,16 +22,16 @@ class Script(BaseScript):
         r"\s+(?P<interface>\S+)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)"
         r"\s+(?P<ifname>[^\n]+)"
         r"\s+Hardware is (?P<hardw>[^\n]+)",
-    re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(
         r"\s+address\s+is\s+(?P<mac>\S+)",
-    re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
     rx_alias = re.compile(
         r"\s+alias\s+name is (?P<alias>\S+)\s",
-    re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
     rx_index = re.compile(
         r"\s*index is (?P<ifindex>\S+)",
-    re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         interfaces = []
@@ -50,7 +51,7 @@ class Script(BaseScript):
                 ifindex = matchindex.group("ifindex")
             a_stat = match.group("admin_status").lower() == "up"
             o_stat = match.group("oper_status").lower() == "up"
-            #print name, mac, index, alias, a_stat, o_stat
+            # print name, mac, index, alias, a_stat, o_stat
 
             interfaces += [{
                 "type": "physical",
@@ -71,4 +72,3 @@ class Script(BaseScript):
                 }]
             }]
         return [{"interfaces": interfaces}]
-

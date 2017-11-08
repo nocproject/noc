@@ -7,9 +7,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.gis.models import Area
 # NOC modules
 from noc.gis.overlays.base import *
-from noc.gis.models import Area
 
 
 class AreasOverlay(OverlayHandler):

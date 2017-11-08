@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.main.models import User
+
 # NOC modules
 from base import BaseAuthBackend
-from noc.main.models import User
-from noc.core.translation import ugettext as _
 
 
 class LocalBackend(BaseAuthBackend):

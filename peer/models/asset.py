@@ -8,11 +8,11 @@
 
 # Django modules
 from django.db import models
-# NOC module
-from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.lib.rpsl import rpsl_format
+# NOC module
+from noc.project.models.project import Project
 
 
 class ASSet(models.Model):
@@ -43,8 +43,8 @@ class ASSet(models.Model):
         if self.members is None:
             return []
         m = sorted(self.members.replace(",", " ")
-            .replace("\n", " ")
-            .replace("\r", " ").upper().split())
+                   .replace("\n", " ")
+                   .replace("\r", " ").upper().split())
         return m
 
     @property

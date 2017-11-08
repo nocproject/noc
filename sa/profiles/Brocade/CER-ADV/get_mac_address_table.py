@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -35,11 +36,11 @@ class Script(BaseScript):
 
         return r
 
-    def execute(self, interface = None, vlan = None, mac = None):
+    def execute(self, interface=None, vlan=None, mac=None):
         if vlan:
             vlans = [vlan]
         else:
-            vlans = [ r['vlan_id'] for r in self.scripts.get_vlans() ]
+            vlans = [r['vlan_id'] for r in self.scripts.get_vlans()]
         if mac:
             rmac = mac.replace(':', '').lower()
         r = []
@@ -48,8 +49,8 @@ class Script(BaseScript):
                 rrmac = m.replace('.', '').lower()
                 if (not interface or port == interface) and (not mac or rmac == rrmac):
                     r += [{'vlan_id': v,
-                      'mac': m,
-                      'interfaces': [port],
-                      'type': type}]
+                           'mac': m,
+                           'interfaces': [port],
+                           'type': type}]
 
         return r

@@ -7,10 +7,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.config import config
 # NOC modules
 from noc.core.service.base import Service
+
 from mrt import MRTRequestHandler
-from noc.config import config
+
 
 class MRTService(Service):
     name = "mrt"
@@ -26,6 +28,7 @@ class MRTService(Service):
         return [
             ("/api/mrt/", MRTRequestHandler, {"service": self})
         ]
+
 
 if __name__ == "__main__":
     MRTService().start()

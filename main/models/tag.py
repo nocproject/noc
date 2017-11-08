@@ -8,9 +8,9 @@
 
 # Django modules
 from django.contrib.contenttypes.models import ContentType
+from noc.lib.db import QTags
 # NOC modules
 from noc.lib.nosql import Document, IntField, StringField, ListField
-from noc.lib.db import QTags
 
 
 class Tag(Document):

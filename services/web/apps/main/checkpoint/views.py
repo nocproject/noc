@@ -8,13 +8,14 @@
 
 # Python modules
 import datetime
+
 # Django modules
 from django import forms
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.application import Application, view, HasPerm
 from noc.lib.forms import NOCForm
 from noc.main.models import Checkpoint
-from noc.core.translation import ugettext as _
 
 
 class CheckpointAppplication(Application):

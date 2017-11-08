@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
 
 
 class VersionCheck(DiscoveryCheck):

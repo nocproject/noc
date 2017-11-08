@@ -9,9 +9,10 @@
 # Python modules
 import operator
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from django.db import models
-import cachetools
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 
@@ -36,6 +37,7 @@ class Project(models.Model):
     """
     Projects are used to track investment projects expenses and profits
     """
+
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"

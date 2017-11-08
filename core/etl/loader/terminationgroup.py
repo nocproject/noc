@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.sa.models.terminationgroup import TerminationGroup
+
 ## NOC modules
 from base import BaseLoader
-from noc.sa.models.terminationgroup import TerminationGroup
 
 
 class TerminationGroupLoader(BaseLoader):

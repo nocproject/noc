@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.lib.text import parse_table
 import re
+
+from noc.core.script.base import BaseScript
+from noc.lib.text import parse_table
+from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 
 
 class Script(BaseScript):
@@ -20,11 +21,14 @@ class Script(BaseScript):
     ## MSTP Mode parsing
     ##
     rx_mstp_instance_list = re.compile(r"^\s*(\d+)", re.MULTILINE)
-    rx_mstp_region = re.compile(r"MST Region Name:\s+(?P<region>\S+).*Revision:\s+(?P<revision>\d+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_mstp_region = re.compile(r"MST Region Name:\s+(?P<region>\S+).*Revision:\s+(?P<revision>\d+)",
+                                re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_mstp_vlans = re.compile(
         r"^MSTI \d VLANs mapped\s+(?P<vlans>.+?)$", re.MULTILINE)
-    rx_mstp_root = re.compile(r"^Root\s+ID\s+Priority\s+(?P<root_priority>\d+),\s+Address\s+(?P<root_id>\S+)", re.MULTILINE)
-    rx_mstp_bridge = re.compile(r"^Bridge\s+ID\s+Priority\s+(?P<bridge_priority>\d+),\s+Address\s+(?P<bridge_id>\S+)", re.MULTILINE)
+    rx_mstp_root = re.compile(r"^Root\s+ID\s+Priority\s+(?P<root_priority>\d+),\s+Address\s+(?P<root_id>\S+)",
+                              re.MULTILINE)
+    rx_mstp_bridge = re.compile(r"^Bridge\s+ID\s+Priority\s+(?P<bridge_priority>\d+),\s+Address\s+(?P<bridge_id>\S+)",
+                                re.MULTILINE)
 
     def process_mstp(self):
         # Get Instances List

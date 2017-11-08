@@ -6,19 +6,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.db.models.fields import CharField, BooleanField, IntegerField,\
-    FloatField, related
 from django.db.models import Q
+# Django modules
+from django.db.models.fields import CharField, BooleanField, IntegerField, \
+    FloatField, related
 from django.db.utils import IntegrityError
+from noc.core.model.fields import TextArrayField
+from noc.lib.validators import is_int
 # NOC modules
 from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
-                               FloatParameter, ModelParameter,
-                               StringParameter, TagsParameter,
-                               StringListParameter,
-                               NoneParameter, InterfaceTypeError)
-from noc.lib.validators import is_int
-from noc.core.model.fields import TextArrayField
+                                    FloatParameter, ModelParameter,
+                                    TagsParameter,
+                                    StringListParameter,
+                                    NoneParameter, InterfaceTypeError)
 
 
 class ModelInline(object):
@@ -80,35 +80,35 @@ class ModelInline(object):
                                  if f.unique and isinstance(f, CharField)]
         # Add searchable custom fields
         self.query_fields += ["%s__%s" % (f.name, self.query_condition)
-            for f in self.get_custom_fields() if f.is_searchable]
+                              for f in self.get_custom_fields() if f.is_searchable]
         #
 
     def contribute_to_class(self, app, name):
         # Add List handler
         app.add_view("api_%s_list" % name, self.api_list,
-            method=["GET"],
-            url="^(?P<parent>[^/]+)/%s/$" % name,
-            access="read", api=True)
+                     method=["GET"],
+                     url="^(?P<parent>[^/]+)/%s/$" % name,
+                     access="read", api=True)
         # Add Create handler
         app.add_view("api_%s_create" % name, self.api_create,
-            method=["POST"],
-            url="^(?P<parent>[^/]+)/%s/$" % name,
-            access="create", api=True)
+                     method=["POST"],
+                     url="^(?P<parent>[^/]+)/%s/$" % name,
+                     access="create", api=True)
         # Add Read Handler
         app.add_view("api_%s_read" % name, self.api_read,
-            method=["GET"],
-            url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
-            access="read", api=True)
+                     method=["GET"],
+                     url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
+                     access="read", api=True)
         # Add Update Handler
         app.add_view("api_%s_update" % name, self.api_update,
-            method=["PUT"],
-            url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
-            access="update", api=True)
+                     method=["PUT"],
+                     url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
+                     access="update", api=True)
         # Add Delete Handler
         app.add_view("api_%s_delete" % name, self.api_delete,
-            method=["DELETE"],
-            url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
-            access="delete", api=True)
+                     method=["DELETE"],
+                     url="^(?P<parent>[^/]+)/%s/(?P<id>\d+)/?$" % name,
+                     access="delete", api=True)
 
     def set_app(self, app):
         self.app = app
@@ -149,7 +149,7 @@ class ModelInline(object):
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
             return ModelParameter(field.rel.to,
-                required=not field.null)
+                                  required=not field.null)
         else:
             return None
 
@@ -157,6 +157,7 @@ class ModelInline(object):
         """
         Prepare Q statement for query
         """
+
         def get_q(f):
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
@@ -164,8 +165,8 @@ class ModelInline(object):
                 return f
 
         q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
-            self.query_fields[1:],
-            Q(**{get_q(self.query_fields[0]): query}))
+                   self.query_fields[1:],
+                   Q(**{get_q(self.query_fields[0]): query}))
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -221,9 +222,9 @@ class ModelInline(object):
                 np, lt = p, None
                 # Skip ignored params
             if np in self.ignored_params or p in (
-                self.limit_param, self.page_param, self.start_param,
-                self.format_param, self.sort_param, self.query_param,
-                self.only_param):
+                    self.limit_param, self.page_param, self.start_param,
+                    self.format_param, self.sort_param, self.query_param,
+                    self.only_param):
                 continue
             v = q[p]
             if v == "\x00":
@@ -237,7 +238,7 @@ class ModelInline(object):
                     self.model._meta.db_table, self.model._meta.pk.name,
                     model._meta.get_field_by_name(fn)[0].attname,
                     model._meta.db_table
-                    )
+                )
                 if None in nq:
                     nq[None] += [extra_where]
                 else:
@@ -271,7 +272,7 @@ class ModelInline(object):
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if (v is not None and
-                    type(v) not in (str, unicode, int, long, bool, list)):
+                            type(v) not in (str, unicode, int, long, bool, list)):
                     v = unicode(v)
                 r[f.name] = v
             else:
@@ -295,7 +296,7 @@ class ModelInline(object):
         """
         # Todo: Fix
         q = dict((str(k), v[0] if len(v) == 1 else v)
-            for k, v in request.GET.lists())
+                 for k, v in request.GET.lists())
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -339,7 +340,7 @@ class ModelInline(object):
 
     def api_list(self, request, parent):
         return self.list_data(request, self.instance_to_dict,
-            parent=int(parent))
+                              parent=int(parent))
 
     def api_create(self, request, parent):
         parent = self.app.get_object_or_404(
@@ -348,35 +349,35 @@ class ModelInline(object):
             attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
         except ValueError, why:
             return self.app.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.app.BAD_REQUEST)
+                {
+                    "status": False,
+                    "message": "Bad request",
+                    "traceback": str(why)
+                }, status=self.app.BAD_REQUEST)
         except InterfaceTypeError, why:
             return self.app.render_json(
-                    {
-                        "status": False,
-                        "message": "Bad request",
-                        "traceback": str(why)
-                    }, status=self.BAD_REQUEST)
+                {
+                    "status": False,
+                    "message": "Bad request",
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
         try:
             # Exclude callable values from query
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
             qattrs = dict((k, attrs[k])
-                for k in attrs if not callable(attrs[k]))
+                          for k in attrs if not callable(attrs[k]))
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.app.render_json(
-                    {
+                {
                     "status": False,
                     "message": "Duplicated record"
                 },
                 status=self.CONFLICT)
         except self.model.MultipleObjectsReturned:
             return self.app.render_json(
-                    {
+                {
                     "status": False,
                     "message": "Duplicated record"
                 }, status=self.CONFLICT)
@@ -387,7 +388,7 @@ class ModelInline(object):
                 o.save()
             except IntegrityError:
                 return self.app.render_json(
-                        {
+                    {
                         "status": False,
                         "message": "Integrity error"
                     }, status=self.CONFLICT)
@@ -414,7 +415,7 @@ class ModelInline(object):
         if only:
             only = only.split(",")
         return self.app.response(self.instance_to_dict(o, fields=only),
-            status=self.OK)
+                                 status=self.OK)
 
     def api_update(self, request, parent, id):
         parent = self.app.get_object_or_404(
@@ -423,14 +424,14 @@ class ModelInline(object):
             attrs = self.clean(self.app.deserialize(request.raw_post_data), parent)
         except ValueError, why:
             return self.app.render_json(
-                    {
+                {
                     "status": False,
                     "message": "Bad request",
                     "traceback": str(why)
                 }, status=self.BAD_REQUEST)
         except InterfaceTypeError, why:
             return self.app.render_json(
-                    {
+                {
                     "status": False,
                     "message": "Bad request",
                     "traceback": str(why)
@@ -446,7 +447,7 @@ class ModelInline(object):
             o.save()
         except IntegrityError:
             return self.app.render_json(
-                    {
+                {
                     "status": False,
                     "message": "Integrity error"
                 }, status=self.CONFLICT)

@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from base import (ListOfParameter, InterfaceNameParameter,
                   DictParameter, FloatParameter, NoneParameter)
 
@@ -34,5 +35,5 @@ class IGetDOMStatus(BaseInterface):
                            FloatParameter(required=False)),
         "optical_tx_dbm": (NoneParameter(required=False) |
                            FloatParameter(required=False)),
-        }))
+    }))
     preview = "NOC.sa.managedobject.scripts.ShowDomStatus"

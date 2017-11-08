@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
-import re
 
 
 class Script(BaseScript):
@@ -48,9 +49,9 @@ class Script(BaseScript):
                     except:
                         pass
                 return {
-                        "device_id": device_id,
-                        "neighbors": neighbors
-                    }
+                    "device_id": device_id,
+                    "neighbors": neighbors
+                }
             except self.snmp.TimeOutError:
                 pass
         for match in self.rx_entry.finditer(self.cli("show cdp neighbors detail")):

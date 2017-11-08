@@ -9,7 +9,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.drop_column("sa_managedobjectselector", "filter_repo_path")
 

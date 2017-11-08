@@ -8,13 +8,15 @@ __author__ = 'FeNikS'
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 # Python modules
 import re
 
-rx_version = re.compile(r" SwVersion=\"(?P<ver>.*?)\"", re.DOTALL|re.MULTILINE)
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
+
+rx_version = re.compile(r" SwVersion=\"(?P<ver>.*?)\"", re.DOTALL | re.MULTILINE)
+
 
 class Script(BaseScript):
     name = "Harmonic.bNSG9000.get_version"

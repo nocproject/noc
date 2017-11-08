@@ -8,7 +8,9 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
+
 # NOC modules
 from .error import TTError, TemporaryTTError
 

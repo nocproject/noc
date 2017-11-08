@@ -8,8 +8,10 @@
 
 # Python modules
 import os
+
 # Third-party modules
 import yaml
+
 # NOC modules
 from base import BaseProtocol
 
@@ -130,7 +132,7 @@ class LegacyProtocol(BaseProtocol):
         # SyslogCollector
         ("syslogcollector.listen_syslog", "syslogcollector.listen"),
         ("syslogcollector-%(pool)s-%(node)s.listen_syslog", "syslogcollector.listen"),
-        #TgSender
+        # TgSender
         ("tgsender.token", "tgsender.token"),
         ("tgsender-global-%(node)s.token", "tgsender.token"),
         # TrapCollector

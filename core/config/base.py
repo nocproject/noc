@@ -8,11 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import inspect
-import re
 import os
+import re
+
 # Third-party modules
 import six
+
 # NOC modules
 from .params import BaseParameter
 

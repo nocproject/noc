@@ -10,10 +10,11 @@
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-# NOC modules
-from rir import RIR
 from noc.core.gridvcs.manager import GridVCSField
 from noc.lib.rpsl import rpsl_format, rpsl_multiple
+
+# NOC modules
+from rir import RIR
 
 
 class Person(models.Model):
@@ -26,7 +27,7 @@ class Person(models.Model):
     nic_hdl = models.CharField("nic-hdl", max_length=64, unique=True)
     person = models.CharField("person", max_length=128)
     type = models.CharField("type", max_length=1, default="P",
-        choices=[("P", "Person"), ("R", "Role")])
+                            choices=[("P", "Person"), ("R", "Role")])
     address = models.TextField("address")
     phone = models.TextField("phone")
     fax_no = models.TextField("fax-no", blank=True, null=True)

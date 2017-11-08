@@ -8,10 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import random
 from collections import defaultdict
+
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
+
 from .pub import pub
 
 
@@ -125,6 +128,7 @@ class ShardingSharder(BaseSharder):
             # Distribute to channels
             for c in eval(sx, {"k": sk}):
                 self.records[c] += [m]
+
 
 # Initialize
 topo = config.get_ch_topology_type()

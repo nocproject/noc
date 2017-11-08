@@ -8,13 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
-import urllib
+
 import random
+import urllib
+
 # Third-party modules
 import six
+from noc.config import config
 # NOC modules
 from noc.core.http.client import fetch_sync
-from noc.config import config
+
 from .error import ClickhouseError
 
 

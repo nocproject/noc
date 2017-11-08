@@ -6,32 +6,33 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from collections import defaultdict
 import datetime
 import threading
+# Python modules
+from collections import defaultdict
+
+import six
 # Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import six
-# NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.interface import Interface
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.mapsettings import MapSettings
-from noc.inv.models.link import Link
-from noc.sa.models.objectstatus import ObjectStatus
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.lib.stencil import stencil_registry
-from noc.core.topology.segment import SegmentTopology
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.maintenance.models.maintenance import Maintenance
-from noc.lib.text import split_alnum
-from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
-                                    StringParameter, DictListParameter, DictParameter)
-from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
 from noc.core.clickhouse.connect import connection
+from noc.core.topology.segment import SegmentTopology
+from noc.core.translation import ugettext as _
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.interface import Interface
+from noc.inv.models.link import Link
+from noc.inv.models.mapsettings import MapSettings
+from noc.inv.models.networksegment import NetworkSegment
+# NOC modules
+from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.stencil import stencil_registry
+from noc.lib.text import split_alnum
+from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
+                                    StringParameter, DictListParameter, DictParameter)
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectstatus import ObjectStatus
 
 tags_lock = threading.RLock()
 
@@ -173,7 +174,7 @@ class MapApplication(ExtApplication):
         return stencil_registry.get_size(shape)
 
     @view(url="^stencils/(?P<shape>.+)/$",
-        method=["GET"], access=True, api=True)
+          method=["GET"], access=True, api=True)
     def api_stencil(self, request, shape):
         svg = stencil_registry.get_svg(shape)
         if not svg:
@@ -284,7 +285,7 @@ class MapApplication(ExtApplication):
           validate={
               "objects": ListOfParameter(IntParameter())
           }
-    )
+          )
     def api_objects_statuses(self, request, objects):
         def get_alarms(objects):
             """
@@ -432,16 +433,16 @@ class MapApplication(ExtApplication):
         r = {}
         # Apply interface statuses
         for d in Interface._get_collection().find(
-            {
-                "_id": {
-                    "$in": list(if_ids)
+                {
+                    "_id": {
+                        "$in": list(if_ids)
+                    }
+                },
+                {
+                    "_id": 1,
+                    "admin_status": 1,
+                    "oper_status": 1
                 }
-            },
-            {
-                "_id": 1,
-                "admin_status": 1,
-                "oper_status": 1
-            }
         ):
             r[if_ids[d["_id"]]] = {
                 "admin_status": d.get("admin_status", True),
@@ -474,7 +475,7 @@ class MapApplication(ExtApplication):
           validate={
               "objects": ListOfParameter(IntParameter())
           }
-    )
+          )
     def api_objects_stp_status(self, request, objects):
         def get_stp_status(object_id):
             roots = set()

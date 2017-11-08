@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -31,6 +30,6 @@ class Script(BaseScript):
         """
         r = self.cli("show spanning-tree")
         if "No spanning tree instance exists." in r \
-        or "No spanning tree instances exists." in r:
+                or "No spanning tree instances exists." in r:
             return False
         return True

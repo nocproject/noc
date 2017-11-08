@@ -24,6 +24,7 @@ def deep_merge(t, d):
     Merge contents of dicts *t* and *d*, including nested dicts,
     and returns merged dict. Values from *d* override values from *t*
     """
+
     def _merge(x, y):
         for k, v in y.iteritems():
             if isinstance(v, dict):

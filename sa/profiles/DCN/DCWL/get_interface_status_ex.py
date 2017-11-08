@@ -7,12 +7,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
-from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -34,8 +31,8 @@ class Script(BaseScript):
 
     @classmethod
     def get_interface_speed(cls, name):
-         c = cls.SPEED.get(name)
-         return c
+        c = cls.SPEED.get(name)
+        return c
 
     def execute(self):
         result = []
@@ -51,7 +48,7 @@ class Script(BaseScript):
             elif wr[0].strip() == "mode":
                 mode = wr[1].strip()
                 speed = self.get_interface_speed(mode)
-                wres[wname] = {"speed": speed, "status" : wstatus}
+                wres[wname] = {"speed": speed, "status": wstatus}
         c = self.cli("get interface all detail")
         ssid = None
         for vline in c.splitlines():

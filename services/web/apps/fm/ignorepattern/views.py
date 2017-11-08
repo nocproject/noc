@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.core.translation import ugettext as _
 from noc.fm.models.ignorepattern import IgnorePattern
 from noc.fm.models.utils import get_event
-from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 
 
 class IgnorePatternApplication(ExtDocApplication):
@@ -33,12 +33,12 @@ class IgnorePatternApplication(ExtDocApplication):
         event = get_event(event_id)
         if not event:
             self.response_not_found()
-        data = { "is_active": True }
+        data = {"is_active": True}
         if event.raw_vars["source"] == "syslog":
             data["description"] = event.raw_vars["message"]
             data["source"] = "syslog"
         elif (event.raw_vars["source"] == "SNMP Trap" and
-              "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
+                      "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
             data["source"] = "SNMP Trap"
         data["pattern"] = event.raw_vars["message"]

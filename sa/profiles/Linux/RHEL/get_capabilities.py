@@ -9,7 +9,6 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -27,7 +26,7 @@ class Script(BaseScript):
             return True
         else:
             return False
-        
+
     @false_on_cli_error
     def has_cdp_cli(self):
         """
@@ -35,7 +34,7 @@ class Script(BaseScript):
         """
         # Ladvd daemon always listen CDP
         r1 = self.cli("/bin/ps aux | grep [l]advd")
-        
+
         # for lldpd daemon need check CDP enable in config. LLDPD_OPTIONS="-c" in /etc/sysconfig/lldpd
         r2 = self.cli("/bin/ps aux | grep \"[/]usr/sbin/lldpd -c\"")
 
@@ -43,5 +42,3 @@ class Script(BaseScript):
             return True
         else:
             return False
-
-

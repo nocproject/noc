@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -29,13 +30,13 @@ class Script(BaseScript):
         s = self.cli("show switch", cached=True)
         match = self.re_search(self.rx_ver, s)
         r = {"vendor": "DLink",
-            "platform": match.group("platform"),
-            "version": match.group("version"),
-            "attributes": {
-                "Boot PROM": match.group("bootprom"),
-                "HW version": match.group("hardware")
-            }
-        }
+             "platform": match.group("platform"),
+             "version": match.group("version"),
+             "attributes": {
+                 "Boot PROM": match.group("bootprom"),
+                 "HW version": match.group("hardware")
+             }
+             }
         ser = self.rx_ser.search(s)
         r["attributes"].update({"Serial Number": ser.group("serial")})
         return r

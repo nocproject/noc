@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
-import re
 
 
 class Script(BaseScript):
@@ -30,7 +31,7 @@ class Script(BaseScript):
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
                                                   "1.3.6.1.2.1.2.2.1.8"):
                     # ifOperStatus up(1)
-                    r += [{"interface":n, "status":int(s) == 1}]
+                    r += [{"interface": n, "status": int(s) == 1}]
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -40,5 +41,5 @@ class Script(BaseScript):
             r += [{
                 "interface": match.group("interface"),
                 "status": match.group("status").lower() == "up"
-                }]
+            }]
         return r

@@ -6,14 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import socket
+import urllib2
 # Python modules
 from collections import defaultdict
-import urllib2
-import socket
+
+from noc.core.fileutils import urlopen
 # NOC modules
 from noc.lib.periodic import Task as NOCTask
 from noc.settings import config
-from noc.core.fileutils import urlopen
 
 
 class Task(NOCTask):
@@ -155,17 +156,17 @@ class Task(NOCTask):
         if self.use_ripe:
             self.info("Processing RIPE origin -> route")
             v = self.update_from_rpsl(self.RIPE_ROUTE_ORIGIN, r,
-                                  "route", "origin", False, self.parse_rpsl)
+                                      "route", "origin", False, self.parse_rpsl)
             self.info("Processed RIPE origin -> route: %d records" % v)
         if self.use_arin:
             self.info("Processing ARIN origin -> route")
             v = self.update_from_rpsl(self.ARIN, r,
-                                   "route", "origin", False, self.parse_rpsl)
+                                      "route", "origin", False, self.parse_rpsl)
             self.info("Processed ARIN origin -> route: %d records" % v)
         if self.use_radb:
             self.info("Processing RADb origin -> route")
             v = self.update_from_rpsl(self.RADB, r,
-                                  "route", "origin", False, self.parse_rpsl)
+                                      "route", "origin", False, self.parse_rpsl)
             self.info("Processed RADb origin -> route: %d records" % v)
         if r:
             # Upload to database

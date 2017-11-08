@@ -7,20 +7,19 @@
 # ---------------------------------------------------------------------
 
 # Django modules
-from django.utils.translation import  ugettext_lazy as _
 from django import forms
+from django.contrib import admin
+from django.contrib.auth.models import Group
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.modelapplication import ModelApplication, view
-from django.contrib.auth.models import Group
-from django.contrib import admin
-from noc.services.web.apps.main.user.widgets import AccessWidget
 from noc.main.models.permission import Permission
-from noc.core.translation import ugettext as _
+from noc.services.web.apps.main.user.widgets import AccessWidget
 
 
 class GroupChangeForm(forms.ModelForm):
     noc_group_permissions = forms.CharField(label="Group Access",
-        widget=AccessWidget, required=False)
+                                            widget=AccessWidget, required=False)
 
     class Meta:
         model = Group
@@ -42,6 +41,7 @@ class GroupChangeForm(forms.ModelForm):
         Permission.set_group_permissions(model, self.new_perms)
         return model
 
+
 #
 # Admin for groups
 #
@@ -50,11 +50,12 @@ class GroupAdmin(admin.ModelAdmin):
         (None, {'fields': ('name',)}),
         (_('Access'), {'fields': ('noc_group_permissions',),
                        "classes": ["collapse"]}),
-        )
+    )
     search_fields = ('name',)
     ordering = ('name',)
     list_display = ("name",)
     form = GroupChangeForm
+
 
 #
 #
@@ -67,11 +68,11 @@ class GroupApplication(ModelApplication):
     title = "Groups"
 
     @view(url=r"^add/legacy/$", url_name="admin:auth_group_add",
-        access="add")
+          access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")
 
     @view(url=r"^legacy/$", url_name="admin:auth_group_changelist",
-        access=True)
+          access=True)
     def view_legacy_changelist(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")

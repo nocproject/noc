@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import os
+import random
+import struct
 # Python modules
 import threading
 import time
-import random
-import os
-import struct
+
 # Third-party modules
 import tornado.gen
 # NOC modules

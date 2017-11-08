@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc crashinfo
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./noc crashinfo
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
+import argparse
+import datetime
 ## Python modules
 import operator
 import os
-import stat
-import datetime
-import argparse
-import stat
 import re
+import stat
+
 ## Third-party modules
 import ujson
+from noc.config import config
 ## NOC modules
 from noc.core.management.base import BaseCommand
-from noc.config import config
 
 
 class Command(BaseCommand):
@@ -112,6 +112,7 @@ class Command(BaseCommand):
             else:
                 self.stdout.write("Removing %s\n" % u)
                 os.unlink(path)
+
 
 if __name__ == "__main__":
     Command().run()

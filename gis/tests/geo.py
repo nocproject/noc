@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.gis.geo import *
 # NOC modules
 from noc.lib.test import NOCTestCase
-from noc.gis.geo import *
 
 
 class GeoTestCase(NOCTestCase):

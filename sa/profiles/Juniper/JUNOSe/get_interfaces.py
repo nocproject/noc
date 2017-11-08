@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import copy
 # Python modules
 import re
-import copy
+
+from noc.core.ip import IPv4
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -109,7 +110,7 @@ class Script(BaseScript):
                         ip_address = match1.group("ip")
                         ip_subnet = match1.group("mask")
                         ip_address = "%s/%s" % (
-                        ip_address, IPv4.netmask_to_len(ip_subnet))
+                            ip_address, IPv4.netmask_to_len(ip_subnet))
                         sub["ipv4_addresses"] += [ip_address]
                 if ", " in match.group("n_proto"):
                     # Need more examples
@@ -160,7 +161,7 @@ class Script(BaseScript):
                 ifaces += [iface]
                 changed = True
             else:
-                #continue
+                # continue
                 if "." in l_iface:
                     v = self.cli("show interface %s" % l_iface)
                     match = self.rx_iface1.search(v)
@@ -184,7 +185,7 @@ class Script(BaseScript):
                                         i['subinterfaces'][0]["enabled_protocols"]
                                     i['subinterfaces'][0].update(sub)
                                 # Need more examples
-                                #changed = True
+                                # changed = True
                                 break
 
         if changed:

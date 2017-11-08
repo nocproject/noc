@@ -8,9 +8,10 @@
 """
 """
 import re
+
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -27,14 +28,14 @@ class Script(BaseScript):
         "^\s+MAC address:\s+(?P<mac>\S+)\s*\n"
         "^\s+Netmask:\s+(?P<ip_subnet>\d+\S+)\s*\n", re.MULTILINE)
 
-
     def execute(self):
         interfaces = []
         cmd = self.cli("switch show port state")
         for i in self.profile.iter_items(cmd):
             for ii in i.items():
                 ifname = ii[0]
-                if ifname.startswith("p") or ifname.startswith("dsl") or ifname.startswith("sfp") or ifname.startswith("cpu"):
+                if ifname.startswith("p") or ifname.startswith("dsl") or ifname.startswith("sfp") or ifname.startswith(
+                        "cpu"):
                     if ifname == "cpu":
                         iface = {
                             "name": ifname,

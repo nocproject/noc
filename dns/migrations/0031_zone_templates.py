@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 from south.db import db
 
-
 NEW_ZONE_SUBJECT = "NOC: {{ name }} zone has been created"
 NEW_ZONE_BODY = """New zone has been created: {{ name }}
 ===========[Zone Data]===========
@@ -22,6 +21,7 @@ ZONE_CHANGE_BODY = """Zone has been changed: {{ name }}
 ==========[End of Diff]==========
 """
 
+
 class Migration:
     depends_on = [
         ("main", "0037_template")
@@ -30,16 +30,16 @@ class Migration:
     def forwards(self):
         for tn, description, subject, body in [
             (
-                "dns.zone.new",
-                "New DNS zone",
-                NEW_ZONE_SUBJECT,
-                NEW_ZONE_BODY
+                    "dns.zone.new",
+                    "New DNS zone",
+                    NEW_ZONE_SUBJECT,
+                    NEW_ZONE_BODY
             ),
             (
-                "dns.zone.change",
-                "DNS zone change",
-                ZONE_CHANGE_SUBJECT,
-                ZONE_CHANGE_BODY
+                    "dns.zone.change",
+                    "DNS zone change",
+                    ZONE_CHANGE_SUBJECT,
+                    ZONE_CHANGE_BODY
             )
         ]:
             db.execute("INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)", [
@@ -56,6 +56,6 @@ class Migration:
         for tn in ("dns.zone.new",
                    "dns.zone.change"):
             tid = db.execute("SELECT id FROM main_template WHERE name=%s",
-                [tn])[0][0]
+                             [tn])[0][0]
             db.execute("DELETE FROM main_systemtemplate WHERE template_id=%s", [tid])
             db.execute("DELETE FROM main_template WHERE id=%s", [tid])

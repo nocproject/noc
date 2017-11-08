@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 
@@ -17,7 +18,7 @@ class Script(BaseScript):
     name = "Dell.Powerconnect62xx.get_vlans"
     interface = IGetVlans
     rx_vlan = re.compile(r"^(?P<vlan_id>\d+)\s+(?P<vlan_name>\S+)",
-        re.MULTILINE | re.DOTALL)
+                         re.MULTILINE | re.DOTALL)
 
     def execute(self):
         r = []

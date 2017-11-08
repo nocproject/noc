@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.inv.models.connectiontype import ConnectionType
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.connectiontype import ConnectionType
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
-from noc.core.translation import ugettext as _
 
 
 class ConnectionTypeApplication(ExtDocApplication):

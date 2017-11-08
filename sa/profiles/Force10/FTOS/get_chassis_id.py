@@ -8,6 +8,7 @@
 
 # python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -17,7 +18,6 @@ class Script(BaseScript):
     name = "Force10.FTOS.get_chassis_id"
     cache = True
     interface = IGetChassisID
-
 
     def execute(self, **kwargs):
         if self.is_s:
@@ -29,7 +29,7 @@ class Script(BaseScript):
     # S-Series
     #
     rx_system_id = re.compile(r"Stack MAC\s+:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                              re.IGNORECASE | re.MULTILINE)
 
     def execute_s(self):
         """
@@ -49,7 +49,7 @@ class Script(BaseScript):
     # C/E-series
     #
     rx_chassis_id = re.compile(r"Chassis MAC\s+:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                               re.IGNORECASE | re.MULTILINE)
 
     def execute_other(self):
         """

@@ -8,32 +8,35 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import operator
 from threading import Lock
-# Third-party modules
-from django.utils.translation import ugettext_lazy as _
-from django.db import models
-from django.db.models import Q
+
 import cachetools
-from psycopg2.extensions import adapt
 # Third-party modules
 import six
+from django.db import models
+from django.db.models import Q
+# Third-party modules
+from django.utils.translation import ugettext_lazy as _
+from noc.core.model.decorator import on_delete, on_save, on_delete_check
+from noc.core.model.fields import DocumentReferenceField
+from noc.core.model.fields import TagsField
+from noc.fm.models.ttsystem import TTSystem
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
+from noc.lib.db import SQL, QTags
+from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
+from noc.main.models.pool import Pool
+from noc.main.models.prefixtable import PrefixTable
+from psycopg2.extensions import adapt
+
 # NOC modules
 from .administrativedomain import AdministrativeDomain
 from .managedobjectprofile import ManagedObjectProfile
-from .terminationgroup import TerminationGroup
 from .profile import Profile
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.fm.models.ttsystem import TTSystem
-from noc.main.models.pool import Pool
-from noc.main.models.prefixtable import PrefixTable
-from noc.core.model.fields import TagsField
-from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
-from noc.lib.db import SQL, QTags
-from noc.core.model.decorator import on_delete, on_save, on_delete_check
-from noc.core.model.fields import DocumentReferenceField
+from .terminationgroup import TerminationGroup
 
 id_lock = Lock()
 
@@ -270,6 +273,7 @@ class ManagedObjectSelector(models.Model):
         """
         Return selector as text expression
         """
+
         def q(s):
             if isinstance(s, six.integer_types):
                 return str(s)
@@ -390,6 +394,7 @@ class ManagedObjectSelectorByAttribute(models.Model):
     def __unicode__(self):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
+
 
 # Avoid circular references
 from .selectorcache import SelectorCache

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
@@ -41,7 +42,7 @@ class Script(BaseScript):
             name = match.group("name")
             rt = match.group("type").lower()
             if (name == "master" or name.startswith("__") or
-              rt not in self.type_map):
+                        rt not in self.type_map):
                 continue
             interfaces = [
                 x.strip() for x in match.group("ifaces").splitlines()

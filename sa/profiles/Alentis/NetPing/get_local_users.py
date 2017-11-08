@@ -21,5 +21,5 @@ class Script(BaseScript):
             "username": data["uname"],
             "class": "superuser",
             "is_active": True
-            }]
+        }]
         return r

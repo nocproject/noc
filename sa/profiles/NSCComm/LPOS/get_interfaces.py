@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 
+import re
+
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -39,6 +40,7 @@ class Script(BaseScript):
         r"^tagged on ports\s*:\s+(?P<tports>.+)\s*",
         re.MULTILINE
     )
+
     def execute(self):
         interfaces = []
         v = self.cli("ethstat")

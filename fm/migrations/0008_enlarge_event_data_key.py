@@ -9,7 +9,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.execute("ALTER TABLE fm_eventdata ALTER key TYPE VARCHAR(256)")
 

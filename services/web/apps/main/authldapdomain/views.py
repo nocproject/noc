@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app import ExtDocApplication, view
-from noc.main.models.authldapdomain import AuthLDAPDomain
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app import ExtDocApplication
+from noc.main.models.authldapdomain import AuthLDAPDomain
 
 
 class AuthLDAPDomainApplication(ExtDocApplication):

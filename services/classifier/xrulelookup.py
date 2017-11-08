@@ -6,19 +6,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
+import operator
+import sre_parse
 # Python modules
 from collections import defaultdict
-import operator
-import logging
+
+import bitarray
 import cachetools
-import sre_parse
 # Third-party modules
 import esm
-import bitarray
+from noc.core.perf import metrics
 # NOC modules
 from noc.services.classifier.rulelookup import RuleLookup
-from noc.core.perf import metrics
-
 
 logger = logging.getLogger(__name__)
 

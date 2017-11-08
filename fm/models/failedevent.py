@@ -9,13 +9,15 @@
 # Python modules
 import datetime
 import struct
+
+from bson import Binary
 # Third-party modules
 from mongoengine import document, fields
-from bson import Binary
+from noc.lib import nosql
+from noc.sa.models.managedobject import ManagedObject
+
 # NOC modules
 from eventlog import EventLog
-from noc.sa.models.managedobject import ManagedObject
-from noc.lib import nosql
 
 
 class FailedEvent(document.Document):
@@ -63,9 +65,10 @@ class FailedEvent(document.Document):
 
     def log_message(self, message):
         self.log += [EventLog(timestamp=datetime.datetime.now(),
-                     from_status=self.status, to_status=self.status,
-                     message=message)]
+                              from_status=self.status, to_status=self.status,
+                              message=message)]
         self.save()
+
 
 # Avoid circular references
 from newevent import NewEvent

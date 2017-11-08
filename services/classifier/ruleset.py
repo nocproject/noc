@@ -8,24 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
-from collections import defaultdict
+
 import logging
 import re
-# NOC modules
-from .rule import Rule
-from .exception import InvalidPatternException, EventProcessingFailed
-from .cloningrule import CloningRule
+from collections import defaultdict
+
 from noc.config import config
-from noc.fm.models.cloneclassificationrule import CloneClassificationRule
-from noc.fm.models.eventclassificationrule import EventClassificationRule
-from noc.fm.models.enumeration import Enumeration
 from noc.core.handler import get_handler
-from noc.core.profile.loader import loader as profile_loader
 from noc.core.perf import metrics
+from noc.core.profile.loader import loader as profile_loader
+from noc.fm.models.cloneclassificationrule import CloneClassificationRule
+from noc.fm.models.enumeration import Enumeration
+from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.sa.interfaces.base import (
     IPv4Parameter, IPv6Parameter, IPParameter, IPv4PrefixParameter,
     IPv6PrefixParameter, PrefixParameter, MACAddressParameter,
     InterfaceTypeError)
+
+from .cloningrule import CloningRule
+from .exception import InvalidPatternException, EventProcessingFailed
+# NOC modules
+from .rule import Rule
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +179,8 @@ class RuleSet(object):
                 try:
                     v = decoder(event, v)
                 except InterfaceTypeError:
-                    raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
+                    raise EventProcessingFailed(
+                        "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
             r[ecv.name] = v
         return r
 

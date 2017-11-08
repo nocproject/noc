@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.inv.models.discoveryid import DiscoveryID
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.translation import ugettext as _
 
 
 class ReportDiscoveryIDPoisonApplication(SimpleReport):
@@ -24,7 +24,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             {"$group": {
                 "_id": "$chassis_mac",
                 "count": {"$sum": 1}
-                }},
+            }},
             {"$match": {"count": {"$gt": 1}}}
         ])
 

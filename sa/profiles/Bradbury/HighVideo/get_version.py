@@ -8,11 +8,11 @@ __author__ = 'FeNikS'
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.sa.interfaces import IGetVersion
 # Python modules
-import re
 # NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+
 
 class Script(NOCScript):
     name = "Bradbury.HighVideo.get_version"
@@ -20,7 +20,7 @@ class Script(NOCScript):
 
     def execute(self):
         version = ''
-        
+
         return {
             "vendor": "Bradbury",
             "platform": "HighVideo",

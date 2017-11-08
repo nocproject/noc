@@ -11,7 +11,6 @@ from noc.lib.nosql import get_db
 
 
 class Migration(object):
-
     def forwards(self):
         db = get_db()
         for om in db.noc.objectmodels.find():

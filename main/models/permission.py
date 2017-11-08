@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.contrib.auth.models import User, Group
 # Django modules
 from django.db import models
-from django.contrib.auth.models import User, Group
 # NOC modules
 from noc.lib.middleware import get_request
 
@@ -20,6 +20,7 @@ class Permission(models.Model):
     Populated by manage.py sync-perm
     @todo: Check name format
     """
+
     class Meta:
         verbose_name = "Permission"
         verbose_name_plural = "Permissions"

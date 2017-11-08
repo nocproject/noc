@@ -6,25 +6,27 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
+import imp
+import os
+import re
 # Python modules
 import subprocess
-import re
-import imp
-import datetime
-import os
+
 # NOC modules
 import noc.lib.nosql as nosql
 from noc.config import config
 from noc.core.fileutils import temporary_file, safe_rewrite
+from noc.core.snmp.util import render_tc
+from noc.lib.escape import fm_unescape, fm_escape
+from noc.lib.validators import is_oid
+
 from error import (MIBNotFoundException, MIBRequiredException,
                    OIDCollision)
-from mibpreference import MIBPreference
 from mibalias import MIBAlias
-from syntaxalias import SyntaxAlias
+from mibpreference import MIBPreference
 from oidalias import OIDAlias
-from noc.lib.validators import is_oid
-from noc.lib.escape import fm_unescape, fm_escape
-from noc.core.snmp.util import render_tc
+from syntaxalias import SyntaxAlias
 
 # Regular expression patterns
 rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
@@ -197,11 +199,11 @@ class MIB(nosql.Document):
             if i in m.MIB:
                 data += [
                     {
-                    "name": "%s::%s" % (mib_name, node),
-                    "oid": v["oid"],
-                    "description": v.get("description"),
-                    "syntax": v["syntax"]["type"] if "syntax" in v else None
-                } for node, v in m.MIB[i].items()]
+                        "name": "%s::%s" % (mib_name, node),
+                        "oid": v["oid"],
+                        "description": v.get("description"),
+                        "syntax": v["syntax"]["type"] if "syntax" in v else None
+                    } for node, v in m.MIB[i].items()]
         mib.load_data(data)
         # Save MIB to cache if not uploaded from cache
         lcd = os.path.join("local", "share", "mibs")
@@ -210,9 +212,9 @@ class MIB(nosql.Document):
         local_cache_path = os.path.join(lcd, "%s.mib" % mib_name)
         cache_path = os.path.join("share", "mibs", "%s.mib" % mib_name)
         if ((os.path.exists(local_cache_path) and
-             os.path.samefile(path, local_cache_path)) or
-            (os.path.exists(cache_path) and
-             os.path.samefile(path, cache_path))):
+                 os.path.samefile(path, local_cache_path)) or
+                (os.path.exists(cache_path) and
+                     os.path.samefile(path, cache_path))):
             return mib
         with open(path) as f:
             data = f.read()
@@ -247,7 +249,7 @@ class MIB(nosql.Document):
                 if not mib_preference:
                     # No preference for target MIB
                     raise OIDCollision(oid, oid_name, o.name,
-                                    "No preference for %s" % self.name)
+                                       "No preference for %s" % self.name)
                 o_mib = o.name.split("::")[0]
                 if o_mib not in prefs:
                     mp = MIBPreference.objects.filter(
@@ -255,7 +257,7 @@ class MIB(nosql.Document):
                     if not mp:
                         # No preference for destination MIB
                         raise OIDCollision(oid, oid_name, o.name,
-                                        "No preference for %s" % o_mib)
+                                           "No preference for %s" % o_mib)
                     prefs[o_mib] = mp.preference  # Add to cache
                 o_preference = prefs[o_mib]
                 if mib_preference == o_preference:

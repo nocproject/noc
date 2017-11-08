@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.mac import MAC
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -20,7 +21,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac_old = re.compile(r"MAC address[^:]*?:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                            re.IGNORECASE | re.MULTILINE)
 
     @BaseScript.match(version__startswith="3.02")
     def execute_old(self):
@@ -33,10 +34,10 @@ class Script(BaseScript):
         }
 
     rx_mac = re.compile(r"^CIST Bridge[^:]*?:\s*\d+?\.(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
 
     rx_mac1 = re.compile(r"^\s*MAC(_|\s)ADDRESS[^:]*?:\s(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                         re.IGNORECASE | re.MULTILINE)
 
     @BaseScript.match()
     def execute_new(self):

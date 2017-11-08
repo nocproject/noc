@@ -8,9 +8,11 @@
 
 # Python modules
 import logging
+
+from noc.inv.models.interface import Interface as DBInterface
+
 # NOC modules
 from base import BaseFact
-from noc.inv.models.interface import Interface as DBInterface
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ class Interface(BaseFact):
              "aggregated_interface"]
     ID = ["name"]
 
-    def __init__(self, name, description=None, admin_status=False, 
+    def __init__(self, name, description=None, admin_status=False,
                  speed="auto", duplex="auto", protocols=None,
                  profile=None, type=None, mac=None, default_name=None,
                  aggregated_interface=None,

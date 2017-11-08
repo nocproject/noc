@@ -6,20 +6,21 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import threading
-import operator
 import uuid
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
+from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (StringField, LongField, URLField,
                                 UUIDField, ListField)
-from mongoengine.errors import NotUniqueError
-import cachetools
+from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
 # NOC modules
 from noc.lib.prettyjson import to_json
-from noc.core.model.decorator import on_delete_check
-from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
 

@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.pm.models.metrictype import MetricType
-from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.main.models.doccategory import DocCategory
+from noc.pm.models.metrictype import MetricType
 
 
 class MetricTypeApplication(ExtDocApplication):

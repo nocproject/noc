@@ -8,13 +8,15 @@
 
 # Python modules
 import random
+
+from noc.core.span import Span
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
-from uptime import UptimeCheck
+
 from interfacestatus import InterfaceStatusCheck
 from mac import MACCheck
 from metrics import MetricsCheck
-from noc.core.span import Span
+from uptime import UptimeCheck
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -70,7 +72,6 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
 
     def can_update_alarms(self):
         return self.object.can_create_periodic_alarms()
-
 
     def get_fatal_alarm_weight(self):
         return self.object.object_profile.periodic_discovery_fatal_alarm_weight

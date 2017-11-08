@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,11 +21,11 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(r"^.*?Switch\s(?P<platform>.+?)\sSoftware\s\Version"
-        r"\s3Com\sOS\sV(?P<version>.+?)$",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                        r"\s3Com\sOS\sV(?P<version>.+?)$",
+                        re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ver1 = re.compile(r"^Comware\sSoftware,\s\Version\s(?P<version>.+?),"
-        r"\sRelease\s(?P<release>.+?)$.+?^(H3C )?(?P<platform>\S+) uptime is",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                         r"\sRelease\s(?P<release>.+?)$.+?^(H3C )?(?P<platform>\S+) uptime is",
+                         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_hw = re.compile(r"Hardware Version is (?P<hardware>\S+)")
     rx_boot = re.compile(r"Bootrom Version is (?P<bootprom>\S+)")
 
@@ -37,7 +38,7 @@ class Script(BaseScript):
                 "vendor": "H3C",
                 "platform": match.group("platform"),
                 "version": match.group("version") + "." + \
-                    match.group("release")
+                           match.group("release")
             }
         else:
             r = {

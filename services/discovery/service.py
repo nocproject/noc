@@ -7,14 +7,14 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import tornado.gen
 # Python modules
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.base import Service
 
 
 class DiscoveryService(Service):

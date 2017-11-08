@@ -8,10 +8,11 @@
 
 # Python modules
 import time
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.validators import is_int
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -62,7 +63,7 @@ class Script(BaseScript):
         ifname = self.cli_detail("/interface %s print detail without-paging" % iftype, cached=True)
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
-                #in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
+                # in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
                 if "local-address" in r1.keys():
                     tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
@@ -106,8 +107,8 @@ class Script(BaseScript):
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
                 if r["type"].startswith("ipip-") \
-                or r["type"].startswith("eoip-") \
-                or r["type"].startswith("gre-"):
+                        or r["type"].startswith("eoip-") \
+                        or r["type"].startswith("gre-"):
                     self.si = {
                         "name": r["name"],
                         "admin_status": "X" not in f,
@@ -127,12 +128,12 @@ class Script(BaseScript):
         time.sleep(1)
         # Refine ethernet parameters
         for n, f, r in self.cli_detail(
-            "/interface ethernet print detail without-paging"):
+                "/interface ethernet print detail without-paging"):
             iface = ifaces[r["name"]]
             ifaces[r["name"]]["mac"] = r["mac-address"]
         # Attach `vlan` subinterfaces to parent
         for n, f, r in self.cli_detail(
-            "/interface vlan print detail without-paging"):
+                "/interface vlan print detail without-paging"):
             if r["interface"] in ifaces:
                 i = ifaces[r["interface"]]
                 self.si = {
@@ -152,12 +153,12 @@ class Script(BaseScript):
         # "RB532", "x86", CCR1009 not support internal switch port
         try:
             v = self.cli_detail(
-                    "/interface ethernet switch port print detail without-paging")
+                "/interface ethernet switch port print detail without-paging")
             for n, f, r in v:
                 if "vlan-mode" not in r:
                     continue
                 if (r["vlan-mode"] in ["check", "secure"]) \
-                and (r["vlan-header"] in ["add-if-missing", "leave-as-is"]):
+                        and (r["vlan-header"] in ["add-if-missing", "leave-as-is"]):
                     vlan_tags[r["name"]] = True
                 else:
                     vlan_tags[r["name"]] = False
@@ -167,8 +168,8 @@ class Script(BaseScript):
         try:
             # Attach subinterfaces with `BRIDGE` AFI to parent
             v = self.cli_detail(
-                    "/interface ethernet switch vlan print detail without-paging")
-            for n, f, r in v: 
+                "/interface ethernet switch vlan print detail without-paging")
+            for n, f, r in v:
                 vlan_id = int(r["vlan-id"])
                 ports = r["ports"].split(",")
                 if not ports:
@@ -209,7 +210,7 @@ class Script(BaseScript):
             pass
         # Refine ip addresses
         for n, f, r in self.cli_detail(
-            "/ip address print detail without-paging"):
+                "/ip address print detail without-paging"):
             if "X" in f:
                 continue
             self.si = {}
@@ -228,7 +229,7 @@ class Script(BaseScript):
                     i["subinterfaces"] += [self.si]
                 else:
                     self.logger.debug('\nError: subinterfaces already exists in ' \
-                        'interface \n%s\n' % i)
+                                      'interface \n%s\n' % i)
                     continue
             else:
                 for i in ifaces:

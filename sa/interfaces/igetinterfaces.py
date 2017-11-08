@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from noc.core.interface.base import BaseInterface
+
 from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
                   MACAddressParameter, VLANIDParameter, VLANStackParameter,
                   RDParameter, IPParameter, IPv4PrefixParameter, IPv6PrefixParameter,
@@ -215,7 +216,7 @@ class IGetInterfaces(BaseInterface):
                 "template", "unknown"]),
             "admin_status": BooleanParameter(default=False),
             "oper_status": BooleanParameter(default=False),
-            "aggregated_interface": InterfaceNameParameter(required=False), # Not empty for portchannel members
+            "aggregated_interface": InterfaceNameParameter(required=False),  # Not empty for portchannel members
             # L2 protocols enabled on interface
             "enabled_protocols": ListOfParameter(
                 element=StringParameter(choices=[
@@ -239,19 +240,22 @@ class IGetInterfaces(BaseInterface):
                         "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE", "ATM", "iSCSI"
                     ]), required=False  # #todo: make required
                 ),
-                "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),  # enabled_afi = [... IPv4 ...]
-                "ipv6_addresses": ListOfParameter(element=IPv6PrefixParameter(), required=False),  # enabled_afi = [... IPv6 ...]
-                "iso_addresses": ListOfParameter(element=StringParameter(), required=False),  #   # enabled_afi = [... ISO ...]
+                "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),
+            # enabled_afi = [... IPv4 ...]
+                "ipv6_addresses": ListOfParameter(element=IPv6PrefixParameter(), required=False),
+            # enabled_afi = [... IPv6 ...]
+                "iso_addresses": ListOfParameter(element=StringParameter(), required=False),
+                # # enabled_afi = [... ISO ...]
                 "vpi": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 "vci": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 # Enabled L3 protocols
                 "enabled_protocols": ListOfParameter(
-                                element=StringParameter(choices=[
-                                    "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
-                                    "BGP",
-                                    "LDP", "RSVP",
-                                    "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
-                                ]), required=False),
+                    element=StringParameter(choices=[
+                        "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
+                        "BGP",
+                        "LDP", "RSVP",
+                        "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
+                    ]), required=False),
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
                 "tagged_vlans": ListOfParameter(element=VLANIDParameter(), required=False),  # enabled_afi = [BRIDGE]
                 "ip_unnumbered_subinterface": InterfaceNameParameter(required=False),

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
@@ -17,7 +18,8 @@ class Script(BaseScript):
     name = "Cisco.SMB.get_cdp_neighbors"
     interface = IGetCDPNeighbors
     rx_entry = re.compile(r"Device-ID:\s*(?P<device_id>\S+).+?"
-        r"Interface: (?P<local_interface>\S+),\s+Port ID\s*\(outgoing port\):\s*(?P<remote_interface>\S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                          r"Interface: (?P<local_interface>\S+),\s+Port ID\s*\(outgoing port\):\s*(?P<remote_interface>\S+)",
+                          re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):
         device_id = self.scripts.get_fqdn()

@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
+import cachetools
+import jinja2
 # Third-party modules
 from django.db import models
-import jinja2
-import cachetools
 
 id_lock = Lock()
 

@@ -8,9 +8,10 @@
 
 # Python modules
 import re
+
+from noc.core.script.base import BaseScript
 # NOC modules
 from noc.sa.interfaces.igetarp import IGetARP
-from noc.core.script.base import BaseScript
 
 
 class Script(BaseScript):
@@ -28,20 +29,20 @@ class Script(BaseScript):
             try:
                 mac_ip = {}
                 for mac, ip in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.2",
-                    "1.3.6.1.2.1.4.22.1.3", cached=True):  # IP-MIB
+                                                     "1.3.6.1.2.1.4.22.1.3", cached=True):  # IP-MIB
                     mac = ":".join(["%02x" % ord(c) for c in mac])
                     ip = ["%02x" % ord(c) for c in ip]
                     mac_ip[mac] = ".".join(str(int(c, 16)) for c in ip)
                 for i, mac in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.1",
-                    "1.3.6.1.2.1.4.22.1.2", cached=True):  # IP-MIB
+                                                    "1.3.6.1.2.1.4.22.1.2", cached=True):  # IP-MIB
                     mac = ":".join(["%02x" % ord(c) for c in mac])
                     interface = self.snmp.get("1.3.6.1.2.1.2.2.1.1." + str(i),
-                        cached=True)  # IF-MIB
+                                              cached=True)  # IF-MIB
                     try:
                         r.append({"ip": mac_ip[mac],
-                            "mac": mac,
-                            "interface": interface,
-                            })
+                                  "mac": mac,
+                                  "interface": interface,
+                                  })
                     except KeyError:
                         pass
                 return r
@@ -55,5 +56,5 @@ class Script(BaseScript):
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
                 "interface": match.group("interface")
-                })
+            })
         return r

@@ -9,9 +9,8 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
-        if db.execute("SELECT COUNT(*) FROM pg_language WHERE lanname='plpgsql'")[0][0]==0:
+        if db.execute("SELECT COUNT(*) FROM pg_language WHERE lanname='plpgsql'")[0][0] == 0:
             db.execute("CREATE LANGUAGE plpgsql")
         db.execute(CREATE_F)
         db.execute(CREATE_T)
@@ -20,7 +19,8 @@ class Migration:
         db.execute(DROP_T)
         db.execute(DROP_F)
 
-CREATE_F="""
+
+CREATE_F = """
 CREATE OR REPLACE
 FUNCTION f_sa_task_insert()
 RETURNS TRIGGER
@@ -32,16 +32,16 @@ END;
 $$ LANGUAGE plpgsql;
 """
 
-CREATE_T="""
+CREATE_T = """
 CREATE TRIGGER t_sa_task_insert
 AFTER INSERT ON sa_task
 FOR EACH STATEMENT EXECUTE PROCEDURE f_sa_task_insert();
 """
 
-DROP_T="""
+DROP_T = """
 DROP TRIGGER IF EXISTS t_sa_task_insert ON sa_task;
 """
 
-DROP_F="""
+DROP_F = """
 DROP FUNCTION f_sa_task_insert();
 """

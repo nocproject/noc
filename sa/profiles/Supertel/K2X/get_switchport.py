@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -77,7 +78,7 @@ class Script(BaseScript):
                                 port_vlans.update({iface: {
                                     "tagged": [],
                                     "untagged": '',
-                                    }})
+                                }})
                             if s[j] == '1':
                                 port_vlans[iface]["untagged"] = v[1]
                                 un += [j]
@@ -91,7 +92,7 @@ class Script(BaseScript):
                                 port_vlans.update({iface: {
                                     "tagged": [],
                                     "untagged": '',
-                                    }})
+                                }})
                             port_vlans[iface]["tagged"].append(v[1])
 
                 # Get switchport data and overall result
@@ -137,7 +138,7 @@ class Script(BaseScript):
                             "802.1ad Tunnel": vlan_stack_status.get(name,
                                                                     False),
                             "tagged": tagged,
-                            }
+                        }
                         if name in port_vlans:
                             if port_vlans[name]["untagged"]:
                                 swp["untagged"] = port_vlans[name]["untagged"]
@@ -172,7 +173,7 @@ class Script(BaseScript):
                 port_vlans.update({interface: {
                     "tagged": [],
                     "untagged": '',
-                    }
+                }
                 })
             for vlan in self.rx_vlan.finditer(self.cli(cmd)):
                 vlan_id = vlan.group("vlan")
@@ -231,7 +232,7 @@ class Script(BaseScript):
                     "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
                     "802.1ad Tunnel": vlan_stack_status.get(name, False),
                     "tagged": port_vlans[name]["tagged"],
-                    }
+                }
                 if port_vlans[name]["untagged"]:
                     swp["untagged"] = port_vlans[name]["untagged"]
                 swp["interface"] = name

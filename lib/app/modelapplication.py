@@ -6,31 +6,32 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.contrib import admin as django_admin
+from django.contrib.admin import SimpleListFilter, FieldListFilter
+from django.db import IntegrityError
+from django.db.models import Q
+from django.db.models.fields import CharField
+from django.utils.encoding import smart_unicode
 # Django modules
 from django.utils.translation import ugettext as _
-from django.contrib import admin as django_admin
-from django.utils.encoding import smart_unicode
-from django.contrib.admin import SimpleListFilter, FieldListFilter
 from django.views.static import serve as serve_static
-from django.db.models.fields import CharField
-from django.db.models import Q
-from django.db import IntegrityError
+from noc.lib.widgets import tags_list
+
 # NOC modules
 from access import HasPerm
 from application import Application, view
-from noc.lib.widgets import tags_list
 
 
 class ModelApplication(Application):
     """
     Django's ModelAdmin application wrapper
     """
-    model = None        # subclass of Model
+    model = None  # subclass of Model
     model_admin = None  # subclass of ModelAdmin
-    menu = None         # Menu Title
+    menu = None  # Menu Title
 
     def __init__(self, site):
-        super(ModelApplication,self).__init__(site)
+        super(ModelApplication, self).__init__(site)
         ## Check the model has tags and add "tags" column
         try:
             self.model.tags
@@ -47,11 +48,11 @@ class ModelApplication(Application):
         self.admin.change_form_template = (
             self.get_template_path("change_form.html") +
             ["admin/change_form.html"]
-            )
+        )
         self.admin.change_list_template = (
             self.get_template_path("change_list.html") +
             ["admin/change_list.html"]
-            )
+        )
         # Set up permissions
         self.granular_access = hasattr(self.model, "user_objects")
         self.admin.has_change_permission = self.has_change_permission
@@ -67,8 +68,9 @@ class ModelApplication(Application):
     def display_tags(self, o):
         """Render neat tags list"""
         return tags_list(o)
-    display_tags.short_description="Tags"
-    display_tags.allow_tags=True
+
+    display_tags.short_description = "Tags"
+    display_tags.allow_tags = True
 
     def queryset(self, request):
         if self.granular_access:
@@ -77,7 +79,7 @@ class ModelApplication(Application):
             return self.model.objects
 
     def has_change_permission(self, request, obj=None):
-        r=self.view_changelist.access.check(self,request.user,obj)
+        r = self.view_changelist.access.check(self, request.user, obj)
         if r and obj and self.granular_access:
             return self.queryset(request).filter(id=obj.id).exists()  # Check obj in queryset
         return r
@@ -86,7 +88,7 @@ class ModelApplication(Application):
         return self.view_add.access.check(self, request.user)
 
     def has_delete_permission(self, request, obj=None):
-        r=self.view_delete.access.check(self,request.user,obj)
+        r = self.view_delete.access.check(self, request.user, obj)
         if r and obj and self.granular_access:
             return self.queryset(request).filter(id=obj.id).exists()  # Check obj in queryset
         return r
@@ -103,7 +105,7 @@ class ModelApplication(Application):
         else:
             return []
 
-    def user_access_change_url(self,user):
+    def user_access_change_url(self, user):
         if hasattr(self.model, "user_access_change_url"):
             return self.model.user_access_change_url(user)
         else:
@@ -130,7 +132,7 @@ class ModelApplication(Application):
 
     def content_type(self):
         """Model's content type"""
-        return "%s.%s" % (self.model._meta.app_label, 
+        return "%s.%s" % (self.model._meta.app_label,
                           self.model._meta.object_name.lower())
 
     @view(url=r"^$", url_name="admin:%s_%s_changelist", access=HasPerm("change"),
@@ -150,7 +152,7 @@ class ModelApplication(Application):
 
     @view(url=r"^(\d+)/history/$", url_name="history",
           access=HasPerm("change"))
-    def view_history(self,request,object_id,extra_context=None):
+    def view_history(self, request, object_id, extra_context=None):
         """Display object's history"""
         return self.admin.history_view(request, object_id, extra_context)
 
@@ -207,6 +209,7 @@ class ModelApplication(Application):
         """
         Prepare Q statement for query
         """
+
         def get_q(f):
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
@@ -273,8 +276,8 @@ class ModelApplication(Application):
                 np, lt = p, None
             # Skip ignored params
             if np in self.ignored_params or p in (
-                self.limit_param, self.page_param, self.start_param,
-                self.format_param, self.sort_param, self.query_param):
+                    self.limit_param, self.page_param, self.start_param,
+                    self.format_param, self.sort_param, self.query_param):
                 continue
             v = q[p]
             # Pass through interface cleaners
@@ -314,20 +317,22 @@ class ExistingListFilter(SimpleListFilter):
     """
     List filter. Show only species present in list
     """
+
     def choices(self, cl):
         yield {
-            "selected"    : self.lookup_val is None,
+            "selected": self.lookup_val is None,
             "query_string": cl.get_query_string({}, [self.lookup_kwarg]),
-            "display"     : _("All")}
+            "display": _("All")}
 
         used = set(self.field.model.objects.distinct().values_list(self.field.name, flat=True))
         for k, v in self.field.flatchoices:
             if k in used:
                 yield {
-                    "selected"     : smart_unicode(k) == self.lookup_val,
-                    "query_string" : cl.get_query_string({self.lookup_kwarg: k}),
-                    "display"      : v
-                    }
+                    "selected": smart_unicode(k) == self.lookup_val,
+                    "query_string": cl.get_query_string({self.lookup_kwarg: k}),
+                    "display": v
+                }
+
 
 # Install specific filters to all models
 FieldListFilter.register(

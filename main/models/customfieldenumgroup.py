@@ -14,6 +14,7 @@ class CustomFieldEnumGroup(models.Model):
     """
     Enumeration groups for custom fields
     """
+
     class Meta:
         verbose_name = "Enum Group"
         verbose_name_plural = "Enum Groups"

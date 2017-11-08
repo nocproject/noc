@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # NOC modules
 from noc.lib.dateutils import hits_in_range
 

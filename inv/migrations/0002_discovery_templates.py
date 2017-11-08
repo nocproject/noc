@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 from south.db import db
 
-
 NEW_PREFIXES_REPORT_SUBJECT = "{{ count }} new prefixes discovered"
 NEW_PREFIXES_REPORT_BODY = """{{ count }} new prefixes discovered
 
@@ -38,22 +37,22 @@ class Migration:
     def forwards(self):
         for tn, description, subject, body in [
             (
-                "inv.discovery.new_prefixes_report",
-                "Discovery's New Prefixes Report",
-                NEW_PREFIXES_REPORT_SUBJECT,
-                NEW_PREFIXES_REPORT_BODY
+                    "inv.discovery.new_prefixes_report",
+                    "Discovery's New Prefixes Report",
+                    NEW_PREFIXES_REPORT_SUBJECT,
+                    NEW_PREFIXES_REPORT_BODY
             ),
             (
-                "inv.discovery.new_addresses_report",
-                "Discovery's New Addresses Report",
-                NEW_ADDRESSES_REPORT_SUBJECT,
-                NEW_ADDRESSES_REPORT_BODY
+                    "inv.discovery.new_addresses_report",
+                    "Discovery's New Addresses Report",
+                    NEW_ADDRESSES_REPORT_SUBJECT,
+                    NEW_ADDRESSES_REPORT_BODY
             ),
             (
-                "inv.discovery.address_collision_report",
-                "Discovery's Address Collision Report",
-                ADDRESS_COLLISION_REPORT_SUBJECT,
-                ADDRESS_COLLISION_REPORT_BODY
+                    "inv.discovery.address_collision_report",
+                    "Discovery's Address Collision Report",
+                    ADDRESS_COLLISION_REPORT_SUBJECT,
+                    ADDRESS_COLLISION_REPORT_BODY
             )
         ]:
             db.execute("INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)", [
@@ -71,6 +70,6 @@ class Migration:
                    "inv.discovery.new_addresses_report",
                    "inv.discovery.address_collision_report"):
             tid = db.execute("SELECT id FROM main_template WHERE name=%s",
-                [tn])[0][0]
+                             [tn])[0][0]
             db.execute("DELETE FROM main_systemtemplate WHERE template_id=%s", [tid])
             db.execute("DELETE FROM main_template WHERE id=%s", [tid])

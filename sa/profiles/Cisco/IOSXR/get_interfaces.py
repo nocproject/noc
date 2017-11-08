@@ -9,10 +9,9 @@
 """
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -43,13 +42,12 @@ class Script(BaseScript):
     rx_hw = re.compile(r"^Hardware is (?P<hw>.+?)(?:, address is (?P<mac>\S+).*)?$")
 
     rx_vlan_id = re.compile(r"^Encapsulation 802.1Q Virtual LAN, VLAN Id (?P<vlan>\d+),.*$",
-        re.IGNORECASE)
+                            re.IGNORECASE)
 
     rx_bundle_member = re.compile(r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$",
-        re.IGNORECASE)
+                                  re.IGNORECASE)
 
     rx_ifindex = re.compile(r"^ifName : (?P<name>\S+)\s+ifIndex : (?P<ifindex>\d+)")
-
 
     def execute(self):
         ifaces = {}
@@ -123,7 +121,7 @@ class Script(BaseScript):
             "name": "default",
             "type": "ip",
             "interfaces": set(ifaces) - seen
-            }] + vpns
+        }] + vpns
         # Bring result together
         for fi in vpns:
             # Forwarding instance

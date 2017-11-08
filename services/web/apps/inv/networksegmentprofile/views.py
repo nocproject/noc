@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app import ExtDocApplication, view
-from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.core.translation import ugettext as _
+from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
+# NOC modules
+from noc.lib.app import ExtDocApplication
 
 
 class NetworkSegmentProfileApplication(ExtDocApplication):

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -20,7 +21,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(r"([0-9a-f]{6}-[0-9a-f]{6})",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+                        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli("show management")

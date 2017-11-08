@@ -9,9 +9,11 @@
 # Python modules
 import bisect
 import logging
+
+from noc.inv.models.subinterface import SubInterface as DBSubInterface
+
 # NOC modules
 from base import BaseFact
-from noc.inv.models.subinterface import SubInterface as DBSubInterface
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +37,7 @@ class SubInterface(BaseFact):
     def __init__(self, name, interface=None, description=None,
                  admin_status=False, profile=None, vlan_ids=None,
                  ip_proxy_arp=False,
-                 ip_redirects=False, tagged_vlans=None, 
+                 ip_redirects=False, tagged_vlans=None,
                  untagged_vlan=None, ipv4_addresses=None,
                  ipv6_addresses=None, protocols=None, afi=None,
                  input_ipv4_filter=None, output_ipv4_filter=None,

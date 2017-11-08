@@ -10,15 +10,16 @@
 import csv
 import sys
 from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
+from noc.core.debug import error_report
 # NOC modules
 from noc.main.models.synccache import SyncCache
-from noc.core.debug import error_report
 
 
 class Command(BaseCommand):
-    option_list=BaseCommand.option_list+(
+    option_list = BaseCommand.option_list + (
         make_option(
             "--list", "-l",
             action="store_const",

@@ -8,15 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
-# Third-party modules
-import tornado.gen
-import tornado.ioloop
-import tornado.httpclient
+
 import consul.base
 import consul.tornado
-
+# Third-party modules
+import tornado.gen
+import tornado.httpclient
+import tornado.ioloop
 from noc.config import config
-
 
 CONSUL_CONNECT_TIMEOUT = config.consul.connect_timeout
 CONSUL_REQUEST_TIMEOUT = config.consul.request_timeout
@@ -29,6 +28,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
     """
     Gentler version of tornado http client
     """
+
     @tornado.gen.coroutine
     def _request(self, callback, request):
         client = tornado.httpclient.AsyncHTTPClient(

@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 from south.db import db
 
-
 NEW_VLANS_REPORT_SUBJECT = "{{ count }} new VLANs discovered"
 NEW_VLANS_REPORT_BODY = """{{ count }} new VLANs discovered
 
@@ -24,10 +23,10 @@ class Migration:
     def forwards(self):
         for tn, description, subject, body in [
             (
-                "inv.discovery.new_vlans_report",
-                "Discovery's New VLANs Report",
-                NEW_VLANS_REPORT_SUBJECT,
-                NEW_VLANS_REPORT_BODY
+                    "inv.discovery.new_vlans_report",
+                    "Discovery's New VLANs Report",
+                    NEW_VLANS_REPORT_SUBJECT,
+                    NEW_VLANS_REPORT_BODY
             )]:
             db.execute("INSERT INTO main_template(name, subject, body) VALUES(%s, %s, %s)", [
                 tn, subject, body
@@ -42,6 +41,6 @@ class Migration:
     def backwards(self):
         for tn in ["inv.discovery.new_vlans_report"]:
             tid = db.execute("SELECT id FROM main_template WHERE name=%s",
-                [tn])[0][0]
+                             [tn])[0][0]
             db.execute("DELETE FROM main_systemtemplate WHERE template_id=%s", [tid])
             db.execute("DELETE FROM main_template WHERE id=%s", [tid])

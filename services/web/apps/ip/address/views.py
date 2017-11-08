@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.ip.models import Address
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 
 
 class AddressApplication(ExtModelApplication):

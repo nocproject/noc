@@ -8,12 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import errno
+
+from noc.config import config
+
 # NOC modules
 from .loader import get_service
-from .error import (RPCError, RPCHTTPError, RPCException, RPCNoService,
-                    RPCRemoteError)
-from noc.config import config
 
 # Connection time
 CONNECT_TIMEOUT = config.rpc.sync_connect_timeout

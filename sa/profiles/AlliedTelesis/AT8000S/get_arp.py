@@ -8,9 +8,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 
 class Script(BaseScript):
@@ -31,5 +32,5 @@ class Script(BaseScript):
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
                 "interface": match.group("interface")
-                })
+            })
         return r

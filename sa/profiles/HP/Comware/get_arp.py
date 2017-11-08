@@ -9,9 +9,10 @@
 """
 # Python modules
 import re
+
+from noc.core.script.base import BaseScript
 # NOC modules
 from noc.sa.interfaces.igetarp import IGetARP
-from noc.core.script.base import BaseScript
 
 
 class Script(BaseScript):

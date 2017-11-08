@@ -9,10 +9,11 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 from noc.lib.convert import mw2dbm
+from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 
 
 class Script(BaseScript):
@@ -28,7 +29,7 @@ class Script(BaseScript):
         v = m.group(g)
         if v in ["N/A", "N/S"]:
             v = None
-        elif g in["rxpw", "txpw"]:
+        elif g in ["rxpw", "txpw"]:
             v = round(mw2dbm(v), 2)
         return v
 
@@ -51,8 +52,8 @@ class Script(BaseScript):
                 "optical_tx_dbm": self.parse_value(match, "txpw")
             }
             if (i["temp_c"] is None) and (i["voltage_v"] is None) \
-            and (i["current_ma"] is None) and (i["optical_rx_dbm"] is None) \
-            and (i["optical_tx_dbm"] is None):
+                    and (i["current_ma"] is None) and (i["optical_rx_dbm"] is None) \
+                    and (i["optical_tx_dbm"] is None):
                 continue
             r += [i]
         return r

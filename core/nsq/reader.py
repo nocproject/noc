@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import logging
+import urllib
 # Python modules
 import urlparse
-import urllib
-import logging
+
 # Third-party modules
 import tornado.gen
-from nsq.reader import Reader as BaseReader, _utf8_params
 import ujson
 # NOC modules
 from noc.core.http.client import fetch
+from nsq.reader import Reader as BaseReader, _utf8_params
 
 logger = logging.getLogger(__name__)
 

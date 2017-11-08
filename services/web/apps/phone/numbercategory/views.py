@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app import ExtDocApplication, view
-from noc.phone.models.numbercategory import NumberCategory
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app import ExtDocApplication
+from noc.phone.models.numbercategory import NumberCategory
 
 
 class NumberCategoryApplication(ExtDocApplication):

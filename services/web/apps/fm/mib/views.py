@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.core.fileutils import temporary_file
+from noc.core.translation import ugettext as _
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.syntaxalias import SyntaxAlias
-from noc.core.fileutils import temporary_file
-from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 
 
 class MIBApplication(ExtDocApplication):
@@ -88,7 +88,7 @@ class MIBApplication(ExtDocApplication):
             if "display_hint" in syntax:
                 s += ["display-hint: %s" % syntax["display_hint"]]
             if (syntax["base_type"] in ("Enumeration", "Bits") and
-                "enum_map" in syntax):
+                        "enum_map" in syntax):
                 # Display enumeration
                 for k in sorted(syntax["enum_map"],
                                 key=lambda x: int(x)):

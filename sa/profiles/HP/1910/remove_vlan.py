@@ -20,5 +20,5 @@ class Script(BaseScript):
             return False
         with self.configure():
             self.cli("delete vlan %d" % vlan_id)
-#        self.save_config()
+        #        self.save_config()
         return True

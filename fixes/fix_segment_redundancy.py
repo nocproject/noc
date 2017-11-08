@@ -8,9 +8,10 @@
 
 # Python modules
 from collections import defaultdict
+
+from noc.sa.models.managedobject import ManagedObject
 # NOC modules
 from noc.sa.models.objectdata import ObjectData
-from noc.sa.models.managedobject import ManagedObject
 
 
 def fix():

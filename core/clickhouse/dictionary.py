@@ -8,15 +8,14 @@
 
 # Python modules
 from __future__ import absolute_import
-import operator
-import itertools
+
 import os
+
 # Third-party modules
 import six
-import cachetools
+
 # NOC modules
 from .fields import BaseField
-from noc.config import config
 
 __all__ = ["Dictionary"]
 

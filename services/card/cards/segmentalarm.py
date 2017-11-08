@@ -8,11 +8,13 @@
 
 # Python modules
 from collections import defaultdict
+
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.servicesummary import SummaryItem
+
 # NOC modules
 from base import BaseCard
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import SummaryItem
-from noc.inv.models.networksegment import NetworkSegment
 
 
 class SegmentAlarmCard(BaseCard):

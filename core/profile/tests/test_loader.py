@@ -6,10 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Third-party modules
-from nose2.tools import params
 ## NOC modules
 from noc.core.profile.loader import loader
+## Third-party modules
+from nose2.tools import params
 
 
 def test_iter_scripts():
@@ -23,4 +23,3 @@ def test_script_loading(name):
     profile = loader.get_profile(name)
     assert profile, "Cannot load script %s" % name
     profile.initialize()
-

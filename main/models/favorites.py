@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
                            BooleanField, ListField)

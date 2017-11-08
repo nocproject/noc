@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 import six
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -185,7 +186,7 @@ class Profile(BaseProfile):
         "MF": "aggregated",  # Multilink Frame Relay
         "Mf": "aggregated",  # Multilink Frame Relay
         "Mu": "aggregated",  # Multilink-group interface
-        "ND": "other",      # Netflow Data Exporter
+        "ND": "other",  # Netflow Data Exporter
         "PO": "physical",  # Packet OC-3 Port Adapter
         "Po": "aggregated",  # Port-channel/Portgroup
         "R": "aggregated",  # @todo: fix

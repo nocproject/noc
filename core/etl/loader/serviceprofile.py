@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.sa.models.serviceprofile import ServiceProfile
+
 ## NOC modules
 from base import BaseLoader
-from noc.sa.models.serviceprofile import ServiceProfile
 
 
 class ServiceProfileLoader(BaseLoader):

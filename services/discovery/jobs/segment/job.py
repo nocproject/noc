@@ -8,11 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.core.span import Span
+from noc.inv.models.networksegment import NetworkSegment
+
+from .mac import MACDiscoveryCheck
 # NOC modules
 from ..base import MODiscoveryJob
-from noc.inv.models.networksegment import NetworkSegment
-from .mac import MACDiscoveryCheck
-from noc.core.span import Span
 
 
 class SegmentDiscoveryJob(MODiscoveryJob):

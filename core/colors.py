@@ -13,10 +13,10 @@ import math
 def hsv_to_rgb(h, s, v):
     """
     HSV -> RGB convertor, for Python 2.5 compatibility
-    :param h: 
-    :param s: 
-    :param v: 
-    :return: 
+    :param h:
+    :param s:
+    :param v:
+    :return:
     """
     h = float(h)
     hi = math.floor(h / 60.0) % 6
@@ -81,7 +81,7 @@ def get_float_pallete(n):
             hs = [i * d for i in range(p)]
         h = hs.pop(len(hs) / 2 if n % 2 else 0)
         # Yield current color
-        yield [float(x)/256.0 for x in hsv_to_rgb(h, s, v)]
+        yield [float(x) / 256.0 for x in hsv_to_rgb(h, s, v)]
         n = n - 1
         if not hs:
             # Reduce value for next round

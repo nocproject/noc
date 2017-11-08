@@ -6,45 +6,47 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-import time
-import os
-import sys
-import logging
-import signal
-import uuid
 import argparse
 import functools
-from collections import defaultdict
+import logging
+import os
 import random
+import setproctitle
+import signal
+import sys
+import threading
+# Python modules
+import time
+import uuid
+from collections import defaultdict
+
+import nsq
+import tornado.gen
+import tornado.httpserver
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
-import tornado.web
 import tornado.netutil
-import tornado.httpserver
-import setproctitle
-import nsq
+import tornado.web
 import ujson
-import threading
 # NOC modules
 from noc.config import config, CH_UNCLUSTERED, CH_REPLICATED, CH_SHARDED
-from noc.core.debug import excepthook, error_report
-from .api import APIRequestHandler
-from .doc import DocRequestHandler
-from .mon import MonRequestHandler
-from .metrics import MetricsHandler
-from .health import HealthRequestHandler
-from .sdl import SDLRequestHandler
-from .rpc import RPCProxy
-from .ctl import CtlAPI
-from .loader import set_service
-from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-from noc.core.threadpool import ThreadPoolExecutor
+from noc.core.debug import excepthook, error_report
 from noc.core.nsq.reader import Reader as NSQReader
+from noc.core.perf import metrics, apply_metrics
 from noc.core.span import get_spans, SPAN_FIELDS
+from noc.core.threadpool import ThreadPoolExecutor
 from noc.core.tz import setup_timezone
+
+from .api import APIRequestHandler
+from .ctl import CtlAPI
+from .doc import DocRequestHandler
+from .health import HealthRequestHandler
+from .loader import set_service
+from .metrics import MetricsHandler
+from .mon import MonRequestHandler
+from .rpc import RPCProxy
+from .sdl import SDLRequestHandler
 
 CHWRITER = "chwriter"
 
@@ -623,6 +625,7 @@ class Service(object):
         """
         Subscribe message to channel
         """
+
         def call_json_handler(message):
             self.perf_metrics[metric_in] += 1
             try:
@@ -716,6 +719,7 @@ class Service(object):
           otherwise
         :param raw: True - pass message as-is, False - convert to JSON
         """
+
         def finish_pub(conn, msg):
             if isinstance(msg, nsq.Error):
                 self.logger.info(
@@ -738,6 +742,7 @@ class Service(object):
         """
         Publish multiple messages to topic
         """
+
         def finish_pub(conn, data):
             if isinstance(data, nsq.Error):
                 self.logger.info(
@@ -956,7 +961,7 @@ class Service(object):
         :return:
         """
         if (self.dcs and self.dcs.health_check_service_id and
-                self.dcs.health_check_service_id != service_id):
+                    self.dcs.health_check_service_id != service_id):
             return False
         else:
             return True

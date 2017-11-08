@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Third-party modules
-from pymongo import UpdateOne
 import bson
 # NOC modules
 from noc.core.bi.decorator import bi_hash
 from noc.lib.nosql import get_db
+# Third-party modules
+from pymongo import UpdateOne
 
 MONGO_CHUNK = 500
 

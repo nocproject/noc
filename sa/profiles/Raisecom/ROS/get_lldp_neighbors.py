@@ -8,11 +8,12 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.lib.validators import is_ipv4, is_ipv6
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
 class Script(BaseScript):
@@ -92,17 +93,17 @@ class Script(BaseScript):
                 }[c]
             n = {
                 "remote_chassis_id_subtype": {
-                        "macAddress": 4,
-                        "networkAddress": 5
-                    }[match.group("ch_type")],
+                    "macAddress": 4,
+                    "networkAddress": 5
+                }[match.group("ch_type")],
                 "remote_chassis_id": match.group("ch_id") if not ext_ch_id else None,
                 "remote_port_subtype": {
-                        "ifAlias": 1,
-                        "macAddress": 3,
-                        "ifName": 5,
-                        "portComponent": 5,
-                        "local": 7
-                    }[match.group("port_id_subtype")],
+                    "ifAlias": 1,
+                    "macAddress": 3,
+                    "ifName": 5,
+                    "portComponent": 5,
+                    "local": 7
+                }[match.group("port_id_subtype")],
                 "remote_port": match.group("port_id"),
                 "remote_capabilities": cap
             }

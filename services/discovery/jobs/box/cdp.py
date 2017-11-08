@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.lib.validators import is_ipv4
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.lib.validators import is_ipv4
 
 
 class CDPCheck(TopologyDiscoveryCheck):

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -17,8 +18,10 @@ class Script(BaseScript):
     name = "3Com.SuperStack.get_mac_address_table"
     interface = IGetMACAddressTable
 
-    rx_line = re.compile(r"^Port\s+(?P<interfaces>\d+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)
-    rx_line2 = re.compile(r"^Unit\s+(?P<unit>\d+)\s+Port\s+(?P<interfaces>\d+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$", re.MULTILINE)
+    rx_line = re.compile(r"^Port\s+(?P<interfaces>\d+)\s+(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$",
+                         re.MULTILINE)
+    rx_line2 = re.compile(r"^Unit\s+(?P<unit>\d+)\s+Port\s+(?P<interfaces>\d+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)$",
+                          re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "bridge port address list"
@@ -41,6 +44,6 @@ class Script(BaseScript):
                     "vlan_id": vid,
                     "mac": mac if mac else match.group("mac"),
                     "interfaces": [match.group("interfaces")],
-                    "type": {"no":"D", "yes":"S"}[match.group("type").lower()]
+                    "type": {"no": "D", "yes": "S"}[match.group("type").lower()]
                 }]
         return r

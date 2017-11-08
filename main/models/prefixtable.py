@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.db import models
 # Django Modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
 # NOC Modules
 from noc.core.ip import IP
-from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import CIDRField
 
 
 @on_delete_check(check=[
@@ -29,7 +29,7 @@ class PrefixTable(models.Model):
 
     name = models.CharField(_("Name"), max_length=128, unique=True)
     description = models.TextField(_("Description"),
-        null=True, blank=True)
+                                   null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -64,9 +64,9 @@ class PrefixTablePrefix(models.Model):
         ordering = ["table", "afi", "prefix"]
 
     table = models.ForeignKey(PrefixTable,
-        verbose_name=_("Prefix Table"))
+                              verbose_name=_("Prefix Table"))
     afi = models.CharField(_("Address Family"), max_length=1,
-            choices=[("4", _("IPv4")), ("6", _("IPv6"))])
+                           choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = CIDRField(_("Prefix"))
 
     def __unicode__(self):

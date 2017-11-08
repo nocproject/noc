@@ -36,5 +36,3 @@ class PeerDS(DataSource):
     @property
     def export_filter(self):
         return self._data.export_filter if self._data else None
-
-

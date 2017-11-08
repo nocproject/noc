@@ -23,8 +23,8 @@ class Profile(BaseProfile):
     pattern_syntax_error = \
         r"^(Command not found. Use '?' to view available commands|" + \
         "Incomplete command\s+|Invalid argument\s+)"
-#    command_disable_pager = "terminal datadump"
-#    command_super = "enable"
+    #    command_disable_pager = "terminal datadump"
+    #    command_super = "enable"
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"
@@ -36,6 +36,7 @@ class Profile(BaseProfile):
 
     class switch(object):
         """Switch context manager to use with "with" statement"""
+
         def __init__(self, script):
             self.script = script
 

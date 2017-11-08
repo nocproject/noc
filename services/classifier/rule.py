@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 import logging
 import new
+# Python modules
+import re
+
 # NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.lib.datasource import datasource_registry
-from noc.services.classifier.exception import InvalidPatternException
 from noc.lib.escape import fm_unescape
+from noc.services.classifier.exception import InvalidPatternException
 
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
 
@@ -42,7 +43,7 @@ class Rule(object):
                     rule.name, clone_rule.name))
                 p0 = [(x.key_re, x.value_re) for x in rule.patterns]
                 p1 = [(y.key_re, y.value_re) for y in [
-                                clone_rule.rewrite(x) for x in rule.patterns]]
+                    clone_rule.rewrite(x) for x in rule.patterns]]
                 logging.debug("%s -> %s" % (p0, p1))
         self.event_class = rule.event_class
         self.event_class_name = self.event_class.name
@@ -54,11 +55,11 @@ class Rule(object):
         # Parse datasources
         for ds in rule.datasources:
             self.datasources[ds.name] = eval(
-                    "lambda vars: datasource_registry['%s'](%s)" % (
-                        ds.datasource,
-                        ", ".join(["%s=vars['%s']" % (k, v)
-                                   for k, v in ds.search.items()])),
-                    {"datasource_registry": datasource_registry}, {})
+                "lambda vars: datasource_registry['%s'](%s)" % (
+                    ds.datasource,
+                    ", ".join(["%s=vars['%s']" % (k, v)
+                               for k, v in ds.search.items()])),
+                {"datasource_registry": datasource_registry}, {})
         # Parse vars
         for v in rule.vars:
             value = v["value"]
@@ -155,6 +156,7 @@ class Rule(object):
         Compile native python rule-matching function
         and install it as .match() instance method
         """
+
         def pyq(s):
             return s.replace("\\", "\\\\").replace("\"", "\\\"")
 
@@ -220,13 +222,14 @@ class Rule(object):
                 else:
                     c += ["e_vars[\"%s\"] = eval(self.vars[\"%s\"], {}, var_context)" % (k, k)]
         if e_vars_used:
-            #c += ["return self.fixup(e_vars)"]
+            # c += ["return self.fixup(e_vars)"]
             for name in self.fixups:
                 r = name.split("__")
                 if len(r) == 2:
                     if r[1] in ("ifindex",):
                         # call fixup with managed object
-                        c += ["e_vars[\"%s\"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
+                        c += ["e_vars[\"%s\"] = self.fixup_%s(event.managed_object, fm_unescape(e_vars[\"%s\"]))" % (
+                        r[0], r[1], name)]
                     else:
                         c += ["e_vars[\"%s\"] = self.fixup_%s(fm_unescape(e_vars[\"%s\"]))" % (r[0], r[1], name)]
                 else:

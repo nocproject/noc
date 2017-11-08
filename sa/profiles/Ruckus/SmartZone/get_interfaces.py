@@ -6,39 +6,39 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
+
 class Script(BaseScript):
     name = "Ruckus.SmartZone.get_interfaces"
     interface = IGetInterfaces
-    cache=True
+    cache = True
 
     INTERFACE_TYPES = {
 
-            "lo": "loopback",  # Loopback
-            "br": "unknown",  # No comment
+        "lo": "loopback",  # Loopback
+        "br": "unknown",  # No comment
 
-        }
+    }
 
     INTERFACE_TYPES2 = {
 
-            "eth": "physical",  # No comment
-            "vEt": "other",  # No comment
-            "pca": "physical",  # No comment
-            "pow": "physical",  # No comment
+        "eth": "physical",  # No comment
+        "vEt": "other",  # No comment
+        "pca": "physical",  # No comment
+        "pow": "physical",  # No comment
 
-        }
+    }
 
     @classmethod
     def get_interface_type(cls, name):
-         c = cls.INTERFACE_TYPES2.get(name[:3])
-         if c:
+        c = cls.INTERFACE_TYPES2.get(name[:3])
+        if c:
             return c
-         c = cls.INTERFACE_TYPES.get(name[:2])
-         return c
+        c = cls.INTERFACE_TYPES.get(name[:2])
+        return c
 
     def execute(self):
         interfaces = []
@@ -60,19 +60,18 @@ class Script(BaseScript):
                         admin_status = "up"
                     else:
                         admin_status = "down"
-                    #print repr("%s\n" % admin_status)
+                    # print repr("%s\n" % admin_status)
                     interfaces += [{
-                            "type": iftype,
+                        "type": iftype,
+                        "name": name,
+                        "mac": mac,
+                        "admin_status": (admin_status).lower() == "up",
+                        "subinterfaces": [{
                             "name": name,
                             "mac": mac,
-                            "admin_status": (admin_status).lower() == "up",
-                            "subinterfaces": [{
-                                "name": name,
-                                "mac": mac,
-                                "enabled_afi": ["BRIDGE"]
-                            }]
+                            "enabled_afi": ["BRIDGE"]
                         }]
+                    }]
                 return [{"interfaces": interfaces}]
             except self.snmp.TimeOutError:
                 pass
-

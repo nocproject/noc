@@ -8,10 +8,10 @@
 
 # Third-party modules
 from django import forms
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.config import config
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn
 
 
 #

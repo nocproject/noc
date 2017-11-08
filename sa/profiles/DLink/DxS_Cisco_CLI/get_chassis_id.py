@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -18,7 +19,7 @@ class Script(BaseScript):
     rx_ver = re.compile(r"^Hardware is\s+VLAN, address is (?P<id>\S+)\s+",
                         re.IGNORECASE | re.MULTILINE)
     rx_mac = re.compile(r"^\s+Chassis\s+ID\s+:\s+(?P<mac>\S+)",
-                             re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
     rx_vlan_int = re.compile(r"^VLAN (?P<vlan_id>\d+)\s+",
                              re.IGNORECASE | re.MULTILINE)
 

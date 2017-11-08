@@ -6,18 +6,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import os
-import operator
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
-import cachetools
-# NOC modules
-from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+# NOC modules
+from noc.main.models.doccategory import category
 
 id_lock = Lock()
 

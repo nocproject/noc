@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -19,9 +20,9 @@ class Script(BaseScript):
 
     def execute(self):
         rx_ver = re.compile(r"^D-Link Firewall (?P<version>\S+)",
-            re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                            re.MULTILINE | re.DOTALL | re.IGNORECASE)
         rx_dev = re.compile(r"^\s+Name:\s+(?P<platform>\S+)",
-            re.MULTILINE | re.DOTALL | re.IGNORECASE)
+                            re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
         v = self.cli("about", cached=True)
         match = rx_ver.search(v)

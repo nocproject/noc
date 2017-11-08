@@ -8,9 +8,11 @@
 
 # Python modules
 import types
+
+from django.contrib.auth.models import User
 # Third-party modules
 from django.db import models
-from django.contrib.auth.models import User
+
 # NOC modules
 from template import Template
 

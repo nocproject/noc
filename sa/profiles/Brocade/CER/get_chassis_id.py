@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -20,7 +21,7 @@ class Script(BaseScript):
     name = 'Brocade.CER.get_chassis_id'
     interface = IGetChassisID
     rx_mac = re.compile('([0-9a-f]{4}\\.[0-9a-f]{4}\\.[0-9a-f]{4})',
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+                        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli('show chassis')

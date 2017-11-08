@@ -10,12 +10,14 @@
 # Python modules
 import socket
 from collections import defaultdict
+
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
+
 from trapserver import TrapServer
 
 
@@ -148,6 +150,7 @@ class TrapCollectorService(Service):
     def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
         self.ioloop.add_callback(self.get_object_mappings)
+
 
 if __name__ == "__main__":
     TrapCollectorService().start()

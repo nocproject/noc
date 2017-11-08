@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # HP.1910.get_lldp_neighbors
@@ -12,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -27,7 +24,6 @@ class Script(BaseScript):
     rx_capabilities = re.compile(
         r"^\s+System capabilities enabled\s+:\s+(?P<capabilities>\S+)\s*",
         re.DOTALL | re.MULTILINE)
-
 
     def execute(self):
         r = []
@@ -127,7 +123,7 @@ class Script(BaseScript):
                     "remote_port_subtype": remote_port_subtype,
                     "remote_chassis_id_subtype": remote_chassis_id_subtype,
                     "remote_system_name": remote_system_name,
-                    }
+                }
 
                 i["neighbors"].append(n)
                 r.append(i)

@@ -6,20 +6,20 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
+import cachetools
+from django.db import models
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-import cachetools
+from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import TagsField, DocumentReferenceField
 # NOC modules
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.fields import TagsField, DocumentReferenceField
-from noc.core.model.decorator import on_delete_check
-from noc.core.bi.decorator import bi_sync
-
 
 id_lock = Lock()
 
@@ -38,6 +38,7 @@ class AdministrativeDomain(models.Model):
     """
     Administrative Domain
     """
+
     class Meta:
         verbose_name = _("Administrative Domain")
         verbose_name_plural = _("Administrative Domains")

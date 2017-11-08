@@ -40,7 +40,7 @@ class Profile(BaseProfile):
         s = s.replace("Port1", "Port 1")
         return s.replace("Port2", "Port 2")
 
-#    def setup_session(self, script):
+# def setup_session(self, script):
 #        try:
 #            script.cli("terminal length 0")
 #        except script.CLISyntaxError:

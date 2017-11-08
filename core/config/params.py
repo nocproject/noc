@@ -9,6 +9,7 @@
 # Python modules
 import itertools
 import logging
+
 # Third-party modules
 import six
 # NOC modules
@@ -61,6 +62,7 @@ class StringParameter(BaseParameter):
                 raise ValueError("Invalid value: %s" % v)
         return v
 
+
 class SecretParameter(BaseParameter):
     def __init__(self, default=None, help=None, choices=None):
         super(SecretParameter, self).__init__(default=default, help=help)
@@ -71,6 +73,7 @@ class SecretParameter(BaseParameter):
 
     def __repr__(self):
         return "****hidden****"
+
 
 class IntParameter(BaseParameter):
     def __init__(self, default=None, help=None, min=None, max=None):

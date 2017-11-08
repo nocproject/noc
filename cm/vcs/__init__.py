@@ -9,10 +9,11 @@
 # Python modules
 import os
 import subprocess
+
+from noc.config import config
+from noc.core.fileutils import copy_file
 # NOC modules
 from noc.lib.registry import Registry
-from noc.core.fileutils import copy_file
-from noc.config import config
 
 
 class VCSRegistry(Registry):

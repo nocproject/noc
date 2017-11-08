@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
-import re
 
 
 class Script(BaseScript):
@@ -21,6 +22,6 @@ class Script(BaseScript):
     def execute(self):
         r = []
         for match in self.rx_vlan.finditer(
-            self.cli("ifconfig -v", cached=True)):
+                self.cli("ifconfig -v", cached=True)):
             r += [{"vlan_id": int(match.group('vlanid'))}]
         return r

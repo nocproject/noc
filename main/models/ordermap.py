@@ -21,6 +21,7 @@ class OrderMap(models.Model):
     """
     Custom field description
     """
+
     class Meta:
         verbose_name = "Order Map"
         verbose_name_plural = "Order Map"
@@ -48,7 +49,8 @@ class OrderMap(models.Model):
         ]
         c = connection.cursor()
         c.execute("DELETE FROM main_ordermap WHERE model = %s", [model])
-        c.execute("INSERT INTO main_ordermap(model, ref_id, name) VALUES " + ",".join(c.mogrify("(%s,%s,%s)", d) for d in data))
+        c.execute("INSERT INTO main_ordermap(model, ref_id, name) VALUES " + ",".join(
+            c.mogrify("(%s,%s,%s)", d) for d in data))
 
     @staticmethod
     def update_models():

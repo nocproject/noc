@@ -8,11 +8,12 @@
 
 # Python modules
 import re
-# Third-party modules
-from pyparsing import OneOrMore, Word, alphanums, QuotedString
+
 # NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.lib.validators import is_ipv4, is_ipv6
+# Third-party modules
+from pyparsing import OneOrMore, Word, alphanums, QuotedString
 
 
 class BaseIOSXRParser(BaseParser):

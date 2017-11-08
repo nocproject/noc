@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from base import BaseCard
 from noc.phone.models.dialplan import DialPlan
 from noc.phone.models.phonerange import PhoneRange
+
+# NOC modules
+from base import BaseCard
 
 
 class DialPlanCard(BaseCard):

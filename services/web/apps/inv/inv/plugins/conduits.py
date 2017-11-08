@@ -8,17 +8,18 @@
 
 # Python modules
 from collections import defaultdict
-# Django modules
-from django.contrib.gis.measure import D
-# NOC modules
-from base import InvPlugin
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
-from noc.lib.geo import distance, bearing, bearing_sym
+
 from noc.gis.map import map
+from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
+from noc.lib.geo import distance, bearing, bearing_sym
 from noc.sa.interfaces.base import (DocumentParameter, FloatParameter,
                                     DictListParameter, IntParameter,
-                                    BooleanParameter, ObjectIdParameter)
+                                    BooleanParameter)
+
+# Django modules
+# NOC modules
+from base import InvPlugin
 
 
 class ConduitsPlugin(InvPlugin):
@@ -39,23 +40,23 @@ class ConduitsPlugin(InvPlugin):
             method=["GET"]
         )
         self.add_view(
-             "api_plugin_%s_create_ducts" % self.name,
-             self.api_create_ducts,
-             url="^(?P<id>[0-9a-f]{24})/plugin/%s/$" % self.name,
-             method=["POST"],
-             validate={
-                 "ducts": DictListParameter(attrs={
-                     "target": DocumentParameter(Object),
-                     "project_distance": FloatParameter(),
-                     "conduits": DictListParameter(attrs={
-                         "id": DocumentParameter(Object, required=False),
-                         "n": IntParameter(),
-                         "x": IntParameter(),
-                         "y": IntParameter(),
-                         "status": BooleanParameter()
-                     })
-                 })
-             }
+            "api_plugin_%s_create_ducts" % self.name,
+            self.api_create_ducts,
+            url="^(?P<id>[0-9a-f]{24})/plugin/%s/$" % self.name,
+            method=["POST"],
+            validate={
+                "ducts": DictListParameter(attrs={
+                    "target": DocumentParameter(Object),
+                    "project_distance": FloatParameter(),
+                    "conduits": DictListParameter(attrs={
+                        "id": DocumentParameter(Object, required=False),
+                        "n": IntParameter(),
+                        "x": IntParameter(),
+                        "y": IntParameter(),
+                        "status": BooleanParameter()
+                    })
+                })
+            }
         )
         #
         self.conduits_model = ObjectModel.objects.filter(name=self.CONDUITS_MODEL).first()
@@ -123,8 +124,8 @@ class ConduitsPlugin(InvPlugin):
                 layer__in=layers,
                 point__near=o.point,
                 point__max_distance=self.MAX_CONDUIT_LENGTH
-                ):
-                #  )).distance(o.point).order_by("distance"):
+        ):
+            #  )).distance(o.point).order_by("distance"):
             # Check object has no connection with this one
             if ro in connected:
                 continue

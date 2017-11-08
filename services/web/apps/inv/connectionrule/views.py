@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.inv.models.connectionrule import ConnectionRule
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.connectionrule import ConnectionRule
-from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.lib.prettyjson import to_json
-from noc.core.translation import ugettext as _
+from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 
 
 class ConnectionRuleApplication(ExtDocApplication):
@@ -26,7 +26,7 @@ class ConnectionRuleApplication(ExtDocApplication):
     @view(url="^actions/json/$", method=["POST"],
           access="read",
           validate={
-            "ids": ListOfParameter(element=DocumentParameter(ConnectionRule), convert=True)
+              "ids": ListOfParameter(element=DocumentParameter(ConnectionRule), convert=True)
           },
           api=True)
     def api_action_json(self, request, ids):

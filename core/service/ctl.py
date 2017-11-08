@@ -8,9 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
+
 # Third-party modules
 import six
+
 # NOC modules
 from .api import API, api
 

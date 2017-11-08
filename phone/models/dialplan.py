@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField
-import cachetools
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()

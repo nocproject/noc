@@ -6,15 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
-import datetime
 import re
+
 # Django modules
 from django.db.models import signals as django_signals
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, DateTimeField
+
 from models import get_object, get_model_id
 
 logger = logging.getLogger(__name__)

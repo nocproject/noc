@@ -10,11 +10,11 @@
 """
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -66,14 +66,14 @@ class Script(BaseScript):
                         first = m[3]
                         last = m[4]
                     for n in range(int(first), int(last) + 1):
-                            if m[2] == 'tagged':
-                                if n in tagged:
-                                    tagged[n].append(vlan)
-                                else:
-                                    tagged[n] = [vlan]
+                        if m[2] == 'tagged':
+                            if n in tagged:
+                                tagged[n].append(vlan)
                             else:
-                                untagged[n] = vlan
-                    if(m[5]):
+                                tagged[n] = [vlan]
+                        else:
+                            untagged[n] = vlan
+                    if (m[5]):
                         ve = m[5].replace(' ', '')
                         self.debug('\nFOUND VE: ' + m[5] + '\n')
                         untagged[ve] = vlan

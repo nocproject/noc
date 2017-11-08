@@ -13,7 +13,6 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):
-
     name = "Nateks.netxpert.get_config"
     interface = IGetConfig
 

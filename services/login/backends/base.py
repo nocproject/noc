@@ -6,11 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import inspect
 # Python modules
 import logging
-from threading import Lock
 import operator
-import inspect
+from threading import Lock
+
 # Third-party modules
 import cachetools
 
@@ -95,8 +96,8 @@ class BaseAuthBackend(object):
     def get_backend(cls, name):
         m = None
         for mm in [
-            "noc.custom.services.login.backends.%s" % name,
-            "noc.services.login.backends.%s" % name
+                    "noc.custom.services.login.backends.%s" % name,
+                    "noc.services.login.backends.%s" % name
         ]:
             try:
                 m = __import__(mm, {}, {}, "*")
@@ -107,9 +108,9 @@ class BaseAuthBackend(object):
         for a in dir(m):
             o = getattr(m, a)
             if (
-                inspect.isclass(o) and
-                issubclass(o, BaseAuthBackend) and
-                o.__module__ == m.__name__
+                            inspect.isclass(o) and
+                            issubclass(o, BaseAuthBackend) and
+                            o.__module__ == m.__name__
             ):
                 return o
         return None

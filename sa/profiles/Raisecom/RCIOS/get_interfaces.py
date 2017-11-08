@@ -8,12 +8,11 @@
 
 # Python modules
 import re
-from collections import defaultdict
+
+from noc.core.ip import IPv4, IPv6
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.text import ranges_to_list
-from noc.core.ip import IPv4, IPv6
 
 
 class Script(BaseScript):
@@ -38,7 +37,7 @@ class Script(BaseScript):
         r"^interface (?P<iface>\S+)\s*\n"
         r"((?P<cfg>.*?)\n)?"
         r"^!\s*\n",
-        re.MULTILINE| re.DOTALL)
+        re.MULTILINE | re.DOTALL)
     rx_trunk = re.compile(r"switchport trunk permit vlan (?P<vlan_id>\d+)")
 
     def execute(self):

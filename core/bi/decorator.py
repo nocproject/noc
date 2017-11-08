@@ -8,9 +8,10 @@
 
 # Python modules
 import struct
+
+import bson
 # Third-party modules
 from csiphash import siphash24
-import bson
 # NOC modules
 from noc.models import is_document
 

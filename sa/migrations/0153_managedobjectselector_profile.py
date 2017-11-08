@@ -1,8 +1,6 @@
-import uuid
-from south.db import db
-from django.db import models
 from noc.core.model.fields import DocumentReferenceField
 from noc.lib.nosql import get_db
+from south.db import db
 
 
 class Migration:
@@ -23,7 +21,8 @@ class Migration:
             WHERE filter_profile = %s
             """, [pmap[p], p])
         # Alter .filter_profile column
-        db.execute("ALTER TABLE sa_managedobjectselector ALTER filter_profile TYPE CHAR(24) USING SUBSTRING(\"filter_profile\", 1, 24)")
+        db.execute(
+            "ALTER TABLE sa_managedobjectselector ALTER filter_profile TYPE CHAR(24) USING SUBSTRING(\"filter_profile\", 1, 24)")
         # Create .filter_vendor field
         db.add_column(
             "sa_managedobjectselector",

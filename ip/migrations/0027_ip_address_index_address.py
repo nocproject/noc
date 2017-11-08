@@ -3,7 +3,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         db.create_index("ip_address", ["address"], db_tablespace="")
 

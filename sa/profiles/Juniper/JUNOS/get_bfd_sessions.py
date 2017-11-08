@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
 from noc.lib.text import find_indented
+from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
 
 
 class Script(BaseScript):

@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -21,7 +22,6 @@ class Script(BaseScript):
     rx_trunk = re.compile(r"^\s*(?P<port>\S+)\s+\|.+?\|"
                           "\s+(?P<trunk>\S+)\s+(?P<type>(\S+)?"
                           "$)", re.MULTILINE)
-
 
     def execute(self):
         r = []

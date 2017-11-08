@@ -6,10 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.inv.models.object import Object
+from noc.inv.models.objectmodel import ObjectModel
+
 ## NOC modules
 from base import BaseLoader
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
 
 
 class ContainerLoader(BaseLoader):

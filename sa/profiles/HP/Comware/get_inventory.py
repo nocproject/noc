@@ -8,11 +8,10 @@
 
 # Python modules
 import re
-from itertools import groupby
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -59,4 +58,3 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         return objects
-

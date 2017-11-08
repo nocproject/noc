@@ -6,17 +6,21 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from django.contrib import admin
-from noc.lib.app.modelapplication import ModelApplication
 from noc.kb.models.kbglobalbookmark import KBGlobalBookmark
+from noc.lib.app.modelapplication import ModelApplication
+
+
 #
 # KBGlobalBookmark admin
 #
 class KBGlobalBookmarkAdmin(admin.ModelAdmin):
-    list_display=["kb_entry"]
+    list_display = ["kb_entry"]
+
+
 #
 # KBGlobalBookmark application
 #
 class KBGlobalBookmarkApplication(ModelApplication):
-    model=KBGlobalBookmark
-    model_admin=KBGlobalBookmarkAdmin
-    menu="Setup | Global Bookmark"
+    model = KBGlobalBookmark
+    model_admin = KBGlobalBookmarkAdmin
+    menu = "Setup | Global Bookmark"

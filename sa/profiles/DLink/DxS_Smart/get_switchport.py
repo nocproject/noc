@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -30,16 +29,16 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
-#        try:
-#            stack = self.cli("show vlan-stacking")
-#            for match in self.rx_vlan_stack.finditer(stack):
-#                if match.group("role").lower() == "tunnel":
-#                    vlan_stack_status[int(match.group("interface"))] = True
-#        except self.CLISyntaxError:
-#            pass
+        #        try:
+        #            stack = self.cli("show vlan-stacking")
+        #            for match in self.rx_vlan_stack.finditer(stack):
+        #                if match.group("role").lower() == "tunnel":
+        #                    vlan_stack_status[int(match.group("interface"))] = True
+        #        except self.CLISyntaxError:
+        #            pass
 
         # Try snmp first
         if self.has_snmp():
@@ -56,6 +55,7 @@ class Script(BaseScript):
                     for i in range(len(c)):
                         p += bin[int(c[i], 16)]
                 return p
+
             try:
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
@@ -63,12 +63,12 @@ class Script(BaseScript):
                 if pmib is None:
                     raise NotImplementedError()
                 for v in self.snmp.get_tables(
-                    [pmib + ".7.6.1.1", pmib + ".7.6.1.2", pmib + ".7.6.1.4"],
+                        [pmib + ".7.6.1.1", pmib + ".7.6.1.2", pmib + ".7.6.1.4"],
                         bulk=True):
                     tagged = v[2]
                     untagged = v[3]
 
-#                    s = self.hex_to_bin(untagged)
+                    #                    s = self.hex_to_bin(untagged)
                     s = hex2bin(untagged)
                     un = []
                     for i in range(len(s)):
@@ -87,7 +87,7 @@ class Script(BaseScript):
                             port_vlans[iface]["untagged"] = v[0]
                             un += [str(i + 1)]
 
-#                    s = self.hex_to_bin(tagged)
+                        #                    s = self.hex_to_bin(tagged)
                     s = hex2bin(tagged)
                     for i in range(len(s)):
                         if s[i] == '1' and str(i + 1) not in un:
@@ -107,10 +107,10 @@ class Script(BaseScript):
                 # Get switchport description
                 port_descr = {}
                 for iface, description in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
+                        "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
                     if iface[:3] == 'Aux' or iface[:4] == 'Vlan' \
-                    or iface[:11] == 'InLoopBack' \
-                    or iface == 'System':
+                            or iface[:11] == 'InLoopBack' \
+                            or iface == 'System':
                         continue
                     if iface[:6] == "Slot0/":
                         iface = iface[6:]

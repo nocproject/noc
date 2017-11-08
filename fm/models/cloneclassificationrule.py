@@ -8,12 +8,13 @@
 
 # Python modules
 import os
+
+from mongoengine import fields
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine import fields
+from noc.lib.prettyjson import to_json
 # NOC modules
 from noc.lib.text import quote_safe_path
-from noc.lib.prettyjson import to_json
 
 
 class CloneClassificationRule(Document):

@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 rx_ver = re.compile(
     r"(?P<platform>\S+) System software Revision (?P<version>\S+)",

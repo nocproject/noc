@@ -1,8 +1,7 @@
 # Third-party modules
-from south.db import db
 # NOC models
 from noc.core.model.fields import DocumentReferenceField
-from noc.lib.nosql import get_db
+from south.db import db
 
 
 class Migration:
@@ -12,10 +11,10 @@ class Migration:
 
     def forwards(self):
         db.add_column("sa_managedobjectselector", "filter_pool",
-            DocumentReferenceField(
-                "self", null=True, blank=True
-            )
-        )
+                      DocumentReferenceField(
+                          "self", null=True, blank=True
+                      )
+                      )
         db.create_index(
             "sa_managedobjectselector",
             ["filter_pool"], unique=False, db_tablespace="")

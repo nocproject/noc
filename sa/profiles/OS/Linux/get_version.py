@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -71,9 +72,9 @@ class Script(BaseScript):
             if plat:
                 platform = plat.group("platform")
                 if 'NanoStation' in platform or 'PowerStation' in platform or \
-                        'AirGrid' in platform or 'NanoBridge' in platform or\
-                        'PowerBridge' in platform or 'Rocket' in platform or\
-                        'Bullet' in platform:
+                                'AirGrid' in platform or 'NanoBridge' in platform or \
+                                'PowerBridge' in platform or 'Rocket' in platform or \
+                                'Bullet' in platform:
                     vendor = 'Ubiquity'
                     # Replace # with @ to prevent prompt matching
                     ps1 = self.cli("echo $PS1|sed 's/#/@/'")
@@ -104,7 +105,7 @@ class Script(BaseScript):
         if not platform:
             platform = "Unknown"
 
-# TODO better...
+        # TODO better...
         if platform == 'MIPS 4Kc V0.10':
             el = self.cli("ls /flash/ 2>/dev/null")
             if 'tau' in el:
@@ -120,7 +121,7 @@ class Script(BaseScript):
                 vendor = distrib.group("distrib")
             if release:
                 version = release.group("release")
- 
+
         if not vendor:
             ven = self.cli("uname -s 2>/dev/null")
             ven = ven.split('\n')[0]
@@ -129,15 +130,15 @@ class Script(BaseScript):
             else:
                 vendor = "Unknown"
 
-#        if not version:
-# Russian latter!!!
-#            vers = self.cli(smart_str("cat /etc/version 2>/dev/null"))
-#            match = self.rx_eltex_version.search(vers)
-#            if match:
-#                vendor = 'Eltex'
-#                platform = match.group("platform")
-#                version = match.group("version")
-#            version = vers.split('\n')[0]
+            #        if not version:
+            # Russian latter!!!
+            #            vers = self.cli(smart_str("cat /etc/version 2>/dev/null"))
+            #            match = self.rx_eltex_version.search(vers)
+            #            if match:
+            #                vendor = 'Eltex'
+            #                platform = match.group("platform")
+            #                version = match.group("version")
+            #            version = vers.split('\n')[0]
         if not version:
             vers = self.cli("uname -r 2>/dev/null")
             version = vers.split('\n')[0]
@@ -151,11 +152,11 @@ class Script(BaseScript):
                 boot = bver.group("boot")
 
         r = {"vendor": vendor,
-            "platform": platform,
-            "version": version,
-            "attributes": {
-                }
-            }
+             "platform": platform,
+             "version": version,
+             "attributes": {
+             }
+             }
 
         try:
             if boot:

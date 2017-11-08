@@ -8,11 +8,13 @@
 
 # Python modules
 import datetime
-# NOC modules
-from base import BaseCard
+
+import cachetools
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
-import cachetools
+
+# NOC modules
+from base import BaseCard
 
 
 class OutageCard(BaseCard):

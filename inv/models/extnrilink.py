@@ -8,8 +8,8 @@
 
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.queryset import Q
 from mongoengine.fields import IntField, ObjectIdField, StringField, BooleanField, ReferenceField
+from mongoengine.queryset import Q
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 

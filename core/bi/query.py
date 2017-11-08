@@ -19,6 +19,7 @@ class OP(object):
     :param max: Maximal count element in query
     :param convert: Convert function name
     """
+
     def __init__(self, min=None, max=None, join=None,
                  prefix=None, convert=None, function=None):
         self.min = min

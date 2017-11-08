@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.models.managedobjectselector import (
     ManagedObjectSelector, ManagedObjectSelectorByAttribute)
-from noc.core.translation import ugettext as _
 
 
 class ManagedObjectSelectorApplication(ExtModelApplication):

@@ -5,8 +5,8 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
@@ -19,4 +19,4 @@ class Migration:
 
     def backwards(self):
         db.delete_column("sa_commandsnippet", "permission_name")
-        db.delete_column("sa_commandsnippet", "display_in_menu")    
+        db.delete_column("sa_commandsnippet", "display_in_menu")

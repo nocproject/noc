@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.gis.models.division import Division
+
 ## NOC modules
 from base import BaseLoader
-from noc.gis.models.division import Division
 
 
 class AdmDivLoader(BaseLoader):

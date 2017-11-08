@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-import re
 
 rx_portchannel_member = re.compile(r"^(\S+\s+\S+)\s+\((Port-channel\s+\d+)\)")
 
@@ -21,7 +22,7 @@ class Script(BaseScript):
     def execute(self):
         r = []
         port_channel_members = {}  # portchannel -> [interfaces]
-        interface_status = {}      # Interface -> stauts
+        interface_status = {}  # Interface -> stauts
         # Get interafces status
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]

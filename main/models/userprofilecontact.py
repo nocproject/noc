@@ -8,10 +8,11 @@
 
 # Django modules
 from django.db import models
+
+from notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from timepattern import TimePattern
 # NOC modules
 from userprofile import UserProfile
-from timepattern import TimePattern
-from notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 
 
 class UserProfileContact(models.Model):

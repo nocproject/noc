@@ -8,13 +8,12 @@
 """
 """
 from south.db import db
-from django.db import models
+
 
 class Migration:
-
     def forwards(self):
-        if db.execute("SELECT COUNT(*) FROM vc_vcdomain WHERE name=%s",["default"])[0][0]==0:
-            db.execute("INSERT INTO vc_vcdomain(name,description) VALUES(%s,%s)",["default","Default VC Domain"])
+        if db.execute("SELECT COUNT(*) FROM vc_vcdomain WHERE name=%s", ["default"])[0][0] == 0:
+            db.execute("INSERT INTO vc_vcdomain(name,description) VALUES(%s,%s)", ["default", "Default VC Domain"])
 
     def backwards(self):
         "Write your backwards migration here"

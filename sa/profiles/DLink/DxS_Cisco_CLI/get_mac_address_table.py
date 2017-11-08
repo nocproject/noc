@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-import re
 
 
 class Script(BaseScript):
@@ -39,8 +40,8 @@ class Script(BaseScript):
                 "mac": match.group("mac"),
                 "interfaces": [match.group("interfaces")],
                 "type": {
-                    "dynamic":"D",
-                     "static":"S"
+                    "dynamic": "D",
+                    "static": "S"
                 }[match.group("type").lower()]
             }]
         return r

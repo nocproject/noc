@@ -7,9 +7,11 @@
 # ---------------------------------------------------------------------
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
 
 class Script(BaseScript):
     name = "UTST.ONU.get_interfaces"

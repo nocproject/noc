@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -44,7 +45,7 @@ class Script(BaseScript):
                             "mac": mac_address,
                             "interfaces": [match.group("interfaces")],
                             "type": {"01": "D", "00": "S"}[match.group("type")]
-                            })
+                        })
         elif vlan is not None:
             for l in macs.split("\n"):
                 match = self.rx_line.match(l.strip())
@@ -58,7 +59,7 @@ class Script(BaseScript):
                             "mac": mac_address,
                             "interfaces": [match.group("interfaces")],
                             "type": {"01": "D", "00": "S"}[match.group("type")]
-                            })
+                        })
         else:
             for l in macs.split("\n"):
                 match = self.rx_line.match(l.strip())
@@ -70,6 +71,6 @@ class Script(BaseScript):
                         "mac": mac_address,
                         "interfaces": [match.group("interfaces")],
                         "type": {"01": "D", "00": "S"}[match.group("type")],
-                        })
+                    })
 
         return r

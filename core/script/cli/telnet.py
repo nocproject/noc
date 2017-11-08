@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import tornado.gen
 ## Tornado modules
 from tornado.iostream import IOStream
-import tornado.gen
+
 ## NOC modules
 from base import CLI
 
@@ -162,7 +163,7 @@ class TelnetIOStream(IOStream):
         self.logger.debug("Send IAC SB %r %r IAC SE",
                           opt, data)
         self.out_iac_seq += [sb]
-        #self.write_to_fd(sb)
+        # self.write_to_fd(sb)
 
     def process_iac(self, cmd, opt):
         """

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -35,12 +36,12 @@ class Script(BaseScript):
                                 r.append({
                                     "interface": n,
                                     "status": int(s) == 1
-                                    })
+                                })
                         else:
                             r.append({
                                 "interface": n,
                                 "status": int(s) == 1
-                                })
+                            })
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -55,5 +56,5 @@ class Script(BaseScript):
             r.append({
                 "interface": match.group("interface"),
                 "status": match.group("status") == "Up"
-                })
+            })
         return r

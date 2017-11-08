@@ -9,8 +9,10 @@
 # Python modules
 import logging
 import re
+
 # Django modules
 from django.template import Template, Context
+
 # NOC modules
 from base import BaseValidator
 

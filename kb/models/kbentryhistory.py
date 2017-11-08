@@ -17,6 +17,7 @@ class KBEntryHistory(models.Model):
     """
     Modification History
     """
+
     class Meta:
         verbose_name = "KB Entry History"
         verbose_name_plural = "KB Entry Histories"

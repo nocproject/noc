@@ -1,7 +1,8 @@
 # encoding: utf-8
-from south.db import db
 from django.db import models
 from noc.core.ip import IPv4
+from south.db import db
+
 
 class Migration:
     depends_on = [
@@ -10,8 +11,8 @@ class Migration:
 
     def forwards(self):
         PrefixTable = db.mock_model(model_name="PrefixTable",
-            db_table="main_prefixtable", db_tablespace="", pk_field_name="id",
-            pk_field_type=models.AutoField)
+                                    db_table="main_prefixtable", db_tablespace="", pk_field_name="id",
+                                    pk_field_type=models.AutoField)
         db.add_column(
             "sa_activator", "prefix_table",
             models.ForeignKey(

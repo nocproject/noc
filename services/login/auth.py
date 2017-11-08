@@ -8,6 +8,7 @@
 
 # Python modules
 import base64
+
 # Third-party modules
 import tornado.web
 from noc.config import config
@@ -15,7 +16,7 @@ from noc.config import config
 
 class AuthRequestHandler(tornado.web.RequestHandler):
     USER_COOKIE = "noc_user"
-    USER_COOKIE_TTL = config.login.user_cookie_ttl # % fixme probably unused
+    USER_COOKIE_TTL = config.login.user_cookie_ttl  # % fixme probably unused
 
     def initialize(self, service):
         self.service = service
@@ -24,6 +25,7 @@ class AuthRequestHandler(tornado.web.RequestHandler):
         """
         Checks Basic auth or noc_user secure cookie
         """
+
         def success(user):
             self.set_status(200, "OK")
             self.set_header("Remote-User", user)

@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.core.translation import ugettext as _
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
-from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn
 
 
 class ReportObjectSummaryApplication(SimpleReport):

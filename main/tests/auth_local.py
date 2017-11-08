@@ -8,9 +8,10 @@
 
 # Python modules
 from __future__ import with_statement
+
+from noc.lib.test import NOCTestCase
 # NOC modules
 from noc.main.auth.backends.localbackend import NOCLocalBackend
-from noc.lib.test import NOCTestCase
 
 
 class LocalBackendTestCase(NOCTestCase):

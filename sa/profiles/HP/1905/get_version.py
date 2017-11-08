@@ -36,15 +36,15 @@ class Script(BaseScript):
                 serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1",
                                        cached=True)
                 return {
-                        "vendor": vendor,
-                        "platform": platform,
-                        "version": version,
-                        "attributes": {
-                            "Boot PROM": bootprom,
-                            "HW version": hardware,
-                            "Serial Number": serial
-                            }
-                        }
+                    "vendor": vendor,
+                    "platform": platform,
+                    "version": version,
+                    "attributes": {
+                        "Boot PROM": bootprom,
+                        "HW version": hardware,
+                        "Serial Number": serial
+                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 

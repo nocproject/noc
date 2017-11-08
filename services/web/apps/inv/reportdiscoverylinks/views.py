@@ -6,16 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
-from noc.lib.nosql import get_db
-from pymongo import ReadPreference
-from noc.main.models.pool import Pool
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.authprofile import AuthProfile
-from noc.sa.models.profile import Profile
-from noc.core.translation import ugettext as _
 from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
+from noc.lib.nosql import get_db
+from noc.main.models.pool import Pool
+from noc.sa.models.authprofile import AuthProfile
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.profile import Profile
+from pymongo import ReadPreference
 
 
 class ReportFilterApplication(SimpleReport):
@@ -64,19 +64,20 @@ class ReportFilterApplication(SimpleReport):
                     profile=Profile.get_by_name(GENERIC_PROFILE)).exclude(
                     auth_profile__in=ap
                 ).values_list('id', flat=True))
-            all_p = 100.0/len(smos) if len(smos) else 1.0
+            all_p = 100.0 / len(smos) if len(smos) else 1.0
             data += [("All polling", len(smos))]
             for c in count:
                 if c == 3:
                     data += [("More 3", len(count[c].intersection(smos)), "%.2f %%" %
-                              round(len(count[c].intersection(smos))*all_p, 2))]
+                              round(len(count[c].intersection(smos)) * all_p, 2))]
                     continue
-                data += [(c, len(count[c].intersection(smos)), "%.2f %%" % round(len(count[c].intersection(smos))*all_p), 2)]
+                data += [(c, len(count[c].intersection(smos)),
+                          "%.2f %%" % round(len(count[c].intersection(smos)) * all_p), 2)]
 
             # 0 links - All discovering- summary with links
             s0 = len(smos) - sum([d[1] for d in data[-3:]])
             data.pop(-4)
-            data.insert(-3, (0, s0, "%.2f %%" % round(s0*all_p, 2)))
+            data.insert(-3, (0, s0, "%.2f %%" % round(s0 * all_p, 2)))
 
         return self.from_dataset(
             title=self.title,

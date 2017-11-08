@@ -8,6 +8,7 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
                   MACAddressParameter, StringParameter)
 
@@ -20,6 +21,6 @@ class IGetOAMStatus(BaseInterface):
             "L",  # Link monitor
             "R",  # Remote loopback
             "U",  # Unidirection
-            "V"   # Variable Request
+            "V"  # Variable Request
         ]))
     }))

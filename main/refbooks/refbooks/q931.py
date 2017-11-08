@@ -5,19 +5,20 @@
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from noc.main.refbooks.refbooks import RefBook,Field
+from noc.main.refbooks.refbooks import RefBook, Field
+
 
 #
 # IEEE OUI Refbook
 #
 class Q931CC(RefBook):
-    name="Q.931 Call Clearings"
-    description="Q.931 ISDN Call Clearings"
-    downloader="CSV"
-    download_url="https://cdn.nocproject.org/refbook/q931_call_clearing.csv"
-    refresh_interval=90
-    fields=[
+    name = "Q.931 Call Clearings"
+    description = "Q.931 ISDN Call Clearings"
+    downloader = "CSV"
+    download_url = "https://cdn.nocproject.org/refbook/q931_call_clearing.csv"
+    refresh_interval = 90
+    fields = [
         Field(name="DEC"),
         Field(name="HEX"),
-        Field(name="Description",search_method="substring"),
-        ]
+        Field(name="Description", search_method="substring"),
+    ]

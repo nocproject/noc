@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.config import config
+
 # Third-party modules
-import pam
 # NOC modules
 from base import BaseAuthBackend
-from noc.config import config
 
 
 class PAMBackend(BaseAuthBackend):

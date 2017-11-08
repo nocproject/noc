@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.sa.models.administrativedomain import AdministrativeDomain
+
 ## NOC modules
 from base import BaseLoader
-from noc.sa.models.administrativedomain import AdministrativeDomain
 
 
 class AdminitstrativeDomainLoader(BaseLoader):

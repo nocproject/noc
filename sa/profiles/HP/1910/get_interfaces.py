@@ -8,11 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-from noc.core.ip import IPv6
+
 
 class Script(BaseScript):
     """
@@ -49,10 +49,10 @@ class Script(BaseScript):
     rx_untag = re.compile(r"^\s*Untagged\s+VLAN ID :\s+(?P<untagged>.+)$")
 
     types = {
-        "Fa": "physical",       # FastEthernet
-        "Gi": "physical",       # GigabitEthernet
-        "Po": "aggregated",     # Aggregated
-        }
+        "Fa": "physical",  # FastEthernet
+        "Gi": "physical",  # GigabitEthernet
+        "Po": "aggregated",  # Aggregated
+    }
 
     def get_ospfint(self):
         ospfs = []
@@ -84,7 +84,7 @@ class Script(BaseScript):
         bgps = self.get_bgpint()
 
         interfaces = []
-        ifaces = self.cli("display interface")#.strip(' ')
+        ifaces = self.cli("display interface")  # .strip(' ')
         for match in self.rx_sh_svi.finditer(ifaces):
             description = match.group("description")
             if not description:
@@ -97,7 +97,7 @@ class Script(BaseScript):
                 ip_interfaces = "ipv6_addresses"
                 ip_ver = "is_ipv6"
                 enabled_afi += ["IPv6"]
-                ip = ip + '/' +  netmask
+                ip = ip + '/' + netmask
                 ip_list = [ip]
             else:
                 ip_interfaces = "ipv4_addresses"
@@ -117,17 +117,17 @@ class Script(BaseScript):
                 "mac": mac,
                 "description": description,
                 "subinterfaces": [{
-                        "name": ifname,
-                        "description": description,
-                        "admin_status": a_stat,
-                        "oper_status": o_stat,
-                        ip_ver: True,
-                        "enabled_afi": enabled_afi,
-                        ip_interfaces: ip_list,
-                        "mac": mac,
-                        "vlan_ids": self.expand_rangelist(vlan),
-                    }]
-                }
+                    "name": ifname,
+                    "description": description,
+                    "admin_status": a_stat,
+                    "oper_status": o_stat,
+                    ip_ver: True,
+                    "enabled_afi": enabled_afi,
+                    ip_interfaces: ip_list,
+                    "mac": mac,
+                    "vlan_ids": self.expand_rangelist(vlan),
+                }]
+            }
             interfaces += [iface]
 
         # Get L2 interfaces
@@ -160,14 +160,14 @@ class Script(BaseScript):
                     "oper_status": o_stat,
                     "mac": mac,
                     "subinterfaces": [{
-                            "name": ifname,
-                            "admin_status": a_stat,
-                            "oper_status": o_stat,
-                            "mac": mac,
-#                            "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
-#                            "snmp_ifindex": ifname.split('/')[2]
-                        }]
-                    }
+                        "name": ifname,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "mac": mac,
+                        #                            "snmp_ifindex": self.scripts.get_ifindex(interface=ifname)
+                        #                            "snmp_ifindex": ifname.split('/')[2]
+                    }]
+                }
 
                 # Portchannel member
                 if ifname in portchannel_members:
@@ -202,6 +202,5 @@ class Script(BaseScript):
                             iface["subinterfaces"][0]["untagged_vlan"] = int(untagged)
 
                 interfaces += [iface]
-
 
         return [{"interfaces": interfaces}]

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -19,7 +20,9 @@ class Script(BaseScript):
     """
     name = 'Brocade.CER.get_portchannel'
     interface = IGetPortchannel
-    rx_trunk = re.compile('^(?P<name>\\S+)\\s+(?P<type>\\S+)\\s+(?P<deploy>\\S+)\\s+(?P<id>\\d+)\\s+(?P<pri>\\d+\\/\\d+)\\s+(?P<ports>.*)$', re.MULTILINE)
+    rx_trunk = re.compile(
+        '^(?P<name>\\S+)\\s+(?P<type>\\S+)\\s+(?P<deploy>\\S+)\\s+(?P<id>\\d+)\\s+(?P<pri>\\d+\\/\\d+)\\s+(?P<ports>.*)$',
+        re.MULTILINE)
 
     def execute(self):
         r = []
@@ -46,7 +49,7 @@ class Script(BaseScript):
                         portlist += [port]
 
             r += [{'interface': trunk[0],
-              'members': portlist,
-              'type': trunk[1]}]
+                   'members': portlist,
+                   'type': trunk[1]}]
 
         return r

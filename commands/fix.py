@@ -8,11 +8,13 @@
 
 # Python modules
 from __future__ import print_function
+
 import argparse
 import os
+
+from noc.core.handler import get_handler
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.handler import get_handler
 
 
 class Command(BaseCommand):
@@ -65,7 +67,6 @@ class Command(BaseCommand):
     def handle_apply(self, fixes=None, *args, **options):
         if not fixes:
             return
-        import noc.lib.nosql  # Connect to mongo
         for f in fixes:
             fix = self.get_fix(f)
             if not fix:

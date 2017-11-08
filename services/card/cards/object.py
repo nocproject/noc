@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.inv.models.object import Object
+
 # NOC modules
 from base import BaseCard
-from noc.inv.models.object import Object
 
 
 class ObjectCard(BaseCard):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from south.db import db
 from noc.lib.nosql import get_db
+from south.db import db
 
 
 class Migration:

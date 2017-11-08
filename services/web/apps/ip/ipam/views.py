@@ -6,15 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import re
 # Python modules
 from operator import attrgetter, itemgetter
 
-import re
 from django import forms
 from django.db.models import Q
 from django.utils.simplejson.encoder import JSONEncoder
 # Django modules
 from django.utils.translation import ugettext_lazy as _
+from noc.core.colors import *
 from noc.core.ip import IP
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
@@ -44,14 +45,13 @@ from noc.sa.interfaces.base import MACAddressParameter, \
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.reducetask import ReduceTask
 from noc.vc.models import VCBindFilter
-from noc.core.colors import *
 
 
 class IPAMAppplication(Application):
     title = "Assigned Addresses"
     extra_permissions = ["bind_vc"]
 
-    ADDRESS_SPOT_DIST = 8    # Area around used address to show in free spot
+    ADDRESS_SPOT_DIST = 8  # Area around used address to show in free spot
     MAX_IPv4_NET_SIZE = 256  # Cover whole IPv4 prefix with spot if size below
     ##
     ## Helper functions
@@ -184,8 +184,8 @@ class IPAMAppplication(Application):
         # Validate
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if ((afi == "4" and
-             (not is_ipv4_prefix(prefix)) or not vrf.afi_ipv4) or
-            (afi == "6" and (not is_ipv6_prefix(prefix) or not vrf.afi_ipv6))):
+                 (not is_ipv4_prefix(prefix)) or not vrf.afi_ipv4) or
+                (afi == "6" and (not is_ipv6_prefix(prefix) or not vrf.afi_ipv6))):
             return self.response_forbidden("Invalid prefix")
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         # Get prefix path
@@ -273,7 +273,7 @@ class IPAMAppplication(Application):
                     r_changes[r.to_address] = (set(), set())
                 r_changes[r.from_address][0].add(r)
                 r_changes[r.to_address][1].add(r)
-                #<!>
+                # <!>
                 n = (IP.prefix(r.to_address) + 1).address
                 if n not in r_changes:
                     r_changes[n] = (set(), set())
@@ -380,6 +380,7 @@ class IPAMAppplication(Application):
         """
         Quickjump to closest suitable block
         """
+
         # Interpolate string to valid IPv4 address
         def interpolate_ipv4(s):
             p = s.split(".")
@@ -401,7 +402,7 @@ class IPAMAppplication(Application):
 
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if (afi == "4" and not vrf.afi_ipv4) or (
-        afi == "6" and not vrf.afi_ipv6):
+                        afi == "6" and not vrf.afi_ipv6):
             return self.response_forbidden("Invalid AFI")
         if request.POST:
             form = self.QuickJumpForm(request.POST)
@@ -433,7 +434,7 @@ class IPAMAppplication(Application):
         """
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if ((afi == "4" and not vrf.afi_ipv4) or
-            (afi == "6" and not vrf.afi_ipv6)):
+                (afi == "6" and not vrf.afi_ipv6)):
             return self.response_forbidden("Invalid AFI")
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         user = request.user
@@ -452,21 +453,22 @@ class IPAMAppplication(Application):
         """
         Add prefix
         """
+
         def get_form_class():
             class AddPrefixForm(NOCForm):
                 prefix = forms.CharField(label=_("Prefix"),
                                          help_text=_("IPv%(afi)s prefix") % {
                                              "afi": afi})
                 state = forms.ModelChoiceField(label=_("State"),
-                    queryset=ResourceState.objects.filter(is_starting=True,
-                        is_active=True).order_by("name"),
-                    help_text=_("Prefix state")
-                )
+                                               queryset=ResourceState.objects.filter(is_starting=True,
+                                                                                     is_active=True).order_by("name"),
+                                               help_text=_("Prefix state")
+                                               )
                 project = forms.ModelChoiceField(label=_("Project"),
-                    queryset=Project.objects.order_by("code"),
-                    help_text=_("Project"),
-                    required=False
-                )
+                                                 queryset=Project.objects.order_by("code"),
+                                                 help_text=_("Project"),
+                                                 required=False
+                                                 )
                 asn = forms.ModelChoiceField(
                     label=_("ASN"),
                     queryset=AS.objects.order_by("asn"),
@@ -519,7 +521,7 @@ class IPAMAppplication(Application):
                     p = Prefix.objects.filter(
                         vrf=vrf, afi=afi, prefix=prefix)
                     if (not p and
-                        vrf.vrf_group.address_constraint == "G"):
+                                vrf.vrf_group.address_constraint == "G"):
                         # Prefixes are unique per VRF Group
                         p = Prefix.objects.filter(
                             vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id),
@@ -544,7 +546,7 @@ class IPAMAppplication(Application):
                         if not PrefixAccess.user_can_change(request.user, vrf,
                                                             ds_afi, ds_prefix):
                             raise ValidationError(_("Permission denied. "
-                                        "Cannot set dual-stack allocation"))
+                                                    "Cannot set dual-stack allocation"))
                     return ds_prefix
 
             # Add custom fields
@@ -554,7 +556,7 @@ class IPAMAppplication(Application):
         # Validation
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if ((afi == "4" and not vrf.afi_ipv4) or
-            (afi == "6" and not vrf.afi_ipv6)):
+                (afi == "6" and not vrf.afi_ipv6)):
             return self.response_forbidden("Invalid AFI")
         parent = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         # Process input
@@ -622,7 +624,7 @@ class IPAMAppplication(Application):
             p_mask = int(parent.prefix.split("/")[1])
             free = sorted(IP.prefix(parent.prefix).iter_free(
                 [p.prefix for p in parent.children_set.all()]),
-                          key=attrgetter("mask"))
+                key=attrgetter("mask"))
             if free:
                 free.reverse()
                 # Find smallest free block possible
@@ -632,7 +634,7 @@ class IPAMAppplication(Application):
                     for p in free:
                         if p.mask <= mask:
                             suggestions += [("%s/%d" % (p.address, mask), 2 ** (
-                            32 - mask) if afi == "4" else None)]
+                                32 - mask) if afi == "4" else None)]
                             break
         return self.render(request, "add_prefix.html", vrf=vrf, afi=afi,
                            form=form, suggestions=suggestions)
@@ -643,20 +645,21 @@ class IPAMAppplication(Application):
         """
         Change prefix
         """
+
         def get_form_class():
             class EditPrefixForm(NOCForm):
                 asn = forms.ModelChoiceField(label=_("ASN"),
                                              queryset=AS.objects.order_by("asn"),
                                              help_text=_("AS Number"))
                 state = forms.ModelChoiceField(label=_("State"),
-                    queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
-                    help_text=_("Prefix state")
-                )
+                                               queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
+                                               help_text=_("Prefix state")
+                                               )
                 project = forms.ModelChoiceField(label=_("Project"),
-                    queryset=Project.objects.order_by("code"),
-                    help_text=_("Project"),
-                    required=False
-                )
+                                                 queryset=Project.objects.order_by("code"),
+                                                 help_text=_("Project"),
+                                                 required=False
+                                                 )
                 if can_bind_vc:
                     vc = forms.ModelChoiceField(
                         label=_("VC"),
@@ -706,9 +709,9 @@ class IPAMAppplication(Application):
                             check_ipv4_prefix(ds_prefix)
                         # Check permissions
                         if not PrefixAccess.user_can_change(
-                            request.user, vrf, ds_afi, ds_prefix):
+                                request.user, vrf, ds_afi, ds_prefix):
                             raise ValidationError(_("Permission denied. "
-                                        "Cannot set dual-stack allocation"))
+                                                    "Cannot set dual-stack allocation"))
                     return ds_prefix
 
             self.customize_form(EditPrefixForm, "ip_prefix")
@@ -717,7 +720,7 @@ class IPAMAppplication(Application):
         # Validate
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if ((afi == "4" and not vrf.afi_ipv4) or
-            (afi == "6" and not vrf.afi_ipv6)):
+                (afi == "6" and not vrf.afi_ipv6)):
             return self.response_forbidden("Invalid AFI")
         if not PrefixAccess.user_can_change(request.user, vrf, afi, prefix):
             return self.response_forbidden()
@@ -730,7 +733,7 @@ class IPAMAppplication(Application):
             if form.is_valid():
                 for k, v in form.cleaned_data.items():
                     if ((not can_bind_vc and k == "vc") or
-                        k == "dual_stack_prefix"):
+                                k == "dual_stack_prefix"):
                         continue
                     setattr(prefix, k, v)
                 with self.form_errors(form):
@@ -768,7 +771,7 @@ class IPAMAppplication(Application):
             self.apply_custom_initial(prefix, initial, "ip_prefix")
             form = form_class(initial=initial)
         return self.render(request, "change_prefix.html", vrf=vrf,
-            afi=afi, prefix=prefix, form=form)
+                           afi=afi, prefix=prefix, form=form)
 
     @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/delete/$",
           url_name="delete_prefix", access="change")
@@ -778,7 +781,7 @@ class IPAMAppplication(Application):
         """
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if (afi == "4" and not vrf.afi_ipv4) or (
-        afi == "6" and not vrf.afi_ipv6):
+                        afi == "6" and not vrf.afi_ipv6):
             return self.response_forbidden("Invalid AFI")
         if not PrefixAccess.user_can_change(request.user, vrf, afi, prefix):
             return self.response_forbidden()
@@ -788,37 +791,37 @@ class IPAMAppplication(Application):
             return self.response_forbidden("Cannot delete root prefix")
         if request.POST:
             if "scope" in request.POST and request.POST["scope"][0] in (
-            "p", "r"):
+                    "p", "r"):
                 if "delete_transition" in request.POST:
                     prefix_transition = prefix.ipv6_transition if prefix.ipv6_transition else prefix.ipv4_transition
-                    if  request.POST["scope"] == "p":
+                    if request.POST["scope"] == "p":
                         # Delete prefix only
                         prefix_transition.delete()
                         self.message_user(request, _(
                             "Prefix %(prefix)s has been successfully deleted") % {
-                            "prefix": prefix_transition.prefix})
+                                              "prefix": prefix_transition.prefix})
                     else:
                         # Delete recursive prefixes
                         prefix_transition.delete_recursive()
                         self.message_user(request, _(
                             "Prefix %(prefix)s and all descendans have been successfully deleted") % {
-                            "prefix": prefix_transition.prefix})
-                
-                if  request.POST["scope"] == "p":
+                                              "prefix": prefix_transition.prefix})
+
+                if request.POST["scope"] == "p":
                     # Delete prefix only
                     prefix.delete()
                     self.message_user(request, _(
                         "Prefix %(prefix)s has been successfully deleted") % {
-                        "prefix": prefix.prefix})
+                                          "prefix": prefix.prefix})
                 else:
                     # Delete recursive prefixes
                     prefix.delete_recursive()
                     self.message_user(request, _(
                         "Prefix %(prefix)s and all descendans have been successfully deleted") % {
-                        "prefix": prefix.prefix})
+                                          "prefix": prefix.prefix})
                 return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
                                               parent.prefix)
-            # Display form
+                # Display form
         return self.render(request, "delete_prefix.html", prefix=prefix)
 
     ##
@@ -837,14 +840,14 @@ class IPAMAppplication(Application):
                 )
             else:
                 state = forms.ModelChoiceField(label=_("State"),
-                    queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
-                    help_text=_("Prefix state")
-                )
+                                               queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
+                                               help_text=_("Prefix state")
+                                               )
             project = forms.ModelChoiceField(label=_("Project"),
-                queryset=Project.objects.order_by("code"),
-                help_text=_("Project"),
-                required=False
-            )
+                                             queryset=Project.objects.order_by("code"),
+                                             help_text=_("Project"),
+                                             required=False
+                                             )
             fqdn = forms.CharField(label=_("FQDN"), validators=[check_fqdn])
             mac = forms.CharField(label=_("MAC"), required=False)
             auto_update_mac = forms.BooleanField(
@@ -871,8 +874,8 @@ class IPAMAppplication(Application):
             style = forms.ModelChoiceField(
                 label=_("Style"),
                 queryset=Style.objects.filter(is_active=True).order_by("name"),
-                                           required=False,
-                                           help_text=_("Visual appearance"))
+                required=False,
+                help_text=_("Visual appearance"))
 
             def clean_address(self):
                 address = self.cleaned_data["address"].strip()
@@ -921,7 +924,7 @@ class IPAMAppplication(Application):
         # Validate
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if (afi == "4" and not vrf.afi_ipv4) or (
-        afi == "6" and not vrf.afi_ipv6):
+                        afi == "6" and not vrf.afi_ipv6):
             return self.response_forbidden("Invalid AFI")
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
         #
@@ -936,7 +939,7 @@ class IPAMAppplication(Application):
                                                   form.cleaned_data["address"]):
                     self.message_user(request, _(
                         "Address %(address)s is in the locked range") % {
-                        "address": form.cleaned_data["address"]})
+                                          "address": form.cleaned_data["address"]})
                     return self.response_redirect("ip:ipam:vrf_index", vrf.id,
                                                   afi, prefix.prefix)
                 # Check for collisions
@@ -988,8 +991,8 @@ class IPAMAppplication(Application):
                 "state": ResourceState.get_default()
             }
             if "address" in request.GET and (
-            (afi == "4" and is_ipv4(request.GET["address"])) or (
-            afi == "6" and is_ipv6(request.GET["address"]))):
+                        (afi == "4" and is_ipv4(request.GET["address"])) or (
+                                    afi == "6" and is_ipv6(request.GET["address"]))):
                 # Use address from querystring
                 initial["address"] = request.GET["address"]
             else:
@@ -1016,7 +1019,7 @@ class IPAMAppplication(Application):
                         if IP.prefix(prefix.prefix).contains(a0):
                             a0 = a0.address
                             if afi == "6" or (
-                            afi == "4" and a0 != p.last.address):
+                                            afi == "4" and a0 != p.last.address):
                                 initial["address"] = a0
                     if not initial:
                         self.message_user(request, _("No free addresses"))
@@ -1028,7 +1031,7 @@ class IPAMAppplication(Application):
                            prefix=prefix, form=form, addresses=None)
 
     @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/change_address/$",
-        url_name="change_address", access="change")
+          url_name="change_address", access="change")
     def view_change_address(self, request, vrf_id, afi, address):
         """
         Change address
@@ -1036,7 +1039,7 @@ class IPAMAppplication(Application):
         # Validate
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if ((afi == "4" and not vrf.afi_ipv4) or
-            (afi == "6" and not vrf.afi_ipv6)):
+                (afi == "6" and not vrf.afi_ipv6)):
             return self.response_forbidden("Invalid AFI")
         address = self.get_object_or_404(Address, vrf=vrf, afi=afi,
                                          address=address)
@@ -1053,15 +1056,15 @@ class IPAMAppplication(Application):
                                                   form.cleaned_data["address"]):
                     self.message_user(request, _(
                         "Address %(address)s is in the locked range") % {
-                        "address": form.cleaned_data["address"]})
+                                          "address": form.cleaned_data["address"]})
                     return self.response_redirect("ip:ipam:vrf_index", vrf.id,
                                                   afi, prefix.prefix)
                 # Modify
                 managed_object = None
                 if ("managed_object" in form.cleaned_data and
-                    form.cleaned_data["managed_object"]):
+                        form.cleaned_data["managed_object"]):
                     managed_object = self.get_object_or_404(ManagedObject,
-                                    name=form.cleaned_data["managed_object"])
+                                                            name=form.cleaned_data["managed_object"])
                 address.address = form.cleaned_data["address"]
                 address.state = form.cleaned_data["state"]
                 address.project = form.cleaned_data["project"]
@@ -1124,7 +1127,7 @@ class IPAMAppplication(Application):
         # Validate
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         if ((afi == "4" and not vrf.afi_ipv4) or
-            (afi == "6" and not vrf.afi_ipv6)):
+                (afi == "6" and not vrf.afi_ipv6)):
             return self.response_forbidden("Invalid AFI")
         address = self.get_object_or_404(Address, vrf=vrf, afi=afi,
                                          address=address)
@@ -1135,7 +1138,7 @@ class IPAMAppplication(Application):
         if AddressRange.address_is_locked(vrf, afi, address.address):
             self.message_user(request, _(
                 "Address %(address)s is in the locked range") % {
-                "address": address.address})
+                                  "address": address.address})
             return self.response_redirect(
                 "ip:ipam:vrf_index", vrf.id, afi,
                 address.prefix.prefix)
@@ -1166,8 +1169,8 @@ class IPAMAppplication(Application):
         addresses = [a.address for a in self.get_prefix_spot(p, sep=False)]
         # Run Map/Reduce task
         t = ReduceTask.create_task(["SAE"], "pyrule:get_single_result", {},
-                                          "ping_check",
-                {"activator_name": activator_name, "addresses": addresses}, 60)
+                                   "ping_check",
+                                   {"activator_name": activator_name, "addresses": addresses}, 60)
         return self.render_json(t.id)
 
     @view(
@@ -1191,7 +1194,7 @@ class IPAMAppplication(Application):
 
     class RebaseForm(NOCForm):
         vrf = forms.ModelChoiceField(label="VRF",
-            queryset=VRF.objects.all())
+                                     queryset=VRF.objects.all())
         to_prefix = forms.CharField(label="Rebase to prefix")
 
         def __init__(self, prefix, data=None):
@@ -1218,9 +1221,9 @@ class IPAMAppplication(Application):
             return to_prefix
 
     @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/rebase/$",
-        url_name="rebase", access="rebase")
+          url_name="rebase", access="rebase")
     def view_rebase(self, request, vrf_id, afi, prefix):
-        vrf = self.get_object_or_404(VRF,id=int(vrf_id))
+        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         prefix = self.get_object_or_404(
             Prefix, vrf=vrf, afi=afi, prefix=prefix)
         if request.POST:
@@ -1231,21 +1234,22 @@ class IPAMAppplication(Application):
                     form.cleaned_data["vrf"],
                     form.cleaned_data["to_prefix"])
                 self.message_user(request,
-                    _(u"Prefix %(old_prefix)s is rebased to %(new_prefix)s") % {
-                    "old_prefix": prefix,
-                    "new_prefix": form.cleaned_data["to_prefix"]})
+                                  _(u"Prefix %(old_prefix)s is rebased to %(new_prefix)s") % {
+                                      "old_prefix": prefix,
+                                      "new_prefix": form.cleaned_data["to_prefix"]})
                 return self.response_redirect("ip:ipam:vrf_index",
-                    new_prefix.vrf.id, afi, new_prefix.prefix)
+                                              new_prefix.vrf.id, afi, new_prefix.prefix)
         else:
             form = self.RebaseForm(prefix)
         return self.render(request,
-            "rebase.html", vrf=vrf, afi=afi, prefix=prefix,
-            rebase_form=form)
+                           "rebase.html", vrf=vrf, afi=afi, prefix=prefix,
+                           rebase_form=form)
 
     def user_access_list(self, user):
         """
         Row-based access
         """
+
         def p(a):
             r = []
             if a.can_view:

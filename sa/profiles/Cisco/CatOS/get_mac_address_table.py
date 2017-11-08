@@ -7,12 +7,13 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-import noc.sa.profiles
-from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
-rx_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<mac>\S+)\s+(?:(?P<type>\S+)\s)?(?P<interfaces>(?:\d|\/|-|,)+)\s+\S+$")
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+
+rx_line = re.compile(
+    r"^(?P<vlan_id>\d{1,4})\s+(?P<mac>\S+)\s+(?:(?P<type>\S+)\s)?(?P<interfaces>(?:\d|\/|-|,)+)\s+\S+$")
 
 
 class Script(BaseScript):

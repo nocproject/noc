@@ -8,7 +8,7 @@
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, IntField, BooleanField
+from mongoengine.fields import StringField, IntField
 
 
 class Entrance(EmbeddedDocument):
@@ -23,6 +23,7 @@ class Entrance(EmbeddedDocument):
     #
     first_home = StringField()
     last_home = StringField()
+
     # @todo: Managing company
 
     def __unicode__(self):

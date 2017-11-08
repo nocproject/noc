@@ -6,43 +6,44 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import zlib
 # Python modules
 from collections import defaultdict
-import zlib
-# Django modules
-from django.http import HttpResponse
+
 # Third-party modules
 import gridfs
 import ujson
+# Django modules
+from django.http import HttpResponse
 from mongoengine.queryset import Q as MQ
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobject import (ManagedObject,
-                                         ManagedObjectAttribute)
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.interactionlog import InteractionLog
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.inv.models.link import Link
-from noc.inv.models.interface import Interface
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.subinterface import SubInterface
-from noc.lib.app.modelinline import ModelInline
-from noc.lib.app.repoinline import RepoInline
-from noc.main.models.resourcestate import ResourceState
-from noc.project.models.project import Project
-from noc.vc.models.vcdomain import VCDomain
-from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.lib.text import split_alnum
-from noc.sa.interfaces.base import ListOfParameter, ModelParameter
-from noc.cm.models.objectfact import ObjectFact
 from noc.cm.engine import Engine
-from noc.sa.models.action import Action
+from noc.cm.models.objectfact import ObjectFact
+from noc.core.defer import call_later
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
-from noc.lib.nosql import get_db
-from noc.core.defer import call_later
 from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.link import Link
+from noc.inv.models.subinterface import SubInterface
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.lib.app.modelinline import ModelInline
+from noc.lib.app.repoinline import RepoInline
+from noc.lib.nosql import get_db
+from noc.lib.text import split_alnum
+from noc.main.models.resourcestate import ResourceState
+from noc.project.models.project import Project
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter
+from noc.sa.models.action import Action
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.interactionlog import InteractionLog
+from noc.sa.models.managedobject import (ManagedObject,
+                                         ManagedObjectAttribute)
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.models.useraccess import UserAccess
+from noc.vc.models.vcdomain import VCDomain
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -285,6 +286,7 @@ class ManagedObjectApplication(ExtModelApplication):
         :param managed_object:
         :return:
         """
+
         def sorted_iname(s):
             return sorted(s, key=lambda x: split_alnum(x["name"]))
 
@@ -322,7 +324,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 # Broadcast
                 label = ", ".join(
                     "%s:%s" % (ii.managed_object.name, ii.name)
-                               for ii in link.other(i))
+                    for ii in link.other(i))
             return {
                 "id": str(link.id),
                 "label": label
@@ -372,8 +374,8 @@ class ManagedObjectApplication(ExtModelApplication):
                     managed_object=o.id, aggregated_interface=i.id)],
                 "row_class": get_style(i)
             } for i in
-              Interface.objects.filter(managed_object=o.id,
-                                       type="aggregated")
+            Interface.objects.filter(managed_object=o.id,
+                                     type="aggregated")
         ]
         # L2 interfaces
         l2 = [
@@ -399,7 +401,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 "vrf": i.forwarding_instance.name if i.forwarding_instance else "",
                 "mac": i.mac
             } for i in
-              SubInterface.objects.filter(managed_object=o.id).filter(q)
+            SubInterface.objects.filter(managed_object=o.id).filter(q)
         ]
         return {
             "l1": sorted_iname(l1),
@@ -415,6 +417,7 @@ class ManagedObjectApplication(ExtModelApplication):
             if not v:
                 return None
             return c.objects.get(id=v)
+
         o = self.get_object_or_404(ManagedObject, id=int(id))
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")

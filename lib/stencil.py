@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import csv
 # Python modules
 import os
-import csv
+
 from noc.config import config
 
 
@@ -24,14 +25,14 @@ class Stencil(object):
     def get_stencil(self, status):
         path = "/inv/map/stencils/%s/%s/" % (status, self.id)
         return ("<shape name='%s#%s' aspect='fixed' w='%s' h='%s'>"
-               "    <background>"
-               "        <image src='%s' w='%s' h='%s' />"
-               "</background>"
-               "<foreground></foreground>"
-               "</shape>") % (
-            self.id, status, self.width, self.height, path,
-            self.width, self.height
-        )
+                "    <background>"
+                "        <image src='%s' w='%s' h='%s' />"
+                "</background>"
+                "<foreground></foreground>"
+                "</shape>") % (
+                   self.id, status, self.width, self.height, path,
+                   self.width, self.height
+               )
 
     def get_svg(self, color):
         return self.svg.replace("#000000", color)

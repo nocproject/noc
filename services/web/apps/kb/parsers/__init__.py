@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 from noc.lib.registry import Registry
 from noc.lib.validators import is_int
-from noc.settings import config
 from noc.services.web.apps.kb.parsers.macros import macro_registry
+from noc.settings import config
 
 macro_registry.register_all()
 
@@ -28,6 +28,7 @@ parser_registry = ParserRegistry()
 
 class ParserBase(type):
     """Metaclass for Parser"""
+
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
         # if m.is_enabled():
@@ -55,6 +56,7 @@ class Parser(object):
     def check(cls, text):
         """Check syntax"""
         cls.to_html(text)
+
     #
     # Convert extracted link to URL
     # Following link types are supported:

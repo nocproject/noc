@@ -8,12 +8,14 @@
 
 # Python modules
 import operator
+
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.inv.models.networksegment import NetworkSegment
+from noc.sa.models.objectstatus import ObjectStatus
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+
 # NOC modules
 from base import BaseCard
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
-from noc.inv.models.networksegment import NetworkSegment
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.objectstatus import ObjectStatus
 
 
 class SegmentCard(BaseCard):

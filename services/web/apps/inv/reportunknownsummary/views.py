@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.inv.models.unknownmodel import UnknownModel
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.inv.models.unknownmodel import UnknownModel
-from noc.core.translation import ugettext as _
 
 
 class ReportUnknownModelsSummary(SimpleReport):

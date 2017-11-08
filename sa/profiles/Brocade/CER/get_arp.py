@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -18,7 +19,7 @@ class Script(BaseScript):
     interface = IGetARP
     rx_line = re.compile('^\\d+\\s+(?P<ip>\\S+)\\s+(?P<mac>\\S+)\\s+(?P<type>\\S+)\\s+\\d+\\s+(?P<interface>\\S+)')
 
-    def execute(self, vrf = None):
+    def execute(self, vrf=None):
         if vrf:
             s = self.cli('show arp vrf %s' % vrf)
         else:
@@ -34,7 +35,7 @@ class Script(BaseScript):
                 continue
             else:
                 r.append({'ip': match.group('ip'),
-                 'mac': match.group('mac'),
-                 'interface': match.group('interface')})
+                          'mac': match.group('mac'),
+                          'interface': match.group('interface')})
 
         return r

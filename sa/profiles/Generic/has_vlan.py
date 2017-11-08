@@ -7,9 +7,6 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.ihasvlan import IHasVlan
-from noc.sa.interfaces.igetvlans import IGetVlans
-
-import re
 
 
 class Script(BaseScript):

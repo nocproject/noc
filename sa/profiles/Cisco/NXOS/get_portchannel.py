@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -65,4 +66,3 @@ class Script(BaseScript):
                     "type": "L",  # <!> TODO: port-channel type detection
                 }]
         return r
-

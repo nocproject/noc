@@ -9,11 +9,12 @@
 # Python modules
 import datetime
 import logging
-# Third-party applications
-from south.db import db
+
 from bson import ObjectId
 # NOC modules
 from noc.lib.nosql import get_db
+# Third-party applications
+from south.db import db
 
 logger = logging.getLogger(__name__)
 

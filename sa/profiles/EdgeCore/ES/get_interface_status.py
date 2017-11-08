@@ -8,11 +8,12 @@
 
 # Python modules
 import re
+
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.mib import mib
+from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 
 class Script(BaseScript):
@@ -71,7 +72,7 @@ class Script(BaseScript):
                     if n.startswith("Trunk ID"):
                         n = "Trunk " + n.replace("Trunk ID ", "").lstrip('0')
                     if n.startswith("Trunk Port ID"):
-                        n = "Trunk " + n.replace("Trunk Port ID ", "").lstrip('0') 
+                        n = "Trunk " + n.replace("Trunk Port ID ", "").lstrip('0')
                     if n.startswith("Trunk Member"):
                         n = "Eth 1/" + str(i)
                     if n.startswith("VLAN ID"):
@@ -92,7 +93,7 @@ class Script(BaseScript):
                 return r
             except self.snmp.TimeOutError:
                 pass
-            # Fallback to CLI
+                # Fallback to CLI
         r = []
         s = []
         if self.match_version(platform__contains="4626"):
@@ -140,7 +141,7 @@ class Script(BaseScript):
                         "interface": interface,
                         "mac": MACAddressParameter().clean(match.group("mac")),
                         "status": linestatus.lower() == "up",
-                        }]
+                    }]
                     if descr:
                         r[-1]["description"] = descr
         return r

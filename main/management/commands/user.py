@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import random
 # Python modules
 from optparse import make_option
-import random
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
@@ -21,7 +22,7 @@ class Command(BaseCommand):
     Manage Jobs
     """
     help = "Manage Full-Text Search index"
-    option_list=BaseCommand.option_list+(
+    option_list = BaseCommand.option_list + (
         make_option(
             "--add", "-a",
             action="store_const",

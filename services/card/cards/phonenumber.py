@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.phone.models.phonenumber import PhoneNumber
+from noc.phone.models.phonerange import PhoneRange
+
 # NOC modules
 from base import BaseCard
-from noc.phone.models.phonerange import PhoneRange
-from noc.phone.models.phonenumber import PhoneNumber
 
 
 class PhoneNumberCard(BaseCard):
@@ -35,7 +36,7 @@ class PhoneNumberCard(BaseCard):
     def search(cls, handler, query):
         r = []
         for p in PhoneNumber.objects.filter(
-            number=query
+                number=query
         ):
             r += [{
                 "scope": "phonenumber",

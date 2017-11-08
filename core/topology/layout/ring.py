@@ -9,9 +9,11 @@
 ## Python modules
 import math
 from collections import defaultdict
+
 ## Third-party modules
 import networkx as nx
 import numpy as np
+
 ## NOC modules
 from base import LayoutBase
 

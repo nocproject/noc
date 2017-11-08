@@ -8,16 +8,17 @@
 
 # Python modules
 import os
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
                                 IntField)
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
-from noc.sa.models.profile import Profile
-from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.main.models.doccategory import category
+from noc.sa.models.profile import Profile
 
 
 @category
@@ -49,7 +50,7 @@ class ProfileCheckRule(Document):
     match_method = StringField(required=True, choices=[
         "eq",  # Full match
         "contains",  # Contains
-        "re"   # regular expression
+        "re"  # regular expression
     ], default="eq")
     #
     value = StringField(required=True)

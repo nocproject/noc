@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import logging
 # Python modules
 import os
-import logging
+
 # Third-party modules
 import six
 
@@ -51,6 +52,7 @@ class MIBRegistry(object):
                         self.loaded_mibs.add(name)
                         logger.debug("Loading MIB: %s", name)
                         self.mib.update(m.MIB)
+
 
 logger.debug("Loading compiled MIBs")
 mib = MIBRegistry()

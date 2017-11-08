@@ -9,15 +9,13 @@ __author__ = 'FeNikS'
 # ---------------------------------------------------------------------
 
 # Python modules
-import urllib2
-from xml.dom.minidom import parseString
 import re
-# NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
 # Python modules
 import urllib2
 from xml.dom.minidom import parseString
+
+# NOC modules
+from noc.sa.interfaces import IGetConfig
 
 
 class Script(BaseScript):
@@ -25,7 +23,7 @@ class Script(BaseScript):
     interface = IGetConfig
 
     data = '<AFRICA><Platform ID=\"1\" Action=\"GET_TREE\" /></AFRICA>'
-    rx_sub = re.compile('\n\t+\n+', re.MULTILINE| re.DOTALL)
+    rx_sub = re.compile('\n\t+\n+', re.MULTILINE | re.DOTALL)
 
     def execute(self):
         url = 'http://' + self.access_profile.address + '/BrowseConfig'
@@ -40,7 +38,7 @@ class Script(BaseScript):
 
         req = urllib2.Request(url, self.data)
         response = urllib2.urlopen(req)
-        
+
         config = response.read()
         config = self.strip_first_lines(config, 1)
         config = parseString(config)

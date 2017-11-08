@@ -8,8 +8,9 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.profile.base import BaseProfile
 import re
+
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):

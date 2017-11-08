@@ -7,10 +7,12 @@
 # ---------------------------------------------------------------------
 """
 """
+import os
+import urlparse
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
-import urlparse
-import os
+
 
 class Script(BaseScript):
     name = "Raritan.DominionSX.get_config"

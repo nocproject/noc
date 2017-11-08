@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.validators import is_int
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
@@ -58,7 +59,7 @@ class Script(BaseScript):
             "710-017560",  # 710-017560
             "750-021778",  # RE-SRX210B
             "710-015273",  # RE-J4350-2540
-            "710-017560"   # RE-J2320-2000
+            "710-017560"  # RE-J2320-2000
         ])
     }
 
@@ -90,7 +91,7 @@ class Script(BaseScript):
         objects = []
         chassis_sn = set()
         for name, revision, part_no, serial, description in \
-          self.parse_hardware(v):
+                self.parse_hardware(v):
             builtin = False
             # Detect type
             t, number = self.get_type(name)
@@ -127,7 +128,7 @@ class Script(BaseScript):
                 builtin = True
                 part_no = []
             if t == "CHASSIS" and number is None \
-              and self.chassis_no is not None:
+                    and self.chassis_no is not None:
                 number = self.chassis_no
             # Submit object
             objects += [{

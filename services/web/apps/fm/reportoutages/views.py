@@ -9,17 +9,18 @@
 # Python modules
 import datetime
 from collections import defaultdict
+
 # Django modu;es
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.fm.models.outage import Outage
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
-from noc.core.translation import ugettext as _
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 
 
 class ReportForm(forms.Form):

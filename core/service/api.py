@@ -8,16 +8,16 @@
 
 # Python modules
 from collections import namedtuple
+
+import tornado.gen
 # Third-party modules
 import tornado.web
-import tornado.gen
 import ujson
+from noc.core.debug import error_report
+from noc.core.error import ERR_UNKNOWN
 # NOC modules
 from noc.core.error import NOCError
-from noc.core.debug import error_report
 from noc.core.span import Span
-from noc.core.error import ERR_UNKNOWN
-
 
 Redirect = namedtuple("Redirect", ["location", "method", "params"])
 
@@ -179,9 +179,11 @@ def executor(name):
     @api
     def script(....)
     """
+
     def wrap(f):
         f.executor = name
         return f
+
     return wrap
 
 
@@ -189,6 +191,7 @@ class lock(object):
     """
     Decorator to lock api method call with named lock
     """
+
     def __init__(self, name):
         self.name = name
 

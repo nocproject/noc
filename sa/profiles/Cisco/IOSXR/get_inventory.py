@@ -8,10 +8,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -67,10 +67,10 @@ class Script(BaseScript):
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
         elif (("LC" in descr or "Line Card" in descr or
-              "Linecard" in descr) and
-              "module mau" not in name):
+                       "Linecard" in descr) and
+                      "module mau" not in name):
             number = name.split()[1].split("/")[1]
-            return "MOD", number, pid 
+            return "MOD", number, pid
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
@@ -85,7 +85,7 @@ class Script(BaseScript):
             number = name.split()[1].split("/")[1][2]
             return "FAN", number, pid
         elif ("Power Module" in descr or
-              "Power Supply" in descr):
+                      "Power Supply" in descr):
             # number = 0/PM0/SP
             number = name.split()[1].split("/")[1][2:]
             return "PWR", number, pid

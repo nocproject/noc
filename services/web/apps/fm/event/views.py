@@ -6,26 +6,27 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import inspect
 # Python modules
 import os
-import inspect
 import re
-# NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
-from noc.fm.models.newevent import NewEvent
+
+from noc.core.translation import ugettext as _
 from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.mib import MIB
+from noc.fm.models.newevent import NewEvent
 from noc.fm.models.utils import get_alarm, get_event, get_severity
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.selectorcache import SelectorCache
+# NOC modules
+from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.escape import json_escape
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter)
-from noc.lib.escape import json_escape
-from noc.core.translation import ugettext as _
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.selectorcache import SelectorCache
 
 
 class EventApplication(ExtApplication):
@@ -74,9 +75,9 @@ class EventApplication(ExtApplication):
             if p in q:
                 del q[p]
         for p in (
-            self.limit_param, self.page_param, self.start_param,
-            self.format_param, self.sort_param, self.query_param,
-            self.only_param):
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param,
+                self.only_param):
             if p in q:
                 del q[p]
         # Normalize parameters
@@ -85,11 +86,11 @@ class EventApplication(ExtApplication):
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
         if "administrative_domain" in q:
-            a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
-            q["managed_object__in"] = a.managedobject_set.values_list("id", flat = True)
+            a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
+            q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
             q.pop("administrative_domain")
         if "managedobjectselector" in q:
-            s = SelectorCache.objects.filter(selector = q["managedobjectselector"]).values_list("object")
+            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
             if "managed_object__in" in q:
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:

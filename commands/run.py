@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc run command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./noc run command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 ## Python modules
 import argparse
+
 ## Third-party modules
 from concurrent.futures import ThreadPoolExecutor, as_completed
 ## NOC modules
@@ -71,7 +72,8 @@ class Command(BaseCommand):
                     o, result = future.result()
                     self.stdout.write("@@@ %s %s\n%s\n" % (o.address, o.name, "".join(result)))
                 except Exception as e:
-                    self.stdout.write("[%s] [%s] ERROR: %s\n" % (o.address, o.name,  e))
+                    self.stdout.write("[%s] [%s] ERROR: %s\n" % (o.address, o.name, e))
+
 
 if __name__ == "__main__":
     Command().run()

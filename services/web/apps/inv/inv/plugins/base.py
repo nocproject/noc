@@ -8,8 +8,10 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.inv.models.object import Object
+
 
 class InvPlugin(object):
     name = None
@@ -43,4 +45,3 @@ class InvPlugin(object):
 
     def get_data(self, request, object):
         return None
-

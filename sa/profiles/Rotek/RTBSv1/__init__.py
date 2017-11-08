@@ -9,6 +9,7 @@
 
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Rotek.RTBSv1"
     pattern_prompt = r"^(?P<hostname>\S+)\s*>?|\W+?#\s+?"

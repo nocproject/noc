@@ -9,17 +9,19 @@
 # Python modules
 import operator
 from collections import defaultdict
+
 # Third-party modules
 import cachetools
 import geojson
-# NOC modules
-from base import BaseCard
+from noc.config import config
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.maintenance.models.maintenance import Maintenance
-from noc.config import config
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+
+# NOC modules
+from base import BaseCard
 
 
 class AlarmHeatCard(BaseCard):

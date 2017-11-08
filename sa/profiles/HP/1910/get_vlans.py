@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
@@ -52,5 +53,5 @@ class Script(BaseScript):
                 r.append({
                     "vlan_id": int(match_v.group("vlan")),
                     "name": match_n.group("name")
-                    })
+                })
         return r

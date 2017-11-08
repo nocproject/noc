@@ -1,5 +1,5 @@
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
@@ -13,7 +13,7 @@ class Migration:
         db.create_table("sa_authprofilesuggestsnmp", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
             ("auth_profile", models.ForeignKey(AuthProfile)),
-            ("snmp_ro",  models.CharField("RO Community", blank=True, null=True, max_length=64)),
+            ("snmp_ro", models.CharField("RO Community", blank=True, null=True, max_length=64)),
             ("snmp_rw", models.CharField("RW Community", blank=True, null=True, max_length=64))
         ))
         db.create_table("sa_authprofilesuggestcli", (

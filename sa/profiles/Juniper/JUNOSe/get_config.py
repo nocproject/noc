@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
@@ -28,9 +29,9 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             config = self.cli("show configuration")
         configs = [{
-                "name": "config",
-                "config": self.cleaned_config(config)
-            }]
+            "name": "config",
+            "config": self.cleaned_config(config)
+        }]
         # Get services
         self.cli("terminal width 200")
         r = self.cli("show service-management service-definition brief | include True")

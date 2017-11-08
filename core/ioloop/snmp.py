@@ -6,21 +6,22 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import errno
 # Python modules
 import logging
 import socket
-import errno
-# Third-party modules
-from tornado.gen import coroutine, Return
+
 import six
-# NOC modules
-from noc.core.snmp.version import SNMP_v2c
+from noc.core.ioloop.udp import UDPSocket
+from noc.core.snmp.error import (NO_ERROR, NO_SUCH_NAME,
+                                 SNMPError, TIMED_OUT, UNREACHABLE)
 from noc.core.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
                                parse_get_response)
 from noc.core.snmp.set import set_pdu
-from noc.core.snmp.error import (NO_ERROR, NO_SUCH_NAME,
-                                 SNMPError, TIMED_OUT, UNREACHABLE)
-from noc.core.ioloop.udp import UDPSocket
+# NOC modules
+from noc.core.snmp.version import SNMP_v2c
+# Third-party modules
+from tornado.gen import coroutine, Return
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 logger = logging.getLogger(__name__)
@@ -161,6 +162,7 @@ def snmp_count(address, oid, port=161,
     Perform SNMP get request and returns Future to be used
     inside @tornado.gen.coroutine
     """
+
     def true(x, y):
         return true
 
@@ -238,6 +240,7 @@ def snmp_getnext(address, oid, port=161,
     Perform SNMP GETNEXT/BULK request and returns Future to be used
     inside @tornado.gen.coroutine
     """
+
     def true(x, y):
         return True
 

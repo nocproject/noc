@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import threading
 import time
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, LongField
-import cachetools
-from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
+from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 

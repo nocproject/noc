@@ -5,10 +5,13 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
+import datetime
+import os
+import stat
+
 from django.db import models
 from noc.config import config
-import os, stat, datetime
+from south.db import db
 
 TYPES = {
     "config": "config",

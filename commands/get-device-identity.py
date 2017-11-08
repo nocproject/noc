@@ -8,11 +8,12 @@
 
 # Python modules
 import argparse
+
 # Third-party modules
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.mib import mib
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
 
 class Command(BaseCommand):

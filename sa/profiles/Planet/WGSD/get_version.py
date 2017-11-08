@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -57,15 +58,15 @@ class Script(BaseScript):
                 serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.67108992",
                                        cached=True)
                 return {
-                        "vendor": "Planet",
-                        "platform": platform,
-                        "version": version,
-                        "attributes": {
-                            "Boot PROM": bootprom,
-                            "HW version": hardware,
-                            "Serial Number": serial
-                            }
-                        }
+                    "vendor": "Planet",
+                    "platform": platform,
+                    "version": version,
+                    "attributes": {
+                        "Boot PROM": bootprom,
+                        "HW version": hardware,
+                        "Serial Number": serial
+                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -109,7 +110,7 @@ class Script(BaseScript):
                 serial = s.group("serial")
         except:
             serial = None
-        r =  {
+        r = {
             "vendor": "Planet",
             "platform": platform,
             "version": version.group("version"),
@@ -119,5 +120,5 @@ class Script(BaseScript):
         }
         if bootprom:
             r["attributes"]["Boot PROM"] = bootprom.group("bootprom")
-            r["attributes"]["HW version"]= hardware.group("hardware")
+            r["attributes"]["HW version"] = hardware.group("hardware")
         return r

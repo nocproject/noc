@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from noc.lib.nosql import get_db
 from bson.binary import Binary
+from noc.lib.nosql import get_db
 
 
 class Migration:

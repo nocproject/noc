@@ -6,22 +6,23 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.db import models
 # Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-# NOC modules
-from noc.project.models.project import Project
-from vrf import VRF
-from prefix import Prefix
-from afi import AFI_CHOICES
-from noc.main.models.style import Style
-from noc.main.models.resourcestate import ResourceState
-from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
 from noc.lib.app.site import site
 from noc.lib.validators import (
     ValidationError, check_fqdn, check_ipv4, check_ipv6)
+from noc.main.models.resourcestate import ResourceState
+from noc.main.models.style import Style
 from noc.main.models.textindex import full_text_search
+# NOC modules
+from noc.project.models.project import Project
+from noc.sa.models.managedobject import ManagedObject
+
+from afi import AFI_CHOICES
+from prefix import Prefix
+from vrf import VRF
 
 
 @full_text_search
@@ -123,7 +124,7 @@ class Address(models.Model):
         afi = cls.get_afi(address)
         try:
             a = Address.objects.get(afi=afi, address=address,
-                vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id))
+                                    vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id))
             return a.vrf
         except Address.DoesNotExist:
             return None

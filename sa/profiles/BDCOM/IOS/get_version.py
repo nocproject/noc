@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -19,7 +20,7 @@ class Script(BaseScript):
     rx_platform = re.compile(r"product_ID\s*:\s*(?P<platform>\d+)")
     rx_version = re.compile(r"Software, Version (?P<version>\S+ Build \d+)")
     rx_bootprom = re.compile(
-      r"ROM: System Bootstrap, Version (?P<bootprom>\S+),"
+        r"ROM: System Bootstrap, Version (?P<bootprom>\S+),"
     )
     rx_serial = re.compile(r"Serial num\s*:\s*(?P<serial>\S+)")
     rx_hardware = re.compile(r"hardware version\s*:\s*(?P<hardware>\S+)")

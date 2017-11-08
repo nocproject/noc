@@ -11,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -97,7 +95,7 @@ class Script(BaseScript):
                             "remote_system_id": rsys_id,
                             "remote_port_id": int(rportid)
                         }]
-            
+
             r += [{
                 "lag_id": chan_num,
                 "interface": "Port-Channel" + pc[0],

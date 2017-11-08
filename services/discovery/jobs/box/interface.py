@@ -8,13 +8,13 @@
 
 # Third-party modules
 import six
-# NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
+# NOC modules
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 
 class InterfaceCheck(DiscoveryCheck):
@@ -265,7 +265,7 @@ class InterfaceCheck(DiscoveryCheck):
         for i in db_fi - set(fi):
             self.logger.info("Removing forwarding instance %s", i)
             for dfi in ForwardingInstance.objects.filter(
-                managed_object=self.object.id, name=i
+                    managed_object=self.object.id, name=i
             ):
                 dfi.delete()
 

@@ -8,11 +8,12 @@
 
 # Python modules
 import os
+
 # Third-party modules
 from django.core.management.base import BaseCommand
+from noc.core.fileutils import read_file
 # NOC modules
 from noc.settings import INSTALLED_APPS
-from noc.core.fileutils import read_file
 
 
 class Command(BaseCommand):

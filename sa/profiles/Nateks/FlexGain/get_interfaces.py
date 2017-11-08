@@ -9,10 +9,11 @@
 """
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -96,7 +97,7 @@ class Script(BaseScript):
             match = self.rx_xdsl.search(l)
             if match:
                 ifname = "%s/%s/%s" % (match.group("slot"), \
-                match.group("port"), match.group("bridge"))
+                                       match.group("port"), match.group("bridge"))
                 v = self.cli("show interface xdsl %s" % ifname[:-2])
                 match1 = self.rx_status.search(v)
                 oper_status = bool(match1.group("oper_status") == "On")
@@ -126,16 +127,16 @@ class Script(BaseScript):
         v = self.cli("show management gbe")
         i = {
             "name": "gbe",
-                "type": "SVI",
+            "type": "SVI",
+            "oper_status": True,
+            "admin_status": True,
+            "subinterfaces": [{
+                "name": "gbe",
                 "oper_status": True,
                 "admin_status": True,
-                "subinterfaces": [{
-                    "name": "gbe",
-                    "oper_status": True,
-                    "admin_status": True,
-                    "enabled_afi": ['IPv4']
-                }]
-            }
+                "enabled_afi": ['IPv4']
+            }]
+        }
         for l in v.split("\n"):
             match = self.rx_ip.search(l)
             if match:
@@ -151,16 +152,16 @@ class Script(BaseScript):
         v = self.cli("show management mgmt")
         i = {
             "name": "mgmt",
-                "type": "management",
+            "type": "management",
+            "oper_status": True,
+            "admin_status": True,
+            "subinterfaces": [{
+                "name": "mgmt",
                 "oper_status": True,
                 "admin_status": True,
-                "subinterfaces": [{
-                    "name": "mgmt",
-                    "oper_status": True,
-                    "admin_status": True,
-                    "enabled_afi": ['IPv4']
-                }]
-            }
+                "enabled_afi": ['IPv4']
+            }]
+        }
         for l in v.split("\n"):
             match = self.rx_ip.search(l)
             if match:

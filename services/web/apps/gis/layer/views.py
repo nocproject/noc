@@ -6,12 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.gis.models.layer import Layer
-from noc.main.models.collectioncache import CollectionCache
-from noc.sa.interfaces.base import ColorParameter
 from noc.core.translation import ugettext as _
+from noc.gis.models.layer import Layer
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.sa.interfaces.base import ColorParameter
 
 
 class LayerApplication(ExtDocApplication):

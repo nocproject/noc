@@ -8,6 +8,7 @@
 
 # Third-party modules
 import tornado.web
+
 from auth import AuthRequestHandler
 
 

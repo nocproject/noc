@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IP-MIB
-##    Compiled MIB
-##    Do not modify this file directly
-##    Run ./noc make-cmib instead
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# IP-MIB
+#    Compiled MIB
+#    Do not modify this file directly
+#    Run ./noc make-cmib instead
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 # MIB Name
 NAME = "IP-MIB"

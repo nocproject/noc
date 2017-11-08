@@ -6,19 +6,19 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import datetime
 # Python modules
 import re
-import datetime
+
 # Third-party modules
 import six
-# NOC Modules
-from noc.lib.text import list_to_ranges, ranges_to_list
-from noc.core.ip import IPv6
-from noc.core.mac import MAC
-from noc.lib.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
-from noc.core.interface.parameter import ORParameter
+from noc.core.ip import IPv6
+from noc.core.mac import MAC
+# NOC Modules
+from noc.lib.text import list_to_ranges, ranges_to_list
+from noc.lib.validators import is_ipv6
 
 
 class NoneParameter(Parameter):
@@ -29,6 +29,7 @@ class NoneParameter(Parameter):
         ...
     InterfaceTypeError: NoneParameter: 'None'
     """
+
     def __init__(self, required=True):
         super(NoneParameter, self).__init__(required=required)
 
@@ -57,6 +58,7 @@ class StringParameter(Parameter):
     ...
     InterfaceTypeError: StringParameter: '3'.
     """
+
     def __init__(self, required=True, default=None, choices=None):
         self.choices = choices
         super(StringParameter, self).__init__(required=required,
@@ -104,6 +106,7 @@ class REStringParameter(StringParameter):
     >>> REStringParameter("ex+p",default="exxp").clean(None)
     'exxp'
     """
+
     def __init__(self, regexp, required=True, default=None):
         self.rx = re.compile(regexp)  # Compile before calling the constructor
         super(REStringParameter, self).__init__(required=required,
@@ -128,6 +131,7 @@ class REParameter(StringParameter):
         ...
     InterfaceTypeError: REParameter: '+'
     """
+
     def clean(self, value):
         try:
             re.compile(value)
@@ -146,6 +150,7 @@ class PyExpParameter(StringParameter):
         ...
     InterfaceTypeError: REParameter: 'a =!= b'
     """
+
     def clean(self, value):
         try:
             compile(value, "<string>", "eval")
@@ -177,6 +182,7 @@ class BooleanParameter(Parameter):
     >>> BooleanParameter(default=True).clean(None)
     True
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -228,6 +234,7 @@ class IntParameter(Parameter):
     InterfaceTypeError: IntParameter: None
     None
     """
+
     def __init__(self, required=True, default=None,
                  min_value=None, max_value=None):
         self.min_value = min_value
@@ -274,6 +281,7 @@ class FloatParameter(Parameter):
         ...
     InterfaceTypeError: FloatParameter: 15
     """
+
     def __init__(self, required=True, default=None,
                  min_value=None, max_value=None):
         self.min_value = min_value
@@ -329,6 +337,7 @@ class InstanceOfParameter(Parameter):
     ...
     InterfaceTypeError: InstanceOfParameter: 1
     """
+
     def __init__(self, cls, required=True, default=None):
         super(InstanceOfParameter, self).__init__(required=required,
                                                   default=default)
@@ -383,6 +392,7 @@ class SubclassOfParameter(Parameter):
     InterfaceTypeError: SubclassOfParameter: <class base.C3>
     >>> SubclassOfParameter(cls="C",required=False).clean(None)
     """
+
     def __init__(self, cls, required=True, default=None):
         super(SubclassOfParameter, self).__init__(required=required,
                                                   default=default)
@@ -446,6 +456,7 @@ class ListOfParameter(ListParameter):
     ...
     InterfaceTypeError: IntParameter: 'x'
     """
+
     def __init__(self, element, required=True, default=None, convert=False):
         self.element = element
         self.is_list = type(element) in (list, tuple)
@@ -490,6 +501,7 @@ class StringListParameter(ListOfParameter):
     >>> StringListParameter().clean(["1",2,"3"])
     ['1', '2', '3']
     """
+
     def __init__(self, required=True, default=None, convert=False):
         super(StringListParameter, self).__init__(
             element=StringParameter(), required=required,
@@ -505,6 +517,7 @@ class DictParameter(Parameter):
         ...
     InterfaceTypeError: DictParameter: {'i': '10', 'x': 'ten'}
     """
+
     def __init__(self, required=True, default=None, attrs=None, truncate=False):
         super(DictParameter, self).__init__(required=required, default=default)
         self.attrs = attrs
@@ -585,7 +598,7 @@ class DictParameter(Parameter):
             if a_name in in_value:
                 try:
                     out_value[a_name] = attr.script_clean_result(profile,
-                                                             in_value[a_name])
+                                                                 in_value[a_name])
                 except InterfaceTypeError as e:
                     self.raise_error(
                         value,
@@ -605,6 +618,7 @@ class DictListParameter(ListOfParameter):
     >>> DictListParameter(attrs={"i":IntParameter(),"s":StringParameter()},convert=True).clean({"i":"10","s":"ten"})
     [{'i': 10, 's': 'ten'}]
     """
+
     def __init__(self, required=True, default=None,
                  attrs=None, convert=False):
         super(DictListParameter, self).__init__(
@@ -653,6 +667,7 @@ class IPv4Parameter(StringParameter):
         ...
     InterfaceTypeError: IPvParameter: '192.168.0.256'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -695,6 +710,7 @@ class IPv4PrefixParameter(StringParameter):
         ...
     InterfaceTypeError: IPv4PrefixParameter: '192.168.0.0/-5'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -745,6 +761,7 @@ class IPv6Parameter(StringParameter):
     >>> IPv6Parameter().clean("2001:db8:0:7:0:0:0:1")
     '2001:db8:0:7::1'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -773,6 +790,7 @@ class IPv6PrefixParameter(StringParameter):
     ...
     InterfaceTypeError: IPv6PrefixParameter: '2001:db8::'
     """
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
@@ -838,6 +856,7 @@ class VLANIDParameter(IntParameter):
         ...
     InterfaceTypeError: VLANIDParameter: 0
     """
+
     def __init__(self, required=True, default=None):
         super(VLANIDParameter, self).__init__(required=required, default=default,
                                               min_value=1, max_value=4095)
@@ -854,10 +873,11 @@ class VLANStackParameter(ListOfParameter):
     >>> VLANStackParameter().clean([10, 0])
     [10, 0]
     """
+
     def __init__(self, required=True, default=None):
         super(VLANStackParameter, self).__init__(element=IntParameter(),
-                                           required=required,
-                                           default=default, convert=True)
+                                                 required=required,
+                                                 default=default, convert=True)
 
     def clean(self, value):
         value = super(VLANStackParameter, self).clean(value)
@@ -878,9 +898,10 @@ class VLANIDListParameter(ListOfParameter):
     >>> VLANIDListParameter().clean([1,2,3])
     [1, 2, 3]
     """
+
     def __init__(self, required=True, default=None):
         super(VLANIDListParameter, self).__init__(element=VLANIDParameter(),
-                                           required=required, default=default)
+                                                  required=required, default=default)
 
 
 #
@@ -944,6 +965,7 @@ class MACAddressParameter(StringParameter):
         ...
     InterfaceTypeError: MACAddressParameter: '\xa8\xf9K\x80\xb4\xc0'.
     """
+
     def __init__(self, required=True, default=None, accept_bin=True):
         self.accept_bin = accept_bin
         super(MACAddressParameter, self).__init__(required=required,
@@ -981,6 +1003,7 @@ class OIDParameter(Parameter):
         ...
     InterfaceTypeError: OIDParameter: '1.3.6.1.2.1.1.X.0'
     """
+
     def clean(self, value):
         def is_false(v):
             try:
@@ -1055,6 +1078,7 @@ class GeoPointParameter(Parameter):
     ...
     InterfaceTypeError: GeoPointParameter: [1]
     """
+
     def clean(self, value):
         if type(value) in (list, tuple):
             # List or tuple
@@ -1070,7 +1094,7 @@ class GeoPointParameter(Parameter):
                 self.raise_error(value)
             s = v[0]
             if (s not in ("(", "[") or (s == "(" and v[-1] != ")") or
-                (s == "[" and v[-1]) != "]"):
+                        (s == "[" and v[-1]) != "]"):
                 self.raise_error(value)
             return self.clean(v[1:-1].split(","))
         else:
@@ -1081,6 +1105,7 @@ class ModelParameter(Parameter):
     """
     Model reference parameter
     """
+
     def __init__(self, model, required=True):
         super(ModelParameter, self).__init__(required=required)
         self.model = model
@@ -1110,6 +1135,7 @@ class DocumentParameter(Parameter):
     """
     Document reference parameter
     """
+
     def __init__(self, document, required=True):
         super(DocumentParameter, self).__init__(required=required)
         self.document = document
@@ -1163,6 +1189,7 @@ class TagsParameter(Parameter):
     >>> TagsParameter().clean("1 , 2,  tags")
     [u'1', u'2', u'tags']
     """
+
     def clean(self, value):
         if type(value) in (list, tuple):
             v = [unicode(v).strip() for v in value]
@@ -1197,9 +1224,11 @@ class ObjectIdParameter(REStringParameter):
             "^[0-9a-f]{24}$", required=required, default=default
         )
 
+
 #
 # Module Test
 #
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()

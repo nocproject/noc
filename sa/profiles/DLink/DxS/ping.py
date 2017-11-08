@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -36,9 +37,9 @@ class Script(BaseScript):
         if source_address:
             cmd += " source_ip %s" % source_address
         # Not implemented, may be in future firmware revisions ?
-        #if size:
+        # if size:
         #    cmd+=" size %d"%int(size)
-        #if df:
+        # if df:
         #    cmd+=" df-bit"
         r = self.cli(cmd)
         rx = self.find_re([self.rx_result, self.rx_result_des1210], r)

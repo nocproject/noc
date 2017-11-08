@@ -1,6 +1,6 @@
 # encoding: utf-8
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:

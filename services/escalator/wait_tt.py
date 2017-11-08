@@ -6,15 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
-import datetime
+
+from noc.config import config
+from noc.core.scheduler.job import Job
 # NOC modules
 from noc.fm.models.utils import get_alarm
-from escalation import tt_system_cache
-from noc.core.scheduler.job import Job
-from noc.config import config
 
+from escalation import tt_system_cache
 
 logger = logging.getLogger(__name__)
 

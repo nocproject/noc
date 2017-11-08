@@ -6,8 +6,8 @@
 """
 """
 
-class Migration:
 
+class Migration:
     def forwards(self):
         pass
 

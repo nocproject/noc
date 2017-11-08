@@ -14,8 +14,6 @@
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 import re
 
 
@@ -142,7 +140,7 @@ class Script(BaseScript):
                 2
                 '''
                 if n["remote_port_subtype"] == 7 \
-                and n["remote_port"].lower().startswith("rmon port"):
+                        and n["remote_port"].lower().startswith("rmon port"):
                     match = self.rx_remote_port_id2.search(n["remote_port"])
                     if not match:
                         # Debug string

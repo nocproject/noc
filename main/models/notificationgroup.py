@@ -11,20 +11,21 @@ import datetime
 import logging
 import operator
 from threading import Lock
+
+import cachetools
+from django.contrib.auth.models import User
 # Django modules
 from django.db import models
-from django.contrib.auth.models import User
-import cachetools
+from noc.core.model.decorator import on_delete_check
+from noc.core.service.pub import pub
+from noc.lib.timepattern import TimePatternList
 # NOC modules
 from noc.settings import LANGUAGE_CODE
-from noc.lib.timepattern import TimePatternList
+
 from timepattern import TimePattern
-from noc.core.service.pub import pub
-from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
-
 
 NOTIFICATION_TOPICS = {
     "mail": "mailsender",
@@ -53,6 +54,7 @@ class NotificationGroup(models.Model):
     """
     Notification Groups
     """
+
     class Meta:
         verbose_name = "Notification Group"
         verbose_name_plural = "Notification Groups"

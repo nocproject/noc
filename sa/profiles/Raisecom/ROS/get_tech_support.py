@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 """
 """
-import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igettechsupport import IGetTechSupport
 

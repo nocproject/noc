@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-import re
 
 
 class Script(BaseScript):
@@ -21,7 +22,7 @@ class Script(BaseScript):
 
     def execute(self):
         match = self.re_search(self.rx_mac,
-            self.cli("display sysman mac-address"))
+                               self.cli("display sysman mac-address"))
         mac = match.group("mac")
         return {
             "first_chassis_mac": mac,

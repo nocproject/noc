@@ -8,7 +8,9 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import random
+
 # NOC modules
 from .ber import BEREncoder
 from .consts import PDU_SET_REQUEST

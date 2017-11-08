@@ -8,9 +8,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-import re
 
 
 class Script(BaseScript):
@@ -33,9 +34,9 @@ class Script(BaseScript):
         pr = self.strip_first_lines(pr, 1)
         match = self.rx_result.search(pr)
         return {
-                "success": match.group("success"),
-                "count": match.group("count"),
-                "min": match.group("min"),
-                "avg": match.group("avg"),
-                "max": match.group("max"),
-            }
+            "success": match.group("success"),
+            "count": match.group("count"),
+            "min": match.group("min"),
+            "avg": match.group("avg"),
+            "max": match.group("max"),
+        }

@@ -9,15 +9,16 @@
 # NOC modules
 import datetime
 import re
+
 # Django modules
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
 # NOC modules
 from noc.lib.app.simplereport import (SimpleReport, SectionRow,
                                       SafeString)
 from noc.main.models.audittrail import AuditTrail
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.address import Address
 
 
 class ReportHistoryApplication(SimpleReport):
@@ -35,7 +36,7 @@ class ReportHistoryApplication(SimpleReport):
         )
 
     rx_detail = re.compile(r"^(.+?): (.+?) -> (.+?)$",
-        re.MULTILINE | re.UNICODE)
+                           re.MULTILINE | re.UNICODE)
 
     MODELS = {
         "ip.Prefix": Prefix,
@@ -52,7 +53,7 @@ class ReportHistoryApplication(SimpleReport):
         return SafeString(s)
 
     def get_data(self, days, include_prefixes,
-                 include_addresses,**kwargs):
+                 include_addresses, **kwargs):
         dt = datetime.date.today() - datetime.timedelta(days=days)
         scope = []
         if include_prefixes:
@@ -62,8 +63,8 @@ class ReportHistoryApplication(SimpleReport):
         last = None
         r = []
         for l in AuditTrail.objects.filter(timestamp__gte=dt,
-                                           model_id__in=scope)\
-                                   .order_by("-timestamp"):
+                                           model_id__in=scope) \
+                .order_by("-timestamp"):
             d = l.timestamp.date()
             if d != last:
                 last = d

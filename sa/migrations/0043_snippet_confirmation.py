@@ -5,19 +5,19 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
-    depends_on=[
+    depends_on = [
         ("main", "0035_prefix_table"),
     ]
+
     def forwards(self):
         db.add_column("sa_commandsnippet", "require_confirmation",
-            models.BooleanField("Require Confirmation",
-                    default=False))
+                      models.BooleanField("Require Confirmation",
+                                          default=False))
 
     def backwards(self):
         db.delete_column("sa_commandsnippet", "require_confirmation")
-

@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
-from noc.peer.models import Peer, WhoisCache
 from noc.core.ip import IP
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.peer.models import Peer, WhoisCache
 
 
 class ReportLOC(SimpleReport):
@@ -60,7 +60,7 @@ class ReportLOC(SimpleReport):
             r += [(p.description, "AS%d" % p.remote_asn, p.import_filter,
                    cone_powers.get(peer_id, 0), uniq_powers.get(peer_id, 0))]
         r = sorted(r, key=lambda x: -x[4])
-        
+
         return self.from_dataset(title=self.title,
                                  columns=[
                                      "Peer", "ASN", "Import Filter",

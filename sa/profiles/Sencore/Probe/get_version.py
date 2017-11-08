@@ -10,19 +10,21 @@ __author__ = 'FeNikS'
 """
 # Python modules
 import re
+
+from noc.sa.interfaces import IGetVersion
 # NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
+
 
 class Script(NOCScript):
     name = "Sencore.Probe.get_version"
     implements = [IGetVersion]
 
     rx_version = re.compile(r"<software_version>(?P<data>.*?)</software_version>",
-                            re.MULTILINE|re.DOTALL)
+                            re.MULTILINE | re.DOTALL)
     rx_platform = re.compile(r"<product>(?P<data>.*?)</product>",
-                             re.MULTILINE|re.DOTALL)
-    
+                             re.MULTILINE | re.DOTALL)
+
     def execute(self):
         platform = "Probe"
         version = "---"
@@ -40,7 +42,7 @@ class Script(NOCScript):
             match = self.rx_platform.search(data)
             if match:
                 platform = match.group("data")
-        
+
         return {
             "vendor": "Sencore",
             "platform": platform,

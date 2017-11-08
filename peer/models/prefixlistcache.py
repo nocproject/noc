@@ -10,9 +10,10 @@
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, IntField,
                                 ListField, EmbeddedDocumentField, DateTimeField)
+from noc.lib.nosql import ForeignKeyField
+
 # NOC modules
 from peeringpoint import PeeringPoint
-from noc.lib.nosql import ForeignKeyField
 
 
 class PrefixListCachePrefix(EmbeddedDocument):

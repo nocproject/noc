@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -143,5 +144,5 @@ class Script(BaseScript):
                 r["instances"] += [self.process_mstp(
                     match1.group("id"),
                     match1.group("vlans")
-                    )]
+                )]
         return r

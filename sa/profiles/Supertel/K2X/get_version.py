@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -52,8 +53,8 @@ class Script(BaseScript):
                         "Boot PROM": bootprom,
                         "HW version": hardware,
                         "Serial Number": serial
-                        }
                     }
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -79,5 +80,5 @@ class Script(BaseScript):
                 "Boot PROM": bootprom.group("bootprom"),
                 "HW version": hardware.group("hardware"),
                 "Serial Number": serial.group("serial")
-                }
             }
+        }

@@ -6,21 +6,23 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
+import os
 # Python modules
 import re
-import os
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
-import cachetools
+from noc.core.handler import get_handler
 # NOC modules
 from noc.lib import nosql
-from alarmclass import AlarmClass
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
-from noc.core.handler import get_handler
+
+from alarmclass import AlarmClass
 
 id_lock = Lock()
 handlers_lock = Lock()
@@ -132,7 +134,7 @@ class EventDispositionRule(EmbeddedDocument):
         if self.alarm_class is None and other.alarm_class is None:
             return True
         if (self.alarm_class is None or other.alarm_class is None or
-                self.alarm_class.name != other.alarm_class.name):
+                    self.alarm_class.name != other.alarm_class.name):
             return False
         return True
 
@@ -364,7 +366,7 @@ class EventClass(Document):
                 l += ["\n".join(ll)]
             r += [",\n".join(l)]
             r += ["    ]"]
-        #
+            #
             if not r[-1].endswith(","):
                 r[-1] += ","
         r += ["    \"repeat_suppression\": ["]
@@ -417,6 +419,7 @@ class EventClass(Document):
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
 
 rx_rule_name_quote = re.compile("[^a-zA-Z0-9]+")
 

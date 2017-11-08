@@ -8,6 +8,7 @@
 
 # Python modules
 import inspect
+
 # NOC modules
 from noc.lib import nosql
 
@@ -177,8 +178,8 @@ class Overlay(nosql.Document):
             for n in dir(m):
                 o = getattr(m, n)
                 if (
-                    inspect.isclass(o) and o != OverlayHandler and
-                    issubclass(o, OverlayHandler)
+                                inspect.isclass(o) and o != OverlayHandler and
+                            issubclass(o, OverlayHandler)
                 ):
                     self._overlay_cache[self.overlay] = o
                     break

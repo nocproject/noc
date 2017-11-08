@@ -14,12 +14,12 @@ class Migration:
     def forwards(self):
         db.create_table("sa_authprofile", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True,
-                auto_created=True)),
+                                    auto_created=True)),
             ("name", models.CharField("Name", max_length=64, unique=True)),
             ("description", models.TextField("Description", null=True, blank=True)),
             ("type", models.CharField("Name", max_length=1)),
             ("user", models.CharField("User", max_length=32, blank=True, null=True)),
-            ("password",  models.CharField("Password", max_length=32, blank=True, null=True)),
+            ("password", models.CharField("Password", max_length=32, blank=True, null=True)),
             ("super_password", models.CharField("Super Password", max_length=32, blank=True, null=True)),
             ("snmp_ro", models.CharField("RO Community", blank=True, null=True, max_length=64)),
             ("snmp_rw", models.CharField("RW Community", blank=True, null=True, max_length=64))

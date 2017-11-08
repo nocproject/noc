@@ -11,25 +11,25 @@ from bson import ObjectId
 
 
 def get_event(event_id):
-        """
-        Get event by event_id
-        """
-        for ec in (ActiveEvent, ArchivedEvent, FailedEvent, NewEvent):
-            e = ec.objects.filter(id=event_id).first()
-            if e:
-                return e
-        return None
+    """
+    Get event by event_id
+    """
+    for ec in (ActiveEvent, ArchivedEvent, FailedEvent, NewEvent):
+        e = ec.objects.filter(id=event_id).first()
+        if e:
+            return e
+    return None
 
 
 def get_alarm(alarm_id):
-        """
-        Get alarm by alarm_id
-        """
-        for ac in (ActiveAlarm, ArchivedAlarm):
-            a = ac.objects.filter(id=alarm_id).first()
-            if a:
-                return a
-        return None
+    """
+    Get alarm by alarm_id
+    """
+    for ac in (ActiveAlarm, ArchivedAlarm):
+        a = ac.objects.filter(id=alarm_id).first()
+        if a:
+            return a
+    return None
 
 
 def get_severity(alarms):
@@ -37,6 +37,7 @@ def get_severity(alarms):
     Return severity CSS class name for the alarms
     :param alarms: Single instance or list of alarms
     """
+
     def f(a):
         if hasattr(a, "id"):
             return a.id
@@ -64,6 +65,7 @@ def get_severity(alarms):
         if not al:
             break
     return severity
+
 
 # NOC modules
 from activeevent import ActiveEvent

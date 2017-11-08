@@ -16,6 +16,7 @@ POLICY_MAP = {
     "a": 1
 }
 
+
 class ProbeSetting(object):
     __slots__ = [
         "id",

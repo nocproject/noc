@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):

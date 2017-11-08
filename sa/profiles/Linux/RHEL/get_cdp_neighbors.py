@@ -30,17 +30,17 @@ enable CDP in /etc/sysconfig/lldpd : LLDPD_OPTIONS="-c"
 ### KVM host ####
 
 need drop CDP traffic  ethX -- bridge -- vnetX
-dump CDP traffic 
+dump CDP traffic
 # tcpdump -nn -v -i bond0 -s 1500 -c 100 'ether[20:2] == 0x2000'
 
 # iptables -I FORWARD -m mac --mac 01:00:0C:CC:CC:CC -j DROP
 
 
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
-import re
-import logging
 
 
 class Script(BaseScript):
@@ -59,7 +59,7 @@ class Script(BaseScript):
     rx_ladvdc = re.compile(r"(?P<device_id>\S+)\s+(?P<local_interface>\S+)\s+"
                            r"CDP\s+\d+\s+\S+\s+(?P<remote_interface>\S+)\s+\n",
                            re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    
+
     """
     $ lldpcli show neighbors summary
     -------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ class Script(BaseScript):
     ------------------------------------------------------------------------------- 
     
     """
-    
+
     rx_lldpd = re.compile(r"Interface:\s+(?P<local_interface>\S+), via: CDPv2\n"
                           r"\s+Chassis:\s+\n"
                           r"\s+ChassisID:\s+\S+\s(?P<device_id>\S+)\n"
@@ -83,7 +83,7 @@ class Script(BaseScript):
                           r"\s+Port:\s+\n"
                           r"\s+PortID:\s+ifname (?P<remote_interface>\S+)\n"
                           , re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    
+
     def execute(self):
 
         """
@@ -92,7 +92,6 @@ class Script(BaseScript):
         # Linux interface regex
         check_ifcfg = re.compile(r"(bond\d+|eno\d+|ens\d+|enp\d+s\d+|en[0-9a-fA-F]{8}|eth\d+|vnet\d+)",
                                  re.MULTILINE | re.DOTALL | re.IGNORECASE)
-
 
         device_id = self.scripts.get_fqdn()
         # Get neighbors
@@ -105,37 +104,37 @@ class Script(BaseScript):
         # try ladvdc
         id_last = 999
         v = self.cli("ladvdc -b -C")
-        #print "Status: ", v
-        
+        # print "Status: ", v
+
         if "INTERFACE" in v:
             for l in v.splitlines():
                 name, value = l.split('=')
-                #print name, value 
+                # print name, value
                 id = int(name.split('_')[-1])
-                #print id
+                # print id
 
                 name2 = ''.join(name.split('_')[:-1])
-                #print name2
+                # print name2
                 if name2 not in map:
                     continue
-                
+
                 if id != id_last:
                     neighbors += [{map[name2]: value.strip("'")}]
-                 #   print value.strip("'")
+                    #   print value.strip("'")
                 else:
                     if map[name2] == 'remote_interface':
                         neighbors[id][map[name2]] = self.profile.convert_interface_name_cisco(value.strip("'"))
-                 #       print map[name2]
+                        #       print map[name2]
                     else:
                         neighbors[id][map[name2]] = value.strip("'")
-                  #      print map[name2], value.strip("'")
+                        #      print map[name2], value.strip("'")
 
                 id_last = id
-                
+
             return {
-                    "device_id": device_id,
-                    "neighbors": neighbors
-                    }
+                "device_id": device_id,
+                "neighbors": neighbors
+            }
 
         """
         

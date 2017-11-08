@@ -8,7 +8,7 @@
 
 # Third-party modules
 from mongoengine import fields
-from mongoengine.document import EmbeddedDocument, Document
+from mongoengine.document import EmbeddedDocument
 
 
 class AlarmPlugin(EmbeddedDocument):

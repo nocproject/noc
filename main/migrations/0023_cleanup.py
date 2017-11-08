@@ -6,14 +6,17 @@
 """
 """
 from south.db import db
-from django.db import models
+
 
 class Migration:
-    depends_on=(
-        ("sa","0003_task_schedule"),
+    depends_on = (
+        ("sa", "0003_task_schedule"),
     )
+
     def forwards(self):
-        db.execute("UPDATE sa_taskschedule SET periodic_name='main.cleanup' WHERE periodic_name='main.cleanup_sessions'")
+        db.execute(
+            "UPDATE sa_taskschedule SET periodic_name='main.cleanup' WHERE periodic_name='main.cleanup_sessions'")
 
     def backwards(self):
-        db.execute("UPDATE sa_taskschedule SET periodic_name='main.cleanup_sessions' WHERE periodic_name='main.cleanup'")
+        db.execute(
+            "UPDATE sa_taskschedule SET periodic_name='main.cleanup_sessions' WHERE periodic_name='main.cleanup'")

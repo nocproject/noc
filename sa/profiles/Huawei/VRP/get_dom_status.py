@@ -9,10 +9,11 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
 
 
 class Script(BaseScript):
@@ -44,19 +45,19 @@ class Script(BaseScript):
         for l in c.split("\n\n"):
             match = self.rx_port.search(l)
             if match:
-                iface = { "interface": match.group("port") }
+                iface = {"interface": match.group("port")}
                 t = parse_table(l)
                 for i in t:
                     if i[0] == "TxPower(dBm)":
-                         iface["optical_tx_dbm"]= i[1]
+                        iface["optical_tx_dbm"] = i[1]
                     if i[0] == "RxPower(dBm)":
-                         iface["optical_rx_dbm"]= i[1]
+                        iface["optical_rx_dbm"] = i[1]
                     if i[0] == "Current(mA)":
-                         iface["current_ma"]= i[1]
+                        iface["current_ma"] = i[1]
                     if i[0] == "Temp.(C)":
-                         iface["temp_c"]= i[1]
+                        iface["temp_c"] = i[1]
                     if i[0] == "Voltage(V)":
-                         iface["voltage_v"]= i[1]
+                        iface["voltage_v"] = i[1]
                 if t:
                     r += [iface]
         return r

@@ -8,10 +8,11 @@
 
 # Python modules
 import logging
+
+from mongoengine import signals
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ObjectIdField
-from mongoengine import signals
 
 logger = logging.getLogger(__name__)
 

@@ -8,12 +8,13 @@
 
 # Python modules
 import functools
+
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetcapabilities import IGetCapabilities
-from noc.core.mib import mib
-from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.snmp.error import SNMPError
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
+from noc.sa.interfaces.igetcapabilities import IGetCapabilities
 
 
 class Script(BaseScript):
@@ -389,4 +390,5 @@ def false_on_cli_error(f):
             return f(*args, **kwargs)
         except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError):
             return False
+
     return wrapper

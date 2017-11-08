@@ -6,15 +6,16 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import datetime
 ## Python modules
 import logging
-import datetime
 
 
 class PrefixLoggerAdapter(object):
     """
     Add [prefix] to log message
     """
+
     def __init__(self, logger, prefix, target=None):
         """
         :param logger: Parent logger

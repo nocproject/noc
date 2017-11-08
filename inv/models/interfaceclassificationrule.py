@@ -8,15 +8,17 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IP
 # NOC modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
-    ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
-    IntField, PlainReferenceField)
-from noc.core.ip import IP
+                           ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
+                           IntField, PlainReferenceField)
 from noc.main.models import PrefixTable
-from interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.vc.models.vcfilter import VCFilter
+
+from interfaceprofile import InterfaceProfile
 
 
 class InterfaceClassificationMatch(EmbeddedDocument):
@@ -92,7 +94,8 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         v = IP.prefix(self.value)
         r = [
             "def %s(iface):" % f_name,
-            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]" % {"afi": v.afi},
+            "    a = [si.ipv%(afi)s_addresses for si in iface.subinterface_set.filter(enabled_afi='IPv%(afi)s')]" % {
+                "afi": v.afi},
             "    a = sum(a, [])",
         ]
         if "/" in self.value:
@@ -189,7 +192,7 @@ class InterfaceClassificationRule(Document):
         EmbeddedDocumentField(InterfaceClassificationMatch),
         required=False)
     profile = PlainReferenceField(InterfaceProfile,
-        default=InterfaceProfile.get_default_profile)
+                                  default=InterfaceProfile.get_default_profile)
 
     def __unicode__(self):
         r = [unicode(x) for x in self.match]

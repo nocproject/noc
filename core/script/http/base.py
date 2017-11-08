@@ -8,11 +8,11 @@
 
 # Third-party modules
 import ujson
+from noc.config import config
+from noc.core.http.client import fetch_sync
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.http.client import fetch_sync
 
-from noc.config import config
 
 class HTTP(object):
     CONNECT_TIMEOUT = config.http_client.connect_timeout

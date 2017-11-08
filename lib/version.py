@@ -8,9 +8,10 @@
 
 # Python modules
 import os
-import sys
-import subprocess
 import platform
+import subprocess
+import sys
+
 # NOC modules
 from noc.config import config
 
@@ -105,6 +106,7 @@ def get_os_brand():
     Get OS brand
     :return:
     """
+
     def _get_brand():
         o = os.uname()[0].lower()
         if o == "linux":

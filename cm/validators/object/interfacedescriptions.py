@@ -25,13 +25,13 @@ class InterfaceDescriptionsValidator(CLIPSObjectValidator):
                        (obj ?n)))
         )
         """,
-        """
-        (defrule {{RULENAME}}-{{RULENUM}}
-            ?i <- (subinterface (admin_status 1) (description nil) (name ?n))
-            =>
-            (assert
-                (error (type "Interface | No Description")
-                       (obj ?n)))
-        )
-        """
-    ]
+             """
+             (defrule {{RULENAME}}-{{RULENUM}}
+                 ?i <- (subinterface (admin_status 1) (description nil) (name ?n))
+                 =>
+                 (assert
+                     (error (type "Interface | No Description")
+                            (obj ?n)))
+             )
+             """
+             ]

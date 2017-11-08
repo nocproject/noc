@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from mongoengine import signals
 # Python modules
-import datetime
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ObjectIdField, FileField,
                                 DateTimeField, IntField)
-from mongoengine import signals
+
 # NOC modules
 from object import Object
 

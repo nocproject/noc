@@ -11,8 +11,8 @@ from south.db import db
 class Migration:
     def forwards(self):
         db.rename_column("dns_dnszonerecordtype", "is_visible",
-            "is_active")
+                         "is_active")
 
     def backwards(self):
         db.rename_column("dns_dnszonerecordtype", "is_active",
-            "is_visible")
+                         "is_visible")

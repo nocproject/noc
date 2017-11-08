@@ -9,6 +9,7 @@
 
 # NOC modules
 from noc.core.service.base import Service
+
 from api.omap import OMapAPI
 
 
@@ -18,6 +19,7 @@ class OMapService(Service):
     api = Service.api + [
         OMapAPI
     ]
+
 
 if __name__ == "__main__":
     OMapService().start()

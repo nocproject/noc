@@ -8,13 +8,14 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField, ListField,
                                 IntField, BinaryField, EmbeddedDocumentField)
+from noc.lib.nosql import ForeignKeyField
 # NOC modules
 from noc.main.models import User, Group
-from noc.lib.nosql import ForeignKeyField
 
 DAL_NONE = -1
 DAL_RO = 0
@@ -74,11 +75,11 @@ class Dashboard(Document):
             if ar.group and ar.group in groups:
                 level = max(level, ar.level)
             if level == DAL_ADMIN:
-                    return level
+                return level
         return level
 
     def save(self, force_insert=False, validate=True, clean=True,
-             write_concern=None,  cascade=None, cascade_kwargs=None,
+             write_concern=None, cascade=None, cascade_kwargs=None,
              _refs=None, save_condition=None, **kwargs):
         # Split DashBoard Acces to {User, level}, {Group, level}
         # self.update(add_to_set__access=[parent_1, parent_2, parent_1])
@@ -107,7 +108,7 @@ class Dashboard(Document):
             self.access = access
 
         super(Dashboard, self).save(force_insert=force_insert, validate=validate, clean=clean,
-                                    write_concern=write_concern,  cascade=cascade, cascade_kwargs=cascade_kwargs,
+                                    write_concern=write_concern, cascade=cascade, cascade_kwargs=cascade_kwargs,
                                     _refs=_refs, save_condition=save_condition, **kwargs)
 
     def clean_access(self, item=None):

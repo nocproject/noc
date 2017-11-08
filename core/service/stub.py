@@ -10,13 +10,15 @@
 import logging
 import threading
 from collections import defaultdict
+
 # Third-party modules
 import tornado.ioloop
+from noc.config import config
 # NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-from .rpc import RPCProxy
 from noc.core.perf import metrics
-from noc.config import config
+
+from .rpc import RPCProxy
 
 
 class ServiceStub(object):

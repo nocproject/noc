@@ -8,9 +8,9 @@
 
 # Python modules
 from collections import namedtuple
+
 # NOC modules
 from noc.core.http.client import fetch_sync
-
 
 GeoCoderResult = namedtuple(
     "GeoCoderResult", ["exact", "query", "path", "lon", "lat"])

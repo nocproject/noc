@@ -6,10 +6,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 from noc.lib.text import strip_html_tags
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
@@ -34,5 +35,5 @@ class Script(BaseScript):
             "version": match.group("version"),
             "attributes": {
                 "Bootloader": match.group("bootloader"),
-                }
             }
+        }

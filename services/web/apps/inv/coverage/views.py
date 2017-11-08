@@ -6,13 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.lib.app.docinline import DocInline
-from noc.inv.models.coverage import Coverage
-from noc.inv.models.coveredobject import CoveredObject
-from noc.inv.models.coveredbuilding import CoveredBuilding
 from noc.core.translation import ugettext as _
+from noc.inv.models.coverage import Coverage
+from noc.inv.models.coveredbuilding import CoveredBuilding
+from noc.inv.models.coveredobject import CoveredObject
+from noc.lib.app.docinline import DocInline
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class CoverageApplication(ExtDocApplication):

@@ -7,11 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-from noc.lib.text import parse_table
 import re
+
+from noc.core.script.base import BaseScript
+from noc.lib.text import parse_table
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -143,7 +143,7 @@ class Script(BaseScript):
             elif match1.group("mode") == "trunk":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
                 sub["tagged_vlans"] = \
-                self.expand_rangelist(match1.group("vlans").strip())
+                    self.expand_rangelist(match1.group("vlans").strip())
             else:
                 raise self.NotSupportedError()
             iface["subinterfaces"] += [sub]

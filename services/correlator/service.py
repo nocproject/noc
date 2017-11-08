@@ -7,35 +7,37 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import sys
 import datetime
 import re
+# Python modules
+import sys
 from collections import defaultdict
 from threading import Lock
+
 # Third-party modules
 from mongoengine.queryset import Q
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
+from noc.core.debug import format_frames, get_traceback_frames, error_report
 from noc.core.scheduler.scheduler import Scheduler
-from services.correlator.rule import Rule
-from services.correlator.rcacondition import RCACondition
-from services.correlator.trigger import Trigger
-from noc.fm.models.activeevent import ActiveEvent
-from noc.fm.models.eventclass import EventClass
+from noc.core.service.base import Service
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.alarmlog import AlarmLog
+from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmlog import AlarmLog
 from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.lib.version import get_version
-from noc.core.debug import format_frames, get_traceback_frames, error_report
-from services.correlator import utils
+from noc.fm.models.eventclass import EventClass
 from noc.lib.dateutils import total_seconds
+from noc.lib.version import get_version
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
+
+from services.correlator import utils
+from services.correlator.rcacondition import RCACondition
+from services.correlator.rule import Rule
+from services.correlator.trigger import Trigger
 
 
 class CorrelatorService(Service):

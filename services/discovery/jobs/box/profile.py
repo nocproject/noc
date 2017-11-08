@@ -6,17 +6,18 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import re
 import threading
+
 import cachetools
-import operator
-# NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.profilecheckrule import ProfileCheckRule
+from noc.core.error import NOCError
 from noc.core.mib import mib
 from noc.core.service.client import open_sync_rpc, RPCError
-from noc.core.error import NOCError
+from noc.sa.models.profilecheckrule import ProfileCheckRule
+# NOC modules
+from noc.services.discovery.jobs.base import DiscoveryCheck
 
 rules_lock = threading.Lock()
 

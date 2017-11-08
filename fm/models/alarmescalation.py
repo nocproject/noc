@@ -6,29 +6,30 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
 import operator
 from threading import Lock
-import datetime
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, IntField, ReferenceField,
                                 ListField, EmbeddedDocumentField,
                                 BooleanField)
-import cachetools
+from noc.core.defer import call_later
 # NOC modules
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.ttsystem import TTSystem
+from noc.lib.dateutils import total_seconds
+from noc.lib.nosql import ForeignKeyField
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
+from noc.main.models.timepattern import TimePattern
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.selectorcache import SelectorCache
-from noc.lib.nosql import ForeignKeyField
-from noc.core.defer import call_later
-from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
 ac_lock = Lock()
@@ -78,7 +79,7 @@ class AlarmEscalation(Document):
     pre_reasons = ListField(EmbeddedDocumentField(PreReasonItem))
     escalations = ListField(EmbeddedDocumentField(EscalationItem))
     global_limit = IntField()
-    max_escalation_retries = IntField(default=30) #@fixme make it configurable
+    max_escalation_retries = IntField(default=30)  # @fixme make it configurable
 
     _ac_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
 
@@ -114,7 +115,7 @@ class AlarmEscalation(Document):
             for e_item in esc.escalations:
                 # Check administrative domain
                 if (e_item.administrative_domain and
-                        e_item.administrative_domain.id not in alarm.adm_path):
+                            e_item.administrative_domain.id not in alarm.adm_path):
                     continue
                 # Check severity
                 if e_item.min_severity and alarm.severity < e_item.min_severity:

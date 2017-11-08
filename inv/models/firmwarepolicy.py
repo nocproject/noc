@@ -8,17 +8,18 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, ReferenceField, ListField,
+from mongoengine.fields import (StringField, ListField,
                                 EmbeddedDocumentField)
-# NOC modules
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from .firmware import Firmware
-from .platform import Platform
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.lib.text import split_alnum
+# NOC modules
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
+from .firmware import Firmware
+from .platform import Platform
 
 FS_RECOMMENDED = "r"
 FS_ACCEPTABLE = "a"

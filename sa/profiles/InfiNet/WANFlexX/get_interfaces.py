@@ -10,6 +10,7 @@
 # python modules
 import re
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,7 +21,7 @@ class Script(BaseScript):
     """
     name = "InfiNet.WANFlexX.get_interfaces"
     interface = IGetInterfaces
-    cache=True
+    cache = True
 
     rx_ifname = re.compile(r"^(?P<name>\S+): \S+ mtu (?P<mtu>\d+)$",
                            re.MULTILINE)

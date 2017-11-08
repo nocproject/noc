@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # Third-party modules
 import six
 
@@ -70,6 +71,7 @@ class MAC(str):
     >>> MAC("AABBCCDDEEFF") + " -- " + MAC("0011.2233.4455")
     'AA:BB:CC:DD:EE:FF -- 00:11:22:33:44:55'
     """
+
     def __new__(cls, mac):
         return super(MAC, cls).__new__(cls, cls._clean(mac))
 

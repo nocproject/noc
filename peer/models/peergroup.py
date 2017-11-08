@@ -17,7 +17,6 @@ class PeerGroup(models.Model):
         db_table = "peer_peergroup"
         app_label = "peer"
 
-
     name = models.CharField("Name", max_length=32, unique=True)
     description = models.CharField("Description", max_length=64)
     communities = models.CharField(

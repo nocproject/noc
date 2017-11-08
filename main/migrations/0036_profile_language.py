@@ -5,16 +5,16 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
-from noc import settings
+from south.db import db
+
 
 class Migration:
     def forwards(self):
         db.delete_column("main_userprofile", "preferred_language_id")
         db.add_column("main_userprofile", "preferred_language",
                       models.CharField("Preferred Language", max_length=16,
-                                        null=True, blank=True))
+                                       null=True, blank=True))
 
     def backwards(self):
-        pass    
+        pass

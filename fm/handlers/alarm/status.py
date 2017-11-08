@@ -8,11 +8,12 @@
 
 # Python modules
 import logging
+
+from noc.config import config
+from noc.core.defer import call_later
 # NOC modules
 from noc.core.perf import metrics
-from noc.core.defer import call_later
 from noc.fm.models.utils import get_alarm
-from noc.config import config
 
 # Delay to close out-of-ordered event
 OO_CLOSE_DELAY = config.correlator.oo_close_delay

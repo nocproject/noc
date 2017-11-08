@@ -1,6 +1,5 @@
-from south.db import db
 from django.db import models
-from noc.core.model.fields import PickledField
+from south.db import db
 
 
 class Migration:

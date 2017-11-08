@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.service.client import open_sync_rpc, RPCError
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.service.client import open_sync_rpc, RPCError
 
 
 class SuggestCLICheck(DiscoveryCheck):

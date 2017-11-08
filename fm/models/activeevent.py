@@ -10,6 +10,8 @@
 import datetime
 import struct
 from threading import Lock
+
+from bson import Binary
 # Django modules
 from django.template import Template, Context
 # Third-party modules
@@ -17,14 +19,14 @@ from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 DictField, ObjectIdField)
-from bson import Binary
+from noc.core.cache.decorator import cachedmethod
+from noc.lib.dateutils import total_seconds
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
+from noc.sa.models.managedobject import ManagedObject
+
+from eventclass import EventClass
 # NOC modules
 from eventlog import EventLog
-from eventclass import EventClass
-from noc.sa.models.managedobject import ManagedObject
-from noc.lib.dateutils import total_seconds
-from noc.core.cache.decorator import cachedmethod
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
 
 id_lock = Lock()
 
@@ -150,8 +152,8 @@ class ActiveEvent(Document):
 
     def log_message(self, message):
         self.log += [EventLog(timestamp=datetime.datetime.now(),
-                     from_status=self.status, to_status=self.status,
-                     message=message)]
+                              from_status=self.status, to_status=self.status,
+                              message=message)]
         self.save()
 
     def log_suppression(self, timestamp):
@@ -206,15 +208,15 @@ class ActiveEvent(Document):
         if alarm.id in self.alarms:
             return
         self._get_collection().update_one({
-                "_id": self.id,
-            }, {
-                "$set": {
-                    "expires": None,
-                },
-                "$push": {
-                    "alarms": alarm.id
-                }
-            })
+            "_id": self.id,
+        }, {
+            "$set": {
+                "expires": None,
+            },
+            "$push": {
+                "alarms": alarm.id
+            }
+        })
         self.alarms.append(alarm.id)
         self.expires = None
 

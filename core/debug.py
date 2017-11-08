@@ -6,28 +6,28 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import datetime
+import hashlib
+import logging
+import os
+import pprint
+import re
 # Python modules
 import sys
-import re
-import logging
-import datetime
-import os
-import hashlib
-import pprint
 import traceback
 import uuid
+
 # Third-party modules
 import ujson
 # NOC modules
 from noc.config import config
-from noc.lib.version import get_branch, get_tip
 from noc.core.fileutils import safe_rewrite
 from noc.core.perf import metrics
+from noc.lib.version import get_branch, get_tip
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig()
-
 
 # CP error reporting
 ENABLE_CP = config.features.cp

@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.fm.models.oidalias import OIDAlias
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.fm.models.oidalias import OIDAlias
 from noc.main.models.collectioncache import CollectionCache
-from noc.core.translation import ugettext as _
 
 
 class OIDAliasApplication(ExtDocApplication):

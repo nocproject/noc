@@ -8,9 +8,9 @@
 
 # Django modules
 from django.db import models
+
 # NOC modules
 from maintainer import Maintainer
-
 
 ORG_TYPE_CHOICES = [
     (x, x) for x in ("IANA", "RIR", "NIR", "LIR", "OTHER")

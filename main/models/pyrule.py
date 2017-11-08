@@ -6,20 +6,22 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import re
 import threading
-import datetime
+
 # Django modules
 from django.db import models
+from noc.core.handler import get_handler
 # NOC modules
 from noc.core.interface.loader import loader as interface_loader
-from noc.core.handler import get_handler
 from noc.core.model.decorator import on_delete_check
 
 
 class NoPyRuleException(Exception):
     pass
+
 
 rx_coding = re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$", re.MULTILINE)
 
@@ -50,7 +52,7 @@ class PyRule(models.Model):
     compiled_lock = threading.Lock()
     NoPyRule = NoPyRuleException
 
-    alters_data = True   # Tell Django's template engine to not call PyRule
+    alters_data = True  # Tell Django's template engine to not call PyRule
 
     # Use special filter for interface
     interface.existing_choices_filter = True
@@ -82,6 +84,7 @@ class PyRule(models.Model):
         """
         Compile pyRule
         """
+
         # Built-in pyRule decorator
         def pyrule(f):
             f.is_pyrule = True

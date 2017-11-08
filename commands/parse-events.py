@@ -8,22 +8,24 @@
 
 # Python modules
 from __future__ import print_function
+
 import argparse
-import time
-import os
-from collections import defaultdict
 import datetime
 import operator
+import os
+import time
+from collections import defaultdict
+
+from noc.core.fileutils import iter_open
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.services.classifier.ruleset import RuleSet
-from noc.core.profile.loader import loader as profile_loader
-from noc.fm.models.mib import MIB
-from noc.sa.models.managedobject import ManagedObject
-from noc.fm.models.activeevent import ActiveEvent
-from noc.core.fileutils import iter_open
-from noc.lib.text import format_table
 from noc.core.perf import metrics
+from noc.core.profile.loader import loader as profile_loader
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.mib import MIB
+from noc.lib.text import format_table
+from noc.sa.models.managedobject import ManagedObject
+from noc.services.classifier.ruleset import RuleSet
 
 
 class Command(BaseCommand):
@@ -122,6 +124,7 @@ class Command(BaseCommand):
                 },
                 repeats=1
             )
+
 
 if __name__ == "__main__":
     Command().run()

@@ -12,7 +12,6 @@ from collections import defaultdict
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError, MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -52,7 +51,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     rx_lldp_35xx = re.compile(r"\s+LLDP Enable\s+\:\s+Yes",
-         re.MULTILINE | re.IGNORECASE | re.DOTALL)
+                              re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     rx_lldp_ports_35xx = re.compile(
         r".*?(?P<name>(Eth|Trunk)[^\n]+\d)\s+\|\s+(Rx|Tx-Rx)",
@@ -76,7 +75,7 @@ class Script(BaseScript):
 
         # Tested only ES3510MA, ES3510, ES3526XAv2, ES3528M, ES3552M, ES4612
         if (self.match_version(platform__contains="4626")):
-                raise self.NotSupportedError()
+            raise self.NotSupportedError()
 
         # Get interface status
         for p in self.scripts.get_interface_status():
@@ -156,15 +155,15 @@ class Script(BaseScript):
 
         # Dirty-hack 3510/3526/3528/3552 managment SVI interface
         if (self.match_version(platform__contains="3510") or
-            self.match_version(platform__contains="3526") or
-            self.match_version(platform__contains="3528") or
-            self.match_version(platform__contains="2228N") or
-            self.match_version(platform__contains="3552") or
-            self.match_version(platform__contains="ECS4210")):
+                self.match_version(platform__contains="3526") or
+                self.match_version(platform__contains="3528") or
+                self.match_version(platform__contains="2228N") or
+                self.match_version(platform__contains="3552") or
+                self.match_version(platform__contains="ECS4210")):
 
             # Dirty-hack 3510MA managment SVI interface
             if (self.match_version(platform__contains="3510MA") or
-            self.match_version(platform__contains="ECS4210")):
+                    self.match_version(platform__contains="ECS4210")):
                 for ls in self.cli("show ip interface").splitlines():
                     match = self.rx_svi_name_stat_3510MA.search(ls)
                     if match:
@@ -328,7 +327,7 @@ class Script(BaseScript):
             "name": "default",
             "type": "ip",
             "interfaces": []
-            }]
+        }]
         for fi in vpns:
             # Forwarding instance
             rr = {

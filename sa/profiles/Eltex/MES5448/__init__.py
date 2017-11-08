@@ -16,11 +16,10 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"--More-- or \(q\)uit", " ")
     ]
-    #pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
+    # pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>"
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = \
         r"^% (Unrecognized command|Incomplete command|" \
         r"Wrong number of parameters or invalid range, size or " \
         r"characters entered)$"
     command_disable_pager = "terminal length 0"
-

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -40,4 +41,4 @@ class Script(BaseScript):
             "min": min,
             "avg": avg,
             "max": max,
-            }
+        }

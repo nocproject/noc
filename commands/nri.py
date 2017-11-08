@@ -8,12 +8,13 @@
 
 # Python modules
 import argparse
+
+from noc.core.etl.portmapper.loader import loader
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.interface import Interface
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.core.etl.portmapper.loader import loader
 from noc.lib.text import split_alnum, format_table
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
 
 class Command(BaseCommand):
@@ -54,14 +55,14 @@ class Command(BaseCommand):
                     o.name, o.address, o.platform, nri))
                 r = []
                 for i in Interface._get_collection().find({
-                        "managed_object": o.id,
-                        "type": "physical"
-                    },
-                    {
-                        "_id": 1,
-                        "name": 1,
-                        "nri_name": 1
-                    }
+                    "managed_object": o.id,
+                    "type": "physical"
+                },
+                        {
+                            "_id": 1,
+                            "name": 1,
+                            "nri_name": 1
+                        }
                 ):
                     rn = portmapper.to_remote(i["name"]) or self.PORT_ERROR
                     if rn == self.PORT_ERROR:
@@ -80,8 +81,9 @@ class Command(BaseCommand):
                     r += [(i["name"], rn, i.get("nri_name", "--"), status)]
                 r = [("Local", "Remote", "Interface NRI", "Status")] + sorted(r, key=lambda x: split_alnum(x[0]))
                 self.stdout.write(
-                    "%s\n" % format_table([0, 0, 0, 0], r, sep=" | ", hsep = "-+-")
+                    "%s\n" % format_table([0, 0, 0, 0], r, sep=" | ", hsep="-+-")
                 )
+
 
 if __name__ == "__main__":
     Command().run()

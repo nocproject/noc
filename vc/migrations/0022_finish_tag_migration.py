@@ -1,6 +1,7 @@
 # encoding: utf-8
 from south.db import db
 
+
 class Migration:
     TAG_MODELS = ["vc_vc"]
 

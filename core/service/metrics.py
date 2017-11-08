@@ -8,6 +8,7 @@
 
 # Python modules
 import string
+
 import six
 # Third-party modules
 import tornado.web
@@ -39,4 +40,4 @@ class MetricsHandler(tornado.web.RequestHandler):
             out += ["# TYPE %s untyped" % qm.lower()]
             out += ["%s{%s} %s" % (qm.lower(), labels.lower(), mdata[key])]
         self.add_header("Content-Type", "text/plain; version=0.0.4")
-        self.write("\n".join(out)+"\n")
+        self.write("\n".join(out) + "\n")

@@ -8,16 +8,17 @@
 
 # Django modules
 from django.db import models
-# NOC modules
-from timepattern import TimePattern
 from noc.lib.timepattern import TimePattern as TP
 
+# NOC modules
+from timepattern import TimePattern
 
 
 class TimePatternTerm(models.Model):
     """
     Time pattern terms
     """
+
     class Meta:
         verbose_name = "Time Pattern Term"
         verbose_name_plural = "Time Pattern Terms"

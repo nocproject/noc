@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -36,7 +37,7 @@ class Script(BaseScript):
                     "vendor": "Brocade",
                     "platform": match.group("platform"),
                     "version": match.group("version"),
-                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -48,4 +49,4 @@ class Script(BaseScript):
             "vendor": "Brocade",
             "platform": match2.group("version"),
             "version": match1.group("version"),
-            }
+        }

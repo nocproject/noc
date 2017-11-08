@@ -9,14 +9,15 @@
 # Python modules
 import datetime
 import time
+
 # Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
+from noc.core.clickhouse.connect import connection
+from noc.core.translation import ugettext as _
+from noc.fm.models.ttsystem import TTSystem
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
-from noc.core.clickhouse.connect import connection
-from noc.fm.models.ttsystem import TTSystem
-from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
@@ -123,7 +124,7 @@ class ReportTTSystemStatApplication(SimpleReport):
         for l in sorted(tt_s, key=lambda x: x[0]):
             data = list(l)
             data += tt_s[l]
-            data[5] = round((float(data[3])/float(data[2]))*100.0, 2)
+            data[5] = round((float(data[3]) / float(data[2])) * 100.0, 2)
             r += [data]
 
         return self.from_dataset(

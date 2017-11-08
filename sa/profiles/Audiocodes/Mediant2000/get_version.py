@@ -6,10 +6,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 from noc.lib.text import strip_html_tags
+from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
@@ -31,7 +32,7 @@ class Script(BaseScript):
                 "vendor": "Audiocodes",
                 "platform": match.group("platform"),
                 "version": match.group("version"),
-                }
+            }
         elif self.access_profile.scheme == self.HTTP:
             v = self.http.get("/SoftwareVersion")
             v = strip_html_tags(v)
@@ -40,6 +41,6 @@ class Script(BaseScript):
                 "vendor": "Audiocodes",
                 "platform": "Mediant2000",
                 "version": match.group("version"),
-                }
+            }
         else:
             raise Exception("Unsupported access scheme")

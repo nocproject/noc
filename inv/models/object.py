@@ -10,28 +10,30 @@
 import datetime
 import operator
 from threading import Lock
+
+import cachetools
+import six
+from mongoengine import signals
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ObjectIdField,
                                 ListField, PointField, ReferenceField,
                                 LongField)
-from mongoengine import signals
-import cachetools
-import six
-# NOC modules
-from connectiontype import ConnectionType
-from objectmodel import ObjectModel
-from modelinterface import ModelInterface
-from objectlog import ObjectLog
+from noc.core.bi.decorator import bi_sync
+from noc.core.defer import call_later
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.decorator import on_save, on_delete_check
 from noc.gis.models.layer import Layer
-from error import ConnectionError, ModelDataError
+from noc.lib.middleware import get_user
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
-from noc.lib.middleware import get_user
-from noc.core.gridvcs.manager import GridVCSField
-from noc.core.defer import call_later
-from noc.core.model.decorator import on_save, on_delete_check
-from noc.core.bi.decorator import bi_sync
+
+# NOC modules
+from connectiontype import ConnectionType
+from error import ConnectionError, ModelDataError
+from modelinterface import ModelInterface
+from objectlog import ObjectLog
+from objectmodel import ObjectModel
 
 id_lock = Lock()
 
@@ -213,14 +215,14 @@ class Object(Document):
     def get_genderless_connections(self, name):
         r = []
         for c in ObjectConnection.objects.filter(
-            __raw__={
-                "connection": {
-                    "$elemMatch": {
-                        "object": self.id,
-                        "name": name
+                __raw__={
+                    "connection": {
+                        "$elemMatch": {
+                            "object": self.id,
+                            "name": name
+                        }
                     }
                 }
-            }
         ):
             for x in c.connection:
                 if x.object.id != self.id:
@@ -272,7 +274,7 @@ class Object(Document):
                 # Connection exists
                 if reconnect:
                     if (r_object.id == remote_object.id and
-                        r_name == remote_name):
+                                r_name == remote_name):
                         # Same connection exists
                         n_data = deep_merge(ec.data, data)
                         if n_data != ec.data:
@@ -640,6 +642,7 @@ class Object(Document):
         """
         if "container" in values and values["container"]:
             document._cache_container = values["container"]
+
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)

@@ -8,6 +8,7 @@
 
 # Python modules
 import uuid
+
 # NOC modules
 from noc.lib.escape import json_escape
 from noc.lib.text import indent

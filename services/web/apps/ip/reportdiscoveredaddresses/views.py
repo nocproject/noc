@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC Modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.inv.models.newaddressdiscoverylog import NewAddressDiscoveryLog
+# NOC Modules
+from noc.lib.app.simplereport import SimpleReport
 
 
 class ReportDiscoveredAddreses(SimpleReport):
@@ -20,7 +20,7 @@ class ReportDiscoveredAddreses(SimpleReport):
                 p.timestamp, p.vrf, p.address, p.description,
                 p.managed_object, p.interface
             ) for p in
-              NewAddressDiscoveryLog.objects.order_by("-timestamp")
+            NewAddressDiscoveryLog.objects.order_by("-timestamp")
         ]
 
         return self.from_dataset(

@@ -7,7 +7,6 @@
 # Third-party modules
 from south.db import db
 
-
 RECORD_TYPES = [
     ("A", True),
     ("AAAA", True),
@@ -43,6 +42,7 @@ RECORD_TYPES = [
     ("TSIG", False),
     ("TXT", True),
 ]
+
 
 class Migration:
     def forwards(self):

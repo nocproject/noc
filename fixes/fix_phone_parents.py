@@ -8,9 +8,10 @@
 
 # Python modules
 from collections import defaultdict
+
+from noc.phone.models.phonenumber import PhoneNumber
 # NOC modules
 from noc.phone.models.phonerange import PhoneRange
-from noc.phone.models.phonenumber import PhoneNumber
 
 
 def fix():

@@ -8,12 +8,10 @@
 
 # Python modules
 import re
-import itertools
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -21,8 +19,8 @@ class Script(BaseScript):
     interface = IGetLACPNeighbors
     split_re = re.compile(r"Port-group\snumber:\s*(?P<p_id>\d+).+", re.IGNORECASE)
     split2_re = re.compile(r"\s*Port-group\snumber:\s*(?P<p_id>\d+),"
-                          r"\s*Mode:\s*(?P<mode>\S+),"
-                          r"\s*Load-balance:\s*(?P<load_bal>\S+)\s*", re.IGNORECASE)
+                           r"\s*Mode:\s*(?P<mode>\S+),"
+                           r"\s*Load-balance:\s*(?P<load_bal>\S+)\s*", re.IGNORECASE)
 
     port_id = re.compile(r"\s*(?P<port_name>\S+).+index\sis\s(\d+)(\s*|\n)", re.IGNORECASE)
 

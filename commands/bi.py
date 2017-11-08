@@ -8,19 +8,20 @@
 
 # Python modules
 from __future__ import print_function
-import os
+
 import datetime
 import gzip
+import os
 import time
+
+from noc.config import config
+from noc.core.clickhouse.dictionary import Dictionary
+from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
+from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.nosql import get_db
-from noc.core.etl.bi.extractor.reboots import RebootsExtractor
-from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
-from noc.core.etl.bi.extractor.managedobject import ManagedObjectsExtractor
-from noc.core.clickhouse.dictionary import Dictionary
-from noc.config import config
 from noc.core.service.shard import Sharder
+from noc.lib.nosql import get_db
 
 
 class Command(BaseCommand):

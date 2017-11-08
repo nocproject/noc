@@ -8,11 +8,12 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import ranges_to_list
-from noc.core.ip import IPv4
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):

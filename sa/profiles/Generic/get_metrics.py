@@ -6,19 +6,20 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import os
+import re
 # Python modules
 import time
-import os
 from threading import Lock
-import re
+
 # Third-party modules
 import six
 import ujson
+from noc.core.handler import get_handler
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmetrics import IGetMetrics
-from noc.core.mib import mib
-from noc.core.handler import get_handler
 
 NS = 1000000000.0
 
@@ -283,8 +284,8 @@ class CapabilityIndexRule(OIDRule):
     def iter_oids(self, script, cfg):
         if self.capability and script.has_capability(self.capability):
             for i in range(
-                self.start,
-                script.capabilities[self.capability] + self.start
+                    self.start,
+                            script.capabilities[self.capability] + self.start
             ):
                 oid = self.expand_oid(index=i)
                 if oid:
@@ -342,7 +343,7 @@ class Script(BaseScript):
     def get_snmp_metrics_get_timeout(self):
         """
         Timeout for snmp GET request
-        :return: 
+        :return:
         """
         return self.profile.snmp_metrics_get_timeout
 
@@ -350,7 +351,7 @@ class Script(BaseScript):
         """
         Aggregate up to *snmp_metrics_get_chunk* oids
         to one SNMP GET request
-        :return: 
+        :return:
         """
         return self.profile.snmp_metrics_get_chunk
 

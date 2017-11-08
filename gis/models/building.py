@@ -8,16 +8,18 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, EmbeddedDocumentField,
                                 DictField, DateTimeField)
+from noc.core.model.decorator import on_save
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
-from .entrance import Entrance
+
 from .division import Division
-from noc.core.model.decorator import on_save
+from .entrance import Entrance
 
 
 @on_save

@@ -6,23 +6,24 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import csv
+import hashlib
 # Python modules
 import os
-import zlib
-import csv
 import shutil
-import hashlib
-import uuid
-from collections import namedtuple
 import sys
+import uuid
+import zlib
+from collections import namedtuple
+
+import bson
 # Third-party modules
 import ujson
-import bson
-from mongoengine.fields import ListField, EmbeddedDocumentField
 from mongoengine.errors import NotUniqueError
-from pymongo import UpdateOne
+from mongoengine.fields import ListField, EmbeddedDocumentField
 # NOC modules
 from noc.core.fileutils import safe_rewrite
+from pymongo import UpdateOne
 
 
 class Collection(object):
@@ -178,7 +179,7 @@ class Collection(object):
                     )
         return items
 
-    def dereference(self,  d, model=None):
+    def dereference(self, d, model=None):
         r = {}
         model = model or self.model
         for k in d:
@@ -246,7 +247,7 @@ class Collection(object):
                 "[%s|%s] Updating %s\n" % (
                     self.name, data["uuid"],
                     getattr(o, self.name_field)
-            ))
+                ))
             for k in d:
                 setattr(o, k, d[k])
             o.save()
@@ -256,7 +257,7 @@ class Collection(object):
                 "[%s|%s] Creating %s\n" % (
                     self.name, data["uuid"],
                     data.get(self.name_field)
-            ))
+                ))
             o = self.model(**d)
             try:
                 o.save()
@@ -352,13 +353,13 @@ class Collection(object):
         """
         bulk = []
         for d in self.model._get_collection().find({
-                "uuid": {
-                    "$type": "string"
-                }
-            }, {
-                "_id": 1,
-                "uuid": 1
+            "uuid": {
+                "$type": "string"
             }
+        }, {
+            "_id": 1,
+            "uuid": 1
+        }
         ):
             bulk += [UpdateOne({"_id": d["_id"]}, {
                 "$set": {

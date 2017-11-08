@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -94,19 +95,19 @@ class Script(BaseScript):
         if vlan is not None:
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
-                interfaces = match.group("interfaces")
-                if interfaces == '0':
-                    continue
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interfaces],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "secure": "S",
-                        "permanent": "S",
-                        "self": "C"
-                        }[match.group("type").lower()],
-                    })
+            interfaces = match.group("interfaces")
+            if interfaces == '0':
+                continue
+            r.append({
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
+                "interfaces": [interfaces],
+                "type": {
+                    "dynamic": "D",
+                    "static": "S",
+                    "secure": "S",
+                    "permanent": "S",
+                    "self": "C"
+                }[match.group("type").lower()],
+            })
         return r

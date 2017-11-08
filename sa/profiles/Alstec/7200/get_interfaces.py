@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -124,10 +125,10 @@ class Script(BaseScript):
         }
         if match.group("ipv6_address"):
             iface["subinterfaces"][0]["ipv6_addresses"] = \
-            [match.group("ipv6_address")]
+                [match.group("ipv6_address")]
             iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
         if match.group("ip_address1") \
-        and match.group("ip_address1") != "0.0.0.0":
+                and match.group("ip_address1") != "0.0.0.0":
             ip_address = match.group("ip_address1")
             ip_subnet = match.group("ip_subnet1")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))

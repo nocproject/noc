@@ -7,9 +7,10 @@
 # ----------------------------------------------------------------------
 __author__ = 'shirokih'
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-import re
 
 
 class Script(BaseScript):
@@ -80,7 +81,7 @@ class Script(BaseScript):
 
     def execute(self):
         my_dict = []
-        re_local_lldp =re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
+        re_local_lldp = re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
 
         try:
             v = self.cli("show system lldp neighbor")

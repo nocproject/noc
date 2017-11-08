@@ -8,24 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
-import socket
-import re
-import functools
+
 import datetime
+import functools
+import re
+import socket
 from functools import reduce
 from threading import Lock
+
+import six
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
-import six
+from noc.config import config
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.span import Span
 from noc.lib.text import replace_re_group
+
 from .error import (CLIError, CLIAuthFailed, CLINoSuperCommand,
                     CLILowPrivileges, CLIConnectionRefused)
-from noc.config import config
-from noc.core.span import Span
 
 
 class CLI(object):

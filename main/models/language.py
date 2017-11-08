@@ -14,6 +14,7 @@ class Language(models.Model):
     """
     Language
     """
+
     class Meta:
         app_label = "main"
         db_table = "main_language"

@@ -9,4 +9,5 @@
 
 if __name__ == "__main__":
     from noc.main.sync.daemon import SyncDaemon
+
     SyncDaemon().process_command()

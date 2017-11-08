@@ -6,14 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 from collections import defaultdict
-import datetime
+
+from noc.core.model.decorator import on_delete, on_save
 # NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
                            IntField)
-from noc.core.model.decorator import on_delete, on_save
 
 
 @on_delete

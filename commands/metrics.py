@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import print_function
+
 import argparse
 import gzip
 import os
+
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
@@ -64,6 +66,7 @@ class Command(BaseCommand):
             sharder.pub()
             if rm:
                 os.unlink(fn)
+
 
 if __name__ == "__main__":
     Command().run()

@@ -6,10 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Third-party modules
-from nose2.tools import params
 ## NOC modules
 from noc.core.script.loader import loader
+## Third-party modules
+from nose2.tools import params
 
 
 def test_iter_scripts():

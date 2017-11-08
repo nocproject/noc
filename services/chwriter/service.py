@@ -7,15 +7,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
+from noc.config import config
+from noc.core.http.client import fetch
+from noc.core.perf import metrics
 # NOC modules
 from noc.core.service.base import Service
-from noc.core.http.client import fetch
+
 from channel import Channel
-from noc.core.perf import metrics
-from noc.config import config
 
 
 class CHWriterService(Service):
@@ -128,7 +129,8 @@ class CHWriterService(Service):
                 break
             channel = self.channels.get(c)
             if channel:
-                self.logger.debug("Channel %s: ready=%s flushing=%s", channel.name, channel.is_ready(), channel.flushing)
+                self.logger.debug("Channel %s: ready=%s flushing=%s", channel.name, channel.is_ready(),
+                                  channel.flushing)
             if channel and channel.is_ready():
                 yield self.flush_channel(channel)
 

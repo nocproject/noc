@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -77,7 +78,7 @@ class Script(BaseScript):
                         "mac": chassis,
                         "type": {"3": "D", "2": "S", "1": "S"}[v[3]],
                         "vlan_id": vlan_id,
-                        })
+                    })
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -94,18 +95,18 @@ class Script(BaseScript):
         if mac is not None:
             cmd += " address %s" % self.profile.convert_mac(mac)
         for match in self.rx_line.finditer(self.cli(cmd)):
-                interfaces = match.group("interfaces")
-                if interfaces == '0':
-                    continue
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interfaces],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "permanent": "S",
-                        "self": "S"
-                        }[match.group("type").lower()],
-                    })
+            interfaces = match.group("interfaces")
+            if interfaces == '0':
+                continue
+            r.append({
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
+                "interfaces": [interfaces],
+                "type": {
+                    "dynamic": "D",
+                    "static": "S",
+                    "permanent": "S",
+                    "self": "S"
+                }[match.group("type").lower()],
+            })
         return r

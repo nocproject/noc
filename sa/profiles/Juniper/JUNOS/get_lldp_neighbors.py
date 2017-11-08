@@ -8,13 +8,14 @@
 
 # Python modules
 import re
-# NOC modules
-from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
+
+from noc.lib.validators import (is_ipv4, is_ipv6)
 from noc.sa.interfaces.base import (IntParameter,
                                     MACAddressParameter,
                                     InterfaceTypeError)
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import (is_int, is_ipv4, is_ipv6)
+# NOC modules
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 
 
 class Script(BaseScript):
@@ -32,23 +33,23 @@ class Script(BaseScript):
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
     rx_detail = [
-         r"Chassis ID\s+:\s(?P<id>\S+)",
-         r"Port type\s+:\s(?P<p_type>.+)",
-         r"Port \S+\s+:\s(?P<p_id>.+)",
-         r"System name\s+:\s(?P<name>\S+)",
-         r"System capabilities",
-         r"Supported\s*:\s(?P<capability>.+)"
+        r"Chassis ID\s+:\s(?P<id>\S+)",
+        r"Port type\s+:\s(?P<p_type>.+)",
+        r"Port \S+\s+:\s(?P<p_id>.+)",
+        r"System name\s+:\s(?P<name>\S+)",
+        r"System capabilities",
+        r"Supported\s*:\s(?P<capability>.+)"
     ]
     rx_detail1 = [
-         r"Chassis ID\s+:\s(?P<id>\S+)",
-         r"Port type\s+:\s(?P<p_type>.+)",
-         r"Port \S+\s+:\s(?P<p_id>.+)",
-         r"System name\s+:\s(?P<name>\S+)"
+        r"Chassis ID\s+:\s(?P<id>\S+)",
+        r"Port type\s+:\s(?P<p_type>.+)",
+        r"Port \S+\s+:\s(?P<p_id>.+)",
+        r"System name\s+:\s(?P<name>\S+)"
     ]
     rx_detail2 = [
-         r"Chassis ID\s+:\s(?P<id>\S+)",
-         r"Port type\s+:\s(?P<p_type>.+)",
-         r"Port \S+\s+:\s(?P<p_id>.+)"
+        r"Chassis ID\s+:\s(?P<id>\S+)",
+        r"Port type\s+:\s(?P<p_type>.+)",
+        r"Port \S+\s+:\s(?P<p_id>.+)"
     ]
 
     def execute_cli(self):
@@ -163,7 +164,7 @@ class Script(BaseScript):
                         n["remote_chassis_id"] = match.get("id")
                         n["remote_port"] = str(remote_port)
             if is_ipv4(n["remote_chassis_id"]) \
-              or is_ipv6(n["remote_chassis_id"]):
+                    or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = 5
             i["neighbors"] += [n]
             r += [i]

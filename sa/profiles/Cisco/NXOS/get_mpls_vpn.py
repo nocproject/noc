@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
@@ -20,7 +21,7 @@ class Script(BaseScript):
     rx_line_split = re.compile(r"^VRF-Name:\s+", re.MULTILINE)
     rx_line_name = re.compile(r"^(?P<name>\S+),\s+VRF-ID:\s(?P<id>\d+),\s+State:\s+(?P<state>Up|Down)\s+",
                               re.MULTILINE)
-    rx_line_rd = re.compile(r"^\s+RD:\s(?P<rd>\d:\d)\s*",re.MULTILINE)
+    rx_line_rd = re.compile(r"^\s+RD:\s(?P<rd>\d:\d)\s*", re.MULTILINE)
 
     portchannel_members = {}
 

@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.core.translation import ugettext as _
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
-from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport, TableColumn
 
 
 class ReportUnclassifiedOIDs(SimpleReport):

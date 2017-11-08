@@ -9,10 +9,11 @@
 """
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -58,6 +59,7 @@ class Script(BaseScript):
         "Fast": "unknown",
         "ATM": "physical",
     }
+
     def execute(self):
         interfaces = []
         v = self.cli("get interface stats")

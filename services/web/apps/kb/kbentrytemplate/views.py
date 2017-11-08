@@ -6,17 +6,21 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from django.contrib import admin
-from noc.lib.app.modelapplication import ModelApplication
 from noc.kb.models.kbentrytemplate import KBEntryTemplate
+from noc.lib.app.modelapplication import ModelApplication
+
+
 #
 # KBEntryTemplate admin
 #
 class KBEntryTemplateAdmin(admin.ModelAdmin):
-    list_display=["name","subject"]
+    list_display = ["name", "subject"]
+
+
 #
 # KBEntryTemplate application
 #
 class KBEntryTemplateApplication(ModelApplication):
-    model=KBEntryTemplate
-    model_admin=KBEntryTemplateAdmin
-    menu="Setup | Templates"
+    model = KBEntryTemplate
+    model_admin = KBEntryTemplateAdmin
+    menu = "Setup | Templates"

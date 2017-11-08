@@ -6,16 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
 import re
-import datetime
+
 # Third-party modules
-from south.db import db
-# Third-party modules
-import pymongo
 # NOC modules
 from noc.lib.nosql import get_db
+# Third-party modules
+from south.db import db
 
 logger = logging.getLogger("south")
 
@@ -63,14 +63,14 @@ class Migration:
             bulk = collection.initialize_unordered_bulk_op()
             rc = 0
             for a_id, user_id, timestamp, model, db_table, op, subject, body in db.execute(
-                """
-                  SELECT id, user_id, "timestamp", model, db_table,
-                      operation, subject, body
-                  FROM main_audittrail
-                  WHERE id > %s
-                  ORDER BY id
-                  LIMIT 1000
-                """, [last_id]
+                    """
+                      SELECT id, user_id, "timestamp", model, db_table,
+                          operation, subject, body
+                      FROM main_audittrail
+                      WHERE id > %s
+                      ORDER BY id
+                      LIMIT 1000
+                    """, [last_id]
             ):
                 o = {
                     "timestamp": timestamp,

@@ -10,11 +10,13 @@ __author__ = 'FeNikS'
 
 # Python modules
 import re
+
+from noc.sa.interfaces import IGetVersion
 # NOC modules
 from noc.sa.script import Script as NOCScript
-from noc.sa.interfaces import IGetVersion
 
-rx_version = re.compile(r" CodeVersion=\"(?P<ver>.*?)\"", re.DOTALL|re.MULTILINE)
+rx_version = re.compile(r" CodeVersion=\"(?P<ver>.*?)\"", re.DOTALL | re.MULTILINE)
+
 
 class Script(NOCScript):
     name = "Harmonic.DiviComElectra.get_version"

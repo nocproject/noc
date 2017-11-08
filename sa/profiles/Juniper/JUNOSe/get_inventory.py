@@ -8,10 +8,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -80,7 +80,7 @@ class Script(BaseScript):
                 i = 1
                 for p in r:
                     if p["type"] == "MODULE" \
-                    and p["number"] == match.group("slot"):
+                            and p["number"] == match.group("slot"):
                         a = {
                             "type": "ADAPTER",
                             "number": match.group("adapter"),
@@ -92,8 +92,8 @@ class Script(BaseScript):
                         for m in v.split("\n"):
                             match1 = self.rx_mac.search(m)
                             if match1 \
-                            and match1.group("slot") == \
-                            match.group("slot") + "/" + match.group("adapter"):
+                                    and match1.group("slot") == \
+                                                            match.group("slot") + "/" + match.group("adapter"):
                                 a["revision"] = match1.group("revision")
                                 break
                         r.insert(i, a)

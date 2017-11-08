@@ -5,8 +5,9 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
+
 
 class Migration:
     def forwards(self):
@@ -20,4 +21,3 @@ class Migration:
 
     def backwards(self):
         db.delete_table("main_shard")
-

@@ -9,9 +9,10 @@
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ReferenceField, ListField
+from noc.main.models.remotesystem import RemoteSystem
+
 # NOC modules
 from subscriberprofile import SubscriberProfile
-from noc.main.models.remotesystem import RemoteSystem
 
 
 class Subscriber(Document):

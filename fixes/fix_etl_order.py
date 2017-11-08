@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import csv
+import glob
+import gzip
 # Python modules
 import os
 import shutil
-import glob
-import gzip
-import csv
+
 from noc.config import config
 
 PATTERNS = [

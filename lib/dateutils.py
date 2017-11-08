@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import bisect
 # Python modules
 import datetime
-import bisect
+
 # NOC modules
 from noc.core.translation import ugettext as _
 
@@ -20,7 +21,7 @@ def humanize_timedelta(delta):
     d = delta.days
     s = delta.seconds
     if not d:
-        if   s < 30:
+        if s < 30:
             return _("less than a minute")
         elif s < 90:  # 1:30
             return _("1 minute")

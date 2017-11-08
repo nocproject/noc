@@ -8,6 +8,7 @@
 
 # NOC modules
 from __future__ import absolute_import
+
 from .ber import decode
 
 
@@ -33,8 +34,8 @@ def decode_trap(packet):
 
 
 def decode_trap_pdu_v1(pdu):
-    _, enterprise, agent_address, generic_type,\
-        specific_code, ts, varbinds = pdu
+    _, enterprise, agent_address, generic_type, \
+    specific_code, ts, varbinds = pdu
     r = {"1.3.6.1.6.3.1.1.4.1.0": enterprise}
     r.update(varbinds)
     return r

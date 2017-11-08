@@ -10,31 +10,30 @@
 # Python modules
 import datetime
 import time
-from collections import defaultdict, namedtuple
+from collections import defaultdict
+
 # Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
-# NOC modules
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.sa.models.managedobject import ManagedObject
+from noc.core.clickhouse.connect import connection
+from noc.core.influxdb.client import InfluxDBClient
+from noc.core.translation import ugettext as _
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.core.influxdb.client import InfluxDBClient
-from noc.lib.nosql import get_db
-from noc.core.clickhouse.connect import connection
-from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.core.translation import ugettext as _
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.administrativedomain import AdministrativeDomain
+# NOC modules
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.useraccess import UserAccess
 
 
 class ReportForm(forms.Form):
     reporttype = forms.ChoiceField(choices=[
-       ("load_interfaces",  _("Load Interfaces")),
-       ("load_cpu",  _("Load CPU/Memory")),
-       ("errors",  _("Errors on the Interface")),
-       ("ping", _("Ping RTT and Ping Attempts"))
+        ("load_interfaces", _("Load Interfaces")),
+        ("load_cpu", _("Load CPU/Memory")),
+        ("errors", _("Errors on the Interface")),
+        ("ping", _("Ping RTT and Ping Attempts"))
     ], label=_("Report Type"))
     from_date = forms.CharField(
         widget=AdminDateWidget,
@@ -66,11 +65,11 @@ class ReportForm(forms.Form):
         required=False,
         queryset=AdministrativeDomain.objects.order_by("name")
     )
-    #object_profile = forms.ModelChoiceField(
+    # object_profile = forms.ModelChoiceField(
     #    label=_("Object Profile"),
     #    required=False,
     #    queryset=ManagedObjectProfile.objects.exclude(name__startswith="tg.").order_by("name")
-    #)
+    # )
     interface_profile = forms.ModelChoiceField(
         label=_("Interface Profile (For Load Interfaces Report Type)"),
         required=False,
@@ -111,7 +110,7 @@ class ReportMetric(object):
                      "errors": "/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
                      "ping": "/Ping\s\|\sRTT/"}
         def_map = {"q_select": ['percentile(\"value\", 98)'],
-                   "q_from": [], # q_from = "from %s" % map_table[reporttype]
+                   "q_from": [],  # q_from = "from %s" % map_table[reporttype]
                    "q_where": ["%s", "time >= '%s'" % fd, "time <= '%s'" % td],
                    "q_group": ["object"]}
         # m_r = "(%s)" % " OR ".join(["object = '%s'" % name for name in moss])
@@ -132,7 +131,7 @@ class ReportMetric(object):
                      "errors": "interface",
                      "ping": "ping"}
         def_map = {"q_select": ["managed_object"],
-                   "q_from": [], # q_from = "from %s" % map_table[reporttype]
+                   "q_from": [],  # q_from = "from %s" % map_table[reporttype]
                    "q_where": ["managed_object IN (%s)",
                                "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))" %
                                (ts_from_date, ts_from_date, ts_to_date)],
@@ -231,8 +230,8 @@ class ReportTraffic(SimpleReport):
         d_url = {
             "path": "/ui/grafana/dashboard/script/report.js",
             "rname": map_table[reporttype],
-            "from": str(int(ts_from_date*1000)),
-            "to": str(int(ts_to_date*1000)),
+            "from": str(int(ts_from_date * 1000)),
+            "to": str(int(ts_to_date * 1000)),
             # o.name.replace("#", "%23")
             "biid": "",
             "oname": "",

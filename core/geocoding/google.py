@@ -8,12 +8,15 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import urllib
+
 # Third-party modules
 import ujson
+from noc.config import config
+
 # NOC modules
 from .base import (BaseGeocoder, GeoCoderError, GeoCoderResult)
-from noc.config import config
 
 
 class GoogleGeocoder(BaseGeocoder):

@@ -9,10 +9,10 @@
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
-# NOC modules
-from noc.sa.models.terminationgroup import TerminationGroup
 from noc.ip.models.vrf import VRF
 from noc.lib.nosql import ForeignKeyField
+# NOC modules
+from noc.sa.models.terminationgroup import TerminationGroup
 
 
 class DynamicIPPoolUsage(Document):
@@ -56,7 +56,7 @@ class DynamicIPPoolUsage(Document):
 
     @classmethod
     def unregister_usage(cls, termination_group, vrf=None,
-                       pool_name="default", technology="IPoE"):
+                         pool_name="default", technology="IPoE"):
         """
         Decrease usage counter
         """
@@ -78,7 +78,7 @@ class DynamicIPPoolUsage(Document):
 
     @classmethod
     def get_usage(cls, termination_group, vrf=None,
-                       pool_name="default", technology="IPoE"):
+                  pool_name="default", technology="IPoE"):
         if not vrf:
             vrf = VRF.get_global()
         r = cls._get_collection().find_one(

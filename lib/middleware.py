@@ -7,24 +7,24 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import base64
+
 try:
     from threading import local
 except ImportError:
     from django.utils._threading_local import local
 # Django modules
-from django.contrib import auth
-
 
 #
 # Thread local storage
 #
 _tls = local()
 
+
 class TLSMiddleware(object):
     """
     Thread local storage middleware
     """
+
     def process_request(self, request):
         """
         Set up TLS' user and request
@@ -52,6 +52,7 @@ class WSGISetupMiddleware(object):
     """
     Set up WSGI headers
     """
+
     def process_request(self, request):
         ru = request.META.get("HTTP_REMOTE_USER")
         if ru:
@@ -62,6 +63,7 @@ class ExtFormatMiddleware(object):
     """
     Set request.is_extjs when __format=ext found in request
     """
+
     def process_request(self, request):
         if request.GET and request.GET.get("__format") == "ext":
             request.is_extjs = True

@@ -8,8 +8,8 @@
 
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.main.models.permission import Permission
 from noc.core.service.loader import get_service
+from noc.main.models.permission import Permission
 
 
 class Command(BaseCommand):

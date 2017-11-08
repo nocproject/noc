@@ -7,13 +7,13 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
+
 
 class Migration:
-
     def forwards(self):
-        db.add_column("main_pyrule","is_builtin",models.BooleanField("Is Builtin",default=False))
+        db.add_column("main_pyrule", "is_builtin", models.BooleanField("Is Builtin", default=False))
 
     def backwards(self):
-        db.delete_column("main_pyrule","is_builtin")
+        db.delete_column("main_pyrule", "is_builtin")

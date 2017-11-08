@@ -9,10 +9,9 @@
 """
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
@@ -38,7 +37,7 @@ class Script(BaseScript):
                              re.MULTILINE | re.IGNORECASE)
     rx_vlan = re.compile(r"VLAN\s+(?P<vlan>\d+)", re.MULTILINE | re.IGNORECASE)
     rx_des = re.compile(r"Description:\s+(?P<des>.+)",
-                       re.MULTILINE | re.IGNORECASE)
+                        re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(r"Interface address is:\s+(?P<ip>.+)",
                        re.MULTILINE | re.IGNORECASE)
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
@@ -54,11 +53,11 @@ class Script(BaseScript):
     rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
                          re.MULTILINE | re.IGNORECASE)
     types = {
-        "Gi": "physical",    # GigabitEthernet
-        "Lo": "loopback",    # Loopback
+        "Gi": "physical",  # GigabitEthernet
+        "Lo": "loopback",  # Loopback
         "Ag": "aggregated",  # Port-channel/Portgroup
-        "Te": "physical",    # TenGigabitEthernet
-        "VL": "SVI",         # VLAN, found on C3500XL
+        "Te": "physical",  # TenGigabitEthernet
+        "VL": "SVI",  # VLAN, found on C3500XL
         "Vl": "SVI"
     }
 
@@ -138,7 +137,7 @@ class Script(BaseScript):
             "interfaces": [],
             "type": "physical"
         }
-            # Portchanel
+        # Portchanel
         for s in self.rx_line.split(v)[1:]:
             n = {}
             enabled_protocols = []
@@ -156,7 +155,7 @@ class Script(BaseScript):
             match = self.rx_descr.search(s)
             description = match.group("description")
             if description:
-                description = description.decode("ascii","ignore")
+                description = description.decode("ascii", "ignore")
             if iface in portchannel_members:
                 ai, is_lacp = portchannel_members[iface]
                 n["aggregated_interface"] = ai
@@ -209,7 +208,7 @@ class Script(BaseScript):
             mac = match.group("mac")
             match = self.rx_des.search(s)
             if match:
-                description = match.group("des").decode("ascii","ignore")
+                description = match.group("des").decode("ascii", "ignore")
 
             enabled_protocols = []
             if ospf_enable and iface in ospf:
@@ -225,14 +224,14 @@ class Script(BaseScript):
                      "oper_status": True,
                      "mac": mac,
                      "subinterfaces": [{
-                             "name": iface,
-                             "admin_status": True,
-                             "oper_status": True,
-                             "enabled_afi": ["IPv4"],
-                             "ipv4_addresses": ip_list,
-                             "mac": mac,
-                             "enabled_protocols": enabled_protocols,
-                             "vlan_ids": vlan_ids,
+                         "name": iface,
+                         "admin_status": True,
+                         "oper_status": True,
+                         "enabled_afi": ["IPv4"],
+                         "ipv4_addresses": ip_list,
+                         "mac": mac,
+                         "enabled_protocols": enabled_protocols,
+                         "vlan_ids": vlan_ids,
                      }]}
             if ifindex != 0:
                 iface["snmp_ifindex"] = ifindex
@@ -241,5 +240,5 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["description"] = description
             r += [iface]
 
-        #quit()
+        # quit()
         return [{"interfaces": r}]

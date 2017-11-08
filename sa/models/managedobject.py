@@ -8,62 +8,65 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import difflib
-from collections import namedtuple
+import itertools
 import logging
+import operator
 import os
 import re
-import itertools
-import operator
+from collections import namedtuple
 from threading import Lock
+
+import cachetools
+import six
+from django.contrib.auth.models import User, Group
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
                               DateTimeField, BigIntegerField, SET_NULL)
-from django.contrib.auth.models import User, Group
-import cachetools
-import six
+from noc.core.bi.decorator import bi_sync
+from noc.core.cache.base import cache
+from noc.core.cache.decorator import cachedmethod
+from noc.core.debug import error_report
+from noc.core.defer import call_later
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.handler import get_handler
+from noc.core.ip import IP
+from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
+from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
+from noc.core.scheduler.job import Job
+from noc.core.script.caller import SessionContext
+from noc.core.script.loader import loader as script_loader
+from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.object import Object
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
+from noc.lib.app.site import site
+from noc.lib.db import SQL
+from noc.lib.stencil import stencil_registry
+from noc.lib.validators import is_ipv4, is_ipv4_prefix
+from noc.main.models import PyRule
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.textindex import full_text_search, TextIndex
+from noc.main.models.timepattern import TimePattern
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.models.profile import Profile
+from noc.sa.mtmanager import MTManager
+from noc.settings import config
+
 # NOC modules
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .managedobjectprofile import ManagedObjectProfile
-from .objectstatus import ObjectStatus
-from .objectmap import ObjectMap
 from .objectdata import ObjectData
+from .objectmap import ObjectMap
+from .objectstatus import ObjectStatus
 from .terminationgroup import TerminationGroup
-from noc.main.models.pool import Pool
-from noc.main.models.timepattern import TimePattern
-from noc.main.models import PyRule
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.remotesystem import RemoteSystem
-from noc.inv.models.networksegment import NetworkSegment
-from noc.sa.models.profile import Profile
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
-from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
-from noc.lib.db import SQL
-from noc.lib.app.site import site
-from noc.lib.stencil import stencil_registry
-from noc.lib.validators import is_ipv4, is_ipv4_prefix
-from noc.core.ip import IP
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.gridvcs.manager import GridVCSField
-from noc.main.models.textindex import full_text_search, TextIndex
-from noc.settings import config
-from noc.core.scheduler.job import Job
-from noc.core.handler import get_handler
-from noc.core.debug import error_report
-from noc.sa.mtmanager import MTManager
-from noc.core.script.loader import loader as script_loader
-from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
-from noc.inv.models.object import Object
-from noc.core.defer import call_later
-from noc.core.cache.decorator import cachedmethod
-from noc.core.cache.base import cache
-from noc.core.script.caller import SessionContext
-from noc.core.bi.decorator import bi_sync
 
 # Increase whenever new field added
 MANAGEDOBJECT_CACHE_VERSION = 7
@@ -99,6 +102,7 @@ class ManagedObject(Model):
     """
     Managed Object
     """
+
     class Meta:
         verbose_name = "Managed Object"
         verbose_name_plural = "Managed Objects"
@@ -490,7 +494,7 @@ class ManagedObject(Model):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
-                  lock=lambda _: id_lock)
+                             lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         mo = ManagedObject.objects.filter(bi_id=id)[:1]
         if mo:
@@ -599,46 +603,46 @@ class ManagedObject(Model):
             )
         # Rebuild object maps
         if (
-            self.initial_data["id"] is None or
-            "is_managed" in self.changed_fields or
-            "object_profile" in self.changed_fields or
-            "trap_source_type" in self.changed_fields or
-            "trap_source_ip" in self.changed_fields or
-            "syslog_source_type" in self.changed_fields or
-            "syslog_source_ip" in self.changed_fields or
-            "address" in self.changed_fields or
-            "pool" in self.changed_fields or
-            "time_pattern" in self.changed_fields or
-            "event_processing_policy" in self.changed_fields
+                                                            self.initial_data["id"] is None or
+                                                            "is_managed" in self.changed_fields or
+                                                        "object_profile" in self.changed_fields or
+                                                    "trap_source_type" in self.changed_fields or
+                                                "trap_source_ip" in self.changed_fields or
+                                            "syslog_source_type" in self.changed_fields or
+                                        "syslog_source_ip" in self.changed_fields or
+                                    "address" in self.changed_fields or
+                                "pool" in self.changed_fields or
+                            "time_pattern" in self.changed_fields or
+                        "event_processing_policy" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
         # Invalidate credentials cache
         if (
-            self.initial_data["id"] is None or
-            "scheme" in self.changed_fields or
-            "address" in self.changed_fields or
-            "port" in self.changed_fields or
-            "auth_profile" in self.changed_fields or
-            "user" in self.changed_fields or
-            "password" in self.changed_fields or
-            "super_password" in self.changed_fields or
-            "snmp_ro" in self.changed_fields or
-            "snmp_rw" in self.changed_fields or
-            "profile" in self.changed_fields or
-            "vendor" in self.changed_fields or
-            "platform" in self.changed_fields or
-            "version" in self.changed_fields or
-            "pool" in self.changed_fields or
-            "access_preference" in self.changed_fields or
-            "cli_privilege_policy" in self.changed_fields
+                                                                                    self.initial_data["id"] is None or
+                                                                                    "scheme" in self.changed_fields or
+                                                                                "address" in self.changed_fields or
+                                                                            "port" in self.changed_fields or
+                                                                        "auth_profile" in self.changed_fields or
+                                                                    "user" in self.changed_fields or
+                                                                "password" in self.changed_fields or
+                                                            "super_password" in self.changed_fields or
+                                                        "snmp_ro" in self.changed_fields or
+                                                    "snmp_rw" in self.changed_fields or
+                                                "profile" in self.changed_fields or
+                                            "vendor" in self.changed_fields or
+                                        "platform" in self.changed_fields or
+                                    "version" in self.changed_fields or
+                                "pool" in self.changed_fields or
+                            "access_preference" in self.changed_fields or
+                        "cli_privilege_policy" in self.changed_fields
         ):
             deleted_cache_keys += ["cred-%s" % self.id]
         # Rebuild paths
         if (
-            self.initial_data["id"] is None or
-            "administrative_domain" in self.changed_fields or
-            "segment" in self.changed_fields or
-            "container" in self.changed_fields
+                                self.initial_data["id"] is None or
+                                "administrative_domain" in self.changed_fields or
+                            "segment" in self.changed_fields or
+                        "container" in self.changed_fields
         ):
             ObjectData.refresh_path(self)
             if self.container and "container" in self.changed_fields:
@@ -680,9 +684,9 @@ class ManagedObject(Model):
         cache.delete_many(deleted_cache_keys)
         # Handle became unmanaged
         if (
-            not self.initial_data["id"] is None and
-            "is_managed" in self.changed_fields and
-            not self.is_managed
+                        not self.initial_data["id"] is None and
+                            "is_managed" in self.changed_fields and
+                    not self.is_managed
         ):
             # Clear alarms
             from noc.fm.models.activealarm import ActiveAlarm
@@ -722,9 +726,9 @@ class ManagedObject(Model):
             return
         # Update existing address
         if (
-            a.managed_object != self or
-            a.address != self.address or
-            a.fqdn != fqdn
+                            a.managed_object != self or
+                            a.address != self.address or
+                        a.fqdn != fqdn
         ):
             a.managed_object = self
             a.address = self.address
@@ -901,8 +905,8 @@ class ManagedObject(Model):
         # Find notification groups
         groups = set()
         for o in ObjectNotification.objects.filter(**{
-                event_id: True,
-                "selector__in": selectors
+            event_id: True,
+            "selector__in": selectors
         }):
             groups.add(o.notification_group)
         if not groups:
@@ -920,7 +924,7 @@ class ManagedObject(Model):
             groups, subject=subject, body=body, delay=delay, tag=tag)
         # Schedule FTS reindex
         if event_id in (
-            self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED
+                self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED
         ):
             TextIndex.update_index(ManagedObject, self)
 
@@ -1365,7 +1369,6 @@ class ManagedObject(Model):
 
 @on_save
 class ManagedObjectAttribute(Model):
-
     class Meta:
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"

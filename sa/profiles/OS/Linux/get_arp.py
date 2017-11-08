@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -28,17 +29,17 @@ class Script(BaseScript):
         r = []
         for match in self.rx_arp.finditer(self.cli("arp -an")):
             r.append({
-                    "ip": match.group("ip"),
-                    "mac": match.group("mac"),
-                    "interface": match.group("interface")
-                    })
+                "ip": match.group("ip"),
+                "mac": match.group("mac"),
+                "interface": match.group("interface")
+            })
         if not r:
             for match in self.rx_proc.finditer(self.cli("cat /proc/net/arp")):
                 r.append({
-                        "ip": match.group("ip"),
-                        "mac": match.group("mac"),
-                        "interface": match.group("interface")
-                        })
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface")
+                })
         if not r:
             raise Exception("Not implemented")
         return r

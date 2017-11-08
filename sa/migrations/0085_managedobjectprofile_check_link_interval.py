@@ -11,7 +11,6 @@ from south.db import db
 
 
 class Migration:
-
     def forwards(self):
         # Alter sa_managedobjectprofile
         db.add_column(

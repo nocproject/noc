@@ -6,6 +6,7 @@
 """
 """
 from noc.core.interface.base import BaseInterface
+
 from base import (IPParameter, DictParameter,
                   IntParameter, BooleanParameter, StringParameter, FloatParameter)
 

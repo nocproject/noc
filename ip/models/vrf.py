@@ -8,24 +8,26 @@
 
 # Python modules
 import hashlib
-import struct
 import operator
+import struct
 from threading import Lock
+
+import cachetools
+from django.db import models
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-import cachetools
-# NOC modules
-from noc.main.models.style import Style
-from noc.main.models import ResourceState
-from noc.project.models.project import Project
-from noc.peer.models.asn import AS
-from vrfgroup import VRFGroup
-from noc.lib.validators import check_rd, is_rd
+from noc.core.model.decorator import on_delete_check
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
+from noc.lib.validators import check_rd
+from noc.main.models import ResourceState
+# NOC modules
+from noc.main.models.style import Style
 from noc.main.models.textindex import full_text_search
-from noc.core.model.decorator import on_delete_check
+from noc.peer.models.asn import AS
+from noc.project.models.project import Project
+
+from vrfgroup import VRFGroup
 
 id_lock = Lock()
 
@@ -45,6 +47,7 @@ class VRF(models.Model):
     """
     VRF
     """
+
     class Meta:
         verbose_name = _("VRF")
         verbose_name_plural = _("VRFs")

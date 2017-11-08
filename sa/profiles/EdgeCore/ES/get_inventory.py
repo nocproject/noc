@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -37,7 +38,7 @@ class Script(BaseScript):
 
     def execute(self):
         objects = []
-        #Chassis info
+        # Chassis info
         p = self.scripts.get_version()
         objects += [{
             "type": "CHASSIS",
@@ -50,7 +51,7 @@ class Script(BaseScript):
             "builtin": False
         }]
 
-        #Detect transceivers
+        # Detect transceivers
         iface = self.cli("sh int status")
         for i in self.rx_int_type.finditer(iface):
             if "SFP" not in i.group("type"):
@@ -60,7 +61,7 @@ class Script(BaseScript):
                     v = self.cli("show int trans " + i.group("int"))
                     for t in v.split("Ethernet"):
                         pid = ""
-                        #Parsing
+                        # Parsing
                         match = self.rx_trans_no.search(t)
                         if match:
                             number = match.group("number")
@@ -76,10 +77,10 @@ class Script(BaseScript):
                             match = self.rx_trans_sn.search(t)
                             serial = match.group("sn").strip() \
                                 if match else None
-                            #Noname transceiver
+                            # Noname transceiver
                             if (pid in ("", "N/A", "Unspecified") or
-                                    "\\x" in repr(pid).strip("'") or
-                                    "NONAME" in vendor):
+                                        "\\x" in repr(pid).strip("'") or
+                                        "NONAME" in vendor):
                                 pid = self.get_transceiver_pid(
                                     i.group("type").upper())
                             if not pid:

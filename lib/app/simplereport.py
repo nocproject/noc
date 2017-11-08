@@ -11,15 +11,16 @@ import csv
 import decimal
 import pprint
 from functools import reduce
+
 # Third-party modules
 import six
 from django.utils.dateformat import DateFormat
-# NOC modules
-from reportapplication import *
-from noc.core.translation import ugettext as _
 from noc.config import config
+from noc.core.translation import ugettext as _
 from noc.lib.widgets import tags_list
 
+# NOC modules
+from reportapplication import *
 
 INDENT = "    "
 
@@ -213,11 +214,11 @@ class TableColumn(ReportNode):
         self.align = {"l": self.ALIGN_LEFT, "left": self.ALIGN_LEFT,
                       "r": self.ALIGN_RIGHT, "right": self.ALIGN_RIGHT,
                       "c": self.ALIGN_CENTER, "center": self.ALIGN_CENTER}[
-        align.lower()] if align else None
+            align.lower()] if align else None
         self.format = getattr(self, "f_%s" % format) if isinstance(format,
-                                                        basestring) else format
+                                                                   basestring) else format
         self.total = getattr(self, "ft_%s" % total) if isinstance(total,
-                                                        basestring) else total
+                                                                  basestring) else total
         self.total_label = total_label
         self.total_data = []
         self.subtotal_data = []
@@ -439,7 +440,7 @@ class TableColumn(ReportNode):
         Returns a sum of not-null elements
         """
         return reduce(lambda x, y: x + y,
-            [decimal.Decimal(str(z)) for z in l if z], 0)
+                      [decimal.Decimal(str(z)) for z in l if z], 0)
 
     def ft_count(self, l):
         """
@@ -452,6 +453,7 @@ class SectionRow(object):
     """
     Delimiter row
     """
+
     def __init__(self, name, title=None, subtotal=True):
         self.name = name
         self.title = title if title else name
@@ -484,7 +486,7 @@ class TableSection(ReportSection):
         self.data = data
         self.enumerate = enumerate
         self.has_total = reduce(lambda x, y: x or y,
-            [c.has_total for c in self.columns],
+                                [c.has_total for c in self.columns],
                                 False)  # Check wrether table has totals
 
     def to_xml(self):
@@ -503,6 +505,7 @@ class TableSection(ReportSection):
         Return HTML representation of table
         :return:
         """
+
         def render_subtotals():
             if not current_section.data:
                 return []
@@ -547,7 +550,7 @@ class TableSection(ReportSection):
                 if type(row) == SectionRow:
                     # Display section row
                     if (current_section and self.has_total and
-                    current_section.subtotal):
+                            current_section.subtotal):
                         # Display totals from previous sections
                         s += render_subtotals()
                     s += [
@@ -570,7 +573,7 @@ class TableSection(ReportSection):
                     current_section.subtotal):
                 # Display totals from previous sections
                 s += render_subtotals()
-            # Render totals
+                # Render totals
         if self.has_total:
             s += ["<tr>"]
             if self.enumerate:
@@ -666,6 +669,7 @@ class MatrixSection(ReportSection):
     """
     Data is a list of (row, column, data)
     """
+
     def __init__(self, name, data=None, enumerate=False):
         super(ReportSection, self).__init__(name=name)
         self.data = data or []

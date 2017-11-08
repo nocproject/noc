@@ -8,11 +8,13 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 from django.db import models
+from noc.main.refbooks.downloaders import downloader_registry
+
 # NOC modules
 from language import Language
-from noc.main.refbooks.downloaders import downloader_registry
 
 downloader_registry.register_all()
 
@@ -123,6 +125,7 @@ class RefBook(models.Model):
         Get fields names sorted by order
         """
         return self.refbookfield_set.order_by("order")
+
 
 # Circular references
 from refbookdata import RefBookData

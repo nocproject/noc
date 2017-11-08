@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -48,13 +49,13 @@ class Script(BaseScript):
             interface_status[s["interface"]] = s["status"]
 
         if (self.match_version(platform__contains="3526") or
-           self.match_version(platform__contains="3510") or
-           self.match_version(platform__contains="2228N") or
-           self.match_version(platform__contains="3528") or
-           self.match_version(platform__contains="3552") or
-           self.match_version(platform__contains="4612") or
-           self.match_version(platform__contains="ECS4210") or
-           self.match_version(platform__contains="ECS4100")):
+                self.match_version(platform__contains="3510") or
+                self.match_version(platform__contains="2228N") or
+                self.match_version(platform__contains="3528") or
+                self.match_version(platform__contains="3552") or
+                self.match_version(platform__contains="4612") or
+                self.match_version(platform__contains="ECS4210") or
+                self.match_version(platform__contains="ECS4100")):
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
                 matchint = self.rx_interface_3526.search(block)
@@ -81,7 +82,7 @@ class Script(BaseScript):
                 if mqinq and mqinq.group("qstatus").lower() == "enable":
                     if mqinq.group("qmode").lower() in ["access"]:
                         swport["802.1ad Tunnel"] = True
-                    # untagged/tagged
+                        # untagged/tagged
                 p = re.compile("\)([^,]+?)(\d)")
                 vlans = p.sub(r"),\g<2>", match.group("vlans").rstrip(",\n "))
                 vlans = vlans.replace(" ", "")
@@ -110,7 +111,7 @@ class Script(BaseScript):
                           "tagged": "",
                           "status": interface_status.get(name, False)}
                 if re.search(r"Type :Aggregation member", block):
-                # skip portchannel members
+                    # skip portchannel members
                     r += [swport]
                     continue
                 if match.group("mode").lower() == "trunk":

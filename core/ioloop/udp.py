@@ -9,11 +9,11 @@
 # Python modules
 import errno
 import socket
+
+from tornado.concurrent import TracebackFuture
 ## Third-party modules
 from tornado.ioloop import IOLoop
-from tornado.concurrent import TracebackFuture
 from tornado.util import errno_from_exception
-
 
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
 
@@ -32,6 +32,7 @@ class UDPSocket(object):
         # Close socket
         sock.close()
     """
+
     def __init__(self, ioloop=None, tos=None):
         self.ioloop = ioloop or IOLoop.current()
         self.send_buffer = None  # (data, address)

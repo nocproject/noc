@@ -10,13 +10,14 @@
 import logging
 import sys
 import time
-# Third-party modules
-from django.db.models import Model
-from mongoengine.base import *
-from mongoengine import *
+
+import bson
 import mongoengine
 import six
-import bson
+# Third-party modules
+from django.db.models import Model
+from mongoengine import *
+from mongoengine.base import *
 # NOC modules
 from noc.config import config
 from noc.models import get_model
@@ -47,9 +48,11 @@ for i in range(RETRIES):
 # Shortcut to ObjectId
 try:
     import pymongo.objectid
+
     ObjectId = pymongo.objectid.ObjectId
 except ImportError:
     import bson.objectid
+
     ObjectId = bson.objectid.ObjectId
 
 RECURSIVE_REFERENCE_CONSTANT = "self"
@@ -150,7 +153,7 @@ class PlainReferenceListField(PlainReferenceField):
                     v = self.document_type.objects(id=value).first()
                 if v is None:
                     raise ValidationError("Unable to dereference %s:%s" % (
-                                        self.document_type, v))
+                        self.document_type, v))
                 return v
             else:
                 return value
@@ -195,6 +198,7 @@ class ForeignKeyField(BaseField):
     A reference to the RDBMS" table that will be automatically
     dereferenced on access (lazily). Maps to integer
     """
+
     def __init__(self, model, **kwargs):
         if not issubclass(model, Model):
             raise ValidationError("Argument to ForeignKeyField constructor "

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -35,14 +36,14 @@ class Script(BaseScript):
                         r.append({
                             "interface": n,
                             "status": int(s) == 1  # ifOperStatus up(1)
-                            })
+                        })
                     return r
                 else:
                     n = self.snmp.get("1.3.6.1.2.1.2.2.1.1.%d"
-                                    % int(interface))
+                                      % int(interface))
                     s = self.snmp.get("1.3.6.1.2.1.2.2.1.8.%d"
-                                    % int(interface))
-                    return [{"interface":n, "status":int(s) == 1}]
+                                      % int(interface))
+                    return [{"interface": n, "status": int(s) == 1}]
             except self.snmp.TimeOutError:
                 pass
 
@@ -54,16 +55,16 @@ class Script(BaseScript):
         for match in self.rx_link.finditer(s):
             if interface is None:
                 r.append({
-                        "interface": match.group("interface"),
-                        "status": match.group("status") == '1'
-                        })
+                    "interface": match.group("interface"),
+                    "status": match.group("status") == '1'
+                })
             else:
                 iface = match.group("interface")
                 if interface == iface:
                     r = [{
                         "interface": iface,
                         "status": match.group("status") == '1'
-                        }]
+                    }]
         if not r:
             raise self.NotSupportedError()
         return r

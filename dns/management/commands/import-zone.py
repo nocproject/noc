@@ -9,16 +9,16 @@
 # Python modules
 import re
 from optparse import make_option
-import logging
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
+from noc.core.debug import error_report
 # NOC modules
 from noc.dns.models.dnszone import DNSZone
-from noc.dns.models.dnszonerecord import DNSZoneRecord
 from noc.dns.models.dnszoneprofile import DNSZoneProfile
-from noc.ip.models.vrf import VRF
+from noc.dns.models.dnszonerecord import DNSZoneRecord
 from noc.ip.models.address import Address
-from noc.core.debug import error_report
+from noc.ip.models.vrf import VRF
 from noc.lib.validators import is_int
 
 
@@ -27,20 +27,20 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option("-t", "--test",
-            action="store_true", dest="test",
-            help="Test only. Do not save records"),
+                    action="store_true", dest="test",
+                    help="Test only. Do not save records"),
 
         make_option("-c", "--clean",
-            action="store_true", dest="clean",
-            help="Clean up zone before store"),
+                    action="store_true", dest="clean",
+                    help="Clean up zone before store"),
 
         make_option("-p", "--profile",
-            action="store", dest="profile",
-            help="Set Zone Profile"),
+                    action="store", dest="profile",
+                    help="Set Zone Profile"),
 
         make_option("-f", "--force",
-            action="store_true", dest="force",
-            help="Forcefully update FQDN for A records")
+                    action="store_true", dest="force",
+                    help="Forcefully update FQDN for A records")
     )
 
     RR_TYPES = [
@@ -216,6 +216,7 @@ class Command(BaseCommand):
         """
         Strip one-line comments from *csym* to end of line
         """
+
         def nq(s, q="\""):
             return sum(1 for c in s if c == q)
 
@@ -256,6 +257,7 @@ class Command(BaseCommand):
         r"^(?P<zone>\S+)\s+(?:IN\s+)?SOA\s+(\S+)\s+(\S+)\s*\(\s*"
         r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*\)$"
     )
+
     def parse_bind_zone(self, data):
         """
         Parse bind-style zone and return records applicable to

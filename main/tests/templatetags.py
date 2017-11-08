@@ -69,6 +69,7 @@ v=2
 v1=7
 """
 
+
 class TemplateTestCase(NOCTestCase):
     def render(self, tpl, context={}):
         ctx = template.Context(context)

@@ -5,14 +5,13 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
-
     def forwards(self):
-        db.add_column("fm_eventclassificationrule","drop_event",models.BooleanField("Drop Event",default=False))
+        db.add_column("fm_eventclassificationrule", "drop_event", models.BooleanField("Drop Event", default=False))
 
     def backwards(self):
-        db.delete_column("fm_eventclassificationrule","drop_event")
+        db.delete_column("fm_eventclassificationrule", "drop_event")

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -30,7 +31,7 @@ class Script(BaseScript):
         "PNP1632-32": "DVG-4032S",
         "SA7S4": "DVG-5004S",
         "TSO": "DVG-7111S"
-        }
+    }
 
     platforms_snmp = {
         "3.2.10": "DVG-2101S",
@@ -38,7 +39,7 @@ class Script(BaseScript):
         "?.?.?": "DVG-4032S",
         "1.2.1": "DVG-5004S",
         "?.?.?": "DVG-7111S"
-        }
+    }
 
     def execute(self):
         # Try SNMP first
@@ -55,7 +56,7 @@ class Script(BaseScript):
                     "vendor": "DLink",
                     "platform": platform,
                     "version": '1.02.38.x',
-                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -67,7 +68,7 @@ class Script(BaseScript):
             "vendor": "DLink",
             "platform": platform,
             "version": match.group("version")
-            }
+        }
         if match.group("hardware"):
             r["attributes"]["HW version"] = match.group("hardware")
         return r

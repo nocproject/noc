@@ -8,13 +8,14 @@
 
 # Python modules
 import datetime
+
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.lib.app.modelinline import ModelInline
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.timepatternterm import TimePatternTerm
-from noc.lib.app.modelinline import ModelInline
 from noc.sa.interfaces.base import ModelParameter, ListOfParameter, StringParameter
-from noc.core.translation import ugettext as _
 
 
 class TimePatternApplication(ExtModelApplication):
@@ -46,5 +47,3 @@ class TimePatternApplication(ExtModelApplication):
                 "result": p.match(dt)
             } for p in ids]
         }
-
-

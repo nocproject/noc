@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.fm.models.alarmclassconfig import AlarmClassConfig
 from noc.core.translation import ugettext as _
+from noc.fm.models.alarmclassconfig import AlarmClassConfig
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class AlarmClassConfigApplication(ExtDocApplication):

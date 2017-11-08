@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetreptopology import IGetREPTopology
@@ -22,7 +23,7 @@ class Script(BaseScript):
                          "\s+.+?\n"
                          "\s+.+?\n"
                          "\s+Neighbor Number:\s+(?P<fwd>\d+)\s*/\s*\[-(?P<rev>\d+)\]",
-        re.MULTILINE)
+                         re.MULTILINE)
 
     s_map = {
         "open": "OPEN",

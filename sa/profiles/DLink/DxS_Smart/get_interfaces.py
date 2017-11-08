@@ -8,11 +8,13 @@
 
 # Python modules
 from __future__ import with_statement
+
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -20,8 +22,8 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_ipif = re.compile(r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n"
-    r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+                         r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n",
+                         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     rx_mgmt_vlan = re.compile(
         r"^802.1Q Management VLAN\s+: (?P<vlan>\S+)\s*\n")
@@ -43,7 +45,7 @@ class Script(BaseScript):
                         "1.3.6.1.2.1.31.1.1.1.1",
                         "1.3.6.1.2.1.2.2.1.7"):  # IF-MIB
                     if n[:3] == 'Aux' or n[:4] == 'Vlan' \
-                    or n[:11] == 'InLoopBack':
+                            or n[:11] == 'InLoopBack':
                         continue
                     else:
                         if n[:6] == "Slot0/":

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -16,8 +17,8 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "Siklu.EH.ping"
     interface = IPing
-    #5 packets transmitted, 5 received, 0% packet loss, time 3999ms
-    #rtt min/avg/max/mdev = 0.058/0.063/0.083/0.013 ms
+    # 5 packets transmitted, 5 received, 0% packet loss, time 3999ms
+    # rtt min/avg/max/mdev = 0.058/0.063/0.083/0.013 ms
     rx_result = re.compile(
         r"^(?P<count>\d+)\s+packets transmitted,\s+"
         r"(?P<success>\d+)\s+received,.*?"
@@ -25,7 +26,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
 
     def execute(self, address, count=None, source_address=None, size=None, \
-        df=None):
+                df=None):
 
         cmd = "ping %s" % address
         if count:

@@ -8,6 +8,7 @@
 
 # Python modules
 from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
@@ -21,9 +22,9 @@ class Command(BaseCommand):
         make_option("--output", "-o", dest="output", action="store",
                     default="/dev/stdout",
                     help="Write output to file"),
-        make_option("--profile", "-p", dest="profile",  action="store",
+        make_option("--profile", "-p", dest="profile", action="store",
                     help="Device profile"),
-        make_option("--name", "-n", dest="name", default="pl",  action="store",
+        make_option("--name", "-n", dest="name", default="pl", action="store",
                     help="prefix-list name")
     )
 

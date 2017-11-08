@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from south.db import db
 # NOC modules
 from noc.ip.models import *
+# Third-party modules
+from south.db import db
 
 
 class Migration:

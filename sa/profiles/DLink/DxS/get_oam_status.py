@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
@@ -21,17 +22,17 @@ class Script(BaseScript):
     rx_line1 = re.compile(r"\nRemote Client", re.MULTILINE)
     rx_oam = re.compile(r"\s+OAM\s+:\s+Enable", re.MULTILINE | re.IGNORECASE)
     rx_capsR = re.compile(r"\n\s+Remote Loopback\s+:\s+(?P<caps_R>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                          re.IGNORECASE | re.MULTILINE)
     rx_capsU = re.compile(r"\n\s+Unidirection\s+:\s+(?P<caps_U>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                          re.IGNORECASE | re.MULTILINE)
     rx_capsL = re.compile(r"\n\s+Link Monitoring\s+:\s+(?P<caps_L>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                          re.IGNORECASE | re.MULTILINE)
     rx_capsV = re.compile(r"\n\s+Variable Request\s+:\s+(?P<caps_V>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                          re.IGNORECASE | re.MULTILINE)
 
     rx_port = re.compile(r"^(?P<port>\S+)", re.MULTILINE)
     rx_mac = re.compile(r"\s+MAC Address\s+:\s+(?P<mac>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
 
     def execute(self, **kwargs):
         r = []

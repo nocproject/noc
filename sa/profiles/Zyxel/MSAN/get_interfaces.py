@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -103,10 +104,10 @@ class Script(BaseScript):
                     raise self.NotSupportedError()
                 for v in vlans:
                     if v["ports"][port_num] == "F" \
-                    and v["mode"][port_num] == "U":
+                            and v["mode"][port_num] == "U":
                         untagged = v["vid"]
                     if v["ports"][port_num] == "F" \
-                    and v["mode"][port_num] == "T":
+                            and v["mode"][port_num] == "T":
                         tagged += [v["vid"]]
                 iface = {
                     "name": ifname,
@@ -173,10 +174,10 @@ class Script(BaseScript):
                     ifname = self.profile.convert_interface_name(match.group("port"))
                     for v in vlans:
                         if v["ports"][port_num] == "F" \
-                        and v["mode"][port_num] == "U":
+                                and v["mode"][port_num] == "U":
                             untagged = v["vid"]
                         if v["ports"][port_num] == "F" \
-                        and v["mode"][port_num] == "T":
+                                and v["mode"][port_num] == "T":
                             tagged += [v["vid"]]
                     iface = {
                         "name": ifname,
@@ -220,11 +221,11 @@ class Script(BaseScript):
                     }
                     if ifname.startswith("ethernet"):
                         sub = {
-                                "name": ifname,
-                                "admin_status": True,
-                                "enabled_afi": ["BRIDGE"],
-                                "tagged_vlans": []
-                            }
+                            "name": ifname,
+                            "admin_status": True,
+                            "enabled_afi": ["BRIDGE"],
+                            "tagged_vlans": []
+                        }
                         v = self.cli("vlan1q vlan status")
                         for match in self.rx_vlan4.finditer(v):
                             vid = int(match.group("vlan_id"))
@@ -259,7 +260,7 @@ class Script(BaseScript):
                         "name": ifname,
                         "type": "SVI",
                         "admin_status": True,  # always True, since inactive
-                        "oper_status": True,   # SVIs aren't shown at all
+                        "oper_status": True,  # SVIs aren't shown at all
                         "subinterfaces": [{
                             "name": ifname,
                             "admin_status": True,
@@ -290,7 +291,7 @@ class Script(BaseScript):
                 "name": ifname,
                 "type": "SVI",
                 "admin_status": True,  # always True, since inactive
-                "oper_status": True,   # SVIs aren't shown at all
+                "oper_status": True,  # SVIs aren't shown at all
                 "subinterfaces": [{
                     "name": ifname,
                     "admin_status": True,

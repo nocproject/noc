@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -32,13 +33,13 @@ class Script(BaseScript):
         r = []
         for match in self.rx_trunk.finditer(c):
             if match.group("status").lower() == "enable" \
-            and match.group("members") is not None:
+                    and match.group("members") is not None:
                 r += [{
                     "interface": "ch%s" % match.group("trunk"),
                     "members": self.expand_interface_range(
                         self.profile.open_brackets(match.group("members"))),
                     "type": "S"
-                    }]
+                }]
         if len(r) > 0:
             try:
                 t = self.cli("show config running")
@@ -49,5 +50,5 @@ class Script(BaseScript):
                                 i["type"] = "L"
             except self.CLISyntaxError:
                 pass
-                
+
         return r

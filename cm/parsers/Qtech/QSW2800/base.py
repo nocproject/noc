@@ -7,19 +7,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 from collections import defaultdict
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
 # NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
-from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 from noc.lib.text import ranges_to_list
 
 
 class BaseQSW2800Parser(BaseParser):
-
     def __init__(self, managed_object):
         super(BaseQSW2800Parser, self).__init__(managed_object)
 
@@ -36,7 +33,7 @@ class BaseQSW2800Parser(BaseParser):
             # if l == "{master}":
             if not l:
                 continue
-            elif l.startswith(" "*inactive_level):
+            elif l.startswith(" " * inactive_level):
                 inactive_level = len(context) + 1
                 context += [l.split()[0].strip()]
             elif "set" in l:
@@ -166,9 +163,9 @@ class BaseQSW2800Parser(BaseParser):
     def on_vlan(self, tokens):
         """
          if - vlan range
-         database - 
-        :param tokens: 
-        :return: 
+         database -
+        :param tokens:
+        :return:
         """
         if "-" not in tokens[-1] and "database" not in tokens:
             self.get_vlan_fact(int(tokens[-1].strip()))
@@ -177,7 +174,7 @@ class BaseQSW2800Parser(BaseParser):
                 self.get_vlan_fact(int(v))
 
     def on_vlan_name(self, tokens):
-            self.get_current_vlan().name = tokens[-1]
+        self.get_current_vlan().name = tokens[-1]
 
     def on_system_ntp_server(self, tokens):
         """
@@ -189,7 +186,7 @@ class BaseQSW2800Parser(BaseParser):
     def on_static_route(self, tokens):
         """
         ip default-gateway 1.2.5.9
-        :param tokens: 
+        :param tokens:
         """
         # print tokens
         if tokens[2] == "default-gateway":

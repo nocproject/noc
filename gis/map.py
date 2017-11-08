@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import geojson
 # Third-party modules
 import pyproj
-import geojson
 # NOC modules
 from noc.gis.models.layer import Layer
 from noc.inv.models.object import Object
@@ -193,5 +193,6 @@ class Map(object):
             return o, distance(point, o.point)
         else:
             return None, None
+
 
 map = Map()

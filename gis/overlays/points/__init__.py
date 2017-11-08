@@ -21,6 +21,7 @@ class PointsOverlay(OverlayHandler):
         position: position property name (GeoPointField)
         text: text label property name
     """
+
     def __init__(self, collection, position, text):
         self.collection = collection
         self.position = position
@@ -31,8 +32,8 @@ class PointsOverlay(OverlayHandler):
         collection = get_db()[self.collection]
         # Find points
         c = collection.find(
-                {self.position: {"$within": {"$box": bbox}}},
-                {"_id": 0, self.position: 1, self.text: 1})
+            {self.position: {"$within": {"$box": bbox}}},
+            {"_id": 0, self.position: 1, self.text: 1})
 
         return {
             "type": "GeometryCollection",

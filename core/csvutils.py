@@ -8,11 +8,11 @@
 
 # Python modules
 import csv
+
 # Third-party modules
 import six
 # Django modules
 from django.db import models
-
 
 # CSV import conflict resolution constants
 IR_FAIL = 0  # Fail on first conflict

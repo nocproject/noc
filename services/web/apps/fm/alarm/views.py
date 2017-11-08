@@ -6,36 +6,37 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
+import inspect
 # Python modules
 import os
-import inspect
-import datetime
+
 # Third-party modules
 import bson
-from pymongo import ReadPreference
 # NOC modules
 from noc.config import config
-from noc.lib.app.extapplication import ExtApplication, view
-from noc.inv.models.object import Object
-from noc.inv.models.networksegment import NetworkSegment
+from noc.core.translation import ugettext as _
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmplugin import AlarmPlugin
+from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.utils import get_alarm
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.selectorcache import SelectorCache
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.object import Object
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models import User
-from noc.sa.models.useraccess import UserAccess
-from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
-                                    DateTimeParameter, StringParameter)
 from noc.maintenance.models.maintenance import Maintenance
 from noc.maintenance.models.maintenance import MaintenanceObject
+from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
+                                    DateTimeParameter, StringParameter)
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.selectorcache import SelectorCache
 from noc.sa.models.servicesummary import SummaryItem
-from noc.fm.models.alarmplugin import AlarmPlugin
-from noc.core.translation import ugettext as _
-from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.sa.models.useraccess import UserAccess
+from pymongo import ReadPreference
 
 
 class AlarmApplication(ExtApplication):
@@ -76,7 +77,7 @@ class AlarmApplication(ExtApplication):
         self.plugins = {}
         for f in os.listdir("services/web/apps/fm/alarm/plugins/"):
             if (not f.endswith(".py") or
-                    f == "base.py" or
+                        f == "base.py" or
                     f.startswith("_")):
                 continue
             mn = "noc.services.web.apps.fm.alarm.plugins.%s" % f[:-3]

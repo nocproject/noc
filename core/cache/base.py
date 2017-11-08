@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.config import config
 from noc.core.handler import get_handler
@@ -20,6 +21,7 @@ class BaseCache(object):
     Basic cache class.
     Follows common dict style like cache[key] = value
     """
+
     @staticmethod
     def make_key(key, version=None):
         return "%s|%s" % (key, version or 0)
@@ -93,6 +95,7 @@ class BaseCache(object):
         else:
             logger.error("Cannot load cache backend: Fallback to dummy")
             return BaseCache()
+
 
 # cache singleton
 cache = BaseCache.get_cache()

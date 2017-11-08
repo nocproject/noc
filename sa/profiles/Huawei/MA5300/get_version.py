@@ -9,9 +9,11 @@
 """
 """
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
+
 
 class Script(BaseScript):
     name = "Huawei.MA5300.get_version"
@@ -33,4 +35,3 @@ class Script(BaseScript):
             "version": version
         }
         return r
-

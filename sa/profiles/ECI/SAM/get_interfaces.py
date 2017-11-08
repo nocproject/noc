@@ -5,11 +5,11 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+import re
+
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -112,7 +112,7 @@ class Script(BaseScript):
                 if ip:
                     try:
                         n = match.group("nmask")
-                        nn = [int(n[2:][i:i+2],16) for i in range(0,len(n[2:]),2)]
+                        nn = [int(n[2:][i:i + 2], 16) for i in range(0, len(n[2:]), 2)]
                     except:
                         print "%s %s %s\n" % (iface, n, mac)
                         quit()

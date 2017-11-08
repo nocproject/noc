@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.maintenance.models.maintenancetype import MaintenanceType
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.maintenance.models.maintenancetype import MaintenanceType
 
 
 class MaintenanceTypeApplication(ExtDocApplication):

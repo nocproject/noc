@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,6 +22,7 @@ class Script(BaseScript):
     rx_ver = re.compile(r"^\s*Firmware Version\s+:(?P<version>\S+)\n", re.MULTILINE)
     rx_hver = re.compile(r"^\s*Software Version\s+:(?P<hversion>\S+)\n", re.MULTILINE)
     rx_serial = re.compile(r"^\s*Serial No\s+:(?P<serial>\S+)\n", re.MULTILINE)
+
     def execute(self):
         ver = self.cli("show system", cached=True)
         match = self.re_search(self.rx_platform, ver)
@@ -34,5 +36,5 @@ class Script(BaseScript):
             "attributes": {
                 "HW version": hmatch.group("hversion"),
                 "Serial Number": smatch.group("serial")
-                          }
             }
+        }

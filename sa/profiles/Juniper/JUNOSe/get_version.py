@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -21,11 +22,11 @@ rx_snmp_ver = re.compile(
     r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?SW Version\s:"
     r"\s\((?P<version>[A-Za-z0-9\- \.\[\]]+)\)")
 
+
 class Script(BaseScript):
     name = "Juniper.JUNOSe.get_version"
     cache = True
     interface = IGetVersion
-
 
     def execute(self):
         if self.has_snmp():

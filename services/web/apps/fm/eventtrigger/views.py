@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.fm.models.eventtrigger import EventTrigger
 from noc.core.translation import ugettext as _
+from noc.fm.models.eventtrigger import EventTrigger
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 
 
 class EventTriggerApplication(ExtModelApplication):

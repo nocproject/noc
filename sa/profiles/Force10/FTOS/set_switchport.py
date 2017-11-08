@@ -8,6 +8,7 @@
 
 # Python modules
 from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.isetswitchport import ISetSwitchport
@@ -32,7 +33,7 @@ class Script(BaseScript):
             if protect_switchport and iface not in ports:
                 errors += ["Interface '%s' is not switchport" % iface]
             if (protect_type and
-                is_access(c) != is_access(ports[iface])):
+                        is_access(c) != is_access(ports[iface])):
                 errors += ["Invalid port type for interface '%s'" % iface]
         if errors:
             return {
@@ -56,8 +57,8 @@ class Script(BaseScript):
             p = ports[iface]
             # Check description
             if ("description" in c and c["description"] and
-                ("description" not in p or
-                 c["description"] != p["description"])):
+                    ("description" not in p or
+                             c["description"] != p["description"])):
                 ic += [" description %s" % c["description"]]
             # Check status
             if c["status"] and not p["status"]:
@@ -84,7 +85,7 @@ class Script(BaseScript):
             else:
                 # Configuring trunk port
                 if ("untagged" in p and
-                    ("untagged" not in c or p["untagged"] != c["untagged"])):
+                        ("untagged" not in c or p["untagged"] != c["untagged"])):
                     remove_untagged[p["untagged"]] += [iface]
                 if "untagged" in c:
                     add_untagged[c["untagged"]] += [iface]

@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 # NOC modules
 from noc.cm.validators.base import BaseValidator
 

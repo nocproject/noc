@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models import SystemTemplate
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.main.models import SystemTemplate
 
 
 class SystemTemplateApplication(ExtModelApplication):
@@ -20,4 +20,3 @@ class SystemTemplateApplication(ExtModelApplication):
     menu = [_("Setup"), _("System Templates")]
     model = SystemTemplate
     query_fields = ["name__icontains"]
-

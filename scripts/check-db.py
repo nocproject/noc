@@ -35,6 +35,7 @@ def check_mongo():
         sys.stderr.write("ERROR: MongoDB 2.4 or later required")
         sys.exit(1)
 
+
 if __name__ == "__main__":
     if sys.argv[1] == "--pg":
         check_pg()

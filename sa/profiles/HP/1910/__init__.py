@@ -9,6 +9,8 @@
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+
+
 # from noc.sa.models import ManagedObject
 
 

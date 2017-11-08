@@ -9,6 +9,7 @@
 # Python modules
 import logging
 import socket
+
 # NOC modules
 from noc.lib.nbsocket import ConnectedTCPSocket
 from noc.lib.validators import is_fqdn

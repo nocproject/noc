@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import threading
-import operator
+
 # Third-party modules
 import cachetools
-from pymongo import ReadPreference
-# NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
+# NOC modules
+from noc.services.discovery.jobs.base import DiscoveryCheck
+from pymongo import ReadPreference
 
 ips_lock = threading.RLock()
 

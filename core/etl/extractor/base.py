@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import csv
+import gzip
 # Python modules
 import logging
-import gzip
 import os
-import csv
 import time
 from collections import namedtuple
+
+from noc.config import config
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.config import config
 
 logger = logging.getLogger(__name__)
 

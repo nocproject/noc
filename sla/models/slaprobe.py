@@ -9,17 +9,18 @@
 # Python modules
 import operator
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField,
                                 ListField)
-import cachetools
-# NOC modules
-from slaprofile import SLAProfile
-from noc.sa.models.managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
+from noc.sa.models.managedobject import ManagedObject
 
+# NOC modules
+from slaprofile import SLAProfile
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
 

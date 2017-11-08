@@ -8,6 +8,7 @@
 
 # Python modules
 import logging
+
 # NOC modules
 from noc.gis.models.geocodercache import GeocoderCache
 

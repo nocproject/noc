@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -38,8 +39,8 @@ class Script(BaseScript):
         table.pop(0)
         for l in table:
             row = l.split()
-            interface = dict(zip(headline[:-1], row[:len(headline)-1]))
-            interface['Ports'] = row[len(headline)-1:]
+            interface = dict(zip(headline[:-1], row[:len(headline) - 1]))
+            interface['Ports'] = row[len(headline) - 1:]
             members = []
             for m in interface['Ports']:
                 members += [m.split("(")[0]]
@@ -59,6 +60,6 @@ class Script(BaseScript):
                 "interface": "Po %s" % interface['Group'],
                 "members": members,
                 "type": "L",  # <!> TODO: port-channel type detection
-                }]
+            }]
 
         return r

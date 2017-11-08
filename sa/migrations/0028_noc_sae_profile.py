@@ -6,12 +6,11 @@
 """
 """
 from south.db import db
-from django.db import models
+
 
 class Migration:
-
     def forwards(self):
-        db.execute("UPDATE sa_managedobject SET name=%s,profile_name=%s WHERE name=%s",["SAE","NOC.SAE","ROOT"])
+        db.execute("UPDATE sa_managedobject SET name=%s,profile_name=%s WHERE name=%s", ["SAE", "NOC.SAE", "ROOT"])
 
     def backwards(self):
-        db.execute("UPDATE sa_managedobject SET name=%s,profile_name=%s WHERE name=%s",["ROOT","NOC","SAE"])
+        db.execute("UPDATE sa_managedobject SET name=%s,profile_name=%s WHERE name=%s", ["ROOT", "NOC", "SAE"])

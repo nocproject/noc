@@ -1,6 +1,7 @@
 # encoding: utf-8
 from south.db import db
 
+
 class Migration:
     TAG_MODELS = ["ip_vrfgroup", "ip_vrf", "ip_prefix",
                   "ip_address", "ip_addressrange"]

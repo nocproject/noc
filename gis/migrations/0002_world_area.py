@@ -4,11 +4,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from south.db import db
 from noc.lib.nosql import get_db
 
-class Migration:
 
+class Migration:
     def forwards(self):
         areas = get_db().noc.gis.areas
         if not areas.find({"name": "World"}).count():

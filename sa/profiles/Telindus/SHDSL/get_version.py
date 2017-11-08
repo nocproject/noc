@@ -10,6 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
+
 class Script(BaseScript):
     name = "Telindus.SHDSL.get_version"
     cache = True
@@ -28,10 +29,10 @@ class Script(BaseScript):
                     if ver.startswith("T"):
                         version = ver
                 return {
-                        "vendor": "Telindus",
-                        "version": version,
-                        "platform": platform
-                        }
+                    "vendor": "Telindus",
+                    "version": version,
+                    "platform": platform
+                }
             except self.snmp.TimeOutError:
                 pass
         # Fallback to CLI

@@ -6,9 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import hashlib
 ## Python modules
 import random
-import hashlib
 
 ## Symbols used in salt
 ITOA64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -71,7 +71,7 @@ def md5crypt(password, salt=None, magic="$1$"):
     # This is the bit that uses to64() in the original code.
     rearranged = ""
     for a, b, c in (
-    (0, 6, 12), (1, 7, 13), (2, 8, 14), (3, 9, 15), (4, 10, 5)):
+            (0, 6, 12), (1, 7, 13), (2, 8, 14), (3, 9, 15), (4, 10, 5)):
         v = ord(final[a]) << 16 | ord(final[b]) << 8 | ord(final[c])
         for i in range(4):
             rearranged += ITOA64[v & 0x3f]

@@ -8,9 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.sa.models.managedobject import ManagedObject
+
 # NOC modules
 from .base import BaseDataSource
-from noc.sa.models.managedobject import ManagedObject
 
 
 class CHManagedObjectDataSource(BaseDataSource):

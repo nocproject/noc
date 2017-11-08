@@ -6,25 +6,26 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import os
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, UUIDField)
-import cachetools
-# NOC modules
-from error import ModelDataError
-from noc.lib.utils import deep_copy
 from noc.lib.escape import json_escape as q
+from noc.lib.utils import deep_copy
 from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
                                     FloatParameter, IntParameter,
                                     StringListParameter)
 
-id_lock = Lock()
+# NOC modules
+from error import ModelDataError
 
+id_lock = Lock()
 
 T_MAP = {
     "str": StringParameter(),
@@ -47,6 +48,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
     description = StringField()
     required = BooleanField(default=False)
     is_const = BooleanField(default=False)
+
     # default
     # ref
 

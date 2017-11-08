@@ -1,6 +1,7 @@
-from south.db import db
 from django.db import models
 from noc.core.model.fields import DocumentReferenceField, TagsField
+from south.db import db
+
 
 class Migration:
     def forwards(self):

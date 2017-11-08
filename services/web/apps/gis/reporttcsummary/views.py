@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.gis.geo import MIN_ZOOM, MAX_ZOOM
+from noc.gis.models import Map, TileCache
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
-from noc.gis.models import Map, TileCache
-from noc.gis.geo import MIN_ZOOM, MAX_ZOOM
 
 
 class ReportTCSummaryApplication(SimpleReport):

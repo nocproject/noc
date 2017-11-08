@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -24,10 +25,10 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_interface = re.compile(r"^\s*(?P<interface>\S+) is "
-                    r"(?P<admin_status>\S*\s*\S+), "
-                    r"line protocol is (?P<oper_status>\S+)")
+                              r"(?P<admin_status>\S*\s*\S+), "
+                              r"line protocol is (?P<oper_status>\S+)")
     rx_description = re.compile(r"alias name is "
-                    r"(?P<description>[A-Za-z0-9\-_/\.\s\(\)]*)")
+                                r"(?P<description>[A-Za-z0-9\-_/\.\s\(\)]*)")
     rx_ifindex = re.compile(r"index is (?P<ifindex>\d+)$")
     rx_ipv4 = re.compile(r"^\s+(?P<ip>[\d+\.]+)\s+(?P<mask>[\d+\.]+)\s+")
     rx_mac = re.compile(r"address is (?P<mac>[0-9a-f\-]+)$", re.IGNORECASE)
@@ -52,7 +53,7 @@ class Script(BaseScript):
         swports = {}
         for sp in self.scripts.get_switchport():
             swports[sp["interface"]] = (sp["untagged"] if "untagged" in sp
-                                                    else None, sp["tagged"])
+                                        else None, sp["tagged"])
 
         # get portchannels
         pc_members = {}
@@ -60,7 +61,7 @@ class Script(BaseScript):
             i = pc["interface"]
             t = pc["type"] == "L"
             for m in pc["members"]:
-                pc_members[m] = (i,t)
+                pc_members[m] = (i, t)
 
         # global GVRP status
         try:
@@ -110,7 +111,7 @@ class Script(BaseScript):
                         iface["enabled_protocols"] += ["LACP"]
                 try:
                     if ifname.startswith("Ethernet"):
-                        v = self.cli("show ethernet-oam local interface %s" % ifname )
+                        v = self.cli("show ethernet-oam local interface %s" % ifname)
                         match = self.rx_oam.search(v)
                         if not match:
                             iface["enabled_protocols"] += ["OAM"]
@@ -155,7 +156,7 @@ class Script(BaseScript):
                     vid = re.search("(?P<vid>\d+)", ifname)
                     sub["vlan_ids"] = [int(vid.group("vid"))]
                 ip = IPv4(match.group("ip"),
-                            netmask=match.group("mask")).prefix
+                          netmask=match.group("mask")).prefix
                 sub["ipv4_addresses"] += [ip]
             # get mac address
             match = self.rx_mac.search(l)

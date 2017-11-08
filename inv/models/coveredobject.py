@@ -9,10 +9,11 @@
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (IntField)
-# NOC modules
-from coverage import Coverage
 from noc.inv.models.object import Object
 from noc.lib.nosql import PlainReferenceField
+
+# NOC modules
+from coverage import Coverage
 
 
 class CoveredObject(Document):

@@ -26,7 +26,7 @@ class Script(BaseScript):
                     r.append({
                         "vlan_id": vlan,
                         "name": name
-                        })
+                    })
                 return r
             except self.snmp.TimeOutError:
                 pass

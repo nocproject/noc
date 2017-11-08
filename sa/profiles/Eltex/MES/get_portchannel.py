@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -62,8 +63,8 @@ class Script(BaseScript):
 
         # Fallback to CLI
         if (
-            self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
-            self.match_version(version__regex="4\.0\.[4-7]$")
+                    self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
+                    self.match_version(version__regex="4\.0\.[4-7]$")
         ):
             cmd = self.cli("show interfaces channel-group")
         else:
@@ -98,8 +99,8 @@ class Script(BaseScript):
                 l_type = "S"
             r += [{
                 "interface": match.group("port").lower(),
-#                "interface": match.group("port"),
+                #                "interface": match.group("port"),
                 "type": l_type,
                 "members": memb,
-                }]
+            }]
         return r

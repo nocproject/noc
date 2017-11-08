@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -25,7 +26,7 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None,
-        size=None, df=None):
+                size=None, df=None):
         cmd = "ping"
         if count:
             cmd += " -c %d" % int(count)
@@ -46,12 +47,12 @@ class Script(BaseScript):
         r = {
             "success": result.group("success"),
             "count": result.group("count"),
-            }
+        }
         stat = self.rx_stat.search(ping)
         if stat:
             r.update({
-                    "min": stat.group("min"),
-                    "avg": stat.group("avg"),
-                    "max": stat.group("max"),
-                    })
+                "min": stat.group("min"),
+                "avg": stat.group("avg"),
+                "max": stat.group("max"),
+            })
         return r

@@ -8,11 +8,11 @@
 
 # Third-party modules
 import ujson
+from noc.core.collection.base import Collection
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter
-from noc.core.collection.base import Collection
-from noc.core.translation import ugettext as _
 
 
 class JSONImportApplication(ExtApplication):

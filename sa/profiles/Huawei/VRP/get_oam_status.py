@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
 
 
 class Script(BaseScript):
@@ -24,7 +25,7 @@ class Script(BaseScript):
     Remote\sMAC:\s+(?P<mac>.+?)\n
     """, re.VERBOSE | re.DOTALL | re.MULTILINE)
     oam_splitter = re.compile(r"\s+-{52}(?P<oam>.+?)Remote\sEFM",
-         re.DOTALL | re.MULTILINE)
+                              re.DOTALL | re.MULTILINE)
 
     def execute(self, **kwargs):
         r = []
@@ -41,9 +42,9 @@ class Script(BaseScript):
                 iface = match.group("interface").strip()
                 mac = match.group("mac")
                 try:
-                    mac=MACAddressParameter().clean(mac)
+                    mac = MACAddressParameter().clean(mac)
                 except:
-                   continue
+                    continue
                 r += [{
                     "interface": iface,
                     "remote_mac": mac,

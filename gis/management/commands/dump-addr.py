@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from optparse import make_option
 import csv
 import sys
+# Python modules
+from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules

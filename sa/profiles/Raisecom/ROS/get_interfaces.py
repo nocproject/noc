@@ -9,11 +9,12 @@
 # Python modules
 import re
 from collections import defaultdict
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import ranges_to_list
-from noc.core.ip import IPv4
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -173,7 +174,6 @@ class Script(BaseScript):
                                     "untagged_vlan"
                                 ] = vlan_id
 
-
         v = self.profile.get_version(self)
         mac = v["mac"]
         """
@@ -246,4 +246,3 @@ class Script(BaseScript):
                     break
 
         return [{"interfaces": l3}]
-

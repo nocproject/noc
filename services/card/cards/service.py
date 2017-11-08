@@ -9,12 +9,14 @@
 # Python modules
 import datetime
 import operator
+
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.inv.models.interface import Interface
+from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.service import Service
+
 # NOC modules
 from base import BaseCard
-from noc.sa.models.service import Service
-from noc.inv.models.interface import Interface
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.maintenance.models.maintenance import Maintenance
 
 
 class ServiceCard(BaseCard):
@@ -49,9 +51,9 @@ class ServiceCard(BaseCard):
                 errors += ["Half-Duplex"]
             # Maintenance
             for m in Maintenance.objects.filter(
-                affected_objects__object=managed_object.id,
-                is_completed=False,
-                start__lte=now + datetime.timedelta(hours=1)
+                    affected_objects__object=managed_object.id,
+                    is_completed=False,
+                    start__lte=now + datetime.timedelta(hours=1)
             ):
                 maintenance += [{
                     "maintenance": m,

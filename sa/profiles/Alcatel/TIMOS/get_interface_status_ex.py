@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.core.mib import mib
+from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 
 
 class Script(BaseScript):
@@ -55,7 +55,7 @@ class Script(BaseScript):
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
-        self.apply_table(r, "1.3.6.1.4.1.6527.3.1.2.2.4.2.1.39", "oper_status", lambda x: x in [4,5])
+        self.apply_table(r, "1.3.6.1.4.1.6527.3.1.2.2.4.2.1.39", "oper_status", lambda x: x in [4, 5])
         # Apply ifSpeed
         s_table = self.get_iftable("IF-MIB::ifSpeed")
         highspeed = set()

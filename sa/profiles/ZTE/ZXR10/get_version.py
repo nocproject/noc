@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # re modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -19,8 +20,10 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(r"^(?P<platform>.+?) Software, Version (?P<version>[^,]+).+ ROS Version (?P<ros>[^,].+?)System", re.MULTILINE | re.DOTALL)
-    rx_snmp_ver = re.compile(r"ROS Version (?P<ros>.+?) (?P<platform>.+?) Software, Version (?P<version>[^,]+) Copyright")
+    rx_ver = re.compile(r"^(?P<platform>.+?) Software, Version (?P<version>[^,]+).+ ROS Version (?P<ros>[^,].+?)System",
+                        re.MULTILINE | re.DOTALL)
+    rx_snmp_ver = re.compile(
+        r"ROS Version (?P<ros>.+?) (?P<platform>.+?) Software, Version (?P<version>[^,]+) Copyright")
 
     def execute(self):
         if self.has_snmp():
@@ -31,7 +34,7 @@ class Script(BaseScript):
                     "vendor": "ZTE",
                     "platform": match.group("platform"),
                     "version": match.group("version")
-                    }
+                }
             except self.snmp.TimeOutError:
                 pass
         v = self.cli("show version software")

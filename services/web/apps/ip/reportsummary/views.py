@@ -8,15 +8,16 @@
 
 # Python Modules
 import math
+
+from django import forms
 # Django Modules
 from django.utils.translation import ugettext_lazy as _
-from django import forms
+from noc.core.ip import IP
+from noc.ip.models import VRF, Prefix
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.ip.models import VRF, Prefix
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
-from noc.core.ip import IP
 
 
 class ReportForm(forms.Form):
@@ -86,4 +87,3 @@ class ReportSummary(SimpleReport):
                                      format="numeric", align="right"),
                          TableColumn(_("%"), format="percent", align="right")],
                 data=data)
-

@@ -8,21 +8,22 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 import six
-from pymongo import UpdateOne
-# NOC modules
-from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.etl.portmapper.loader import loader as portmapper_loader
+from noc.inv.models.extnrilink import ExtNRILink
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.extnrilink import ExtNRILink
-from noc.sa.models.serviceprofile import ServiceProfile
-from noc.sa.models.service import Service
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.link import Link
-from noc.sa.models.servicesummary import ServiceSummary
-from noc.core.etl.portmapper.loader import loader as portmapper_loader
 from noc.lib.text import split_alnum
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service
+from noc.sa.models.serviceprofile import ServiceProfile
+from noc.sa.models.servicesummary import ServiceSummary
+# NOC modules
+from noc.services.discovery.jobs.base import DiscoveryCheck
+from pymongo import UpdateOne
 
 
 class NRICheck(DiscoveryCheck):

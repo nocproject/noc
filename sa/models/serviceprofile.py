@@ -8,18 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import operator
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, IntField,
                                 BooleanField, LongField, ListField)
-import cachetools
+from noc.core.defer import call_later
+from noc.core.model.decorator import on_save
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.decorator import on_save
-from noc.core.defer import call_later
 
 id_lock = Lock()
 
@@ -49,7 +51,7 @@ class ServiceProfile(Document):
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
     # Object id in remote system
-    remote_id = StringField()    
+    remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
     # Tags

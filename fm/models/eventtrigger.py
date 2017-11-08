@@ -8,12 +8,12 @@
 
 # Third-party modules
 from django.db import models
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.pyrule import PyRule
+from noc.main.models.template import Template
+from noc.main.models.timepattern import TimePattern
 # NOC modules
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.main.models.timepattern import TimePattern
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.main.models.template import Template
-from noc.main.models.pyrule import PyRule
 
 
 class EventTrigger(models.Model):

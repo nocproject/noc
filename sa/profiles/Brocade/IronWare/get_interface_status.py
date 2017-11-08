@@ -8,7 +8,7 @@
 
 # Python modules
 import re
-import string
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -43,9 +43,9 @@ class Script(BaseScript):
             cmd = "show interface brief | excl Port"
 
         for l in self.cli(cmd).splitlines():
-            l=l.replace("Disabled"," Disabled ")
-            l=l.replace("Up"," Up ")
-            l=l.replace("DisabN"," Disabled N")
+            l = l.replace("Disabled", " Disabled ")
+            l = l.replace("Up", " Up ")
+            l = l.replace("DisabN", " Disabled N")
             match = rx_interface_status.match(l)
             if match:
                 r += [{

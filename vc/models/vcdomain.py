@@ -8,12 +8,13 @@
 
 # Django modules
 from django.db import models
+from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_save, on_delete
+from noc.main.models.style import Style
+
+from vcfilter import VCFilter
 # NOC modules
 from vctype import VCType
-from vcfilter import VCFilter
-from noc.main.models.style import Style
-from noc.core.model.decorator import on_save, on_delete
-from noc.core.model.decorator import on_delete_check
 
 
 @on_save
@@ -30,6 +31,7 @@ class VCDomain(models.Model):
     """
     Virtual circuit domain, allows to separate unique VC spaces
     """
+
     class Meta:
         verbose_name = "VC Domain"
         verbose_name_plural = "VC Domains"

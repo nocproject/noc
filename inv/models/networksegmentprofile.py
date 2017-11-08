@@ -8,17 +8,19 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import operator
-import cachetools
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 LongField)
+from noc.core.bi.decorator import bi_sync
 # NOC modules
 from noc.core.model.decorator import on_delete_check, on_save
-from noc.core.bi.decorator import bi_sync
 from noc.lib.nosql import PlainReferenceField
 from noc.main.models.remotesystem import RemoteSystem
 

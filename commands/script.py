@@ -6,17 +6,18 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import argparse
 # Python modules
 import os
-import argparse
 import pprint
 import re
+
 # Third-party modules
 import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.validators import is_int
 from noc.core.script.loader import loader
+from noc.lib.validators import is_int
 
 
 class Command(BaseCommand):
@@ -196,6 +197,7 @@ class Command(BaseCommand):
         """
         Parse arguments and return script's
         """
+
         def read_file(path):
             if not os.path.exists(path):
                 self.die("Cannot open file '%s'" % path)

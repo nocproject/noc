@@ -6,18 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
-from threading import Lock
 import operator
-# Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField, IntField,
-                                ListField, EmbeddedDocumentField)
+# Python modules
+from threading import Lock
+
 import cachetools
+# Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, BooleanField)
+
 # NOC modules
-from dialplan import DialPlan
-from noc.lib.nosql import PlainReferenceField
 
 id_lock = Lock()
 

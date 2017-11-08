@@ -9,6 +9,7 @@
 # Python modules
 import sys
 from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand
 from django.db import models
@@ -55,5 +56,5 @@ class Command(BaseCommand):
         if not m:
             return self._usage()
         print csv_export(m,
-            queryset=self.get_queryset(m, args[1:]),
-            first_row_only=options.get("template")),
+                         queryset=self.get_queryset(m, args[1:]),
+                         first_row_only=options.get("template")),

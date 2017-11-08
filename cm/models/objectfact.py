@@ -8,12 +8,13 @@
 
 # Python modules
 import datetime
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, DateTimeField, UUIDField
+from noc.lib.nosql import ForeignKeyField
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import ForeignKeyField
 
 
 class ObjectFact(Document):

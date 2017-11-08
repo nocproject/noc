@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
-import re
 
 
 class Script(BaseScript):
@@ -18,7 +19,7 @@ class Script(BaseScript):
     rx_vlan1 = re.compile(
         r"^\s+(?P<vlanid>\d+)\s+(?P<type>\S+)\s+", re.MULTILINE)
     rx_vlan2 = re.compile(r"^\s+\d+\s+(?P<vlanid>\d+)\s+\d+\s+\d+",
-        re.MULTILINE | re.DOTALL)
+                          re.MULTILINE | re.DOTALL)
     rx_vlan3 = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")
 
     def execute(self):

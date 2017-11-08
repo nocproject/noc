@@ -8,9 +8,8 @@
 """
 """
 # Python modules
-import os
-import datetime
 import logging
+
 # NOC modules
 from noc.lib.registry import Registry
 
@@ -21,11 +20,13 @@ class PeriodicRegistry(Registry):
     subdir = "periodics"
     classname = "Task"
 
+
 periodic_registry = PeriodicRegistry()
 
 
 class TaskBase(type):
     """Metaclass for Task"""
+
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
         periodic_registry.register(m.name, m)

@@ -1,8 +1,8 @@
 import uuid
-from south.db import db
-from django.db import models
+
 from noc.core.model.fields import DocumentReferenceField
 from noc.lib.nosql import get_db
+from south.db import db
 
 
 class Migration:
@@ -12,7 +12,8 @@ class Migration:
         #
 
         # Select vendors
-        vendors = set(r[0] for r in db.execute("SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key = 'vendor'"))
+        vendors = set(
+            r[0] for r in db.execute("SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key = 'vendor'"))
         # Create vendors records
         pcoll = get_db()["noc.vendors"]
         for v in vendors:

@@ -9,16 +9,18 @@
 """
 # Python modules
 import re
+
+from noc.core.script.base import BaseScript
 # NOC modules
 from noc.sa.interfaces.igetarp import IGetARP
-from noc.core.script.base import BaseScript
 
 
 class Script(BaseScript):
     name = "H3C.VRP.get_arp"
     interface = IGetARP
 
-    rx_arp_line = re.compile(r"^(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+\d*\s+.{3}\s+(?P<interface>\S+)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
+    rx_arp_line = re.compile(r"^(?P<ip>\d+\.\S+)\s+(?P<mac>[0-9a-f]\S+)\s+\d*\s+.{3}\s+(?P<interface>\S+)",
+                             re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
     def execute(self):
         return self.cli("display arp", list_re=self.rx_arp_line)

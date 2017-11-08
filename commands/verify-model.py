@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import argparse
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.objectmodel import ObjectModel, ModelConnectionsCache
@@ -141,6 +140,7 @@ class Command(BaseCommand):
         self.check_protocols(c, [
             "TransEth10G"
         ])
+
 
 if __name__ == "__main__":
     Command().run()

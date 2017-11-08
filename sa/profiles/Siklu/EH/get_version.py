@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -20,7 +21,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_sys = re.compile(r"^system description\s+: (?P<platform>.+?)$",
-        re.MULTILINE)
+                        re.MULTILINE)
     rx_ver = re.compile(
         r"^\d+\s+(?P<version>\S+)\s+\S+\s+\S+\s+yes\s+\S+\s+\S+",
         re.MULTILINE)

@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -144,7 +145,7 @@ class Script(BaseScript):
             elif match1.group("mode") == "trunk":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
                 sub["tagged_vlans"] = \
-                self.expand_rangelist(match1.group("vlans"))
+                    self.expand_rangelist(match1.group("vlans"))
             else:
                 raise self.NotSupportedError()
             iface["subinterfaces"] += [sub]
@@ -157,7 +158,6 @@ class Script(BaseScript):
                 if match.group("port") == "Port":
                     continue
                 descr += [match.groupdict()]
-
 
         v = self.cli("show interface ip")
         for match in self.rx_ip.finditer(v):
@@ -173,7 +173,7 @@ class Script(BaseScript):
                 "oper_status": match.group("admin_status") == "active",
                 "mac": mac,
                 "subinterfaces": [{
-                    "name":  "ip%s" % ifname,
+                    "name": "ip%s" % ifname,
                     "admin_status": match.group("admin_status") == "active",
                     "oper_status": match.group("admin_status") == "active",
                     "mac": mac,

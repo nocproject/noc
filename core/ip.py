@@ -323,7 +323,7 @@ class IPv4(IP):
         :type mask: integer
         """
         return IPv4("%d.%d.%d.%d/%d" % ((s >> 24) & 0xff, (s >> 16) & 0xff,
-                                       (s >> 8) & 0xff, s & 0xff, mask))
+                                        (s >> 8) & 0xff, s & 0xff, mask))
 
     def __hash__(self):
         """Hashing"""
@@ -867,6 +867,7 @@ class PrefixDB(object):
     """
     Generalized binary-tree prefix lookup database
     """
+
     def __init__(self, key=None):
         self.children = [None, None]
         self.key = key
@@ -910,6 +911,7 @@ class PrefixDB(object):
         :param root:
         :return:
         """
+
         def walk_tree(c, root_bits):
             for n, v in enumerate(c.children):
                 bits = root_bits + [n]
@@ -920,6 +922,7 @@ class PrefixDB(object):
                     if nc.key is None:
                         for f in walk_tree(nc, bits):
                             yield f
+
         root_bits = list(root.iter_bits())
         afi = root.afi
         max_bits = 32 if afi == "4" else 128

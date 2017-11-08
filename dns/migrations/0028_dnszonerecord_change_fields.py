@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
@@ -13,7 +13,7 @@ class Migration:
             ALTER COLUMN content TYPE VARCHAR(256)
             """)
         db.add_column("dns_dnszonerecord", "type",
-            models.CharField(_("Type"), max_length=16, default=""))
+                      models.CharField(_("Type"), max_length=16, default=""))
 
     def backwards(self):
         pass

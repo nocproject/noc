@@ -9,6 +9,7 @@
 # Python modules
 import operator
 import threading
+
 # Third-party modules
 import cachetools
 import jinja2

@@ -9,25 +9,25 @@
 # Python modules
 import datetime
 import logging
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, DateTimeField, ReferenceField)
-from pymongo import ReadPreference
-
+from noc.core.model.decorator import on_delete
 # NOC Modules
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
-from interfaceprofile import InterfaceProfile
-from coverage import Coverage
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
-from noc.vc.models.vcdomain import VCDomain
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import Service
-from noc.core.model.decorator import on_delete
+from noc.vc.models.vcdomain import VCDomain
+from pymongo import ReadPreference
 
+from coverage import Coverage
+from interfaceprofile import InterfaceProfile
 
 INTERFACE_TYPES = (IGetInterfaces.returns
                    .element.attrs["interfaces"]
@@ -36,7 +36,6 @@ INTERFACE_PROTOCOLS = (IGetInterfaces.returns
                        .element.attrs["interfaces"]
                        .element.attrs["enabled_protocols"]
                        .element.choices)
-
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +106,7 @@ class Interface(Document):
             super(Interface, self).save(*args, **kwargs)
         except Exception as e:
             raise ValueError("%s: %s" % (e.__doc__, e.message))
-        if  not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
             ServiceSummary.refresh_object(self.managed_object)
 
     def on_delete(self):
@@ -177,6 +176,7 @@ class Interface(Document):
         :type other: Interface
         :returns: Link instance
         """
+
         def link_mismatched_lag(agg, phy):
             """
             Try to link LAG to physical interface
@@ -298,6 +298,7 @@ class Interface(Document):
         Returns interface status in form of
         Up/100/Full
         """
+
         def humanize_speed(speed):
             if not speed:
                 return "-"
@@ -314,10 +315,10 @@ class Interface(Document):
             return str(speed)
 
         s = [{
-            True: "Up",
-            False: "Down",
-            None: "-"
-        }[self.oper_status]]
+                 True: "Up",
+                 False: "Down",
+                 None: "-"
+             }[self.oper_status]]
         # Speed
         if self.oper_status:
             if self.in_speed and self.in_speed == self.out_speed:
@@ -328,10 +329,10 @@ class Interface(Document):
                     humanize_speed(self.out_speed)
                 ]
             s += [{
-                True: "Full",
-                False: "Half",
-                None: "-"
-            }[self.full_duplex]]
+                      True: "Full",
+                      False: "Half",
+                      None: "-"
+                  }[self.full_duplex]]
         else:
             s += ["-", "-"]
         return "/".join(s)

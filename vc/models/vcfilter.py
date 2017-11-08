@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import re
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from django.db import models
-import cachetools
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 
@@ -28,6 +29,7 @@ class VCFilter(models.Model):
     """
     VC Filter
     """
+
     class Meta:
         verbose_name = "VC Filter"
         verbose_name_plural = "VC Filters"

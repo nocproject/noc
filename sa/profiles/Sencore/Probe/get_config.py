@@ -5,6 +5,7 @@ __author__ = 'FeNikS'
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
 
+
 class Script(noc.sa.script.Script):
     name = "Sencore.Probe.get_config"
     implements = [IGetConfig]
@@ -12,9 +13,9 @@ class Script(noc.sa.script.Script):
     suffixes = ["/probe/status",
                 "/probe/generaldata?&&",
                 "/probe/etrdata?&&"
-                 ]
+                ]
 
-    def execute(self):        
+    def execute(self):
         result = ["<?xml version=\"1.0\"?>\n<Root>"]
 
         for suffix in self.suffixes:

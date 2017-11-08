@@ -9,24 +9,26 @@
 # Python modules
 import datetime
 import operator
+
 # Third-party modules
 from django.db.models import Q
-# NOC modules
-from base import BaseCard
-from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.uptime import Uptime
 from noc.fm.models.outage import Outage
-from noc.inv.models.object import Object
+from noc.fm.models.uptime import Uptime
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.sa.models.service import Service
-from noc.inv.models.firmwarepolicy import FirmwarePolicy
-from noc.sa.models.servicesummary import ServiceSummary
+from noc.inv.models.object import Object
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.sa.models.useraccess import UserAccess
+
+# NOC modules
+from base import BaseCard
 
 
 class ManagedObjectCard(BaseCard):
@@ -191,9 +193,9 @@ class ManagedObjectCard(BaseCard):
         # Maintenance
         maintenance = []
         for m in Maintenance.objects.filter(
-            affected_objects__object=self.object.id,
-            is_completed=False,
-            start__lte=now + datetime.timedelta(hours=1)
+                affected_objects__object=self.object.id,
+                is_completed=False,
+                start__lte=now + datetime.timedelta(hours=1)
         ):
             maintenance += [{
                 "maintenance": m,

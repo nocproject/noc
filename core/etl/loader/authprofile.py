@@ -6,9 +6,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from noc.sa.models.authprofile import AuthProfile
+
 ## NOC modules
 from base import BaseLoader
-from noc.sa.models.authprofile import AuthProfile
 
 
 class AuthProfileLoader(BaseLoader):

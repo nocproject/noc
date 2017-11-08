@@ -7,11 +7,12 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from noc.config import config
 # NOC modules
 from noc.core.service.ui import UIService
+
 from card import CardRequestHandler
 from search import SearchRequestHandler
-from noc.config import config
 
 
 class CardService(UIService):

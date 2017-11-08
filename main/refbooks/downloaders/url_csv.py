@@ -10,11 +10,12 @@
 # Python modules
 import csv
 import gzip
+
 # Third-party modules
 import six
+from noc.core.http.client import fetch_sync
 # NOC modules
 from noc.main.refbooks.downloaders import Downloader as DownloaderBase
-from noc.core.http.client import fetch_sync
 
 
 class Downloader(DownloaderBase):

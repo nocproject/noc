@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import AddressRange
 from noc.core.ip import IP
-from noc.lib.validators import is_ipv4, is_ipv6, is_fqdn
 from noc.core.translation import ugettext as _
+from noc.ip.models import AddressRange
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.lib.validators import is_ipv4, is_ipv6, is_fqdn
 
 
 class AddressRangeApplication(ExtModelApplication):

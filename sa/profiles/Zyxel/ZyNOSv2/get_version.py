@@ -7,12 +7,13 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
+
 rx_ver = re.compile(r"^(?P<platform>.+?) version (?P<version>.+?)\s+",
-    re.MULTILINE | re.DOTALL)
+                    re.MULTILINE | re.DOTALL)
 
 
 class Script(BaseScript):

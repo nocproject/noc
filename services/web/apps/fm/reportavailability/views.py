@@ -8,23 +8,24 @@
 
 # Python modules
 import datetime
-from collections import defaultdict, Counter
+from collections import defaultdict
+
 # Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
-from noc.sa.models.managedobject import ManagedObject
-from noc.lib.nosql import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.sa.models.useraccess import UserAccess
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
-from pymongo import ReadPreference
+from noc.lib.nosql import get_db
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
-from noc.core.translation import ugettext as _
+from pymongo import ReadPreference
 
 
 class ReportForm(forms.Form):

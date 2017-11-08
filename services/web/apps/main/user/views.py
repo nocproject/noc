@@ -8,25 +8,26 @@
 
 # Django modules
 from django import forms
-from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.modelapplication import ModelApplication, view
 from noc.main.models.permission import Permission
+
 from widgets import AccessWidget
-from noc.core.translation import ugettext as _
 
 
 class UserChangeForm(forms.ModelForm):
     username = forms.RegexField(label=_("Username"), max_length=75, regex=r"^[\w.@+-]+$",
-        help_text=_("Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"),
-        error_message=_("This value must contain only letters, digits and @/./+/-/_."))
+                                help_text=_("Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"),
+                                error_message=_("This value must contain only letters, digits and @/./+/-/_."))
     password = ReadOnlyPasswordHashField(label=_("Password"),
-            help_text=_("Raw passwords are not stored, so there is no way to see "
-                        "this user's password, but you can change the password "
-                        "using <a href=\"password/\">this form</a>."))
+                                         help_text=_("Raw passwords are not stored, so there is no way to see "
+                                                     "this user's password, but you can change the password "
+                                                     "using <a href=\"password/\">this form</a>."))
     noc_user_permissions = forms.CharField(label="User Access", widget=AccessWidget, required=False)
 
     class Meta:
@@ -60,7 +61,7 @@ class UserAdmin(DjangoUserAdmin):
         (_('Groups'), {'fields': ('groups',)}),
         (_('Access'), {'fields': ('noc_user_permissions',), "classes": ["collapse"]}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
-        )
+    )
     list_display = ('username', 'email', 'first_name', 'last_name', "is_active", "is_superuser")
     list_filter = ('is_superuser', 'is_active')
     filter_horizontal = ("groups",)
@@ -95,18 +96,18 @@ class UserApplication(ModelApplication):
         else:
             form = self.admin.change_password_form(user)
         return self.render(request, "change_password.html",
-            form=form, original=user)
+                           form=form, original=user)
 
     def has_delete_permission(self, request, obj=None):
         """Disable 'Delete' button"""
         return False
 
     @view(url=r"^add/legacy/$", url_name="admin:auth_user_add",
-        access="add")
+          access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")
 
     @view(url=r"^legacy/$", url_name="admin:auth_user_changelist",
-        access=True)
+          access=True)
     def view_legacy_changelist(self, request, form_url="", extra_context=None):
         return self.response_redirect("..")

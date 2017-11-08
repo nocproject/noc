@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from base import InvPlugin
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import UnicodeParameter
+
+# NOC modules
+from base import InvPlugin
 
 
 class CommentPlugin(InvPlugin):

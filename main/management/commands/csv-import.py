@@ -8,14 +8,16 @@
 
 # Python modules
 from __future__ import with_statement
+
 import sys
 from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
+from noc.core.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
 # NOC modules
 from noc.core.debug import error_report
-from noc.core.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
 
 
 class Command(BaseCommand):

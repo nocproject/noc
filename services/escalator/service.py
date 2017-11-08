@@ -9,13 +9,14 @@
 
 # Python modules
 from collections import defaultdict
+
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 # NOC modules
 from noc.config import config
-from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
+from noc.core.service.base import Service
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 
 
@@ -64,6 +65,7 @@ class EscalatorService(Service):
                 sample=config.escalator.sample
             )
             self.shards[sn].run()
+
 
 if __name__ == "__main__":
     EscalatorService().start()

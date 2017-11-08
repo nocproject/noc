@@ -8,6 +8,7 @@
 
 # Python modules
 import os
+
 # Third-party modules
 from django.db import models
 # NOC modules
@@ -18,6 +19,7 @@ class MIMEType(models.Model):
     """
     MIME Type mapping
     """
+
     class Meta:
         app_label = "main"
         db_table = "main_mimetype"

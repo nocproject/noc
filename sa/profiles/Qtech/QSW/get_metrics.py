@@ -9,7 +9,6 @@
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import \
     Script as GetMetricsScript
-from noc.core.script.metrics import percent
 
 
 class Script(GetMetricsScript):

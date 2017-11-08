@@ -6,16 +6,17 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import socket
-import platform
 import errno
 import os
-## Third-party modules
-from tornado.util import errno_from_exception
+import platform
+## Python modules
+import socket
+
+from tornado import process
 from tornado.ioloop import IOLoop
 from tornado.platform.auto import set_close_exec
-from tornado import process
+## Third-party modules
+from tornado.util import errno_from_exception
 
 
 class UDPServer(object):
@@ -178,7 +179,7 @@ def bind_udp_sockets(port, address=None, family=socket.AF_UNSPEC,
                                       0, flags)):
         af, socktype, proto, canonname, sockaddr = res
         if (platform.system() == 'Darwin' and address == 'localhost' and
-                af == socket.AF_INET6 and sockaddr[3] != 0):
+                    af == socket.AF_INET6 and sockaddr[3] != 0):
             # Mac OS X includes a link-local address fe80::1%lo0 in the
             # getaddrinfo results for 'localhost'.  However, the firewall
             # doesn't understand that this is a local address and will

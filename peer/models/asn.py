@@ -8,17 +8,18 @@
 
 # Django modules
 from django.db import models
-# NOC modules
-from noc.project.models.project import Project
-from person import Person
-from organisation import Organisation
-from maintainer import Maintainer
-from rir import RIR
-from noc.settings import config
-from noc.lib.rpsl import rpsl_format
+from noc.core.model.decorator import on_delete_check
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
-from noc.core.model.decorator import on_delete_check
+from noc.lib.rpsl import rpsl_format
+# NOC modules
+from noc.project.models.project import Project
+from noc.settings import config
+
+from maintainer import Maintainer
+from organisation import Organisation
+from person import Person
+from rir import RIR
 
 
 @on_delete_check(check=[
@@ -68,7 +69,7 @@ class AS(models.Model):
     )
     # remarks: will be prepended automatically
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
-     # remarks: will be prepended automatically
+    # remarks: will be prepended automatically
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
     rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
     tags = TagsField("Tags", null=True, blank=True)
@@ -121,13 +122,13 @@ class AS(models.Model):
             for R in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
                 p_import, p_export, localpref, import_med, export_med, remark = R
                 if (peer.import_filter == p_import and
-                    peer.export_filter == p_export and
-                    e_import_med == import_med and
-                    e_export_med == export_med):
+                            peer.export_filter == p_export and
+                            e_import_med == import_med and
+                            e_export_med == export_med):
                     to_skip = True
                     break
             if not to_skip:
-                pg[peer.peer_group][peer.remote_asn][peer.peering_point] +=\
+                pg[peer.peer_group][peer.remote_asn][peer.peering_point] += \
                     [(peer.import_filter, peer.export_filter,
                       peer.effective_local_pref, e_import_med, e_export_med,
                       peer.rpsl_remark)]
@@ -142,7 +143,7 @@ class AS(models.Model):
                 add_at = len(pg[peer_group][asn]) != 1
                 for pp in pg[peer_group][asn]:
                     for R in pg[peer_group][asn][pp]:
-                        import_filter, export_filter, localpref, import_med,\
+                        import_filter, export_filter, localpref, import_med, \
                         export_med, remark = R
                         # Prepend import and export with remark when given
                         if remark:

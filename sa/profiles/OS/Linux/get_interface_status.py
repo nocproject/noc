@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -40,9 +41,9 @@ class Script(BaseScript):
                             r = [{
                                 "interface": if_name,
                                 "status": 'RUNNING' in status.group("status"),
-                                }]
-                elif '.' not in if_name and (if_name[:3] == 'eth' or\
-                        if_name[:3] == 'ath'):
+                            }]
+                elif '.' not in if_name and (if_name[:3] == 'eth' or \
+                                                         if_name[:3] == 'ath'):
                     i += 1
                     l = s[i]
                     while l.strip()[:4] == 'inet':
@@ -53,7 +54,7 @@ class Script(BaseScript):
                         r += [{
                             "interface": if_name,
                             "status": 'RUNNING' in status.group("status"),
-                            }]
+                        }]
         if not r:
             raise Exception("Not implemented")
         return r

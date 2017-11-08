@@ -10,6 +10,7 @@ from noc.config import config
 
 DELAY = config.correlator.discovery_delay
 
+
 def schedule_discovery(event):
     """
     Reschedule discovery processes

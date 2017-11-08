@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
@@ -18,17 +19,18 @@ class Script(BaseScript):
     interface = IGetFQDN
 
     rx_hostname = re.compile(r"^hostname (?P<hostname>\S+)$", re.MULTILINE)
-#    rx_domain_name = re.compile(r"^ip domain-name (?P<domain>\S+)$",
-#                                re.MULTILINE)
+
+    #    rx_domain_name = re.compile(r"^ip domain-name (?P<domain>\S+)$",
+    #                                re.MULTILINE)
 
     def execute(self):
         v = self.cli("show running-config | include hostname")
         match = self.rx_hostname.search(v)
         if match:
             fqdn = match.group("hostname")
-#            match = self.rx_domain_name.search(v)
-#            if match:
-#                fqdn = "%s.%s" % (fqdn, match.group("domain"))
+            #            match = self.rx_domain_name.search(v)
+            #            if match:
+            #                fqdn = "%s.%s" % (fqdn, match.group("domain"))
             return fqdn
         else:
             return 'None'

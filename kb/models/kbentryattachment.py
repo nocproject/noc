@@ -9,15 +9,16 @@
 # Third-party modules
 from django.db import models
 from django.db.models import Q
+from noc.kb.models.kbentry import KBEntry
 # NOC modules
 from noc.main.models.databasestorage import database_storage
-from noc.kb.models.kbentry import KBEntry
 
 
 class KBEntryAttachment(models.Model):
     """
     Attachments
     """
+
     class Meta:
         verbose_name = "KB Entry Attachment"
         verbose_name_plural = "KB Entry Attachments"

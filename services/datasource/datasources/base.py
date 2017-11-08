@@ -7,11 +7,12 @@
 # ----------------------------------------------------------------------
 
 import logging
+
 import six
+from noc.config import config
+from noc.core.perf import metrics
 # NOC modules
 from noc.main.models.datasourcecache import DataSourceCache
-from noc.core.perf import metrics
-from noc.config import config
 
 
 class BaseDataSource(object):

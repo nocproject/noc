@@ -6,13 +6,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import datetime
+import gzip
+import itertools
 # Python modules
 import os
-import datetime
-import itertools
-import gzip
 import shutil
+
 from noc.config import config
+
 
 class Stream(object):
     CHUNK_SIZE = config.bi.chunk_size

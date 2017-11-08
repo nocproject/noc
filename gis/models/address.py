@@ -10,10 +10,11 @@
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, DictField, BooleanField
 from mongoengine.signals import post_save
+from noc.lib.nosql import PlainReferenceField
+
+from building import Building
 # NOC modules
 from street import Street
-from building import Building
-from noc.lib.nosql import PlainReferenceField
 
 
 class Address(Document):
@@ -52,6 +53,7 @@ class Address(Document):
         """
         Reset other primary addresses from building
         """
+
         def q(x):
             return x if x else ""
 
@@ -93,7 +95,6 @@ class Address(Document):
                     "sort_order": so
                 }
             })
-
 
     def display_ru(self, levels=0, to_level=None, sep=", "):
         """
@@ -159,7 +160,8 @@ class Address(Document):
                 levels -= 1
         return sep.join(n)
 
-    # @todo: cmp_addr
+        # @todo: cmp_addr
+
 
 #
 RU_SHORT_AFTER = set([u"б-р", u"проезд", u"пер", u"ш"])

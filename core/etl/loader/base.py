@@ -8,21 +8,23 @@
 
 # Python modules
 from __future__ import print_function
-import os
-import logging
-import gzip
-import re
+
 import csv
-import time
-import shutil
 import functools
+import gzip
 import itertools
+import logging
+import os
+import re
+import shutil
+import time
+
 # Third party modules
 import six
+from noc.config import config
+from noc.core.fileutils import safe_rewrite
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.fileutils import safe_rewrite
-from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +69,7 @@ class BaseLoader(object):
 
     PREFIX = config.path.etl_import
     rx_archive = re.compile(
-            "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
+        "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
 
     # Discard records which cannot be dereferenced
@@ -84,7 +86,7 @@ class BaseLoader(object):
         self.chain = chain
         self.system = chain.system
         self.logger = PrefixLoggerAdapter(
-                logger, "%s][%s" % (self.system.name, self.name)
+            logger, "%s][%s" % (self.system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system.name, self.name)
@@ -117,8 +119,8 @@ class BaseLoader(object):
             unique_fields = [
                 f.name for f in self.model._meta.fields
                 if f.unique and
-                f.name != self.model._meta.pk.name and
-                f.name not in self.ignore_unique]
+                   f.name != self.model._meta.pk.name and
+                   f.name not in self.ignore_unique]
             self.integrity_exception = django.db.utils.IntegrityError
         if unique_fields:
             self.unique_field = unique_fields[0]
@@ -185,8 +187,8 @@ class BaseLoader(object):
                 # @todo: Die
         if os.path.isdir(self.archive_dir):
             fn = sorted(
-                    f for f in os.listdir(self.archive_dir)
-                    if self.rx_archive.match(f)
+                f for f in os.listdir(self.archive_dir)
+                if self.rx_archive.match(f)
             )
         else:
             fn = []
@@ -410,14 +412,14 @@ class BaseLoader(object):
         if not self.new_state_path:
             return
         self.logger.info(
-                "Summary: %d new, %d changed, %d removed",
-                self.c_add, self.c_change, self.c_delete
+            "Summary: %d new, %d changed, %d removed",
+            self.c_add, self.c_change, self.c_delete
         )
         t = time.localtime()
         archive_path = os.path.join(
-                self.archive_dir,
-                "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
-                        t[:6])
+            self.archive_dir,
+            "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
+                t[:6])
         )
         self.logger.info("Moving %s to %s",
                          self.new_state_path, archive_path)
@@ -623,8 +625,8 @@ class BaseLoader(object):
             for i in r_index:
                 if not row[i]:
                     self.logger.error(
-                            "ERROR: Required field #%d(%s) is missed in row: %s",
-                            i, self.fields[i], ",".join(row)
+                        "ERROR: Required field #%d(%s) is missed in row: %s",
+                        i, self.fields[i], ",".join(row)
                     )
                     n_errors += 1
                     continue
@@ -633,8 +635,8 @@ class BaseLoader(object):
                 v = row[i]
                 if (i, v) in uv:
                     self.logger.error(
-                            "ERROR: Field #%d(%s) value is not unique: %s",
-                            i, self.fields[i], ",".join(row)
+                        "ERROR: Field #%d(%s) value is not unique: %s",
+                        i, self.fields[i], ",".join(row)
                     )
                     n_errors += 1
                 else:

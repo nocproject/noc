@@ -7,11 +7,11 @@
 # ---------------------------------------------------------------------
 
 
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.text import parse_table
-from noc.core.ip import IPv4
 import re
+
+from noc.core.script.base import BaseScript
+from noc.lib.text import parse_table
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -89,7 +89,7 @@ class Script(BaseScript):
             if not r[3]:
                 continue
             vlan_id = int(r[0])
-            #ports = r[3].split(", ")
+            # ports = r[3].split(", ")
             for p in r[3].split(", "):
                 p = self.profile.convert_interface_name(p)
                 for i in interfaces:

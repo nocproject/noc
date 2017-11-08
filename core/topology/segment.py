@@ -6,17 +6,19 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import logging
 ## Python modules
 import operator
-import logging
+
 ## Third-party modules
 import networkx as nx
 import numpy as np
 from cachetools import cachedmethod
-## NOC modules
-from base import BaseTopology
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+
+## NOC modules
+from base import BaseTopology
 from layout.ring import RingLayout
 from layout.spring import SpringLayout
 from layout.tree import TreeLayout
@@ -91,6 +93,7 @@ class SegmentTopology(BaseTopology):
         """
         Load all managed objects from segment
         """
+
         def bandwidth(speed, bandwidth):
             if speed and bandwidth:
                 return min(speed, bandwidth)

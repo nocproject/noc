@@ -8,13 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
+
 # Third-party modules
 import pylibmc
 import pylibmc.pools
+from noc.config import config
+
 # NOC modules
 from .base import BaseCache
-from noc.config import config
 
 logger = logging.getLogger(__name__)
 ignorable_memcache_errors = (
@@ -27,6 +30,7 @@ class MemcachedCache(BaseCache):
     """
     Memcached backend
     """
+
     def __init__(self):
         super(BaseCache, self).__init__()
         self.tpl_client = pylibmc.Client(

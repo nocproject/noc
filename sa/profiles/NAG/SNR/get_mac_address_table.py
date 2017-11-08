@@ -26,7 +26,7 @@ class Script(BaseScript):
                 if mac is not None:
                     mac = mac.lower()
                 for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"], bulk=True):
-                        vlan_oid.append(v[0])
+                    vlan_oid.append(v[0])
                 # mac iface type
                 for v in self.snmp.get_tables(
                         ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2", "1.3.6.1.2.1.17.4.3.1.3"], bulk=True):
@@ -62,7 +62,7 @@ class Script(BaseScript):
                         "mac": chassis,
                         "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
                         "vlan_id": vlan_id,
-                        })
+                    })
                 return r
             except self.snmp.TimeOutError:
                 pass

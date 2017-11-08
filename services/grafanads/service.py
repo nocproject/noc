@@ -9,8 +9,10 @@
 
 # NOC modules
 from noc.core.service.ui import UIService
-from check import CheckHandler
+
 from annotations import AnnotationsHandler
+from check import CheckHandler
+
 
 class GrafanaDSService(UIService):
     name = "grafanads"
@@ -20,6 +22,7 @@ class GrafanaDSService(UIService):
             ("^/api/grafanads/annotations", AnnotationsHandler, {"service": self}),
             ("^/api/grafanads/", CheckHandler)
         ]
+
 
 if __name__ == "__main__":
     GrafanaDSService().start()

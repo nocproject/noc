@@ -9,9 +9,10 @@
 # Third-party modules
 import tornado.web
 import ujson
+from noc.sa.models.useraccess import UserAccess
+
 # NOC modules
 from card import CardRequestHandler
-from noc.sa.models.useraccess import UserAccess
 
 
 class SearchRequestHandler(CardRequestHandler):

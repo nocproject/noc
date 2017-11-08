@@ -17,31 +17,31 @@ class Migration:
 
     def forwards(self):
         db.add_column("sa_managedobject", "trap_source_type",
-            models.CharField(
-                max_length=1,
-                choices=[
-                    ("d", "Disable"),
-                    ("m", "Management Address"),
-                    ("s", "Specify address"),
-                    ("l", "Loopback address"),
-                    ("a", "All interface addresses")
-                ],
-                default="d", null=False, blank=False
-            )
-        )
+                      models.CharField(
+                          max_length=1,
+                          choices=[
+                              ("d", "Disable"),
+                              ("m", "Management Address"),
+                              ("s", "Specify address"),
+                              ("l", "Loopback address"),
+                              ("a", "All interface addresses")
+                          ],
+                          default="d", null=False, blank=False
+                      )
+                      )
         db.add_column("sa_managedobject", "syslog_source_type",
-            models.CharField(
-                max_length=1,
-                choices=[
-                    ("d", "Disable"),
-                    ("m", "Management Address"),
-                    ("s", "Specify address"),
-                    ("l", "Loopback address"),
-                    ("a", "All interface addresses")
-                ],
-                default="d", null=False, blank=False
-            )
-        )
+                      models.CharField(
+                          max_length=1,
+                          choices=[
+                              ("d", "Disable"),
+                              ("m", "Management Address"),
+                              ("s", "Specify address"),
+                              ("l", "Loopback address"),
+                              ("a", "All interface addresses")
+                          ],
+                          default="d", null=False, blank=False
+                      )
+                      )
         db.add_column(
             "sa_managedobject", "syslog_source_ip",
             models.IPAddressField("Syslog Source IP", null=True)

@@ -17,7 +17,7 @@ class Migration:
         db.add_column(
             "main_pyrule", "handler",
             models.CharField("Handler", max_length=255,
-                               null=True, blank=True))
+                             null=True, blank=True))
         db.drop_column("main_pyrule", "is_builtin")
         db.execute("ALTER TABLE main_pyrule ALTER \"text\" DROP NOT NULL")
 

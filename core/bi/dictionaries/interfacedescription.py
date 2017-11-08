@@ -17,4 +17,3 @@ class InterfaceDescription(Dictionary):
         layout = "flat"
 
     description = StringField()
-

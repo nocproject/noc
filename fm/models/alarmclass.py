@@ -8,24 +8,26 @@
 
 # Python modules
 import hashlib
+import operator
 import os
 from threading import Lock
-import operator
-# Third-party modules
-from mongoengine import fields
+
 import cachetools
 # NOC modules
 import noc.lib.nosql as nosql
-from alarmseverity import AlarmSeverity
-from alarmclassvar import AlarmClassVar
-from datasource import DataSource
-from alarmrootcausecondition import AlarmRootCauseCondition
-from alarmclasscategory import AlarmClassCategory
-from alarmplugin import AlarmPlugin
+# Third-party modules
+from mongoengine import fields
+from noc.core.bi.decorator import bi_sync
+from noc.core.handler import get_handler
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
-from noc.core.handler import get_handler
-from noc.core.bi.decorator import bi_sync
+
+from alarmclasscategory import AlarmClassCategory
+from alarmclassvar import AlarmClassVar
+from alarmplugin import AlarmPlugin
+from alarmrootcausecondition import AlarmRootCauseCondition
+from alarmseverity import AlarmSeverity
+from datasource import DataSource
 
 id_lock = Lock()
 handlers_lock = Lock()
@@ -343,6 +345,7 @@ class AlarmClass(nosql.Document):
                 return self.config.control_timeN or None
             else:
                 return self.control_timeN or None
+
 
 # Avoid circular references
 from alarmclassconfig import AlarmClassConfig

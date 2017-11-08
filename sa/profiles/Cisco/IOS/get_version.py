@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-from noc.core.mib import mib
 
 
 class Script(BaseScript):

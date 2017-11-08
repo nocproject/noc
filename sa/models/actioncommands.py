@@ -8,7 +8,9 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import os
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField,
@@ -16,10 +18,11 @@ from mongoengine.fields import (StringField, UUIDField,
                                 EmbeddedDocumentField, ReferenceField)
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
-from .profile import Profile
-from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
+
 from .action import Action
+from .profile import Profile
 
 
 class PlatformMatch(EmbeddedDocument):

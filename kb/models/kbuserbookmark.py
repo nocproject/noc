@@ -17,6 +17,7 @@ class KBUserBookmark(models.Model):
     """
     User Bookmarks
     """
+
     class Meta:
         verbose_name = "KB User Bookmark"
         verbose_name_plural = "KB User Bookmarks"

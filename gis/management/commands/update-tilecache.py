@@ -10,6 +10,7 @@
 # Python modules
 import logging
 from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
@@ -23,7 +24,7 @@ class Command(BaseCommand):
 
     option_list = BaseCommand.option_list + (
         make_option("-a", "--all", dest="all", action="store_true",
-                   default=False),
+                    default=False),
         make_option("-m", "--map", dest="maps", action="append", default=[]),
         make_option("-w", "--workers", dest="workers", action="store",
                     default=get_cpu_cores() * 2),

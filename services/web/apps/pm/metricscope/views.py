@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app import ExtDocApplication, view
-from noc.pm.models.metricscope import MetricScope
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app import ExtDocApplication
+from noc.pm.models.metricscope import MetricScope
 
 
 class MetricScopeApplication(ExtDocApplication):

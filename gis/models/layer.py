@@ -6,15 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import os
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField)
-import cachetools
 # NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
@@ -47,9 +48,9 @@ class Layer(Document):
     point_radius = IntField(default=5)
     point_graphic = StringField(
         choices=[(x, x) for x in
-            ("circle", "triangle", "cross", "x", "square", "star",
-             "diamond", "antenna", "flag")
-        ], default="circle"
+                 ("circle", "triangle", "cross", "x", "square", "star",
+                  "diamond", "antenna", "flag")
+                 ], default="circle"
     )
     # Line symbolizer
     stroke_dashstyle = StringField(choices=[(x, x) for x in (

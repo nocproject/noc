@@ -8,18 +8,18 @@
 
 # Python module
 import itertools
+
 import bson
 # Third-party modules
 from django.db.models import Q as d_Q
-from noc.lib.nosql import Q as m_Q
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.firmware import Firmware
+from noc.lib.nosql import Q as m_Q
+from noc.sa.interfaces.base import (ListOfParameter, IPv4Parameter, DictParameter)
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.sa.interfaces.base import (ListOfParameter, IPv4Parameter, DictParameter)
 from noc.sa.models.useraccess import UserAccess
 
 

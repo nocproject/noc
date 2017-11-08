@@ -8,28 +8,30 @@
 
 # NOC modules
 import datetime
+
+from django.contrib.auth.models import Group
 # Django modules
 from django.http import HttpResponse
-from django.contrib.auth.models import Group
 # NOC modules
 from noc.config import config
-from noc.lib.app.extapplication import ExtApplication, view
-from noc.lib.app.modelapplication import ModelApplication
-from noc.lib.app.access import PermitLogged
-from noc.lib.version import get_version, get_brand
-from noc.main.models.usersession import UserSession
-from noc.main.models.userstate import UserState
-from noc.main.models.favorites import Favorites
-from noc.main.models.permission import Permission
-from noc.support.cp import CPClient
 from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.translation import ugettext as _
+from noc.lib.app.access import PermitLogged
+from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.modelapplication import ModelApplication
+from noc.lib.version import get_version, get_brand
+from noc.main.models.favorites import Favorites
+from noc.main.models.permission import Permission
+from noc.main.models.usersession import UserSession
+from noc.main.models.userstate import UserState
+from noc.support.cp import CPClient
 
 
 class DesktopApplication(ExtApplication):
     """
     main.desktop application
     """
+
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         # Login restrictions
@@ -186,6 +188,7 @@ class DesktopApplication(ExtApplication):
         :param node:
         :returns:
         """
+
         def get_children(node, user):
             c = []
             for r in node:

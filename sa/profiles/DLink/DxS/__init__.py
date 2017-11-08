@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -91,9 +92,9 @@ class Profile(BaseProfile):
         match = self.rx_interface_name.match(s)
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
-                match.group("re_platform") and \
-                any(match.group("re_platform").startswith(p)
-                    for p in platforms_with_stacked_ports):
+                            match.group("re_platform") and \
+                            any(match.group("re_platform").startswith(p)
+                                for p in platforms_with_stacked_ports):
                 return "%s:%s" % (
                     match.group("re_slot"), match.group("re_port")
                 )
@@ -194,14 +195,14 @@ class Profile(BaseProfile):
 
     def get_ports(self, script, interface=None):
         if (
-            (
-                script.match_version(DES3200, version__gte="1.70.B007") and
-                script.match_version(DES3200, version__lte="3.00.B000")
-            ) or script.match_version(DES3200, version__gte="4.38.B000") or
-            script.match_version(DES3028, version__gte="2.90.B10") or
-            script.match_version(DGS3120, version__gte="3.00.B022") or
-            script.match_version(DGS3420, version__gte="1.73.R008") or
-            script.match_version(DGS3620, version__gte="2.50.017")
+                                    (
+                                                script.match_version(DES3200, version__gte="1.70.B007") and
+                                                script.match_version(DES3200, version__lte="3.00.B000")
+                                    ) or script.match_version(DES3200, version__gte="4.38.B000") or
+                                script.match_version(DES3028, version__gte="2.90.B10") or
+                            script.match_version(DGS3120, version__gte="3.00.B022") or
+                        script.match_version(DGS3420, version__gte="1.73.R008") or
+                    script.match_version(DGS3620, version__gte="2.50.017")
         ) and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             if interface is not None:
@@ -446,17 +447,17 @@ def DGS3620(v):
 
 def DxS_L2(v):
     if (
-        v["platform"].startswith("DES-1100") or
-        v["platform"].startswith("DES-12") or
-        v["platform"].startswith("DES-30") or
-        v["platform"].startswith("DES-32") or
-        v["platform"].startswith("DES-35") or
-        v["platform"].startswith("DES-3810") or
-        v["platform"].startswith("DGS-1100") or
-        v["platform"].startswith("DGS-12") or
-        v["platform"].startswith("DGS-15") or
-        v["platform"].startswith("DGS-30") or
-        v["platform"].startswith("DGS-32")
+                                                    v["platform"].startswith("DES-1100") or
+                                                    v["platform"].startswith("DES-12") or
+                                                v["platform"].startswith("DES-30") or
+                                            v["platform"].startswith("DES-32") or
+                                        v["platform"].startswith("DES-35") or
+                                    v["platform"].startswith("DES-3810") or
+                                v["platform"].startswith("DGS-1100") or
+                            v["platform"].startswith("DGS-12") or
+                        v["platform"].startswith("DGS-15") or
+                    v["platform"].startswith("DGS-30") or
+                v["platform"].startswith("DGS-32")
     ):
         return True
     else:
@@ -465,14 +466,14 @@ def DxS_L2(v):
 
 def get_platform(platform, hw_revision):
     if (
-        platform.startswith("DES-1210-") or
-        platform.startswith("DES-1228") or
-        platform.startswith("DES-2108") or
-        platform.startswith("DES-3200-") or
-        platform.startswith("DGS-1210-") or
-        platform.startswith("DGS-3120-") or
-        platform.startswith("DGS-3420-") or
-        platform.startswith("DGS-3620-")
+                                        platform.startswith("DES-1210-") or
+                                        platform.startswith("DES-1228") or
+                                    platform.startswith("DES-2108") or
+                                platform.startswith("DES-3200-") or
+                            platform.startswith("DGS-1210-") or
+                        platform.startswith("DGS-3120-") or
+                    platform.startswith("DGS-3420-") or
+                platform.startswith("DGS-3620-")
     ):
         return "%s/%s" % (platform, hw_revision)
     else:

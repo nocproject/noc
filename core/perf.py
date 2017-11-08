@@ -17,9 +17,10 @@ Usage:
 """
 # Python modules
 from collections import defaultdict
+
+import six
 # Third-party modules
 from atomiclong import AtomicLong
-import six
 
 #
 # Performance metrics

@@ -8,9 +8,10 @@
 
 # Python modules
 import datetime
+
+from noc.config import config
 # NOC modules
 from noc.sa.models.interactionlog import InteractionLog
-from noc.config import config
 
 
 def get_seconds(section, option):
@@ -36,6 +37,7 @@ def get_seconds(section, option):
     except ValueError:
         raise "Invalid expiration option in %s:%s" % (section, option)
     return v * m
+
 
 # Expiration settings
 TTL_COMMAND = config.audit.command_ttl

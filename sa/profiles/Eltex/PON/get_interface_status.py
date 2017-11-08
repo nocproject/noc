@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
@@ -55,9 +56,9 @@ class Script(BaseScript):
                 cmd = "show interfaces status %s\r" % interface
                 match = self.rx_status.search(self.cli(cmd))
                 r.append({
-                        "interface": interface,
-                        "status": match.group("status") == "up"
-                        })
+                    "interface": interface,
+                    "status": match.group("status") == "up"
+                })
             else:
                 cmd = "show uplink interfaces\r"
                 for match in self.rx_uplink.finditer(self.cli(cmd)):
@@ -65,15 +66,15 @@ class Script(BaseScript):
                     cmd = "show interfaces status %s\r" % interface
                     match = self.rx_status.search(self.cli(cmd))
                     r.append({
-                            "interface": interface,
-                            "status": match.group("status") == "up"
-                            })
+                        "interface": interface,
+                        "status": match.group("status") == "up"
+                    })
                 for port in range(8):
                     interface = "pon-port " + str(port)
                     cmd = "show interfaces status %s\r" % interface
                     match = self.rx_status.search(self.cli(cmd))
                     r.append({
-                            "interface": interface,
-                            "status": match.group("status") == "up"
-                            })
+                        "interface": interface,
+                        "status": match.group("status") == "up"
+                    })
         return r

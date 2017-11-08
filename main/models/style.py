@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 from django.db import models
-import cachetools
 # NOC models
 from noc.core.model.decorator import on_delete_check
 
@@ -38,6 +39,7 @@ class Style(models.Model):
     """
     CSS Style
     """
+
     class Meta:
         verbose_name = "Style"
         verbose_name_plural = "Styles"

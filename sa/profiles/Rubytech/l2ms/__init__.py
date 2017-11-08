@@ -13,7 +13,6 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
-
     name = "Rubytech.l2ms"
     pattern_more = [
         (r"^Error1:", "\n"),

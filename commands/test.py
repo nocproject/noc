@@ -8,15 +8,15 @@
 
 # Python modules
 from __future__ import print_function
-import sys
-import re
+
 import os
 import subprocess
-# Third-party modules
-from pytest import main as pytest_main
+
+from noc.config import config
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.config import config
+# Third-party modules
+from pytest import main as pytest_main
 
 
 class Command(BaseCommand):

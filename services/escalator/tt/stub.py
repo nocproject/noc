@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import logging
 # Python modules
 import uuid
-import logging
+
 # NOC modules
 from noc.core.tt.base import BaseTTSystem
 

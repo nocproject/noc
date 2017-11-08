@@ -6,16 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from django.db import models
 # Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-# NOC modules
-from vrf import VRF
-from afi import AFI_CHOICES
-from noc.sa.models.terminationgroup import TerminationGroup
-
 from noc.core.model.fields import CIDRField, TextArrayField
 from noc.lib.validators import check_ipv4, check_ipv6
+from noc.sa.models.terminationgroup import TerminationGroup
+
+from afi import AFI_CHOICES
+# NOC modules
+from vrf import VRF
 
 
 class IPPool(models.Model):
@@ -63,5 +63,5 @@ class IPPool(models.Model):
         elif self.afi == "6":
             check_ipv6(self.from_address)
             check_ipv6(self.to_address)
-        # @todo: from_address<=to_address
-        # @todo: Overlaps
+            # @todo: from_address<=to_address
+            # @todo: Overlaps

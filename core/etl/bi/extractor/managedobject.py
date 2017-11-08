@@ -9,16 +9,18 @@
 # Python modules
 import datetime
 from collections import defaultdict
-# NOC modules
-from base import BaseExtractor
-from noc.sa.models.managedobject import ManagedObject
+
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
-from noc.core.etl.bi.stream import Stream
 from noc.config import config
+from noc.core.etl.bi.stream import Stream
+from noc.inv.models.capability import Capability
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.inv.models.capability import Capability
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectcapabilities import ObjectCapabilities
+
+# NOC modules
+from base import BaseExtractor
 
 
 class ManagedObjectsExtractor(BaseExtractor):

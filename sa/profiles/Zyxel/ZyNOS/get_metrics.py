@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
-from noc.core.script.metrics import percent
+
 
 #
 # Tested on  ES-2024A. works only on firmware 3.90+

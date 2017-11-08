@@ -6,15 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import subprocess
-import logging
-#
-from psycopg2.extensions import adapt
+
+from django.db import connection
+from django.db.models import Q
 # Django modules
 from django.utils import tree
-from django.db.models import Q
-from django.db import connection
+#
+from psycopg2.extensions import adapt
 
 logger = logging.getLogger(__name__)
 

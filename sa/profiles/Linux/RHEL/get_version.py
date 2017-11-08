@@ -9,9 +9,11 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+
 
 class Script(BaseScript):
     name = "Linux.RHEL.get_version"
@@ -24,7 +26,7 @@ class Script(BaseScript):
     CentOS release 6.7 (Final)
     CentOS Linux release 7.2.1511 (Core) 
     Red Hat Enterprise Linux Server release 6.6 (Santiago)
-    """ 
+    """
 
     rx_ver = re.compile(
         r"(?P<distr>[^,]+) release (?P<version>[^ ,]+) \((?P<codename>[^,]+)\)"
@@ -73,10 +75,10 @@ class Script(BaseScript):
                 self.check_virtual_xen,
                 self.check_virtual_dom0,
                 self.check_virtual_qemu
-                ], virtual)
+            ], virtual)
 
             match1 = rx.search(virtual)
-        
+
             if match1.group("virtplatform") == "bare":
                 # print (match1.group("virtplatform"))
                 virtualplatform = ""
@@ -96,5 +98,5 @@ class Script(BaseScript):
                 "codename": codename,
                 "distro": distr,
                 "kernel": kernel.strip(),
-                }
             }
+        }

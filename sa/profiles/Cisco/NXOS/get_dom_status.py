@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdomstatus import IGetDOMStatus
@@ -18,10 +19,10 @@ class Script(BaseScript):
     name = "Cisco.NXOS.get_dom_status"
     interface = IGetDOMStatus
     rx_xcvr = re.compile(r"(?P<interface>Ethernet\S+)\n.+\s+Temperature"
-        r"\s+(?P<temp_c>\S+).+\n\s+Voltage\s+(?P<voltage_v>\S+).+\n\s+"
-        r"Current\s+(?P<current_ma>\S+).+\n\s+Tx Power\s+"
-        r"(?P<optical_tx_dbm>\S+).+\n\s+Rx Power\s+(?P<optical_rx_dbm>\S+)",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+                         r"\s+(?P<temp_c>\S+).+\n\s+Voltage\s+(?P<voltage_v>\S+).+\n\s+"
+                         r"Current\s+(?P<current_ma>\S+).+\n\s+Tx Power\s+"
+                         r"(?P<optical_tx_dbm>\S+).+\n\s+Rx Power\s+(?P<optical_rx_dbm>\S+)",
+                         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def execute(self, interface=None):
         cmd = "show interface transceiver details | no-more"
@@ -33,7 +34,7 @@ class Script(BaseScript):
             return []
 
         r = []
-        for i in v.replace("Ethernet","\n===\nEthernet").split("\n===\n"):
+        for i in v.replace("Ethernet", "\n===\nEthernet").split("\n===\n"):
             match = self.rx_xcvr.match(i)
             if not match:
                 continue

@@ -8,11 +8,14 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_mac
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+
+
 #
 # @todo: SNMP Support
 #
@@ -89,7 +92,7 @@ class Script(BaseScript):
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
-                }
+            }
             # TODO:
             n["remote_chassis_id_subtype"] = 4
             try:
@@ -161,7 +164,7 @@ class Script(BaseScript):
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
-                }
+            }
             if remote_system_name:
                 n["remote_system_name"] = remote_system_name
             # TODO:

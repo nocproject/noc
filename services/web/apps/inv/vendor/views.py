@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.inv.models.vendor import Vendor
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.vendor import Vendor
 from noc.main.models.collectioncache import CollectionCache
-from noc.core.translation import ugettext as _
 
 
 class VendorApplication(ExtDocApplication):

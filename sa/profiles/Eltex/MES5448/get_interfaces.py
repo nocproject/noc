@@ -8,18 +8,15 @@
 
 # Python modules
 import re
-import time
-from collections import defaultdict
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.core.ip import IPv4
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-
     name = "Eltex.MES5448.get_interfaces"
     interface = IGetInterfaces
 
@@ -61,7 +58,7 @@ class Script(BaseScript):
         # Get list of aggreged  interfaces
         aggregated = []
         for i in parse_table(
-            self.cli("show port-channel all"), allow_wrap=True
+                self.cli("show port-channel all"), allow_wrap=True
         ):
             aggregated += [i[0]]
 
@@ -92,7 +89,7 @@ class Script(BaseScript):
         interfaces = []
         # Get ifname and description
         for i in parse_table(
-            self.cli("show interfaces status all"), allow_wrap=True
+                self.cli("show interfaces status all"), allow_wrap=True
         ):
             ifname = i[0]
             ifdescr = i[1]

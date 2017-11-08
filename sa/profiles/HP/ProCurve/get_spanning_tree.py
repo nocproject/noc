@@ -8,10 +8,9 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-#from noc.sa.interfaces.base import MACAddressParameter
+# from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import list_to_ranges
-import re
+from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 
 
 class Script(BaseScript):
@@ -210,7 +209,8 @@ class Script(BaseScript):
         # Install interfaces
         #
         for instance_id in instances:
-            instances[instance_id]["interfaces"] = sorted(instance_ports[instance_id].values(), lambda x, y: cmp(x["port_id"], y["port_id"]))
+            instances[instance_id]["interfaces"] = sorted(instance_ports[instance_id].values(),
+                                                          lambda x, y: cmp(x["port_id"], y["port_id"]))
         #
         # Install instances
         #
@@ -278,13 +278,13 @@ class Script(BaseScript):
                     iface['designated_port_id'] = l.split(':')[2].rstrip()
 
             if not iface:
-                    continue
+                continue
 
             for p in ports:
-                    if iface['interface'] == ports[p]['interface']:
-                        iface['port_id'] = '%s.%s' % (pri, ports[p]['port_id'])
-                        iface['edge'] = ports[p]['edge']
-                        iface['point_to_point'] = ports[p]['point_to_point']
+                if iface['interface'] == ports[p]['interface']:
+                    iface['port_id'] = '%s.%s' % (pri, ports[p]['port_id'])
+                    iface['edge'] = ports[p]['edge']
+                    iface['point_to_point'] = ports[p]['point_to_point']
             try:
                 instance['interfaces'].append(iface)
             except KeyError:

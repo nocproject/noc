@@ -10,6 +10,7 @@
 import time
 import urllib
 import urllib2
+
 # Django modules
 from django.db import models
 
@@ -17,9 +18,11 @@ from django.db import models
 class RIRDBUpdateError(Exception):
     pass
 
+
 # Check ssl library is available
 try:
     import ssl
+
     # Use SSL-enabled version when possible
     RIPE_SYNCUPDATES_URL = "https://syncupdates.db.ripe.net"
 except ImportError:
@@ -30,6 +33,7 @@ class RIR(models.Model):
     """
     Regional internet registries
     """
+
     class Meta:
         verbose_name = "RIR"
         verbose_name_plural = "RIRs"
@@ -39,7 +43,7 @@ class RIR(models.Model):
 
     name = models.CharField("Name", max_length=64, unique=True)
     whois = models.CharField("Whois", max_length=64,
-        blank=True, null=True)
+                             blank=True, null=True)
 
     def __unicode__(self):
         return self.name

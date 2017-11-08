@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app import ExtDocApplication
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.translation import ugettext as _
 
 
 class RemoteSystemApplication(ExtDocApplication):

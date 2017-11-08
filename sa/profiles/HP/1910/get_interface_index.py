@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetifindex import IGetIfIndex
-import re
 
 
 class Script(BaseScript):
@@ -25,7 +26,7 @@ class Script(BaseScript):
                 interface = interface.replace('Gi ', 'GigabitEthernet')
                 interface = interface.replace('Vl ', 'Vlan-interface')
                 for iface in self.snmp.get_tables(["1.3.6.1.2.1.31.1.1.1.1"],
-                    bulk=True):
+                                                  bulk=True):
                     if iface[1] == interface:
                         iface_index = iface[0]
                         break

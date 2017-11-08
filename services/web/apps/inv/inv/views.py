@@ -9,14 +9,15 @@
 # Python modules
 import inspect
 import os
-# NOC modules
-from noc.lib.app.extapplication import ExtApplication, view
+
+from noc.core.translation import ugettext as _
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
+# NOC modules
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.validators import is_objectid
 from noc.sa.interfaces.base import (StringParameter, ObjectIdParameter,
                                     UnicodeParameter, ListOfParameter)
-from noc.core.translation import ugettext as _
 
 
 class InvApplication(ExtApplication):
@@ -39,7 +40,7 @@ class InvApplication(ExtApplication):
         self.plugins = {}
         for f in os.listdir("services/web/apps/inv/inv/plugins/"):
             if (not f.endswith(".py") or
-                    f == "base.py" or
+                        f == "base.py" or
                     f.startswith("_")):
                 continue
             mn = "noc.services.web.apps.inv.inv.plugins.%s" % f[:-3]

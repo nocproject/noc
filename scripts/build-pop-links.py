@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.inv.models.link import Link
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
-from noc.inv.models.link import Link
 
 pop_map = {}  # object -> PoP
 mo_pop = {}  # managed object id -> pop

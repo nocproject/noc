@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.ip.models import VRF, VRFGroup
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import VRF, VRFGroup
-from noc.sa.interfaces.base import StringParameter, BooleanParameter,\
+from noc.sa.interfaces.base import StringParameter, BooleanParameter, \
     ModelParameter, RDParameter, ListOfParameter, DictParameter
-from noc.core.translation import ugettext as _
 
 
 class VRFApplication(ExtModelApplication):

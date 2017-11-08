@@ -8,10 +8,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.profiles.DLink.DxS import get_platform
 
 
@@ -62,8 +62,8 @@ class Script(BaseScript):
         }
         ser = self.rx_ser.search(s)
         if (
-            ser and ser.group("serial") != "System" and
-            ser.group("serial") != "Power"
+                        ser and ser.group("serial") != "System" and
+                        ser.group("serial") != "Power"
         ):
             p["serial"] = ser.group("serial")
         p["description"] = self.rx_des.search(s).group("descr")

@@ -8,15 +8,17 @@
 
 # Python modules
 from __future__ import absolute_import
-# NOC modules
-from .site import *
+
+from noc.config import config
+
 from .access import *
 from .application import *
-from .modelapplication import *
 from .extapplication import *
-from .extmodelapplication import *
 from .extdocapplication import *
-from noc.config import config
+from .extmodelapplication import *
+from .modelapplication import *
+# NOC modules
+from .site import *
 
 
 def setup_processor(request):

@@ -6,16 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import geojson
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 LineStringField, ReferenceField)
-import geojson
+from noc.gis.models.layer import Layer
 # NOC modules
 from noc.inv.models.object import Object
 from noc.lib.nosql import PlainReferenceField
-from noc.gis.models.layer import Layer
 
 
 class ObjectConnectionItem(EmbeddedDocument):

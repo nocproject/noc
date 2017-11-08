@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -21,8 +22,8 @@ class Profile(BaseProfile):
     ]
     pattern_prompt = r"(?P<hostname>\S+)> "
     pattern_syntax_error = r"Command not found"
-#    command_disable_pager = "terminal datadump"
-#    command_super = "enable"
+    #    command_disable_pager = "terminal datadump"
+    #    command_super = "enable"
     username_submit = "\r"
     password_submit = "\r"
     command_submit = "\r"

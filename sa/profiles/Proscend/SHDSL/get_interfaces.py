@@ -6,28 +6,29 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
 
 class Script(BaseScript):
     name = "Proscend.SHDSL.get_interfaces"
     interface = IGetInterfaces
-    cache=True
+    cache = True
 
     INTERFACE_TYPES = {
 
-            "lan": "physical",  # No comment
-            "mgm": "unknown",  # No comment
-            "loo": "loopback",  # No comment
-            "shd": "physical",  # No comment
-        }
+        "lan": "physical",  # No comment
+        "mgm": "unknown",  # No comment
+        "loo": "loopback",  # No comment
+        "shd": "physical",  # No comment
+    }
+
     @classmethod
     def get_interface_type(cls, name):
-         c = cls.INTERFACE_TYPES.get(name[:3].lower())
-         return c
+        c = cls.INTERFACE_TYPES.get(name[:3].lower())
+        return c
 
     def execute(self):
         interfaces = []
@@ -44,36 +45,36 @@ class Script(BaseScript):
                             "Ignoring unknown interface type: '%s", iftype
                         )
                         continue
-                    s = self.snmp.get("1.3.6.1.2.1.2.2.1.6."+ str(i))
+                    s = self.snmp.get("1.3.6.1.2.1.2.2.1.6." + str(i))
                     if s:
                         mac = MACAddressParameter().clean(s)
-                    astat = self.snmp.get("1.3.6.1.2.1.2.2.1.7."+ str(i))
+                    astat = self.snmp.get("1.3.6.1.2.1.2.2.1.7." + str(i))
                     if astat == 1:
                         a_stat = True
                     else:
                         a_stat = False
-                    ostat = self.snmp.get("1.3.6.1.2.1.2.2.1.8."+ str(i))
+                    ostat = self.snmp.get("1.3.6.1.2.1.2.2.1.8." + str(i))
                     if ostat == 1:
                         o_stat = True
                     else:
                         o_stat = False
                     # print repr("%s\n" % admin_status)
                     interfaces += [{
-                            "type": iftype,
+                        "type": iftype,
+                        "name": name,
+                        "mac": mac,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "ifindex": i,
+                        "subinterfaces": [{
                             "name": name,
-                            "mac": mac,
                             "admin_status": a_stat,
                             "oper_status": o_stat,
+                            "mac": mac,
                             "ifindex": i,
-                            "subinterfaces": [{
-                                "name": name,
-                                "admin_status": a_stat,
-                                "oper_status": o_stat,
-                                "mac": mac,
-                                "ifindex": i,
-                                "enabled_afi": ["BRIDGE"]
-                            }]
+                            "enabled_afi": ["BRIDGE"]
                         }]
+                    }]
                 return [{"interfaces": interfaces}]
             except self.snmp.TimeOutError:
                 pass

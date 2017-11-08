@@ -8,29 +8,32 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import operator
 from threading import Lock
-# Third-party modules
-from django.utils.translation import ugettext_lazy as _
+
+import cachetools
 from django.db import models
 from django.template import Template, Context
-import cachetools
-# NOC modules
-from noc.main.models.style import Style
-from .authprofile import AuthProfile
-from noc.lib.validators import is_fqdn
-from noc.lib.stencil import stencil_registry
+# Third-party modules
+from django.utils.translation import ugettext_lazy as _
+from noc.core.bi.decorator import bi_sync
+from noc.core.defer import call_later
+from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
-from noc.core.model.decorator import on_save, on_init, on_delete_check
+from noc.core.scheduler.job import Job
+from noc.lib.stencil import stencil_registry
+from noc.lib.validators import is_fqdn
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.scheduler.job import Job
-from noc.core.defer import call_later
-from .objectmap import ObjectMap
+# NOC modules
+from noc.main.models.style import Style
 from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
                                     IntParameter, StringParameter)
-from noc.core.bi.decorator import bi_sync
+
+from .authprofile import AuthProfile
+from .objectmap import ObjectMap
 
 m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
                                    "is_active": BooleanParameter(default=False),
@@ -66,7 +69,6 @@ id_lock = Lock()
     ("inv.FirmwarePolicy", "object_profile")
 ])
 class ManagedObjectProfile(models.Model):
-
     class Meta:
         verbose_name = _("Managed Object Profile")
         verbose_name_plural = _("Managed Object Profiles")
@@ -474,15 +476,15 @@ class ManagedObjectProfile(models.Model):
             )
 
         if (
-            self.initial_data["report_ping_rtt"] != self.report_ping_rtt or
-            self.initial_data["enable_ping"] != self.enable_ping or
-            self.initial_data["ping_interval"] != self.ping_interval or
-            self.initial_data["ping_policy"] != self.ping_policy or
-            self.initial_data["ping_size"] != self.ping_size or
-            self.initial_data["ping_count"] != self.ping_count or
-            self.initial_data["ping_timeout_ms"] != self.ping_timeout_ms or
-            self.initial_data["report_ping_attempts"] != self.ping_interval or
-            self.initial_data["event_processing_policy"] != self.event_processing_policy
+                                                    self.initial_data["report_ping_rtt"] != self.report_ping_rtt or
+                                                    self.initial_data["enable_ping"] != self.enable_ping or
+                                                self.initial_data["ping_interval"] != self.ping_interval or
+                                            self.initial_data["ping_policy"] != self.ping_policy or
+                                        self.initial_data["ping_size"] != self.ping_size or
+                                    self.initial_data["ping_count"] != self.ping_count or
+                                self.initial_data["ping_timeout_ms"] != self.ping_timeout_ms or
+                            self.initial_data["report_ping_attempts"] != self.ping_interval or
+                        self.initial_data["event_processing_policy"] != self.event_processing_policy
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
@@ -490,7 +492,7 @@ class ManagedObjectProfile(models.Model):
     def can_escalate(self, depended=False):
         """
         Check alarms on objects within profile can be escalated
-        :return: 
+        :return:
         """
         if self.escalation_policy == "R":
             return bool(depended)

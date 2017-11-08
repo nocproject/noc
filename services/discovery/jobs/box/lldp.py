@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.lib.validators import is_ipv4, is_int
-from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.lib.validators import is_ipv4, is_int
+from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
+# NOC modules
+from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 
 
 class LLDPCheck(TopologyDiscoveryCheck):

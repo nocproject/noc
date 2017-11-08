@@ -6,10 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import time
 import datetime
 import random
+# Python modules
+import time
+
 # NOC modules
 from job import Job
 

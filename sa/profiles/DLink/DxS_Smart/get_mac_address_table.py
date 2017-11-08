@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -44,8 +45,8 @@ class Script(BaseScript):
 
                 # mac iface type
                 for v in self.snmp.get_tables([
-                        "1.3.6.1.2.1.17.7.1.2.2.1.2",
-                        "1.3.6.1.2.1.17.7.1.2.2.1.3"]):
+                    "1.3.6.1.2.1.17.7.1.2.2.1.2",
+                    "1.3.6.1.2.1.17.7.1.2.2.1.3"]):
                     if v[1]:
                         macar = v[0].split('.')[1:]
                         chassis = ":".join(["%02x" % int(c) for c in macar])

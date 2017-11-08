@@ -6,14 +6,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import bz2
 # Python modules
 import datetime
-import bz2
+
+import bson
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BinaryField,
                                 DateTimeField, IntField)
-import bson
 
 CURRENT_VERSION = 2
 

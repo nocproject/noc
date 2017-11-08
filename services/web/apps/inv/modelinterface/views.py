@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.modelinterface import ModelInterface
 from noc.core.translation import ugettext as _
+from noc.inv.models.modelinterface import ModelInterface
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class ModelInterfaceApplication(ExtDocApplication):

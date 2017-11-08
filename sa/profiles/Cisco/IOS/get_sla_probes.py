@@ -8,7 +8,7 @@
 
 # Python modules
 import re
-from itertools import izip
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes

@@ -4,13 +4,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# NOC models
+from noc.lib.nosql import get_db
 # Django modules
-from django.db import models
 # Third-party modules
 from south.db import db
-# NOC models
-from noc.core.model.fields import DocumentReferenceField
-from noc.lib.nosql import get_db
 
 
 class Migration:

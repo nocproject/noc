@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.lib.text import parse_table
 import re
+
+from noc.core.script.base import BaseScript
+from noc.lib.text import parse_table
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
@@ -19,7 +20,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_ver = re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
     rx_line = re.compile(
         r"^\s*\d+\s+(?:\S+\s+)?"
         r"([0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-"

@@ -6,14 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import threading
+import itertools
 import logging
 import re
-import itertools
+# Python modules
+import threading
+
 # Third-party modules
 import clips
-
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +73,7 @@ class CLIPSEnv(object):
             clips_match_re,
             "py-match-re"
         )
+
 
 # Extension functions
 def _clips_bool(r):

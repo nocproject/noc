@@ -9,13 +9,14 @@
 """
 # Third-party modules
 from django import forms
+from noc.core.translation import ugettext as _
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.platform import Platform
+from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 # NOC modules
 from noc.sa.models.profile import Profile
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
+
 #
 #
 #
@@ -31,6 +32,8 @@ report_types = [
 
 class ReportForm(forms.Form):
     report_type = forms.ChoiceField(label=_("Report Type"), choices=report_types)
+
+
 #
 #
 #
@@ -141,7 +144,7 @@ class ReportObjectsSummary(SimpleReport):
             raise Exception("Invalid report type: %s" % report_type)
         for r, t in report_types:
             if r == report_type:
-                title = self.title+": "+t
+                title = self.title + ": " + t
                 break
         columns += [TableColumn(_("Quantity"), align="right", total="sum", format="integer")]
 

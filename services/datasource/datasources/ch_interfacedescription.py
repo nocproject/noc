@@ -8,11 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.inv.models.subinterface import SubInterface
+from noc.sa.models.managedobject import ManagedObject
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.subinterface import SubInterface
 
 
 class CHManagedObjectDataSource(BaseDataSource):

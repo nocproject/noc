@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import argparse
 # Python modules
 import re
-import argparse
+
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
@@ -40,6 +41,7 @@ class Command(BaseCommand):
             print r
         else:
             self.die("Not found: %s" % v)
+
 
 if __name__ == "__main__":
     Command().run()

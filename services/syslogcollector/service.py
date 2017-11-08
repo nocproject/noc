@@ -10,9 +10,10 @@
 # Python modules
 import socket
 from collections import defaultdict
+
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -20,7 +21,7 @@ from noc.services.syslogcollector.syslogserver import SyslogServer
 
 
 class SyslogCollectorService(Service):
-    name = "syslogcollector"    #
+    name = "syslogcollector"  #
     leader_group_name = "syslogcollector-%(dc)s-%(node)s"
     pooled = True
     require_nsq_writer = True

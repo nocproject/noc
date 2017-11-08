@@ -8,14 +8,15 @@
 
 # Python modules
 import re
-# Third-party modules
-from pyparsing import *
-# NOC modules
-from noc.core.ip import IPv4
+
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS, RD
+# NOC modules
+from noc.core.ip import IPv4
 from noc.lib.text import ranges_to_list
 from noc.lib.validators import is_ipv4, is_int
+# Third-party modules
+from pyparsing import *
 
 
 class BaseIOSParser(BasePyParser):
@@ -35,12 +36,19 @@ class BaseIOSParser(BasePyParser):
         DOMAIN_NAME = LineStart() + Literal("ip domain-name") + REST.copy().setParseAction(self.on_domain_name)
         TIMEZONE = LineStart() + Literal("clock timezone") + REST.copy().setParseAction(self.on_timezone)
         NAMESERVER = LineStart() + Literal("ip name-server") + REST.copy().setParseAction(self.on_nameserver)
-        USER = LineStart() + Literal("username") + (Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
-        CDP_RUN = LineStart() + (Optional(Literal("no")) + Literal("cdp") + Literal("run")).setParseAction(self.on_cdp_run)
-        SERVICE = LineStart() + (Optional(Literal("no")) + Literal("service") + Word(alphanums + "-") + restOfLine).setParseAction(self.on_service)
-        SSH_VERSION = LineStart() + Literal("ip ssh version") + (Word(nums) + restOfLine).setParseAction(self.on_ssh_version)
-        HTTPS_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http secure-server")).setParseAction(self.on_http_server)
-        HTTP_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http server")).setParseAction(self.on_https_server)
+        USER = LineStart() + Literal("username") + (
+        Word(alphanums + "-_") + Optional(Literal("privilege") + DIGITS)).setParseAction(self.on_user) + REST
+        CDP_RUN = LineStart() + (Optional(Literal("no")) + Literal("cdp") + Literal("run")).setParseAction(
+            self.on_cdp_run)
+        SERVICE = LineStart() + (
+        Optional(Literal("no")) + Literal("service") + Word(alphanums + "-") + restOfLine).setParseAction(
+            self.on_service)
+        SSH_VERSION = LineStart() + Literal("ip ssh version") + (Word(nums) + restOfLine).setParseAction(
+            self.on_ssh_version)
+        HTTPS_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http secure-server")).setParseAction(
+            self.on_http_server)
+        HTTP_SERVER = LineStart() + (Optional(Literal("no")) + Literal("ip http server")).setParseAction(
+            self.on_https_server)
 
         SYSTEM_BLOCK = (
             HOSTNAME |
@@ -55,30 +63,38 @@ class BaseIOSParser(BasePyParser):
             HTTP_SERVER
         )
         # VLAN
-        VLAN_RANGE = LineStart() + Literal("vlan") + Combine(DIGITS + Word("-,") + restOfLine).setParseAction(self.on_vlan_range)
+        VLAN_RANGE = LineStart() + Literal("vlan") + Combine(DIGITS + Word("-,") + restOfLine).setParseAction(
+            self.on_vlan_range)
         VLAN = LineStart() + Literal("vlan") + DIGITS.copy().setParseAction(self.on_vlan)
         VLAN_NAME = Literal("name") + REST.copy().setParseAction(self.on_vlan_name)
         VLAN_BLOCK = VLAN + ZeroOrMore(INDENT + (VLAN_NAME | LINE))
         # Interface
         INTERFACE = LineStart() + Literal("interface") + REST.copy().setParseAction(self.on_interface)
         INTERFACE_DESCRIPTION = Literal("description") + REST.copy().setParseAction(self.on_interface_descripion)
-        INTERFACE_ADDRESS = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask")).setParseAction(self.on_interface_address)
-        INTERFACE_ADDRESS_SECONDARY = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask") + Literal("secondary")).setParseAction(self.on_interface_address)
+        INTERFACE_ADDRESS = Literal("ip address") + (IPv4_ADDRESS("address") + IPv4_ADDRESS("mask")).setParseAction(
+            self.on_interface_address)
+        INTERFACE_ADDRESS_SECONDARY = Literal("ip address") + (
+        IPv4_ADDRESS("address") + IPv4_ADDRESS("mask") + Literal("secondary")).setParseAction(self.on_interface_address)
         INTERFACE_SHUTDOWN = (Optional(Literal("no")) + Literal("shutdown")).setParseAction(self.on_interface_shutdown)
-        INTERFACE_REDIRECTS = (Optional(Literal("no")) + Literal("ip redirects")).setParseAction(self.on_interface_redirects)
-        INTERFACE_PROXY_ARP = (Optional(Literal("no")) + Literal("ip proxy-arp")).setParseAction(self.on_interface_proxy_arp)
+        INTERFACE_REDIRECTS = (Optional(Literal("no")) + Literal("ip redirects")).setParseAction(
+            self.on_interface_redirects)
+        INTERFACE_PROXY_ARP = (Optional(Literal("no")) + Literal("ip proxy-arp")).setParseAction(
+            self.on_interface_proxy_arp)
         INTERFACE_SPEED = Literal("speed") + ALPHANUMS.copy().setParseAction(self.on_interface_speed)
         INTERFACE_DUPLEX = Literal("duplex") + ALPHANUMS.copy().setParseAction(self.on_interface_duplex)
-        INTERFACE_UNTAGGED = Literal("switchport") + Literal("access") + Literal("vlan") + DIGITS.copy().setParseAction(self.on_interface_untagged)
+        INTERFACE_UNTAGGED = Literal("switchport") + Literal("access") + Literal("vlan") + DIGITS.copy().setParseAction(
+            self.on_interface_untagged)
         INTERFACE_TAGGED = (
             Literal("switchport") + Literal("trunk") +
             Literal("allowed") + Literal("vlan") +
             REST.copy().setParseAction(self.on_interface_tagged)
         )
         INTERFACE_CDP = (Optional(Literal("no")) + Literal("cdp enable")).setParseAction(self.on_interface_cdp)
-        INTERFACE_ACL = Literal("ip access-group") + (Word(alphanums + "-_") + (Literal("in") | Literal("out"))).setParseAction(self.on_interface_acl)
+        INTERFACE_ACL = Literal("ip access-group") + (
+        Word(alphanums + "-_") + (Literal("in") | Literal("out"))).setParseAction(self.on_interface_acl)
         INTERFACE_ISIS = Literal("ip router isis").setParseAction(self.on_interface_isis)
-        INTERFACE_ISIS_METRIC = Literal("isis metric") + (Word(nums) + Optional(Literal("level-1") | Literal("level-2"))).setParseAction(self.on_interface_isis_metric)
+        INTERFACE_ISIS_METRIC = Literal("isis metric") + (
+        Word(nums) + Optional(Literal("level-1") | Literal("level-2"))).setParseAction(self.on_interface_isis_metric)
         INTERFACE_ISIS_PTP = Literal("isis network point-to-point").setParseAction(self.on_interface_isis_ptp)
         INTERFACE_MPLS_IP = Literal("mpls ip").setParseAction(self.on_interface_mpls_ip)
         INTERFACE_BLOCK = INTERFACE + ZeroOrMore(INDENT + (
@@ -105,7 +121,8 @@ class BaseIOSParser(BasePyParser):
         LOGGING_HOST = LineStart() + Literal("logging") + IPv4_ADDRESS.copy().setParseAction(self.on_logging_host)
         LOGGING_BLOCK = LOGGING_HOST
         # NTP
-        NTP_SERVER = LineStart() + Literal("ntp") + Literal("server") + IPv4_ADDRESS.copy().setParseAction(self.on_ntp_server)
+        NTP_SERVER = LineStart() + Literal("ntp") + Literal("server") + IPv4_ADDRESS.copy().setParseAction(
+            self.on_ntp_server)
         NTP_BLOCK = NTP_SERVER
         # VRF
         VRF_NAME = LineStart() + Literal("ip vrf") + Word(alphanums + "_-.").setParseAction(self.on_vrf_name)
@@ -115,7 +132,8 @@ class BaseIOSParser(BasePyParser):
             LINE
         ))
         # Static Route
-        STATIC_ROUTE = LineStart() + Literal("ip route") + (IPv4_ADDRESS("net") + IPv4_ADDRESS("mask") + REST).setParseAction(self.on_ipv4_route)
+        STATIC_ROUTE = LineStart() + Literal("ip route") + (
+        IPv4_ADDRESS("net") + IPv4_ADDRESS("mask") + REST).setParseAction(self.on_ipv4_route)
 
         CONFIG = (
             INTERFACE_BLOCK |

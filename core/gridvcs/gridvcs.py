@@ -9,14 +9,16 @@
 ## Python modules
 import datetime
 import difflib
-## Third-party modules
-import pymongo
+from mercurial.mdiff import textdiff, patch
+
 import gridfs
 import gridfs.errors
-from mercurial.mdiff import textdiff, patch
+## Third-party modules
+import pymongo
+from noc.lib.nosql import get_db, ObjectId
+
 ## NOC modules
 from revision import Revision
-from noc.lib.nosql import get_db, ObjectId
 
 
 class GridVCS(object):
@@ -91,7 +93,7 @@ class GridVCS(object):
                 dt, delta = self.get_delta(data, old_data)
                 # Save delta
                 self.fs.put(delta, object=object, ts=f.ts, ft=dt,
-                    encoding=self.ENCODING)
+                            encoding=self.ENCODING)
                 # Remove old version
                 self.fs.delete(f._id)
             except gridfs.errors.NoFile:
@@ -99,8 +101,8 @@ class GridVCS(object):
         # Save new version
         ts = ts or datetime.datetime.now()
         self.fs.put(data, object=object,
-            ts=ts, ft=self.T_FILE,
-            encoding=self.ENCODING)
+                    ts=ts, ft=self.T_FILE,
+                    encoding=self.ENCODING)
         return True
 
     def get(self, object, revision=None):

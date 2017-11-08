@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.inv.models.discoveryid import DiscoveryID
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.inv.models.discoveryid import DiscoveryID
 
 
 class IDCheck(DiscoveryCheck):

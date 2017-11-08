@@ -6,12 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.datasource import DataSource
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.inv.models.subinterface import SubInterface
+# NOC modules
+from noc.lib.datasource import DataSource
 from noc.sa.interfaces.base import MACAddressParameter
 
 
@@ -72,7 +71,7 @@ class ChassisDS(DataSource):
         if ipv4:
             if SubInterface.objects.filter(
                     ipv4_addresses=ipv4).count() == 1:
-                self._object =  SubInterface.objects.filter(
+                self._object = SubInterface.objects.filter(
                     ipv4_addresses=ipv4).first().managed_object
 
     @property

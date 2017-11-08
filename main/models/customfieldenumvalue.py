@@ -8,6 +8,7 @@
 
 # Django modules
 from django.db import models
+
 # NOC modules
 from customfieldenumgroup import CustomFieldEnumGroup
 
@@ -16,6 +17,7 @@ class CustomFieldEnumValue(models.Model):
     """
     Enumeration groups values
     """
+
     class Meta:
         verbose_name = "Enum Group Value"
         verbose_name_plural = "Enum Group Values"

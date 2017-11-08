@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-import re
 
 
 class Script(BaseScript):
@@ -17,7 +18,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_platform = re.compile(r"^sysName\s+:\s(?P<platform>\S+)?",
-        re.MULTILINE)
+                             re.MULTILINE)
 
     rx_ver = re.compile(
         r"SW\s+software\sVer\s:\s(?P<version>\S+)?",
@@ -42,4 +43,4 @@ class Script(BaseScript):
             "vendor": "UTST",
             "platform": platform,
             "version": version
-            }
+        }

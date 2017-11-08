@@ -8,17 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import os
+
+import _libssh2
+import libssh2
 # Third-party modules modules
 import six
-from tornado.iostream import IOStream
 import tornado.gen
-import libssh2
-import _libssh2
+from noc.config import config
+from tornado.iostream import IOStream
+
 # NOC modules
 from .base import CLI
 from .error import CLIAuthFailed, CLISSHProtocolError
-from noc.config import config
 
 
 class SSHIOStream(IOStream):

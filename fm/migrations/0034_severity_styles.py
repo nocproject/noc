@@ -5,13 +5,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
 # Third-party modules
 from south.db import db
+
+
 # Python modules
 
 
-class Migration:    
+class Migration:
     def forwards(self):
         # Create styles for alarm severities
         for name, font, background, description in [
@@ -22,7 +23,9 @@ class Migration:
             ("FM CRITICAL", 12255232, 16768460, "Alarm severity CRITICAL"),
         ]:
             if db.execute("SELECT COUNT(*) FROM main_style WHERE name = %s", [name])[0][0] == 0:
-                db.execute("INSERT INTO main_style(name, font_color, background_color, description) VALUES (%s, %s, %s, %s)", [name, font, background, description])
+                db.execute(
+                    "INSERT INTO main_style(name, font_color, background_color, description) VALUES (%s, %s, %s, %s)",
+                    [name, font, background, description])
 
     def backwards(self):
         db.execute("DELETE FROM main_style WHERE name LIKE 'FM %%'")

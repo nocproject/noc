@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.scheduler.intervaljob import IntervalJob
@@ -53,4 +54,4 @@ class RefreshSelectorCacheJob(IntervalJob):
     def initial_submit(cls, scheduler, keys):
         if not keys:
             cls.submit(scheduler, interval=86400,
-                ts=datetime.datetime.now())
+                       ts=datetime.datetime.now())

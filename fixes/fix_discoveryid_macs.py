@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.mac import MAC
 # NOC modules
 from noc.inv.models.discoveryid import DiscoveryID
-from noc.core.mac import MAC
 
 BATCH_SIZE = 10000
 

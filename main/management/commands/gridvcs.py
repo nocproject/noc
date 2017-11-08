@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import os
 # Python modules
 from optparse import make_option
-import os
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
+from noc.core.fileutils import safe_rewrite
+from noc.lib.validators import is_int
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.validators import is_int
 from noc.settings import config
-from noc.core.fileutils import safe_rewrite
 
 
 class Command(BaseCommand):
@@ -23,7 +24,7 @@ class Command(BaseCommand):
     Manage Jobs
     """
     help = "Manage Full-Text Search index"
-    option_list=BaseCommand.option_list+(
+    option_list = BaseCommand.option_list + (
         make_option(
             "--repo", "-r",
             action="store",

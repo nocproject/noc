@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.inv.models.unknownmodel import UnknownModel
 # NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.unknownmodel import UnknownModel
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
-from noc.core.translation import ugettext as _
 
 
 class UnknownModelApplication(ExtDocApplication):

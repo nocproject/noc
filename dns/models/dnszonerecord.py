@@ -6,21 +6,23 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-# NOC modules
-from dnszone import DNSZone
+# Django modules
+from django.utils.translation import ugettext_lazy as _
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
+
+# NOC modules
+from dnszone import DNSZone
 
 
 class DNSZoneRecord(models.Model):
     """
     Zone RRs
     """
+
     class Meta:
         verbose_name = _("DNS Zone Record")
         verbose_name_plural = _("DNS Zone Records")
@@ -37,11 +39,11 @@ class DNSZoneRecord(models.Model):
 
     def __unicode__(self):
         return u"%s %s" % (self.zone.name,
-            " ".join([x
-                      for x
-                      in (self.name, self.type, self.content)
-                      if x
-                    ]))
+                           " ".join([x
+                                     for x
+                                     in (self.name, self.type, self.content)
+                                     if x
+                                     ]))
 
     def get_absolute_url(self):
         """Return link to zone preview
@@ -50,6 +52,7 @@ class DNSZoneRecord(models.Model):
         :rtype: String
         """
         return site.reverse("dns:dnszone:change", self.zone.id)
+
 
 #
 # Signal handlers

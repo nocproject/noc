@@ -9,10 +9,11 @@
 """
 # Python modules
 import re
+
+from noc.core.ip import IPv4
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -96,8 +97,8 @@ class Script(BaseScript):
                     if match.group("name") == sub["name"]:
                         sub["enabled_afi"] += ["IPv4"]
                         sub["ipv4_addresses"] = [IPv4(match.group("ip"),
-                                                 netmask=match.group("mask"))
-                                                 .prefix]
+                                                      netmask=match.group("mask"))
+                                                     .prefix]
                         if sh_ospf:
                             for o in sh_ospf.split("\n"):
                                 if o.split():

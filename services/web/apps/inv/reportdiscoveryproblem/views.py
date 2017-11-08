@@ -7,19 +7,18 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import operator
 from django import forms
-# NOC modules
-from noc.lib.app.simplereport import SimpleReport
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import ManagedObjectProfile
+from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.translation import ugettext as _
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.sa.models.objectdata import ObjectData
+# NOC modules
+from noc.lib.app.simplereport import SimpleReport
 from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import ManagedObjectProfile
+from noc.sa.models.objectdata import ObjectData
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
-from noc.core.profile.loader import GENERIC_PROFILE
 
 
 class ReportForm(forms.Form):
@@ -50,7 +49,8 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 mos = dict(
                     (mo.id, mo)
                     for mo in ManagedObject.objects.filter(is_managed=True, pool=pool,
-                                                           administrative_domain__in=UserAccess.get_domains(request.user))
+                                                           administrative_domain__in=UserAccess.get_domains(
+                                                               request.user))
                 )
         else:
             # Get all managed objects
@@ -62,7 +62,8 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 mos = dict(
                     (mo.id, mo)
                     for mo in ManagedObject.objects.filter(is_managed=True, pool=pool, object_profile=obj_profile,
-                                                           administrative_domain__in=UserAccess.get_domains(request.user))
+                                                           administrative_domain__in=UserAccess.get_domains(
+                                                               request.user))
                 )
 
         mos_set = set(mos)

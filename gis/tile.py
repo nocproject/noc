@@ -6,26 +6,27 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import Queue
+import datetime
+import logging
 # Python modules
 import os
-import logging
 import threading
-import Queue
 import time
-import datetime
+
+from noc.config import config
+from noc.gis.geo import xy_to_ll, ll_to_xy, TS, MIN_ZOOM, MAX_ZOOM
+from noc.gis.mapxml import map_to_xml
+from noc.gis.models import TileCache, Area
 # NOC modules
 from noc.settings import IS_TEST
-from noc.config import config
-from noc.gis.models import TileCache, Area
-from noc.gis.mapxml import map_to_xml
-from noc.gis.geo import xy_to_ll, ll_to_xy, TS, MIN_ZOOM, MAX_ZOOM
+
 # Third-party modules
 try:
     import mapnik2
 except ImportError, why:
     if not IS_TEST:
         raise ImportError(*why)
-
 
 # Render additional N tiles around areas
 PAD_TILES = config.gis.tilecache_padding
@@ -134,7 +135,7 @@ class TileTask(object):
                 top = max(NE[1] - PAD_TILES, 0)
                 bottom = min(SW[1] + PAD_TILES, M)
                 a_size = (right - left + 1) * (bottom - top + 1)
-                self.log("Checking area '%s' at zoom level %d "\
+                self.log("Checking area '%s' at zoom level %d " \
                          " (%d x %d = %d tiles)" % (area.name, zoom,
                                                     right - left + 1,
                                                     bottom - top + 1,
@@ -162,7 +163,7 @@ class TileTask(object):
         self.log("Looking for areas:")
         n = 0
         for a in Area.objects.order_by("name"):
-            self.log("    %s [%s - %s] %s Zoom %d - %d" %(
+            self.log("    %s [%s - %s] %s Zoom %d - %d" % (
                 a.name, a.SW, a.NE,
                 "(active)" if a.is_active else "(disabled)",
                 a.min_zoom, a.max_zoom
@@ -209,4 +210,4 @@ class TileTask(object):
         speed = float(nt) / dt if nt and dt > 0 else 0
         self.log("Finishing processing map '%s'. " \
                  "%d tiles processed in %8.2fs (%8.2f tiles/s)" % (
-            self.map.name, nt, dt, speed))
+                     self.map.name, nt, dt, speed))

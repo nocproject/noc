@@ -7,13 +7,13 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
-import re
-import datetime
 
 rx_line = re.compile(
-r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
+    r"^username\s+(?P<username>\S+)(?:\s+.*privilege\s+(?P<privilege>\d+))?.*$")
 
 
 class Script(BaseScript):
@@ -37,5 +37,5 @@ class Script(BaseScript):
                     "username": match.group("username"),
                     "class": user_class,
                     "is_active": True
-                    })
+                })
         return r

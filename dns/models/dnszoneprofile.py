@@ -6,14 +6,15 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+# Django modules
+from django.utils.translation import ugettext_lazy as _
+from noc.main.models import NotificationGroup
+
 # NOC modules
 from dnsserver import DNSServer
-from noc.main.models import NotificationGroup
 
 
 class DNSZoneProfile(models.Model):
@@ -32,6 +33,7 @@ class DNSZoneProfile(models.Model):
     :param notification_group:
     :param description:
     """
+
     class Meta:
         verbose_name = _("DNS Zone Profile")
         verbose_name_plural = _("DNS Zone Profiles")
@@ -40,9 +42,9 @@ class DNSZoneProfile(models.Model):
 
     name = models.CharField(_("Name"), max_length=32, unique=True)
     masters = models.ManyToManyField(DNSServer, verbose_name=_("Masters"),
-        related_name="masters", blank=True)
+                                     related_name="masters", blank=True)
     slaves = models.ManyToManyField(DNSServer, verbose_name=_("Slaves"),
-        related_name="slaves", blank=True)
+                                    related_name="slaves", blank=True)
     zone_soa = models.CharField(_("SOA"), max_length=64)
     zone_contact = models.CharField(_("Contact"), max_length=64)
     zone_refresh = models.IntegerField(_("Refresh"), default=3600)
@@ -50,8 +52,8 @@ class DNSZoneProfile(models.Model):
     zone_expire = models.IntegerField(_("Expire"), default=86400)
     zone_ttl = models.IntegerField(_("TTL"), default=3600)
     notification_group = models.ForeignKey(NotificationGroup,
-        verbose_name=_("Notification Group"), null=True, blank=True,
-        help_text=_("Notification group to use when zone group is not set"))
+                                           verbose_name=_("Notification Group"), null=True, blank=True,
+                                           help_text=_("Notification group to use when zone group is not set"))
     description = models.TextField(_("Description"), blank=True, null=True)
 
     def __unicode__(self):
@@ -64,6 +66,7 @@ class DNSZoneProfile(models.Model):
         slave servers
         """
         return list(self.masters.all()) + list(self.slaves.all())
+
 
 #
 # Signal handlers

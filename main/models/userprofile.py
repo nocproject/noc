@@ -8,9 +8,10 @@
 
 # Python modules
 import datetime
+
+from django.contrib.auth.models import User
 # Django modules
 from django.db import models
-from django.contrib.auth.models import User
 # NOC modules
 from noc import settings
 from noc.lib.middleware import get_user
@@ -22,6 +23,7 @@ class UserProfileManager(models.Manager):
     User Profile Manager
     Leave only current user's profile
     """
+
     def get_query_set(self):
         s = super(UserProfileManager, self)
         user = get_user()
@@ -40,6 +42,7 @@ class UserProfile(models.Model):
     """
     User profile
     """
+
     class Meta:
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"

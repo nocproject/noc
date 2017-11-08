@@ -8,12 +8,14 @@
 
 ## Python modules
 import operator
+
 ## Third-party modules
 import cachetools
+from noc.crm.models.subscriber import Subscriber
+from noc.crm.models.subscriberprofile import SubscriberProfile
+
 ## NOC modules
 from base import BaseLoader
-from noc.crm.models.subscriberprofile import SubscriberProfile
-from noc.crm.models.subscriber import Subscriber
 
 
 class SubscriberLoader(BaseLoader):

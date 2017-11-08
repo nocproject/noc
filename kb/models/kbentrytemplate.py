@@ -8,12 +8,14 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from django.db import models
+from noc.core.model.fields import AutoCompleteTagsField
 # NOC modules
 from noc.lib.app import site
-from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
+
 from kbentry import parser_registry  # Load
 
 
@@ -21,6 +23,7 @@ class KBEntryTemplate(models.Model):
     """
     KB Entry Template
     """
+
     class Meta:
         verbose_name = "KB Entry Template"
         verbose_name_plural = "KB Entry Templates"

@@ -28,4 +28,3 @@ class DataSource(nosql.EmbeddedDocument):
             self.datasource == other.datasource and
             self.search == other.search
         )
-

@@ -5,8 +5,8 @@
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
@@ -16,11 +16,11 @@ class Migration:
             ("id", models.AutoField(verbose_name="ID", primary_key=True,
                                     auto_created=True)),
             ("name", models.CharField("Name", max_length=128,
-                unique=True)),
+                                      unique=True)),
             ("is_active", models.BooleanField("Is Active",
-                default=True)),
+                                              default=True)),
             ("description", models.TextField("Description",
-                null=True, blank=True))))
+                                             null=True, blank=True))))
         # CustomFieldEnumValue
         CustomFieldEnumGroup = db.mock_model(
             model_name="CustomFieldEnumGroup",
@@ -30,19 +30,19 @@ class Migration:
 
         db.create_table("main_customfieldenumvalue", (
             ("id", models.AutoField(verbose_name="ID",
-                primary_key=True, auto_created=True)),
+                                    primary_key=True, auto_created=True)),
             ("enum_group", models.ForeignKey(CustomFieldEnumGroup,
-                verbose_name="Enum Group")),
+                                             verbose_name="Enum Group")),
             ("is_active", models.BooleanField("Is Active",
-                default=True)),
+                                              default=True)),
             ("key", models.CharField("Key", max_length=256)),
             ("value", models.CharField("Value", max_length=256))))
         # CustomField.enum_group
         db.add_column("main_customfield", "enum_group",
-            models.ForeignKey(CustomFieldEnumGroup,
-                    verbose_name="Enum Group", null=True, blank=True))
+                      models.ForeignKey(CustomFieldEnumGroup,
+                                        verbose_name="Enum Group", null=True, blank=True))
         db.send_create_signal("main",
-            ["CustomFieldEnumGroup", "CustomFieldEnumValue"])
+                              ["CustomFieldEnumGroup", "CustomFieldEnumValue"])
 
     def backwards(self):
         db.delete_column("main_customfield", "enum_group_id")

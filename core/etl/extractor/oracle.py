@@ -8,18 +8,20 @@
 
 # Python modules
 import os
+
 # Third-party modules
 from concurrent.futures import as_completed
+from noc.core.threadpool import ThreadPoolExecutor
+
 # NOC modules
 from sql import SQLExtractor
-from noc.core.threadpool import ThreadPoolExecutor
 
 
 class ORACLEExtractor(SQLExtractor):
     """
     Oracle SQL extractor.
     Requres cx_Oracle
-    
+
     Configuration variables
     *ORACLE_DSN* - Oracle database DSN
     *ORACLE_HOST* - Oracle host (when *ORACLE_DSN* is empty)
@@ -29,11 +31,12 @@ class ORACLEExtractor(SQLExtractor):
     *ORACLE_SID* - Oracle database SID (when *ORACLE_DSN* is empty)
     *ORACLE_USER* - Oracle database user
     *ORACLE_PASSWORD* - Oracle database password
-    
+
     *ORACLE_CONCURRENCY* - execute up to *ORACLE_CONCURRENCY* queries
       in parralel
     *ORACLE_ARRAYSIZE* - oracle client array size
     """
+
     def __init__(self, *args, **kwargs):
         super(ORACLEExtractor, self).__init__(*args, **kwargs)
         self.connect = None

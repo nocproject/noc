@@ -8,17 +8,20 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
+
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (ListField, StringField, ReferenceField,
                                 DynamicField, EmbeddedDocumentField)
+from noc.core.cache.base import cache
+from noc.core.model.decorator import on_save
 # NOC modules
 from noc.inv.models.capability import Capability
-from .managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField
-from noc.core.model.decorator import on_save
-from noc.core.cache.base import cache
+
+from .managedobject import ManagedObject
 
 logger = logging.getLogger(__name__)
 

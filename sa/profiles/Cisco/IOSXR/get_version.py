@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -23,7 +24,8 @@ class Script(BaseScript):
         r"cisco\s+(?P<platform>\S+)(?: Series)? \([^)]+\) processor with \d+",
         re.MULTILINE | re.DOTALL
     )
-    rx_snmp_ver = re.compile(r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+Version\s+(?P<version>\S+)\[\S+\]")
+    rx_snmp_ver = re.compile(
+        r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+Version\s+(?P<version>\S+)\[\S+\]")
 
     def execute(self):
         if self.has_snmp():

@@ -6,33 +6,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import glob
+import hashlib
+import json
+import logging
+import os
 # Python modules
 import re
 import types
-import glob
-import os
 import urllib
-import hashlib
-import logging
-import json
 from collections import defaultdict
+
+import six
+import ujson
+from django.conf import settings
+from django.conf.urls import patterns
+from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
 # Third-party modules
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
-from django.conf.urls import patterns
-from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
-from django.conf import settings
 from django.utils.encoding import smart_str
-import six
-import ujson
 # NOC modules
 from noc.config import config
 from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
 
+
 class ProxyNode:
     pass
+
 
 HTTP_METHODS = set(["GET", "POST", "PUT", "DELETE"])
 
@@ -41,6 +44,7 @@ class URL(object):
     """
     URL Data wrapper
     """
+
     def __init__(self, url, name=None, method=None):
         self.url = url
         self.name = name
@@ -124,7 +128,7 @@ class Site(object):
         elif isinstance(view.url, URL):  # Explicit URL object
             yield view.url
         elif (isinstance(view.url, types.ListType) or
-              isinstance(view.url, types.TupleType)):  # List type
+                  isinstance(view.url, types.TupleType)):  # List type
             for o in view.url:
                 if isinstance(o, six.string_types):  # Given by string
                     yield URL(o)
@@ -145,6 +149,7 @@ class Site(object):
         """
         Decorator for application view
         """
+
         # Render view
         def inner(request, *args, **kwargs):
             def nq(s):
@@ -180,7 +185,7 @@ class Site(object):
                         else:
                             ct = request.META.get("CONTENT_TYPE")
                             if ct and ("text/json" in ct or
-                                       "application/json" in ct):
+                                               "application/json" in ct):
                                 try:
                                     g = ujson.loads(request.raw_post_data)
                                 except ValueError as e:
@@ -208,7 +213,7 @@ class Site(object):
                             app_logger.error("ERROR: %s", errors)
                         # Return error response
                         ext_format = ("__format=ext"
-                                    in request.META["QUERY_STRING"].split("&"))
+                                      in request.META["QUERY_STRING"].split("&"))
                         r = json.dumps({
                             "status": False,
                             "errors": errors
@@ -222,7 +227,7 @@ class Site(object):
                     if request.method in ("POST", "PUT"):
                         ct = request.META.get("CONTENT_TYPE")
                         if ct and ("text/json" in ct or
-                                   "application/json" in ct):
+                                           "application/json" in ct):
                             a = json.loads(request.raw_post_data)
                         else:
                             a = dict((k, v[0] if len(v) == 1 else v)
@@ -404,7 +409,7 @@ class Site(object):
             names = set()
             for u, v in umap[url]:
                 for m in u.method:
-                    #if m in mm:
+                    # if m in mm:
                     #    raise ValueError("Overlapping methods for same URL")
                     mm[m] = v
                 if hasattr(v, "menu") and v.menu:
@@ -427,7 +432,7 @@ class Site(object):
                 self.register_named_view(app.module, app.app, n, sv)
         # Register application-level menu
         if (hasattr(app, "launch_access") and
-            hasattr(app, "menu") and app.menu):
+                hasattr(app, "menu") and app.menu):
             self.add_app_menu(app)
         # Register contributors
         for c in self.app_contributors[app.__class__]:
@@ -449,7 +454,6 @@ class Site(object):
             # Do not discover site twice
             return
         # Connect to mongodb
-        import noc.lib.nosql
         prefix = "services/web/apps"
         # Load applications
         for app in [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]:
@@ -527,6 +531,7 @@ class Site(object):
         """
         Sort application menu
         """
+
         def sorted_menu(c):
             c = sorted(c, key=lambda x: x["title"])
             for m in c:
@@ -552,6 +557,7 @@ class Site(object):
             if pr:
                 for pr in self.apps[app].predefined_reports:
                     yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
+
 
 #
 # Global application site instance

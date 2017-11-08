@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.core.translation import ugettext as _
 from noc.gis.models.division import Division
 from noc.gis.models.street import Street
-from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class StreetApplication(ExtDocApplication):

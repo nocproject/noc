@@ -8,9 +8,11 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
 
+
 class Script(BaseScript):
-    name="Juniper.SRCPE.get_config"
+    name = "Juniper.SRCPE.get_config"
     interface = IGetConfig
+
     def execute(self):
-        config=self.cli("show configuration")
+        config = self.cli("show configuration")
         return self.cleaned_config(config)

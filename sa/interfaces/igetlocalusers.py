@@ -8,6 +8,7 @@
 """
 """
 from noc.core.interface.base import BaseInterface
+
 from base import ListOfParameter, DictParameter, StringParameter, BooleanParameter
 
 
@@ -21,5 +22,5 @@ class IGetLocalUsers(BaseInterface):
         "username": StringParameter(),
         "class": StringParameter(),
         "is_active": BooleanParameter(default=True)
-        }))
+    }))
     preview = "NOC.sa.managedobject.scripts.ShowLocalUsers"

@@ -6,7 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from noc.core.interface.base import BaseInterface
-from base import (DictParameter,   MACAddressParameter,
+
+from base import (DictParameter, MACAddressParameter,
                   StringParameter, IPParameter, DictListParameter)
 
 

@@ -6,18 +6,18 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from pymongo import ReadPreference
+from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
-from noc.sa.models.profile import Profile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
-from noc.core.profile.loader import GENERIC_PROFILE
+# Third-party modules
+from pymongo import ReadPreference
 
 
 class ReportFilterApplication(SimpleReport):
@@ -173,7 +173,7 @@ class ReportFilterApplication(SimpleReport):
                 # ["name"], "%d (%d%%)" % (c, (c / float(summary[1]))*100)]]
                 data += [[s1[summary.index(c)],
                           calc[summary.index(c)]["name"],
-                          c, "%.2f %%" % ((c / float(summary[1]))*100)]]
+                          c, "%.2f %%" % ((c / float(summary[1])) * 100)]]
                 continue
             data += [[s1[summary.index(c)], calc[summary.index(c)]["name"], c, None]]
 

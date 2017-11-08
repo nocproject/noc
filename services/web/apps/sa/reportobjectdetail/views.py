@@ -6,36 +6,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import csv
+import datetime
 # Python modules
 import logging
-import datetime
-import csv
 import tempfile
 from collections import (defaultdict, namedtuple)
+
+import bson
+import xlsxwriter
 # Third-party modules
 from django.db import connection
 from django.http import HttpResponse
-from pymongo import ReadPreference
-import xlsxwriter
-import bson
-# NOC modules
-from noc.lib.app.simplereport import SectionRow
-from noc.lib.nosql import get_db
+from noc.core.translation import ugettext as _
+from noc.inv.models.capability import Capability
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
 from noc.lib.app.extapplication import ExtApplication, view
+# NOC modules
+from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
+from noc.sa.interfaces.base import StringParameter, BooleanParameter
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.inv.models.capability import Capability
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectstatus import ObjectStatus
-from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
-from noc.sa.interfaces.base import StringParameter, BooleanParameter
-from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.profile import Profile
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
-from noc.inv.models.vendor import Vendor
+from noc.sa.models.useraccess import UserAccess
+from pymongo import ReadPreference
 
 # @todo ThreadingCount
 # @todo ReportDiscovery Problem
@@ -44,7 +44,6 @@ logger = logging.getLogger(__name__)
 
 
 class ReportObjectBuild(object):
-
     def __init__(self, site, report, user):
         # Predefined report id
         # <app id>:<variant>
@@ -104,7 +103,7 @@ class ReportObjectCaps(object):
 
         i = 0
         d = {}
-        while mo_ids[0+i:10000+i]:
+        while mo_ids[0 + i:10000 + i]:
             match = {"_id": {"$in": mo_ids}}
             value = get_db()["noc.sa.objectcapabilities"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
@@ -128,6 +127,7 @@ class ReportObjectCaps(object):
 
 class ReportObjectDetailLinks(object):
     """Report for MO links detail"""
+
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
         self.out = self.load(mo_ids)
@@ -155,6 +155,7 @@ class ReportObjectDetailLinks(object):
 
 class ReportDiscoveryResult(object):
     """Report for MO links detail"""
+
     def __init__(self, mos, avail_only=False, match=None, load=False):
         """
 
@@ -193,7 +194,7 @@ class ReportDiscoveryResult(object):
             # @todo check match
             pipeline += [{"$match": self.match}]
         else:
-            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {  }}}}]
+            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {}}}}]
         return pipeline
 
     def load(self):
@@ -220,6 +221,7 @@ class ReportDiscoveryResult(object):
 
 class ReportContainer(object):
     """Report for MO Container"""
+
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
         self.out = self.load(self.mo_ids)
@@ -251,6 +253,7 @@ class ReportContainer(object):
 
 class ReportObjectLinkCount(object):
     """Report for MO link count"""
+
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
         self.out = self.load()
@@ -271,6 +274,7 @@ class ReportObjectLinkCount(object):
 
 class ReportObjectIfacesTypeStat(object):
     """Report for MO interfaces count"""
+
     def __init__(self, mo_ids, i_type="physical"):
         self.mo_ids = mo_ids
         self.out = self.load(i_type, self.mo_ids)
@@ -294,6 +298,7 @@ class ReportObjectIfacesTypeStat(object):
 
 class ReportObjectIfacesStatusStat(object):
     """Report for interfaces speed and status count"""
+
     def __init__(self, mo_ids, columns=list("-"), oper=True):
         self.mo_ids = mo_ids
         # self.columns = ["1G_UP", "1G_DOWN"]
@@ -447,6 +452,7 @@ class ReportAttrResolver(object):
 
 class ReportObjects(object):
     """MO fields report"""
+
     def __init__(self, mo_ids=()):
         self.mo_ids = mo_ids
         self.out = self.load(mo_ids)
@@ -478,6 +484,7 @@ class ReportObjects(object):
 
 class ReportObjectsHostname(object):
     """MO hostname"""
+
     def __init__(self, mo_ids=(), use_facts=False):
         self.mo_ids = mo_ids
         self.out = self.load_discovery(mo_ids)
@@ -542,6 +549,7 @@ class ReportObjectDetailApplication(ExtApplication):
                     return str(v)
                 else:
                     return v
+
             r = [qe(x) for x in row]
             return r
 
@@ -575,27 +583,27 @@ class ReportObjectDetailApplication(ExtApplication):
         ]
 
         header_row = [
-         "ID",
-         "OBJECT_NAME",
-         "OBJECT_ADDRESS",
-         "OBJECT_STATUS",
-         "PROFILE_NAME",
-         "OBJECT_PROFILE",
-         "OBJECT_VENDOR",
-         "OBJECT_PLATFORM",
-         "OBJECT_VERSION",
-         "OBJECT_SERIAL",
-         "AVAIL",
-         "ADMIN_DOMAIN",
-         "CONTAINER",
-         "SEGMENT",
-         "PHYS_INTERFACE_COUNT",
-         "LINK_COUNT",
-         "DISCOVERY_PROBLEM"
-         # "OBJECT_TAGS"
-         # "SORTED_TAGS"
-         # "OBJECT_CAPS"
-         # "INTERFACE_TYPE_COUNT"
+            "ID",
+            "OBJECT_NAME",
+            "OBJECT_ADDRESS",
+            "OBJECT_STATUS",
+            "PROFILE_NAME",
+            "OBJECT_PROFILE",
+            "OBJECT_VENDOR",
+            "OBJECT_PLATFORM",
+            "OBJECT_VERSION",
+            "OBJECT_SERIAL",
+            "AVAIL",
+            "ADMIN_DOMAIN",
+            "CONTAINER",
+            "SEGMENT",
+            "PHYS_INTERFACE_COUNT",
+            "LINK_COUNT",
+            "DISCOVERY_PROBLEM"
+            # "OBJECT_TAGS"
+            # "SORTED_TAGS"
+            # "OBJECT_CAPS"
+            # "INTERFACE_TYPE_COUNT"
         ]
 
         if columns:
@@ -663,7 +671,8 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend(caps_columns)
         if "sorted_tags" in columns.split(","):
             tags = set()
-            for s in ManagedObject.objects.filter(is_managed=True).exclude(tags=None).values_list('tags', flat=True).distinct():
+            for s in ManagedObject.objects.filter(is_managed=True).exclude(tags=None).values_list('tags',
+                                                                                                  flat=True).distinct():
                 tags.update(set(s))
             tags_o = sorted([t for t in tags if "{" not in t])
             r[-1].extend(tags_o)

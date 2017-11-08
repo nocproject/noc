@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from south.db import db
 from noc.core.model.fields import INETField
+from south.db import db
 
 
 class Migration:

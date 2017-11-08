@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import datetime
+import glob
 # Python modules
 import json
+import os
 import re
 import uuid
-import os
-import glob
-import datetime
+
+from noc.config import config
 # NOC modules
 from noc.core.fileutils import safe_rewrite
-from noc.config import config
 
 
 class Beef(object):
@@ -112,7 +113,7 @@ class Beef(object):
             return None
         #
         for path in glob.glob(os.path.join(
-            cls.BEEF_ROOT, "*/*/*/*/%s.json" % beef_id
+                cls.BEEF_ROOT, "*/*/*/*/%s.json" % beef_id
         )):
             beef = Beef()
             beef.load(path)

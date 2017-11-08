@@ -8,10 +8,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -46,16 +46,16 @@ class Script(BaseScript):
         v = self.cli("show inventory | no-more")
         s = self.cli("sh int transceiver | no-more")
 
-        #get transceivers
+        # get transceivers
         for match in self.rx_sfp.finditer(s):
             if match.group("number").startswith("Ethernet"):
                 if match.group("type"):
                     if ("Fabric" in match.group("type") or
-                        "BASE" in match.group("type").upper()):
+                                "BASE" in match.group("type").upper()):
                         parts = [match.group("partno")]
                     elif "BASE" in match.group("partno").upper():
                         parts = [match.group("type")]
-                    else:    
+                    else:
                         parts = [match.group("partno"), match.group("type")]
                 else:
                     parts = [match.group("partno")]
@@ -93,9 +93,9 @@ class Script(BaseScript):
                     "builtin": builtin
                 }]
                 # Add transceivers
-                if (objects[-1]["type"] == "SUP" or 
-                    (objects[-1]["type"] == "GEM" and
-                     objects[-1]["part_no"][0] not in self.gem_w_o_sfp)):
+                if (objects[-1]["type"] == "SUP" or
+                        (objects[-1]["type"] == "GEM" and
+                                 objects[-1]["part_no"][0] not in self.gem_w_o_sfp)):
 
                     # Get number of last chassis
                     for c in objects:

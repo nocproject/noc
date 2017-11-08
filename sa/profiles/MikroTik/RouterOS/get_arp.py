@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.sa.interfaces.igetarp import IGetARP
 # NOC modules
 from noc.sa.profiles.Generic.get_arp import Script as BaseScript
-from noc.sa.interfaces.igetarp import IGetARP
 
 
 class Script(BaseScript):

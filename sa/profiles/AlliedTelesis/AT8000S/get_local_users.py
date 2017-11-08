@@ -8,10 +8,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
-import re
-import datetime
 
 
 class Script(BaseScript):
@@ -28,7 +28,7 @@ class Script(BaseScript):
                 r.append({
                     "username": match.group("username"),
                     "class": {"15": "superuser",
-                        "1": "operator"}[match.group("privilege")],
+                              "1": "operator"}[match.group("privilege")],
                     "is_active": True
-                    })
+                })
         return r

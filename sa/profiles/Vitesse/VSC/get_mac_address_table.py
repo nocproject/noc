@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
@@ -31,7 +32,6 @@ Static  35   33:33:ff:01:62:5a  GigabitEthernet 1/1-8 2.5GigabitEthernet 1/1-2 1
 Static  35   ff:ff:ff:ff:ff:ff  GigabitEthernet 1/1-8 2.5GigabitEthernet 1/1-2 10GigabitEthernet 1/1-2 CPU
 
     """
-
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []

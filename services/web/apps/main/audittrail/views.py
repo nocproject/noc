@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.main.models.audittrail import AuditTrail
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
+from noc.main.models.audittrail import AuditTrail
 
 
 class AuditTrailApplication(ExtDocApplication):
@@ -20,4 +20,3 @@ class AuditTrailApplication(ExtDocApplication):
     menu = _("Audit Trail")
     model = AuditTrail
     query_fields = ["model_id", "user"]
-

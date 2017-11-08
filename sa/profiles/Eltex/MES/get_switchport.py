@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetswitchport import IGetSwitchport
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
 class Script(BaseScript):
@@ -33,17 +34,16 @@ class Script(BaseScript):
         for p in portchannels:
             portchannel_members += p["members"]
 
-
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
-#        try:
-#            cmd = self.cli("show vlan-stacking")
-#            for match in self.rx_vlan_stack.finditer(cmd):
-#                if match.group("role").lower() == "tunnel":
-#                    vlan_stack_status[int(match.group("interface"))] = True
-#        except self.CLISyntaxError:
-#            pass
+        #        try:
+        #            cmd = self.cli("show vlan-stacking")
+        #            for match in self.rx_vlan_stack.finditer(cmd):
+        #                if match.group("role").lower() == "tunnel":
+        #                    vlan_stack_status[int(match.group("interface"))] = True
+        #        except self.CLISyntaxError:
+        #            pass
 
         # Try snmp first
         if self.has_snmp():
@@ -82,7 +82,7 @@ class Script(BaseScript):
                                 port_vlans.update({iface: {
                                     "tagged": [],
                                     "untagged": '1',
-                                    }})
+                                }})
                             if s[j] == '1':
                                 port_vlans[iface]["untagged"] = v[0]
                                 un += [j]
@@ -96,7 +96,7 @@ class Script(BaseScript):
                                 port_vlans.update({iface: {
                                     "tagged": [],
                                     "untagged": '',
-                                    }})
+                                }})
                             port_vlans[iface]["tagged"].append(v[0])
 
                 # Get switchport data and overall result
@@ -142,7 +142,7 @@ class Script(BaseScript):
                             "802.1ad Tunnel": vlan_stack_status.get(name,
                                                                     False),
                             "tagged": tagged,
-                            }
+                        }
                         if name in port_vlans:
                             if port_vlans[name]["untagged"]:
                                 swp["untagged"] = port_vlans[name]["untagged"]
@@ -173,7 +173,7 @@ class Script(BaseScript):
                 port_vlans.update({interface: {
                     "tagged": [],
                     "untagged": '',
-                    }
+                }
                 })
             cmd = self.cli("show interfaces switchport %s" % interface)
             for vlan in parse_table(cmd, allow_wrap=True):
@@ -237,7 +237,7 @@ class Script(BaseScript):
                     "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
                     "802.1ad Tunnel": vlan_stack_status.get(name, False),
                     "tagged": port_vlans[name]["tagged"],
-                    }
+                }
                 if port_vlans[name]["untagged"]:
                     swp["untagged"] = port_vlans[name]["untagged"]
                 swp["interface"] = name

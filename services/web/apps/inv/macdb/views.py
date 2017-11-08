@@ -7,17 +7,13 @@
 # ---------------------------------------------------------------------
 
 import threading
-import operator
 import re
 # Third-party modules
-from mongoengine import Q
 from django.db.models import Q as d_Q
 # NOC modules
 from noc.lib.app.extdocapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.macdb import MACDB
-from noc.core.cache.decorator import cachedmethod
-from cachetools import TTLCache, cachedmethod
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.mac import MAC
 from noc.inv.models.maclog import MACLog
@@ -195,7 +191,7 @@ class MACApplication(ExtApplication):
 
         for i in MACLog.objects.filter(mac=mac).order_by("-timestamp"):
             id = id_cache.get(i.managed_object_name)
-            if id is None:        
+            if id is None:
                 for p in ManagedObject.objects.filter(name=i.managed_object_name):
                     id = p.id
                     id_cache[i.managed_object_name] = p.id
@@ -215,12 +211,12 @@ class MACApplication(ExtApplication):
                         d_cache[id, i.interface_name] = ""
 
             history += [{
-                    "timestamp": str(i.timestamp),
-                    "mac": i.mac,
-                    "vc_domain": str(i.vc_domain_name),
-                    "vlan": i.vlan,
-                    "managed_object_name": str(i.managed_object_name),
-                    "interface_name": str(i.interface_name),
-                    "description": c
+                "timestamp": str(i.timestamp),
+                "mac": i.mac,
+                "vc_domain": str(i.vc_domain_name),
+                "vlan": i.vlan,
+                "managed_object_name": str(i.managed_object_name),
+                "interface_name": str(i.interface_name),
+                "description": c
             }]
         return current

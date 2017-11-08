@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.ip.models import VRF
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.ip.models import VRF
-from noc.core.translation import ugettext as _
 
 
 class Reportreportduplicatedfqdns(SimpleReport):
@@ -18,7 +18,7 @@ class Reportreportduplicatedfqdns(SimpleReport):
     def get_data(self, request, **kwargs):
         vrf_id = VRF.get_global().id
         return self.from_query(title=self.title,
-                               columns=["FQDN", "AFI"," N", "Addresses"],
+                               columns=["FQDN", "AFI", " N", "Addresses"],
                                query="""
 SELECT fqdn, afi, COUNT(*),
     array_to_string(ARRAY(SELECT address

@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-import re
 
 
 class Script(BaseScript):
@@ -26,7 +27,7 @@ class Script(BaseScript):
         v = self.cli("context ip router arp show", cached=True)
         for match in self.rx_line.finditer(v):
             if (interface is not None) \
-            and (interface != match.group("interface")):
+                    and (interface != match.group("interface")):
                 continue
             r.append(match.groupdict())
         return r

@@ -6,28 +6,30 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from itertools import ifilterfalse
+
 # Python modules
 import six
-from itertools import ifilterfalse
 # Third-party modules
 from django import forms
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
-from pymongo import ReadPreference
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.profile import Profile
-from noc.sa.models.profile import GENERIC_PROFILE
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectstatus import ObjectStatus
+from noc.sa.models.profile import GENERIC_PROFILE
+from noc.sa.models.profile import Profile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
+from pymongo import ReadPreference
 
 
 class ReportDiscoveryProblem(object):
     """Report for MO links detail"""
+
     def __init__(self, mos, avail_only=False, match=None):
         """
 
@@ -65,7 +67,7 @@ class ReportDiscoveryProblem(object):
             # @todo check match
             pipeline += [{"$match": self.match}]
         else:
-            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {  }}}}]
+            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {}}}}]
         return pipeline
 
     def __iter__(self):
@@ -188,30 +190,30 @@ class ReportFilterApplication(SimpleReport):
             exclude_method += ["lldp", "lacp", "cdp", "huawei_ndp"]
 
         for discovery in rdp:
-                mo = ManagedObject.get_by_id(discovery["key"])
-                for method in ifilterfalse(lambda x: x in exclude_method, discovery["job"][0]["problems"]):
-                    problem = discovery["job"][0]["problems"][method]
-                    if filter_none_objects and not problem:
-                        continue
-                    if isinstance(problem, dict) and "" in problem:
-                        problem = problem.get("", "")
-                    if "Remote error code" in problem:
-                        problem = code_map.get(problem.split(" ")[-1], problem)
-                    if isinstance(problem, six.string_types):
-                        problem = problem.replace("\n", " ").replace("\r", " ")
+            mo = ManagedObject.get_by_id(discovery["key"])
+            for method in ifilterfalse(lambda x: x in exclude_method, discovery["job"][0]["problems"]):
+                problem = discovery["job"][0]["problems"][method]
+                if filter_none_objects and not problem:
+                    continue
+                if isinstance(problem, dict) and "" in problem:
+                    problem = problem.get("", "")
+                if "Remote error code" in problem:
+                    problem = code_map.get(problem.split(" ")[-1], problem)
+                if isinstance(problem, six.string_types):
+                    problem = problem.replace("\n", " ").replace("\r", " ")
 
-                    data += [
-                        (
-                            mo.name,
-                            mo.address,
-                            mo.profile.name,
-                            mo.administrative_domain.name,
-                            _("Yes") if mo.get_status() else _("No"),
-                            discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
-                            method,
-                            problem
-                        )
-                    ]
+                data += [
+                    (
+                        mo.name,
+                        mo.address,
+                        mo.profile.name,
+                        mo.administrative_domain.name,
+                        _("Yes") if mo.get_status() else _("No"),
+                        discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
+                        method,
+                        problem
+                    )
+                ]
 
         return self.from_dataset(
             title=self.title,

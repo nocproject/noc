@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+
 # NOC modules
 from noc.sa.interfaces.base import StringParameter
 
@@ -18,6 +19,7 @@ class DateTimeParameter(StringParameter):
         "%Y-%m-%dT%H:%M:%S.%f",
         "%Y-%m-%d"
     ]
+
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default

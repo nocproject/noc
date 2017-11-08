@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import tornado.gen
 # Third-party modules
 import tornado.ioloop
-import tornado.gen
+from noc.core.consul import ConsulClient
+
 # NOC modules
 from base import BaseProtocol
-from noc.core.consul import ConsulClient
 
 
 class ConsulProtocol(BaseProtocol):

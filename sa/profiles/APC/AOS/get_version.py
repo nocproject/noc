@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
@@ -23,7 +24,7 @@ class Script(BaseScript):
     rx_platform = re.compile(r"^(?P<platform>.+?)\s+named\s+", re.MULTILINE)
 
     rx_platform1 = re.compile(r"^Name\s+: (?P<platform>.+?)\s+Date",
-        re.MULTILINE)
+                              re.MULTILINE)
 
     def execute(self):
         m = self.motd
@@ -36,4 +37,4 @@ class Script(BaseScript):
             "vendor": "APC",
             "platform": platform,
             "version": self.re_search(self.rx_fwver, m).group("version")
-            }
+        }

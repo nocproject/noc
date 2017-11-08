@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
@@ -28,7 +29,7 @@ class Script(BaseScript):
             type = match.group("type")
             mac = match.group("mac")
             if (mac.lower() in ("incomplete" or "none") or
-                type.lower() in ("pending", "invalid")):
+                        type.lower() in ("pending", "invalid")):
                 continue
             else:
                 r += [{

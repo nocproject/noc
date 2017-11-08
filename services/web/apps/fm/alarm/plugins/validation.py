@@ -8,10 +8,11 @@
 
 # Django modules
 from django.template import Template, Context
+from noc.cm.models.errortype import ErrorType
+from noc.cm.models.objectfact import ObjectFact
+
 # NOC modules
 from base import AlarmPlugin
-from noc.cm.models.objectfact import ObjectFact
-from noc.cm.models.errortype import ErrorType
 
 
 class ValidationPlugin(AlarmPlugin):

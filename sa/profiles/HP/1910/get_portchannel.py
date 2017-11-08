@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -35,9 +36,9 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
-                    ["1.2.840.10006.300.43.1.1.1.1.6",
-                    "1.2.840.10006.300.43.1.1.2.1.1",
-                    "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
+                        ["1.2.840.10006.300.43.1.1.1.1.6",
+                         "1.2.840.10006.300.43.1.1.2.1.1",
+                         "1.2.840.10006.300.43.1.1.1.1.5"], bulk=True):
                     port = 'Po' + v[1]
                     s = self.hex_to_bin(v[2])
                     members = []
@@ -53,7 +54,7 @@ class Script(BaseScript):
                         # 1.2.840.10006.300.43.1.1.1.1.5 is correct???????????
                         "type": "L" if v[3] == '1' else "S",
                         "members": members,
-                        })
+                    })
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -100,5 +101,5 @@ class Script(BaseScript):
                 "interface": port,
                 "type": "L" if typ == "Dynamic" else "S",
                 "members": members,
-                }]
+            }]
         return r

@@ -8,13 +8,13 @@
 
 # Python modules
 import datetime
-import itertools
+
+from noc.core.scheduler.job import Job
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
-from noc.core.scheduler.job import Job
-from noc.core.translation import ugettext as _
 
 
 class InvMonitorApplication(ExtApplication):

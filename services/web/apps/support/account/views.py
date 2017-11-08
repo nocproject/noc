@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.support.cp import CPClient
 from noc.sa.interfaces.base import StringParameter, REStringParameter
-from noc.core.translation import ugettext as _
+from noc.support.cp import CPClient
 
 
 class AccountApplication(ExtApplication):
@@ -37,7 +37,7 @@ class AccountApplication(ExtApplication):
               "name": StringParameter(),
               "password": StringParameter(required=False)
           }
-    )
+          )
     def api_attach_account(self, request, name, password):
         c = CPClient()
         if c.has_account():
@@ -57,7 +57,7 @@ class AccountApplication(ExtApplication):
               "language": REStringParameter("^[A-Z]{2}$"),
               "password": StringParameter(required=False)
           }
-    )
+          )
     def api_save_account(self, request, name, email, password=None,
                          org=None, country=None, language=None,
                          *args, **kwargs):
@@ -87,9 +87,9 @@ class AccountApplication(ExtApplication):
               "old_password": StringParameter(),
               "new_password": StringParameter()
           }
-    )
+          )
     def api_change_password(self, request, old_password, new_password,
-                         *args, **kwargs):
+                            *args, **kwargs):
         c = CPClient()
         if not c.has_account():
             return {"status": False, "message": "Account is not registred"}
@@ -104,9 +104,9 @@ class AccountApplication(ExtApplication):
               "type": StringParameter(required=False),
               "description": StringParameter(required=False)
           }
-    )
+          )
     def api_save_system(self, request, name, type=None, description=None,
-                         *args, **kwargs):
+                        *args, **kwargs):
         c = CPClient()
         if c.has_system():
             try:

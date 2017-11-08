@@ -6,35 +6,36 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import logging
 # Python modules
 import re
 import time
 from collections import defaultdict
-import logging
-# Django modules
-from django.utils.translation import ugettext_lazy as _
+
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-# NOC modules
-from dnszoneprofile import DNSZoneProfile
-from noc.main.models import (NotificationGroup, SystemNotification,
-                             SystemTemplate)
-from noc.project.models.project import Project
+# Django modules
+from django.utils.translation import ugettext_lazy as _
+from noc.core.gridvcs.manager import GridVCSField
+from noc.core.ip import IPv6
+from noc.core.model.fields import TagsField
+from noc.dns.utils.zonefile import ZoneFile
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
-from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
-from noc.core.ip import IPv6
-from noc.lib.validators import is_ipv4, is_ipv6
 from noc.lib.rpsl import rpsl_format
-from noc.dns.utils.zonefile import ZoneFile
-from noc.core.gridvcs.manager import GridVCSField
+from noc.lib.validators import is_ipv4, is_ipv6
+from noc.main.models import (NotificationGroup, SystemNotification,
+                             SystemTemplate)
 from noc.main.models.synccache import SyncCache
+from noc.project.models.project import Project
+
+# NOC modules
+from dnszoneprofile import DNSZoneProfile
 
 logger = logging.getLogger(__name__)
-
 
 # Constants
 ZONE_FORWARD = "F"
@@ -46,6 +47,7 @@ class DNSZone(models.Model):
     """
     DNS Zone
     """
+
     class Meta:
         verbose_name = _("DNS Zone")
         verbose_name_plural = _("DNS Zones")
@@ -202,6 +204,7 @@ class DNSZone(models.Model):
         :return: Zone records
         :trype: List of tuples
         """
+
         # @todo: deprecated
         def f(name, type, content, ttl, prio):
             name = name[:-lnsuffix]  # Strip domain from name
@@ -305,6 +308,7 @@ class DNSZone(models.Model):
         SOA record
         :return:
         """
+
         def dotted(s):
             if not s.endswith("."):
                 return s + "."
@@ -313,12 +317,12 @@ class DNSZone(models.Model):
 
         return [(dotted(self.to_idna(self.name)),
                  "SOA", "%s %s %d %d %d %d %d" % (
-            dotted(self.profile.zone_soa),
-            dotted(self.profile.zone_contact),
-            self.serial,
-            self.profile.zone_refresh, self.profile.zone_retry,
-            self.profile.zone_expire,
-            self.profile.zone_ttl), self.profile.zone_ttl, None)]
+                     dotted(self.profile.zone_soa),
+                     dotted(self.profile.zone_contact),
+                     self.serial,
+                     self.profile.zone_refresh, self.profile.zone_retry,
+                     self.profile.zone_expire,
+                     self.profile.zone_ttl), self.profile.zone_ttl, None)]
 
     def get_ipam_a(self):
         """
@@ -356,6 +360,7 @@ class DNSZone(models.Model):
         Fetch IPv4 PTR records from IPAM
         :return: (name, type, content, ttl, prio)
         """
+
         def ptr(a):
             """
             Convert address to full PTR record
@@ -467,8 +472,8 @@ class DNSZone(models.Model):
         ttl = self.profile.zone_ttl
         # Range delegations
         for r in AddressRange.objects.filter(action="D").extra(
-            where=["from_address << %s", "to_address << %s"],
-            params=[self.reverse_prefix, self.reverse_prefix]
+                where=["from_address << %s", "to_address << %s"],
+                params=[self.reverse_prefix, self.reverse_prefix]
         ):
             nses = [ns.strip() for ns in r.reverse_nses.split(",")]
             for a in r.addresses:
@@ -581,6 +586,7 @@ class DNSZone(models.Model):
         Resolve name to zone object
         :return:
         """
+
         def get_closest(n):
             """
             Return closest matching zone
@@ -715,6 +721,7 @@ def on_save_zone_profile(sender, instance, created, **kwargs):
     if not created:
         for z in instance.dnszone_set.all():
             z.ensure_sync()
+
 
 # @todo: DNSServer change
 # @todo: Sync change

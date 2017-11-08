@@ -8,24 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
-import logging
+
 import datetime
+import logging
 import random
 import threading
 import time
+
 # Third-party modules
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
 from concurrent.futures import Future
+from noc.config import config
+from noc.core.handler import get_handler
+from noc.core.perf import metrics
+from noc.core.threadpool import ThreadPoolExecutor
+from noc.lib.nosql import get_db
 from pymongo import DeleteOne, UpdateOne
+
 # NOC modules
 from .job import Job
-from noc.lib.nosql import get_db
-from noc.core.handler import get_handler
-from noc.core.threadpool import ThreadPoolExecutor
-from noc.core.perf import metrics
-from noc.config import config
 
 
 class Scheduler(object):

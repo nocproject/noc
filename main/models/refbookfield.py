@@ -8,8 +8,10 @@
 
 # Python modules
 import re
+
 # Third-party modules
 from django.db import models
+
 # NOC modules
 from refbook import RefBook
 
@@ -18,6 +20,7 @@ class RefBookField(models.Model):
     """
     Refbook fields
     """
+
     class Meta:
         app_label = "main"
         verbose_name = "Ref Book Field"

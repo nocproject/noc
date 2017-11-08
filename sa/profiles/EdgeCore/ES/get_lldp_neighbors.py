@@ -7,9 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import binascii
 # Python modules
 import re
-import binascii
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors, MACAddressParameter
@@ -58,7 +59,7 @@ class Script(BaseScript):
         # so local_interface_id parameter required Collect data
         local_port_ids = {}  # name -> id
         for port, local_id in self.rx_localport.findall(
-            self.cli("show lldp info local-device")
+                self.cli("show lldp info local-device")
         ):
             local_port_ids["Eth " + port] = \
                 MACAddressParameter().clean(local_id)
@@ -72,7 +73,7 @@ class Script(BaseScript):
             if i["local_interface"] in local_port_ids:
                 i["local_interface_id"] = local_port_ids[i["local_interface"]]
             v = self.cli("show lldp info remote detail %s" % \
-                i["local_interface"])
+                         i["local_interface"])
             match = self.re_search(self.rx_detail, v)
             n = {"remote_chassis_id_subtype": 4}
             if match:
@@ -91,7 +92,7 @@ class Script(BaseScript):
                     remote_port = match.group("p_id").strip()
                 else:
                     # Removing bug
-                    remote_port = binascii.unhexlify('' . join(
+                    remote_port = binascii.unhexlify(''.join(
                         match.group("p_id").split('-'))
                     )
                     remote_port = remote_port.rstrip('\x00')

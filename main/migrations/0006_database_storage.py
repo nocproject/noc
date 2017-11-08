@@ -1,16 +1,14 @@
-
-from south.db import db
 from django.db import models
 from noc.core.model.fields import BinaryField
+from south.db import db
+
 
 class Migration:
-
     def forwards(self):
-
         # Model 'DatabaseStorage'
         db.create_table('main_databasestorage', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('name', models.CharField("Name",max_length=256,unique=True)),
+            ('name', models.CharField("Name", max_length=256, unique=True)),
             ('data', BinaryField("Data")),
             ('size', models.IntegerField("Size")),
             ('mtime', models.DateTimeField("MTime"))
@@ -20,4 +18,3 @@ class Migration:
 
     def backwards(self):
         db.delete_table('main_databasestorage')
-

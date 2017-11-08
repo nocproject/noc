@@ -14,6 +14,7 @@ class VCType(models.Model):
     """
     VC Type
     """
+
     class Meta:
         verbose_name = "VC Type"
         verbose_name_plural = "VC Types"

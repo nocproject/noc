@@ -9,7 +9,6 @@
 # Python modules
 import re
 
-
 rx_os_format = re.compile(
     r"(?P<repeat>[*]?)"
     r"(?P<size>\d+)"

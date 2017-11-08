@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -26,21 +27,22 @@ class Script(BaseScript):
 
     rx_description = re.compile(
         r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
-#    rx_channel_description = re.compile(
-#        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-#    rx_vlan_stack = re.compile(
-#        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
+
+    #    rx_channel_description = re.compile(
+    #        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    #    rx_vlan_stack = re.compile(
+    #        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
 
     def execute(self):
 
-        #TODO
+        # TODO
         # Get portchannels
-#        portchannels = self.scripts.get_portchannel()
+        #        portchannels = self.scripts.get_portchannel()
         portchannels = []
         portchannel_members = []
-#        for p in portchannels:
-#            portchannel_members += p["members"]
+        #        for p in portchannels:
+        #            portchannel_members += p["members"]
 
         # Get interafces status
         interface_status = {}
@@ -48,7 +50,7 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         """
@@ -184,10 +186,10 @@ class Script(BaseScript):
         port_vlans = {}
         port_channels = portchannels
 
-
         iface_conf = self.cli("show interface")
         # Correct Qtech BUG:
-        iface_conf = iface_conf.replace("\n\n                                                                          ", "\n")
+        iface_conf = iface_conf.replace(
+            "\n\n                                                                          ", "\n")
         iface_conf = iface_conf.splitlines()
         i = 0
         L = len(iface_conf) - 2
@@ -207,10 +209,10 @@ class Script(BaseScript):
                         break
             if interface not in port_vlans:
                 port_vlans.update({interface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                })
+                    "tagged": [],
+                    "untagged": '',
+                }
+                })
 
             i += 1
             match_mod = self.rx_mode.match(iface_conf[i])
@@ -243,11 +245,10 @@ class Script(BaseScript):
                         vlans = vlans.split("-")[0]
                     port_vlans[interface]["untagged"] = vlans
 
-
         iface_conf = []
         # Why portchannels=[] ???????
         # Get portchannels onse more!!!
-#        portchannels = self.scripts.get_portchannel()
+        #        portchannels = self.scripts.get_portchannel()
         portchannels = []
         # Get switchport data and overall result
         r = []
@@ -293,12 +294,12 @@ class Script(BaseScript):
                 else:
                     tagged = port_vlans[name]["tagged"]
                 swp = {
-                        "status": status,
-                        "description": description.strip(),
-                        "802.1Q Enabled": len(port_vlans.get(name, [])) > 0,
-                        "802.1ad Tunnel": vlan_stack_status.get(name, False),
-                        "tagged": tagged,
-                        }
+                    "status": status,
+                    "description": description.strip(),
+                    "802.1Q Enabled": len(port_vlans.get(name, [])) > 0,
+                    "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                    "tagged": tagged,
+                }
                 if name in port_vlans:
                     if port_vlans[name]["untagged"]:
                         swp["untagged"] = port_vlans[name]["untagged"]

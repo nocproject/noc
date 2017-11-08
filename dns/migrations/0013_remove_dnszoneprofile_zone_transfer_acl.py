@@ -3,8 +3,8 @@
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
@@ -13,5 +13,5 @@ class Migration:
 
     def backwards(self):
         db.add_column("dns_dnszoneprofile", "zone_transfer_acl",
-            models.CharField("named zone transfer ACL", max_length=64,
-                default="acl-transfer"))
+                      models.CharField("named zone transfer ACL", max_length=64,
+                                       default="acl-transfer"))

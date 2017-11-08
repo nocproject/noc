@@ -6,32 +6,33 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import csv
 # Python modules
 import datetime
-import csv
 import tempfile
+
+import bson
+import xlsxwriter
 # Third-party modules
 from django.http import HttpResponse
-import xlsxwriter
-import bson
-from pymongo import ReadPreference
+from noc.core.translation import ugettext as _
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.object import Object
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter, IntParameter
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.alarmclass import AlarmClass
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectpath import ObjectPath
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.object import Object
-from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
+from noc.sa.models.useraccess import UserAccess
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
-from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
+from pymongo import ReadPreference
 
 
 class ReportAlarmDetailApplication(ExtApplication):
@@ -90,46 +91,46 @@ class ReportAlarmDetailApplication(ExtApplication):
             return [row[i] for i in cmap]
 
         cols = [
-            "id",
-            "root_id",
-            "from_ts",
-            "to_ts",
-            "duration_sec",
-            "object_name",
-            "object_address",
-            "object_profile",
-            "object_admdomain",
-            "object_platform",
-            "object_version",
-            "alarm_class",
-            "objects",
-            "subscribers",
-            "tt",
-            "escalation_ts",
-            "container_address"
-        ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
-            "segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+                   "id",
+                   "root_id",
+                   "from_ts",
+                   "to_ts",
+                   "duration_sec",
+                   "object_name",
+                   "object_address",
+                   "object_profile",
+                   "object_admdomain",
+                   "object_platform",
+                   "object_version",
+                   "alarm_class",
+                   "objects",
+                   "subscribers",
+                   "tt",
+                   "escalation_ts",
+                   "container_address"
+               ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
+                   "segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         header_row = [
-         "ID",
-         _("ROOT_ID"),
-         _("FROM_TS"),
-         _("TO_TS"),
-         _("DURATION_SEC"),
-         _("OBJECT_NAME"),
-         _("OBJECT_ADDRESS"),
-         _("OBJECT_PROFILE"),
-         _("OBJECT_ADMDOMAIN"),
-         _("OBJECT_PLATFORM"),
-         _("OBJECT_VERSION"),
-         _("ALARM_CLASS"),
-         _("OBJECTS"),
-         _("SUBSCRIBERS"),
-         _("TT"),
-         _("ESCALATION_TS"),
-         _("CONTAINER_ADDRESS")
-        ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
-            "SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+                         "ID",
+                         _("ROOT_ID"),
+                         _("FROM_TS"),
+                         _("TO_TS"),
+                         _("DURATION_SEC"),
+                         _("OBJECT_NAME"),
+                         _("OBJECT_ADDRESS"),
+                         _("OBJECT_PROFILE"),
+                         _("OBJECT_ADMDOMAIN"),
+                         _("OBJECT_PLATFORM"),
+                         _("OBJECT_VERSION"),
+                         _("ALARM_CLASS"),
+                         _("OBJECTS"),
+                         _("SUBSCRIBERS"),
+                         _("TT"),
+                         _("ESCALATION_TS"),
+                         _("CONTAINER_ADDRESS")
+                     ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + [
+                         "SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         if columns:
             cmap = []
@@ -197,7 +198,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             # Archived Alarms
             for a in ArchivedAlarm._get_collection().with_options(
                     read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort(
-                    [("timestamp", 1)]):
+                [("timestamp", 1)]):
                 dt = a["clear_timestamp"] - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 if duration and duration < min_duration:
@@ -247,7 +248,7 @@ class ReportAlarmDetailApplication(ExtApplication):
         if source in ["active", "both"]:
             for a in ActiveAlarm._get_collection().with_options(
                     read_preference=ReadPreference.SECONDARY_PREFERRED).find(q).sort(
-                    [("timestamp", 1)]):
+                [("timestamp", 1)]):
                 dt = datetime.datetime.now() - a["timestamp"]
                 duration = dt.days * 86400 + dt.seconds
                 if duration and duration < min_duration:

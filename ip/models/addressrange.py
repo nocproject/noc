@@ -6,18 +6,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
-# NOC modules
-from vrf import VRF
-from address import Address
-from afi import AFI_CHOICES
+# Django modules
+from django.utils.translation import ugettext_lazy as _
+from noc.core.ip import IP
 from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
-from noc.core.ip import IP
 from noc.lib.validators import check_ipv4, check_ipv6
+
+from address import Address
+from afi import AFI_CHOICES
+# NOC modules
+from vrf import VRF
 
 
 class AddressRange(models.Model):
@@ -60,7 +61,8 @@ class AddressRange(models.Model):
         _("Reverse NSes"),
         max_length=255,
         null=True, blank=True,
-        help_text=_("Comma-separated list of NSes to partial reverse zone delegation when 'Action' set to 'Partial reverse zone delegation"))
+        help_text=_(
+            "Comma-separated list of NSes to partial reverse zone delegation when 'Action' set to 'Partial reverse zone delegation"))
     tags = TagsField(_("Tags"), null=True, blank=True)
     tt = models.IntegerField(
         "TT",
@@ -73,7 +75,7 @@ class AddressRange(models.Model):
 
     def __unicode__(self):
         return u"%s (IPv%s): %s -- %s" % (
-        self.vrf.name, self.afi, self.from_address, self.to_address)
+            self.vrf.name, self.afi, self.from_address, self.to_address)
 
     def clean(self):
         """
@@ -162,8 +164,8 @@ class AddressRange(models.Model):
                     # Upper boundary is lowered. Clean up addressess falled out of range
                     Address.objects.filter(
                         vrf=self.vrf, afi=self.afi,
-                                           address__gt=self.to_address,
-                                           address__lte=old.to_address).delete()
+                        address__gt=self.to_address,
+                        address__lte=old.to_address).delete()
                     # Finally recheck FQDNs
                 generate_fqdns()
 

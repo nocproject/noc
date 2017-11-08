@@ -6,11 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
-import re
 # NOC modules
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -20,17 +19,17 @@ class Script(BaseScript):
 
     INTERFACE_TYPES = {
 
-            "lo": "loopback",  # Loopback
+        "lo": "loopback",  # Loopback
 
-        }
+    }
 
     INTERFACE_TYPES2 = {
 
-            "brv": "unknown",  # No comment
-            "eth": "physical",  # No comment
-            "wla": "physical",  # No comment
+        "brv": "unknown",  # No comment
+        "eth": "physical",  # No comment
+        "wla": "physical",  # No comment
 
-        }
+    }
 
     @classmethod
     def get_interface_type(cls, name):

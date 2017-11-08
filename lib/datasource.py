@@ -8,9 +8,9 @@
 
 # Python modules
 import os
+
 # NOC modules
 from noc.settings import INSTALLED_APPS
-
 
 datasource_registry = {}
 

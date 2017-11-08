@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.translation import ugettext as _
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.pm.models.metrictype import MetricType
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
 class ManagedObjectProfileApplication(ExtModelApplication):

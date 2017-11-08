@@ -8,11 +8,12 @@
 
 # Python modules
 import logging
+
 # Third-party modules
 import six
+from noc.fm.models.activealarm import ActiveAlarm
 # NOC modules
 from noc.sa.models.objectdata import ObjectData
-from noc.fm.models.activealarm import ActiveAlarm
 
 logger = logging.getLogger(__name__)
 

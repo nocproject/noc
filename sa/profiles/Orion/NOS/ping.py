@@ -9,7 +9,6 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
-from noc.lib.validators import is_ipv4, is_ipv6
 import re
 
 
@@ -23,7 +22,7 @@ class Script(BaseScript):
         r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+                df=None, vrf=None):
         cmd = "ping %s" % address
         if count:
             cmd += " count %d" % int(count)

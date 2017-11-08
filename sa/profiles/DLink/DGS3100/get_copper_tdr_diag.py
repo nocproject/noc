@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
@@ -81,17 +82,17 @@ class Script(BaseScript):
                     "interface": match.group("interface"),
                     "pairs": [
                         {"pair": 1, "status": "T",
-                            "distance_cm": length,
-                            "variance_cm": self.variance},
+                         "distance_cm": length,
+                         "variance_cm": self.variance},
                         {"pair": 2, "status": "T",
-                            "distance_cm": length,
-                            "variance_cm": self.variance},
+                         "distance_cm": length,
+                         "variance_cm": self.variance},
                         {"pair": 3, "status": "T",
-                            "distance_cm": length,
-                            "variance_cm": self.variance},
+                         "distance_cm": length,
+                         "variance_cm": self.variance},
                         {"pair": 4, "status": "T",
-                            "distance_cm": length,
-                            "variance_cm": self.variance}
+                         "distance_cm": length,
+                         "variance_cm": self.variance}
                     ]
                 }]
 

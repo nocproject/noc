@@ -8,13 +8,15 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from django.contrib.auth.models import Group
+from django.db import models
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-from django.contrib.auth.models import Group
+
+from .administrativedomain import AdministrativeDomain
 # NOC modules
 from .managedobjectselector import ManagedObjectSelector
-from .administrativedomain import AdministrativeDomain
 
 
 class GroupAccess(models.Model):
@@ -27,7 +29,7 @@ class GroupAccess(models.Model):
 
     group = models.ForeignKey(Group, verbose_name=_("Group"))
     selector = models.ForeignKey(ManagedObjectSelector,
-            null=True, blank=True)
+                                 null=True, blank=True)
     administrative_domain = models.ForeignKey(
         AdministrativeDomain,
         null=True, blank=True

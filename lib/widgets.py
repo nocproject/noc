@@ -6,12 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import ujson
 # Django modules
 from django.forms.widgets import Input
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
-# Third-party modules
-import ujson
 
 
 class AutoCompleteTags(Input):

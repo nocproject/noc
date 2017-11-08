@@ -9,9 +9,10 @@
 # Python modules
 import re
 import time
+
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -74,7 +75,7 @@ class Script(BaseScript):
         for I in ifaces:
             if "." in I["interface"]:
                 continue
-            #if I["interface"] != "ge-3/0/1":
+            # if I["interface"] != "ge-3/0/1":
             #    continue
             v = self.cli("show interfaces %s" % I["interface"])
             L = self.rx_log_split.split(v)
@@ -103,12 +104,12 @@ class Script(BaseScript):
                 "admin_status": match.group("admin").lower() == "enabled",
                 "oper_status": match.group("oper").lower() == "up",
                 "type": iftype,
-                }
+            }
             def_si = {
                 "name": name,
                 "admin_status": match.group("admin").lower() == "enabled",
                 "oper_status": match.group("oper").lower() == "up"
-                }
+            }
             # Get description
             match = self.rx_phy_description.search(phy)
             if match and match.group("description") != "-=unused=-":
@@ -197,7 +198,7 @@ class Script(BaseScript):
                         bundle = match.group("bundle")
                         iface["aggregated_interface"] = bundle
                     elif proto.lower() == "eth-switch" \
-                    or proto.lower() == "multiservice":
+                            or proto.lower() == "multiservice":
                         if proto.lower() == "eth-switch":
                             si["enabled_afi"] += ["BRIDGE"]
                         if not vlans_requested:
@@ -220,9 +221,9 @@ class Script(BaseScript):
                             si["vlan_ids"] = [l3_ids[si["name"]]]
                         except KeyError:
                             pass
-                        # x = untagged.get(si["name"])
-                        # if x:
-                        #     si["untagged_vlans"]
+                            # x = untagged.get(si["name"])
+                            # if x:
+                            #     si["untagged_vlans"]
                     """
                     Why we are setting vlan_ids only on IP interfaces ?
 
@@ -305,6 +306,7 @@ class Script(BaseScript):
         :return: tagged map, untagged map
         :rtype: tuple
         """
+
         def clean_interface(s):
             """
             Clean interface name
@@ -366,7 +368,7 @@ class Script(BaseScript):
                         except KeyError:
                             tagged[i] = [tag]
                     else:
-                            untagged[i] = tag
+                        untagged[i] = tag
                 match = self.rx_l3_iface.search(vdata)
                 if match:
                     i = match.group("iface")

@@ -8,16 +8,18 @@
 
 # Python modules
 import datetime
-# Django modules
-from django.template import Template, Context
+
 # NOC modules
 import noc.lib.nosql as nosql
+# Django modules
+from django.template import Template, Context
+from noc.core.span import get_current_span
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
+
 from alarmclass import AlarmClass
 from alarmlog import AlarmLog
 from alarmseverity import AlarmSeverity
-from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
-from noc.core.span import get_current_span
 
 
 class ArchivedAlarm(nosql.Document):
@@ -86,8 +88,8 @@ class ArchivedAlarm(nosql.Document):
 
     def log_message(self, message):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
-                     from_status=self.status, to_status=self.status,
-                     message=message)]
+                              from_status=self.status, to_status=self.status,
+                              message=message)]
         self.save()
 
     def get_template_vars(self):
@@ -175,7 +177,7 @@ class ArchivedAlarm(nosql.Document):
         # @todo: Clear related correlator jobs
         self.delete()
         # Remove pending control_notify job
-        #remove_job("fm.correlator", "control_notify", key=a.id)
+        # remove_job("fm.correlator", "control_notify", key=a.id)
         # Send notifications
         # Do not set notifications for child and for previously reopened
         # alarms
@@ -240,6 +242,6 @@ class ArchivedAlarm(nosql.Document):
                 }}
             )
 
+
 # Avoid circular references
 from activealarm import ActiveAlarm
-

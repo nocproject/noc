@@ -25,5 +25,5 @@ class Script(BaseScript):
             "revision": v["attributes"]["HW version"]
         }
         if "Serial Number" in v["attributes"]:
-            r["serial"] =  v["attributes"]["Serial Number"]
+            r["serial"] = v["attributes"]["Serial Number"]
         return [r]

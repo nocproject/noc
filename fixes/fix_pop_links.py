@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.inv.models.object import Object
 # NOC modules
 from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
 from noc.inv.util.pop_links import LinkedPoP
 
 

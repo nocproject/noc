@@ -6,27 +6,29 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 import os
 from threading import Lock
-import operator
+
+import cachetools
+from mongoengine import signals
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
-from mongoengine import signals
-import cachetools
-# NOC modules
-from connectiontype import ConnectionType
-from connectionrule import ConnectionRule
-from unknownmodel import UnknownModel
-from vendor import Vendor
-from noc.main.models.doccategory import category
+from noc.core.model.decorator import on_delete_check
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
-from noc.core.model.decorator import on_delete_check
+from noc.main.models.doccategory import category
+
+from connectionrule import ConnectionRule
+# NOC modules
+from connectiontype import ConnectionType
+from unknownmodel import UnknownModel
+from vendor import Vendor
 
 id_lock = Lock()
 
@@ -43,7 +45,7 @@ class ObjectModelConnection(EmbeddedDocument):
         choices=[
             "i",  # Inner slot
             "o",  # Outer slot
-            "s"   # Connection
+            "s"  # Connection
         ]
     )
     gender = StringField(choices=["s", "m", "f"])
@@ -195,7 +197,7 @@ class ObjectModel(Document):
     def get_model_connection(self, name):
         for c in self.connections:
             if (c.name == name or (
-                    c.internal_name and c.internal_name == name)):
+                        c.internal_name and c.internal_name == name)):
                 return c
         return None
 

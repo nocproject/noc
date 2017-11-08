@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
-import re
-import datetime
 
 
 class Script(BaseScript):
@@ -29,5 +29,5 @@ class Script(BaseScript):
                     "User": "operator",
                     "Power_User": "operator"}[match.group("privilege")],
                 "is_active": True
-                }]
+            }]
         return r

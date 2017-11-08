@@ -12,6 +12,7 @@ class RetryAfter(Exception):
     Raise RetryAfter exception from job handler to reschedule
     execution after delay seconds
     """
+
     def __init__(self, msg, delay):
         super(RetryAfter, self).__init__(msg)
         self.delay = delay

@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -83,8 +83,8 @@ class Script(BaseScript):
         adm_status = []
         gvrp = self.get_gvrp()
         stp = self.get_stp()
-        #ctp = self.get_ctp()
-        #lldp = self.get_lldp()
+        # ctp = self.get_ctp()
+        # lldp = self.get_lldp()
         for l in self.cli("show interfaces description").split("\n"):
             match = self.rx_descr.match(l.strip())
             if match:

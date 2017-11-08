@@ -6,9 +6,9 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import glob
 # Python modules
 import os
-import glob
 import stat
 import subprocess
 

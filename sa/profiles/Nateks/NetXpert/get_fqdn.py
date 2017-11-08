@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetfqdn import IGetFQDN
@@ -25,10 +26,10 @@ class Script(BaseScript):
                 # sysName.0
                 v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
                 if v:
-                   return v
+                    return v
             except self.snmp.TimeOutError:
                 pass
-        
+
         v = self.cli("show version")
 
         match = self.rx_hostname.search(v)

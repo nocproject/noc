@@ -23,18 +23,18 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.4.22.1.1",
-                     "1.3.6.1.2.1.4.22.1.2",
-                     "1.3.6.1.2.1.4.22.1.3"], bulk=True):
+                        ["1.3.6.1.2.1.4.22.1.1",
+                         "1.3.6.1.2.1.4.22.1.2",
+                         "1.3.6.1.2.1.4.22.1.3"], bulk=True):
                     iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[1],
-                        cached=True)  # IF-MIB
+                                          cached=True)  # IF-MIB
                     mac = ":".join(["%02x" % ord(c) for c in v[2]])
                     ip = ["%02x" % ord(c) for c in v[3]]
                     ip = ".".join(str(int(c, 16)) for c in ip)
                     r.append({"ip": ip,
-                            "mac": mac,
-                            "interface": iface,
-                            })
+                              "mac": mac,
+                              "interface": iface,
+                              })
                 return r
             except self.snmp.TimeOutError:
                 pass

@@ -20,12 +20,12 @@ class Script(BaseScript):
         device_id = self.scripts.get_fqdn()
         interfaces = []
         for n, f, r in self.cli_detail(
-        "/interface print detail without-paging where type=\"ether\""):
+                "/interface print detail without-paging where type=\"ether\""):
             interfaces += [r["name"]]
         # Get neighbors
         neighbors = []
         for n, f, r in self.cli_detail(
-        "/ip neighbor print detail without-paging"):
+                "/ip neighbor print detail without-paging"):
             if "system-caps" not in r or r["system-caps"] == "":
                 continue
             if r["interface"] not in interfaces:
@@ -45,20 +45,20 @@ class Script(BaseScript):
                 raise self.NotSupportedError()
             caps = 0
             for c in r["system-caps"].split(","):
-                    c = c.strip()
-                    if not c:
-                        break
-                    # Need more examples
-                    caps |= {
-                        "other": 1,
-                        "repeater": 2,
-                        "bridge": 4,
-                        #"WLAN Access Point": 8,
-                        "router": 16,
-                        "telephone": 32,
-                        #"DOCSIS Cable Device": 64,
-                        #"Station Only": 128
-                    }[c]
+                c = c.strip()
+                if not c:
+                    break
+                # Need more examples
+                caps |= {
+                    "other": 1,
+                    "repeater": 2,
+                    "bridge": 4,
+                    # "WLAN Access Point": 8,
+                    "router": 16,
+                    "telephone": 32,
+                    # "DOCSIS Cable Device": 64,
+                    # "Station Only": 128
+                }[c]
             interface = {
                 "local_interface": r["interface"],
                 "neighbors": [{
@@ -71,6 +71,6 @@ class Script(BaseScript):
             }
             if "system-description" in r:
                 interface["neighbors"][0]["remote_system_description"] = \
-                r["system-description"]
+                    r["system-description"]
             res += [interface]
         return res

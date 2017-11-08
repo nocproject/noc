@@ -37,8 +37,8 @@ class Script(BaseScript):
         """
         r = self.cli("display lldp local")
         return "LLDP is not enabled" not in r \
-            and "Global status of LLDP: Disable" not in r \
-                and "LLDP enable status:           disable" not in r
+               and "Global status of LLDP: Disable" not in r \
+               and "LLDP enable status:           disable" not in r
 
     @false_on_cli_error
     def has_ndp_cli(self):
@@ -63,7 +63,7 @@ class Script(BaseScript):
         """
         r = self.cli("display dldp")
         return "Global DLDP is not enabled" not in r \
-            and "DLDP global status : disable" not in r
+               and "DLDP global status : disable" not in r
 
     @false_on_cli_error
     def has_stack(self):

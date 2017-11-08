@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from south.db import db
 from django.db import models
+from south.db import db
 
 
 class Migration:
@@ -21,12 +21,11 @@ class Migration:
             "sa_managedobjectprofile",
             "hk_handler",
             models.CharField(
-                    "Housekeeping Handler",
-                    max_length=255,
-                    null=True, blank=True
-                )
+                "Housekeeping Handler",
+                max_length=255,
+                null=True, blank=True
+            )
         )
-
 
     def backwards(self):
         db.delete_column("sa_managedobjectprofile",

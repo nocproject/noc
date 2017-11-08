@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
@@ -38,7 +39,7 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         if distance is not None:
             return {"pair": pair, "status": st, "distance_cm": int(distance),
-            "variance_cm": self.variance}
+                    "variance_cm": self.variance}
         else:
             return {"pair": pair, "status": st, "distance_cm": 0}
 
@@ -53,7 +54,7 @@ class Script(BaseScript):
                     "test cable-diagnostics tdr interface %s" % s["interface"])
         else:
             diag = self.cli(
-                    "test cable-diagnostics tdr interface %s" % interface)
+                "test cable-diagnostics tdr interface %s" % interface)
 
         for l in diag.split('\n'):
             match = self.rx_diag.search(l)
@@ -66,7 +67,7 @@ class Script(BaseScript):
                 r.append({
                     "interface": match.group("interface"),
                     "pairs": pairs
-                    })
+                })
             match = self.rx_diag_good.search(l)
             if match:
                 status = match.group("status")
@@ -77,5 +78,5 @@ class Script(BaseScript):
                 r.append({
                     "interface": match.group("interface"),
                     "pairs": pairs
-                    })
+                })
         return r

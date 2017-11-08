@@ -53,7 +53,7 @@ class Script(BaseScript):
                     "afi": "6",
                     "mac": x["mac"],
                     "interface": x["interface"]}
-                for x in r if x["state"] == "reachable"
+                    for x in r if x["state"] == "reachable"
                 ]
         # Iterate through VRF
         data = []

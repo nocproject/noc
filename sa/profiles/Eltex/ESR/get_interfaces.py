@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -20,11 +21,11 @@ class Script(BaseScript):
     rx_iface = re.compile("Interface\s+(?P<iface>\S+)")
 
     types = {
-           "gi": "physical",
-           "te": "physical",
-           "po": "aggregated",
-           "br": "SVI",
-           }
+        "gi": "physical",
+        "te": "physical",
+        "po": "aggregated",
+        "br": "SVI",
+    }
 
     def execute(self, interface=None):
         stp = []
@@ -86,7 +87,7 @@ class Script(BaseScript):
                 "name": ifname,
                 "type": typ,
                 "admin_status": astate == "Up",
-                "oper_status": lstate =="Up",
+                "oper_status": lstate == "Up",
                 "mac": mac,
                 "enabled_protocols": ["NDP"],
                 "subinterfaces": [sub]

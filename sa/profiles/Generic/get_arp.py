@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+from noc.core.mac import MAC
+from noc.core.mib import mib
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
-from noc.core.mib import mib
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):

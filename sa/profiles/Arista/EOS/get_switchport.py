@@ -8,6 +8,7 @@
 
 # NOC modules
 import re
+
 # Python modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -26,7 +27,7 @@ class Script(BaseScript):
     def execute(self):
         r = []
         port_channel_members = {}  # portchannel -> [interfaces]
-        interface_status = {}      # Interface -> stauts
+        interface_status = {}  # Interface -> stauts
         # Get interafces status
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]

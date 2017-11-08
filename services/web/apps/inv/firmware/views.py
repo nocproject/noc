@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.inv.models.firmware import Firmware
 from noc.core.translation import ugettext as _
+from noc.inv.models.firmware import Firmware
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class FirmwareApplication(ExtDocApplication):

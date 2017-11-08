@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetudldneighbors import IGetUDLDNeighbors
@@ -41,10 +42,10 @@ class Script(BaseScript):
             if not match:
                 continue
             r += [{
-                  "local_device": match.group("local_device"),
-                  "local_interface": local_interface,
-                  "remote_device": match.group("remote_device"),
-                  "remote_interface": match.group("remote_interface"),
-                  "state": match.group("state").upper()
+                "local_device": match.group("local_device"),
+                "local_interface": local_interface,
+                "remote_device": match.group("remote_device"),
+                "remote_interface": match.group("remote_interface"),
+                "state": match.group("state").upper()
             }]
         return r

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from django.db import models
 from south.db import db
-from django.db import models
-from django.db import models
+
 
 class Migration:
     depends_on = [
@@ -10,8 +10,10 @@ class Migration:
     ]
 
     def forwards(self):
-        VCDomain = db.mock_model(model_name='VCDomain', db_table='vc_vcdomain', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        ManagedObjectSelector = db.mock_model(model_name='ManagedObjectSelector', db_table='sa_managedobjectselector', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        VCDomain = db.mock_model(model_name='VCDomain', db_table='vc_vcdomain', db_tablespace='', pk_field_name='id',
+                                 pk_field_type=models.AutoField)
+        ManagedObjectSelector = db.mock_model(model_name='ManagedObjectSelector', db_table='sa_managedobjectselector',
+                                              db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
 
         # Adding model 'VCDomainProvisioningConfig'
         db.create_table('vc_vcdomainprovisioningconfig', (
@@ -26,10 +28,9 @@ class Migration:
         # Creating unique_together for [vc_domain, selector, key] on VCDomainProvisioningConfig.
         db.create_unique('vc_vcdomainprovisioningconfig', ['vc_domain_id', 'selector_id', 'key'])
 
-        db.add_column("vc_vcdomain","enable_provisioning",models.BooleanField("Enable Provisioning",default=False))
+        db.add_column("vc_vcdomain", "enable_provisioning", models.BooleanField("Enable Provisioning", default=False))
 
     def backwards(self):
-
         # Deleting model 'VCDomainProvisioningConfig'
         db.delete_table('vc_vcdomainprovisioningconfig')
 

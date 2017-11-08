@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from pymongo import UpdateOne
 # NOC modules
 from noc.lib.nosql import get_db
+# Python modules
+from pymongo import UpdateOne
 
 
 def fix():

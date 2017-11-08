@@ -10,9 +10,10 @@
 # Python modules
 import re
 from collections import defaultdict
+
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -42,9 +43,13 @@ class Script(BaseScript):
         re.IGNORECASE
     )
     rx_iftype = re.compile(r"^(\S+?)\d+.*$")
-    rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
-    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
+    rx_dis_ip_int = re.compile(
+        r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)",
+        re.IGNORECASE)
+    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
+                       re.MULTILINE | re.IGNORECASE)
+    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+",
+                         re.MULTILINE)
     rx_ndp = re.compile(
         r"^\s*Interface: (?P<name>\S+)\s*\n"
         r"^\s*Status: Enabled", re.MULTILINE)
@@ -199,7 +204,7 @@ class Script(BaseScript):
                 continue
             # I do not known, what are these
             if ifname.startswith("DCN-Serial") \
-            or ifname.startswith("Cpos-Trunk"):
+                    or ifname.startswith("Cpos-Trunk"):
                 continue
             sub = {
                 "name": ifname,

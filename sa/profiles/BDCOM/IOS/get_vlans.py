@@ -8,8 +8,8 @@
 
 
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.lib.text import parse_table
+from noc.sa.interfaces.igetvlans import IGetVlans
 
 
 class Script(BaseScript):

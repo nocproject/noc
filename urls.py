@@ -17,6 +17,6 @@ site.autodiscover()
 # Install URL handlers
 #
 urlpatterns = patterns("",
-    (r"^jsi18n/$", "django.views.i18n.javascript_catalog",
-        {"packages": "django.conf"})
-) + site.urls
+                       (r"^jsi18n/$", "django.views.i18n.javascript_catalog",
+                        {"packages": "django.conf"})
+                       ) + site.urls

@@ -8,11 +8,13 @@
 
 # Python modules
 from operator import attrgetter
-# Django modules
-from django.utils.translation import ugettext_lazy as _
+
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
+# Django modules
+from django.utils.translation import ugettext_lazy as _
+
 # NOC modules
 from prefix import Prefix
 
@@ -21,6 +23,7 @@ class PrefixBookmark(models.Model):
     """
     User Bookmarks
     """
+
     class Meta:
         verbose_name = _("Prefix Bookmark")
         verbose_name_plural = _("Prefix Bookmarks")

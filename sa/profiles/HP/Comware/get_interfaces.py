@@ -9,7 +9,7 @@
 """
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -72,7 +72,7 @@ class Script(BaseScript):
                 continue
             ifname = match.group("interface")
             if ifname.startswith("Bridge-Aggregation") \
-            or ifname.startswith("Route-Aggregation"):
+                    or ifname.startswith("Route-Aggregation"):
                 iftype = "aggregated"
             elif ifname.startswith("LoopBack"):
                 iftype = "loopback"
@@ -127,13 +127,13 @@ class Script(BaseScript):
                     tagged = match2.group("tagged")
                     if match2.group("tagged") and match2.group("tagged") != "none":
                         sub["tagged_vlan"] = \
-                        self.expand_rangelist(match2.group("tagged"))
+                            self.expand_rangelist(match2.group("tagged"))
                 if port_type == "trunk":
                     match2 = self.rx_port_trunk.search(i)
                     if match2.group("passing") and match2.group("passing") != "none":
                         passing = match2.group("passing").replace("1(default vlan),", "")
                         sub["tagged_vlan"] = \
-                        self.expand_rangelist(passing)
+                            self.expand_rangelist(passing)
             iface["subinterfaces"] += [sub]
             if ifname in portchannel_members:
                 ai, is_lacp = portchannel_members[ifname]

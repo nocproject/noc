@@ -5,17 +5,19 @@
 # ---------------------------------------------------------------------
 """
 """
-from south.db import db
 from django.db import models
+from south.db import db
+
 
 class Migration:
-    depends_on=[
+    depends_on = [
         ("main", "0034_default_shard"),
     ]
+
     def forwards(self):
         Shard = db.mock_model(model_name="Shard",
-            db_table="main_shard", db_tablespace="", pk_field_name="id",
-            pk_field_type=models.AutoField)
+                              db_table="main_shard", db_tablespace="", pk_field_name="id",
+                              pk_field_type=models.AutoField)
 
         db.add_column("sa_activator", "shard", models.ForeignKey(Shard, verbose_name=_("Shard"), null=True, blank=True))
 

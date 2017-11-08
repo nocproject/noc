@@ -9,9 +9,12 @@
 """
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+
+
 # @todo: only SNMP version, vrf support
 
 
@@ -50,7 +53,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for pr in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.31.1.1.1.18"]
+                        ["1.3.6.1.2.1.2.2.1.2", "1.3.6.1.2.1.31.1.1.1.18"]
                 ):  # 1.3.6.1.2.1.31.1.1.1.1
                     if (int(pr[0]) >= 1000000):
                         continue

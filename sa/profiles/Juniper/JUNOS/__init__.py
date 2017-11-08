@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -44,6 +45,7 @@ class Profile(BaseProfile):
         Version format:
         <major>.<minor>R<h>.<l>
         """
+
         def c(v):
             v = v.upper()
             l, r = v.split("R")

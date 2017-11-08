@@ -6,20 +6,21 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import datetime
+import operator
 # Python modules
 from threading import Lock
-import operator
-import datetime
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField,
                                 EmbeddedDocumentField, BooleanField,
                                 DateTimeField)
-import cachetools
+from noc.core.debug import error_report
+from noc.core.handler import get_handler
 # NOC modules
 from noc.core.model.decorator import on_delete_check
-from noc.core.handler import get_handler
-from noc.core.debug import error_report
 
 id_lock = Lock()
 

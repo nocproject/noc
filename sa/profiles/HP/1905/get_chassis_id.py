@@ -24,7 +24,7 @@ class Script(BaseScript):
                 return {
                     "first_chassis_mac": mac,
                     "last_chassis_mac": mac
-                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 

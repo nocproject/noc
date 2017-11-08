@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.topology.segment import SegmentTopology
 # NOC modules
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.objectdata import ObjectData
-from noc.core.topology.segment import SegmentTopology
 
 
 def fix():

@@ -4,8 +4,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from noc.lib.nosql import get_db
 from noc.lib.dateutils import total_seconds
+from noc.lib.nosql import get_db
 
 
 class Migration:

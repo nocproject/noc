@@ -6,14 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from base import InvPlugin
+from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.modelinterface import ModelInterface
-from noc.gis.map import map
 from noc.lib.utils import deep_merge
 from noc.sa.interfaces.base import StringParameter, UnicodeParameter
+
+# NOC modules
+from base import InvPlugin
 
 
 class DataPlugin(InvPlugin):
@@ -45,11 +45,11 @@ class DataPlugin(InvPlugin):
     def get_data(self, request, o):
         data = []
         for k, v, d, is_const in [
-                ("Name", " | ".join(o.get_name_path()), "Inventory name", False),
-                ("Vendor", o.model.vendor.name, "Hardware vendor", True),
-                ("Model", o.model.name, "Inventory model", True),
-                ("ID", str(o.id), "Internal ID", True)
-            ]:
+            ("Name", " | ".join(o.get_name_path()), "Inventory name", False),
+            ("Vendor", o.model.vendor.name, "Hardware vendor", True),
+            ("Model", o.model.name, "Inventory model", True),
+            ("ID", str(o.id), "Internal ID", True)
+        ]:
             r = {
                 "interface": "Common",
                 "name": k,
@@ -95,7 +95,7 @@ class DataPlugin(InvPlugin):
         }
 
     def api_save_data(self, request, id,
-                 interface=None, key=None, value=None):
+                      interface=None, key=None, value=None):
         o = self.app.get_object_or_404(Object, id=id)
         if interface == "Common":
             # Fake interface

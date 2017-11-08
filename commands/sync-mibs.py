@@ -6,19 +6,20 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import argparse
+import datetime
+import gzip
 # Python modules
 import os
-import gzip
 import re
-import datetime
 import time
-import argparse
+
 # Third-party modules
 import ujson
+from noc.config import config
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
-from noc.config import config
 
 
 class Command(BaseCommand):
@@ -32,6 +33,7 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="List of extractor names"
         )
+
     rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
                                  re.MULTILINE)
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
@@ -129,6 +131,7 @@ class Command(BaseCommand):
         # Upload
         if d["data"]:
             mib.load_data(d["data"])
+
 
 if __name__ == "__main__":
     Command().run()

@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from django.db import models
 from south.db import db
-from django.db import models
-from django.db import models
+
 
 class Migration:
-
     def forwards(self):
-
         # Adding model 'PyRule'
         db.create_table('main_pyrule', (
             ('id', models.AutoField(primary_key=True)),

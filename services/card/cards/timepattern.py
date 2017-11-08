@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.main.models.timepattern import TimePattern
+
 # NOC modules
 from base import BaseCard
-from noc.main.models.timepattern import TimePattern
 
 
 class TimePatternCard(BaseCard):

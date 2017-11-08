@@ -6,19 +6,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import os
-import datetime
-from optparse import make_option
 import re
+from optparse import make_option
+
 # Django modules
 from django.core.management.base import BaseCommand, CommandError
-from django.template import Template, Context
-from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
+from django.db.models.fields import NOT_PROVIDED
+from django.template import Template, Context
 # NOC modules
 from noc.settings import INSTALLED_APPS
-from noc.lib.nosql import Document
 
 
 class Command(BaseCommand):
@@ -26,7 +26,7 @@ class Command(BaseCommand):
     Create and initialize appliation skeleton
     """
     help = "Create application skeleton"
-    option_list=BaseCommand.option_list+(
+    option_list = BaseCommand.option_list + (
         make_option("--model", "-m", dest="model",
                     help="Create ModelApplication"),
         make_option("--report", "-r", dest="report",
@@ -120,6 +120,7 @@ class Command(BaseCommand):
         :param data:
         :return:
         """
+
         def js_f(data):
             """
             Convert list of pairs to JS dict
@@ -127,6 +128,7 @@ class Command(BaseCommand):
             :type data: list
             :return:
             """
+
             def js_v(s):
                 """
                 Convert python value to js

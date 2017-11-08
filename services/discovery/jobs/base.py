@@ -7,35 +7,35 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from collections import defaultdict
 import contextlib
+import datetime
 import time
 import zlib
-import datetime
+# Python modules
+from collections import defaultdict
+
 # Third-party modules
 import bson
 import six
-from six.moves import StringIO
-# NOC modules
-from noc.core.scheduler.periodicjob import PeriodicJob
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.subinterface import SubInterface
-from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.debug import error_report
-from noc.core.log import PrefixLoggerAdapter
-from noc.inv.models.discoveryid import DiscoveryID
-from noc.inv.models.interface import Interface
-from noc.lib.nosql import get_db
-from noc.core.service.error import RPCError, RPCRemoteError
-from noc.core.service.loader import get_service
 from noc.core.error import (
     ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND,
     ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR,
     ERR_CLI_CONNECTION_REFUSED
 )
-from noc.core.span import Span
 from noc.core.error import ERR_UNKNOWN
+from noc.core.log import PrefixLoggerAdapter
+# NOC modules
+from noc.core.scheduler.periodicjob import PeriodicJob
+from noc.core.service.error import RPCError, RPCRemoteError
+from noc.core.span import Span
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.subinterface import SubInterface
+from noc.lib.nosql import get_db
+from noc.sa.models.managedobject import ManagedObject
+from six.moves import StringIO
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -609,8 +609,8 @@ class DiscoveryCheck(object):
         """
         self.logger.info("Cleaning links")
         for i in Interface.objects.filter(
-            managed_object=self.object.id,
-            type__in=["physical", "aggregated"]
+                managed_object=self.object.id,
+                type__in=["physical", "aggregated"]
         ):
             l = i.link
             if l:
@@ -733,7 +733,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # Checking candidates from remote side
         for remote_object in candidates:
             if (self.required_script and
-                    self.required_script not in remote_object.scripts):
+                        self.required_script not in remote_object.scripts):
                 self.logger.info(
                     "Remote object '%s' does not support %s script. "
                     "Cannot confirm links",
@@ -966,9 +966,9 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 llink.discovery_method
             )
             if (
-                llink.discovery_method != self.name and
-                (llink.discovery_method is None or
-                     self.is_preferable_over(llink))
+                            llink.discovery_method != self.name and
+                        (llink.discovery_method is None or
+                             self.is_preferable_over(llink))
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)

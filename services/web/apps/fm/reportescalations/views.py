@@ -9,16 +9,17 @@
 ## Python modules
 import datetime
 import operator
+
 ## Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
-## NOC modules
-from noc.lib.app.simplereport import SimpleReport, PredefinedReport
-from noc.sa.models.useraccess import UserAccess
+from noc.core.translation import ugettext as _
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+## NOC modules
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.translation import ugettext as _
+from noc.sa.models.useraccess import UserAccess
 
 
 class ReportForm(forms.Form):

@@ -9,12 +9,14 @@
 # Python modules
 import datetime
 import logging
+
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
+from noc.lib.dateutils import total_seconds
+
 # NOC modules
 from reboot import Reboot
-from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
 

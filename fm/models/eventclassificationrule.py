@@ -8,15 +8,17 @@
 
 # Python modules
 import os
+
 # Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
+from noc.lib.escape import json_escape as jq
+from noc.lib.nosql import PlainReferenceField
+from noc.lib.text import quote_safe_path
+
+from datasource import DataSource
 # NOC modules
 from eventclass import EventClass
-from datasource import DataSource
-from noc.lib.nosql import PlainReferenceField
-from noc.lib.escape import json_escape as jq
-from noc.lib.text import quote_safe_path
 
 
 class EventClassificationRuleVar(EmbeddedDocument):

@@ -6,17 +6,18 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import operator
 # Python modules
 from threading import Lock
-import operator
+
+import cachetools
+from django.contrib.auth.models import Group
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, IntField, ListField, EmbeddedDocumentField
-from django.contrib.auth.models import Group
-import cachetools
+from noc.core.model.decorator import on_save
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
-from noc.core.model.decorator import on_save
 
 id_lock = Lock()
 
@@ -139,8 +140,8 @@ class AuthLDAPDomain(Document):
 
     def on_save(self):
         if self.is_default and (
-                not hasattr(self, "_changed_fields") or
-                "is_default" in self._changed_fields
+                    not hasattr(self, "_changed_fields") or
+                        "is_default" in self._changed_fields
         ):
             # Only one default domain permitted
             AuthLDAPDomain._get_collection().update_many({

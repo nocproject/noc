@@ -9,6 +9,7 @@
 
 # NOC modules
 from noc.core.interface.base import BaseInterface
+
 from base import (DictListParameter, StringParameter,
                   StringListParameter, BooleanParameter)
 
@@ -36,7 +37,7 @@ class IGetSLAProbes(BaseInterface):
             "ftp",
             "dhcp",
             "owamp",  # One-Way Active Measurement Protocol (RFC4656)
-            "twamp"   # Two-Way Active Measurement Protocol (RFC5357)
+            "twamp"  # Two-Way Active Measurement Protocol (RFC5357)
         ]),
         "target": StringParameter(),
         "hw_timestamp": BooleanParameter(default=False),

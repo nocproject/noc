@@ -6,9 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import logging
-import datetime
+
 # Django modules
 from django.db.models import signals as django_signals
 from django.utils.encoding import smart_unicode
@@ -20,7 +21,6 @@ from mongoengine.fields import (StringField, DateTimeField,
 from noc.config import config
 from noc.lib.middleware import get_user
 from noc.lib.utils import get_model_id
-from noc.lib.text import to_seconds
 
 logger = logging.getLogger(__name__)
 

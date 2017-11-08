@@ -8,14 +8,15 @@
 
 # Python modules
 import difflib
-# Third-party modules
-from core.model.fields import AutoCompleteTagsField
+
 from django.db import models
 # NOC modules
 from noc.lib.app import site
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers import parser_registry
 
+# Third-party modules
+from core.model.fields import AutoCompleteTagsField
 
 parser_registry.register_all()
 
@@ -24,6 +25,7 @@ class KBEntry(models.Model):
     """
     KB Entry
     """
+
     class Meta:
         verbose_name = "KB Entry"
         verbose_name_plural = "KB Entries"

@@ -8,10 +8,10 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-
 
 rx_sep = re.compile(r"^===+\n", re.MULTILINE)
 rx_local_interface = re.compile(
@@ -22,14 +22,14 @@ rx_remote_chassis_id_subtype = re.compile(
     r"Remote Chassis ID Subtype:.+\((?P<subtype>\d+)\)",
     re.IGNORECASE | re.MULTILINE)
 rx_remote_chassis_id = re.compile(r"Remote Chassis ID:\s*(?P<id>\S+)",
-    re.IGNORECASE | re.MULTILINE)
+                                  re.IGNORECASE | re.MULTILINE)
 rx_remote_port_id_subtype = re.compile(
     r"Remote Port Subtype:.+\((?P<subtype>\d+)\)",
-     re.IGNORECASE | re.MULTILINE)
+    re.IGNORECASE | re.MULTILINE)
 rx_remote_port_id = re.compile(r"Remote Port ID:\s*(?P<port>.+?)$",
-    re.IGNORECASE | re.MULTILINE)
+                               re.IGNORECASE | re.MULTILINE)
 rx_remote_system_name = re.compile(r"Remote System Name:\s*(?P<name>\S+)",
-    re.IGNORECASE | re.MULTILINE)
+                                   re.IGNORECASE | re.MULTILINE)
 rx_remote_capabilities = re.compile(
     r"Enabled System Capabilities:\s*(?P<capabilities>.*?)$",
     re.IGNORECASE | re.MULTILINE)

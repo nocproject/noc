@@ -8,13 +8,14 @@
 
 # Python modules
 from collections import defaultdict
-# Third-party modules
-from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
-    Literal, delimitedList
+
 # NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
 from noc.lib.validators import is_ipv4, is_int
+# Third-party modules
+from pyparsing import nums, Word, Group, Optional, Suppress, Combine, \
+    Literal, delimitedList
 
 
 class BaseDLinkParser(BaseParser):
@@ -289,8 +290,8 @@ class BaseDLinkParser(BaseParser):
 
     def parse_traffic_control(self, tokens):
         """
-        config traffic control 1 broadcast enable multicast enable unicast enable action drop threshold 64 countdown 0 time_interval 5 
-        config traffic control 49 broadcast disable multicast disable unicast disable action drop threshold 131072 countdown 0 time_interval 5 
+        config traffic control 1 broadcast enable multicast enable unicast enable action drop threshold 64 countdown 0 time_interval 5
+        config traffic control 49 broadcast disable multicast disable unicast disable action drop threshold 131072 countdown 0 time_interval 5
         """
         ports = self.next_item(tokens, "control") or ""
         unicast = self.next_item(tokens, "unicast")

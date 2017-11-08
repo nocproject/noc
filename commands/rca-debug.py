@@ -8,17 +8,18 @@
 
 # Python modules
 from __future__ import print_function
+
 import datetime
-from collections import namedtuple
 import operator
+from collections import namedtuple
+
+from noc.config import config
 # NOC modules
 from noc.core.management.base import BaseCommand
-from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.sa.models.objectdata import ObjectData
-from noc.config import config
 from noc.lib.dateutils import total_seconds
-
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectdata import ObjectData
 
 Record = namedtuple("Record", [
     "timestamp", "alarm_id", "root_id",
@@ -60,9 +61,9 @@ class Command(BaseCommand):
         alarms = {}
         mos = list(a0.managed_object.segment.managed_objects)
         for a in ArchivedAlarm.objects.filter(
-            timestamp__gte=t0,
-            timestamp__lte=t1,
-            managed_object__in=[o.id for o in mos]
+                timestamp__gte=t0,
+                timestamp__lte=t1,
+                managed_object__in=[o.id for o in mos]
         ):
             alarms[a.managed_object.id] = a
         # Enrich with roots
@@ -97,7 +98,8 @@ class Command(BaseCommand):
             self.print(MASK % x)
         if trace:
             self.print("Time range: %s -- %s" % (t0, t1))
-            self.print("Topology RCA Window: %s" % ("%ss" % config.correlator.topology_rca_window if config.correlator.topology_rca_window else "Disabled"))
+            self.print("Topology RCA Window: %s" % (
+                "%ss" % config.correlator.topology_rca_window if config.correlator.topology_rca_window else "Disabled"))
             amap = dict((a.id, a) for a in alarms.values())
             for x in sorted(r, key=operator.attrgetter("timestamp")):
                 if not x.alarm_id:
@@ -145,7 +147,8 @@ class Command(BaseCommand):
             a = alarms.get(n)
             if a and a.timestamp <= ts:
                 na[n] = a
-        self.print("    Neighbor alarms: %s" % ", ".join("%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name) for x in na))
+        self.print("    Neighbor alarms: %s" % ", ".join(
+            "%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name) for x in na))
         self.print("    Uplinks: %s" % ", ".join(ManagedObject.get_by_id(u).name for u in uplinks))
         if uplinks and len([na[o] for o in uplinks if o in na]) == len(uplinks):
             # All uplinks are faulty

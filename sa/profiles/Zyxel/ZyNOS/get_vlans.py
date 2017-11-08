@@ -8,9 +8,10 @@
 
 # Python modules
 import re
+
+from noc.core.script.base import BaseScript
 # NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
-from noc.core.script.base import BaseScript
 
 
 class Script(BaseScript):
@@ -18,9 +19,9 @@ class Script(BaseScript):
     interface = IGetVlans
 
     rx_vlan = re.compile(r"^\s*\d+\s+(?P<vlan_id>\d+)\s+.*$",
-                re.MULTILINE)
+                         re.MULTILINE)
     rx_vlan_name = re.compile(r"^\s+Name\s+:(?P<name>.*)$",
-                re.MULTILINE)
+                              re.MULTILINE)
 
     def execute(self):
         if self.has_snmp():

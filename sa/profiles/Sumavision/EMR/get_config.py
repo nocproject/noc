@@ -8,27 +8,29 @@ __author__ = 'FeNikS'
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetconfig import IGetConfig
+import gzip
 # Python modules
 import os
 from ftplib import FTP
-import gzip
 from xml.dom.minidom import parseString
+
+# NOC modules
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 confdir = "para"
 path_to_temp_files = '/tmp/noc'
 path_to_files = 'for_sumavision'
 
+
 def check_path_existence(path):
-        folders = path.split("/")
-        path = '/'
-        for folder in folders:
-            if folder:
-                path += folder + "/"
-                if not os.path.exists(path):
-                    os.mkdir(path)
+    folders = path.split("/")
+    path = '/'
+    for folder in folders:
+        if folder:
+            path += folder + "/"
+            if not os.path.exists(path):
+                os.mkdir(path)
+
 
 def clear_dir(path):
     if not os.path.exists(path):
@@ -40,6 +42,7 @@ def clear_dir(path):
         else:
             os.remove(full_path)
     os.rmdir(path)
+
 
 class Script(NOCScript):
     name = "Sumavision.EMR.get_config"
@@ -67,7 +70,7 @@ class Script(NOCScript):
                     if name.endswith(".gz"):
                         copy_file_path = temp_dir + name
                         lf = open(copy_file_path, "wb")
-                        ftp.retrbinary("RETR " + name, lf.write, 8*1024)
+                        ftp.retrbinary("RETR " + name, lf.write, 8 * 1024)
                         copy_files.append(copy_file_path)
             finally:
                 ftp.quit()

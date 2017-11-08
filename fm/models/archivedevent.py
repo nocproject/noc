@@ -6,16 +6,17 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from mongoengine import document, fields
 # Django modules
 from django.template import Template, Context
-# NOC modules
-from eventlog import EventLog
-from eventclass import EventClass
-from noc.sa.models.managedobject import ManagedObject
+# Third-party modules
+from mongoengine import document, fields
 from noc.lib import nosql
 from noc.lib.dateutils import total_seconds
+from noc.sa.models.managedobject import ManagedObject
+
+from eventclass import EventClass
+# NOC modules
+from eventlog import EventLog
 
 
 class ArchivedEvent(document.Document):

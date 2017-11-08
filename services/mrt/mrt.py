@@ -9,17 +9,17 @@
 
 # Python modules
 import logging
+
+import tornado.gen
 # Third-party modules
 import ujson
-import tornado.gen
+from noc.config import config
+from noc.core.debug import error_report
+from noc.core.perf import metrics
 # Python modules
 from noc.core.service.authhandler import AuthRequestHandler
-from noc.core.perf import metrics
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
-from noc.core.debug import error_report
-from noc.config import config
-
 
 logger = logging.getLogger(__name__)
 

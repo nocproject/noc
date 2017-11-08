@@ -7,17 +7,20 @@
 # ---------------------------------------------------------------------
 """
 """
+import datetime
+import re
+import time
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
-import re
-import datetime
-import time
 
 
 class Script(BaseScript):
     name = "DLink.DxS.get_dhcp_binding"
     interface = IGetDHCPBinding
-    rx_line = re.compile(r"^(?P<name>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<type>Ethernet)\s+(?P<status>Automatic|Manual)\s+(?P<expire>.+?).*$", re.IGNORECASE | re.MULTILINE)
+    rx_line = re.compile(
+        r"^(?P<name>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<type>Ethernet)\s+(?P<status>Automatic|Manual)\s+(?P<expire>.+?).*$",
+        re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         try:

@@ -6,11 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.fm.models.ignoreeventrules import IgnoreEventRules
-from noc.sa.interfaces.base import REParameter
 from noc.core.translation import ugettext as _
+from noc.fm.models.ignoreeventrules import IgnoreEventRules
+# NOC modules
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.sa.interfaces.base import REParameter
 
 
 class IgnoreEventRuleApplication(ExtModelApplication):

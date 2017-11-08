@@ -8,11 +8,12 @@
 
 # Python modules
 import logging
+
+from noc.core.perf import metrics
+from noc.fm.models.ttsystem import TTSystem
 # NOC modules
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.managedobject import ManagedObject
-from noc.fm.models.ttsystem import TTSystem
-from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 

@@ -8,22 +8,22 @@
 # ---------------------------------------------------------------------
 """
 # Python modules
-import operator
 import re
 from collections import defaultdict
+
 from django import forms
 # NOC modules
 from noc.core.cache.base import cache
-from noc.lib.app.simplereport import SimpleReport, SectionRow
-from noc.lib.nosql import get_db
-from pymongo import ReadPreference
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import ManagedObjectProfile
+from noc.core.translation import ugettext as _
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.lib.app.simplereport import SimpleReport, SectionRow
+from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import ManagedObjectProfile
 from noc.sa.models.useraccess import UserAccess
-from noc.core.translation import ugettext as _
+from pymongo import ReadPreference
 
 
 class ReportForm(forms.Form):

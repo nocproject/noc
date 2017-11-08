@@ -6,13 +6,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-from pyrad.packet import AccessAccept
+from noc.config import config
 from pyrad.client import Client
 from pyrad.dictionary import Dictionary
+# Third-party modules
+from pyrad.packet import AccessAccept
+
 # NOC modules
 from base import BaseAuthBackend
-from noc.config import config
 
 
 class RADIUSBackend(BaseAuthBackend):

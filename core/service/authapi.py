@@ -8,13 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import operator
 from threading import Lock
+
 # Third-party modules
 import cachetools
+from noc.main.models import User
+
 # NOC modules
 from .api import APIRequestHandler
-from noc.main.models import User
 
 user_lock = Lock()
 

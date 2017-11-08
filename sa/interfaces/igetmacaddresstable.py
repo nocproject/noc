@@ -6,6 +6,7 @@
 """
 """
 from noc.core.interface.base import BaseInterface
+
 from base import (InterfaceNameParameter, ListOfParameter, StringParameter,
                   VLANIDParameter, MACAddressParameter, DictParameter)
 
@@ -21,7 +22,7 @@ class IGetMACAddressTable(BaseInterface):
         "type": StringParameter(choices=[
             "D",  # Dynamic
             "S",  # Static
-            "C"   # CPU
+            "C"  # CPU
         ])
     }))
     preview = "NOC.sa.managedobject.scripts.ShowMAC"

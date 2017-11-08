@@ -8,7 +8,7 @@
 
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -36,11 +36,11 @@ class Script(BaseScript):
         re.MULTILINE)
 
     types = {
-        "g": "physical",    # GigabitEthernet
+        "g": "physical",  # GigabitEthernet
         "c": "aggregated",  # Port-channel/Portgroup
-        "V": "SVI",         # Vlan interface
-        "v": "SVI",         # Vlan interface
-        }
+        "V": "SVI",  # Vlan interface
+        "v": "SVI",  # Vlan interface
+    }
 
     def execute(self):
         # Get port-to-vlan mappings
@@ -50,7 +50,7 @@ class Script(BaseScript):
             switchports[sp["interface"]] = (
                 sp["untagged"] if "untagged" in sp else None,
                 sp["tagged"]
-                )
+            )
 
         # Get IP interfaces
         mac = self.scripts.get_chassis_id()
@@ -78,8 +78,8 @@ class Script(BaseScript):
                     "enabled_afi": ["IPv4"],
                     "ipv4_addresses": [ip],
                     "mac": mac,
-                    }]
-                }
+                }]
+            }
             interfaces += [iface]
 
         ip_iface = self.cli("show ipv6 interface")
@@ -119,8 +119,8 @@ class Script(BaseScript):
                         "enabled_afi": ["IPv6"],
                         "ipv6_addresses": [ip],
                         "mac": mac,
-                        }]
-                    }
+                    }]
+                }
                 interfaces += [iface]
 
         status = self.cli("show interfaces status")
@@ -145,13 +145,13 @@ class Script(BaseScript):
                 ifindex = ifname[1:]
                 rx_config = re.compile(
                     r"^" + ifname + "\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
-                    r"(?P<admin_status>(Up|Down))\s+\S+\s+\S+$",
+                                    r"(?P<admin_status>(Up|Down))\s+\S+\s+\S+$",
                     re.MULTILINE)
             else:
                 ifindex = str(999 + int(ifname[2:]))
                 rx_config = re.compile(
                     r"^" + ifname + "\s+\S+\s+\S+\s+\S+\s+\S+\s+"
-                    r"(?P<admin_status>(Up|Down))\s*$",
+                                    r"(?P<admin_status>(Up|Down))\s*$",
                     re.MULTILINE)
             match = rx_config.search(config)
             a_stat = match.group("admin_status").lower() == "up"
@@ -195,8 +195,8 @@ class Script(BaseScript):
                         "mac": mac,
                         "enabled_afi": [],
                         "snmp_ifindex": ifindex
-                        }]
-                    }
+                    }]
+                }
                 interfaces += [iface]
 
             # Portchannel member
@@ -217,7 +217,7 @@ class Script(BaseScript):
             # GVRP
             rx_gvrp = re.compile(
                 r"^" + ifname + "\s+Enabled\s+Normal\s+"
-                r"Enabled\s+\d+\s+\d+\s+\d+",
+                                r"Enabled\s+\d+\s+\d+\s+\d+",
                 re.MULTILINE)
             match = rx_gvrp.search(gvrp)
             if match:
@@ -233,7 +233,7 @@ class Script(BaseScript):
             # STP
             rx_stp = re.compile(
                 r"^\s*" + ifname + "\s+enabled\s+\S+\s+\d+\s+"
-                r"\S+\s+\S+\s+(Yes|No)\s+", re.MULTILINE)
+                                   r"\S+\s+\S+\s+(Yes|No)\s+", re.MULTILINE)
             match = rx_stp.search(stp)
             if match:
                 iface["enabled_protocols"] += ["STP"]

@@ -6,18 +6,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from noc.core.translation import ugettext as _
+from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.inv.models.link import Link
 # Python modules
-import datetime
 # Django modules
-from django.db.models import Count
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
-from noc.inv.models.interface import Interface
-from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.inv.models.link import Link
-from noc.core.translation import ugettext as _
 
 
 class ReportDiscoveryApplication(SimpleReport):

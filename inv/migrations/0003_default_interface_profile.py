@@ -9,6 +9,7 @@ from noc.lib.nosql import get_db
 
 DEFAULT_NAME = "default"
 
+
 class Migration:
     def forwards(self):
         c = get_db().noc.interface_profiles

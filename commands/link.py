@@ -9,6 +9,7 @@
 # Python modules
 import argparse
 from collections import defaultdict
+
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.inv.models.interface import Interface
@@ -112,6 +113,7 @@ class Command(BaseCommand):
             iface = Interface.get_interface(i)
             if iface:
                 iface.unlink()
+
 
 if __name__ == "__main__":
     Command().run()

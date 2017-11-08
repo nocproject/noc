@@ -8,14 +8,15 @@
 
 # Python modules
 import datetime
+
+from django import forms
 # Django modules
 from django.contrib import admin
-from django import forms
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.modelapplication import ModelApplication
-from noc.main.models import Schedule, PyRule
 from noc.lib.periodic import periodic_registry
-from noc.core.translation import ugettext as _
+from noc.main.models import Schedule, PyRule
 
 
 class ScheduleAdminForm(forms.ModelForm):
@@ -60,6 +61,7 @@ class ScheduleAdmin(admin.ModelAdmin):
         else:
             message = "%d tasks have been rescheduled" % updated
         self.message_user(request, message)
+
     run_now.short_description = "Run selected tasks now"
 
     def save_model(self, request, obj, form, change):

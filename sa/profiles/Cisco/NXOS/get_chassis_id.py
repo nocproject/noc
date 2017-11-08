@@ -8,10 +8,11 @@
 
 # Python modules
 import re
+
+from noc.core.mac import MAC
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -23,7 +24,6 @@ class Script(BaseScript):
     rx_mac = re.compile(r"\s+MAC\s+Addresses\s+:\s+(?P<base>\S+)\n"
                         r"\s+Number\s+of\s+MACs\s+:\s+(?P<count>\d+)\n",
                         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
 
     def execute(self):
         try:

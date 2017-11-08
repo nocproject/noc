@@ -9,7 +9,7 @@
 """
 # Python modules
 import re
-from collections import defaultdict
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -33,7 +33,7 @@ class Script(BaseScript):
         interfaces = []
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
-            #hw = match.group("hardw")
+            # hw = match.group("hardw")
             full_ifname = match.group("interface")
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname[:4] == "mgmt":

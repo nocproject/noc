@@ -7,10 +7,11 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -67,10 +68,10 @@ class Script(BaseScript):
                     }
                     interfaces += [iface]
         match = self.re_search(self.rx_mac,
-            self.cli("show atmlan mac-address"))
+                               self.cli("show atmlan mac-address"))
         mac = match.group("mac")
         match = self.re_search(self.rx_ip,
-            self.cli("show atmlan ip-address"))
+                               self.cli("show atmlan ip-address"))
         addr = match.group("ip")
         mask = match.group("mask")
         ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
@@ -82,7 +83,7 @@ class Script(BaseScript):
             "name": "mgmt",
             "type": "SVI",
             "admin_status": True,  # always True, since inactive
-            "oper_status": True,   # SVIs aren't shown at all
+            "oper_status": True,  # SVIs aren't shown at all
             "mac": mac,
             "subinterfaces": [{
                 "name": "mgmt",

@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Pretty command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Pretty command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 ## Python modules
 import argparse
-import os
-# Third-party modules
-from tornado.ioloop import IOLoop
+
 import tornado.gen
 import tornado.queues
+from noc.config import config
+from noc.core.ioloop.ping import Ping
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
-from noc.core.ioloop.ping import Ping
-from noc.config import config
+# Third-party modules
+from tornado.ioloop import IOLoop
 
 
 class Command(BaseCommand):

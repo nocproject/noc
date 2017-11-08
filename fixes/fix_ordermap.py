@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 # NOC modules
 from noc.main.models.ordermap import OrderMap
 

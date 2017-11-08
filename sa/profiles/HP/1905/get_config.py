@@ -40,7 +40,7 @@ class Script(BaseScript):
                 conf_file = open(TFTP_root + '/' + file_name, 'r')
                 config = conf_file.read()
                 conf_file.close()
-#                config = self.strip_first_lines(config, 0)
+                #                config = self.strip_first_lines(config, 0)
                 return self.cleaned_config(config)
             except self.snmp.TimeOutError:
                 pass

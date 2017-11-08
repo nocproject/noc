@@ -6,14 +6,16 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import logging
 # Python modules
 import os
-import logging
+
 # Third-party modules
 import six
+from noc.core.fileutils import safe_rewrite
+
 # NOC modules
 from gridvcs import GridVCS
-from noc.core.fileutils import safe_rewrite
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +41,7 @@ class GridVCSField(object):
     # Get diff between revision
     print o.data.diff(rev1, rev2)
     """
+
     def __init__(self, repo, mirror=None):
         self.repo = repo
         self.model = None

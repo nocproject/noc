@@ -5,10 +5,11 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.validators import is_int
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
@@ -177,7 +178,7 @@ class Script(BaseScript):
                 my_dict['type'] = 'tunnel'
 
             elif iftypeNetwork in iface or iftypeVPRN in iface \
-            or iftypeIES in iface:
+                    or iftypeIES in iface:
                 match_obj = re.search(re_int_desc_vprn, iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
@@ -230,7 +231,7 @@ class Script(BaseScript):
                     my_sub = {
                         'oper_status': my_dict['oper_status'],
                         'admin_status': my_dict['admin_status'],
-                        'protocols':my_dict['protocols']
+                        'protocols': my_dict['protocols']
                     }
                     my_dict.pop('protocols')
                     if 'enabled_afi' in my_dict:
@@ -251,10 +252,10 @@ class Script(BaseScript):
                         else:
                             my_sub['enabled_afi'] = ['MPLS']
                     if 'mac' in my_dict:
-                            my_sub['mac'] = my_dict['mac']
+                        my_sub['mac'] = my_dict['mac']
                     if 'mtu' in my_dict:
-                            my_sub['mtu'] = my_dict['mtu']
-                            my_dict.pop('mtu')
+                        my_sub['mtu'] = my_dict['mtu']
+                        my_dict.pop('mtu')
                     my_dict['subinterfaces'][0].update(my_sub)
                     if vrf:
                         found = False
@@ -282,7 +283,6 @@ class Script(BaseScript):
         else:
             fitype = "Unsupported"
         return fitype
-
 
     def fix_vpls_saps(self, sap_section):
         result = {'interfaces': []}
@@ -361,7 +361,6 @@ class Script(BaseScript):
                 }
 
         return result
-
 
     def get_forwarding_instance(self):
         forwarding_instance = re.compile(
@@ -505,7 +504,6 @@ class Script(BaseScript):
                 my_dict.pop('bad_stat')
                 my_dict['description'] = my_dict['description'].replace("\n", "")
                 fi['interfaces'].append(my_dict)
-
 
         lag_info = self.cli('show lag detail')
 

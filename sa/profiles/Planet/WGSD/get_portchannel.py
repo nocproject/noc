@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
@@ -92,8 +93,8 @@ class Script(BaseScript):
                 l_type = "S"
             r += [{
                 "interface": match.group("port").lower(),
-               #"interface": match.group("port"),
+                # "interface": match.group("port"),
                 "type": l_type,
                 "members": memb,
-                }]
+            }]
         return r

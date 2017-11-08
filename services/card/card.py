@@ -6,22 +6,23 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+import inspect
+import operator
 # Python modules
 import os
-import inspect
 from threading import Lock
-import operator
+
+import cachetools
 # Third-party modules
 import tornado.web
-from jinja2 import Template
 import ujson
-import cachetools
+from jinja2 import Template
+from noc.config import config
+from noc.core.debug import error_report
 # NOC modules
 from noc.core.service.ui import UIHandler
-from noc.services.card.cards.base import BaseCard
-from noc.core.debug import error_report
 from noc.main.models import User
-from noc.config import config
+from noc.services.card.cards.base import BaseCard
 
 user_lock = Lock()
 
@@ -117,9 +118,9 @@ class CardRequestHandler(UIHandler):
                     for d in dir(m):
                         c = getattr(m, d)
                         if (
-                            inspect.isclass(c) and
-                            issubclass(c, BaseCard) and
-                            c.__module__ == m.__name__ and
-                            getattr(c, "name", None)
+                                            inspect.isclass(c) and
+                                            issubclass(c, BaseCard) and
+                                            c.__module__ == m.__name__ and
+                                    getattr(c, "name", None)
                         ):
                             cls.CARDS[c.name] = c

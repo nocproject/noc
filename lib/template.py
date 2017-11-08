@@ -8,6 +8,7 @@
 
 # Python modules
 import os
+
 # Django modules
 from django.template import Template, Context
 
@@ -19,6 +20,7 @@ def render_template(name, context=None):
     :param context:
     :return:
     """
+
     def get_path(name):
         local_path = os.path.join("local", "templates", name)
         if os.path.exists(local_path):
@@ -52,6 +54,7 @@ def render_message(name, context=None):
     :param context:
     :return: subject, body tuple
     """
+
     def strip_leading_newlines(lines):
         l = lines[:]
         while l and not l[0].strip():

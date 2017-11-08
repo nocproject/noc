@@ -8,10 +8,10 @@
 
 # Django modules
 from django.db import models
+from noc.core.model.decorator import on_delete_check
+from noc.core.model.fields import TagsField, DocumentReferenceField
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.model.fields import TagsField, DocumentReferenceField
-from noc.core.model.decorator import on_delete_check
 
 
 @on_delete_check(check=[
@@ -25,6 +25,7 @@ class TerminationGroup(models.Model):
     """
     Termination Group
     """
+
     class Meta:
         verbose_name = "Termination Group"
         verbose_name_plural = "Termination Groups"
@@ -93,7 +94,6 @@ class TerminationGroup(models.Model):
         Retuns dict of dynamic pool name -> technology -> usage counter
         """
         # Avoid circular references
-        from noc.ip.models.vrf import VRF
         from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
 
         usage = {}

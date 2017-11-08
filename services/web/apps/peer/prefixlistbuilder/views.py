@@ -9,11 +9,11 @@
 # Django modules
 from django import forms
 from django.core.validators import RegexValidator
+from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.peer.models import PeeringPoint, WhoisCache
 from noc.sa.interfaces.base import UnicodeParameter, ModelParameter
-from noc.core.translation import ugettext as _
 
 as_set_re = "^AS(?:\d+|-\S+)(:\S+)?(?:\s+AS(?:\d+|-\S+)(:\S+)?)*$"
 
@@ -39,9 +39,10 @@ class PrefixListBuilderApplication(ExtApplication):
     """
     title = _("Prefix List Builder")
     menu = _("Prefix List Builder")
+
     # implied_permissions = {
     #    "read": ["peer:peeringpoint:lookup"]
-    #}
+    # }
 
     @view(method=["GET"], url=r"^$", access="read", api=True,
           validate={

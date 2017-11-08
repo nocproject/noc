@@ -6,10 +6,10 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.crm.models.subscriber import Subscriber
 from noc.core.translation import ugettext as _
+from noc.crm.models.subscriber import Subscriber
+# NOC modules
+from noc.lib.app.extdocapplication import ExtDocApplication
 
 
 class SubscriberApplication(ExtDocApplication):

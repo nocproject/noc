@@ -9,17 +9,18 @@
 # Python modules
 import operator
 from time import mktime
+
+import dateutil.parser
+import tornado.gen
 # Third-party modules
 import tornado.web
-import tornado.gen
 import ujson
-import dateutil.parser
 from dateutil import tz
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.archivedalarm import ArchivedAlarm
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.fm.models.alarmclass import AlarmClass
 
 
 class AnnotationsHandler(tornado.web.RequestHandler):
@@ -97,17 +98,17 @@ class AnnotationsHandler(tornado.web.RequestHandler):
                 if f <= d["timestamp"] <= t:
                     r += [{
                         "annotation": annotation,
-                        "time": mktime(d["timestamp"].timetuple())*1000 + d["timestamp"].microsecond / 1000,
+                        "time": mktime(d["timestamp"].timetuple()) * 1000 + d["timestamp"].microsecond / 1000,
                         "title": AlarmClass.get_by_id(d["alarm_class"]).name
-                        #"tags": X,
-                        #"text": X
+                        # "tags": X,
+                        # "text": X
                     }]
                 if "clear_timestamp" in d and f <= d["clear_timestamp"] <= t:
                     r += [{
                         "annotation": annotation,
-                        "time": mktime(d["timestamp"].timetuple())*1000 + d["timestamp"].microsecond / 1000,
+                        "time": mktime(d["timestamp"].timetuple()) * 1000 + d["timestamp"].microsecond / 1000,
                         "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name
-                        #"tags": X,
-                        #"text": X
+                        # "tags": X,
+                        # "text": X
                     }]
         return r

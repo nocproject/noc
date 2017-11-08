@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
@@ -43,7 +44,7 @@ class Script(BaseScript):
                 "type": self.TEST_TYPES[match.group("type")],
                 "target": match.group("target"),
                 "hw_timestamp": match.group("hw_timestamp").strip() !=
-                "No hardware timestamps"
+                                "No hardware timestamps"
             }
             found = False
             for rpm in r:

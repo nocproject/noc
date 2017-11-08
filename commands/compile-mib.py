@@ -6,18 +6,19 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import argparse
+import gzip
+import os
 # Python modules
 import sys
-import os
-import gzip
-import argparse
+
 # Third-party modules
 import ujson
-from noc.lib.nosql import DoesNotExist
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
+from noc.lib.nosql import DoesNotExist
 
 
 class Command(BaseCommand):
@@ -85,7 +86,7 @@ class Command(BaseCommand):
                     "description": d.description,
                     "syntax": d.syntax
                 } for d in MIBData.objects.filter(
-                    aliases__startswith="%s::" % mib.name)
+                aliases__startswith="%s::" % mib.name)
             ], key=lambda x: x["oid"]
         )
         # Prepare MIB
@@ -109,6 +110,7 @@ class Command(BaseCommand):
         out.write(ujson.dumps(data))
         if out_path:
             out.close()
+
 
 if __name__ == "__main__":
     Command().run()

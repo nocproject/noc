@@ -8,14 +8,16 @@
 
 # Python modules
 from __future__ import absolute_import
+
 # Django modules
 from django.db import models
+from noc.core.model.fields import DocumentReferenceField
+from noc.lib.rpsl import rpsl_format
 # NOC modules
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.profile import Profile
-from noc.core.model.fields import DocumentReferenceField
+
 from .asn import AS
-from noc.lib.rpsl import rpsl_format
 
 
 class PeeringPoint(models.Model):
@@ -52,8 +54,10 @@ class PeeringPoint(models.Model):
     def sync_cm_prefix_list(self):
         from noc.cm.models import PrefixList
         peers_pl = set()
-        peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if p.import_filter_name.strip()])
-        peers_pl.update([p.export_filter_name for p in self.peer_set.filter(export_filter_name__isnull=False) if p.export_filter_name.strip()])
+        peers_pl.update([p.import_filter_name for p in self.peer_set.filter(import_filter_name__isnull=False) if
+                         p.import_filter_name.strip()])
+        peers_pl.update([p.export_filter_name for p in self.peer_set.filter(export_filter_name__isnull=False) if
+                         p.export_filter_name.strip()])
         h = self.hostname + "/"
         l_h = len(h)
         for p in PrefixList.objects.filter(repo_path__startswith=h):

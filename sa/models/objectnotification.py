@@ -8,12 +8,14 @@
 
 # Django modules
 from __future__ import absolute_import
-from django.utils.translation import ugettext_lazy as _
+
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from noc.lib.template import render_message
+from noc.main.models.notificationgroup import NotificationGroup
+
 # NOC modules
 from .managedobjectselector import ManagedObjectSelector
-from noc.main.models.notificationgroup import NotificationGroup
-from noc.lib.template import render_message
 
 
 class ObjectNotification(models.Model):

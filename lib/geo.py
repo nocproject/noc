@@ -8,10 +8,11 @@
 
 # Python modules
 import math
+
 # Third-party modules
 import geojson
+from geopy.distance import vincenty, ELLIPSOIDS
 from geopy.point import Point as GPoint
-from geopy.distance import vincenty, great_circle, ELLIPSOIDS
 # NOC settings
 from noc.config import config
 

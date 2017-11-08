@@ -8,8 +8,10 @@
 
 # Python modules
 import urllib
+
 # Third-party modules
 import requests
+
 # NOC modules
 from base import Geocoder
 

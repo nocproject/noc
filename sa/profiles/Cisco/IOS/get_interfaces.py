@@ -10,11 +10,12 @@
 # Python modules
 import re
 from collections import defaultdict
-# NOC modules
-from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
+
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.profiles.Cisco.IOS import uBR
+# NOC modules
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 
 
 class Script(BaseScript):
@@ -37,12 +38,12 @@ class Script(BaseScript):
         r"\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?"
         r"(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?"
         r"[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
-       re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
     rx_sh_ip_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+"
         r"line\s+protocol\s+is\s+", re.IGNORECASE)
     rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
-        re.MULTILINE | re.IGNORECASE)
+                        re.MULTILINE | re.IGNORECASE)
     rx_ip = re.compile(
         r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})",
         re.MULTILINE | re.IGNORECASE)
@@ -56,7 +57,7 @@ class Script(BaseScript):
         r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+"
         r"(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
     rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
-        re.MULTILINE)
+                                   re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_pim = re.compile(r"^\S+\s+(?P<name>\S+)\s+v\d+/\S+\s+\d+")
     rx_igmp = re.compile(r"^(?P<name>\S+) is ")
@@ -67,10 +68,10 @@ class Script(BaseScript):
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
     rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
-        re.MULTILINE | re.DOTALL)
+                         re.MULTILINE | re.DOTALL)
     rx_gvtp = re.compile("VTP Operating Mode\s+: Off", re.MULTILINE)
     rx_vtp = re.compile("^\s*(?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+enabled",
-        re.MULTILINE)
+                        re.MULTILINE)
     rx_vtp1 = re.compile(
         "^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+",
         re.MULTILINE)

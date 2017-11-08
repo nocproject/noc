@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iping import IPing
@@ -31,9 +32,9 @@ class Script(BaseScript):
                 n += int(match.group("resp"))
         avg1 = int(n / len(r))
         return {
-                "success": len(r),
-                "count": 4,
-                "min": min(r),
-                "avg": avg1,
-                "max": max(r)
-               }
+            "success": len(r),
+            "count": 4,
+            "min": min(r),
+            "avg": avg1,
+            "max": max(r)
+        }

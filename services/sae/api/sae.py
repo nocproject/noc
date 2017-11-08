@@ -8,18 +8,17 @@
 
 # Third-party modules
 import tornado.gen
-# NOC modules
-from noc.core.service.api import API, APIError, api
-from noc.core.script.loader import loader
-from noc.sa.models.managedobject import ManagedObject  # Do not delete
-from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.sa.models.profile import Profile
-from noc.inv.models.vendor import Vendor
-from noc.inv.models.platform import Platform
-from noc.inv.models.firmware import Firmware
+from noc.config import config
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
-from noc.config import config
+from noc.core.script.loader import loader
+# NOC modules
+from noc.core.service.api import API, APIError, api
+from noc.inv.models.firmware import Firmware
+from noc.inv.models.platform import Platform
+from noc.inv.models.vendor import Vendor
+from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.models.profile import Profile
 
 
 class SAEAPI(API):

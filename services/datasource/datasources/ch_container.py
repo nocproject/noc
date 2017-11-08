@@ -8,11 +8,13 @@
 
 # Python modules
 from __future__ import absolute_import
+
+from noc.core.bi.decorator import bi_hash
+from noc.inv.models.object import Object
 from pymongo import ReadPreference
+
 # NOC modules
 from .base import BaseDataSource
-from noc.inv.models.object import Object
-from noc.core.bi.decorator import bi_hash
 
 
 class CHContainerDataSource(BaseDataSource):

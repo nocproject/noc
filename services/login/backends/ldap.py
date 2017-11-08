@@ -8,9 +8,10 @@
 
 # Third-party modules
 import ldap3
+from noc.main.models.authldapdomain import AuthLDAPDomain
+
 # NOC modules
 from base import BaseAuthBackend
-from noc.main.models.authldapdomain import AuthLDAPDomain
 
 
 class LdapBackend(BaseAuthBackend):
@@ -58,7 +59,7 @@ class LdapBackend(BaseAuthBackend):
             dkw["password"] = "******"
         self.logger.debug("Connect to ldap: %s", ", ".join(
             "%s='%s'" % (kk, dkw[kk]) for kk in dkw)
-        )
+                          )
         connect = ldap3.Connection(server_pool, **connect_kwargs)
         if not connect.bind():
             raise self.LoginError(

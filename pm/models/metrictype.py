@@ -8,24 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
-import os
+
 import operator
+import os
 from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField,
                                 LongField)
-import cachetools
-# NOC Modules
-from .metricscope import MetricScope
-from noc.inv.models.capability import Capability
-from noc.lib.nosql import PlainReferenceField
-from noc.main.models.doccategory import category
-from noc.lib.text import quote_safe_path
-from noc.lib.prettyjson import to_json
+from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save
-from noc.core.bi.decorator import bi_sync
+from noc.inv.models.capability import Capability
+from noc.lib.nosql import PlainReferenceField
+from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
+from noc.main.models.doccategory import category
+
+# NOC Modules
+from .metricscope import MetricScope
 
 id_lock = Lock()
 

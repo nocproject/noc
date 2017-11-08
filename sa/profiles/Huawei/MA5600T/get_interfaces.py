@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------
 """
 """
+import re
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
 
 
 class Script(BaseScript):
@@ -266,7 +266,7 @@ class Script(BaseScript):
             if "admin_status" in match.groupdict():
                 iface["admin_status"] = match.group("admin_status") != "DOWN"
                 sub["admin_status"] = match.group("admin_status") != "DOWN"
-            if "oper_status"  in match.groupdict():
+            if "oper_status" in match.groupdict():
                 iface["oper_status"] = match.group("oper_status") != "DOWN"
                 sub["oper_status"] = match.group("oper_status") != "DOWN"
             if match.group("descr"):
@@ -292,7 +292,7 @@ class Script(BaseScript):
         if not vlans_found:
             for vlan in self.scripts.get_vlans():
                 for match in self.rx_vlan2.finditer(
-                    self.cli("display vlan %s\n" % vlan["vlan_id"])
+                        self.cli("display vlan %s\n" % vlan["vlan_id"])
                 ):
                     ifname = match.group("ifname").replace(" ", "")
                     for i in interfaces:

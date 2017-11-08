@@ -8,28 +8,31 @@
 
 # Python modules
 from __future__ import absolute_import
-from threading import Lock
-import operator
+
 import logging
+import operator
+from threading import Lock
+
+import cachetools
 # Third-party modules
 from mongoengine.document import Document
+from mongoengine.errors import ValidationError
 from mongoengine.fields import StringField, BooleanField
 from mongoengine.queryset import Q
-from mongoengine.errors import ValidationError
-import cachetools
-# NOC modules
-from .dialplan import DialPlan
-from .phonerangeprofile import PhoneRangeProfile
-from .numbercategory import NumberCategory
-from noc.lib.nosql import PlainReferenceField
+from noc.core.defer import call_later
+from noc.core.model.decorator import on_save, on_delete
 from noc.crm.models.supplier import Supplier
+from noc.lib.nosql import ForeignKeyField
+from noc.lib.nosql import PlainReferenceField
+from noc.lib.text import clean_number
 from noc.project.models.project import Project
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.terminationgroup import TerminationGroup
-from noc.lib.nosql import ForeignKeyField
-from noc.core.model.decorator import on_save, on_delete
-from noc.core.defer import call_later
-from noc.lib.text import clean_number
+
+# NOC modules
+from .dialplan import DialPlan
+from .numbercategory import NumberCategory
+from .phonerangeprofile import PhoneRangeProfile
 
 logger = logging.getLogger(__name__)
 id_lock = Lock()
@@ -105,7 +108,7 @@ class PhoneRange(Document):
         }
         if exclude_range:
             q["id__ne"] = exclude_range.id
-        return PhoneRange.objects.filter(**q)\
+        return PhoneRange.objects.filter(**q) \
             .order_by("-from_number", "to_number").first()
 
     def clean(self):
@@ -155,9 +158,9 @@ class PhoneRange(Document):
         # Borrow own phone numbers from parent
         if self.parent:
             for n in PhoneNumber.objects.filter(
-                phone_range=self.parent.id,
-                number__gte=self.from_number,
-                number__lte=self.to_number
+                    phone_range=self.parent.id,
+                    number__gte=self.from_number,
+                    number__lte=self.to_number
             ):
                 n.phone_range = self
                 n.save()
@@ -169,11 +172,11 @@ class PhoneRange(Document):
             )
         # Reparent nested ranges
         for r in PhoneRange.objects.filter(
-            dialplan=self.dialplan,
-            from_number__gte=self.from_number,
-            from_number__lte=self.to_number,
-            to_number__lte=self.to_number,
-            id__ne=self.id
+                dialplan=self.dialplan,
+                from_number__gte=self.from_number,
+                from_number__lte=self.to_number,
+                to_number__lte=self.to_number,
+                id__ne=self.id
         ):
             r.save()
 
@@ -201,8 +204,8 @@ class PhoneRange(Document):
 
     def iter_numbers(self):
         for n in range(
-            int(self.from_number),
-            int(self.to_number) + 1
+                int(self.from_number),
+                        int(self.to_number) + 1
         ):
             yield str(n)
 

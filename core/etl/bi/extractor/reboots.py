@@ -6,15 +6,15 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import os
-## NOC modules
-from base import BaseExtractor
+from noc.bi.models.reboots import Reboots
+from noc.config import config
+from noc.core.etl.bi.stream import Stream
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
-from noc.bi.models.reboots import Reboots
-from noc.core.etl.bi.stream import Stream
-from noc.config import config
+
+## Python modules
+## NOC modules
+from base import BaseExtractor
 
 
 class RebootsExtractor(BaseExtractor):

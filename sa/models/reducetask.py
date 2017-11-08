@@ -8,22 +8,25 @@
 
 # Python modules
 from __future__ import absolute_import
-import marshal
+
 import base64
 import datetime
+import itertools
+import marshal
 import random
 import time
 from collections import defaultdict
-import itertools
+
+import six
+from django.db import models
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
-import six
+from noc.core.model.fields import PickledField
 # NOC modules
 from noc.main.models import PyRule
+
 from .managedobject import ManagedObject
 from .managedobjectselector import ManagedObjectSelector
-from noc.core.model.fields import PickledField
 
 
 class ReduceTask(models.Model):
@@ -46,17 +49,18 @@ class ReduceTask(models.Model):
             return u"%d" % self.id
         else:
             return u"New: %s" % id(self)
+
     #
     #
     #
     def save(self, **kwargs):
         if callable(self.script):
             # Make bootstrap from callable
-            self.script = "import marshal,base64\n"\
-            "@pyrule\n"\
-            "def rule(*args,**kwargs): pass\n"\
-            "rule.func_code=marshal.loads(base64.decodestring('%s'))\n" % (
-                    base64.encodestring(marshal.dumps(self.script.__code__)).replace("\n", "\\n"))
+            self.script = "import marshal,base64\n" \
+                          "@pyrule\n" \
+                          "def rule(*args,**kwargs): pass\n" \
+                          "rule.func_code=marshal.loads(base64.decodestring('%s'))\n" % (
+                              base64.encodestring(marshal.dumps(self.script.__code__)).replace("\n", "\\n"))
         elif self.script.startswith("pyrule:"):
             # Reference to existing pyrule
             r = PyRule.objects.get(name=self.script[7:], interface="IReduceTask")
@@ -77,9 +81,8 @@ class ReduceTask(models.Model):
     #
     @property
     def complete(self):
-        return self.stop_time <= datetime.datetime.now()\
-            or (self.maptask_set.all().count() == self.maptask_set.filter(status__in=["C", "F"]).count())
-
+        return self.stop_time <= datetime.datetime.now() \
+               or (self.maptask_set.all().count() == self.maptask_set.filter(status__in=["C", "F"]).count())
 
     @classmethod
     def create_task(cls, object_selector, reduce_script, reduce_script_params,
@@ -112,6 +115,7 @@ class ReduceTask(models.Model):
         :return: Task
         :rtype: ReduceTask
         """
+
         def get_timeout(ts, max_scripts):
             ts = sorted(ts)
             args = [iter(ts)] * max_scripts
@@ -257,7 +261,7 @@ class ReduceTask(models.Model):
                 if status == "F":
                     if no_sessions:
                         m.script_result = dict(code=ERR_ACTIVATOR_NOT_AVAILABLE,
-                            text="Activator pool '%s' is down" % o.activator.name)
+                                               text="Activator pool '%s' is down" % o.activator.name)
                     else:
                         m.script_result = dict(code=ERR_INVALID_SCRIPT,
                                                text="Invalid script %s" % msn)
@@ -325,8 +329,10 @@ def reduce_object_script(task):
     else:
         return None
 
+
 def reduce_dumb(task):
     pass
+
 
 # Avoid circular references
 from .maptask import MapTask

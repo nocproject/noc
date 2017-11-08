@@ -6,12 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+import datetime
 # Python modules
 import uuid
-import datetime
+
+from noc.lib.nosql import get_db
 # Third-party modules
 from south.db import db
-from noc.lib.nosql import get_db
 
 
 class Migration:
@@ -19,14 +20,14 @@ class Migration:
         now = datetime.datetime.now()
         sc = get_db()["noc.synccaches"]
         for zone_id, sync_id in db.execute(
-            "SELECT z.id, s.sync "
-            "FROM "
-            "    dns_dnszone z JOIN dns_dnszoneprofile p ON (z.profile_id = p.id) "
-            "    JOIN dns_dnszoneprofile_masters m ON (m.dnszoneprofile_id = p.id) "
-            "    JOIN dns_dnsserver s ON (s.id = m.dnsserver_id) "
-            "WHERE "
-            "    z.is_auto_generated = TRUE "
-            "    AND s.sync IS NOT NULL"
+                "SELECT z.id, s.sync "
+                "FROM "
+                "    dns_dnszone z JOIN dns_dnszoneprofile p ON (z.profile_id = p.id) "
+                "    JOIN dns_dnszoneprofile_masters m ON (m.dnszoneprofile_id = p.id) "
+                "    JOIN dns_dnsserver s ON (s.id = m.dnsserver_id) "
+                "WHERE "
+                "    z.is_auto_generated = TRUE "
+                "    AND s.sync IS NOT NULL"
         ):
             if not sc.find({
                 "sync_id": str(sync_id),
