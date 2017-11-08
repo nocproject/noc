@@ -10,6 +10,8 @@ job_lint:
     - apk add --update git
   script:
     - flake8 $(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD))
+  except:
+    - microservices
   tags:
     - docker
 
