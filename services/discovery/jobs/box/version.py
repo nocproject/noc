@@ -61,11 +61,14 @@ class VersionCheck(DiscoveryCheck):
         # Sync image
         image = result.get("image")
         if image and image != self.object.software_image:
+            image = image[:255]  # Cut to field length
             if self.object.version:
                 self.logger.info("Image changed: %s -> %s",
                                  self.object.software_image, image)
             else:
                 self.logger.info("Set image: %s", image)
+            self.object.software_image = image
+            changed = True
         # Sync attributes
         if "attributes" in result:
             self.object.update_attributes(result["attributes"])
