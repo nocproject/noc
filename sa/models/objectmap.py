@@ -55,9 +55,15 @@ class ObjectMap(Document):
             is_managed=True
         ).exclude(
             trap_source_type="d", syslog_source_type="d"
-        ).only("id", "name", "address",
+        ).select_related(
+            "object_profile"
+        ).only("id", "name", "address", "event_processing_policy",
                "trap_source_type", "syslog_source_type",
-               "trap_source_ip", "syslog_source_ip"):
+               "trap_source_ip", "syslog_source_ip",
+               "object_profile__event_processing_policy"):
+            # Process event policy
+            if mo.get_event_processing_policy() != "E":
+                continue
             # Process trap sources
             if mo.trap_source_type == "m" and mo.address:
                 trap_sources[aq(mo.address)] = mo.id

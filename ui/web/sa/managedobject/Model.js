@@ -372,6 +372,10 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "int"
         },
         {
+            name: "event_processing_policy",
+            type: "string"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false
