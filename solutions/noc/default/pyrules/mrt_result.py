@@ -11,6 +11,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+
 def mrt_result(task):
     """
     Format MRT task result to return as JSON

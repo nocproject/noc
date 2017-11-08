@@ -19,6 +19,7 @@ DELAY = 600
 
 discovery_scheduler = get_scheduler()
 
+
 def refresh_config(event):
     # Check managed object is managed
     if not event.managed_object.is_managed:

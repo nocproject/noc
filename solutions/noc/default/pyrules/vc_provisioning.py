@@ -13,33 +13,33 @@
 # ---------------------------------------------------------------------
 
 
-def vc_provisioning(task,config):
-    created={}
-    removed={}
+def vc_provisioning(task, config):
+    created = {}
+    removed = {}
     for mt in task.maptask_set.filter(status="C"):
-        r=mt.script_result
+        r = mt.script_result
         if not r:
             continue
         for vlan in r["created"]:
             if vlan not in created:
-                created[vlan]=[mt.managed_object.name]
+                created[vlan] = [mt.managed_object.name]
             else:
-                created[vlan]+=[mt.managed_object.name]
+                created[vlan] += [mt.managed_object.name]
         for vlan in r["removed"]:
             if vlan not in removed:
-                removed[vlan]=[mt.managed_object.name]
+                removed[vlan] = [mt.managed_object.name]
             else:
-                removed[vlan]+=[mt.managed_object.name]
-    notification_group=config.notification_group
+                removed[vlan] += [mt.managed_object.name]
+    notification_group = config.notification_group
     if notification_group and (created or removed):
-        r=[]
+        r = []
         if created:
-            r+=["Created VLANs"]
+            r += ["Created VLANs"]
             for vlan in sorted(created.keys()):
-                r+=["    %d: %s"%(vlan,", ".join([n for n in sorted(created[vlan])]))]
+                r += ["    %d: %s" % (vlan, ", ".join([n for n in sorted(created[vlan])]))]
         if removed:
-            r+=["Removed VLANs"]
+            r += ["Removed VLANs"]
             for vlan in sorted(removed.keys()):
-                r+=["    %d: %s"%(vlan,", ".join([n for n in sorted(removed[vlan])]))]
-        notification_group.notify(subject="VLAN Provisioning Report for Domain '%s'"%config.vc_domain.name,
-            body="\n".join(r))
+                r += ["    %d: %s" % (vlan, ", ".join([n for n in sorted(removed[vlan])]))]
+        notification_group.notify(subject="VLAN Provisioning Report for Domain '%s'" % config.vc_domain.name,
+                                  body="\n".join(r))

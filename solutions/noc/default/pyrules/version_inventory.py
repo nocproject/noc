@@ -20,8 +20,8 @@ def version_inventory(task):
     changes = []
     for mt in task.maptask_set.filter(status="C"):
         mo = mt.managed_object
-        c = [] # name, old, new
-        for k,v in mt.script_result.items():
+        c = []  # name, old, new
+        for k, v in mt.script_result.items():
             if k == "attributes":
                 for kk, vv in v.items():
                     ov = mo.get_attr(kk)
@@ -34,7 +34,7 @@ def version_inventory(task):
                     mo.set_attr(k, v)
                     c += [(k, ov, v)]
         if c:
-            changes += [mo.name+":"]
+            changes += [mo.name + ":"]
             for name, old, new in c:
                 if old:
                     changes += ["    %s: %s -> %s" % (name, old, new)]
@@ -43,4 +43,4 @@ def version_inventory(task):
             changes += []
     if changes:
         SystemNotification.notify(name="sa.version_inventory",
-            subject="Version inventory changes", body="\n".join(changes))
+                                  subject="Version inventory changes", body="\n".join(changes))

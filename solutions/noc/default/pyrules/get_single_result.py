@@ -10,8 +10,10 @@
 # Copyright (C) 2007-2010 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+
 def get_single_result(task):
-    mt=task.maptask_set.all()[0]
-    if mt.status!="C":
+    mt = task.maptask_set.all()[0]
+    if mt.status != "C":
         return None
     return mt.script_result
