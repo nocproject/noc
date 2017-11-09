@@ -44,6 +44,15 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
     rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
 
+    """
+    @todo
+
+
+    show spanning-tree mst configuration
+    Command authorization failed.
+
+    """
+
     def cmp_version(self, x, y):
         """12(25)SEC2"""
         return cmp(

@@ -27,7 +27,16 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
     command_exit = "exit"
+    pattern_syntax_error = \
+        r"^(\'\S+\' is ambiguous\.|syntax error|unknown command\.)"
     default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
+
+    """
+    @todo
+
+    show lldp neighbors interface ge-11/3/1
+    error: abnormal communication termination with l2cpd-service daemon
+    """
 
     matchers = {
         "is_switch": {
