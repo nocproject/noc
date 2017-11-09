@@ -16,7 +16,7 @@ from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged
-from noc.lib.version import get_version, get_brand
+from noc.core.version import version
 from noc.main.models.usersession import UserSession
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
@@ -97,7 +97,7 @@ class DesktopApplication(ExtApplication):
             "logo_url": config.customization.logo_url,
             "logo_width": config.customization.logo_width,
             "logo_height": config.customization.logo_height,
-            "brand": get_brand(),
+            "brand": version.brand,
             "branding_color": config.customization.branding_color,
             "branding_background_color": config.customization.branding_background_color,
             "favicon_url": favicon_url,
@@ -129,7 +129,7 @@ class DesktopApplication(ExtApplication):
         :returns: version string
         :rtype: Str
         """
-        return get_version()
+        return version.version
 
     @view(method=["GET"], url="^is_logged/$", access=True, api=True)
     def api_is_logged(self, request):
@@ -347,7 +347,7 @@ class DesktopApplication(ExtApplication):
             return {
                 "logo_url": config.customization.logo_url,
                 "brand": config.brand,
-                "version": get_version(),
+                "version": version.version,
                 "installation": config.installation_name,
                 "system_id": cp.system_uuid,
                 "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
@@ -356,7 +356,7 @@ class DesktopApplication(ExtApplication):
             return {
                 "logo_url": config.customization.logo_url,
                 "brand": config.brand,
-                "version": get_version(),
+                "version": version.version,
                 "installation": config.installation_name,
                 "copyright": "2007-%d, %s" % (datetime.date.today().year, config.brand)
             }
