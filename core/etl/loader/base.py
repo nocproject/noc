@@ -338,8 +338,10 @@ class BaseLoader(object):
         """
         Change object with attributes
         """
-        o = self.model.get_by_id(object_id)
-        if not o:
+        # See: https://code.getnoc.com/noc/noc/merge_requests/49
+        try:
+            o = self.model.objects.get(pk=object_id)
+        except self.model.DoesNotExist:
             self.logger.error(
                 "Cannot change %s:%s: Does not exists",
                 self.name, object_id
