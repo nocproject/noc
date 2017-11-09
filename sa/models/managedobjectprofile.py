@@ -411,6 +411,12 @@ class ManagedObjectProfile(models.Model):
         ],
         default="E"
     )
+    # Cache protocol neighbors up to *neighbor_cache_ttl* seconds
+    # 0 - disable cache
+    neighbor_cache_ttl = models.IntegerField(
+        "Neighbor Cache TTL",
+        default=0
+    )
     #
     metrics = PickledField(blank=True)
     #

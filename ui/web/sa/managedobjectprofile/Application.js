@@ -535,7 +535,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "_box_discovery_system_start_delay",
                                                     xtype: 'displayfield',
-                                                    value: "sec"
+                                                    value: __("sec")
                                                 }
                                             ]
                                         },
@@ -561,7 +561,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "_box_discovery_config_changed_delay",
                                                     xtype: 'displayfield',
-                                                    value: "sec"
+                                                    value: __("sec")
                                                 }
                                             ]
                                         }
@@ -635,70 +635,98 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     xtype: "fieldset",
                                     title: __("Topology"),
-                                    layout: "hbox",
-                                    defaults: {
-                                        padding: "0 8 0 0"
-                                    },
+                                    layout: "vbox",
                                     items: [
                                         {
-                                            name: "enable_box_discovery_nri",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("NRI")
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "enable_box_discovery_nri",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("NRI")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_bfd",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("BFD")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_cdp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("CDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_huawei_ndp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("Huawei NDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_mikrotik_ndp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("MikroTik NDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_fdp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("FDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_lldp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("LLDP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_oam",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("OAM")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_rep",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("REP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_stp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("STP")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_udld",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("UDLD")
+                                                },
+                                                {
+                                                    name: "enable_box_discovery_lacp",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("LACP")
+                                                }
+                                            ]
                                         },
                                         {
-                                            name: "enable_box_discovery_bfd",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("BFD")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_cdp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("CDP")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_huawei_ndp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Huawei NDP")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_mikrotik_ndp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("MikroTik NDP")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_fdp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("FDP")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_lldp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("LLDP")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_oam",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("OAM")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_rep",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("REP")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_stp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("STP")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_udld",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("UDLD")
-                                        },
-                                        {
-                                            name: "enable_box_discovery_lacp",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("LACP")
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "neighbor_cache_ttl",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Cache neighbors for"),
+                                                    allowBlank: false,
+                                                    uiStyle: "small",
+                                                    align: "right"
+                                                },
+                                                {
+                                                    xtype: "displayfield",
+                                                    name: "_neighbor_cache_ttl",
+                                                    value: __("sec")
+                                                }
+                                            ]
                                         }
                                     ]
                                 },
