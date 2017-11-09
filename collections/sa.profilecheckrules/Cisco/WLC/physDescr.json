@@ -1,13 +1,13 @@
 {
-    "name": "Cisco | WLC | WLC2500",
+    "name": "Cisco | WLC | physDescr",
     "$collection": "sa.profilecheckrules",
     "uuid": "69f288c0-e852-47b4-9e28-059219bffc41",
     "description": "Examples:\nCisco 2500 Series Wireless LAN Controller",
     "preference": 100,
     "method": "snmp_v2c_get",
     "param": "1.3.6.1.2.1.47.1.1.1.1.2.1",
-    "match_method": "contains",
-    "value": "Cisco 2500 Series Wireless LAN Controller",
+    "match_method": "re",
+    "value": "^Cisco \\d+ Series Wireless LAN Controller",
     "action": "match",
     "profile__name": "Cisco.WLC"
 }
