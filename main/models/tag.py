@@ -32,10 +32,11 @@ class Tag(Document):
     def register_tag(cls, tag, model):
         """
         Register new tag occurence
-        :param model:
+        :param tag: Tag Name
+        :param model: Model for creating tag
         :return:
         """
-        r = cls._get_collection().update(
+        cls._get_collection().update(
             {"tag": tag},
             {
                 "$addToSet": {
@@ -47,16 +48,28 @@ class Tag(Document):
             },
             upsert=True
         )
-        return r
 
     @classmethod
     def unregister_tag(cls, tag, model):
         """
         Unregister tag occurence
-        :param model:
+        :param tag: Tag Name
+        :param model: Model for creating tag
         :return:
         """
-        pass
+        r = cls._get_collection().update(
+            {"tag": tag},
+            {
+                "$addToSet": {
+                    "models": model
+                },
+                "$inc": {
+                    "count": -1
+                }
+            },
+            upsert=True
+        )
+        # @todo Remove Tag if count <= 0
 
     def get_objects(self):
         """
