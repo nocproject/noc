@@ -32,7 +32,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from noc.lib.version import get_version
+from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from services.correlator import utils
 from noc.lib.dateutils import total_seconds
@@ -46,7 +46,7 @@ class CorrelatorService(Service):
 
     def __init__(self):
         super(CorrelatorService, self).__init__()
-        self.version = get_version()
+        self.version = version.version
         self.rules = {}  # event_class -> [Rule]
         self.back_rules = {}  # event_class -> [Rule]
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]

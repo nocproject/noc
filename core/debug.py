@@ -20,7 +20,7 @@ import uuid
 import ujson
 # NOC modules
 from noc.config import config
-from noc.lib.version import get_branch, get_tip
+from noc.core.version import version
 from noc.core.fileutils import safe_rewrite
 from noc.core.perf import metrics
 
@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig()
 
+rx_coding = re.compile(r"coding[:=]\s*([-\w.]+)")
 
 # CP error reporting
 ENABLE_CP = config.features.cp
@@ -45,7 +46,7 @@ if config.features.sentry:
         processors=(
             'raven.processors.SanitizePasswordsProcessor',
         ),
-        release=get_tip()
+        release=version.version
     )
 
 
@@ -76,7 +77,7 @@ def get_lines_from_file(filename, lineno, context_lines,
     for line in source[:2]:
         # File coding may be specified. Match pattern from PEP-263
         # (http://www.python.org/dev/peps/pep-0263/)
-        match = re.search(r"coding[:=]\s*([-\w.]+)", line)
+        match = rx_coding.search(line)
         if match:
             encoding = match.group(1)
             break
@@ -232,17 +233,14 @@ def get_traceback(reverse=config.traceback.reverse, fp=None):
     except:
         pass  # Ignore exceptions
     now = datetime.datetime.now()
-    try:
-        branch = get_branch()
-        tip = get_tip()
-    except:
-        # We cannot get branch and tip on "Too many open files" error
-        branch = "unknown"
-        tip = "unknown"
     r = [
         "UNHANDLED EXCEPTION (%s)" % str(now),
-        "BRANCH: %s TIP: %s" % (branch, tip),
-        "PROCESS: %s" % sys.argv[0]
+        "PROCESS: %s" % version.process,
+        "VERSION: %s" % version.version
+    ]
+    if version.branch:
+        r += [
+            "BRANCH: %s CHANGESET: %s" % (version.branch, version.changeset)
     ]
     if fp:
         r += ["ERROR FINGERPRINT: %s" % fp]
@@ -301,8 +299,10 @@ def error_report(reverse=config.traceback.reverse, logger=logger):
                 "uuid": fp,
                 # "installation": None,
                 "process": SERVICE_NAME,
-                "branch": get_branch(),
-                "tip": get_tip(),
+                "version": version.version,
+                "branch": version.branch,
+                "tip": version.changeset,
+                "changeset": version.changeset,
                 "traceback": r
             }
             try:
@@ -351,7 +351,7 @@ def error_fingerprint():
             noc_lineno = tb_lineno
         tb = tb.tb_next
     parts = [
-        get_branch(),
+        version.branch,
         SERVICE_NAME,  # Process
         str(t),  # Exception class
         noc_file, noc_function, str(noc_lineno),  # NOC code point
