@@ -672,7 +672,6 @@ class ReportObjectDetailApplication(ExtApplication):
                 attr = ReportObjectAttributes([])
             attr_resolv = ReportAttrResolver([])
             moss = ReportObjects([])
-        # @todo mo_attributes_lookup
         # @todo segment_name lookup
         for mo in moss:
             if mo not in mos_id:
