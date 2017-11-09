@@ -5,9 +5,7 @@ stages:
 
 job_lint:
   stage: lint
-  image: hoto/flake8
-  before_script:
-    - apk add --update git
+  image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - git rev-parse --abbrev-ref HEAD
     - git merge-base origin/HEAD HEAD
@@ -18,7 +16,7 @@ job_lint:
   tags:
     - docker
 
-job1:
+build:
   stage: build
   image: registry.getnoc.com/noc/nocmc/microservices:build
   variables:
