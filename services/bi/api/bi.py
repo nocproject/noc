@@ -21,6 +21,7 @@ import cachetools
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
+from noc.core.clickhouse.dictionary import Dictionary
 from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
@@ -110,6 +111,17 @@ class BIAPI(API):
                     "dict": cls.ref_dict.get(k.model, None),
                     "model": k.model
                 }]
+                if cls.ref_dict.get(k.model, None):
+                    for f in Dictionary.get_dictionary_class(cls.ref_dict.get(k.model, None))._fields_order:
+                        r["fields"] += [{
+                            "name": f,
+                            "description": f,
+                            "type": "UInt64",
+                            "ro": True,
+                            "dict": cls.ref_dict.get(k.model, None),
+                            "dict_id": k.field_name,
+                            "model": k.model
+                        }]
             if ms.path:
                 r["fields"] += [{
                     "name": "path",
@@ -185,7 +197,7 @@ class BIAPI(API):
         return [
             {
                 "name": ds["name"],
-                "decscription": ds["description"],
+                "description": ds.get("description", ""),
                 "tags": ds["tags"]
             } for ds in self.get_datasources()
         ]
@@ -295,7 +307,7 @@ class BIAPI(API):
         if d:
             return ujson.loads(zlib.decompress(d.config))
         else:
-            return None
+            return APIError("Dashboard not found")
 
     @executor("query")
     @api
@@ -516,7 +528,7 @@ class BIAPI(API):
 
         :param id: Dashboard ID
         :param items: Dictionary rights
-        :param r_filter: User or Group only set
+        :param acc_limit: User or Group only set
         :return:
         """
         self.logger.info("Settings dashboard access")
