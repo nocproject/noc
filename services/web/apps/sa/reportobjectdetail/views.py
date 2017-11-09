@@ -19,7 +19,6 @@ from pymongo import ReadPreference
 import xlsxwriter
 import bson
 # NOC modules
-from noc.lib.app.simplereport import SectionRow
 from noc.lib.nosql import get_db
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
@@ -63,7 +62,6 @@ class ReportObjectBuild(object):
         Generate report
         :return:
         """
-        t0 = datetime.datetime.now()
         logger.info("[%s] Building report", self.report)
         app_id, variant = self.report.split(":")
         if app_id not in self.site.apps:
@@ -104,7 +102,7 @@ class ReportObjectCaps(object):
 
         i = 0
         d = {}
-        while mo_ids[0+i:10000+i]:
+        while mo_ids[0 + i:10000 + i]:
             match = {"_id": {"$in": mo_ids}}
             value = get_db()["noc.sa.objectcapabilities"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
@@ -193,7 +191,7 @@ class ReportDiscoveryResult(object):
             # @todo check match
             pipeline += [{"$match": self.match}]
         else:
-            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {  }}}}]
+            pipeline += [{"$match": {"job.problems": {"$exists": True, "$ne": {}}}}]
         return pipeline
 
     def load(self):
@@ -326,7 +324,6 @@ class ReportObjectIfacesStatusStat(object):
             {"$group": {"_id": group,
                         "count": {"$sum": 1}}}
         ])
-        def_l = [""] * len(self.columns)
         r = defaultdict(lambda: [""] * len(self.columns))
         for v in value:
             c = {
@@ -525,11 +522,10 @@ class ReportObjectDetailApplication(ExtApplication):
               "is_managed": BooleanParameter(required=False),
               "avail_status": BooleanParameter(required=False),
               "columns": StringParameter(required=False),
-              "format": StringParameter(choices=["csv", "xlsx"])
-          })
-    def api_report(self, request, format, is_managed=None,
-                   administrative_domain=None, selector=None, segment=None,
-                   avail_status=False, columns=None):
+              "format": StringParameter(choices=["csv", "xlsx"])})
+    def api_report(self, request, o_format, is_managed=None,
+                   administrative_domain=None, selector=None,
+                   segment=None, avail_status=False, columns=None):
         def row(row):
             def qe(v):
                 if v is None:
@@ -542,8 +538,8 @@ class ReportObjectDetailApplication(ExtApplication):
                     return str(v)
                 else:
                     return v
-            r = [qe(x) for x in row]
-            return r
+
+            return [qe(x) for x in row]
 
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
@@ -575,28 +571,28 @@ class ReportObjectDetailApplication(ExtApplication):
         ]
 
         header_row = [
-         "ID",
-         "OBJECT_NAME",
-         "OBJECT_ADDRESS",
-         "OBJECT_STATUS",
-         "PROFILE_NAME",
-         "OBJECT_PROFILE",
-         "OBJECT_VENDOR",
-         "OBJECT_PLATFORM",
-         "OBJECT_VERSION",
-         "OBJECT_SERIAL",
-         "AVAIL",
-         "ADMIN_DOMAIN",
-         "CONTAINER",
-         "SEGMENT",
-         "PHYS_INTERFACE_COUNT",
-         "LINK_COUNT",
-         "DISCOVERY_PROBLEM"
-         # "OBJECT_TAGS"
-         # "SORTED_TAGS"
-         # "OBJECT_CAPS"
-         # "INTERFACE_TYPE_COUNT"
+            "ID",
+            "OBJECT_NAME",
+            "OBJECT_ADDRESS",
+            "OBJECT_STATUS",
+            "PROFILE_NAME",
+            "OBJECT_PROFILE",
+            "OBJECT_VENDOR",
+            "OBJECT_PLATFORM",
+            "OBJECT_VERSION",
+            "OBJECT_SERIAL",
+            "AVAIL",
+            "ADMIN_DOMAIN",
+            "CONTAINER",
+            "SEGMENT",
+            "PHYS_INTERFACE_COUNT",
+            "LINK_COUNT",
+            "DISCOVERY_PROBLEM"
         ]
+        # "OBJECT_TAGS"
+        # "SORTED_TAGS"
+        # "OBJECT_CAPS"
+        # "INTERFACE_TYPE_COUNT"
 
         if columns:
             cmap = []
@@ -661,14 +657,14 @@ class ReportObjectDetailApplication(ExtApplication):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.caps.values()
             r[-1].extend(caps_columns)
+        if "object_tags" in columns.split(","):
+            r[-1].extend([_("OBJECT_TAGS")])
         if "sorted_tags" in columns.split(","):
             tags = set()
             for s in ManagedObject.objects.filter(is_managed=True).exclude(tags=None).values_list('tags', flat=True).distinct():
                 tags.update(set(s))
             tags_o = sorted([t for t in tags if "{" not in t])
             r[-1].extend(tags_o)
-        # if "object_tags" in columns.split(","):
-        #    r[-1].extend(["tags"])
 
         if len(mos_id) < 70000:
             # @todo Warning - too many objects
@@ -720,14 +716,14 @@ class ReportObjectDetailApplication(ExtApplication):
             pass
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
-        if format == "csv":
+        if o_format == "csv":
             response = HttpResponse(content_type="text/csv")
             response[
                 "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % filename
             writer = csv.writer(response, dialect='excel', delimiter=';')
             writer.writerows(r)
             return response
-        elif format == "xlsx":
+        elif o_format == "xlsx":
             with tempfile.NamedTemporaryFile(mode="wb") as f:
                 wb = xlsxwriter.Workbook(f.name)
                 ws = wb.add_worksheet("Objects")
