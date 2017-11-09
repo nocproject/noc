@@ -47,7 +47,6 @@ class Profile(BaseProfile):
     """
     @todo
 
-
     show spanning-tree mst configuration
     Command authorization failed.
 
