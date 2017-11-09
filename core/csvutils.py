@@ -47,6 +47,7 @@ def get_model_fields(model):
     fields = []
     ignored = set(getattr(model, "csv_ignored_fields", []))
     ignored.add("id")
+    ignored.add("bi_id")
     for f in model._meta.fields:
         if f.name in ignored:
             continue
@@ -65,7 +66,7 @@ def get_model_fields(model):
         elif hasattr(f, "document"):
             k = f.document._meta["id_field"]
             for ff, fi in f.document._fields.items():
-                if fi.name != k and fi.unique:
+                if fi.name != k and fi.unique and fi.name != "bi_id":
                     k = fi.name
                     break
             fields += [(f.name, required, f.document, k)]
