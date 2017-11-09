@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# MikroTik.RouterOS.get_capabilities_ex
+# MikroTik.RouterOS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,6 +24,12 @@ class Script(BaseScript):
     def has_cdp_cli(self):
         """
         Check box has cdp enabled
+        """
+        return True
+
+    def has_lldp(self):
+        """
+        Check box has lldp enabled
         """
         return True
 
