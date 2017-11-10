@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_capabilities_ex
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -70,8 +70,8 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show spanning-tree")
-        if ("No spanning tree instance exists" in r
-            or "No spanning tree instances exist" in r):
+        if ("No spanning tree instance exists" in r or
+                "No spanning tree instances exist" in r):
             return False
         return True
 
@@ -80,11 +80,10 @@ class Script(BaseScript):
         """
         Check box has bfd enabled
         """
-        r = self.cli("sh bfd summary")
+        r = self.cli("show bfd summary")
         if not r:
             return False
         return True
-
 
     @false_on_cli_error
     def has_ipv6_cli(self):
