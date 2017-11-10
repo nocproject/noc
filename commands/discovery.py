@@ -32,7 +32,7 @@ class Command(BaseCommand):
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri", "udld",
             "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe",
-            "lacp", "hk", "mac"
+            "lacp", "hk", "mac", "bfd", "fdp"
         ],
         "periodic": [
             "uptime", "interfacestatus",
@@ -150,6 +150,7 @@ class ServiceStub(object):
 
     def register_metrics(self, fields, data):
         self.metrics[fields] += data
+
 
 if __name__ == "__main__":
     Command().run()
