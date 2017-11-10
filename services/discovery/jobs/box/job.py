@@ -33,6 +33,7 @@ from .nri import NRICheck
 from .sla import SLACheck
 from .cpe import CPECheck
 from .bfd import BFDCheck
+from .fdp import FDPCheck
 from .hk import HouseKeepingCheck
 from .segmentation import SegmentationCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
@@ -54,6 +55,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         LLDPCheck,
         BFDCheck,
         CDPCheck,
+        FDPCheck,
         HuaweiNDPCheck,
         STPCheck
     ])
