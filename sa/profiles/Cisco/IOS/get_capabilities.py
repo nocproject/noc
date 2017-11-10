@@ -76,6 +76,17 @@ class Script(BaseScript):
         return True
 
     @false_on_cli_error
+    def has_bfd_cli(self):
+        """
+        Check box has bfd enabled
+        """
+        r = self.cli("sh bfd summary")
+        if not r:
+            return False
+        return True
+
+
+    @false_on_cli_error
     def has_ipv6_cli(self):
         """
         Check box has IPv6 ND enabled
