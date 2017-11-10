@@ -55,5 +55,5 @@ class Command(BaseCommand):
         if not m:
             return self._usage()
         print csv_export(m,
-            queryset=self.get_queryset(m, args[1:]),
-            first_row_only=options.get("template")),
+                         queryset=self.get_queryset(m, args[1:]),
+                         first_row_only=options.get("template")),
