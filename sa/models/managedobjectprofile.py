@@ -496,7 +496,7 @@ class ManagedObjectProfile(models.Model):
     def can_escalate(self, depended=False):
         """
         Check alarms on objects within profile can be escalated
-        :return: 
+        :return:
         """
         if self.escalation_policy == "R":
             return bool(depended)

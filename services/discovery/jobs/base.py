@@ -1016,8 +1016,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             )
             if (
                 llink.discovery_method != self.name and
-                (llink.discovery_method is None or
-                     self.is_preferable_over(llink))
+                (llink.discovery_method is None or self.is_preferable_over(llink))
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)
