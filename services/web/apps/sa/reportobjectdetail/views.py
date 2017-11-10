@@ -393,7 +393,6 @@ class ReportObjectAttributes(object):
         query = query1 + query2
         cursor.execute(query)
         mo_attrs.update(dict([(c[0], c[1:6]) for c in cursor]))
-        # print mo_attrs
 
         return mo_attrs
 
@@ -613,7 +612,6 @@ class ReportObjectDetailApplication(ExtApplication):
         # print("-----------%s------------%s" % (administrative_domain, columns))
 
         p = Pool.get_by_name("default")
-        # for a in ArchivedAlarm._get_collection().find(q).sort(
         mos = ManagedObject.objects.filter()
         if request.user.is_superuser and not administrative_domain and not selector:
             mos = ManagedObject.objects.filter(pool=p)
@@ -627,7 +625,6 @@ class ReportObjectDetailApplication(ExtApplication):
         if selector:
             selector = ManagedObjectSelector.get_by_id(int(selector))
             mos = mos.filter(selector.Q)
-        # discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         mos_id = list(mos.values_list("id", flat=True))
         avail = {}
         segment_lookup = {}
