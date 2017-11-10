@@ -12,7 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_mac
+from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 #
 # @todo: SNMP Support
 #
@@ -89,10 +89,13 @@ class Script(BaseScript):
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
-                "remote_port_subtype": remote_port_subtype,
-                }
-            # TODO:
-            n["remote_chassis_id_subtype"] = 4
+                "remote_port_subtype": remote_port_subtype
+            }
+            if is_ipv4(n["remote_chassis_id"]) \
+                    or is_ipv6(n["remote_chassis_id"]):
+                n["remote_chassis_id_subtype"] = 5
+            else:
+                n["remote_chassis_id_subtype"] = 4
             try:
                 c = self.cli(
                     "show lldp ports %s neighbors detailed" % local_interface
@@ -113,7 +116,7 @@ class Script(BaseScript):
                         r"\\\n\s*", "", n["remote_system_name"]
                     )
                     sys_descr = match.group("system_descr")
-                    if sys_desc:
+                    if sys_descr:
                         n["remote_system_description"] =  \
                             sys_descr.replace("\"", "").strip()
                         n["remote_system_description"] = re.sub(
@@ -163,12 +166,15 @@ class Script(BaseScript):
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
-                "remote_port_subtype": remote_port_subtype,
-                }
+                "remote_port_subtype": remote_port_subtype
+            }
             if remote_system_name:
                 n["remote_system_name"] = remote_system_name
-            # TODO:
-            n["remote_chassis_id_subtype"] = 4
+            if is_ipv4(n["remote_chassis_id"]) \
+                    or is_ipv6(n["remote_chassis_id"]):
+                n["remote_chassis_id_subtype"] = 5
+            else:
+                n["remote_chassis_id_subtype"] = 4
 
             i["neighbors"].append(n)
             r.append(i)
