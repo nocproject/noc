@@ -151,5 +151,6 @@ class ServiceStub(object):
     def register_metrics(self, fields, data):
         self.metrics[fields] += data
 
+
 if __name__ == "__main__":
     Command().run()
