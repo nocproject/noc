@@ -264,7 +264,7 @@ class BIAPI(API):
             aq &= Q(format=str(query["version"]))
         return [{
             "id": str(d.id),
-            "format": str(d.format),
+            "format": int(d.format),
             "title": str(d.title),
             "description": str(d.description),
             "tags": str(d.tags),
@@ -307,7 +307,7 @@ class BIAPI(API):
         if d:
             return ujson.loads(zlib.decompress(d.config))
         else:
-            return APIError("Dashboard not found")
+            raise APIError("Dashboard not found")
 
     @executor("query")
     @api
