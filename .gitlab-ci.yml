@@ -1,8 +1,22 @@
 stages:
+  - lint
   - build
   - test
 
-job1:
+job_lint:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - git rev-parse --abbrev-ref HEAD
+    - git merge-base origin/HEAD HEAD
+    - git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD)
+    - flake8 $(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD))
+  except:
+    - microservices
+  tags:
+    - docker
+
+build:
   stage: build
   image: registry.getnoc.com/noc/nocmc/microservices:build
   variables:

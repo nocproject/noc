@@ -1,163 +1,99 @@
 {
+  "aliasColors": {},
   "bars": false,
-  "timeFrom": null,
+  "dashLength": 10,
+  "dashes": false,
+  "datasource": null,
+  "editable": true,
+  "error": false,
+  "fill": 1,
+  "grid": {},
+  "id": "03fae50b-87a6-4de0-88ab-bb6f13565541",
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
   "links": [],
   "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
   "renderer": "flot",
-  "id": "03fae50b-87a6-4de0-88ab-bb6f13565541",
-  "linewidth": 2,
+  "seriesOverrides": [],
+  "spaceLength": 10,
+  "span": 6,
+  "stack": false,
   "steppedLine": false,
   "targets": [
     {
-      "dsType": "influxdb",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=",
-          "value": "$device"
-        }
-      ],
-      "refId": "B",
-      "alias": "Subscribers sum",
+      "refId": "A",
       "resultFormat": "time_series",
-      "measurement": "Subscribers | Summary",
-      "policy": "default",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "select": [
-        [
-          {
-            "type": "field",
-            "params": [
-              "value"
-            ]
-          },
-          {
-            "type": "sum",
-            "params": []
-          }
-        ]
-      ],
-      "rawQuery": false
+      "intervalFactor": 1,
+      "query": "SELECT $timeSeries as t, \n        sum(summary) as `Subscribers Sum` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter\nGROUP BY t \nORDER BY t ASC",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "subscriber",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
     },
     {
-      "dsType": "influxdb",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=",
-          "value": "$device"
-        }
-      ],
-      "refId": "A",
-      "alias": "Subscribers on slot $tag_slot",
+      "refId": "B",
       "resultFormat": "time_series",
-      "measurement": "Subscribers | Summary",
-      "policy": "default",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "type": "tag",
-          "params": [
-            "slot"
-          ]
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "select": [
-        [
-          {
-            "type": "field",
-            "params": [
-              "value"
-            ]
-          },
-          {
-            "type": "sum",
-            "params": []
-          }
-        ]
-      ],
-      "rawQuery": false
+      "intervalFactor": 1,
+      "query": "SELECT \n    t,\n    groupArray((slot, Subscribers)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as slot, \n        argMax(summary, t) as `Subscribers` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "subscriber",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateTimeColDataType": "ts",
+      "dateColDataType": "date"
     }
   ],
-  "fill": 1,
-  "span": 6,
+  "thresholds": [],
+  "timeFrom": null,
+  "timeShift": null,
   "title": "Subscribers on slots",
   "tooltip": {
-    "sort": 0,
+    "msResolution": false,
     "shared": true,
-    "value_type": "cumulative",
-    "msResolution": false
+    "sort": 0,
+    "value_type": "individual"
   },
-  "stack": false,
-  "yaxes": [
-    {
-      "logBase": 1,
-      "format": "short",
-      "max": null,
-      "show": true,
-      "label": null,
-      "min": null
-    },
-    {
-      "logBase": 1,
-      "format": "short",
-      "max": null,
-      "show": true,
-      "label": null,
-      "min": null
-    }
-  ],
+  "type": "graph",
   "xaxis": {
-    "show": true,
+    "buckets": null,
     "mode": "time",
     "name": null,
+    "show": true,
     "values": []
   },
-  "seriesOverrides": [],
-  "percentage": false,
-  "type": "graph",
-  "error": false,
-  "editable": true,
-  "grid": {},
-  "legend": {
-    "avg": true,
-    "min": true,
-    "max": true,
-    "show": true,
-    "current": true,
-    "values": true,
-    "total": false,
-    "alignAsTable": true
-  },
-  "timeShift": null,
-  "aliasColors": {},
-  "lines": true,
-  "points": false,
-  "datasource": null,
-  "pointradius": 5,
-  "thresholds": []
+  "yaxes": [
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    }
+  ]
 }

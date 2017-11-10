@@ -31,3 +31,10 @@ class SegmentDiscoveryJob(MODiscoveryJob):
 
     def get_failed_interval(self):
         return self.object.object_profile.discovery_interval
+
+    def update_alarms(self):
+        """
+        Disable umbrella alarms creation
+        :return:
+        """
+        pass

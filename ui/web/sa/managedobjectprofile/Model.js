@@ -478,6 +478,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "escalation_policy",
             type: "string"
+        },
+        {
+            name: "event_processing_policy",
+            type: "string"
         }
     ]
 });

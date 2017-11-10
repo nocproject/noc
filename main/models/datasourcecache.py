@@ -8,8 +8,6 @@
 
 # Python modules
 import datetime
-import cPickle
-import zlib
 import bz2
 # Third-party modules
 from mongoengine.document import Document

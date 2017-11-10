@@ -226,6 +226,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         ]
                     },
                     {
+                        name: "allow_subinterface_metrics",
+                        xtype: "checkbox",
+                        boxLabel: __("Apply metrics to subinterfaces"),
+                        allowBlank: true
+                    },
+                    {
                         name: "metrics",
                         xtype: "gridfield",
                         fieldLabel: __("Metrics"),

@@ -29,6 +29,14 @@ class Profile(BaseProfile):
     command_exit = "exit"
     default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
+    matchers = {
+        "is_switch": {
+            "platform": {
+                "$regex": "ex|mx|qfx|acx"
+            }
+        }
+    }
+
     def cmp_version(self, x, y):
         """
         Compare versions.

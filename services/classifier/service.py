@@ -31,7 +31,7 @@ from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 import noc.inv.models.interface
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.version import get_version
+from noc.core.version import version
 from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
 from noc.lib.nosql import ObjectId
@@ -99,7 +99,7 @@ class ClassifierService(Service):
 
     def __init__(self):
         super(ClassifierService, self).__init__()
-        self.version = get_version()
+        self.version = version.version
         self.ruleset = RuleSet()
         self.triggers = defaultdict(list)  # event_class_id -> [trigger1, ..., triggerN]
         self.templates = {}  # event_class_id -> (body_template,subject_template)

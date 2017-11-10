@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,6 +32,9 @@ class Script(BaseScript):
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
             iface = match.group("iface")
+            # found on QSW-3470-10T-AC-POE fw 1.1.5.6
+            if match.group("type").lower() == "unknown":
+                continue
             m = {
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),

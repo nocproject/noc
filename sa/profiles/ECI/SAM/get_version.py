@@ -33,8 +33,8 @@ class Script(BaseScript):
             cardtype = "None"
             platform = "None"
         else:
-            version = match.group("version")
-            cardtype = match.group("cardtype")
+            version = match.group("version").strip()
+            cardtype = match.group("cardtype").strip()
             c = self.cli("EXISTSH ALL")
             match = self.rx_platform.search(c)
             platform = match.group("platform")

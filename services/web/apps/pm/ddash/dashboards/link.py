@@ -9,7 +9,6 @@
 """
 
 import demjson
-
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
 from noc.inv.models.link import Link
@@ -30,9 +29,9 @@ class LinkDashboard(BaseDashboard):
     def render(self):
         mos = self.object
         if mos.interfaces[0].description:
-            mos.interfaces[0].description = mos.interfaces[0].description.replace('\"', '')
+            mos.interfaces[0].description = self.str_cleanup(mos.interfaces[0].description)
         if mos.interfaces[1].description:
-            mos.interfaces[1].description = mos.interfaces[1].description.replace('\"', '')
+            mos.interfaces[1].description = self.str_cleanup(mos.interfaces[1].description)
         context = {
             "device_a": mos.interfaces[0].managed_object.name.replace('\"', ''),
             "device_b": mos.interfaces[1].managed_object.name.replace('\"', ''),

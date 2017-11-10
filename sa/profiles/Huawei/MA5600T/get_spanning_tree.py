@@ -137,6 +137,8 @@ class Script(BaseScript):
                     ifname = p.group("port").replace(" ", "")
                     p1 = self.cli("display stp instance %d port %s" %
                                   (instance["id"], ifname))
+                    if "spanning tree protocol is disabled" in p1:
+                        continue
                     iface = {"interface": ifname}
                     iface["port_id"] = \
                         p.group("port_id1") + "." + p.group("port_id2")
@@ -175,6 +177,8 @@ class Script(BaseScript):
             for p in self.rx_port.finditer(v):
                 ifname = p.group("port").replace(" ", "")
                 p1 = self.cli("display stp port %s" % ifname)
+                if "spanning tree protocol is disabled" in p1:
+                    continue
                 iface = {"interface": ifname}
                 iface["port_id"] = \
                     p.group("port_id1") + "." + p.group("port_id2")

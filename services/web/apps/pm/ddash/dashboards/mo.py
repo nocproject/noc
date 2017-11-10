@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------
 
 import demjson
-
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
 from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 # NOC modules
 from noc.lib.text import split_alnum
 from noc.pm.models.metrictype import MetricType
@@ -41,6 +41,7 @@ class MODashboard(BaseDashboard):
         port_types = []
         object_metrics = []
         lags = []
+        subif = []
 
         # Get all interface profiles with configurable metrics
         all_ifaces = list(Interface.objects.filter(
@@ -54,17 +55,20 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
-                if iface.description:
-                    iface.description = iface.description.replace('\"', '')
                 if iface.type == u"aggregated" and iface.lag_members:
                     lags += [{
                         "name": iface.name,
                         "ports": [i.name for i in iface.lag_members],
-                        "descr": iface.description or "No description",
+                        "descr": self.str_cleanup(iface.description) or "No description",
                         "status": ["status : ".join([i.name, i.status]) for i in iface.lag_members]
                     }]
                     continue
-                ports += [{"name": iface.name, "descr": iface.description, "status": iface.status}]
+                ports += [{"name": iface.name, "descr": self.str_cleanup(iface.description), "status": iface.status}]
+                if iface.profile.allow_subinterface_metrics:
+                    subif += [{
+                        "name": si.name,
+                        "descr": self.str_cleanup(si.description)
+                    } for si in SubInterface.objects.filter(interface=iface)]
             if not ports:
                 continue
             port_types += [{"type": profile.id, "name": profile.name,
@@ -80,7 +84,8 @@ class MODashboard(BaseDashboard):
 
         return {"port_types": port_types,
                 "object_metrics": object_metrics,
-                "lags": lags}
+                "lags": lags,
+                "subifaces": subif}
 
     def render(self):
 
@@ -95,6 +100,7 @@ class MODashboard(BaseDashboard):
             "firmare_version": self.object.version.version if self.object.version else None,
             "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown version",
+            "subifaces": self.object_data["subifaces"],
             "bi_id": self.object.bi_id,
             "pool": self.object.pool.name,
             "ping_interval": self.object.object_profile.ping_interval,

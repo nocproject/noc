@@ -22,6 +22,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
@@ -263,11 +264,29 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.info("Object metrics are not configured. Skipping")
         return metrics
 
+    def get_subinterfaces(self):
+        subs = defaultdict(list)  # interface id -> [{"name":, "ifindex":}]
+        for si in SubInterface._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        ).find({
+            "managed_object": self.object.id
+        }, {
+            "name": 1,
+            "interface": 1,
+            "ifindex": 1
+        }):
+            subs[si["interface"]] += [{
+                "name": si["name"],
+                "ifindex": si.get("ifindex")
+            }]
+        return subs
+
     def get_interface_metrics(self):
         """
         Populate metrics list with interface metrics
         :return:
         """
+        subs = None
         metrics = []
         for i in Interface._get_collection().with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED
@@ -275,6 +294,7 @@ class MetricsCheck(DiscoveryCheck):
             "managed_object": self.object.id,
             "type": "physical"
         }, {
+            "_id": 1,
             "name": 1,
             "ifindex": 1,
             "profile": 1
@@ -283,6 +303,10 @@ class MetricsCheck(DiscoveryCheck):
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
                 continue  # No metrics configured
+            i_profile = InterfaceProfile.get_by_id(i["profile"])
+            if i_profile.allow_subinterface_metrics and subs is None:
+                # Resolve subinterfaces
+                subs = self.get_subinterfaces()
             ifindex = i.get("ifindex")
             for metric in ipr:
                 m_id = next(self.id_count)
@@ -295,6 +319,18 @@ class MetricsCheck(DiscoveryCheck):
                     m["ifindex"] = ifindex
                 metrics += [m]
                 self.id_metrics[m_id] = ipr[metric]
+                if i_profile.allow_subinterface_metrics:
+                    for si in subs[i["_id"]]:
+                        m_id = next(self.id_count)
+                        m = {
+                            "id": m_id,
+                            "metric": metric,
+                            "path": ["", "", "", i["name"], si["name"]]
+                        }
+                        if si["ifindex"] is not None:
+                            m["ifindex"] = si["ifindex"]
+                        metrics += [m]
+                        self.id_metrics[m_id] = ipr[metric]
         if not metrics:
             self.logger.info("Interface metrics are not configured. Skipping")
         return metrics

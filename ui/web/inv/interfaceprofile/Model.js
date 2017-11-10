@@ -95,6 +95,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "allow_autosegmentation",
             type: "boolean"
         },
+        {
+            name: "allow_subinterface_metrics",
+            type: "boolean"
+        },
         // CSS
         {
             name: "row_class",

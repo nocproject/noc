@@ -686,15 +686,28 @@ Ext.define("NOC.sa.managedobject.Application", {
                     },
                     items: [
                         {
+                            name: "event_processing_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Event Policy"),
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P",
+                            allowBlank: false,
+                            uiStyle: "medium"
+                        },
+                        {
                             name: "trap_source_type",
                             xtype: "combobox",
                             fieldLabel: __("Trap Source"),
                             store: [
-                                ["d", "Disable"],
-                                ["m", "Management Address"],
-                                ["s", "Specify address"],
-                                ["l", "Loopback address"],
-                                ["a", "All interface addresses"]
+                                ["d", __("Disable")],
+                                ["m", __("Management Address")],
+                                ["s", __("Specify address")],
+                                ["l", __("Loopback address")],
+                                ["a", __("All interface addresses")]
                             ],
                             value: "d",
                             listeners: {
@@ -719,11 +732,11 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "combobox",
                             fieldLabel: __("Syslog Source"),
                             store: [
-                                ["d", "Disable"],
-                                ["m", "Management Address"],
-                                ["s", "Specify address"],
-                                ["l", "Loopback address"],
-                                ["a", "All interface addresses"]
+                                ["d", __("Disable")],
+                                ["m", __("Management Address")],
+                                ["s", __("Specify address")],
+                                ["l", __("Loopback address")],
+                                ["a", __("All interface addresses")]
                             ],
                             value: "d",
                             listeners: {

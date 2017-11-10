@@ -420,6 +420,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             title: "FM",
                             items: [
                                 {
+                                    name: "event_processing_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Event Policy"),
+                                    store: [
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "E",
+                                    allowBlank: false,
+                                    uiStyle: "medium"
+                                },
+                                {
                                     name: "weight",
                                     xtype: "numberfield",
                                     fieldLabel: __("Alarm Weight"),

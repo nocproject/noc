@@ -299,6 +299,21 @@ class BaseLoader(object):
             if rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
 
+    def find_object(self, v):
+        """
+        Find object by remote system/remote id
+        :param v:
+        :return:
+        """
+        rs = v.get("remove_system")
+        rid = v.get("remote_id")
+        if not rs or not rid:
+            return None
+        try:
+            return self.model.objects.get(remote_system=rs, remote_id=rid)
+        except self.model.DoesNotExist:
+            return None
+
     def create_object(self, v):
         """
         Create object with attributes. Override to save complex
@@ -323,6 +338,7 @@ class BaseLoader(object):
         """
         Change object with attributes
         """
+        # See: https://code.getnoc.com/noc/noc/merge_requests/49
         try:
             o = self.model.objects.get(pk=object_id)
         except self.model.DoesNotExist:
@@ -353,12 +369,27 @@ class BaseLoader(object):
         """
         self.logger.debug("Add: %s", ";".join(row))
         v = self.clean(row)
-        self.c_add += 1
         # @todo: Check record is already exists
         if self.fields[0] in v:
             del v[self.fields[0]]
-        o = self.create_object(v)
-        self.set_mappings(row[0], o.id)
+        o = self.find_object(v)
+        if o:
+            self.c_change += 1
+            # Lost&found object with same remote_id
+            vv = {
+                "remote_system": v["remote_system"],
+                "remote_id": v["remote_id"]
+            }
+            for fn, nv in zip(self.fields[1:], row[1:]):
+                if getattr(o, fn) != nv:
+                    vv[fn] = nv
+            self.change_object(o.id, vv)
+            # Restore mappings
+            self.set_mappings(row[0], o.id)
+        else:
+            self.c_add += 1
+            o = self.create_object(v)
+            self.set_mappings(row[0], o.id)
 
     def on_change(self, o, n):
         """

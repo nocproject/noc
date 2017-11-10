@@ -66,7 +66,7 @@ from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 
 # Increase whenever new field added
-MANAGEDOBJECT_CACHE_VERSION = 6
+MANAGEDOBJECT_CACHE_VERSION = 7
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
@@ -439,6 +439,17 @@ class ManagedObject(Model):
         default="p"
     )
     #
+    event_processing_policy = CharField(
+        "Event Processing Policy",
+        max_length=1,
+        choices=[
+            ("P", "Profile"),
+            ("E", "Process Events"),
+            ("D", "Drop events")
+        ],
+        default="P"
+    )
+    #
     tags = TagsField("Tags", null=True, blank=True)
 
     # Event ids
@@ -597,7 +608,8 @@ class ManagedObject(Model):
             "syslog_source_ip" in self.changed_fields or
             "address" in self.changed_fields or
             "pool" in self.changed_fields or
-            "time_pattern" in self.changed_fields
+            "time_pattern" in self.changed_fields or
+            "event_processing_policy" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
         # Invalidate credentials cache
@@ -1319,6 +1331,12 @@ class ManagedObject(Model):
             return self.object_profile.access_preference
         else:
             return self.access_preference
+
+    def get_event_processing_policy(self):
+        if self.event_processing_policy == "P":
+            return self.object_profile.event_processing_policy
+        else:
+            return self.event_processing_policy
 
     @classmethod
     def get_bi_selector(cls, cfg):
