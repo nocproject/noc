@@ -113,7 +113,7 @@ class Script(BaseScript):
                         r"\\\n\s*", "", n["remote_system_name"]
                     )
                     sys_descr = match.group("system_descr")
-                    if sys_desc:
+                    if sys_descr:
                         n["remote_system_description"] =  \
                             sys_descr.replace("\"", "").strip()
                         n["remote_system_description"] = re.sub(
