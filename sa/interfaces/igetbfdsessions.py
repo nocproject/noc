@@ -19,7 +19,7 @@ class IGetBFDSessions(BaseInterface):
         "local_interface": InterfaceNameParameter(),
         "local_discriminator": IntParameter(),
         "remote_discriminator": IntParameter(),
-        "state": StringParameter(choices=["UP"]),
+        "state": StringParameter(choices=["UP", "DOWN"]),
         "clients": ListOfParameter(element=StringParameter(choices=[
             "L2", "RSVP", "ISIS", "OSPF", "BGP", "EIGRP", "PIM"
         ])),
