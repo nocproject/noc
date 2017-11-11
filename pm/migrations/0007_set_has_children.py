@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+# Third-party modules
+from pymongo.errors import BulkWriteError
+from pymongo import UpdateOne
+# NOC modules
 from noc.lib.nosql import get_db
 
 
@@ -13,14 +18,21 @@ class Migration:
                 parent = ".".join(m["name"].split(".")[:-1])
                 has_children[parent] = True
         if has_children:
-            bulk = metrics.initialize_unordered_bulk_op()
+            bulk = []
             for name in has_children:
-                bulk.find({"name": name}).update({
+                bulk += [UpdateOne({"name": name}, {
                     "$set": {
                         "has_children": has_children[name]
                     }
-                })
-            bulk.execute()
+                })]
+            if bulk:
+                print("Commiting changes to database")
+                try:
+                    metrics.bulk_write(bulk)
+                    print("Database has been synced")
+                except BulkWriteError as e:
+                    print("Bulk write error: '%s'", e.details)
+                    print("Stopping check")
 
     def backwards(self):
         pass
