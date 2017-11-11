@@ -34,8 +34,8 @@ class TagApplication(ExtDocApplication):
         else:
             q = request.GET["query"]
             tags = Tag.objects.filter(tag__startswith=q)
-
-        return {"data": [{"id": t.tag, "label": t.tag} for t in tags],
-                "total": tags.count(),
-                "success": True
-                }
+        return {
+            "data": [{"id": t.tag, "label": t.tag} for t in tags],
+            "total": tags.count(),
+            "success": True
+        }
