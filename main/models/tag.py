@@ -57,7 +57,7 @@ class Tag(Document):
         :param model: Model for creating tag
         :return:
         """
-        r = cls._get_collection().update(
+        cls._get_collection().update(
             {"tag": tag},
             {
                 "$addToSet": {
