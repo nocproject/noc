@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI Extractor
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# BI Extractor
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 
 
@@ -23,6 +23,8 @@ class BaseExtractor(object):
     # Does extractor apply time-based restriction
     # or just a snapshot of existing data
     is_snapshot = False
+    # Link to config boolean parameter, skip extract if False
+    is_extract = False
 
     def __init__(self, prefix, start, stop):
         self.prefix = prefix

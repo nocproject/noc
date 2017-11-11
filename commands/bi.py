@@ -32,7 +32,8 @@ class Command(BaseCommand):
 
     EXTRACTORS = [
         RebootsExtractor,
-        AlarmsExtractor
+        AlarmsExtractor,
+        ManagedObjectsExtractor
     ]
 
     # Extract by 1-day chunks
@@ -81,6 +82,9 @@ class Command(BaseCommand):
         now = datetime.datetime.now()
         window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
+            if not ecls.is_extract:
+                self.print("[%s] Not enable, skipping" % ecls.name)
+                continue
             start = self.get_last_extract(ecls.name)
             if not start:
                 start = ecls.get_start()

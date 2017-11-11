@@ -69,6 +69,11 @@ class Config(BaseConfig):
         chunk_size = IntParameter(default=3000)
         extract_window = SecondsParameter(default="1d")
 
+    class bi_extractors(ConfigSection):
+        alarms = BooleanParameter(default=False)
+        reboots = BooleanParameter(default=False)
+        managedobject = BooleanParameter(default=False)
+
     brand = StringParameter(default="NOC")
 
     class cache(ConfigSection):

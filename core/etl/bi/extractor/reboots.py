@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Outage Extractor
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Outage Extractor
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import os
-## NOC modules
+# NOC modules
 from base import BaseExtractor
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
@@ -21,6 +19,7 @@ class RebootsExtractor(BaseExtractor):
     name = "reboots"
     extract_delay = config.bi.extract_delay_reboots
     clean_delay = config.bi.clean_delay_reboots
+    is_enable = config.bi_extractors.reboots
 
     def __init__(self, prefix, start, stop):
         super(RebootsExtractor, self).__init__(prefix, start, stop)

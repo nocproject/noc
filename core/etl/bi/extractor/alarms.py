@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import bisect
 import datetime
 # NOC modules
 from base import BaseExtractor
@@ -27,6 +26,7 @@ class AlarmsExtractor(BaseExtractor):
     extract_delay = config.bi.extract_delay_alarms
     clean_delay = config.bi.clean_delay_alarms
     reboot_interval = datetime.timedelta(seconds=config.bi.reboot_interval)
+    is_enable = config.bi_extractors.alarms
 
     def __init__(self, prefix, start, stop):
         super(AlarmsExtractor, self).__init__(prefix, start, stop)
