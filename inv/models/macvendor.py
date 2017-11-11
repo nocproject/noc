@@ -84,7 +84,7 @@ class MACVendor(Document):
         if bulk:
             logger.info("Commiting changes to database")
             try:
-                r = collection.bulk_write(bulk)
+                r = collection.bulk_write(bulk, ordered=False)
                 logger.info("Database has been synced")
                 logger.info("Inserted: %d, Modify: %d, Deleted: %d",
                             r.inserted_count + r.upserted_count,
