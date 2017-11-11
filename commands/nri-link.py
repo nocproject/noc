@@ -26,9 +26,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # view command
-        apply_parser = subparsers.add_parser("apply")
+        subparsers.add_parser("apply")
         # list command
-        status_parser = subparsers.add_parser("status")
+        subparsers.add_parser("status")
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)

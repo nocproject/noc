@@ -31,10 +31,10 @@ class Migration(object):
         """):
             data = json.loads(data)
             bulk += [InsertOne({
-                 "layer": ObjectId(layer),
-                 "object": ObjectId(object),
-                 "label": label,
-                 "data": data
+                "layer": ObjectId(layer),
+                "object": ObjectId(object),
+                "label": label,
+                "data": data
             })]
         if bulk:
             print("Commiting changes to database")

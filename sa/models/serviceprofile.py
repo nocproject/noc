@@ -50,7 +50,7 @@ class ServiceProfile(Document):
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
     # Object id in remote system
-    remote_id = StringField()    
+    remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
     # Tags
