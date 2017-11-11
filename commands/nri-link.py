@@ -10,6 +10,8 @@
 import operator
 # Third-party modules
 import cachetools
+from pymongo.errors import BulkWriteError
+from pymongo import UpdateOne
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.extnrilink import ExtNRILink
@@ -34,8 +36,8 @@ class Command(BaseCommand):
     def handle_apply(self, *args, **options):
         self.mo_cache = {}
         self.mc_cache = {}
-        self.bulk = ExtNRILink._get_collection().initialize_unordered_bulk_op()
-        self.nb = 0
+        self.bulk = []
+        self.collection = ExtNRILink._get_collection()
         self.stdout.write("Apply NRI links from %s\n" % ExtNRILink._meta["collection"])
         for l in ExtNRILink.objects.filter(link__exists=False):
             # Get objects
@@ -137,8 +139,15 @@ class Command(BaseCommand):
                     l.id,
                     "Linked to: %s" % dst_link
                 )
-        if self.nb:
-            self.bulk.execute()
+        if self.bulk:
+            self.stdout.write("Commiting changes to database\n")
+            try:
+                self.collection.bulk_write(self.bulk)
+                self.stdout.write("Database has been synced\n")
+            except BulkWriteError as e:
+                self.stdout.write("Bulk write error: '%s'\n", e.details)
+        else:
+            self.stdout.write("Nothing changed\n")
 
     @cachetools.cachedmethod(operator.attrgetter("mo_cache"))
     def get_mo(self, mo_id):
@@ -147,13 +156,15 @@ class Command(BaseCommand):
         except ManagedObject.DoesNotExist:
             return None
 
-    def get_port_mapper(self, mo):
+    @staticmethod
+    def get_port_mapper(mo):
         for t in mo.tags:
             if t.startswith("src:"):
                 return loader.get_loader(t[4:])
         return None
 
-    def get_interface(self, managed_object, name):
+    @staticmethod
+    def get_interface(managed_object, name):
         return Interface.objects.filter(
             managed_object=managed_object.id,
             name=name
@@ -172,12 +183,15 @@ class Command(BaseCommand):
             op["$set"] = op_set
         if op_unset:
             op["$unset"] = op_unset
-        self.bulk.find({"_id": id}).update(op)
-        self.nb += 1
-        if self.nb % self.BATCH_SIZE == 0:
-            self.bulk.execute()
-            self.bulk = ExtNRILink._get_collection().initialize_unordered_bulk_op()
-            self.nb = 0
+        self.bulk += [UpdateOne({"_id": id}, op)]
+        if len(self.bulk) % self.BATCH_SIZE == 0:
+            self.stdout.write("Commiting changes to database\n")
+            try:
+                self.collection.bulk_write(self.bulk)
+                self.bulk = []
+                self.stdout.write("Database has been synced\n")
+            except BulkWriteError as e:
+                self.stdout.write("Bulk write error: '%s'\n", e.details)
 
     def update_nri(self, id, **kwargs):
         self.bulk_op(id, error=None, warn=None, **kwargs)
