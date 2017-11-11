@@ -718,6 +718,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Cache neighbors for"),
                                                     allowBlank: false,
+                                                    labelWidth: 130,
                                                     uiStyle: "small",
                                                     align: "right"
                                                 },
