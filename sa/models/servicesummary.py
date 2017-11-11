@@ -11,6 +11,8 @@ from __future__ import absolute_import
 from collections import defaultdict
 import logging
 # Third-party modules
+from pymongo.errors import BulkWriteError
+from pymongo import UpdateOne, DeleteOne, InsertOne
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (IntField, ObjectIdField,
                                 EmbeddedDocumentField, ListField)
@@ -171,7 +173,6 @@ class ServiceSummary(Document):
 
     @classmethod
     def _refresh_object(cls, managed_object):
-        from noc.inv.models.networksegment import NetworkSegment
         from noc.sa.models.managedobject import ManagedObject
 
         def to_dict(v):
@@ -185,8 +186,8 @@ class ServiceSummary(Document):
 
         if hasattr(managed_object, "id"):
             managed_object = managed_object.id
-        bulk = ServiceSummary._get_collection().initialize_unordered_bulk_op()
-        n = 0
+        collection = ServiceSummary._get_collection()
+        bulk = []
         summary = cls.build_summary_for_object(managed_object)
         for s in ServiceSummary._get_collection().find({
             "managed_object": managed_object
@@ -201,35 +202,41 @@ class ServiceSummary(Document):
                 service_profiles = to_dict(s["service"])
                 subscriber_profiles = to_dict(s["subscriber"])
                 if (service_profiles != ss["service"] or
-                            subscriber_profiles != ss["subscriber"]):
-                    bulk.find({
+                        subscriber_profiles != ss["subscriber"]):
+                    bulk += [UpdateOne({
                         "_id": s["_id"]
-                    }).update({
+                    }, {
                         "$set": {
                             "service": to_list(ss["service"]),
                             "subscriber": to_list(ss["subscriber"])
                         }
-                    })
-                    n += 1
+                    })]
                 del summary[s["interface"]]
             else:
-                bulk.find({
+                bulk += [DeleteOne({
                     "_id": s["_id"]
-                }).remove()
-                n += 1
+                })]
 
         # add new
         for si, s in summary.items():
             # New interface
-            bulk.insert({
+            bulk += [InsertOne({
                 "managed_object": managed_object,
                 "interface": si,
                 "service": to_list(s["service"]),
                 "subscriber": to_list(s["subscriber"])
-            })
-            n += 1
-        if n:
-            bulk.execute()
+            })]
+        if bulk:
+            logger.info("Commiting changes to database")
+            try:
+                r = collection.bulk_write(bulk, ordered=False)
+                logger.info("Database has been synced")
+                logger.info("Inserted: %d, Modify: %d, Deleted: %d",
+                            r.inserted_count + r.upserted_count,
+                            r.modified_count, r.deleted_count)
+            except BulkWriteError as e:
+                logger.error("Bulk write error: '%s'", e.details)
+                logger.error("Stopping check")
         mo = ManagedObject.get_by_id(managed_object)
         mo.segment.update_summary()
 
