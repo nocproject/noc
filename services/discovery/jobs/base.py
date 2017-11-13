@@ -13,6 +13,7 @@ import contextlib
 import time
 import zlib
 import datetime
+import types
 # Third-party modules
 import bson
 import six
@@ -856,11 +857,16 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         if not ttl:
             # Disabled cache
             metrics["neighbor_cache_misses"] += 1
-            return list(iter_neighbors(mo))
+            neighbors = iter_neighbors(mo)
+            if isinstance(neighbors, types.GeneratorType):
+                neighbors = list(iter_neighbors(mo))
+            return neighbors
         # Cached version
         neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
         if neighbors is None:
-            neighbors = list(iter_neighbors(mo))
+            neighbors = iter_neighbors(mo)
+            if isinstance(neighbors, types.GeneratorType):
+                neighbors = list(iter_neighbors(mo))
             cache.set(key, neighbors, ttl=ttl,
                       version=self.NEIGHBOR_CACHE_VERSION)
             metrics["neighbor_cache_misses"] += 1
