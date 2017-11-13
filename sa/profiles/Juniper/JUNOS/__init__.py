@@ -23,6 +23,8 @@ class Profile(BaseProfile):
         (r"^---\(more.*?\)---", " "),
         (r"\? \[yes,no\] .*?", "y\n")
     ]
+    pattern_syntax_error = \
+        r"^(\'\S+\' is ambiguous\.|syntax error|unknown command\.)"
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
@@ -109,7 +111,7 @@ class Profile(BaseProfile):
         if "." in name:
             try:
                 ifname, unit = name.split(".")
-            except:
+            except ValueError:
                 return True
             # See `logical-interface-unit-range`
             if int(unit) > 16385:

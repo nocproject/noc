@@ -59,9 +59,12 @@ class VersionCheck(DiscoveryCheck):
             changed = True
             # @todo: Check next_version and report upgrade
         # Sync image
-        image = result.get("image")
-        if image and image != self.object.software_image:
-            image = image[:255]  # Cut to field length
+        image = result.get("image", "")
+        if image != self.object.software_image:
+            if image:
+                image = image.strip()[:255]  # Cut to field length
+            if not image:
+                image = None
             if self.object.version:
                 self.logger.info("Image changed: %s -> %s",
                                  self.object.software_image, image)

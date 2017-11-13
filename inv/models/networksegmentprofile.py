@@ -40,6 +40,8 @@ class SegmentTopologySettings(EmbeddedDocument):
             ("oam", "OAM"),
             ("stp", "STP"),
             ("udld", "UDLD"),
+            ("fdp", "FDP"),
+            ("bfd", "BFD"),
             ("mac", "MAC"),
             ("nri", "NRI")
         ]

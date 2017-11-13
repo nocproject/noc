@@ -480,6 +480,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "neighbor_cache_ttl",
+            type: "int"
+        },
+        {
             name: "event_processing_policy",
             type: "string"
         }

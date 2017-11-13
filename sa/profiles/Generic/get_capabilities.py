@@ -274,6 +274,17 @@ class Script(BaseScript):
             fallback_handler=self.return_false
         )
 
+    def has_bfd(self):
+        """
+        Returns True when BFD is enabled
+        :return:
+        """
+        return self.call_method(
+            cli_handler="has_bfd_cli",
+            snmp_handler="has_bfd_snmp",
+            fallback_handler=self.return_false
+        )
+
     def execute_platform_cli(self, caps):
         """
         Method to be overriden in subclasses. Execute if C preffered
@@ -350,6 +361,8 @@ class Script(BaseScript):
             caps["Network | RSVP"] = True
         if self.has_lacp():
             caps["Network | LACP"] = True
+        if self.has_bfd():
+            caps["Network | BFD"] = True
         self.call_method(
             cli_handler="execute_platform_cli",
             snmp_handler="execute_platform_snmp",

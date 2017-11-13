@@ -39,6 +39,14 @@ class Script(BaseScript):
         return bool(r)
 
     @false_on_cli_error
+    def has_bfd_cli(self):
+        """
+        Check box has oam enabled
+        """
+        r = self.cli("show bfd session")
+        return "0 sessions, 0 clients" not in r
+
+    @false_on_cli_error
     def get_rpm_probes(self):
         i = 0
         v = self.scripts.get_sla_probes()

@@ -32,6 +32,8 @@ from .udld import UDLDCheck
 from .nri import NRICheck
 from .sla import SLACheck
 from .cpe import CPECheck
+from .bfd import BFDCheck
+from .fdp import FDPCheck
 from .hk import HouseKeepingCheck
 from .segmentation import SegmentationCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
@@ -51,26 +53,30 @@ class BoxDiscoveryJob(MODiscoveryJob):
         LACPCheck,
         UDLDCheck,
         LLDPCheck,
+        BFDCheck,
         CDPCheck,
+        FDPCheck,
         HuaweiNDPCheck,
         STPCheck
     ])
 
     def handler(self, **kwargs):
         with Span(sample=self.object.box_telemetry_sample):
+            has_cli = "C" in self.object.get_access_preference()
             if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestSNMPCheck(self).run()
             if self.object.object_profile.enable_box_discovery_profile:
                 ProfileCheck(self).run()
-            if self.object.auth_profile and self.object.auth_profile.enable_suggest:
+            if has_cli and self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestCLICheck(self).run()
-            if self.object.auth_profile and self.object.auth_profile.type == "S":
-                self.logger.info(
-                    "Cannot choose valid credentials. Stopping"
-                )
-                return
+                if self.object.auth_profile.enable_suggest:
+                    # Still suggest
+                    self.logger.info(
+                        "Cannot choose valid credentials. Stopping"
+                    )
+                    return
             # Run remaining checks
-            if self.allow_sessions():
+            if has_cli and self.allow_sessions():
                 self.logger.debug("Using CLI sessions")
                 with self.object.open_session():
                     self.run_checks()

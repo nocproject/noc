@@ -358,14 +358,13 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
-        if getattr(o, "tags") is not None and "tags" in attrs:
-            for t in set(getattr(o, "tags", [])).difference(set(attrs.get("tags", []))):
-                r = Tag.register_tag(t, repr(self.model))
-                self.logger.info("Update tag: %s" % t)
-                if not r.get("updatedExisting"):
-                    # Tags not in collections not removed
-                    self.logger.warning("Tags not in collections not removed %s" % t)
-                    attrs["tags"] += [t]
+        if hasattr(o, "tags") and "tags" in attrs:
+            for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
+                Tag.unregister_tag(t, repr(self.model))
+                self.logger.info("Unregister Tag: %s" % t)
+            for t in set(attrs.get("tags", [])) - (set(getattr(o, "tags", []))):
+                Tag.register_tag(t, repr(self.model))
+                self.logger.info("Register Tag: %s" % t)
         # @todo: Check for duplicates
         for k in attrs:
             if k != self.pk and "__" not in k:

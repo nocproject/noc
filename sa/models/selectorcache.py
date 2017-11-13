@@ -14,10 +14,11 @@ import operator
 from threading import Lock
 import re
 # Third-party modules
+from pymongo import ReadPreference, UpdateOne, InsertOne, DeleteOne, WriteConcern
+from pymongo.errors import BulkWriteError
 from mongoengine.document import Document
 from mongoengine.fields import IntField
 import cachetools
-from pymongo import ReadPreference
 # NOC modules
 from noc.core.defer import call_later
 
@@ -142,8 +143,8 @@ class SelectorCache(Document):
             old[d["selector"]] = d
         # Refreshed data
         vcdomain = object.vc_domain.id if object.vc_domain else None
-        bulk = SelectorCache._get_collection().initialize_unordered_bulk_op()
-        nb = 0
+        collection = SelectorCache._get_collection().with_options(write_concern=WriteConcern(w=0))
+        bulk = []
         for s in cls.selectors_for_object(object):
             sdata = old.get(s)
             if sdata:
@@ -155,12 +156,11 @@ class SelectorCache(Document):
                         object.name,
                         vcdomain
                     )
-                    bulk.find({"_id": sdata["_id"]}).update({
+                    bulk += [UpdateOne({"_id": sdata["_id"]}, {
                         "$set": {
                             "vc_domain": vcdomain
                         }
-                    })
-                    nb += 1
+                    })]
                 del old[s]
             else:
                 # New record
@@ -168,26 +168,30 @@ class SelectorCache(Document):
                     "[%s] Add to selector %s",
                     object.name, s
                 )
-                bulk.insert({
+                bulk += [InsertOne({
                     "object": object.id,
                     "selector": s,
                     "vc_domain": vcdomain
-                })
-                nb += 1
+                })]
         # Delete stale records
         for sdata in old.itervalues():
             logging.debug(
                 "[%s] Remove from selector %s",
                 object.name, sdata["_id"]
             )
-            bulk.find({"_id": sdata["_id"]}).remove()
+            bulk += [DeleteOne({"_id": sdata["_id"]})]
         # Apply changes
-        if nb:
-            logging.debug(
-                "[%s] Committing %d changes",
-                object.name, nb
-            )
-            bulk.execute({"w": 0})
+        if bulk:
+            logging.info("[%s]Commiting changes to database", object.name)
+            try:
+                r = collection.bulk_write(bulk, ordered=False)
+                logging.info("Database has been synced")
+                logging.info("Inserted: %d, Modify: %d, Deleted: %d",
+                             r.inserted_count + r.upserted_count,
+                             r.modified_count, r.deleted_count)
+            except BulkWriteError as e:
+                logging.error("Bulk write error: '%s'", e.details)
+                logging.error("Stopping check")
 
 
 def refresh():
@@ -230,7 +234,6 @@ def refresh():
 
     from .managedobjectselector import ManagedObjectSelector
 
-    r = []
     logger.info("Building selector cache")
     logger.info("Loading existing cache")
     old = sorted(
@@ -250,29 +253,40 @@ def refresh():
     n_new = 0
     n_changed = 0
     n_removed = 0
-    bulk = SelectorCache._get_collection().initialize_unordered_bulk_op()
+    collection = SelectorCache._get_collection()
+    bulk = []
     for o, n in diff(iter(old), iter(new)):
         if o is None:
             # New
-            bulk.insert({
+            bulk += [InsertOne({
                 "object": n[0], "selector": n[1], "vc_domain": n[2]
-            })
+            })]
             n_new += 1
         elif n is None:
             # Removed
-            bulk.find({"_id": o[-1]}).remove()
+            bulk += [DeleteOne({"_id": o[-1]})]
             n_removed += 1
         else:
             # Changed
-            bulk.find({"_id": o[-1]}).update({
+            bulk += [UpdateOne({"_id": o[-1]}, {
                 "$set": {
                     "object": n[0], "selector": n[1], "vc_domain": n[2]
                 }
-            })
+            })]
             n_changed += 1
     if n_new + n_changed + n_removed:
         logger.info("Writing (new=%s, changed=%s, removed=%s)",
                     n_new, n_changed, n_removed)
-        bulk.execute()
+        if bulk:
+            logger.info("Commiting changes to database")
+            try:
+                r = collection.bulk_write(bulk, ordered=False)
+                logger.info("Database has been synced")
+                logger.info("Inserted: %d, Modify: %d, Deleted: %d",
+                            r.inserted_count + r.upserted_count,
+                            r.modified_count, r.deleted_count)
+            except BulkWriteError as e:
+                logger.error("Bulk write error: '%s'", e.details)
+                logger.error("Stopping check")
     logger.info("Done ")
     return

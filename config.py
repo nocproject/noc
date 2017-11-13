@@ -68,6 +68,9 @@ class Config(BaseConfig):
         clean_delay_reboots = SecondsParameter(default="1d")
         chunk_size = IntParameter(default=3000)
         extract_window = SecondsParameter(default="1d")
+        enable_alarms = BooleanParameter(default=False)
+        enable_reboots = BooleanParameter(default=False)
+        enable_managedobjects = BooleanParameter(default=False)
 
     brand = StringParameter(default="NOC")
 

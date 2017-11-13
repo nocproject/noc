@@ -9,7 +9,10 @@
 # Python modules
 from threading import Lock
 import operator
+import logging
 # Third-party modules
+from pymongo.errors import BulkWriteError
+from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import IntField, ListField, ObjectIdField
 import cachetools
@@ -17,6 +20,8 @@ import six
 
 id_lock = Lock()
 neighbor_lock = Lock()
+
+logger = logging.getLogger(__name__)
 
 
 class ObjectData(Document):
@@ -89,16 +94,20 @@ class ObjectData(Document):
     def update_uplinks(cls, umap):
         if not umap:
             return
-        bulk = ObjectData._get_collection().initialize_unordered_bulk_op()
+        bulk = []
         for o, uplinks in six.iteritems(umap):
-            bulk.find({
+            bulk += [UpdateOne({
                 "_id": o
-            }).upsert().update({
+            }, {
                 "$set": {
                     "uplinks": uplinks
                 }
-            })
-        bulk.execute()
+            }, upsert=True)]
+        if bulk:
+            try:
+                ObjectData._get_collection().bulk_write(bulk, ordered=False)
+            except BulkWriteError as e:
+                logger.error("Bulk write error: '%s'", e.details)
 
     @classmethod
     def refresh_path(cls, obj):
