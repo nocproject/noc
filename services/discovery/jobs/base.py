@@ -615,9 +615,9 @@ class DiscoveryCheck(object):
             managed_object=self.object.id,
             type__in=["physical", "aggregated"]
         ):
-            l = i.link
-            if l:
-                self.logger.info("Unlinking: %s", l)
+            link = i.link
+            if link:
+                self.logger.info("Unlinking: %s", link)
                 try:
                     i.unlink()
                 except ValueError as e:
