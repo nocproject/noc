@@ -94,18 +94,17 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                         {
                             name: "start_date",
                             xtype: "datefield",
+                            startDay: 1,
                             fieldLabel: __("Start"),
                             allowBlank: false,
-                            uiStyle: "small",
-                            width: 200,
                             format: "d.m.Y"
                         },
                         {
                             name: "start_time",
                             xtype: "timefield",
+                            startDay: 1,
                             allowBlank: false,
                             labelWidth: 0,
-                            uiStyle: "small",
                             width: 80,
                             format: "H:i"
                         }
@@ -120,8 +119,6 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                             xtype: "datefield",
                             fieldLabel: __("Stop"),
                             allowBlank: false,
-                            uiStyle: "small",
-                            width: 200,
                             format: "d.m.Y"
                         },
                         {
@@ -129,7 +126,6 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                             xtype: "timefield",
                             allowBlank: false,
                             labelWidth: 0,
-                            uiStyle: "small",
                             width: 80,
                             format: "H:i"
                         }

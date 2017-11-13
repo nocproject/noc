@@ -96,6 +96,7 @@ Ext.define("NOC.ip.prefix.Application", {
         {
             name: "allocated_till",
             xtype: "datefield",
+            startDay: 1,
             fieldLabel: __("Allocated till"),
             allowBlank: true
         },
@@ -132,6 +133,7 @@ Ext.define("NOC.ip.prefix.Application", {
         {
             name: "last_changed",
             xtype: "datefield",
+            startDay: 1,
             fieldLabel: __("last changed"),
             allowBlank: true
         },

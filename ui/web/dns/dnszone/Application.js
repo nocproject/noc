@@ -133,6 +133,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                 {
                     name: "paid_till",
                     xtype: "datefield",
+                    startDay: 1,
                     fieldLabel: __("Paid Till"),
                     allowBlank: true
                 },

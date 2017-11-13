@@ -63,6 +63,7 @@ Ext.define("NOC.main.timepattern.Application", {
                 {
                     name: "date",
                     xtype: "datefield",
+                    startDay: 1,
                     fieldLabel: __("Date"),
                     allowBlank: false,
                     format: "Y-m-d"
