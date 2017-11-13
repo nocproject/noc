@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def start_maintenance(maintenance_id):
-    logger.info("Start maintenance")
+    logger.info("[%s] Start maintenance", maintenance_id)
     m = Maintenance.get_by_id(maintenance_id)
     if not m:
         logger.info("[%s] Not found, skipping")
@@ -84,7 +84,7 @@ def start_maintenance(maintenance_id):
 
 
 def close_maintenance(maintenance_id):
-    logger.info("Close maintenance")
+    logger.info("[%s] Close maintenance", maintenance_id)
     m = Maintenance.get_by_id(maintenance_id)
     if not m:
         logger.info("[%s] Not found, skipping", maintenance_id)
