@@ -14,7 +14,7 @@ import operator
 import uuid
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, UUIDField, DateTimeField
+from mongoengine.fields import StringField, LongField, UUIDField
 from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules

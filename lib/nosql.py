@@ -150,8 +150,9 @@ class PlainReferenceListField(PlainReferenceField):
                 else:
                     v = self.document_type.objects(id=value).first()
                 if v is None:
-                    raise ValidationError("Unable to dereference %s:%s" % (
-                                        self.document_type, v))
+                    raise ValidationError(
+                        "Unable to dereference %s:%s" % (
+                            self.document_type, v))
                 return v
             else:
                 return value
