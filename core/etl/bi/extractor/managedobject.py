@@ -142,11 +142,10 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "name": {
                     "$in": list(self.CAPS_MAP)
                 }
-            },
-                {
-                    "_id": 1,
-                    "name": 1
-                })
+            }, {
+                "_id": 1,
+                "name": 1
+            })
         )
         # object -> caps
         add_expr = dict(

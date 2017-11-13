@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI Extractor
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# BI Extractor
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
+from noc.config import config
 
 
 class BaseExtractor(object):
@@ -30,6 +31,10 @@ class BaseExtractor(object):
         self.stop = stop
         self.clean_ts = stop - datetime.timedelta(seconds=self.clean_delay)
         self.last_ts = None
+
+    @classmethod
+    def is_enabled(cls):
+        return getattr(config.bi, "enable_%s" % cls.name, False)
 
     def extract(self):
         pass

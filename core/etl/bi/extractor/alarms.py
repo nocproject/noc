@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import bisect
 import datetime
 # NOC modules
 from base import BaseExtractor
