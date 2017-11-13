@@ -161,6 +161,7 @@ Ext.define("NOC.ip.addressrange.Application", {
         {
             name: "allocated_till",
             xtype: "datefield",
+            startDay: 1,
             fieldLabel: __("Allocated till"),
             allowBlank: true
         }
