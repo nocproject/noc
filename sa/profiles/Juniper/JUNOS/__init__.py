@@ -111,7 +111,7 @@ class Profile(BaseProfile):
         if "." in name:
             try:
                 ifname, unit = name.split(".")
-            except:
+            except ValueError:
                 return True
             # See `logical-interface-unit-range`
             if int(unit) > 16385:
