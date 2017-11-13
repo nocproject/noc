@@ -82,7 +82,7 @@ class Command(BaseCommand):
         now = datetime.datetime.now()
         window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
-            if not ecls.is_enabled:
+            if not ecls.is_enabled():
                 self.print("[%s] Not enabled, skipping" % ecls.name)
                 continue
             start = self.get_last_extract(ecls.name)

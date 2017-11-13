@@ -32,9 +32,9 @@ class BaseExtractor(object):
         self.clean_ts = stop - datetime.timedelta(seconds=self.clean_delay)
         self.last_ts = None
 
-    @property
-    def is_enabled(self):
-        return getattr(config.bi, "enable_%s" % self.name, False)
+    @classmethod
+    def is_enabled(cls):
+        return getattr(config.bi, "enable_%s" % cls.name, False)
 
     def extract(self):
         pass
