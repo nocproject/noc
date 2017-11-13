@@ -986,7 +986,7 @@ Ext.define("NOC.core.ModelApplication", {
                 // WARNING: Will skip other inline editors
                 continue;
             }
-            if(field.xtype == "datefield") {
+            if(field.xtype === "datefield") {
                 // Convert date to string
                 var dv = field.getValue();
                 data = {};

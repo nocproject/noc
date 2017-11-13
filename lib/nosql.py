@@ -259,6 +259,13 @@ class DateField(DateTimeField):
             return None
         return datetime.datetime(year=v.year, month=v.month, day=v.day)
 
+    def to_python(self, value):
+        if isinstance(value, datetime.datetime):
+            return datetime.date(year=value.year, month=value.month,
+                                 day=value.day)
+        else:
+            return value
+
 
 ESC1 = "__"  # Escape for '.'
 ESC2 = "^^"  # Escape for '$'

@@ -12,6 +12,7 @@ import os
 import threading
 import operator
 import uuid
+import datetime
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
@@ -137,3 +138,29 @@ class Platform(Document):
                 return platform
             except NotUniqueError:
                 pass  # Already created by concurrent process, reread
+
+    @property
+    def is_end_of_sale(self):
+        """
+        Check if platform reached end-of-sale mark
+        :return:
+        """
+        if not self.end_of_sale:
+            return False
+        return datetime.date.today() > self.end_of_sale
+
+    @property
+    def is_end_of_support(self):
+        """
+        Check if platform reached end-of-support mark
+        :return:
+        """
+        deadline = []
+        if self.end_of_support:
+            deadline += [self.end_of_support]
+        if self.end_of_xsupport:
+            deadline += [self.end_of_xsupport]
+        if deadline:
+            return datetime.date.today() > max(deadline)
+        else:
+            return False
