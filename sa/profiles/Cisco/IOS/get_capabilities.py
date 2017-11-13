@@ -54,7 +54,7 @@ class Script(BaseScript):
         """
         # ciscoCdpMIB::cdpGlobalRun
         r = self.snmp.get("1.3.6.1.4.1.9.9.23.1.3.1.0")
-        return r and str(r) == "1"
+        return r == 1
 
     @false_on_cli_error
     def has_cdp_cli(self):
