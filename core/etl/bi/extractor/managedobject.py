@@ -26,7 +26,6 @@ class ManagedObjectsExtractor(BaseExtractor):
     extract_delay = config.bi.extract_delay_alarms
     clean_delay = config.bi.clean_delay_alarms
     is_snapshot = True
-    is_enable = config.bi_extractors.managedobject
 
     # Caps to field mapping
     CAPS_MAP = {

@@ -48,11 +48,11 @@ class Command(BaseCommand):
             help="Show only summary"
         )
         # extract command
-        extract_parser = subparsers.add_parser("extract")
+        subparsers.add_parser("extract")
         # clean command
-        clean_parser = subparsers.add_parser("clean")
+        subparsers.add_parser("clean")
         # load command
-        load_parser = subparsers.add_parser("load")
+        subparsers.add_parser("load")
 
     def handle(self, cmd, data_prefix, *args, **options):
         self.DATA_PREFIX = data_prefix
@@ -82,8 +82,8 @@ class Command(BaseCommand):
         now = datetime.datetime.now()
         window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
-            if not ecls.is_extract:
-                self.print("[%s] Not enable, skipping" % ecls.name)
+            if not ecls.is_enabled:
+                self.print("[%s] Not enabled, skipping" % ecls.name)
                 continue
             start = self.get_last_extract(ecls.name)
             if not start:

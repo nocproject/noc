@@ -19,7 +19,6 @@ class RebootsExtractor(BaseExtractor):
     name = "reboots"
     extract_delay = config.bi.extract_delay_reboots
     clean_delay = config.bi.clean_delay_reboots
-    is_enable = config.bi_extractors.reboots
 
     def __init__(self, prefix, start, stop):
         super(RebootsExtractor, self).__init__(prefix, start, stop)
