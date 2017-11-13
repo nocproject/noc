@@ -10,6 +10,7 @@
 import logging
 import sys
 import time
+import datetime
 # Third-party modules
 from django.db.models import Model
 from mongoengine.base import *
@@ -248,6 +249,14 @@ class ForeignKeyField(BaseField):
         if value is None:
             return None
         return self.to_mongo(value)
+
+
+class DateField(DateTimeField):
+    def to_mongo(self, value):
+        v = super(DateField, self).to_mongo(value)
+        if v is None:
+            return None
+        return datetime.datetime(year=v.year, month=v.month, day=v.day)
 
 
 ESC1 = "__"  # Escape for '.'
