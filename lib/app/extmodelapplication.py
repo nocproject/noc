@@ -29,6 +29,7 @@ from noc.sa.interfaces.base import (
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.models import is_document
+from noc.main.models.tag import Tag
 
 
 class ExtModelApplication(ExtApplication):
@@ -77,7 +78,7 @@ class ExtModelApplication(ExtApplication):
                                  if f.unique and isinstance(f, CharField)]
         # Add searchable custom fields
         self.query_fields += ["%s__%s" % (f.name, self.query_condition)
-            for f in self.get_custom_fields() if f.is_searchable]
+                              for f in self.get_custom_fields() if f.is_searchable]
 
     def get_validator(self, field):
         """
@@ -105,7 +106,7 @@ class ExtModelApplication(ExtApplication):
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
             return ModelParameter(field.rel.to,
-                required=not field.null)
+                                  required=not field.null)
         else:
             return None
 
@@ -143,8 +144,8 @@ class ExtModelApplication(ExtApplication):
                 return f
 
         q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
-            self.query_fields[1:],
-            Q(**{get_q(self.query_fields[0]): query}))
+                   self.query_fields[1:],
+                   Q(**{get_q(self.query_fields[0]): query}))
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -203,10 +204,10 @@ class ExtModelApplication(ExtApplication):
             else:
                 np, lt = p, None
                 # Skip ignored params
-            if np in self.ignored_params or p in (
-                self.limit_param, self.page_param, self.start_param,
-                self.format_param, self.sort_param, self.query_param,
-                self.only_param):
+            if np in self.ignored_params or p in (self.limit_param,
+                                                  self.page_param, self.start_param,
+                                                  self.format_param, self.sort_param,
+                                                  self.query_param, self.only_param):
                 continue
             v = q[p]
             if self.in_param in p:
@@ -223,7 +224,7 @@ class ExtModelApplication(ExtApplication):
                         self.model._meta.db_table, self.model._meta.pk.name,
                         model._meta.get_field_by_name(fn)[0].attname,
                         model._meta.db_table
-                        )
+                    )
                     if None in nq:
                         nq[None] += [extra_where]
                     else:
@@ -265,8 +266,7 @@ class ExtModelApplication(ExtApplication):
                     r["%s__label" % f.name] = ""
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
-                if (v is not None and
-                    type(v) not in (str, unicode, int, long, bool, list)):
+                if (v is not None and type(v) not in (str, unicode, int, long, bool, list)):
                     if type(v) == datetime.datetime:
                         v = v.isoformat()
                     else:
@@ -392,7 +392,7 @@ class ExtModelApplication(ExtApplication):
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
             qattrs = dict((k, attrs[k])
-                for k in attrs if not callable(attrs[k]))
+                          for k in attrs if not callable(attrs[k]))
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.render_json(
@@ -405,7 +405,7 @@ class ExtModelApplication(ExtApplication):
             return self.render_json({
                 "status": False,
                 "message": "Duplicated record"
-                }, status=self.CONFLICT)
+            }, status=self.CONFLICT)
         except self.model.DoesNotExist:
             o = self.model(**attrs)
             # Run models validators
@@ -453,10 +453,11 @@ class ExtModelApplication(ExtApplication):
         if only:
             only = only.split(",")
         return self.response(self.instance_to_dict(o, fields=only),
-            status=self.OK)
+                             status=self.OK)
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
+        print request
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
@@ -480,6 +481,14 @@ class ExtModelApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+        # Tags
+        if hasattr(o, "tags") and "tags" in attrs:
+            for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
+                Tag.unregister_tag(t, repr(self.model))
+                self.logger.info("Unregister Tag: %s" % t)
+            for t in set(attrs.get("tags", [])) - (set(getattr(o, "tags", []))):
+                Tag.register_tag(t, repr(self.model))
+                self.logger.info("Register Tag: %s" % t)
         # Update attributes
         for k, v in attrs.items():
             setattr(o, k, v)
