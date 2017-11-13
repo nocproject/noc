@@ -1,0 +1,13 @@
+{
+    "name": "Huawei | VRP | VRP_ALL sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "0c0a9b37-0c05-4fab-871b-05c1598abbc4",
+    "description": "Huawei Versatile Routing Platform Software",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "contains",
+    "value": "Huawei Versatile Routing Platform Software",
+    "action": "match",
+    "profile__name": "Huawei.VRP"
+}
