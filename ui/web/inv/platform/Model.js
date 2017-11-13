@@ -33,6 +33,22 @@ Ext.define("NOC.inv.platform.Model", {
             type: "string"
         },
         {
+            name: "start_of_sale",
+            type: "string"
+        },
+        {
+            name: "end_of_sale",
+            type: "string"
+        },
+        {
+            name: "end_of_support",
+            type: "string"
+        },
+        {
+            name: "end_of_xsupport",
+            type: "string"
+        },
+        {
             name: "is_builtin",
             type: "boolean",
             persist: false

@@ -986,7 +986,18 @@ Ext.define("NOC.core.ModelApplication", {
                 // WARNING: Will skip other inline editors
                 continue;
             }
-            data = field.getModelData();
+            if(field.xtype == "datefield") {
+                // Convert date to string
+                var dv = field.getValue();
+                data = {};
+                if(dv) {
+                    data[field.getName()] = Ext.Date.format(dv, field.format)
+                } else {
+                    data[field.getName()] = null
+                }
+            } else {
+                data = field.getModelData()
+            }
             if(Ext.isObject(data)) {
                 name = field.getName();
                 if(data.hasOwnProperty(name)) {

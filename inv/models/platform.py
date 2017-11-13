@@ -14,12 +14,12 @@ import operator
 import uuid
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, UUIDField
+from mongoengine.fields import StringField, LongField, UUIDField, DateTimeField
 from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules
 from .vendor import Vendor
-from noc.lib.nosql import PlainReferenceField
+from noc.lib.nosql import PlainReferenceField, DateField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
@@ -50,6 +50,14 @@ class Platform(Document):
     description = StringField(required=False)
     # Full name, combined from vendor platform
     full_name = StringField(unique=True)
+    # Platform start of sale date
+    start_of_sale = DateField()
+    # Platform end of sale date
+    end_of_sale = DateField()
+    # Platform end of support date
+    end_of_support = DateField()
+    # End of extended support date (installation local)
+    end_of_xsupport = DateField()
     # Global ID
     uuid = UUIDField(binary=True)
     # Object id in BI
@@ -79,13 +87,22 @@ class Platform(Document):
         return Platform.objects.filter(bi_id=id).first()
 
     def to_json(self):
-        return to_json({
+        r = {
             "$collection": self._meta["json_collection"],
             "vendor__name": self.vendor.name,
             "name": self.name,
             "uuid": self.uuid,
             "description": self.description
-        }, order=["vendor__name", "name", "uuid", "description"])
+        }
+        if self.start_of_sale:
+            r["start_of_sale"] = self.start_of_sale.strftime("%Y-%m-%d")
+        if self.end_of_sale:
+            r["end_of_sale"] = self.end_of_sale.strftime("%Y-%m-%d")
+        if self.end_of_support:
+            r["end_of_support"] = self.end_of_support.strftime("%Y-%m-%d")
+        return to_json(r, order=[
+            "vendor__name", "name", "uuid", "description",
+            "start_of_sale", "end_of_sale", "end_of_support"])
 
     def get_json_path(self):
         return os.path.join(self.vendor.code,
