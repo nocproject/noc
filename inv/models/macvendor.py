@@ -8,6 +8,9 @@
 
 # Python modules
 import logging
+# Third-party modules
+from pymongo.errors import BulkWriteError
+from pymongo import UpdateOne, InsertOne, DeleteOne
 # NOC modules
 from noc.lib.nosql import Document, StringField
 
@@ -65,21 +68,27 @@ class MACVendor(Document):
         old = dict((d["_id"], d["vendor"])
                    for d in MACVendor._get_collection().find())
         # Compare
-        bulk = MACVendor._get_collection().initialize_unordered_bulk_op()
-        n = 0
+        collection = MACVendor._get_collection()
+        bulk = []
         for oui, vendor in new.iteritems():
             if oui in old:
                 if vendor != old[oui]:
                     logger.info("[%s] %s -> %s", oui, old[oui], vendor)
-                    bulk.find({"_id": oui}).update({"$set": {"vendor": vendor}})
-                    n += 1
+                    bulk += [UpdateOne({"_id": oui}, {"$set": {"vendor": vendor}})]
             else:
                 logger.info("[%s] Add %s", oui, vendor)
-                bulk.insert({"_id": oui, "vendor": vendor})
-                n += 1
+                bulk += [InsertOne({"_id": oui, "vendor": vendor})]
         for oui in set(old) - set(new):
             logger.info("[%s] Delete")
-            bulk.find({"_id": oui}).remove()
-            n += 1
-        if n:
-            bulk.execute()
+            bulk += [DeleteOne({"_id": oui})]
+        if bulk:
+            logger.info("Commiting changes to database")
+            try:
+                r = collection.bulk_write(bulk, ordered=False)
+                logger.info("Database has been synced")
+                logger.info("Inserted: %d, Modify: %d, Deleted: %d",
+                            r.inserted_count + r.upserted_count,
+                            r.modified_count, r.deleted_count)
+            except BulkWriteError as e:
+                logger.error("Bulk write error: '%s'", e.details)
+                logger.error("Stopping check")

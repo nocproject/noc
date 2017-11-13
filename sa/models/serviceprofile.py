@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
+from pymongo import UpdateOne
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, IntField,
                                 BooleanField, LongField, ListField)
@@ -49,7 +50,7 @@ class ServiceProfile(Document):
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
     # Object id in remote system
-    remote_id = StringField()    
+    remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
     # Tags
@@ -85,9 +86,11 @@ def refresh_interface_profiles(sp_id, ip_id):
     ]
     if not svc:
         return
-    bulk = Interface._get_collection().initialize_unordered_bulk_op()
-    bulk.find({
+    collection = Interface._get_collection()
+    bulk = []
+    bulk += [UpdateOne({
         "_id": {"$in": svc}
-    }).update({
+    }, {
         "$set": {"profile": ip_id}
-    })
+    })]
+    collection.bulk_write(bulk, ordered=False)

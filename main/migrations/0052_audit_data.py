@@ -12,8 +12,8 @@ import re
 import datetime
 # Third-party modules
 from south.db import db
-# Third-party modules
-import pymongo
+from pymongo.errors import BulkWriteError
+from pymongo import InsertOne
 # NOC modules
 from noc.lib.nosql import get_db
 
@@ -60,8 +60,7 @@ class Migration:
         logger.info("Migration audit trail")
         last_id = 0
         while True:
-            bulk = collection.initialize_unordered_bulk_op()
-            rc = 0
+            bulk = []
             for a_id, user_id, timestamp, model, db_table, op, subject, body in db.execute(
                 """
                   SELECT id, user_id, "timestamp", model, db_table,
@@ -120,13 +119,22 @@ class Migration:
                 else:
                     raise ValueError("Invalid op '%s'" % op)
                 o["changes"] = changes
-                rc += 1
-                bulk.insert(o)
+                bulk += [InsertOne(o)]
                 last_id = a_id
-            left -= rc
+            left -= len(bulk)
             logger.info("   ... %d records left", left)
-            if rc:
-                bulk.execute({"w": 0})
+            if bulk:
+                logger.info("Commiting changes to database")
+                try:
+                    r = collection.bulk_write(bulk)
+                    logger.info("Database has been synced")
+                    logger.info("Inserted: %d, Modify: %d, Deleted: %d",
+                                r.inserted_count + r.upserted_count,
+                                r.modified_count, r.deleted_count)
+                except BulkWriteError as e:
+                    logger.error("Bulk write error: '%s'", e.details)
+                    logger.error("Stopping check")
+                    break
             else:
                 break
         db.drop_table("main_audittrail")
