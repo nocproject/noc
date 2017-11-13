@@ -10,7 +10,7 @@ job_lint:
     - git rev-parse --abbrev-ref HEAD
     - git merge-base origin/HEAD HEAD
     - git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD)
-    - flake8 $(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD))
+    - flake8 $(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD)|egrep ".py$"))
   except:
     - microservices
   tags:
