@@ -52,6 +52,7 @@ class Script(BaseScript):
         """
         Check box has cdp enabled
         """
+        # ciscoCdpMIB::cdpGlobalRun
         r = self.snmp.get("1.3.6.1.4.1.9.9.23.1.3.1.0")
         return r and str(r) == "1"
 
