@@ -15,4 +15,4 @@ class BIDashboardApplication(ExtApplication):
     title = _("Dashboard")
     menu = _("Dashboard")
     glyph = "dashboard"
-    link = "/ui/bi2/"
+    link = "/api/bi/index.html"
