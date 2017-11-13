@@ -13,6 +13,7 @@ import contextlib
 import time
 import zlib
 import datetime
+import types
 # Third-party modules
 import bson
 import six
@@ -28,7 +29,6 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
 from noc.core.service.error import RPCError, RPCRemoteError
-from noc.core.service.loader import get_service
 from noc.core.error import (
     ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND,
     ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR,
@@ -36,6 +36,8 @@ from noc.core.error import (
 )
 from noc.core.span import Span
 from noc.core.error import ERR_UNKNOWN
+from noc.core.cache.base import cache
+from noc.core.perf import metrics
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -667,6 +669,8 @@ class DiscoveryCheck(object):
 
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
+    NEIGHBOR_CACHE_VERSION = 1
+
     def __init__(self, *args, **kwargs):
         super(TopologyDiscoveryCheck, self).__init__(*args, **kwargs)
         self.neighbor_hostname_cache = {}  # (method, id) -> managed object
@@ -682,7 +686,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         loops = {}  # first interface, second interface
         problems = {}
         # Check local side
-        for li, ro, ri in self.iter_neighbors(self.object):
+        ln_key = "mo-neighbors-%s-%s" % (self.name, self.object.id)
+        for li, ro, ri in self.cached_neighbors(self.object, ln_key, self.iter_neighbors):
             # Resolve remote object
             remote_object = self.get_neighbor(ro)
             if not remote_object:
@@ -741,9 +746,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 continue
             try:
-                remote_neighbors = list(
-                    self.iter_neighbors(remote_object)
-                )
+                rn_key = "mo-neighbors-%s-%s" % (self.name, remote_object.id)
+                remote_neighbors = self.cached_neighbors(remote_object, rn_key, self.iter_neighbors)
             except Exception as e:
                 self.logger.error(
                     "Cannot get neighbors from candidate %s: %s",
@@ -818,6 +822,57 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     path=i,
                     message=problems[i]
                 )
+
+    def cached_iter_neighbors(self, mo):
+        """
+        Apply caching policy to *iter_neighbbors*
+        :param mo:
+        :return: Cached result of iter_neighbors
+        """
+        ttl = mo.object_profile.neighbor_cache_ttl
+        if not ttl:
+            # Disabled cache
+            return list(self.iter_neighbors(mo))
+        # Cached version
+        key = "mo-neighbors-%s-%s" % (self.name, mo.id)
+        neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
+        if neighbors is None:
+            neighbors = list(self.iter_neighbors(mo))
+            cache.set(key, neighbors, ttl=ttl,
+                      version=self.NEIGHBOR_CACHE_VERSION)
+            metrics["neighbor_cache_misses"] += 1
+        else:
+            metrics["neighbor_cache_hits"] += 1
+        return neighbors
+
+    def cached_neighbors(self, mo, key, iter_neighbors):
+        """
+        Cache iter_neighbors results according to profile settings
+        :param mo:
+        :param key:
+        :param iter_neighbors:
+        :return:
+        """
+        ttl = mo.object_profile.neighbor_cache_ttl
+        if not ttl:
+            # Disabled cache
+            metrics["neighbor_cache_misses"] += 1
+            neighbors = iter_neighbors(mo)
+            if isinstance(neighbors, types.GeneratorType):
+                neighbors = list(iter_neighbors(mo))
+            return neighbors
+        # Cached version
+        neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
+        if neighbors is None:
+            neighbors = iter_neighbors(mo)
+            if isinstance(neighbors, types.GeneratorType):
+                neighbors = list(iter_neighbors(mo))
+            cache.set(key, neighbors, ttl=ttl,
+                      version=self.NEIGHBOR_CACHE_VERSION)
+            metrics["neighbor_cache_misses"] += 1
+        else:
+            metrics["neighbor_cache_hits"] += 1
+        return neighbors
 
     def iter_neighbors(self, mo):
         """
@@ -967,8 +1022,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             )
             if (
                 llink.discovery_method != self.name and
-                (llink.discovery_method is None or
-                     self.is_preferable_over(llink))
+                (llink.discovery_method is None or self.is_preferable_over(llink))
             ):
                 # Change disovery method
                 self.logger.info("Remarking discovery method as %s", self.name)
