@@ -8,6 +8,7 @@
 
 # Python modules
 import datetime
+from noc.config import config
 
 
 class BaseExtractor(object):
@@ -23,8 +24,6 @@ class BaseExtractor(object):
     # Does extractor apply time-based restriction
     # or just a snapshot of existing data
     is_snapshot = False
-    # Link to config boolean parameter, skip extract if False
-    is_extract = False
 
     def __init__(self, prefix, start, stop):
         self.prefix = prefix
@@ -32,6 +31,10 @@ class BaseExtractor(object):
         self.stop = stop
         self.clean_ts = stop - datetime.timedelta(seconds=self.clean_delay)
         self.last_ts = None
+
+    @property
+    def is_enabled(self):
+        return getattr(config.bi, "enable_%s" % self.name, False)
 
     def extract(self):
         pass

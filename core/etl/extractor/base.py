@@ -44,10 +44,6 @@ class BaseExtractor(object):
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
         self.problems = []
 
-    @property
-    def is_enabled(self):
-        return getattr(config.bi, self.name, False)
-
     def register_problem(self, line, p_class, message, row):
         self.problems += [self.Problem(line=line + 1, p_class=p_class, message=message, row=row)]
 
