@@ -196,13 +196,9 @@ class LdapBackend(BaseAuthBackend):
                 "user": user,
                 "authentication": ldap3.NTLM
             }
-        elif ldap_domain.type == "oldap":
-            kwargs = {
-                "user": ("uid=" + user + "," + ldap_domain.user_search_dn)
-            }
         else:
             kwargs = {
-                "user": user
+                "user": "uid=%s,%s" % (user, ldap_domain.get_user_search_dn())
             }
         kwargs["password"] = password
         return kwargs
@@ -214,10 +210,7 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             return user_info
         usf = ldap_domain.get_user_search_filter() % {"user": user}
-        if ldap_domain.type == "oldap":
-            user_search_dn = ldap_domain.user_search_dn
-        else:
-            user_search_dn = ldap_domain.root
+        user_search_dn = ldap_domain.get_user_search_dn()
         self.logger.debug("User search from %s: %s",
                           user_search_dn, usf)
         connection.search(
@@ -251,10 +244,7 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             self.logger.debug("No active connection")
             return []
-        if ldap_domain.type == "oldap":
-            group_search_dn = ldap_domain.group_search_dn
-        else:
-        group_search_dn = ldap_domain.root
+        group_search_dn = ldap_domain.get_group_search_dn()
         gsf = ldap_domain.get_group_search_filter() % user_info
         self.logger.debug("Group search from %s: %s",
                           group_search_dn, gsf)
@@ -267,3 +257,5 @@ class LdapBackend(BaseAuthBackend):
         self.logger.debug("Groups found: %s",
                           [e.entry_get_dn() for e in connection.entries])
         return [e.entry_get_dn() for e in connection.entries]
+
+

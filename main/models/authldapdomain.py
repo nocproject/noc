@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # AuthLDAPDomain model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -52,8 +52,7 @@ class AuthLDAPDomain(Document):
     type = StringField(
         choices=[
             ("ldap", "LDAP"),
-            ("ad", "Active Directory"),
-            ("oldap", "OpenLDAP")
+            ("ad", "Active Directory")
         ]
     )
     # Bind root
@@ -99,25 +98,22 @@ class AuthLDAPDomain(Document):
     sync_mail = BooleanField(default=False)
 
     DEFAULT_USER_SEARCH_FILTER = {
-        "ldap": "(uid=%(user)s)",
-        "ad": "(samAccountName=%(user)s)",
-        "oldap": "(uid=%(user)s)"
+        "ldap": "(&(objectClass=posixUser)(uid=%(user)s))",
+        "ad": "(samAccountName=%(user)s)"
     }
 
     DEFAULT_GROUP_SEARCH_FILTER = {
-        "ldap": "(&((objectClass=groupOfNames))(member=%(user_dn)s))",
-        "ad": "(&(objectClass=group)(member=%(user_dn)s))",
-        "oldap": "(objectClass=posixGroup)"
+        "ldap": "(&(objectClass=posixGroup)(memberUid=%(user)s))",
+        "ad": "(&(objectClass=group)(member=%(user_dn)s))"
     }
 
     DEFAULT_ATTR_MAPPING = {
-        "ldap": {},
         "ad": {
             "givenName": "first_name",
             "sn": "last_name",
             "mail": "email"
         },
-        "oldap": {
+        "ldap": {
             "givenName": "first_name",
             "sn": "last_name",
             "mail": "email"
@@ -194,3 +190,17 @@ class AuthLDAPDomain(Document):
 
     def get_user_search_attributes(self):
         return ["dn"] + list(self.DEFAULT_ATTR_MAPPING[self.type])
+        
+    def get_user_search_dn(self):
+        if self.user_search_dn:
+            user_search_dn = self.user_search_dn
+        else:
+            user_search_dn = self.root
+        return user_search_dn
+
+    def get_group_search_dn(self):
+        if self.group_search_dn:
+            group_search_dn = self.group_search_dn
+        else:
+            group_search_dn = self.root
+        return group_search_dn

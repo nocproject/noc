@@ -66,8 +66,7 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     fieldLabel: __("Type"),
                     store: [
                         ["ldap", "LDAP"],
-                        ["ad", "Active Directory"],
-                        ["oldap", "OpenLDAP"]
+                        ["ad", "Active Directory"]
                     ],
                     allowBlank: false,
                     uiStyle: "medium"
