@@ -7,12 +7,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import os
 import logging
 from threading import Lock
 import operator
 import inspect
 # Third-party modules
 import cachetools
+from noc.config import config
 
 id_lock = Lock()
 
@@ -93,14 +95,33 @@ class BaseAuthBackend(object):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_methods"), lock=lambda _: id_lock)
     def get_backend(cls, name):
+        """
+        Look for custom auth methods in custom and load it.
+        First check if custom method with same name exists then use bundled one.
+        :param name: param name
+        :return: found auth method
+        """
+        import logging
+        logger = logging.getLogger(__name__)
         m = None
+        custom_path = os.path.join(config.path.custom_path, "services/login/backends")
         for mm in [
-            "noc.custom.services.login.backends.%s" % name,
-            "noc.services.login.backends.%s" % name
+            "%s/%s.py" % (custom_path, name),
+            "services/login/backends.%s.py" % name
         ]:
+            if not os.path.exists(mm):
+                continue
+            if mm.startswith(".."):
+                mm = mm.replace(config.path.custom_path, "")[1:]
+            mn = "%s.%s" % (
+                os.path.basename(config.path.custom_path),
+                mm.replace("/", ".")[:-3]
+            )
             try:
-                m = __import__(mm, {}, {}, "*")
+                m = __import__(mn, {}, {}, "*")
+                logger.debug("Successfuly imported %s", m)
             except ImportError as e:
+                logger.debug("There was an error importing %s with %s %s", e, m, mn)
                 pass
         if m is None:
             return None
