@@ -22,8 +22,8 @@
 
   when: noc_root_state.stat.exists is defined and not noc_root_state.stat.exists
 
-- name: Pull NOC
-  shell: git fetch "{{noc_repo}}"
+- name: Fetch changes form upstream
+  shell: git fetch origin
   args:
     chdir: "{{noc_root}}"
   environment:
@@ -31,11 +31,3 @@
   register: git_pill_status
   changed_when: "'Already up-to-date.' not in git_pill_status.stdout"
 
-- name: Switch to "{{noc_revision}}" branch
-  shell: git checkout "{{noc_revision}}"
-  args:
-    chdir: "{{noc_root}}"
-  environment:
-    https_proxy: "{{http_proxy}}"
-  register: git_pill_status
-  changed_when: "'Already up-to-date.' not in git_pill_status.stdout"
