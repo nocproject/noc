@@ -96,8 +96,8 @@ class Script(BaseScript):
                     sys_id = p.group("mac")
             # Get bundle
             for i in pc[1]:
-                l = self.cli("show lacp %s" % i)
-                for match in self.rx_iface.finditer(l):
+                sl = self.cli("show lacp %s" % i)
+                for match in self.rx_iface.finditer(sl):
                     if match:
                         sys_id = match.group("mac")
                         rsys_id = match.group("rmac")
