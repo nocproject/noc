@@ -35,6 +35,13 @@ Ext.define("NOC.main.authldapdomain.Model", {
             name: "root",
             type: "string"
         },
+        name: "user_search_dn",
+            type: "string"
+        },
+        {
+            name: "group_search_dn",
+            type: "string"
+        },
         {
             name: "is_active",
             type: "boolean"
