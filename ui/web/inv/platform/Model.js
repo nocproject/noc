@@ -49,6 +49,10 @@ Ext.define("NOC.inv.platform.Model", {
             type: "string"
         },
         {
+            name: "snmp_sysobjectid",
+            type: "string"
+        },
+        {
             name: "is_builtin",
             type: "boolean",
             persist: false
