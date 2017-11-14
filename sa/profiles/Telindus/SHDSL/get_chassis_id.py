@@ -24,9 +24,9 @@ class Script(BaseScript):
             try:
                 base = self.snmp.get("1.3.6.1.2.1.2.2.1.6.1", cached=True)
                 return [{
-                        "first_chassis_mac": base,
-                        "last_chassis_mac": base
-                    }]
+                    "first_chassis_mac": base,
+                    "last_chassis_mac": base
+                }]
             except self.snmp.TimeOutError:
                 pass
 
