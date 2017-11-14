@@ -27,3 +27,13 @@
   tags:
     - mercurial
     - custom
+
+- name: make symlink for old dir
+  file:
+    src: "{{noc_root | dirname}}/noc_custom/"
+    dest: "{{noc_root}}/custom"
+    state: link
+  when: old_path.stat.exists is defined and old_path.stat.exists
+  tags:
+    - mercurial
+    - custom
