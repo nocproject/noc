@@ -21,7 +21,7 @@ class BaseCard(object):
     name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
-    custom_path = os.path.join(config.path.custom_path, "services/card/cards")
+    custom_path = os.path.join(config.path.custom_path, "services/card/templates/")
     TEMPLATE_PATH = [
         custom_path,
         "services/card/templates/"
