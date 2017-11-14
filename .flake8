@@ -2,4 +2,8 @@
 exclude=.git,var,share
 # E501 line too long
 #    Not a real bug
-ignore=E501
+# F403 from xxx import *' used; unable to detect undefined names
+#    Needs global refactoring, postponed for a while
+# F405 'xxx' may be undefined, or defined from star imports: xxx
+#    Needs global refactoring, postponed for a while
+ignore=E501,F403,F405

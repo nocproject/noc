@@ -10,6 +10,7 @@
 import logging
 import sys
 import time
+import datetime
 # Third-party modules
 from django.db.models import Model
 from mongoengine.base import *
@@ -149,8 +150,9 @@ class PlainReferenceListField(PlainReferenceField):
                 else:
                     v = self.document_type.objects(id=value).first()
                 if v is None:
-                    raise ValidationError("Unable to dereference %s:%s" % (
-                                        self.document_type, v))
+                    raise ValidationError(
+                        "Unable to dereference %s:%s" % (
+                            self.document_type, v))
                 return v
             else:
                 return value
@@ -248,6 +250,21 @@ class ForeignKeyField(BaseField):
         if value is None:
             return None
         return self.to_mongo(value)
+
+
+class DateField(DateTimeField):
+    def to_mongo(self, value):
+        v = super(DateField, self).to_mongo(value)
+        if v is None:
+            return None
+        return datetime.datetime(year=v.year, month=v.month, day=v.day)
+
+    def to_python(self, value):
+        if isinstance(value, datetime.datetime):
+            return datetime.date(year=value.year, month=value.month,
+                                 day=value.day)
+        else:
+            return value
 
 
 ESC1 = "__"  # Escape for '.'

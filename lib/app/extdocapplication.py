@@ -21,7 +21,7 @@ from mongoengine.errors import ValidationError
 from noc.config import config
 from .extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
-                           PlainReferenceField, Q)
+                           PlainReferenceField, Q, DateField)
 from noc.sa.interfaces.base import (
     BooleanParameter, GeoPointParameter,
     ModelParameter, ListOfParameter,
@@ -236,6 +236,11 @@ class ExtDocApplication(ExtApplication):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                 elif isinstance(f, BinaryField):
                     v = repr(v)
+                elif isinstance(f, DateField):
+                    if v:
+                        v = v.strftime("%Y-%m-%d")
+                    else:
+                        v = None
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
