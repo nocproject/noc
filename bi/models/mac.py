@@ -10,6 +10,7 @@
 from collections import defaultdict
 import datetime
 # NOC modules
+from noc.config import config
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
     DateField, DateTimeField, UInt64Field, UInt16Field, UInt8Field,
@@ -47,7 +48,7 @@ class MAC(Model):
       AND uni = 1;
     """
 
-    MAC_WINDOW = 4 * 86400
+    MAC_WINDOW = config.web.macdb_window
 
     class Meta:
         db_table = "mac"
