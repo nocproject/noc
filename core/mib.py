@@ -11,6 +11,7 @@ import os
 import logging
 # Third-party modules
 import six
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +33,9 @@ class MIBRegistry(object):
 
     def load_mibs(self):
         dirs = ["cmibs"]
-        if os.path.isdir("custom/cmibs"):
-            dirs += ["custom/cmibs"]
+        custom_path = os.path.join(config.path.custom_path, "cmibs")
+        if os.path.exists(custom_path):
+            dirs += [custom_path]
         for root in dirs:
             logger.debug("Loading compiled MIBs from '%s'", root)
             for path, dirnames, filenames in os.walk(root):

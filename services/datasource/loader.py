@@ -12,10 +12,12 @@ import os
 import inspect
 # NOC modules
 from .datasources.base import BaseDataSource
+from noc.config import config
 
+custom_path = os.path.join(config.path.custom_path, "services/datasource/datasources")
 PATHS = [
     "services/datasource/datasources",
-    "custom/services/datasource/datasources",
+    custom_path,
 ]
 
 # ds name -> ds cls

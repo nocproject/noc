@@ -16,6 +16,7 @@ import os
 import re
 ## NOC modules
 from base import BaseInterface
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,8 @@ class InterfaceLoader(object):
         Scan all available scripts
         """
         ns = set()
-        for gx in ["sa/interfaces/*.py", "custom/sa/interfaces/*.py"]:
+        custom_path = os.path.join(config.path.custom_path, "sa/interfaces/*.py")
+        for gx in ["sa/interfaces/*.py", custom_path]:
             for path in glob.glob(gx):
                 if path in ("base.py", "__init__.py"):
                     continue

@@ -9,7 +9,6 @@ dist/
 build/
 noc.egg-info/
 bin/*
-custom/
 etc/**
 include/*
 lib/python*
@@ -29,7 +28,6 @@ share/
 static/test/
 pip-selfcheck.json
 var/
-scripts/custom/*
 django/*
 ui/pkg/
 ansible/vars/local.yml

@@ -103,8 +103,9 @@ class CardRequestHandler(UIHandler):
     def load_cards(cls):
         if not cls.CARDS:
             cls.CARDS = {}
-            for r in ["custom/services/card/cards", "services/card/cards"]:
-                if not os.path.isdir(r):
+            custom_path = os.path.join(config.path.custom_path, "services/card/cards")
+            for r in [custom_path, "services/card/cards"]:
+                if not os.path.exists(r):
                     continue
                 for f in os.listdir(r):
                     if not f.endswith(".py"):

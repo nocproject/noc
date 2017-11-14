@@ -23,11 +23,12 @@ from mongoengine.errors import NotUniqueError
 from pymongo import UpdateOne
 # NOC modules
 from noc.core.fileutils import safe_rewrite
+from noc.config import config
 
 
 class Collection(object):
     PREFIX = "collections"
-    CUSTOM_PREFIX = "custom/collections"
+    CUSTOM_PREFIX = os.path.join(config.path.custom_path, "collections")
     STATE_COLLECTION = "noc.collectionstates"
 
     _MODELS = {}
@@ -45,7 +46,7 @@ class Collection(object):
     def get_path(self):
         path = [os.path.join(self.PREFIX, self.name)]
         cp = os.path.join(self.CUSTOM_PREFIX, self.name)
-        if os.path.isdir(cp):
+        if os.path.exists(cp):
             path = [cp] + path
         return path
 

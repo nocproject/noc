@@ -375,6 +375,7 @@ class Config(BaseConfig):
         npkg_root = StringParameter(default="/var/lib/noc/var/pkg")
         card_template_path = StringParameter(default="services/card/templates/card.html.j2")
         pm_templates = StringParameter(default="templates/ddash/")
+        custom_path = StringParameter("../noc_custom")
 
     class pg(ConfigSection):
         addresses = ServiceParameter(

@@ -14,14 +14,16 @@ from jinja2 import Template, Environment
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
+from noc.config import config
 
 
 class BaseCard(object):
     name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
+    custom_path = os.path.join(config.path.custom_path, "services/card/cards")
     TEMPLATE_PATH = [
-        "custom/services/card/templates/",
+        custom_path,
         "services/card/templates/"
     ]
     model = None
