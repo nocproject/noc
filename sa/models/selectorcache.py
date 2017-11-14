@@ -184,11 +184,8 @@ class SelectorCache(Document):
         if bulk:
             logging.info("[%s]Commiting changes to database", object.name)
             try:
-                r = collection.bulk_write(bulk, ordered=False)
+                collection.bulk_write(bulk, ordered=False)
                 logging.info("Database has been synced")
-                logging.info("Inserted: %d, Modify: %d, Deleted: %d",
-                             r.inserted_count + r.upserted_count,
-                             r.modified_count, r.deleted_count)
             except BulkWriteError as e:
                 logging.error("Bulk write error: '%s'", e.details)
                 logging.error("Stopping check")
@@ -280,11 +277,8 @@ def refresh():
         if bulk:
             logger.info("Commiting changes to database")
             try:
-                r = collection.bulk_write(bulk, ordered=False)
+                collection.bulk_write(bulk, ordered=False)
                 logger.info("Database has been synced")
-                logger.info("Inserted: %d, Modify: %d, Deleted: %d",
-                            r.inserted_count + r.upserted_count,
-                            r.modified_count, r.deleted_count)
             except BulkWriteError as e:
                 logger.error("Bulk write error: '%s'", e.details)
                 logger.error("Stopping check")
