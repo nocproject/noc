@@ -19,8 +19,12 @@ def fix():
     for p in Platform.objects.filter():
         if p.snmp_sysobjectid:
             continue  # Already filled
+        print("Checked profile: %s" % p.name)
         # Get sample devices
         for mo in ManagedObject.objects.filter(is_managed=True, platform=p.id).order_by("?"):
+            caps = mo.get_caps()
+            if not caps.get("SNMP"):
+                continue
             try:
                 v = mo.scripts.get_snmp_get(oid=mib["SNMPv2-MIB::sysObjectID.0"])
             except NOCError:
@@ -30,3 +34,4 @@ def fix():
             print("%s sysObjectID.0 %s" % (p.full_name, v))
             p.snmp_sysobjectid = v
             p.save()
+            break

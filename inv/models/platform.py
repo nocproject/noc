@@ -61,7 +61,7 @@ class Platform(Document):
     end_of_xsupport = DateField()
     # SNMP OID value
     # sysObjectID.0
-    snmp_sysobjectid = StringField(regex=r"^1.3.6(\.\d+)$")
+    snmp_sysobjectid = StringField(regex=r"^1.3.6(\.\d+)+$")
     # Global ID
     uuid = UUIDField(binary=True)
     # Object id in BI
