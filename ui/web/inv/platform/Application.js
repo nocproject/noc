@@ -146,7 +146,7 @@ Ext.define("NOC.inv.platform.Application", {
                             xtype: "textfield",
                             fieldLabel: "sysObjectID.0",
                             allowBlank: true,
-                            regex: /^1.3.6(\.\d+)$/,
+                            regex: /^1.3.6(\.\d+)+$/,
                             uiStyle: "large"
                         }
                     ]
