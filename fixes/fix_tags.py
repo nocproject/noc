@@ -24,15 +24,14 @@ def fix():
         for s in m.objects.filter(is_managed=True).exclude(tags=None).values_list('tags', flat=True).distinct():
             tags.update(s)
         for t in tags:
-            bulk += [UpdateOne({"tag": t},
-                               {
-                                   "$addToSet": {
-                                       "models": repr(m)
-                                   },
-                                   "$inc": {
-                                       "count": m.objects.filter(tags__in=["{%s}" % t]).count()
-                                   }
-                               }, upsert=True)]
+            bulk += [UpdateOne({
+                "tag": t}, {
+                "$addToSet": {
+                    "models": repr(m)
+                }, "$inc": {
+                    "count": m.objects.filter(tags__in=["{%s}" % t]).count()
+                }
+            }, upsert=True)]
         ex_tags += [t.decode("utf8") for t in tags]
     # Documents
     print("Fixing documents....")
@@ -40,15 +39,14 @@ def fix():
         tags = set(t[0] for t in m.objects.filter(tags__exists=True).values_list('tags') if t)
         ex_tags += list(tags)
         for t in tags:
-            bulk += [UpdateOne({"tag": t},
-                               {
-                                   "$addToSet": {
-                                       "models": repr(m)
-                                   },
-                                   "$inc": {
-                                       "count": m.objects.filter(tags__in=[t]).count()
-                                   }
-                               }, upsert=True)]
+            bulk += [UpdateOne({
+                "tag": t}, {
+                "$addToSet": {
+                    "models": repr(m)
+                }, "$inc": {
+                    "count": m.objects.filter(tags__in=[t]).count()
+                }
+            }, upsert=True)]
     delete_tags = set(Tag.objects.values_list("tag")) - set(ex_tags)
     print("Clean tags: %s" % delete_tags)
     for t in delete_tags:
