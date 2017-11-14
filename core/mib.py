@@ -54,6 +54,7 @@ class MIBRegistry(object):
                         logger.debug("Loading MIB: %s", name)
                         self.mib.update(m.MIB)
 
+
 logger.debug("Loading compiled MIBs")
 mib = MIBRegistry()
 mib.load_mibs()
