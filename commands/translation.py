@@ -211,5 +211,6 @@ class Command(BaseCommand):
         ]:
             subprocess.check_call(["open", path])
 
+
 if __name__ == "__main__":
     Command().run()
