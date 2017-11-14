@@ -66,7 +66,8 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     fieldLabel: __("Type"),
                     store: [
                         ["ldap", "LDAP"],
-                        ["ad", "Active Directory"]
+                        ["ad", "Active Directory"],
+                        ["oldap", "OpenLDAP"]
                     ],
                     allowBlank: false,
                     uiStyle: "medium"
@@ -76,6 +77,18 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Root"),
                     allowBlank: false
+                },
+                {
+                    name: "user_search_dn",
+                    xtype: "textfield",
+                    fieldLabel: __("User_DN"),
+                    allowBlank: true
+                },
+                {
+                    name: "group_search_dn",
+                    xtype: "textfield",
+                    fieldLabel: __("Group_DN"),
+                    allowBlank: true
                 },
                 {
                     name: "user_search_filter",
