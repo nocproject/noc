@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^\s*(?:Device: )?(?P<platform>\S+)(?: Device|, sysLocation\:).+\n"
-        r"^\s*SoftWare(?: Package)? Version\s+(?P<version>\S+?)(?:\(\S+\))?\n"
+        r"^\s*SoftWare(?: Package)? Version\s+(?P<version>\S+?(?:\(\S+\))?)\n"
         r"^\s*BootRom Version\s+(?P<bootprom>\S+)\n"
         r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
         r"^\s*(?:Device serial number |Serial No.:)(?P<serial>\S+)\n",
