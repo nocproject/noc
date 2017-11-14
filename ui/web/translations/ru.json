@@ -7,12 +7,12 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2017-09-26 11:28+0300",
-        "POT-Creation-Date": "2017-09-26 17:35+1000",
+        "PO-Revision-Date": "2017-11-15 01:27+0500",
+        "POT-Creation-Date": "2017-11-15 05:49+1000",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 2.0.4"
+        "X-Generator": "Poedit 2.0.3"
     },
     "About system": [
         null,
@@ -30,6 +30,10 @@
         null,
         "Уровень доступа"
     ],
+    "Access Preference": [
+        null,
+        "Приоритет протокола доступа"
+    ],
     "Account": [
         null,
         "Учётная запись"
@@ -45,6 +49,10 @@
     "Action": [
         null,
         "Действие"
+    ],
+    "Actions": [
+        null,
+        "Действия"
     ],
     "Active": [
         null,
@@ -77,6 +85,10 @@
     "Add Interfaces": [
         null,
         "Добавить интерфейсы"
+    ],
+    "Add To Maintenance": [
+        null,
+        "Добавить в РНР"
     ],
     "Add all objects to group": [
         null,
@@ -113,6 +125,14 @@
     "Address": [
         null,
         "Адрес"
+    ],
+    "Address (Interface)": [
+        null,
+        "Адресс (Интерфейс)"
+    ],
+    "Address (Neighbors)": [
+        null,
+        "Адрес (соседи)"
     ],
     "Address/Platform": [
         null,
@@ -238,6 +258,10 @@
         null,
         "Успешны все"
     ],
+    "All interface addresses": [
+        null,
+        "Адреса всех интерфейсов"
+    ],
     "All interface settings has been applied successfully": [
         null,
         "Все настройки интерфейса успешно применены"
@@ -254,9 +278,17 @@
         null,
         "Размещено до"
     ],
+    "Allow Autosegmentation": [
+        null,
+        "Разрешить смену сегмента"
+    ],
     "Allow LAG mismatch": [
         null,
         "Разрешить соединиение LAG <> physical"
+    ],
+    "Allow autosegmentation": [
+        null,
+        "Разрешить изменение сегмента"
     ],
     "Alrm Status": [
         null,
@@ -265,6 +297,10 @@
     "Alrm.": [
         null,
         "Ав."
+    ],
+    "Always Enable": [
+        null,
+        "Всегда включить"
     ],
     "Anonymous": [
         null,
@@ -277,6 +313,10 @@
     "Apply changes": [
         null,
         "Применить изменения"
+    ],
+    "Apply metrics to subinterfaces": [
+        null,
+        "Снимать метрики с сабинтерфейса"
     ],
     "Archive": [
         null,
@@ -317,6 +357,18 @@
     "Auto generated?": [
         null,
         "Создать автоматически?"
+    ],
+    "Autocreated Profile": [
+        null,
+        "Профиль сегментов при создании"
+    ],
+    "Autosegmentation": [
+        null,
+        "Автосегментация"
+    ],
+    "Autosegmentation Policy": [
+        null,
+        "Политика автосегментации"
     ],
     "Avail": [
         null,
@@ -361,6 +413,18 @@
     "Box": [
         null,
         "Пакетный опрос"
+    ],
+    "Box Alarm": [
+        null,
+        "Авария при опросе"
+    ],
+    "Box Sample": [
+        null,
+        "Частота телеметрии"
+    ],
+    "Box Telemetry": [
+        null,
+        "Телеметрия опроса"
     ],
     "Box discovery": [
         null,
@@ -438,10 +502,6 @@
         null,
         "По IPv6"
     ],
-    "By Ignore CLI Errors": [
-        null,
-        "Игнорировать ошибки CLI"
-    ],
     "By Link Event": [
         null,
         "По событиям на линке"
@@ -498,10 +558,6 @@
         null,
         "По Диапазону"
     ],
-    "By Require Confirmation": [
-        null,
-        "Требовать подтверждения"
-    ],
     "By SA Profile": [
         null,
         "По профилю"
@@ -542,6 +598,10 @@
         null,
         "По Стилю"
     ],
+    "By Subscriber": [
+        null,
+        "По абоненту"
+    ],
     "By Supplier": [
         null,
         "По поставщику"
@@ -553,6 +613,10 @@
     "By Termination Group": [
         null,
         "По группе терминации"
+    ],
+    "By Type": [
+        null,
+        "По типу"
     ],
     "By User": [
         null,
@@ -582,9 +646,25 @@
         null,
         "По версии:"
     ],
+    "CLI Only": [
+        null,
+        "Только CLI"
+    ],
+    "CLI Privilege Policy": [
+        null,
+        "Политика работы с привелегиями CLI"
+    ],
+    "CLI Session Policy": [
+        null,
+        "Политика работы в CLI"
+    ],
     "CR. Context": [
         null,
         "CR. Контекст"
+    ],
+    "Calculate": [
+        null,
+        "Рассчитывать"
     ],
     "Can Change": [
         null,
@@ -726,6 +806,10 @@
         null,
         "Закрыть без сохранения"
     ],
+    "Closed": [
+        null,
+        "Закрыт"
+    ],
     "Code": [
         null,
         "Код"
@@ -733,6 +817,26 @@
     "Collapse panels": [
         null,
         "Свернуть панели"
+    ],
+    "Collect All": [
+        null,
+        "Собирать все"
+    ],
+    "Collect from VLAN matching VC Filter": [
+        null,
+        "Собирать согласно фильтру вланов"
+    ],
+    "Collect from management VLAN": [
+        null,
+        "Собирать с влана управления"
+    ],
+    "Collect from multicast VLAN": [
+        null,
+        "Собирать из мультикаст влана"
+    ],
+    "Collect if permitted by interface profile": [
+        null,
+        "Собирать разрешенные профилем интерфейса"
     ],
     "Color": [
         null,
@@ -934,6 +1038,10 @@
         null,
         "Конвертировать Имя пользователя"
     ],
+    "Cooldown": [
+        null,
+        "Время ожидания при сбое"
+    ],
     "Copy existing values to a new object": [
         null,
         "Скопировать значения в новый объект"
@@ -1038,6 +1146,10 @@
         null,
         "По умолчанию"
     ],
+    "Default Domain": [
+        null,
+        "Домен по-умолчанию"
+    ],
     "Default Severity": [
         null,
         "Важность по умолчанию"
@@ -1102,6 +1214,10 @@
         null,
         "Отключить"
     ],
+    "Disabled": [
+        null,
+        "Отключён"
+    ],
     "Disconnect": [
         null,
         "Отсоединить"
@@ -1118,6 +1234,14 @@
         null,
         "Политика при опросе"
     ],
+    "Discovery Problem": [
+        null,
+        "Проблемы опроса"
+    ],
+    "Discovery interval": [
+        null,
+        "Интервал дискавери MAC"
+    ],
     "Discriminator": [
         null,
         "Разделитель"
@@ -1130,13 +1254,17 @@
         null,
         "Размещение"
     ],
-    "Do Checked": [
-        null,
-        "Продолжить"
-    ],
     "Do not convert": [
         null,
         "Не конвертировать"
+    ],
+    "Do not raise": [
+        null,
+        "Не поднимать"
+    ],
+    "Do not segmentate": [
+        null,
+        "Не сегментировать"
     ],
     "Do you wish to delete record? This operation cannot be undone!": [
         null,
@@ -1149,6 +1277,10 @@
     "Domain": [
         null,
         "Зона"
+    ],
+    "Don't Raise": [
+        null,
+        "Не поднимать привилегии"
     ],
     "Download": [
         null,
@@ -1178,9 +1310,17 @@
         null,
         "Действующие настройки"
     ],
+    "Empty command": [
+        null,
+        "Пустой вывод"
+    ],
     "Enable": [
         null,
         "Включить"
+    ],
+    "Enable Horizontal Transit": [
+        null,
+        "Разрешить транзит пути"
     ],
     "Enable IPAM synchronization": [
         null,
@@ -1205,6 +1345,10 @@
     "Entrances": [
         null,
         "Подъезды"
+    ],
+    "Enum Group": [
+        null,
+        "Группа нумерации (Enum Group)"
     ],
     "Environment": [
         null,
@@ -1290,6 +1434,10 @@
         null,
         "RE класса события"
     ],
+    "Event Policy": [
+        null,
+        "Политика событий"
+    ],
     "Event Role": [
         null,
         "Роль события"
@@ -1317,6 +1465,10 @@
     "Exclude": [
         null,
         "Исключить"
+    ],
+    "Exclude MO by Selector": [
+        null,
+        "Исключить Объекты управления по Селектору"
     ],
     "Expand panels": [
         null,
@@ -1752,7 +1904,7 @@
     ],
     "Filtering List": [
         null,
-        "Фильтр"
+        "Список для фильтрации"
     ],
     "First Discovered": [
         null,
@@ -1852,7 +2004,7 @@
     ],
     "Go to next step": [
         null,
-        "Перейти на следующий шаг"
+        "К следующему шагу"
     ],
     "Group": [
         null,
@@ -1929,6 +2081,10 @@
     "Homes per Entrance": [
         null,
         "Кв./подъезд"
+    ],
+    "Horizontal Transit Policy": [
+        null,
+        "Политика транзита пути"
     ],
     "ID": [
         null,
@@ -2066,6 +2222,10 @@
         null,
         "Доступно для поиска"
     ],
+    "Is Stored": [
+        null,
+        "Сохранять"
+    ],
     "Italic": [
         null,
         "Наклонный"
@@ -2194,6 +2354,10 @@
         null,
         "Уровень"
     ],
+    "Level Limit": [
+        null,
+        "Ограничить уровень"
+    ],
     "Level Up": [
         null,
         "Подняться вверх"
@@ -2282,6 +2446,10 @@
         null,
         "История"
     ],
+    "Logical Status": [
+        null,
+        "Логический статус"
+    ],
     "Login": [
         null,
         "Вход"
@@ -2293,6 +2461,10 @@
     "Logout": [
         null,
         "Выход"
+    ],
+    "Loopback address": [
+        null,
+        "Адрес Loopback"
     ],
     "Low Error": [
         null,
@@ -2313,10 +2485,6 @@
     "MAC Discovery Policy": [
         null,
         "Политика сбора MAC адресов"
-    ],
-    "MAC discovery interval": [
-        null,
-        "Интервал сбора MAC адресов"
     ],
     "MIBs has been uploaded": [
         null,
@@ -2361,6 +2529,10 @@
     "Management": [
         null,
         "Управление"
+    ],
+    "Management Address": [
+        null,
+        "Адрес управления"
     ],
     "Management VLAN": [
         null,
@@ -2417,6 +2589,10 @@
     "Max": [
         null,
         "Макс"
+    ],
+    "Max Links": [
+        null,
+        "Макс. линков"
     ],
     "Max Zoom": [
         null,
@@ -2522,13 +2698,17 @@
         null,
         "Данные модели"
     ],
+    "Modify": [
+        null,
+        "Изменить"
+    ],
     "Month": [
         null,
         "Месяц"
     ],
     "Move all selected devices to the right": [
         null,
-        "Переместить все выделенные устройства на правую панель"
+        "Переместить все выбранные вправо"
     ],
     "Multicast VLAN": [
         null,
@@ -2554,6 +2734,10 @@
         null,
         "Имя/IP устройства"
     ],
+    "Native Name": [
+        null,
+        "Исходное имя (native)"
+    ],
     "Navigation": [
         null,
         "Навигация"
@@ -2561,6 +2745,10 @@
     "Neighbor": [
         null,
         "Сосед"
+    ],
+    "Network Resources": [
+        null,
+        "Сетевые ресурсы"
     ],
     "Network Segment": [
         null,
@@ -2610,10 +2798,6 @@
         null,
         "Интерфейсы не найдены"
     ],
-    "No leaf selected": [
-        null,
-        "ничего не выбрано"
-    ],
     "No matching": [
         null,
         "Не совпадает"
@@ -2622,9 +2806,17 @@
         null,
         "Новые VRF не найдены"
     ],
+    "No recently closed alarms": [
+        null,
+        "Не показывать последние закрытые"
+    ],
     "No records": [
         null,
         "Нет записей"
+    ],
+    "Not Configured": [
+        null,
+        "Не настроен"
     ],
     "Not Found": [
         null,
@@ -2730,6 +2922,10 @@
         null,
         "Объекты"
     ],
+    "Old": [
+        null,
+        "Старый"
+    ],
     "Old Password": [
         null,
         "Старый пароль"
@@ -2769,14 +2965,6 @@
     "Operation": [
         null,
         "Действие"
-    ],
-    "Optical Rx, bBm": [
-        null,
-        "Optical Rx, dBm"
-    ],
-    "Optical Tx, bBm": [
-        null,
-        "Optical Tx, dBm"
     ],
     "Order": [
         null,
@@ -2830,6 +3018,10 @@
         null,
         "Родитель"
     ],
+    "Parent Filter": [
+        null,
+        "Фильтр по родителю"
+    ],
     "Parent filter": [
         null,
         "Фильтр по родителю"
@@ -2857,6 +3049,18 @@
     "Periodic": [
         null,
         "Периодичность"
+    ],
+    "Periodic Alarm": [
+        null,
+        "Авария при опросе"
+    ],
+    "Periodic Discovery": [
+        null,
+        "Периодический опрос"
+    ],
+    "Periodic Sample": [
+        null,
+        "Частота телеметрии"
     ],
     "Periodic discovery": [
         null,
@@ -2898,6 +3102,10 @@
         null,
         "Настройки серии"
     ],
+    "Planned": [
+        null,
+        "Планируется"
+    ],
     "Platform": [
         null,
         "Платформа"
@@ -2921,6 +3129,10 @@
     "Plugins": [
         null,
         "Плагины"
+    ],
+    "Pofile": [
+        null,
+        "Профиль"
     ],
     "Point Radius": [
         null,
@@ -2981,6 +3193,14 @@
     "Prefix": [
         null,
         "Префикс"
+    ],
+    "Prefix (Interface)": [
+        null,
+        "Префикс (Интерфейс)"
+    ],
+    "Prefix (Neighbors)": [
+        null,
+        "Префикс (соседи)"
     ],
     "Prefixes": [
         null,
@@ -3070,13 +3290,25 @@
         null,
         "Поднятие"
     ],
+    "Raise Privileges": [
+        null,
+        "Пробовать поднять привилегии"
+    ],
     "Range": [
         null,
         "Диапазон"
     ],
+    "Ready": [
+        null,
+        "Готов"
+    ],
     "Rear": [
         null,
         "Задняя часть"
+    ],
+    "Recent Alarms (time/opacity)": [
+        null,
+        "Последние аварии (время/интервал)"
     ],
     "Reclassify": [
         null,
@@ -3148,7 +3380,7 @@
     ],
     "Remove all devices from right panel": [
         null,
-        "Удалить все устройства из правой панели"
+        "Удалить все выбранные с правой панели"
     ],
     "Remove group": [
         null,
@@ -3160,7 +3392,11 @@
     ],
     "Remove selected devices from right panel": [
         null,
-        "Удалить выбранные устройства из правой панели"
+        "Удалить выбранные с правой панели."
+    ],
+    "Removing": [
+        null,
+        "Удалён"
     ],
     "Rep.": [
         null,
@@ -3342,6 +3578,10 @@
         null,
         "Профиль SA"
     ],
+    "SNMP Only": [
+        null,
+        "Только SNMP"
+    ],
     "STP blocked": [
         null,
         "STP заблокирован"
@@ -3458,9 +3698,29 @@
         null,
         "Свойства сегмента"
     ],
+    "Segment Name": [
+        null,
+        "Шаблон имени сегмента"
+    ],
     "Segment Policy": [
         null,
         "Политика сегмента"
+    ],
+    "Segmentate for child segment": [
+        null,
+        "Сегментировать в дочерние сегменты"
+    ],
+    "Segmentate for object's segment": [
+        null,
+        "Сегментировать в сегмент объекта"
+    ],
+    "Segmentate to child segment": [
+        null,
+        "Перемещать соседей в дочерний сегмент"
+    ],
+    "Segmentate to existing segment": [
+        null,
+        "Перемещать соседей в текущий сегмент"
     ],
     "Segments": [
         null,
@@ -3532,7 +3792,7 @@
     ],
     "Selected : {total.selection}": [
         null,
-        " Выбрано : {total.selection}"
+        "Выбрано : {total.selection}"
     ],
     "Selector": [
         null,
@@ -3706,6 +3966,10 @@
         null,
         "Показывать только ожидающие подтверждения"
     ],
+    "Show recently closed": [
+        null,
+        "Отобразить последние закрытые"
+    ],
     "Show static map": [
         null,
         "Статичная карта"
@@ -3742,9 +4006,17 @@
         null,
         "Маленький"
     ],
+    "Software Image": [
+        null,
+        "Имя файла ПО"
+    ],
     "Solution": [
         null,
         "Решение"
+    ],
+    "Sorted Tags": [
+        null,
+        "Выравненные тэги"
     ],
     "Sound": [
         null,
@@ -3898,6 +4170,10 @@
         null,
         "Подавление"
     ],
+    "Suspended": [
+        null,
+        "Приостановлен"
+    ],
     "Swap revisions": [
         null,
         "Переключить версии"
@@ -3978,6 +4254,10 @@
         null,
         "ID в системе TT"
     ],
+    "TTL": [
+        null,
+        "Время жизни"
+    ],
     "Table": [
         null,
         "Таблица"
@@ -4005,6 +4285,14 @@
     "Technologies": [
         null,
         "Технологии"
+    ],
+    "Telemetry": [
+        null,
+        "Телеметрия"
+    ],
+    "Tememetry Sample": [
+        null,
+        "Пропуск телеметрии"
     ],
     "Temp, C": [
         null,
@@ -4049,6 +4337,10 @@
     "Test selected prefix tables ...": [
         null,
         "Проверить выбранные таблицы префиксов"
+    ],
+    "Testing": [
+        null,
+        "Тестируется"
     ],
     "Text": [
         null,
@@ -4162,6 +4454,10 @@
         null,
         "Топология"
     ],
+    "Topology Discovery": [
+        null,
+        "Опрос топологии"
+    ],
     "Topology methods": [
         null,
         "Методы построения топологии"
@@ -4172,7 +4468,7 @@
     ],
     "Total : {total.selected}": [
         null,
-        "Всего : {total.selected}"
+        "Суммарно : {total.selected}"
     ],
     "Total: ": [
         null,
@@ -4210,6 +4506,10 @@
         null,
         "Размер (в юнитах)"
     ],
+    "Unknown": [
+        null,
+        "Неизвестен"
+    ],
     "Unknows mode :": [
         null,
         "Неизвестный режим :"
@@ -4228,11 +4528,15 @@
     ],
     "Unselect all devices": [
         null,
-        "Отменить выделение для всех устройств "
+        "Снять выделение со всех устройств на экране"
     ],
     "Untag.": [
         null,
         "Нетэгированный"
+    ],
+    "Update": [
+        null,
+        "Обновить"
     ],
     "Upload": [
         null,
@@ -4257,6 +4561,10 @@
     "Use TLS": [
         null,
         "Использовать TLS"
+    ],
+    "Use uplink object's": [
+        null,
+        "Использовать аплинки объектов"
     ],
     "User": [
         null,
@@ -4378,6 +4686,10 @@
         null,
         "Просмотр карточки"
     ],
+    "Vlan": [
+        null,
+        "Влан"
+    ],
     "Voltage, V": [
         null,
         "Напряжение, В"
@@ -4494,6 +4806,10 @@
         null,
         "подразделение"
     ],
+    "don't show": [
+        null,
+        "Не показывать"
+    ],
     "empty list": [
         null,
         "пустой список"
@@ -4501,6 +4817,10 @@
     "handler": [
         null,
         "обработчик"
+    ],
+    "host": [
+        null,
+        "узел"
     ],
     "is primary": [
         null,
@@ -4524,7 +4844,11 @@
     ],
     "nothing checked": [
         null,
-        "ничего не отмечено"
+        "ничего не выбрано"
+    ],
+    "objects": [
+        null,
+        "объекты"
     ],
     "oper down": [
         null,
@@ -4554,6 +4878,10 @@
         null,
         "проект"
     ],
+    "server-side failure with status code ": [
+        null,
+        "Ошибка со стороны сервера. Код: "
+    ],
     "service": [
         null,
         "сервис"
@@ -4577,6 +4905,10 @@
     "unknown": [
         null,
         "неизвестный"
+    ],
+    "vlan": [
+        null,
+        "влан"
     ],
     "with": [
         null,
