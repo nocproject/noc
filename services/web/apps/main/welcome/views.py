@@ -14,7 +14,7 @@ from jinja2 import Template
 from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.core.translation import ugettext as _
-from noc.config import config
+
 
 class WelcomeApplication(ExtApplication):
     """
