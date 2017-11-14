@@ -32,15 +32,23 @@ class Command(BaseCommand):
                 self.die("Invalid object '%s'" % d)
         self.stdout.write("profile,platform,oid,value\n")
         for o in sorted(devs, key=lambda x: x.name):
-            try:
-                v = o.scripts.get_version()
-            except AttributeError:
-                v = {
-                    "platform": "Unknown"
-                }
-            platform = v["platform"]
+            if "get_snmp_get" not in o.scripts:
+                continue
+            if o.platform:
+                platform = o.platform.full_name
+            else:
+                try:
+                    v = o.scripts.get_version()
+                except AttributeError:
+                    v = {
+                        "platform": "Unknown"
+                    }
+                platform = v["platform"]
             # sysObjectID
-            v = o.scripts.get_snmp_get(oid=mib["SNMPv2-MIB::sysObjectID.0"])
+            try:
+                v = o.scripts.get_snmp_get(oid=mib["SNMPv2-MIB::sysObjectID.0"])
+            except:
+                continue
             self.stdout.write(
                 "%s,%s,%s,%s\n" % (
                     o.profile.name,
