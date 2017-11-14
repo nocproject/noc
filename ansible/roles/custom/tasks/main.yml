@@ -1,7 +1,7 @@
 - name: Pull NOC Customizations
   hg:
     repo: "{{ noc_custom_repo }}"
-    dest: "{{ noc_root }}/custom"
+    dest: "{{noc_root | dirname}}/noc_custom"
     revision: "{{ noc_custom_revision }}"
     update: yes
     force: yes
@@ -9,6 +9,21 @@
   when: "noc_custom_enabled==True and noc_custom_repo is defined and noc_custom_revision is defined"
   environment:
     LC_ALL: C
+  tags:
+    - mercurial
+    - custom
+
+- name: Check if custom exists on old path
+  stat:
+    path: "{{noc_root}}/custom"
+  register: old_path
+  tags:
+    - mercurial
+    - custom
+
+- name: move custom to new location
+  shell: mv "{{noc_root}}/custom/" "{{noc_root | dirname}}/noc_custom/"
+  when: old_path.stat.exists is defined and old_path.stat.exists
   tags:
     - mercurial
     - custom
