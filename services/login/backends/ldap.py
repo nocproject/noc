@@ -251,7 +251,7 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             self.logger.debug("No active connection")
             return []
-        if not ldap_domain.group_search_dn
+        if not ldap_domain.group_search_dn:
             group_search_dn = ldap_domain.root
         else:
             group_search_dn = ldap_domain.group_search_dn
