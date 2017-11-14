@@ -87,7 +87,7 @@ class Maintenance(Document):
     def on_save(self):
         self.update_affected_objects()
         if self.escalate_managed_object:
-            if self.is_completed:
+            if not self.is_completed:
                 call_later(
                     "noc.services.escalator.maintenance.start_maintenance",
                     delay=(dateutil.parser.parse(self.start) - datetime.datetime.now()).seconds,
