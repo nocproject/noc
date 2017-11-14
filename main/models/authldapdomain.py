@@ -52,11 +52,16 @@ class AuthLDAPDomain(Document):
     type = StringField(
         choices=[
             ("ldap", "LDAP"),
-            ("ad", "Active Directory")
+            ("ad", "Active Directory"),
+            ("oldap", "OpenLDAP")
         ]
     )
     # Bind root
     root = StringField()
+    # Users search tree
+    user_search_dn = StringField()
+    # Groups search tree
+    group_search_dn = StringField()
     # Search expression to find user
     # Use DEFAULT_USER_SEARCH_FILTER when empty
     user_search_filter = StringField()
@@ -95,17 +100,24 @@ class AuthLDAPDomain(Document):
 
     DEFAULT_USER_SEARCH_FILTER = {
         "ldap": "(uid=%(user)s)",
-        "ad": "(samAccountName=%(user)s)"
+        "ad": "(samAccountName=%(user)s)",
+        "oldap": "(uid=%(user)s)"
     }
 
     DEFAULT_GROUP_SEARCH_FILTER = {
         "ldap": "(&((objectClass=groupOfNames))(member=%(user_dn)s))",
-        "ad": "(&(objectClass=group)(member=%(user_dn)s))"
+        "ad": "(&(objectClass=group)(member=%(user_dn)s))",
+        "oldap": "(objectClass=posixGroup)"
     }
 
     DEFAULT_ATTR_MAPPING = {
         "ldap": {},
         "ad": {
+            "givenName": "first_name",
+            "sn": "last_name",
+            "mail": "email"
+        },
+        "oldap": {
             "givenName": "first_name",
             "sn": "last_name",
             "mail": "email"
