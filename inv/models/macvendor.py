@@ -86,9 +86,10 @@ class MACVendor(Document):
             try:
                 r = collection.bulk_write(bulk, ordered=False)
                 logger.info("Database has been synced")
-                logger.info("Inserted: %d, Modify: %d, Deleted: %d",
-                            r.inserted_count + r.upserted_count,
-                            r.modified_count, r.deleted_count)
+                if r.acknowledged:
+                    logger.info("Inserted: %d, Modify: %d, Deleted: %d",
+                                r.inserted_count + r.upserted_count,
+                                r.modified_count, r.deleted_count)
             except BulkWriteError as e:
                 logger.error("Bulk write error: '%s'", e.details)
                 logger.error("Stopping check")
