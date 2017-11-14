@@ -45,9 +45,10 @@ class InterfaceLoader(object):
             imname = name.lower()
             if os.path.exists(
                     os.path.join(
-                        "custom", "sa", "interfaces", "%s.py" % imname)):
+                        config.path.custom_path, "sa", "interfaces", "%s.py" % imname)):
                 # Custom script
-                module_name = "noc.custom.sa.interfaces.%s" % imname
+                custom_name = os.path.basename(config.path.custom_path)
+                module_name = "%s.sa.interfaces.%s" % (custom_name, imname)
             elif os.path.exists(
                     os.path.join(
                         "sa", "interfaces", "%s.py" % imname)):

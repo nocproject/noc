@@ -51,12 +51,13 @@ class ScriptLoader(object):
                     return None
                 if os.path.exists(
                         os.path.join(
-                            "custom", "sa", "profiles", vendor, system,
+                            config.path.custom_path, "sa", "profiles", vendor, system,
                             "%s.py" % sn
                         )
                 ):
                     # Custom script
-                    module_name = "noc.custom.sa.profiles.%s" % name
+                    custom_name = os.path.basename(config.path.custom_path)
+                    module_name = "%s.sa.profiles.%s" % (custom_name, name)
                 elif os.path.exists(
                         os.path.join(
                             "sa", "profiles", vendor, system,

@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NRI Port mapper loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# NRI Port mapper loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import logging
 import inspect
-## NOC modules
+import logging
+# Python modules
+import os
+
+from noc.config import config
+
+# NOC modules
 from base import BasePortMapper
 
 logger = logging.getLogger(__name__)
@@ -21,9 +25,10 @@ class PortMapperLoader(object):
 
     def get_loader(self, name):
         loader = self.loaders.get(name)
+        custom_name = os.path.basename(config.path.custom_path)
         if not loader:
             logging.info("Loading %s", name)
-            mn = "noc.custom.etl.portmappers.%s" % name
+            mn = "%s.etl.portmappers.%s" % (custom_name, name)
             try:
                 sm = __import__(mn, {}, {}, "*")
                 for n in dir(sm):
@@ -41,5 +46,6 @@ class PortMapperLoader(object):
                 loader = None
             self.loaders[name] = loader
         return loader
+
 
 loader = PortMapperLoader()
