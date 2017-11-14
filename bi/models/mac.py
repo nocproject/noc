@@ -48,8 +48,6 @@ class MAC(Model):
       AND uni = 1;
     """
 
-    MAC_WINDOW = config.web.macdb_window
-
     class Meta:
         db_table = "mac"
         engine = MergeTree("date", ("ts", "managed_object"))
@@ -88,7 +86,7 @@ class MAC(Model):
         where like(MACNumToString(mac), 'A0:AB:1B%') group by managed_object, interface, vlan;
         """
         query_field = ["mac", "managed_object"]
-        t0 = datetime.datetime.now() - datetime.timedelta(seconds=self.MAC_WINDOW)
+        t0 = datetime.datetime.now() - datetime.timedelta(seconds=config.web.macdb_window)
         t0 = t0.replace(microsecond=0)
 
         if not query:
