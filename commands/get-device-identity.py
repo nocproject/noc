@@ -13,6 +13,7 @@ import argparse
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.mib import mib
+from noc.core.error import NOCError
 
 
 class Command(BaseCommand):
@@ -47,7 +48,7 @@ class Command(BaseCommand):
             # sysObjectID
             try:
                 v = o.scripts.get_snmp_get(oid=mib["SNMPv2-MIB::sysObjectID.0"])
-            except:
+            except NOCError:
                 continue
             self.stdout.write(
                 "%s,%s,%s,%s\n" % (
