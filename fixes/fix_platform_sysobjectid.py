@@ -19,7 +19,7 @@ def fix():
     for p in Platform.objects.filter():
         if p.snmp_sysobjectid:
             continue  # Already filled
-        print("Checked profile: %s" % p.name)
+        print("Checked platform: %s" % p.name)
         # Get sample devices
         for mo in ManagedObject.objects.filter(is_managed=True, platform=p.id).order_by("?"):
             caps = mo.get_caps()
@@ -28,6 +28,9 @@ def fix():
             try:
                 v = mo.scripts.get_snmp_get(oid=mib["SNMPv2-MIB::sysObjectID.0"])
             except NOCError:
+                continue
+            except AttributeError as e:
+                print("Invalid script on platform: %s, %s", p.name, e)
                 continue
             if not v:
                 continue
