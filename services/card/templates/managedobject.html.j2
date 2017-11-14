@@ -90,8 +90,8 @@
     <td>
         {{ platform }}
         {% if platform %}
-            {% if object.platform.is_end_of_sale %}[{{ _("End of Sale") }}]{% endif %}
-            {% if object.platform.is_end_of_support %}[{{ _("End of Support") }}]{% endif %}
+            {% if object.platform.is_end_of_sale %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
+            {% if object.platform.is_end_of_support %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
         {% endif %}
     </td>
 </tr>
