@@ -94,8 +94,9 @@ class InterfaceLoader(object):
         Scan all available scripts
         """
         ns = set()
-        custom_path = os.path.join(config.path.custom_path, "sa/interfaces/*.py")
-        for gx in ["sa/interfaces/*.py", custom_path]:
+        custom_path = os.path.join(config.path.custom_path, "sa", "interfaces", "*.py")
+        base_path = os.path.join("sa", "interfaces", "*.py")
+        for gx in [base_path, custom_path]:
             for path in glob.glob(gx):
                 if path in ("base.py", "__init__.py"):
                     continue
