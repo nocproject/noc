@@ -18,6 +18,7 @@ import types
 import bson
 import six
 from six.moves import StringIO
+from pymongo import UpdateOne
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
@@ -500,14 +501,14 @@ class DiscoveryCheck(object):
                     setattr(obj, k, v)
                     changes += [(k, v)]
         if changes:
-            if bulk:
+            if bulk is not None:
                 op = {
                     "$set": dict(changes)
                 }
                 id_field = obj._fields[Interface._meta["id_field"]].db_field
-                bulk.find({
+                bulk += [UpdateOne({
                     id_field: obj.pk
-                }).update(op)
+                }, op)]
             else:
                 kwargs = {}
                 if async:
@@ -614,9 +615,9 @@ class DiscoveryCheck(object):
             managed_object=self.object.id,
             type__in=["physical", "aggregated"]
         ):
-            l = i.link
-            if l:
-                self.logger.info("Unlinking: %s", l)
+            link = i.link
+            if link:
+                self.logger.info("Unlinking: %s", link)
                 try:
                     i.unlink()
                 except ValueError as e:
