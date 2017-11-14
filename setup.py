@@ -29,7 +29,7 @@ def get_version():
 
 MANIFEST = []
 
-REQUIREMENTS = [i.strip() for i in open("requirements/docker.txt").readlines()]
+REQUIREMENTS = [i.strip() for i in open("requirements/all.txt").readlines()]
 
 
 def get_manifest():
