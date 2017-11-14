@@ -7,11 +7,10 @@
 # ---------------------------------------------------------------------
 
 from __future__ import with_statement
-from distutils.core import setup
-import distutils.command.sdist
-from distutils.command.install import INSTALL_SCHEMES
-import subprocess
+
 import os
+import subprocess
+from setuptools import setup
 
 #
 # Prefix to where noc to be installed
@@ -27,7 +26,10 @@ def get_version():
     with open("VERSION") as f:
         return f.read().strip()
 
+
 MANIFEST = []
+
+REQUIREMENTS = [i.strip() for i in open("requirements/docker.txt").readlines()]
 
 
 def get_manifest():
@@ -37,24 +39,12 @@ def get_manifest():
     """
     global MANIFEST
     if not MANIFEST:
-        if os.path.exists(".hg"):
+        if os.path.exists(".git"):
             # Rebuild MANIFEST file every time mercurial repo found
-            proc = subprocess.Popen(["hg", "locate"], stdout=subprocess.PIPE,
-                                                    stderr=subprocess.PIPE)
+            proc = subprocess.Popen(["git", "ls-tree", "--name-only", "-r", "HEAD"], stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
             stdout, stderr = proc.communicate()
             mf = stdout.splitlines()
-            if os.path.exists(".hgsub"):
-                with open(".hgsub") as sf:
-                    for l in sf:
-                        if "=" not in l:
-                            continue
-                        sr, r = l.split("=", 1)
-                        sr = sr.strip()
-                        proc = subprocess.Popen(["hg", "-R", sr, "locate"],
-                                                stdout=subprocess.PIPE,
-                                                stderr=subprocess.PIPE)
-                        stdout, stderr = proc.communicate()
-                        mf += [sr + "/" + x for x in stdout.splitlines()]
             mf += ["MANIFEST"]
             with open("MANIFEST", "w") as f:
                 f.write("\n".join(mf))
@@ -88,19 +78,6 @@ def get_data():
     return data.items()
 
 
-class noc_sdist(distutils.command.sdist.sdist):
-    """
-    Get file list for sdist from MANIFEST
-    """
-    def get_file_list(self):
-        self.filelist.files = get_manifest()
-
-#
-# Monkeypatch distutils to install noc to the desired location
-#
-for scheme in INSTALL_SCHEMES.values():
-    scheme["purelib"] = PREFIX
-    scheme["data"] = PREFIX
 #
 # Pass control to the setuptools
 #
@@ -116,13 +93,8 @@ setup(
 service providers, and enterprise Network Operation Centers (NOC).
 Areas covered by NOC include fault management, service activation/provisioning, multi-VRF address space management,
 configuration management, DNS provisioning, peering management, RPSL and BGP filter generation, and reporting.""",
-    cmdclass={"sdist": noc_sdist},
     packages=get_packages(),
     data_files=get_data(),
     provides=["noc"],
-    requires=[
-        "psycopg2 (>= 2.0.5)",
-        "pycrypto (>= 2.3)",
-        "pymongo (>= 1.1)"
-    ]
+    install_requires=REQUIREMENTS
 )
