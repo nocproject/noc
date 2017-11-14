@@ -18,14 +18,14 @@ if [ -f "$PWD/.env" ]; then
 fi
 
 CMD=$1
-if [ -f "./custom/commands/$CMD.sh" ]; then
+if [ -f "../noc_custom/commands/$CMD.sh" ]; then
     shift
-    exec /bin/sh ./custom/commands/$CMD.sh "$@"
+    exec /bin/sh ../noc_custom/commands/$CMD.sh "$@"
 fi
 
-if [ -f "./custom/commands/$CMD.py" ]; then
+if [ -f "../noc_custom/commands/$CMD.py" ]; then
     shift
-    exec ./bin/python ./custom/commands/$CMD.py "$@"
+    exec ./bin/python ../noc_custom/commands/$CMD.py "$@"
 fi
 
 if [ -f "./commands/$CMD.sh" ]; then

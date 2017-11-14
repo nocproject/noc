@@ -17,6 +17,7 @@ import re
 # NOC modules
 from base import BaseScript
 from noc.core.profile.loader import GENERIC_PROFILE
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +126,8 @@ class ScriptLoader(object):
                     ns.add("%s.%s" % (GENERIC_PROFILE, gn))
         # Load custom scripts
         profiles = set()
-        for path in glob.glob("custom/sa/profiles/*/*/*.py"):
+        custom_path = os.path.join(config.path.custom_path, "sa/profiles/*/*/*.py")
+        for path in glob.glob(custom_path):
             vendor, system, name = path.split(os.sep)[-3:]
             name = name[:-3]
             if name != "__init__":

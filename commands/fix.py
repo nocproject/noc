@@ -13,10 +13,13 @@ import os
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
+from noc.config import config
 
 
 class Command(BaseCommand):
-    FIX_DIRS = ["custom/fixes", "fixes"]
+    custom_path = os.path.join(config.path.custom_path, "fixes")
+
+    FIX_DIRS = [custom_path, "fixes"]
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -36,7 +39,7 @@ class Command(BaseCommand):
     def handle_list(self, *args, **options):
         fixes = set()
         for d in self.FIX_DIRS:
-            if not os.path.isdir(d):
+            if not os.path.exists(d):
                 continue
             files = os.listdir(d)
             if "__init__.py" not in files:

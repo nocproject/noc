@@ -14,15 +14,17 @@ from jinja2 import Template
 from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.core.translation import ugettext as _
-
+from noc.config import config
 
 class WelcomeApplication(ExtApplication):
     """
     main.welcome application
     """
     title = _("Welcome")
+    custom_path = os.path.join(config.path.custom_path,
+                               "services/web/apps/main/welcome/templates/Welcome.html.j2")
     WELCOME_PATH = [
-        "custom/services/web/apps/main/welcome/templates/Welcome.html.j2",
+        custom_path,
         "services/web/apps/main/welcome/templates/Welcome.html.j2",
     ]
 

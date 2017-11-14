@@ -15,7 +15,7 @@ import platform
 from noc.config import config
 
 CHANGESET_LEN = 8
-BRAND_PATH = "custom/BRAND"
+BRAND_PATH = os.path.join(config.path.custom_path, "BRAND")
 
 
 class cachedproperty(object):
