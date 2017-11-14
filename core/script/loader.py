@@ -127,7 +127,7 @@ class ScriptLoader(object):
                     ns.add("%s.%s" % (GENERIC_PROFILE, gn))
         # Load custom scripts
         profiles = set()
-        custom_path = os.path.join(config.path.custom_path, "sa/profiles/*/*/*.py")
+        custom_path = os.path.join(config.path.custom_path, "sa", "profiles", "*", "*", "*.py")
         for path in glob.glob(custom_path):
             vendor, system, name = path.split(os.sep)[-3:]
             name = name[:-3]
