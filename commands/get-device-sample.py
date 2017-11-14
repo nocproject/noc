@@ -43,7 +43,7 @@ class Command(BaseCommand):
                *args, **options):
         fields = show.split(",")
         mqs = {
-            "is_active": True
+            "is_managed": True
         }
         pqs = {}
         if platform:
