@@ -52,8 +52,7 @@ class AuthLDAPDomain(Document):
     type = StringField(
         choices=[
             ("ldap", "LDAP"),
-            ("ad", "Active Directory"),
-            ("oldap", "OpenLDAP")
+            ("ad", "Active Directory")
         ]
     )
     # Bind root
@@ -100,24 +99,21 @@ class AuthLDAPDomain(Document):
 
     DEFAULT_USER_SEARCH_FILTER = {
         "ldap": "(uid=%(user)s)",
-        "ad": "(samAccountName=%(user)s)",
-        "oldap": "(uid=%(user)s)"
+        "ad": "(samAccountName=%(user)s)"
     }
 
     DEFAULT_GROUP_SEARCH_FILTER = {
         "ldap": "(&((objectClass=groupOfNames))(member=%(user_dn)s))",
-        "ad": "(&(objectClass=group)(member=%(user_dn)s))",
-        "oldap": "(objectClass=posixGroup)"
+        "ad": "(&(objectClass=group)(member=%(user_dn)s))"
     }
 
     DEFAULT_ATTR_MAPPING = {
-        "ldap": {},
         "ad": {
             "givenName": "first_name",
             "sn": "last_name",
             "mail": "email"
         },
-        "oldap": {
+        "ldap": {
             "givenName": "first_name",
             "sn": "last_name",
             "mail": "email"
