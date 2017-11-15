@@ -209,11 +209,14 @@ def format_frames(frames, reverse=config.traceback.reverse):
 def check_fatal_errors(t, v):
     def die(msg, *args, **kwargs):
         logger.error(msg, *args, **kwargs)
+        logger.error("Exiting due to fatal error")
         os._exit(1)
 
     xn = "%s.%s" % (t.__module__, t.__name__)
     if xn == "pymongo.errors.AutoReconnect":
-        die("Failed to connect MongoDB: %s", v)
+        die("Reconnecting to MongoDB: %s", v)
+    elif xn == "pymongo.errors.ServerSelectionTimeoutError":
+        die("Cannot select MongoDB master: %s", v)
     elif xn == "django.db.utils.DatabaseError" and "server closed" in v:
         die("Failed to connect PostgreSQL: %s", v)
     elif xn == "psycopg2.InterfaceError" and "connection already closed" in v:
