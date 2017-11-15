@@ -40,10 +40,6 @@ class MACApplication(ExtApplication):
     mac_search_re = re.compile(r"([\dABCDEF][\dABCDEF]:){2,}", re.IGNORECASE)
     mac_search_re_inv = re.compile(r"(:[\dABCDEF][\dABCDEF]){2,}", re.IGNORECASE)
 
-    implied_permissions = {
-        "read": ["inv:macdb:lookup", "main:style:lookup"]
-    }
-
     @staticmethod
     def field_description(o, iname):
         # @todo cache
