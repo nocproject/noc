@@ -40,10 +40,11 @@ class SuggestSNMPCheck(DiscoveryCheck):
                     if self.check_oid(oid, ro, self.CHECK_VERSION[ver]):
                         self.logger.info("Guessed community: %s, version: %d", ro, ver)
                         self.object._suggest_snmp = (ro, rw, self.CHECK_VERSION[ver])
-                        self.set_credentials(
-                            snmp_ro=ro,
-                            snmp_rw=rw
-                        )
+                        if self.object.get_access_preference() == "S":
+                            self.set_credentials(
+                                snmp_ro=ro,
+                                snmp_rw=rw
+                            )
                         return
         self.logger.info("Failed to guess SNMP community")
         self.set_problem(
