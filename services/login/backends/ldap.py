@@ -197,12 +197,9 @@ class LdapBackend(BaseAuthBackend):
                 "authentication": ldap3.NTLM
             }
         else:
-            if not ldap_domain.user_search_dn:
-                user_search_dn = ldap_domain.root
-            else:
-                user_search_dn = ldap_domain.user_search_dn
+            user_search_dn = self.get_user_search_dn(ldap_domain)
             kwargs = {
-                "user": ("uid=" + user + "," + user_search_dn)
+                "user": "uid=%s,%s" % (user, user_search_dn)
             }
         kwargs["password"] = password
         return kwargs
@@ -214,10 +211,7 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             return user_info
         usf = ldap_domain.get_user_search_filter() % {"user": user}
-        if not ldap_domain.user_search_dn:
-            user_search_dn = ldap_domain.root
-        else:
-            user_search_dn = ldap_domain.user_search_dn
+        user_search_dn = self.get_user_search_dn(ldap_domain)
         self.logger.debug("User search from %s: %s",
                           user_search_dn, usf)
         connection.search(
@@ -251,10 +245,7 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             self.logger.debug("No active connection")
             return []
-        if not ldap_domain.group_search_dn:
-            group_search_dn = ldap_domain.root
-        else:
-            group_search_dn = ldap_domain.group_search_dn
+        group_search_dn = self.get_group_search_dn(ldap_domain)
         gsf = ldap_domain.get_group_search_filter() % user_info
         self.logger.debug("Group search from %s: %s",
                           group_search_dn, gsf)
@@ -267,3 +258,18 @@ class LdapBackend(BaseAuthBackend):
         self.logger.debug("Groups found: %s",
                           [e.entry_get_dn() for e in connection.entries])
         return [e.entry_get_dn() for e in connection.entries]
+        
+    def get_user_search_dn(self, ldap_domain):
+        if ldap_domain.user_search_dn:
+            user_search_dn = ldap_domain.user_search_dn
+        else:
+            user_search_dn = ldap_domain.root
+        return user_search_dn
+
+    def get_group_search_dn(self, ldap_domain):
+        if ldap_domain.group_search_dn:
+            group_search_dn = ldap_domain.group_search_dn
+        else:
+            group_search_dn = ldap_domain.root
+        return group_search_dn
+
