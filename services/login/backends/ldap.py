@@ -197,7 +197,7 @@ class LdapBackend(BaseAuthBackend):
                 "authentication": ldap3.NTLM
             }
         else:
-            user_search_dn = AuthLDAPDomain.get_user_search_dn(ldap_domain)
+            user_search_dn = AuthLDAPDomain.get_user_search_dn()
             kwargs = {
                 "user": "uid=%s,%s" % (user, user_search_dn)
             }
@@ -211,7 +211,7 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             return user_info
         usf = ldap_domain.get_user_search_filter() % {"user": user}
-        user_search_dn = AuthLDAPDomain.get_user_search_dn(ldap_domain)
+        user_search_dn = AuthLDAPDomain.get_user_search_dn()
         self.logger.debug("User search from %s: %s",
                           user_search_dn, usf)
         connection.search(
@@ -245,7 +245,7 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             self.logger.debug("No active connection")
             return []
-        group_search_dn = AuthLDAPDomain.get_group_search_dn(ldap_domain)
+        group_search_dn = AuthLDAPDomain.get_group_search_dn()
         gsf = ldap_domain.get_group_search_filter() % user_info
         self.logger.debug("Group search from %s: %s",
                           group_search_dn, gsf)
