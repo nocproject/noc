@@ -296,6 +296,8 @@ class JSONObject(object):
     def get_caps(self):
         return self.caps
 
+    def get_access_preference(self):
+        return self.access_preference
 
 if __name__ == "__main__":
     Command().run()
