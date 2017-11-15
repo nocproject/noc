@@ -191,16 +191,16 @@ class AuthLDAPDomain(Document):
     def get_user_search_attributes(self):
         return ["dn"] + list(self.DEFAULT_ATTR_MAPPING[self.type])
         
-    def get_user_search_dn(cls, ldap_domain):
-        if ldap_domain.user_search_dn:
-            user_search_dn = ldap_domain.user_search_dn
+    def get_user_search_dn(self):
+        if self.user_search_dn:
+            user_search_dn = self.user_search_dn
         else:
-            user_search_dn = ldap_domain.root
+            user_search_dn = self.root
         return user_search_dn
 
-    def get_group_search_dn(cls, ldap_domain):
-        if ldap_domain.group_search_dn:
-            group_search_dn = ldap_domain.group_search_dn
+    def get_group_search_dn(self):
+        if self.group_search_dn:
+            group_search_dn = self.group_search_dn
         else:
-            group_search_dn = ldap_domain.root
+            group_search_dn = self.root
         return group_search_dn
