@@ -25,7 +25,7 @@ class ValidatorRegistry(object):
         # Get all probes locations
         dirs = ["cm/validators"]
         custom_dir = os.path.join(config.path.custom_path, "cm/validators")
-        if os.path.exists(custom_dir):
+        if os.path.isdir(custom_dir):
             dirs += [custom_dir]
         # Load all probes
         for root in dirs:

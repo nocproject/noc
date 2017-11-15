@@ -34,7 +34,7 @@ class MIBRegistry(object):
     def load_mibs(self):
         dirs = ["cmibs"]
         custom_path = os.path.join(config.path.custom_path, "cmibs")
-        if os.path.exists(custom_path):
+        if os.path.isdir(custom_path):
             dirs += [custom_path]
         for root in dirs:
             logger.debug("Loading compiled MIBs from '%s'", root)
