@@ -522,7 +522,7 @@ services:
     category: internal
     command: "./services/datasource/service.py"
     process_name: "%(program_name)s-%(process_num)02d"
-    oom_score_adj: 500
+    oom_score_adj: 999
     priority: 100
     startretries: 999
     stopwaitsecs: 3
