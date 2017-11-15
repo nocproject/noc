@@ -104,17 +104,16 @@ class CardRequestHandler(UIHandler):
         if not cls.CARDS:
             cls.CARDS = {}
             custom_path = os.path.join(config.path.custom_path, "services/card/cards")
-            for r in [custom_path, "services/card/cards"]:
+            for b, r in [(os.path.basename(config.path.custom_path), custom_path), ("noc", "services/card/cards")]:
                 if not os.path.isdir(r):
                     continue
-                if r.startswith(".."):
-                    r = r.replace(config.path.custom_path, "")[1:]
                 for f in os.listdir(r):
                     if not f.endswith(".py"):
                         continue
                     mn = "%s.%s.%s" % (
-                        os.path.basename(config.path.custom_path),
-                        r.replace("/", "."),
+                        b,
+                        r.replace("/", ".") if not r.startswith("..")
+                        else r.replace("../%s" % b, "")[1:].replace("/", "."),
                         f[:-3]
                     )
                     m = __import__(mn, {}, {}, "*")
