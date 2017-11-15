@@ -35,7 +35,8 @@ Ext.define("NOC.main.authldapdomain.Model", {
             name: "root",
             type: "string"
         },
-        name: "user_search_dn",
+        {
+            name: "user_search_dn",
             type: "string"
         },
         {
