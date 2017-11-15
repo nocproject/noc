@@ -197,9 +197,8 @@ class LdapBackend(BaseAuthBackend):
                 "authentication": ldap3.NTLM
             }
         else:
-            user_search_dn = ldap_domain.get_user_search_dn()
             kwargs = {
-                "user": "uid=%s,%s" % (user, user_search_dn)
+                "user": "uid=%s,%s" % (user, ldap_domain.get_user_search_dn())
             }
         kwargs["password"] = password
         return kwargs
