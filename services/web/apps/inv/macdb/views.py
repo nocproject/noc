@@ -2,22 +2,19 @@
 # ---------------------------------------------------------------------
 # inv.macdb application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import threading
-import operator
 import re
 # Third-party modules
-from mongoengine import Q
 from django.db.models import Q as d_Q
 # NOC modules
 from noc.lib.app.extdocapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.macdb import MACDB
-from noc.core.cache.decorator import cachedmethod
-from cachetools import TTLCache, cachedmethod
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.mac import MAC
 from noc.inv.models.maclog import MACLog
@@ -42,14 +39,6 @@ class MACApplication(ExtApplication):
     macdb = MACDBC()
     mac_search_re = re.compile(r"([\dABCDEF][\dABCDEF]:){2,}", re.IGNORECASE)
     mac_search_re_inv = re.compile(r"(:[\dABCDEF][\dABCDEF]){2,}", re.IGNORECASE)
-
-    # query_fields = ["mac"]
-    # query_condition = "icontains"
-    # int_query_fields = ["vlan"]
-
-    # implied_permissions = {
-    #     "read": ["inv:macdb:lookup", "main:style:lookup"]
-    # }
 
     @staticmethod
     def field_description(o, iname):
@@ -103,7 +92,7 @@ class MACApplication(ExtApplication):
         query = q.get("__query")
         start = q.get("__start")
         limit = q.get("__limit")
-        page = q.get("__page")
+        # page = q.get("__page")
         out = []
         if not query:
             return self.response(out, status=self.OK)
@@ -122,7 +111,7 @@ class MACApplication(ExtApplication):
                 mo_q = ManagedObject.get_search_Q(query)
                 if not mo_q:
                     mo_q = d_Q(name__contains=query)
-                mos = [mo.get_bi_id() for mo in ManagedObject.objects.filter(mo_q)[:2]]
+                mos = [mo.bi_id for mo in ManagedObject.objects.filter(mo_q)[:2]]
                 if mos:
                     out = self.api_macdb({"managed_object__in": mos}, limit=limit, offset=start)
         # out = self.api_get_maclog(request, mac)
@@ -168,34 +157,13 @@ class MACApplication(ExtApplication):
                 "description": getattr(iface, "description", "")
             }]
 
-        """
-        for p in m:
-            if p:
-                vc_d = str(p.vc_domain.name) if p.vc_domain else None
-
-                for i in Interface.objects.filter(id=p.interface.id):
-                    if i.description:
-                        descr = i.description
-                    else:
-                        descr = None
-
-                current = [{
-                    "timestamp": str(p.last_changed),
-                    "mac": p.mac,
-                    "vc_domain": vc_d,
-                    "vlan": p.vlan,
-                    "managed_object_name": str(p.managed_object.name),
-                    "interface_name": str(p.interface.name),
-                    "description": descr
-                }]
-        """
         history = []
         id_cache = {}
         d_cache = {}
 
         for i in MACLog.objects.filter(mac=mac).order_by("-timestamp"):
             id = id_cache.get(i.managed_object_name)
-            if id is None:        
+            if id is None:
                 for p in ManagedObject.objects.filter(name=i.managed_object_name):
                     id = p.id
                     id_cache[i.managed_object_name] = p.id
@@ -215,12 +183,12 @@ class MACApplication(ExtApplication):
                         d_cache[id, i.interface_name] = ""
 
             history += [{
-                    "timestamp": str(i.timestamp),
-                    "mac": i.mac,
-                    "vc_domain": str(i.vc_domain_name),
-                    "vlan": i.vlan,
-                    "managed_object_name": str(i.managed_object_name),
-                    "interface_name": str(i.interface_name),
-                    "description": c
+                "timestamp": str(i.timestamp),
+                "mac": i.mac,
+                "vc_domain": str(i.vc_domain_name),
+                "vlan": i.vlan,
+                "managed_object_name": str(i.managed_object_name),
+                "interface_name": str(i.interface_name),
+                "description": c
             }]
         return current

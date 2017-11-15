@@ -59,6 +59,9 @@ class Platform(Document):
     end_of_support = DateField()
     # End of extended support date (installation local)
     end_of_xsupport = DateField()
+    # SNMP OID value
+    # sysObjectID.0
+    snmp_sysobjectid = StringField(regex=r"^1.3.6(\.\d+)+$")
     # Global ID
     uuid = UUIDField(binary=True)
     # Object id in BI
@@ -92,18 +95,22 @@ class Platform(Document):
             "$collection": self._meta["json_collection"],
             "vendor__name": self.vendor.name,
             "name": self.name,
-            "uuid": self.uuid,
-            "description": self.description
+            "uuid": self.uuid
         }
+        if self.description:
+            r["description"] = self.description
         if self.start_of_sale:
             r["start_of_sale"] = self.start_of_sale.strftime("%Y-%m-%d")
         if self.end_of_sale:
             r["end_of_sale"] = self.end_of_sale.strftime("%Y-%m-%d")
         if self.end_of_support:
             r["end_of_support"] = self.end_of_support.strftime("%Y-%m-%d")
+        if self.snmp_sysobjectid:
+            r["snmp_sysobjectid"] = self.snmp_sysobjectid
         return to_json(r, order=[
-            "vendor__name", "name", "uuid", "description",
-            "start_of_sale", "end_of_sale", "end_of_support"])
+            "vendor__name", "name", "$collection", "uuid", "description",
+            "start_of_sale", "end_of_sale", "end_of_support",
+            "snmp_sysobjectid"])
 
     def get_json_path(self):
         return os.path.join(self.vendor.code,

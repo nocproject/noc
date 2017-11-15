@@ -188,7 +188,7 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
         }
 
         url = [
-            "/sa/reportobjectdetail/download/?format=" + format
+            "/sa/reportobjectdetail/download/?o_format=" + format
         ];
 
         if(me.adm_domain) {

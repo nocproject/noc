@@ -83,12 +83,12 @@ class Script(BaseScript):
     rx_pvst_root = re.compile(
         r"^\s+Root ID\s+Priority\s+(?P<root_priority>\d+).\s+"
         r"Address\s+(?P<root_id>\S+)",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.DOTALL)
 
     rx_pvst_bridge = re.compile(
         r"^\s+Bridge ID\s+Priority\s+(?P<bridge_priority>\d+).\s+"
         r"Address\s+(?P<bridge_id>\S+)",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.DOTALL)
 
     rx_pvst_interfaces = re.compile(
         r"Port\s+(?P<interface>\S+)\s+(?P<status>(enabled|disabled))\s*."
@@ -100,7 +100,7 @@ class Script(BaseScript):
         r"(?P<designated_bridge_priority>\d+)\s+"
         r"Address:\s+(?P<designated_bridge_id>\S+)\s*."
         r"Designated port id:\s+(?P<designated_port_id>\d+\.\d+)",
-        re.DOTALL | re.IGNORECASE | re.MULTILINE)
+        re.MULTILINE | re.DOTALL)
 
     def process_pvst(self, cli_stp, proto, sep):
         # Save port attributes
@@ -119,7 +119,7 @@ class Script(BaseScript):
             if match_b:
                 r["instances"] += [{
                     "id": instance_id,
-                    "vlans": "",
+                    "vlans": "1-4095",
                     "root_id": match_r.group("root_id"),
                     "root_priority": match_r.group("root_priority"),
                     "bridge_id": match_b.group("bridge_id"),
@@ -128,7 +128,7 @@ class Script(BaseScript):
             elif match_r:
                 r["instances"] += [{
                     "id": instance_id,
-                    "vlans": "",
+                    "vlans": "1-4095",
                     "root_id": match_r.group("root_id"),
                     "root_priority": match_r.group("root_priority"),
                     "bridge_id": match_r.group("root_id"),

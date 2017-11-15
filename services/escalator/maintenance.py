@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def start_maintenance(maintenance_id):
-    logger.info("[%s] Start maintenance")
+    logger.info("[%s] Start maintenance", maintenance_id)
     m = Maintenance.get_by_id(maintenance_id)
     if not m:
         logger.info("[%s] Not found, skipping")
@@ -32,8 +32,8 @@ def start_maintenance(maintenance_id):
                     maintenance_id, m.escalation_tt)
         return
     # Get external TT system
-    d = m.escalate_managed_object.tt_system_id
-    if not d:
+    tts_id = m.escalate_managed_object.tt_system_id
+    if not tts_id:
         logger.info("[%s] No TT mapping for object %s(%s)",
                     maintenance_id, m.escalate_managed_object.name,
                     m.escalate_managed_object.address)
@@ -48,7 +48,7 @@ def start_maintenance(maintenance_id):
         logger.info("[%s] Creating TT", maintenance_id)
         tt_id = tts.create_tt(
             queue=1,
-            obj=d["remote_id"],
+            obj=tts_id,
             reason=0,
             subject=m.subject,
             body=m.body,
@@ -84,7 +84,7 @@ def start_maintenance(maintenance_id):
 
 
 def close_maintenance(maintenance_id):
-    logger.info("[%s] Start maintenance")
+    logger.info("[%s] Close maintenance", maintenance_id)
     m = Maintenance.get_by_id(maintenance_id)
     if not m:
         logger.info("[%s] Not found, skipping", maintenance_id)
