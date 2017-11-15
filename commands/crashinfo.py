@@ -50,8 +50,8 @@ class Command(BaseCommand):
 
     def handle_list(self):
         # Get last update timestamp
-        if os.path.exists(".hg/dirstate"):
-            uts = os.stat(".hg/dirstate")[stat.ST_MTIME]
+        if os.path.exists(".git/index"):
+            uts = os.stat(".git/index")[stat.ST_MTIME]
         else:
             uts = 0
         # Build list
