@@ -112,7 +112,8 @@ class CardRequestHandler(UIHandler):
                 for f in os.listdir(r):
                     if not f.endswith(".py"):
                         continue
-                    mn = "noc.%s.%s" % (
+                    mn = "%s.%s.%s" % (
+                        os.path.basename(config.path.custom_path),
                         r.replace("/", "."),
                         f[:-3]
                     )
