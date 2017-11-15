@@ -521,7 +521,7 @@ class ReportObjectDetailApplication(ExtApplication):
               "is_managed": BooleanParameter(required=False),
               "avail_status": BooleanParameter(required=False),
               "columns": StringParameter(required=False),
-              "format": StringParameter(choices=["csv", "xlsx"])})
+              "o_format": StringParameter(choices=["csv", "xlsx"])})
     def api_report(self, request, o_format, is_managed=None,
                    administrative_domain=None, selector=None,
                    segment=None, avail_status=False, columns=None):
