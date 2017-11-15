@@ -105,7 +105,7 @@ class CardRequestHandler(UIHandler):
             cls.CARDS = {}
             custom_path = os.path.join(config.path.custom_path, "services/card/cards")
             for r in [custom_path, "services/card/cards"]:
-                if not os.path.exists(r):
+                if not os.path.isdir(r):
                     continue
                 if r.startswith(".."):
                     r = r.replace(config.path.custom_path, "")[1:]

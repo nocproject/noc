@@ -39,7 +39,7 @@ class Command(BaseCommand):
     def handle_list(self, *args, **options):
         fixes = set()
         for d in self.FIX_DIRS:
-            if not os.path.exists(d):
+            if not os.path.isdir(d):
                 continue
             files = os.listdir(d)
             if "__init__.py" not in files:
