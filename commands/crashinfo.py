@@ -67,9 +67,12 @@ class Command(BaseCommand):
             service = data["process"]
             if service.startswith("services/") and service.endswith("/service.py"):
                 service = service[9:-11]
-            x = str(data["traceback"].splitlines()[5])
-            if x.startswith("EXCEPTION: "):
-                x = x[11:]
+            x = "Unknown exception"
+            for xline in data["traceback"].splitlines()[:7]:
+                sl = str(xline)
+                if sl.startswith("EXCEPTION: "):
+                    x = sl[11:]
+                    break
             x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
             x = unicode(x)[:100].encode("utf-8")
             fl += [{
