@@ -299,5 +299,6 @@ class JSONObject(object):
     def get_access_preference(self):
         return self.access_preference
 
+
 if __name__ == "__main__":
     Command().run()
