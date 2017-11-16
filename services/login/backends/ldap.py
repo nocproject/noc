@@ -198,7 +198,7 @@ class LdapBackend(BaseAuthBackend):
             }
         else:
             kwargs = {
-                "user": user
+                "user": "uid=%s,%s" % (user, ldap_domain.get_user_search_dn())
             }
         kwargs["password"] = password
         return kwargs
@@ -210,10 +210,11 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             return user_info
         usf = ldap_domain.get_user_search_filter() % {"user": user}
+        user_search_dn = ldap_domain.get_user_search_dn()
         self.logger.debug("User search from %s: %s",
-                          ldap_domain.root, usf)
+                          user_search_dn, usf)
         connection.search(
-            ldap_domain.root,
+            user_search_dn,
             ldap_domain.get_user_search_filter() % {"user": user},
             ldap3.SUBTREE,
             attributes=ldap_domain.get_user_search_attributes()
@@ -243,11 +244,12 @@ class LdapBackend(BaseAuthBackend):
         if not connection:
             self.logger.debug("No active connection")
             return []
+        group_search_dn = ldap_domain.get_group_search_dn()
         gsf = ldap_domain.get_group_search_filter() % user_info
         self.logger.debug("Group search from %s: %s",
-                          ldap_domain.root, gsf)
+                          group_search_dn, gsf)
         connection.search(
-            ldap_domain.root,
+            group_search_dn,
             gsf,
             ldap3.SUBTREE,
             attributes=["cn"]
