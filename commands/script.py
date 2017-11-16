@@ -279,7 +279,7 @@ class JSONObject(object):
         self.caps = data.get("caps")
         self.remote_path = None
         self.to_raise_privileges = data.get("raise_privileges", True)
-        self.access_preference = data.get("access_preference", "SC")
+        self.access_preference = data.get("access_preference", "CS")
         self.pool = PoolStub("default")
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
@@ -295,6 +295,9 @@ class JSONObject(object):
 
     def get_caps(self):
         return self.caps
+
+    def get_access_preference(self):
+        return self.access_preference
 
 
 if __name__ == "__main__":
