@@ -98,7 +98,7 @@ class AuthLDAPDomain(Document):
     sync_mail = BooleanField(default=False)
 
     DEFAULT_USER_SEARCH_FILTER = {
-        "ldap": "(&(objectClass=posixUser)(uid=%(user)s))",
+        "ldap": "(&(objectClass=posixAccount)(uid=%(user)s))",
         "ad": "(samAccountName=%(user)s)"
     }
 
