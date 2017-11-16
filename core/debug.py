@@ -196,7 +196,7 @@ def format_frames(frames, reverse=config.traceback.reverse):
                     pv = unicode(repr(v), "utf-8")
                     if len(pv) > 72:
                         pv = u"\n" + pprint.pformat(v)
-                except:
+                except:  # noqa
                     pv = u"repr() failed"
                 r += [u"%20s = %s" % (n, pv)]
         else:
@@ -233,8 +233,8 @@ def get_traceback(reverse=config.traceback.reverse, fp=None):
     t, v, tb = sys.exc_info()
     try:
         check_fatal_errors(t, v)
-    except:
-        pass  # Ignore exceptions
+    except:  # noqa
+        pass  # noqa Ignore exceptions
     now = datetime.datetime.now()
     r = [
         "UNHANDLED EXCEPTION (%s)" % str(now),
@@ -244,7 +244,7 @@ def get_traceback(reverse=config.traceback.reverse, fp=None):
     if version.branch:
         r += [
             "BRANCH: %s CHANGESET: %s" % (version.branch, version.changeset)
-    ]
+        ]
     if fp:
         r += ["ERROR FINGERPRINT: %s" % fp]
     r += [
