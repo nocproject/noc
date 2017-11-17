@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ class Script(BaseScript):
 
     ##
     ## Catalyst 2960/3560/3750/3750ME/3120 on IOS SE
+    ## Catalyst 2900 on IOS E
     ## Catalyst 2960 on IOS FX
     ## Catalyst 2950 on IOS EA
     ## Catalyst 3850 on IOS EX
@@ -31,7 +32,7 @@ class Script(BaseScript):
         r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY|WC")
+    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY|E|WC")
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
