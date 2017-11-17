@@ -55,7 +55,7 @@ class Script(BaseScript):
 		    else:
 			neigh["remote_port"] = v[5].rstrip("\x00")
 		    neigh["remote_system_name"] = v[7].rstrip("\x00")
-		    neigh["remote_capabilities"] = ("%x" % ord(v[8][0]))
+		    neigh["remote_capabilities"] = (struct.unpack("h", v[8])[0])/32
                     r += [{
                         "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
                         "neighbors": [neigh]
