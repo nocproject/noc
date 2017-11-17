@@ -44,16 +44,18 @@ class Script(BaseScript):
                                            "1.0.8802.1.1.2.1.4.1.1.7",
                                            "1.0.8802.1.1.2.1.4.1.1.8",
                                            "1.0.8802.1.1.2.1.4.1.1.9",
+					   "1.0.8802.1.1.2.1.4.1.1.12"
                                            ], bulk=True):
                 if v[7]:
                     neigh = dict(zip(neighb, v[2:]))
                     if neigh["remote_chassis_id_subtype"] == 4:
                         neigh["remote_chassis_id"] = MAC(":".join(["%02x" % ord(c) for c in v[3]]))
-		    v[5] = v[5].rstrip("\x00")
 		    if neigh["remote_port_subtype"] == 3:
-		        neigh["remote_port"] = ":".join(["%02x" % ord(c) for c in v[5]])
-		    v[7] = v[7].rstrip("\x00")
-		    neigh["remote_capabilities"] = (["%02x" % ord(x) for x in v[7]])[0]
+		        neigh["remote_port"] = MAC(":".join(["%02x" % ord(c) for c in v[5]]))
+		    else:
+			neigh["remote_port"] = v[5].rstrip("\x00")
+		    neigh["remote_system_name"] = v[7].rstrip("\x00")
+		    neigh["remote_capabilities"] = ("%x" % ord(v[8][0]))
                     r += [{
                         "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
                         "neighbors": [neigh]
