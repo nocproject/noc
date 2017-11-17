@@ -57,7 +57,7 @@ class FIASParser(AddressParser):
         if not os.path.isfile(os.path.join(self.prefix, "ADDROBJ.DBF")):
             self.error("FIAS database not found")
             self.error("Please download full DBF version")
-            self.error("from http://fias.nalog.ru/Public/DownloadPage.aspx")
+            self.error("from https://fias.nalog.ru/Updates.aspx")
             self.error("and unpack it to %s directory" % self.prefix)
             return False
         return True
@@ -231,6 +231,7 @@ class FIASParser(AddressParser):
         """
         Refine OKTMO by OKATO
         """
+        oktmo = oktmo.strip()
         if (okato and len(oktmo) == 8 and len(okato) == 11 and
                 okato[-3:] != "000"):
             o = self.okato.get(okato)
@@ -427,6 +428,7 @@ class FIASParser(AddressParser):
         self.load_oktmo()
         self.sync_buildings()
         self.update_levels()
+
 
 #
 OKTMO = namedtuple("OKTMO", ["okato", "oktmo", "name", "parent"])
