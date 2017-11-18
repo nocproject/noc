@@ -22,6 +22,7 @@ if config.features.pypy:
 else:
     from psycopg2.pool import ThreadedConnectionPool
 
+
 class SAEService(Service):
     name = "sae"
     api = [SAEAPI]
@@ -66,6 +67,7 @@ class SAEService(Service):
             yield connect
         finally:
             self.pg_pool.putconn(connect)
+
 
 if __name__ == "__main__":
     SAEService().start()
