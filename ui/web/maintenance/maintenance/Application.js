@@ -94,7 +94,7 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                         {
                             name: "start_date",
                             xtype: "datefield",
-                            // startDay: 1,
+                            startDay: 1,
                             fieldLabel: __("Start"),
                             allowBlank: false,
                             format: "d.m.Y"
@@ -116,7 +116,7 @@ Ext.define("NOC.maintenance.maintenance.Application", {
                         {
                             name: "stop_date",
                             xtype: "datefield",
-                            // startDay: 1,
+                            startDay: 1,
                             fieldLabel: __("Stop"),
                             allowBlank: false,
                             format: "d.m.Y"
