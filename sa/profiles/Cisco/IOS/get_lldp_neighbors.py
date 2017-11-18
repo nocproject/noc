@@ -74,6 +74,7 @@ class Script(BaseScript):
             remote_port_subtype = 1
             if is_ipv4(remote_port):
                 # Actually networkAddress(4)
+                remote_port = IPv4Parameter.clean(remote_port)
                 remote_port_subtype = 4
             elif is_mac(remote_port):
                 # Actually macAddress(3)
