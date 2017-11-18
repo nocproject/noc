@@ -953,21 +953,23 @@ Ext.define('NOC.fm.alarm.Application', {
     //
     pollingTask: function() {
         var me = this;
-        // Check for new alarms and play sound
-        me.checkNewAlarms();
-        // Poll only application tab is visible
-        if(!me.isActiveApp()) {
-            return;
-        }
-        // Poll only when in grid preview
-        // if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
-        //     return;
-        // }
-        // Poll only if polling is not locked
-        if(!me.isPollLocked()) {
-            me.store.load();
-            if(me.recentShow.down('#combo').getValue()) {
-                me.recentStore.load();
+        if(!Visibility.hidden()) {
+            // Check for new alarms and play sound
+            me.checkNewAlarms();
+            // Poll only application tab is visible
+            if (!me.isActiveApp()) {
+                return;
+            }
+            // Poll only when in grid preview
+            // if(me.getLayout().getActiveItem().itemId !== 'grid-panel') {
+            //     return;
+            // }
+            // Poll only if polling is not locked
+            if (!me.isPollLocked()) {
+                me.store.load();
+                if (me.recentShow.down('#combo').getValue()) {
+                    me.recentStore.load();
+                }
             }
         }
     },
