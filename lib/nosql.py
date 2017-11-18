@@ -30,8 +30,9 @@ TIMEOUT = config.mongo.timeout
 
 for i in range(RETRIES):
     try:
-        ca = config.mongo_connection_args
+        ca = config.mongo_connection_args.copy()
         if ca.get("password"):
+            ca["host"] = ca["host"].replace(ca["password"], "********")
             ca["password"] = "********"
         logger.info("Connecting to MongoDB %s", ca)
         connect(**config.mongo_connection_args)
