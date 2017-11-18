@@ -82,7 +82,7 @@ class Command(BaseCommand):
             for p in parsers:
                 print("Syncing", p.name)
                 p.sync()
-        except:
+        except Exception:
             error_report()
 
 
