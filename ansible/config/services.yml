@@ -270,10 +270,11 @@ config:
       description: "Is provided certificate is trusted by nodes?"
       type: bool
   noc:
-    config:
-      type: text
-      label: "Settings"
-      description: "<strong> <a href=https://kb.nocproject.org/x/8oKYAQ target=_blank> Doc in russian</a> </strong>"
+    python_interpreter:
+      default: python
+      label: Interpreter
+      description: Python interpreter eighter python or pypy. Do not change until you know what are you doing.
+      type: str
   nsqd:
     max_messages_in_memory:
       default: 10000

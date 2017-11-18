@@ -43,8 +43,8 @@
 - name: Include {{install_method}} install method
   include: "{{install_method}}.yml"
 
-- name: Include venv init
-  include: "init_venv.yml"
+- name: Include venv init for {{python_interpreter}}
+  include: "init_venv_{{python_interpreter}}.yml"
 
 - name: Include requirements install
   include: "requirements.yml"

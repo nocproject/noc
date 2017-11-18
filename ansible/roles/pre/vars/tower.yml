@@ -87,3 +87,5 @@ alerta_token: "{% if groups['svc-zz_alerta'] | count > 0 -%}
 haproxy_stats_enabled: "{{noc_config['config'].get('haproxy-global-%s' % ansible_nodename, {}).get('stats', False)}}"
 haproxy_stats_user: "{{noc_config['config'].get('haproxy-global-%s' % ansible_nodename, {}).get('user', 'noc')}}"
 haproxy_stats_password: "{{noc_config['config'].get('haproxy-global-%s' % ansible_nodename, {}).get('password', 'noc')}}"
+
+python_interpreter: "{{noc_config['config'].get('noc-global-%s' % ansible_nodename, {}).get('python_interpreter', 'python')}}"
