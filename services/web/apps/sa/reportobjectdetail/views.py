@@ -682,9 +682,9 @@ class ReportObjectDetailApplication(ExtApplication):
                 attr_resolv[mo][0],
                 # Profile
                 moss[4],
-                attr_resolv[mo][1] if attr else "",
-                attr_resolv[mo][2] if attr else "",
-                attr_resolv[mo][3] if attr else "",
+                attr_resolv[mo][1] if attr_resolv else "",
+                attr_resolv[mo][2] if attr_resolv else "",
+                attr_resolv[mo][3] if attr_resolv else "",
                 # Serial
                 attr[mo][0] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
                 _("Yes") if avail.get(mo, None) else _("No"),
