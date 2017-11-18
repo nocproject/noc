@@ -228,19 +228,19 @@ class Command(BaseCommand):
             return sum(1 for c in s if c == q)
 
         r = []
-        for l in data.splitlines():
-            if csym in l:
+        for ll in data.splitlines():
+            if csym in ll:
                 # Detect csym is not within string
                 i = -1
                 while True:
-                    i = l.find(csym, i + 1)
+                    i = ll.find(csym, i + 1)
                     if i == -1:
                         break
-                    if nq(l[:i]) % 2 == 0:
+                    if nq(ll[:i]) % 2 == 0:
                         # Strip comment
-                        l = l[:i - 1] if i else ""
+                        ll = ll[:i - 1] if i else ""
                         break
-            r += [l.strip()]
+            r += [ll.strip()]
         return "\n".join(l for l in r if l)
 
     def merge_enclosed(self, data):
