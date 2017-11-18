@@ -100,7 +100,7 @@ def fetch(url, method="GET",
           password=None,
           content_encoding=None,
           eof_mark=None
-    ):
+          ):
     """
 
     :param url: Fetch URL
