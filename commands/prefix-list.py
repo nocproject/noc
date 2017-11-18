@@ -61,12 +61,12 @@ class Command(BaseCommand):
     def build_prefix_list(self, out, expression, name, profile):
         prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(expression)
         if profile is None:
-            l = "\n".join(p[0] for p in prefixes)
+            ll = "\n".join(p[0] for p in prefixes)
         else:
-            l = profile.get_profile(profile)().generate_prefix_list(name, prefixes)
-        if not l.endswith("\n"):
-            l += "\n"
-        out.write(l)
+            ll = profile.get_profile(profile)().generate_prefix_list(name, prefixes)
+        if not ll.endswith("\n"):
+            ll += "\n"
+        out.write(ll)
 
 
 if __name__ == "__main__":
