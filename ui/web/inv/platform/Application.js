@@ -106,6 +106,7 @@ Ext.define("NOC.inv.platform.Application", {
                         {
                             name: "start_of_sale",
                             xtype: "datefield",
+                            startDay: 1,
                             fieldLabel: __("Start of Sale"),
                             allowBlank: true,
                             uiStyle: "medium",
@@ -114,6 +115,7 @@ Ext.define("NOC.inv.platform.Application", {
                         {
                             name: "end_of_sale",
                             xtype: "datefield",
+                            startDay: 1,
                             fieldLabel: __("End of Sale"),
                             allowBlank: true,
                             uiStyle: "medium",
@@ -122,6 +124,7 @@ Ext.define("NOC.inv.platform.Application", {
                         {
                             name: "end_of_support",
                             xtype: "datefield",
+                            startDay: 1,
                             fieldLabel: __("End of Support"),
                             allowBlank: true,
                             uiStyle: "medium",
@@ -130,6 +133,7 @@ Ext.define("NOC.inv.platform.Application", {
                         {
                             name: "end_of_xsupport",
                             xtype: "datefield",
+                            startDay: 1,
                             fieldLabel: __("End of Extended Support"),
                             allowBlank: true,
                             uiStyle: "medium",
