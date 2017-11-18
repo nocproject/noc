@@ -11,7 +11,7 @@ from __future__ import print_function
 import csv
 import sys
 # NOC modules
-from noc.core.management.base import BaseCommand, CommandError
+from noc.core.management.base import BaseCommand
 from noc.core.scheduler.scheduler import Scheduler
 
 
@@ -56,7 +56,7 @@ class Command(BaseCommand):
             "Run", "ID", "Name", "Key", "Status", "Last Status",
             "Runs", "Last Run", "Last Duration",
             "Interval", "Failed Interval", "Offset"
-            ])
+        ])
 
     def format_json(self, job):
         print(job)
@@ -69,7 +69,7 @@ class Command(BaseCommand):
             job.get("last", ""), job.get("ldur", ""),
             s.get("interval", ""), s.get("failed_interval", ""),
             s.get("offset", "")
-            ])
+        ])
 
     def handle(self, *args, **options):
         action = options["action"] or "list"
