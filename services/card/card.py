@@ -22,6 +22,7 @@ from noc.services.card.cards.base import BaseCard
 from noc.core.debug import error_report
 from noc.main.models import User
 from noc.config import config
+from noc.core.debug import ErrorReport
 
 user_lock = Lock()
 
@@ -47,9 +48,12 @@ class CardRequestHandler(UIHandler):
             return None
 
     def get_current_user(self):
-        return self.get_user_by_name(
-            self.request.headers.get("Remote-User")
-        )
+        user = None
+        with ErrorReport():
+            user = self.get_user_by_name(
+                self.request.headers.get("Remote-User")
+            )
+        return user
 
     def get(self, card_type, card_id, *args, **kwargs):
         if not self.current_user:

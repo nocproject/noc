@@ -393,3 +393,19 @@ def BQ(s):
         return unicode(s)
     except UnicodeDecodeError:
         return "(%s)" % " ".join(["%02X" % ord(c) for c in s])
+
+
+class ErrorReport(object):
+    """
+    error_report context wrapper
+    """
+    def __init__(self, reverse=config.traceback.reverse, logger=logger):
+        self.reverse = reverse
+        self.logger = logger
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            error_report(self.reverse, self.logger)
