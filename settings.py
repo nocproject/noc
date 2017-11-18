@@ -11,6 +11,9 @@ import sys
 import os
 import logging
 from noc.config import config
+if config.features.pypy:
+    from psycopg2cffi import compat
+    compat.register()
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG

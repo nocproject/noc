@@ -20,7 +20,6 @@ import struct
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
-from http_parser.parser import HttpParser
 import cachetools
 import six
 # NOC modules
@@ -28,6 +27,11 @@ from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
 from .proxy import SYSTEM_PROXIES
 from noc.config import config
+
+if config.features.pypy:
+    from http_parser.pyparser import HttpParser
+else:
+    from http_parser.parser import HttpParser
 
 logger = logging.getLogger(__name__)
 
