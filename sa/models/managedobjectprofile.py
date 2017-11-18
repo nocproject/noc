@@ -23,6 +23,7 @@ from noc.lib.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
 from noc.core.model.decorator import on_save, on_init, on_delete_check
+from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
@@ -470,6 +471,10 @@ class ManagedObjectProfile(models.Model):
     def on_save(self):
         box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
         periodic_changed = self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery
+        access_changed = (
+            (self.initial_data["access_preference"] != self.access_preference) or
+            (self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy)
+        )
 
         if box_changed or periodic_changed:
             call_later(
@@ -492,6 +497,11 @@ class ManagedObjectProfile(models.Model):
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
+        if access_changed:
+            cache.delete_many([
+                "cred-%s" % x
+                for x in self.managedobject_set.values_list("id", flat=True)
+            ])
 
     def can_escalate(self, depended=False):
         """
