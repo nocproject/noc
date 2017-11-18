@@ -257,12 +257,12 @@ class FIASParser(AddressParser):
             if not match:
                 print r
                 raise ValueError("Invalid number: '%s'" % s)
-            n, l = match.groups()
+            n, ll = match.groups()
             if not n:
                 n = None
-            if not l:
-                l = None
-            return n, l
+            if not ll:
+                ll = None
+            return n, ll
 
         def split_num2(s):
             s = nq(s)
@@ -280,10 +280,10 @@ class FIASParser(AddressParser):
                 n2 = n2[1:]  # strip /
             else:
                 n2 = None
-            l = l1 or l2
-            if not l:
-                l = None
-            return n, n2, l
+            ll = l1 or l2
+            if not ll:
+                ll = None
+            return n, n2, ll
 
         houses = get_db()["noc.cache.fias.houses"]
         houses.drop()
