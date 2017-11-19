@@ -219,7 +219,7 @@ def ranges_to_list(s, splitter=","):
         try:
             r += [int(p)]
             continue
-        except:
+        except ValueError:
             pass
         match = rx_range.match(p)
         if not match:
