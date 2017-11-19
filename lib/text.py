@@ -486,5 +486,5 @@ def safe_shadow(text):
         return "******"
 
 
-def ch_rogue_replace(s):
+def ch_escape(s):
     return s.replace("\n", "\\n").replace("\t", "\\t").replace("\\", "\\\\")
