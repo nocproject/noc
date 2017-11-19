@@ -72,7 +72,7 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                     # calculate spaces between column
                     column_spaces.append((c, x + len(match.group(1))))
                     c = x + len(match.group(1)) + len(
-                                    match.group(2))
+                        match.group(2))
                 x += match.end()
                 l = l[match.end():]
             if max_width and columns[-1][-1] < max_width:
@@ -110,6 +110,7 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     else:
         return r
 
+
 #
 # Convert HTML to plain text
 #
@@ -119,7 +120,7 @@ rx_html_tags = re.compile("</?[^>+]+>", re.MULTILINE | re.DOTALL)
 def strip_html_tags(s):
     t = rx_html_tags.sub("", s)
     for k, v in [("&nbsp;", " "), ("&lt;", "<"), ("&gt;", ">"),
-        ("&amp;", "&")]:
+                 ("&amp;", "&")]:
         t = t.replace(k, v)
     return t
 
@@ -134,14 +135,14 @@ def xml_to_table(s, root, row):
     """
     # Detect root element
     match = re.search(r"<%s>(.*)</%s>" % (root, root), s,
-        re.DOTALL | re.IGNORECASE)
+                      re.DOTALL | re.IGNORECASE)
     if not match:
         return []
     s = match.group(1)
     row_re = re.compile(r"<%s>(.*?)</%s>" % (row, row),
-        re.DOTALL | re.IGNORECASE)
+                        re.DOTALL | re.IGNORECASE)
     item_re = re.compile(r"<([^\]+])>(.*?)</\1>",
-        re.DOTALL | re.IGNORECASE)
+                         re.DOTALL | re.IGNORECASE)
     r = []
     for m in [x for x in row_re.split(s) if x]:
         data = item_re.findall(m)
@@ -191,6 +192,7 @@ def list_to_ranges(s):
     if last_start is not None:
         r += [f()]
     return ",".join(r)
+
 
 #
 # Convert range string to a list of integers
@@ -324,6 +326,7 @@ def split_alnum(s):
             r[-1] += c
     return [convert(x) for x in r]
 
+
 rx_notspace = re.compile(r"^\S+")
 
 
@@ -383,6 +386,7 @@ def str_dict(d):
     :rtype: str
     """
     return ", ".join("%s=%s" % (k, d[k]) for k in d)
+
 
 rx_safe_path = re.compile("[^a-z0-9\-\+]+", re.IGNORECASE)
 
