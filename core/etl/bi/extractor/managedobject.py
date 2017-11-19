@@ -23,8 +23,6 @@ from noc.sa.models.objectcapabilities import ObjectCapabilities
 
 class ManagedObjectsExtractor(BaseExtractor):
     name = "managedobjects"
-    extract_delay = 1
-    clean_delay = 1
     is_snapshot = True
 
     # Caps to field mapping
