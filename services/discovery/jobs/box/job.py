@@ -69,7 +69,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 ProfileCheck(self).run()
             if has_cli and self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestCLICheck(self).run()
-                if self.object.auth_profile.enable_suggest:
+                if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                     # Still suggest
                     self.logger.info(
                         "Cannot choose valid credentials. Stopping"
