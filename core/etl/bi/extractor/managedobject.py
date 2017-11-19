@@ -8,13 +8,13 @@
 
 # Python modules
 import datetime
+from noc.lib.text import ch_rogue_replace
 from collections import defaultdict
 # NOC modules
 from base import BaseExtractor
 from noc.sa.models.managedobject import ManagedObject
 from noc.bi.models.managedobjects import ManagedObject as ManagedObjectBI
 from noc.core.etl.bi.stream import Stream
-from noc.config import config
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.capability import Capability
@@ -23,8 +23,8 @@ from noc.sa.models.objectcapabilities import ObjectCapabilities
 
 class ManagedObjectsExtractor(BaseExtractor):
     name = "managedobjects"
-    extract_delay = config.bi.extract_delay_alarms
-    clean_delay = config.bi.clean_delay_alarms
+    extract_delay = 1
+    clean_delay = 1
     is_snapshot = True
 
     # Caps to field mapping
@@ -68,7 +68,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "vendor": mo.vendor,
                 "platform": mo.platform,
                 "version": mo.version,
-                "name": mo.name,
+                "name": ch_rogue_replace(mo.name),
                 "address": mo.address,
                 "is_managed": mo.is_managed,
                 # subscribers
@@ -101,7 +101,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 t[o] += 1
                 neighbors[o].update(linked)
         return dict((o, {
-            "n_neighbors": neighbors[o],
+            "n_neighbors": len(neighbors[o]),
             "n_links": t[o],
             "nri_links": r[o, "nri"],
             "mac_links": r[o, "mac"],
