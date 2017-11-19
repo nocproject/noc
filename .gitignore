@@ -39,10 +39,11 @@ speedup/*.so
 ui/bi/**
 ui/bi2/**
 collections/
-include/ # pypy
-lib/*.so #pypy
-lib-python/ #pypy
-lib_pypy/ #pypy
-site-packages/ #pypy
-lib/tcl/ #pypy
-lib/tk/ #pypy
+include
+lib/*.so.*
+lib/*.so
+lib-python/
+lib_pypy/
+site-packages/
+lib/tcl/
+lib/tk/
