@@ -6,6 +6,7 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import re
+import six
 
 #
 # Parse string containing table an return a list of table rows.
@@ -452,3 +453,30 @@ def clean_number(n):
     :return:
     """
     return rx_non_numbers.sub("", n)
+
+
+def safe_shadow(text):
+    """
+    Shadow string to first and last char
+    :param text:
+    :return:
+
+    >>> safe_shadow(None)
+    'None'
+    >>>safe_shadow("s")
+    '******'
+    >>>safe_shadow("sssssss")
+    's******s'
+    >>> safe_shadow(1)
+    '******'
+    >>> safe_shadow([1, 2])
+    '******'
+     """
+    if not text:
+        return "None"
+    elif not isinstance(text, six.string_types):
+        return "******"
+    elif len(text) > 2:
+        return "%s******%s" % (text[0], text[-1])
+    else:
+        return "******"

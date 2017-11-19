@@ -9,6 +9,7 @@
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import open_sync_rpc, RPCError
+from noc.lib.text import safe_shadow
 
 
 class SuggestCLICheck(DiscoveryCheck):
@@ -46,7 +47,8 @@ class SuggestCLICheck(DiscoveryCheck):
         )
 
     def check_login(self, user, password, super_password):
-        self.logger.info("Checking %s/%s/%s", user, password, super_password)
+        self.logger.debug("Checking %s/%s/%s", user, password, super_password)
+        self.logger.info("Checking %s/%s/%s", safe_shadow(user), safe_shadow(password), safe_shadow(super_password))
         try:
             r = open_sync_rpc(
                 "activator",
