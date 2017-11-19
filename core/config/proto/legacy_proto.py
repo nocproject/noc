@@ -174,7 +174,7 @@ class LegacyProtocol(BaseProtocol):
                     v
                 )
             if 'features.pypy' in new_key:
-                if 'pypy' in v:
+                if v and 'pypy' in v:
                     self.config.set_parameter(
                         new_key,
                         True
