@@ -8,7 +8,7 @@
 
 # Python modules
 import datetime
-from noc.lib.text import ch_rogue_replace
+from noc.lib.text import ch_escape
 from collections import defaultdict
 # NOC modules
 from base import BaseExtractor
@@ -68,7 +68,7 @@ class ManagedObjectsExtractor(BaseExtractor):
                 "vendor": mo.vendor,
                 "platform": mo.platform,
                 "version": mo.version,
-                "name": ch_rogue_replace(mo.name),
+                "name": ch_escape(mo.name),
                 "address": mo.address,
                 "is_managed": mo.is_managed,
                 # subscribers
