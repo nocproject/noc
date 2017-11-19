@@ -38,6 +38,7 @@ class LegacyProtocol(BaseProtocol):
         ("noc.ch_user", "clickhouse.rw_user"),
         ("noc.ch_password", "clickhouse.rw_password"),
         ("noc.ch_ro_password", "clickhouse.ro_password"),
+        ("noc-global-%(node)s.python_interpreter", "features.pypy"),
 
         # Activator
         ("activator.script_threads", "activator.script_threads"),
@@ -172,3 +173,9 @@ class LegacyProtocol(BaseProtocol):
                     new_key,
                     v
                 )
+            if 'features.pypy' in new_key:
+                if 'pypy' in v:
+                    self.config.set_parameter(
+                        new_key,
+                        True
+                    )
