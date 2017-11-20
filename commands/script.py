@@ -95,13 +95,11 @@ class Command(BaseCommand):
         if access_preference:
             credentials["access_preference"] = access_preference
         # Get version info
-        v = obj.version
-        p = obj.platform
-        if v:
+        if obj.version:
             version = {
-                "vendor": v.vendor.name,
-                "platform": p.name,
-                "version": v.version if v else None
+                "vendor": obj.vendor.name if obj.vendor else None,
+                "platform": obj.platform.name if obj.platform else None,
+                "version": obj.version.version if obj.version else None
             }
         else:
             version = None
