@@ -7,21 +7,27 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from optparse import make_option
+from __future__ import print_function
 import csv
 import sys
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
+import argparse
 # NOC modules
+from noc.core.management.base import BaseCommand, CommandError
 from noc.gis.models.division import Division
 
 
 class Command(BaseCommand):
     help = "Dump address database"
 
-    option_list = BaseCommand.option_list + (
-        make_option("-c", "--country", dest="countries", action="append"),
-    )
+    def add_arguments(self, parser):
+        # parser.add_argument("-c", "--country",
+        #                     dest="countries",
+        #                     action="append")
+        parser.add_argument(
+            "countries",
+            nargs=argparse.REMAINDER,
+            help="List of dumped countries"
+        )
 
     HEADERS = {
         "ru": ["RU_OKATO", "RU_OKTMO", "RU_KLADR", "RU_FIAS_HOUSEGUID"]
@@ -66,7 +72,9 @@ class Command(BaseCommand):
             self.dump_division(writer, c, ctr, level)
 
     def handle(self, *args, **options):
-        ctr = options["countries"] or []
+        ctr = options.get("countries", [])
+        print(ctr)
+        print(options)
         # Check countries
         for c in ctr:
             if c not in self.HEADERS or c not in self.DATA:
@@ -86,3 +94,7 @@ class Command(BaseCommand):
         writer.writerow(header)
         for d in Division.get_top():
             self.dump_division(writer, d, ctr, [])
+
+
+if __name__ == "__main__":
+    Command().run()
