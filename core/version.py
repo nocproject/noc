@@ -108,11 +108,11 @@ class Version(object):
             if os.path.exists("/etc/os-release"):
                 vdata = {}
                 with open("/etc/os-release") as f:
-                    for l in f:
-                        if "=" not in l:
+                    for line in f:
+                        if "=" not in line:
                             continue
-                        l = l.strip()
-                        k, v = l.split("=", 1)
+                        line = line.strip()
+                        k, v = line.split("=", 1)
                         if v.startswith("\"") and v.endswith("\""):
                             v = v[1:-1]
                         vdata[k] = v
@@ -155,6 +155,7 @@ class Version(object):
         return {
             "Python": self.python_version
         }
+
 
 # Singleton instance
 version = Version()
