@@ -24,7 +24,8 @@ class Profile(BaseProfile):
         (r"\? \[yes,no\] .*?", "y\n")
     ]
     pattern_syntax_error = \
-        r"^(\'\S+\' is ambiguous\.|syntax error|unknown command\.)"
+        r"\'\S+\' is ambiguous\.|syntax error, expecting|" \
+        r"unknown command\."
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"

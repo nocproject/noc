@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_vlans
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,4 +20,8 @@ class Script(BaseScript):
     rx_vlan_line = re.compile(r"^(?P<name>\S+)\s+(?P<vlan_id>\d+)\s+")
 
     def execute(self):
+        try:
+            self.cli("show vlan")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
         return self.cli("show vlan brief", list_re=self.rx_vlan_line)
