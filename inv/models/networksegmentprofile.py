@@ -38,6 +38,7 @@ class SegmentTopologySettings(EmbeddedDocument):
             ("lacp", "LACP"),
             ("lldp", "LLDP"),
             ("oam", "OAM"),
+            ("rep", "REP"),
             ("stp", "STP"),
             ("udld", "UDLD"),
             ("fdp", "FDP"),
