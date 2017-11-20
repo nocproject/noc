@@ -294,9 +294,9 @@ class Script(BaseScript):
             for vrf in set(imap.get(si["name"], "default") for si in subs):
                 c = i.copy()
                 c["subinterfaces"] = [
-                    si for si in subs
+                    si for si in subs  # noqa
                     if imap.get(si["name"], "default") == vrf
-                ]  # noqa
+                ]
                 vrfs[vrf]["interfaces"] += [c]
         return vrfs.values()
 
