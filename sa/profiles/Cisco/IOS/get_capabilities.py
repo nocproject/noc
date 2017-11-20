@@ -136,7 +136,19 @@ class Script(BaseScript):
         r = self.cli("show lacp counters")
         return r
 
+    @false_on_cli_error
+    def has_rep_cli(self):
+        """
+        Check REP status
+        :return:
+        """
+        r = self.cli("show rep topology")
+        return bool(r)
+
     def execute_platform_cli(self, caps):
+        # Check REP Proto
+        if self.has_rep_cli():
+            caps["Cisco | REP"] = True
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
         if sla_v is not None:

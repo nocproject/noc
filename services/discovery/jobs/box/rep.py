@@ -17,7 +17,7 @@ class REPCheck(TopologyDiscoveryCheck):
     """
     name = "rep"
     required_script = "get_rep_neighbors"
-    required_capabilities = ["Network | REP"]
+    required_capabilities = ["Cisco | REP"]
     own_mac_cache = {}
     own_macs = None  # [(first_mac, last_mac), ...]
 
