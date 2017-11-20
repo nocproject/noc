@@ -484,3 +484,7 @@ def safe_shadow(text):
         return "%s******%s" % (text[0], text[-1])
     else:
         return "******"
+
+
+def ch_escape(s):
+    return s.replace("\n", "\\n").replace("\t", "\\t").replace("\\", "\\\\")
