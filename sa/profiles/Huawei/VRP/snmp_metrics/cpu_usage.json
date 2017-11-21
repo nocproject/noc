@@ -1,5 +1,33 @@
 {
   "$metric": "CPU | Usage",
-  "$type": "oid",
-  "oid": "1.3.6.1.4.1.2011.2.23.1.18.1.3.0"
+  "$type": "match",
+  "matchers": {
+    "is_5328": {
+      "platform": {
+        "$regex": "5328"
+            }
+        },
+    "is_2328": {
+      "platform": {
+        "$regex": "2328"
+            }
+        }
+    },
+  "$match": [{
+    "$match": "is_2328",
+    "oid": "1.3.6.1.4.1.2011.2.23.1.18.1.3.0",
+    "path": ["","","", "Current_Load"],
+    "$type": "oid",
+    "type": "gauge",
+    "scale": 1
+  },{
+    "$match": "is_5328",
+    "$type": "slot",
+    "oid": "1.3.6.1.4.1.2011.6.3.4.1.2.{{ hwSlotIndex }}"
+   },{
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.2011.6.3.4.1.3.0.0.0",
+    "type": "gauge",
+    "scale": 1
+  }]
 }
