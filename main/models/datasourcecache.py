@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import sys
 import logging
 import datetime
 import bz2
@@ -58,7 +57,7 @@ class DataSourceCache(Document):
     def set_data(cls, name, data, ttl):
         # Compressed size: 17425159
         data = cls.encode(data)
-        size = sys.getsizeof(data)
+        size = len(data)
         if size > MAX_DATA_SIZE:
             logger.warning("[%s] Compressed size data: %s over max size %s" % (name, size, MAX_DATA_SIZE))
         else:
