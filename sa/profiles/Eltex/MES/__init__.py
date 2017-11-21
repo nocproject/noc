@@ -29,7 +29,9 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
-    pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)#"
+    pattern_prompt = \
+        r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\,\(\)\/]+)?" \
+        r"(?:\(config[^\)]*\))?#"
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     INTERFACE_TYPES = {
