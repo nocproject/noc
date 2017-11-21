@@ -16,7 +16,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 class Script(BaseScript):
 
-    name = "Nateks.netxpert.get_version"
+    name = "Nateks.NetXpert.get_version"
     cache = True
     interface = IGetVersion
 

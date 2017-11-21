@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 
 
 class Script(BaseScript):
-    name = "Eltex.MES.get_vlans"
+    name = "Planet.WGSD.get_vlans"
     interface = IGetVlans
 
     rx_vlan = re.compile(

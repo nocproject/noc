@@ -13,5 +13,5 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 
 class Script(BaseScript):
-    name = "Ruckus.SmartZone"
+    name = "Ruckus.SmartZone.get_config"
     interface = IGetConfig

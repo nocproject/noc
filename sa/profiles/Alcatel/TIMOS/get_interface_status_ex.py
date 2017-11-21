@@ -14,7 +14,7 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Generic.get_interface_status_ex"
+    name = "Alcatel.TIMOS.get_interface_status_ex"
     interface = IGetInterfaceStatusEx
     requires = []
 

@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
 class Script(BaseScript):
-    name = "Nateks.netxpert.get_fqdn"
+    name = "Nateks.NetXpert.get_fqdn"
     interface = IGetFQDN
 
     rx_hostname = re.compile(r"(?P<hostname>\S+) uptime is", re.MULTILINE)

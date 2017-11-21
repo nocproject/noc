@@ -1,12 +1,51 @@
-# # -*- coding: utf-8 -*-
-# # ---------------------------------------------------------------------
-# # Test sa scripts
-# # ---------------------------------------------------------------------
-# # Copyright (C) 2007-2015 The NOC Project
-# # See LICENSE for details
-# # ---------------------------------------------------------------------
-#
-# # Python modules
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Test sa scripts
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# Python modules
+import os
+# Third-party modules
+import pytest
+
+
+def get_script_modules():
+    r = []
+    for prefix in [os.path.join("sa", "profiles")]:
+        for root, dirs, files in os.walk(prefix, topdown=True):
+            for f in files:
+                if not f.endswith(".py") or f.startswith("_"):
+                    continue
+                r += ["noc.%s.%s" % (root.replace(os.sep, "."), f[:-3])]
+    return r
+
+
+@pytest.fixture(params=get_script_modules())
+def sa_script(request):
+    return request.param
+
+
+def test_script(sa_script):
+    # Test loading
+    m = __import__(sa_script, {}, {}, "Script")
+    assert m
+    # Test script has name
+    scls = m.Script
+    assert getattr(scls, "name"), "Script should has name"
+    # Test name
+    req_name = scls.__module__
+    if req_name.startswith("noc.sa.profiles."):
+        req_name = req_name[16:]
+    assert scls.name == req_name, "Script name mismatch"
+
+
+
+
+
+
 # import glob
 # import unittest2
 # import os

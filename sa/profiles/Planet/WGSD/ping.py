@@ -14,7 +14,7 @@ from noc.sa.interfaces.iping import IPing
 
 
 class Script(BaseScript):
-    name = "Eltex.MES.ping"
+    name = "Planet.WGSD.ping"
     interface = IPing
 
     rx_result = re.compile(

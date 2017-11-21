@@ -23,7 +23,7 @@ rx_ifc_br_status = re.compile(
 
 
 class Script(BaseScript):
-    name = "Huawei.VRP.get_interface_status"
+    name = "H3C.VRP.get_interface_status"
     interface = IGetInterfaceStatus
 
     def execute(self, interface=None):

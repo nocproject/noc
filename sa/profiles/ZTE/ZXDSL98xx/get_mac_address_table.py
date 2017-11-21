@@ -14,7 +14,7 @@ import re
 
 
 class Script(BaseScript):
-    name = "ZTE.ZXDSL98xx..get_mac_address_table"
+    name = "ZTE.ZXDSL98xx.get_mac_address_table"
     interface = IGetMACAddressTable
 
     rx_line = re.compile(

@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 
 class Script(BaseScript):
-    name = "Eltex.MES.get_interface_status"
+    name = "Planet.WGSD.get_interface_status"
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(

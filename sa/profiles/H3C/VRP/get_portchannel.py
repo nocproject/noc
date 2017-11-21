@@ -14,10 +14,9 @@ from noc.sa.interfaces.igetportchannel import IGetPortchannel
 
 
 class Script(BaseScript):
-    name = "Huawei.VRP.get_portchannel"
+    name = "H3C.VRP.get_portchannel"
     interface = IGetPortchannel
 
     def execute(self):
-        r = self.cli("display link-aggregation summary")
-        self.logger.error("Not implemented properly yet")
-        return []
+        raise self.NotSupportedError()
+        #r = self.cli("display link-aggregation summary")

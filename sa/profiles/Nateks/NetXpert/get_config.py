@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 
 class Script(BaseScript):
 
-    name = "Nateks.netxpert.get_config"
+    name = "Nateks.NetXpert.get_config"
     interface = IGetConfig
 
     def execute(self):

@@ -18,7 +18,7 @@ from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
-    name = "Generic.SNMP.get_interfaces"
+    name = "Generic.get_interfaces"
     cache = True
     interface = IGetInterfaces
 
