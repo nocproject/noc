@@ -37,8 +37,10 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
                     # ifOperStatus up(1)
-                    if (interface and
-                                interface == self.profile.convert_interface_name(n)):
+                    if (
+                        interface and
+                        interface == self.profile.convert_interface_name(n)
+                    ):
                         return [{"interface": n, "status": int(s) == 1}]
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r
@@ -46,18 +48,22 @@ class Script(BaseScript):
                 pass
         # Fallback to CLI
         r = []
-        ##
-        ## VRP3 style
-        ##
+        #
+        # VRP3 style
+        #
         if self.match_version(version__startswith="3."):
             for l in self.cli("display interface").splitlines():
-                if (l.find(" current state :") != -1 \
-                and l.find("Line protocol ") == -1):
+                if (
+                    l.find(" current state :") != -1 and
+                    l.find("Line protocol ") == -1
+                ):
                     match_int = rx_ifc_status.match(l)
                     if match_int:
                         iface = match_int.group("interface")
-                        if (interface and
-                                    interface == self.profile.convert_interface_name(iface)):
+                        if (
+                            interface and
+                            interface == self.profile.convert_interface_name(iface)
+                        ):
                             return [{
                                 "interface": iface,
                                 "status": match_int.group("status").lower() == "up"
@@ -66,9 +72,9 @@ class Script(BaseScript):
                             "interface": iface,
                             "status": match_int.group("status").lower() == "up"
                         }]
-        ##
-        ## Other (VRP5 style)
-        ##
+        #
+        # Other (VRP5 style)
+        #
         else:
             cli = self.cli("display interface brief", cached=True)
             match = rx_ifc_block.search(cli)
@@ -77,8 +83,10 @@ class Script(BaseScript):
                     match_int = rx_ifc_br_status.match(l)
                     if match_int:
                         iface = match_int.group("interface")
-                        if (interface and
-                                    interface == self.profile.convert_interface_name(iface)):
+                        if (
+                            interface and
+                            interface == self.profile.convert_interface_name(iface)
+                        ):
                             return [{
                                 "interface": iface,
                                 "status": match_int.group("status").lower() == "up"
