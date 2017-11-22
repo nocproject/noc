@@ -1,31 +1,29 @@
-__author__ = 'FeNikS'
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Harmonic.bNSG9000.get_config
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2015 The NOC Project
 # See LICENSE for details
+# __author__ = 'FeNikS'
 # ---------------------------------------------------------------------
 
 # Python modules
-import urllib2
-from xml.dom.minidom import parseString
 import re
-# NOC modules
-import noc.sa.script
-from noc.sa.interfaces import IGetConfig
-# Python modules
 import urllib2
 from xml.dom.minidom import parseString
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetconfig import IGetConfig
 
 data = '<PYTHON><Platform ID=\"1\" Action=\"GET_TREE\" /></PYTHON>'
+
 
 class Script(BaseScript):
     name = "Harmonic.bNSG9000.get_config"
     interface = IGetConfig
 
     data = '<PYTHON><Platform ID=\"1\" Action=\"GET_TREE\" /></PYTHON>'
-    rx_sub = re.compile('\n\t+\n+', re.MULTILINE| re.DOTALL)
+    rx_sub = re.compile('\n\t+\n+', re.MULTILINE | re.DOTALL)
 
     def execute(self):
         url = 'http://' + self.access_profile.address + '/BrowseConfig'
