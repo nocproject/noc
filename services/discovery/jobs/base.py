@@ -679,6 +679,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
         self.neighbor_id_cache = {}
         self.interface_aliases = {}  # (object, alias) -> port name
+        self.own_mac_cache = {}
+        self.own_macs = None  # [(first_mac, last_mac), ...]
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
@@ -1308,3 +1310,30 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :return:
         """
         self.interface_aliases[object, alias] = interface_name
+
+    def is_own_mac(self, mac):
+        """
+        Check the MAC belongs to object
+        :param mac:
+        :return:
+        """
+        if self.own_macs is None:
+            r = DiscoveryID.macs_for_object(self.object)
+            if not r:
+                self.own_macs = []
+                return False
+            else:
+                self.own_macs = r
+
+        if self.own_macs:
+            mr = self.own_mac_cache.get(mac)
+            if mr is None:
+                mr = False
+                for f, t in self.own_macs:
+                    if f <= mac <= t:
+                        mr = True
+                        break
+                self.own_mac_cache[mac] = mr
+            return mr
+        else:
+            return False
