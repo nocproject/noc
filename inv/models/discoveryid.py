@@ -11,7 +11,6 @@ import operator
 from threading import Lock
 import bisect
 # Third-party modules
-from mongoengine.queryset import DoesNotExist
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField, LongField,
@@ -170,7 +169,6 @@ class DiscoveryID(Document):
                     return True
             return False
 
-        c = cls._get_collection()
         # Find by mac
         if mac:
             metrics["discoveryid_mac_requests"] += 1
@@ -188,18 +186,19 @@ class DiscoveryID(Document):
             o = set(
                 d["managed_object"]
                 for d in SubInterface._get_collection().with_options(
-                    read_preference=ReadPreference.SECONDARY_PREFERRED).find({
-                       "ipv4_addresses": {
+                    read_preference=ReadPreference.SECONDARY_PREFERRED
+                ).find({
+                    "ipv4_addresses": {
                         "$gt": ipv4_address + "/",
                         "$lt": ipv4_address + "/99"
-                        }
-                    }, {
-                        "_id": 0,
-                        "managed_object": 1,
-                        "ipv4_addresses": 1
-                    })
+                    }
+                }, {
+                    "_id": 0,
+                    "managed_object": 1,
+                    "ipv4_addresses": 1
+                })
                 if has_ip(ipv4_address, d["ipv4_addresses"])
-                )
+            )
             if len(o) == 1:
                 metrics["discoveryid_ip_interface"] += 1
                 return ManagedObject.get_by_id(list(o)[0])
@@ -214,23 +213,23 @@ class DiscoveryID(Document):
         :param object:
         :return: list of (fist_mac, last_mac)
         """
-        try:
-            o = cls.objects.get(object=object.id)
-        except DoesNotExist:
-            return []
-        if not o or not o.chassis_mac:
-            return None
-        # Discovered chassis id range
-        c_macs = [(r.first_mac, r.last_mac) for r in o.chassis_mac]
-        # Other interface macs
-        i_macs = set()
-        for i in Interface.objects.filter(
-                managed_object=object.id, mac__exists=True):
-            if i.mac:
-                if not any(1 for f, t in c_macs if f <= i.mac <= t):
-                    # Not in range
-                    i_macs.add(i.mac)
-        return c_macs + [(m, m) for m in i_macs]
+        # Get discovered chassis id range
+        o = DiscoveryID.objects.filter(object=object.id).first()
+        if o and o.chassis_mac:
+            c_macs = [(r.first_mac, r.last_mac) for r in o.chassis_mac]
+        else:
+            c_macs = []
+        # Get interface macs
+        i_macs = set(i.mac for i in Interface.objects.filter(
+            managed_object=object.id,
+            mac__exists=True).only("mac") if i.mac
+        )
+        # Enrich discovered macs with additional interface's ones
+        c_macs += [
+            (m, m) for m in i_macs
+            if not any(1 for f, t in c_macs if f <= m <= t)
+        ]
+        return c_macs
 
     @classmethod
     def macs_for_objects(cls, objects_ids):
