@@ -323,20 +323,10 @@ class DiscoveryID(Document):
     def update_udld_id(cls, object, local_id):
         """
         Update UDLD id if necessary
-        :param local_id:
+        :param object: Object for set
+        :param local_id: Local UDLD id
         :return:
         """
-        o = cls.objects.filter(object=object.id).first()
-        if o:
-            # Found
-            if o.udld_id != local_id:
-                print("Setting local UDLD id to '%s'" % local_id)
-                o.udld_id = local_id
-                o.save()
-        else:
-            # Not Found
-            print("Setting local UDLD id to '%s'" % local_id)
-            cls.objects(
-                object=object,
-                udld_id=local_id
-            ).save()
+        DiscoveryID._get_collection().update_one(
+            {"object": object.id},
+            {"$set": {"udld_id": local_id}}, upsert=True)
