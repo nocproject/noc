@@ -364,7 +364,6 @@ class DiscoveryCheck(object):
         self.if_ip_cache = {}
         self.sub_cache = {}
         self.profile_cache = {}
-        self._own_mac_check_cache = {}
 
     def is_enabled(self):
         checks = self.job.attrs.get("_checks", set())
@@ -682,8 +681,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
         self.neighbor_id_cache = {}
         self.interface_aliases = {}  # (object, alias) -> port name
-        self.own_mac_cache = {}
-        self.own_macs = None  # [(first_mac, last_mac), ...]
+        self._own_mac_check_cache = {}
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
