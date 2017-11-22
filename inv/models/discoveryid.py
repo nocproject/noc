@@ -214,23 +214,23 @@ class DiscoveryID(Document):
         :param object:
         :return: list of (fist_mac, last_mac)
         """
-        try:
-            o = cls.objects.get(object=object.id)
-        except DoesNotExist:
-            return []
-        if not o or not o.chassis_mac:
-            return None
-        # Discovered chassis id range
-        c_macs = [(r.first_mac, r.last_mac) for r in o.chassis_mac]
-        # Other interface macs
-        i_macs = set()
-        for i in Interface.objects.filter(
-                managed_object=object.id, mac__exists=True):
-            if i.mac:
-                if not any(1 for f, t in c_macs if f <= i.mac <= t):
-                    # Not in range
-                    i_macs.add(i.mac)
-        return c_macs + [(m, m) for m in i_macs]
+        # Get discovered chassis id range
+        o = DiscoveryID.objects.filter(object=object.id).first()
+        if o and o.chassis_mac:
+            c_macs = [(r.first_mac, r.last_mac) for r in o.chassis_mac]
+        else:
+            c_macs = []
+        # Get interface macs
+        i_macs = set(i.mac for i in Interface.objects.filter(
+            managed_object=object.id,
+            mac__exists=True).only("mac") if i.mac
+        )
+        # Enrich discovered macs with additional interface's ones
+        c_macs += [
+            (m, m) for m in i_macs
+            if not any(1 for f, t in c_macs if f <= m <= t)
+        ]
+        return c_macs
 
     @classmethod
     def macs_for_objects(cls, objects_ids):
