@@ -991,7 +991,11 @@ Ext.define("NOC.core.ModelApplication", {
                 var dv = field.getValue();
                 data = {};
                 if(dv) {
-                    data[field.getName()] = Ext.Date.format(dv, field.format)
+                    if(field.hasOwnProperty('nocDateFormat')) {
+                        data[field.getName()] = Ext.Date.format(dv, field.format)
+                    } else {
+                        data[field.getName()] = dv;
+                    }
                 } else {
                     data[field.getName()] = null
                 }
