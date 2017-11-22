@@ -9,7 +9,6 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
-from noc.sa.interfaces.base import MACAddressParameter
 import re
 
 

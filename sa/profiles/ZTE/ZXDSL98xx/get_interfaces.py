@@ -8,8 +8,6 @@
 
 # Python modules
 import re
-import copy
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -122,7 +120,7 @@ class Script(BaseScript):
             if ports == 0:
                 continue
             for port_n in range(int(ports)):
-                ifname = "%s/%s" % (slot, port_n+1)
+                ifname = "%s/%s" % (slot, port_n + 1)
                 try:
                     v = self.cli("show interface %s" % ifname)
                 except self.CLISyntaxError:
@@ -161,49 +159,49 @@ class Script(BaseScript):
                         "vlan_ids": [match.group("pvid1")],
                         "vpi": match1.group("vpi1"),
                         "vci": match1.group("vci1")
-                    },{
+                    }, {
                         "name": "%s/%s" % (ifname, "2"),
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "mtu": match.group("mtu"),
                         "vlan_ids": [match.group("pvid2")],
                         "vpi": match1.group("vpi2"),
                         "vci": match1.group("vci2")
-                    },{
+                    }, {
                         "name": "%s/%s" % (ifname, "3"),
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "mtu": match.group("mtu"),
                         "vlan_ids": [match.group("pvid3")],
                         "vpi": match1.group("vpi3"),
                         "vci": match1.group("vci3")
-                    },{
+                    }, {
                         "name": "%s/%s" % (ifname, "4"),
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "mtu": match.group("mtu"),
                         "vlan_ids": [match.group("pvid4")],
                         "vpi": match1.group("vpi4"),
                         "vci": match1.group("vci4")
-                    },{
+                    }, {
                         "name": "%s/%s" % (ifname, "5"),
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "mtu": match.group("mtu"),
                         "vlan_ids": [match.group("pvid5")],
                         "vpi": match1.group("vpi5"),
                         "vci": match1.group("vci5")
-                    },{
+                    }, {
                         "name": "%s/%s" % (ifname, "6"),
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "mtu": match.group("mtu"),
                         "vlan_ids": [match.group("pvid6")],
                         "vpi": match1.group("vpi6"),
                         "vci": match1.group("vci6")
-                    },{
+                    }, {
                         "name": "%s/%s" % (ifname, "7"),
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "mtu": match.group("mtu"),
                         "vlan_ids": [match.group("pvid7")],
                         "vpi": match1.group("vpi7"),
                         "vci": match1.group("vci7")
-                    },{
+                    }, {
                         "name": "%s/%s" % (ifname, "8"),
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "mtu": match.group("mtu"),
