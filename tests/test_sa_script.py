@@ -41,12 +41,7 @@ def test_script(sa_script):
         req_name = req_name[16:]
     assert scls.name == req_name, "Script name mismatch"
 
-
-
-
-
-
-# import glob
+#  import glob
 # import unittest2
 # import os
 # # Third-party modules
