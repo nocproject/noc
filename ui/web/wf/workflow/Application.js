@@ -8,7 +8,7 @@ console.debug("Defining NOC.wf.workflow.Application");
 
 Ext.define("NOC.wf.workflow.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.wf.workflow.Model",
         "NOC.wf.solution.LookupField",
         "NOC.wf.workflow.LanesModel",

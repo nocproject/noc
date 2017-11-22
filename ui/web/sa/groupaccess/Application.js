@@ -8,7 +8,7 @@ console.debug("Defining NOC.sa.groupaccess.Application");
 
 Ext.define("NOC.sa.groupaccess.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.sa.groupaccess.Model",
         "NOC.main.group.LookupField",
         "NOC.sa.managedobjectselector.LookupField",

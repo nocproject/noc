@@ -8,7 +8,7 @@ console.debug("Defining NOC.fm.eventtrigger.Application");
 
 Ext.define("NOC.fm.eventtrigger.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.fm.eventtrigger.Model",
         "NOC.main.timepattern.LookupField",
         "NOC.sa.managedobjectselector.LookupField",

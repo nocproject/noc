@@ -8,7 +8,7 @@ console.debug("Defining NOC.sa.managedobjectprofile.Application");
 
 Ext.define("NOC.sa.managedobjectprofile.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.sa.managedobjectprofile.Model",
         "NOC.sa.managedobjectprofile.LookupField",
         "NOC.sa.authprofile.LookupField",

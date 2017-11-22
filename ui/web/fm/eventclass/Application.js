@@ -8,7 +8,7 @@ console.debug("Defining NOC.fm.eventclass.Application");
 
 Ext.define("NOC.fm.eventclass.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.fm.eventclass.Model",
         "NOC.fm.eventclass.LookupField",
         "NOC.fm.alarmclass.LookupField",

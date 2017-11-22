@@ -8,7 +8,7 @@ console.debug("Defining NOC.peer.communitytype.Application");
 
 Ext.define("NOC.peer.communitytype.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.peer.communitytype.Model"],
+    requires: ["NOC.peer.communitytype.Model"],
     model: "NOC.peer.communitytype.Model",
     search: true,
     columns: [

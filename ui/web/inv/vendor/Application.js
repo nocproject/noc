@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.vendor.Application");
 
 Ext.define("NOC.inv.vendor.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.inv.vendor.Model"],
+    requires: ["NOC.inv.vendor.Model"],
     model: "NOC.inv.vendor.Model",
     search: true,
 

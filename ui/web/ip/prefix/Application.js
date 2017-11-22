@@ -8,7 +8,7 @@ console.debug("Defining NOC.ip.prefix.Application");
 
 Ext.define("NOC.ip.prefix.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.ip.prefix.Model",
         "NOC.ip.prefix.LookupField",
         "NOC.ip.vrf.LookupField",

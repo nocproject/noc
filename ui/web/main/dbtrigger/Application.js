@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.dbtrigger.Application");
 
 Ext.define("NOC.main.dbtrigger.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.main.dbtrigger.Model",
         "NOC.main.pyrule.LookupField",
         "NOC.main.ref.model.LookupField"

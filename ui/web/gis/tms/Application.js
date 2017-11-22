@@ -8,6 +8,5 @@ console.debug("Defining NOC.gis.tile.Application");
 
 Ext.define("NOC.gis.tile.Application", {
     extend: "NOC.core.Application",
-    //requires: [],
     items: []
 });
