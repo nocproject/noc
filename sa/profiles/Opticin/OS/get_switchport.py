@@ -7,8 +7,6 @@
 # ---------------------------------------------------------------------
 """
 """
-# Python modules
-import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
@@ -35,8 +33,8 @@ class Script(BaseScript):
                 "802.1ad Tunnel": False,
                 "802.1Q Enabled": False,
                 "tagged": "",
-                "status": status == True,
+                "status": bool(status),
                 "untagged": untagged
-                }
+            }
             r += [swport]
         return r
