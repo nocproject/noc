@@ -25,14 +25,14 @@ class Script(BaseScript):
                 # sysName.0
                 v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
                 if v:
-                   return v
+                    return v
             except self.snmp.TimeOutError:
                 pass
-        
         v = self.cli("show version")
 
         match = self.rx_hostname.search(v)
         if match:
             fqdn = match.group("hostname")
-
-        return fqdn
+            return fqdn
+        else:
+            raise self.UnexpectedResultError()
