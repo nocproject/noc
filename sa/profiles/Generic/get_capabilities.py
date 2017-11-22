@@ -285,6 +285,17 @@ class Script(BaseScript):
             fallback_handler=self.return_false
         )
 
+    def has_rep(self):
+        """
+        Returns True when REP is enabled
+        :return:
+        """
+        return self.call_method(
+            cli_handler="has_rep_cli",
+            snmp_handler="has_rep_snmp",
+            fallback_handler=self.return_false
+        )
+
     def execute_platform_cli(self, caps):
         """
         Method to be overriden in subclasses. Execute if C preffered
@@ -363,6 +374,8 @@ class Script(BaseScript):
             caps["Network | LACP"] = True
         if self.has_bfd():
             caps["Network | BFD"] = True
+        if self.has_rep():
+            caps["Network | REP"] = True
         self.call_method(
             cli_handler="execute_platform_cli",
             snmp_handler="execute_platform_snmp",

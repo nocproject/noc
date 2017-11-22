@@ -14,8 +14,10 @@ import time
 import zlib
 import datetime
 import types
+import operator
 # Third-party modules
 import bson
+import cachetools
 import six
 from six.moves import StringIO
 from pymongo import UpdateOne
@@ -679,6 +681,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
         self.neighbor_id_cache = {}
         self.interface_aliases = {}  # (object, alias) -> port name
+        self._own_mac_check_cache = {}
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
@@ -1308,3 +1311,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :return:
         """
         self.interface_aliases[object, alias] = interface_name
+
+    @cachetools.cachedmethod(operator.attrgetter("_own_mac_check_cache"))
+    def is_own_mac(self, mac):
+        mr = DiscoveryID.macs_for_objects(self.object)
+        return mr and any(1 for f, t in mr if f <= mac <= t)
