@@ -8,7 +8,6 @@ console.debug("Defining NOC.sa.monitor.Application");
 
 Ext.define("NOC.sa.monitor.Application", {
     extend: "NOC.core.Application",
-    uses: [],
 
     initComponent: function() {
         var me = this;
