@@ -146,9 +146,6 @@ class Script(BaseScript):
         return bool(r)
 
     def execute_platform_cli(self, caps):
-        # Check REP Proto
-        if self.has_rep_cli():
-            caps["Cisco | REP"] = True
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
         if sla_v is not None:

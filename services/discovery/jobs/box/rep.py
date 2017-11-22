@@ -16,7 +16,7 @@ class REPCheck(TopologyDiscoveryCheck):
     """
     name = "rep"
     required_script = "get_rep_neighbors"
-    required_capabilities = ["Cisco | REP"]
+    required_capabilities = ["Network | REP"]
 
     def iter_neighbors(self, mo):
         self.own_macs = None
