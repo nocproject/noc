@@ -318,3 +318,25 @@ class DiscoveryID(Document):
                 r[MAC(mlist[start])] = mo
                 start += 1
         return r
+
+    @classmethod
+    def update_udld_id(cls, object, local_id):
+        """
+        Update UDLD id if necessary
+        :param local_id:
+        :return:
+        """
+        o = cls.objects.filter(object=object.id).first()
+        if o:
+            # Found
+            if o.udld_id != local_id:
+                print("Setting local UDLD id to '%s'" % local_id)
+                o.udld_id = local_id
+                o.save()
+        else:
+            # Not Found
+            print("Setting local UDLD id to '%s'" % local_id)
+            cls.objects(
+                object=object,
+                udld_id=local_id
+            ).save()
