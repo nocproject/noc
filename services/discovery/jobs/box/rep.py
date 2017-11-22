@@ -18,10 +18,9 @@ class REPCheck(TopologyDiscoveryCheck):
     name = "rep"
     required_script = "get_rep_neighbors"
     required_capabilities = ["Cisco | REP"]
-    own_mac_cache = {}
-    own_macs = None  # [(first_mac, last_mac), ...]
 
     def iter_neighbors(self, mo):
+        self.own_macs = None
         result = mo.scripts.get_rep_neighbors()
         for segment in result:
             topology = segment["topology"]
@@ -56,27 +55,3 @@ class REPCheck(TopologyDiscoveryCheck):
                         remote_object,
                         remote_info
                     )
-
-    def is_own_mac(self, mac):
-        """
-        Check the MAC belongs to object
-        :param mac:
-        :return:
-        """
-        if self.own_macs is None:
-            r = DiscoveryID.macs_for_object(self.object)
-            if not r:
-                self.own_macs = []
-                return False
-        if self.own_macs:
-            mr = self.own_mac_cache.get(mac)
-            if mr is None:
-                mr = False
-                for f, t in self.own_macs:
-                    if f <= mac <= t:
-                        mr = True
-                        break
-                self.own_mac_cache[mac] = mr
-            return mr
-        else:
-            return False
