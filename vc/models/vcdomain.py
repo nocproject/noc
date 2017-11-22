@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # VCDomain model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.db import models
 # NOC modules
-from vctype import VCType
-from vcfilter import VCFilter
+from .vctype import VCType
+from .vcfilter import VCFilter
 from noc.main.models.style import Style
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.model.decorator import on_delete_check
@@ -52,10 +54,12 @@ class VCDomain(models.Model):
         return self.name
 
     def on_save(self):
+        from noc.sa.models.selectorcache import SelectorCache
         # Rebuild selector cache
         SelectorCache.refresh()
 
     def on_delete(self):
+        from noc.sa.models.selectorcache import SelectorCache
         # Rebuild selector cache
         SelectorCache.refresh()
 
@@ -88,15 +92,10 @@ class VCDomain(models.Model):
             if x > y or y < l_min or x > l_max:
                 continue  # Skip chunk outside of type's range
             for l in range(max(l_min, x), min(l_max, y) + 1):
-                if not VC.objects.filter(vc_domain=self, l1=l).exists():
+                if not self.vc_set.filter(l1=l).exists():
                     return l  # Return first free found
         return None  # Nothing found
 
     @classmethod
     def get_default(cls):
         return VCDomain.objects.get(name="default")
-
-
-# Avoid circular references
-from vc import VC
-from noc.sa.models.selectorcache import SelectorCache
