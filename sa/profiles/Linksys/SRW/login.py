@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Linksys.SWR.login
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ class Script(BaseScript):
     """
     Try to log in
     """
-    name = "Linksys.SWR.login"
+    name = "Linksys.SRW.login"
     interface = ILogin
     requires = []
 
@@ -23,5 +23,5 @@ class Script(BaseScript):
         try:
             self.cli("\x1A")
             return True
-        except:
+        except Exception:
             return False

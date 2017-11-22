@@ -19,14 +19,14 @@ class Script(BaseScript):
         data = self.cli("show user-account | no-more")
         r = []
         cu = {}
-        for l in data.split("\n"):
-            l = l.strip()
-            if l.startswith("user:"):
+        for line in data.split("\n"):
+            line = line.strip()
+            if line.startswith("user:"):
                 if cu:
                     r += [cu]
-                cu = {"username": l[5:], "is_active": True}
-            elif cu and l.startswith("roles:"):
-                for role in l[6:].split(" "):
+                cu = {"username": line[5:], "is_active": True}
+            elif cu and line.startswith("roles:"):
+                for role in line[6:].split(" "):
                     if role == "network-operator":
                         role = "operator"
                     elif role == "network-admin":

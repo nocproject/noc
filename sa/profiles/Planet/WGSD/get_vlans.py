@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 
 
 class Script(BaseScript):
-    name = "Eltex.MES.get_vlans"
+    name = "Planet.WGSD.get_vlans"
     interface = IGetVlans
 
     rx_vlan = re.compile(
@@ -28,11 +28,11 @@ class Script(BaseScript):
             try:
                 for vlan, name in self.snmp.join_tables(
                     "1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    "1.3.6.1.2.1.17.7.1.4.3.1.1"):
+                        "1.3.6.1.2.1.17.7.1.4.3.1.1"):
                     r.append({
                         "vlan_id": vlan,
                         "name": name
-                        })
+                    })
                 return r
             except self.snmp.TimeOutError:
                 pass
