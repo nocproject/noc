@@ -8,7 +8,6 @@
 
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.inv.models.discoveryid import DiscoveryID
 
 
 class REPCheck(TopologyDiscoveryCheck):
