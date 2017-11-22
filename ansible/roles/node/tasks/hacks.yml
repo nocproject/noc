@@ -1,24 +1,5 @@
 
-- name: Check sitecustomize
-  stat: path="{{noc_root}}/lib/python/site-packages/sitecustomize.py"
-  register: sitecustomizes
-  tags:
-    - config
 
-- name: Install sitecustomize.py
-  template:
-    src: "lib/python/site-packages/sitecustomize.py.j2"
-    dest: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
-  when: sitecustomizes.stat.exists == False
-  tags:
-    - config
-
-- name: Update site.py
-  replace:
-    dest: "{{noc_root}}/lib/python/site.py"
-    regexp: "encoding = 'ascii'"
-    replace: "encoding = 'utf-8'"
-  when: sitecustomizes.stat.exists == True
 
 
 - name: Tune sysctl.conf for node
