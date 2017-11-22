@@ -301,6 +301,10 @@ Ext.define('NOC.sa.runcommands.Controller', {
             });
         };
 
+        // Reset state
+        this.lookupReference('sa-run-commands-selected-grid-3').getSelectionModel().deselectAll();
+        this.getViewModel().set('resultOutput', '');
+
         switch(mode) {
             case 'commands': {
                 this.sendCommands('commands', {

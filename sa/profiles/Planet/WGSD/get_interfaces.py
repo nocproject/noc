@@ -8,13 +8,10 @@
 
 # Python modules
 import re
-import time
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -51,8 +48,9 @@ class Script(BaseScript):
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
-    rx_sh_int_des = rx_in =re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
-                    re.MULTILINE)
+    rx_sh_int_des = rx_in = re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)"
+                                       r"\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
+                                       re.MULTILINE)
     rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(
@@ -144,13 +142,13 @@ class Script(BaseScript):
                 description = res[1].strip()
 
             sub = {
-                    "name": name,
-                    "mtu": mtu,
-                    "admin_status": a_stat,
-                    "oper_status": o_stat,
-                    "description": description.strip(),
-                    "enabled_afi": []
-                }
+                "name": name,
+                "mtu": mtu,
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+                "description": description.strip(),
+                "enabled_afi": []
+            }
             if ifindex:
                 sub["snmp_ifindex"] = ifindex
             if mac:
@@ -202,7 +200,6 @@ class Script(BaseScript):
             iface["subinterfaces"][0]["tagged_vlans"] = tvlan
             if utvlan:
                 iface["subinterfaces"][0]["untagged_vlan"] = utvlan
-            
             cmd = self.cli("show ip interface %s" % name)
             time.sleep(1)
             for match in self.rx_sh_ip_int.finditer(cmd):

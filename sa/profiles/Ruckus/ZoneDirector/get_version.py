@@ -20,6 +20,7 @@ class Script(BaseScript):
     rx_ver = re.compile(r"\s*Version=\s+(?P<version>\S+).+\n", re.MULTILINE)
     rx_platform = re.compile(r"^\s*Model=\s+(?P<platform>\S+)\s*\n", re.MULTILINE)
     rx_serial = re.compile(r"^\s*Serial Number=\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
+
     def execute(self):
         ver = self.cli("show sysinfo", cached=True)
         # print (ver)
@@ -32,5 +33,5 @@ class Script(BaseScript):
             "version": match.group("version"),
             "attributes": {
                 "SN": smatch.group("serial"),
-                          }
             }
+        }

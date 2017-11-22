@@ -16,7 +16,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "BDCOM_xPON.get_interfaces"
+    name = "BDCOM.xPON.get_interfaces"
     cache = True
     interface = IGetInterfaces
     TIMEOUT = 300

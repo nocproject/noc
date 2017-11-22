@@ -9,7 +9,6 @@
 # Python modules
 import re
 import copy
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -34,7 +33,6 @@ class Script(BaseScript):
         ifaces = {}
         last_if = None
         if_list = []
-        subs = defaultdict(list)
         vlans_raw = self.cli("show vlan").splitlines()
         vlan_set = self.get_vlan(vlans_raw)
         for l in self.cli("show interface").splitlines():
@@ -90,13 +88,13 @@ class Script(BaseScript):
         for iface in ifaces:
             subif = {
                 "name": iface,
-                "description" : "",
-                "admin_status" : "",
+                "description": "",
+                "admin_status": "",
                 "oper_status": "",
-                "enabled_afi" : [],
-                "tagged_vlans" : [],
-                "untagged_vlan" : ""
-                }
+                "enabled_afi": [],
+                "tagged_vlans": [],
+                "untagged_vlan": ""
+            }
             subif["description"] = ifaces[iface]["description"]
             subif["admin_status"] = ifaces[iface]["admin_status"]
             subif["oper_status"] = ifaces[iface]["oper_status"]
@@ -110,19 +108,19 @@ class Script(BaseScript):
                     subif["enabled_afi"] += ['IPv4']
                 else:
                     subif["enabled_afi"] += ['BRIDGE']
-            if subif["tagged_vlans"] == []: 
+            if subif["tagged_vlans"] == []:
                 del subif["tagged_vlans"]
-            if subif["untagged_vlan"] == "": 
+            if subif["untagged_vlan"] == "":
                 del subif["untagged_vlan"]
             if ifaces[iface]["ipv4_addresses"] == []:
                 del ifaces[iface]["ipv4_addresses"]
             else:
                 subif["ipv4_addresses"] = ifaces[iface]["ipv4_addresses"]
                 del ifaces[iface]["ipv4_addresses"]
-            if ifaces[iface].has_key("mtu"):
+            if "mtu" in ifaces[iface]:
                 subif["mtu"] = ifaces[iface]["mtu"]
             ifaces[iface]["subinterfaces"] += [subif]
-        # Process LACP aggregated links 
+        # Process LACP aggregated links
         for l in self.cli("show lacp internal").splitlines():
             match = self.rx_lag.search(l)
             if match:
@@ -131,8 +129,7 @@ class Script(BaseScript):
             if match:
                 ifaces[match.group("lag_member")]["enabled_protocols"] += ['LACP']
                 ifaces[match.group("lag_member")]["aggregated_interface"] = 'smartgroup' + last_lag
-                
-        return [{"interfaces": ifaces.values() }]
+        return [{"interfaces": ifaces.values()}]
 
     def type_by_name(self, name):
         if name.startswith("gei"):
@@ -169,13 +166,13 @@ class Script(BaseScript):
         rx_horizontal_rule = re.compile(r"-{79}")
         rx_spaces = re.compile(r"\s+")
         vl = {
-            "id" : [],
-            "name" : [],
-            "pvid_ports" : [],
-            "untag_ports" : [],
-            "tag_ports" : []
+            "id": [],
+            "name": [],
+            "pvid_ports": [],
+            "untag_ports": [],
+            "tag_ports": []
         }
-        vlan_list=[]
+        vlan_list = []
         for line in rows:
             match_head = rx_head.search(line)
             match_horizontal_rule = rx_horizontal_rule.search(line)
@@ -184,71 +181,71 @@ class Script(BaseScript):
                 vlan_name_len = len(match_head.group("vlan_name"))
                 pvid_ports_len = len(match_head.group("pvid_ports"))
                 untag_ports_len = len(match_head.group("untag_ports"))
-                tag_ports_len = len(match_head.group("tag_ports"))+4 # Add 4 to last column to compensate trail spaces
+                tag_ports_len = len(match_head.group("tag_ports")) + 4  # Add 4 to last column to compensate trail spaces
             elif match_horizontal_rule:
                 continue
             else:
                 shift = 0
-                if rx_spaces.sub('',''.join(line[shift:vlan_id_len+shift])) != '':
+                if rx_spaces.sub('', ''.join(line[shift:vlan_id_len + shift])) != '':
                     if not vl["id"] == []:
                         vlan_list.append(copy.deepcopy(vl))
-                    vl["id"] = line[shift:vlan_id_len+shift]
+                    vl["id"] = line[shift:vlan_id_len + shift]
                     shift += vlan_id_len
-                    vl["name"] = line[shift:vlan_name_len+shift]
+                    vl["name"] = line[shift:vlan_name_len + shift]
                     shift += vlan_name_len
-                    vl["pvid_ports"] = line[shift:pvid_ports_len+shift]
+                    vl["pvid_ports"] = line[shift:pvid_ports_len + shift]
                     shift += pvid_ports_len
-                    vl["untag_ports"] = line[shift:untag_ports_len+shift]
+                    vl["untag_ports"] = line[shift:untag_ports_len + shift]
                     shift += untag_ports_len
-                    vl["tag_ports"] = line[shift:tag_ports_len+shift]
+                    vl["tag_ports"] = line[shift:tag_ports_len + shift]
                 else:
-                    vl["id"] += line[shift:vlan_id_len+shift]
+                    vl["id"] += line[shift:vlan_id_len + shift]
                     shift += vlan_id_len
-                    vl["name"] += line[shift:vlan_name_len+shift]
+                    vl["name"] += line[shift:vlan_name_len + shift]
                     shift += vlan_name_len
-                    vl["pvid_ports"] += line[shift:pvid_ports_len+shift]
+                    vl["pvid_ports"] += line[shift:pvid_ports_len + shift]
                     shift += pvid_ports_len
-                    vl["untag_ports"] += line[shift:untag_ports_len+shift]
+                    vl["untag_ports"] += line[shift:untag_ports_len + shift]
                     shift += untag_ports_len
-                    vl["tag_ports"] += line[shift:tag_ports_len+shift]
+                    vl["tag_ports"] += line[shift:tag_ports_len + shift]
         vlan_list.append(copy.deepcopy(vl))
         return vlan_list
 
     def split_interface_groups(self, data):
-        #desassembly interface groupping
+        # desassembly interface groupping
         rx_interface_group = re.compile(r"^(?P<int_group>.+(?:group|\/))(?P<first_num>\d+)-(?P<last_num>\d+)$")
         result = []
         for interface in data:
             match = rx_interface_group.search(interface)
             if match:
-                step=0
-                for interface_group in range(int(match.group("first_num"))-1,int(match.group("last_num"))):
-                    result.append(match.group("int_group")+str(int(match.group("first_num"))+step))
-                    step=step+1
+                step = 0
+                for interface_group in range(int(match.group("first_num")) - 1, int(match.group("last_num"))):
+                    result.append(match.group("int_group") + str(int(match.group("first_num")) + step))
+                    step = step + 1
             else:
                 result.append(interface)
         return result
 
     def split_interface(self, data):
         rx_spaces = re.compile(r"\s+")
-        result = rx_spaces.sub('',''.join(data)).split(',')
+        result = rx_spaces.sub('', ''.join(data)).split(',')
         return result
 
     def reformat_vlans(self, data):
         rx_spaces = re.compile(r"\s+")
         vlan_list = []
         for vl in data:
-            vl["id"] = int(rx_spaces.sub('',''.join(vl["id"])))
-            vl["name"] = rx_spaces.sub('',''.join(vl["name"]))
-            vl["tag_ports"]=self.split_interface(vl["tag_ports"])
-            vl["pvid_ports"]=self.split_interface(vl["pvid_ports"])
-            vl["untag_ports"]=self.split_interface(vl["untag_ports"])
-            vl["pvid_ports"]=self.split_interface_groups(vl["pvid_ports"])
-            vl["tag_ports"]=self.split_interface_groups(vl["tag_ports"])
-            vl["untag_ports"]=self.split_interface_groups(vl["untag_ports"])
+            vl["id"] = int(rx_spaces.sub('', ''.join(vl["id"])))
+            vl["name"] = rx_spaces.sub('', ''.join(vl["name"]))
+            vl["tag_ports"] = self.split_interface(vl["tag_ports"])
+            vl["pvid_ports"] = self.split_interface(vl["pvid_ports"])
+            vl["untag_ports"] = self.split_interface(vl["untag_ports"])
+            vl["pvid_ports"] = self.split_interface_groups(vl["pvid_ports"])
+            vl["tag_ports"] = self.split_interface_groups(vl["tag_ports"])
+            vl["untag_ports"] = self.split_interface_groups(vl["untag_ports"])
             vlan_list.append(copy.deepcopy(vl))
         return vlan_list
-    
+
     def get_vlan(self, data):
         vlans = self.split_data_in_table_to_columns(data)
         self.reformat_vlans(vlans)

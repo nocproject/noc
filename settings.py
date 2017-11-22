@@ -8,9 +8,11 @@
 
 # Python modules
 import sys
-import os
 import logging
 from noc.config import config
+if config.features.pypy:
+    from psycopg2cffi import compat
+    compat.register()
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -147,7 +149,7 @@ INSTALLED_APPS = [
 FORCE_SCRIPT_NAME = ""
 
 # Available languages
-_ = lambda s: s
+_ = lambda s: s # noqa. _ should be a lambda not a function
 LANGUAGES = [
     ("en", _("English")),
     ("ru", _("Russian")),

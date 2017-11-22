@@ -18,7 +18,7 @@ from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
-    name = "Generic.SNMP.get_interfaces"
+    name = "Generic.get_interfaces"
     cache = True
     interface = IGetInterfaces
 
@@ -64,7 +64,8 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
-            f = lambda x: x
+            def f(x):
+                return x
         for ifindex, v in self.get_iftable(mib):
             s = r.get(ifindex)
             if s:

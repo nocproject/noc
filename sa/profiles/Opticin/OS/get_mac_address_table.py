@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable, MACAddressParameter
 
+
 class Script(BaseScript):
     name = "Opticin.OS.get_mac_address_table"
     interface = IGetMACAddressTable
@@ -29,7 +30,6 @@ class Script(BaseScript):
     }
 
     def execute(self, interface=None, vlan=None, mac=None):
-        
         cmd = "sh port mac-learning"
         if interface is not None:
             cmd += " %s" % int(interface.replace("Port", ""))
@@ -52,8 +52,8 @@ class Script(BaseScript):
         else:
             r = []
             for i in self.scripts.get_interface_status():
-                if i["status"] == False:
-                   continue
+                if not bool(i["status"]):
+                    continue
                 else:
                     cmd = "sh port mac-learning"
                     port = i["interface"]
