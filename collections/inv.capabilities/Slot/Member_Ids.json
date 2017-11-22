@@ -1,0 +1,8 @@
+{
+    "name": "Slot | Member Ids",
+    "$collection": "inv.capabilities",
+    "uuid": "06a1ea7b-0ee7-4091-87fe-fc125dab9f95",
+    "description": "Number slots used",
+    "type": "str",
+    "card_template": null
+}

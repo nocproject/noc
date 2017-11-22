@@ -1,0 +1,8 @@
+{
+    "name": "Network | REP",
+    "$collection": "inv.capabilities",
+    "uuid": "ad56148a-b722-4f28-ba62-02f9186fd183",
+    "description": "REP is enabled (Resilient Ethernet Protocol)",
+    "type": "bool",
+    "card_template": null
+}
