@@ -84,6 +84,16 @@ class Script(BaseScript):
         return True
 
     @false_on_cli_error
+    def has_udld_cli(self):
+        """
+        Check box has stp enabled
+        """
+        r = self.cli("show udld  neighbors")
+        if len(r.splitlines()) > 2:
+            return True
+        return False
+
+    @false_on_cli_error
     def has_bfd_cli(self):
         """
         Check box has bfd enabled
