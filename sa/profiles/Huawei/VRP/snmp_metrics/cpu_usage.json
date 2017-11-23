@@ -1,7 +1,7 @@
 {
   "$metric": "CPU | Usage",
   "$type": "match",
-  "matchers": {
+  "$matchers": {
     "is_5328": {
       "platform": {
         "$regex": "5328"

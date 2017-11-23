@@ -226,7 +226,7 @@ class MatcherRule(object):
             raise ValueError("$match must be list")
         return MatcherRule(oids=[(d.get("$match"),
                                   OIDRule.load(d)) for d in data["$match"]],
-                           matchers=data.get("matchers", {}))
+                           matchers=data.get("$matchers", {}))
 
 
 @six.add_metaclass(OIDRuleBase)
