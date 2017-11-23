@@ -45,6 +45,7 @@ class State(Document):
     }
     workflow = PlainReferenceField(Workflow)
     name = StringField()
+    description = StringField()
     # State properties
     # Default state for workflow (starting state if not set explicitly)
     is_default = BooleanField(default=False)
@@ -54,11 +55,12 @@ class State(Document):
     update_last_seen = BooleanField(default=False)
     # State time-to-live in seconds
     # 0 - infinitive TTL
-    # >0 - Set *expires* field to now + ttl
-    #      Send *expires* signal when TTL expired
+    # >0 - Set *expired* field to now + ttl
+    #      Send *expired* signal when TTL expired
+    # Expiration may also be delayed by *update_expired* setting
     ttl = IntField(default=0)
     # Update ttl every time when object is discovered
-    update_ttl = BooleanField(default=False)
+    update_expired = BooleanField(default=False)
     # Handler to be called on entering state
     on_enter_handlers = ListField(StringField())
     # Job to be started when entered state (jcls)
