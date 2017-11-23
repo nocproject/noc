@@ -98,6 +98,12 @@ config:
       description: "<strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>"
       label: "consul token"
       type: str
+  consultemplate:
+    use_dedup:
+      label: "Use dedup"
+      type: bool
+      default: false
+      description: "Useful start from 20 nodes"
   correlator:
     max_threads:
       default: 10
@@ -273,7 +279,7 @@ config:
     python_interpreter:
       default: python
       label: Interpreter
-      description: Python interpreter eighter python or pypy. Do not change until you know what are you doing.
+      description: Python interpreter either <strong>python</strong> or <strong>pypy</strong>.
       type: str
   nsqd:
     max_messages_in_memory:
@@ -493,6 +499,16 @@ services:
     level: global
     category: external
     port: 8500
+  consultemplate:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Config Manager based on consul kv <br/>
+      <strong>Long description</strong>: Gets data from consul and renders nginx and some other service configs and reload them if needed
+      <strong>Scale Recommendations</strong>: Will be placed on each node.<br/>
+      <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
+      <strong>Placement constraint</strong>: Just tick it on any node to configure dedup feature. <br/>
+    level: global
+    category: external
   correlator:
     description: >
       <strong>Service type</strong>: Internal <br/>

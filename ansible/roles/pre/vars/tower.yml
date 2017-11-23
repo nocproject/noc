@@ -89,3 +89,6 @@ haproxy_stats_user: "{{noc_config['config'].get('haproxy-global-%s' % ansible_no
 haproxy_stats_password: "{{noc_config['config'].get('haproxy-global-%s' % ansible_nodename, {}).get('password', 'noc')}}"
 
 python_interpreter: "{{noc_config['config'].get('noc-global-%s' % ansible_nodename, {}).get('python_interpreter', 'python')}}"
+consul_template_dedup: "{% if groups['svc-consultemplate'] | count > 0 -%}
+{{noc_config.config.get('consultemplate-global-%s' % groups['svc-consultemplate'][0]).get('use_dedup', False)}}
+{%- endif%}"
