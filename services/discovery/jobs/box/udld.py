@@ -22,7 +22,8 @@ class UDLDCheck(TopologyDiscoveryCheck):
 
     def iter_neighbors(self, mo):
         result = mo.scripts.get_udld_neighbors()
-        local_id = None
+        d = DiscoveryID.objects.filter(object=self.object.id).first()
+        local_id = d.udld_id if d and d.udld_id else None
         for n in result:
             if local_id != n["local_device"]:
                 DiscoveryID.update_udld_id(self.object, n["local_device"])
