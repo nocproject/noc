@@ -318,3 +318,15 @@ class DiscoveryID(Document):
                 r[MAC(mlist[start])] = mo
                 start += 1
         return r
+
+    @classmethod
+    def update_udld_id(cls, object, local_id):
+        """
+        Update UDLD id if necessary
+        :param object: Object for set
+        :param local_id: Local UDLD id
+        :return:
+        """
+        DiscoveryID._get_collection().update_one(
+            {"object": object.id},
+            {"$set": {"udld_id": local_id}}, upsert=True)
