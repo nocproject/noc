@@ -8,7 +8,7 @@ console.debug("Defining NOC.fm.ignoreeventrule.Application");
 
 Ext.define("NOC.fm.ignoreeventrule.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.fm.ignoreeventrules.Model"],
+    requires: ["NOC.fm.ignoreeventrules.Model"],
     model: "NOC.fm.ignoreeventrule.Model",
     columns: [
         {

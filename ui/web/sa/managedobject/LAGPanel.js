@@ -8,7 +8,6 @@ console.debug("Defining NOC.sa.managedobject.LAGPanel");
 
 Ext.define("NOC.sa.managedobject.LAGPanel", {
     extend: "Ext.panel.Panel",
-    uses: [],
     title: "LAG",
     closable: false,
     layout: "fit",

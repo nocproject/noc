@@ -8,7 +8,7 @@ console.debug("Defining NOC.sa.useraccess.Application");
 
 Ext.define("NOC.sa.useraccess.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.sa.useraccess.Model",
         "NOC.main.user.LookupField",
         "NOC.sa.managedobjectselector.LookupField",

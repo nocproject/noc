@@ -8,7 +8,6 @@ console.debug("Defining NOC.inv.inv.plugins.map.AddObjectForm");
 
 Ext.define("NOC.inv.inv.plugins.map.AddObjectForm", {
     extend: "Ext.window.Window",
-    requires: [],
     modal: true,
     autoShow: true,
     closeable: true,

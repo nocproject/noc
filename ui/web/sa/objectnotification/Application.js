@@ -8,7 +8,7 @@ console.debug("Defining NOC.sa.objectnotification.Application");
 
 Ext.define("NOC.sa.objectnotification.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.sa.objectnotification.Model",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.notificationgroup.LookupField"

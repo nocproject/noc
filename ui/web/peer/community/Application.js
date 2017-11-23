@@ -8,7 +8,7 @@ console.debug("Defining NOC.peer.community.Application");
 
 Ext.define("NOC.peer.community.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.peer.community.Model",
+    requires: ["NOC.peer.community.Model",
            "NOC.peer.communitytype.LookupField"
     ],
     model: "NOC.peer.community.Model",

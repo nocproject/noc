@@ -8,7 +8,6 @@ console.debug("Defining NOC.inv.interface.L3Panel");
 
 Ext.define("NOC.inv.interface.L3Panel", {
     extend: "Ext.panel.Panel",
-    uses: [],
     title: "L3",
     closable: false,
     layout: "fit",

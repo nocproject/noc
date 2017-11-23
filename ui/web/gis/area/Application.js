@@ -8,7 +8,7 @@ console.debug("Defining NOC.gis.area.Application");
 
 Ext.define("NOC.gis.area.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.gis.area.Model",
         "Ext.ux.form.GeoField"
     ],
