@@ -61,6 +61,8 @@ class Script(BaseScript):
                             if p:
                                 if p.startswith("CISCO"):
                                     p = p[5:]
+                                if p.endswith("-CHASSIS"):
+                                    p = p[:-8]
                                 platform = p
                     if not self.rx_invalid_platforms.search(platform):
                         r = {
