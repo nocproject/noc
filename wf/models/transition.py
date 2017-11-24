@@ -16,6 +16,7 @@ from mongoengine.fields import (StringField, ReferenceField, LongField,
                                 ListField, BooleanField)
 import cachetools
 # NOC modules
+from .workflow import Workflow
 from .state import State
 from noc.lib.nosql import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
@@ -36,8 +37,10 @@ class Transition(Document):
         "strict": False,
         "auto_create_index": False
     }
+    workflow = PlainReferenceField(Workflow)
     from_state = PlainReferenceField(State)
     to_state = PlainReferenceField(State)
+    is_active = BooleanField(default=True)
     # Event name
     # Some predefined names exists:
     # seen -- discovery confirms resource usage
@@ -48,6 +51,10 @@ class Transition(Document):
     ])
     # Text label
     label = StringField()
+    # Event name
+    event = StringField()
+    # Arbbitrary description
+    description = StringField()
     # Enable manual transition
     enable_manual = BooleanField(default=True)
     # Handler to be called on starting transitions
@@ -77,3 +84,10 @@ class Transition(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return Transition.objects.filter(bi_id=id).first()
+
+    def clean(self):
+        if not self.from_state or not self.to_state:
+            raise ValueError("Missed state")
+        if self.from_state.workflow != self.to_state.workflow:
+            raise ValueError("Workflow mismatch")
+        self.workflow = self.from_state.workflow
