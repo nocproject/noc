@@ -4,8 +4,15 @@
 // Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.platform.Model");
 
+var convert = function(v) {
+    if(v instanceof Date) {
+        return Ext.Date.format(v, 'Y-m-d');
+    }
+    return Ext.Date.parse(v, "Y-m-d");
+};
+
+console.debug("Defining NOC.inv.platform.Model");
 Ext.define("NOC.inv.platform.Model", {
     extend: "Ext.data.Model",
     rest_url: "/inv/platform/",
@@ -34,19 +41,23 @@ Ext.define("NOC.inv.platform.Model", {
         },
         {
             name: "start_of_sale",
-            type: "string"
+            type: "date",
+            convert: convert
         },
         {
             name: "end_of_sale",
-            type: "string"
+            type: "date",
+            convert: convert
         },
         {
             name: "end_of_support",
-            type: "string"
+            type: "date",
+            convert: convert
         },
         {
             name: "end_of_xsupport",
-            type: "string"
+            type: "date",
+            convert: convert
         },
         {
             name: "snmp_sysobjectid",
