@@ -24,8 +24,17 @@ Ext.define("NOC.wf.workflow.Model", {
             type: "string"
         },
         {
+            name: "description",
+            type: "string"
+        },
+        {
             name: "remote_system",
             type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
         },
         {
             name: "is_active",

@@ -46,6 +46,12 @@ Ext.define("NOC.wf.workflow.Application", {
                     boxLabel: __("Active")
                 },
                 {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: __("Description"),
+                    allowBlank: true
+                },
+                {
                     xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),

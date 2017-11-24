@@ -36,6 +36,7 @@ class Workflow(Document):
     name = StringField(unique=True)
     description = StringField()
     is_active = BooleanField()
+    description = StringField()
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
