@@ -28,8 +28,18 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
                 padding: '0 10'
             },
             items: [
-                {boxLabel: __('Active'), name: 'params', inputValue: 'status=A', checked: true},
-                {boxLabel: __('Archive (last 25)'), name: 'params', inputValue: 'status=C&__limit=25&__sort=[{"property":"timestamp","direction":"DESC"}]'}
+                {
+                    boxLabel: __('Active'),
+                    name: 'params',
+                    inputValue: 'status=A',
+                    checked: true
+                },
+                {
+                    boxLabel: __('Archive (last 25)'),
+                    width: 150,
+                    name: 'params',
+                    inputValue: 'status=C&__limit=25&__sort=[{"property":"timestamp","direction":"DESC"}]'
+                }
             ],
             listeners: {
                 scope: me,
