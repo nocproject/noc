@@ -32,6 +32,11 @@ Ext.define("NOC.wf.state.Model", {
             type: "string"
         },
         {
+            name: "workflow__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "job_handler",
             type: "string"
         },

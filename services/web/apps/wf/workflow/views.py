@@ -16,6 +16,6 @@ class WorkflowApplication(ExtDocApplication):
     """
     Workflow application
     """
-    title = "Workflows"
+    title = _("Workflows")
     menu = [_("Setup"), _("Workflow")]
     model = Workflow

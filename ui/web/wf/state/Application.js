@@ -33,31 +33,32 @@ Ext.define("NOC.wf.state.Application", {
                     text: __("Default"),
                     dataIndex: "is_default",
                     width: 50,
-                    renderer: NOC.render.True
+                    renderer: NOC.render.Bool
                 },
                 {
                     text: __("Productive"),
                     dataIndex: "is_productive",
                     width: 50,
-                    renderer: NOC.render.True
+                    renderer: NOC.render.Bool
                 },
                 {
                     text: __("Update Last Seen"),
                     dataIndex: "is_productive",
                     width: 50,
-                    renderer: NOC.render.True
+                    renderer: NOC.render.Bool
                 },
                 {
                     text: __("Update Expired"),
                     dataIndex: "is_productive",
                     width: 50,
-                    renderer: NOC.render.True
+                    renderer: NOC.render.Bool
                 },
                 {
                     text: __("TTL"),
                     dataIndex: "ttl",
                     width: 50,
-                    align: "right"
+                    align: "right",
+                    renderer: NOC.render.Duration
                 }
             ],
 
@@ -89,7 +90,7 @@ Ext.define("NOC.wf.state.Application", {
                 {
                     name: "is_productive",
                     xtype: "checkbox",
-                    boxLabel: __("Default")
+                    boxLabel: __("Productive")
                 },
                 {
                     name: "update_last_seen",
@@ -140,6 +141,18 @@ Ext.define("NOC.wf.state.Application", {
                             uiStyle: "medium"
                         }
                     ]
+                },
+                {
+                    name: "on_enter_handlers",
+                    xtype: "stringsfield",
+                    fieldLabel: __("On Enter Handlers"),
+                    allowBlank: true
+                },
+                {
+                    name: "on_leave_handlers",
+                    xtype: "stringsfield",
+                    fieldLabel: __("On Enter Handlers"),
+                    allowBlank: true
                 }
             ]
         });
