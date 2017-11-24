@@ -23,6 +23,20 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
             handler: me.onRefresh
         });
 
+        me.statusRadioButton = Ext.create("Ext.form.RadioGroup", {
+            defaults: {
+                padding: '0 10'
+            },
+            items: [
+                {boxLabel: __('Active'), name: 'params', inputValue: 'status=A', checked: true},
+                {boxLabel: __('Archive (last 25)'), name: 'params', inputValue: 'status=C&__limit=25&__sort=[{"property":"timestamp","direction":"DESC"}]'}
+            ],
+            listeners: {
+                scope: me,
+                change: me.onRefresh
+            }
+        });
+
         me.store = Ext.create("Ext.data.Store", {
             model: "NOC.fm.alarm.Model",
             data: []
@@ -81,7 +95,8 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
                     dock: "top",
                     items: [
                         me.getCloseButton(),
-                        me.refreshButton
+                        me.refreshButton,
+                        me.statusRadioButton
                     ]
                 }
             ],
@@ -106,14 +121,20 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
     preview: function(record, backItem) {
         var me = this;
         me.callParent(arguments);
+        var status = me.statusRadioButton.getValue().params,
+            url = Ext.String.format("/fm/alarm/?managed_object={0}&__format=ext&{1}", me.currentRecord.get("id"), status);
         me.setTitle(record.get("name") + " alarms");
         Ext.Ajax.request({
-            url: "/fm/alarm/?managed_object=" + me.currentRecord.get("id"),
+            url: url,
             method: "GET",
             scope: me,
             success: function(response) {
-                var data = Ext.decode(response.responseText);
-                me.store.loadData(data);
+                var result = Ext.decode(response.responseText);
+                if(result.hasOwnProperty('data')) {
+                    me.store.loadData(result.data);
+                } else {
+                    me.store.removeAll();
+                }
             },
             failure: function() {
                 NOC.error(__("Failed to load data"));
