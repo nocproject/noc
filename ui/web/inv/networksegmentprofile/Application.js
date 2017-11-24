@@ -115,8 +115,11 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                                     ["lacp", "LACP"],
                                     ["lldp", "LLDP"],
                                     ["oam", "OAM"],
+                                    ["rep", "REP"],
                                     ["stp", "STP"],
                                     ["udld", "UDLD"],
+                                    ["fdp", "FDP"],
+                                    ["bfd", "BFD"],
                                     ["mac", "MAC"],
                                     ["nri", "NRI"]
                                 ]
