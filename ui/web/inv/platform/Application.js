@@ -16,8 +16,7 @@ Ext.define("NOC.inv.platform.Application", {
     search: true,
 
     initComponent: function () {
-        var me = this,
-            defaultDateFormat = "Y-m-d";
+        var me = this;
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
@@ -111,8 +110,7 @@ Ext.define("NOC.inv.platform.Application", {
                             fieldLabel: __("Start of Sale"),
                             allowBlank: true,
                             uiStyle: "medium",
-                            format: defaultDateFormat,
-                            nocDateFormat: defaultDateFormat
+                            format: "Y-m-d"
                         },
                         {
                             name: "end_of_sale",
@@ -121,8 +119,7 @@ Ext.define("NOC.inv.platform.Application", {
                             fieldLabel: __("End of Sale"),
                             allowBlank: true,
                             uiStyle: "medium",
-                            format: defaultDateFormat,
-                            nocDateFormat: defaultDateFormat
+                            format: "Y-m-d"
                         },
                         {
                             name: "end_of_support",
@@ -131,8 +128,7 @@ Ext.define("NOC.inv.platform.Application", {
                             fieldLabel: __("End of Support"),
                             allowBlank: true,
                             uiStyle: "medium",
-                            format: defaultDateFormat,
-                            nocDateFormat: defaultDateFormat
+                            format: "Y-m-d"
                         },
                         {
                             name: "end_of_xsupport",
@@ -141,8 +137,7 @@ Ext.define("NOC.inv.platform.Application", {
                             fieldLabel: __("End of Extended Support"),
                             allowBlank: true,
                             uiStyle: "medium",
-                            format: defaultDateFormat,
-                            nocDateFormat: defaultDateFormat
+                            format: "Y-m-d"
                         }
                     ]
                 },
