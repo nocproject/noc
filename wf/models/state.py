@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+import logging
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, ListField,
@@ -21,9 +22,14 @@ from noc.lib.nosql import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
+from noc.core.handler import get_handler
+from noc.core.defer import call_later
+from noc.models import get_model_id
 
-
+logger = logging.getLogger(__name__)
 id_lock = Lock()
+
+TRANSITION_HANDLER = "noc.core.wf.transition.transition_job"
 
 
 @bi_sync
@@ -91,3 +97,91 @@ class State(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return State.objects.filter(bi_id=id).first()
+
+    def on_enter_state(self, obj):
+        """
+        Called when object enters state
+        :param obj:
+        :return:
+        """
+        # Process on enter handlers
+        if self.on_leave_handlers:
+            logger.debug("[%s|%s] Running on_enter_handlers",
+                         obj, obj.state.name)
+            for hn in self.on_enter_handlers:
+                h = get_handler(hn)
+                if h:
+                    logger.debug("[%s|%s] Running %s",
+                                 obj, self.name, hn)
+                    h(obj)  # @todo: Catch exceptions
+                else:
+                    logger.debug("[%s|%s] Invalid handler %s, skipping",
+                                 obj, self.name, hn)
+        # Run Job handler when necessary
+        if self.job_handler:
+            logger.debug("[%s|%s] Running job handler %s",
+                         obj.self.name, self.job_handler)
+            h = get_handler(self.job_handler)
+            if h:
+                call_later(
+                    TRANSITION_HANDLER,
+                    handler=self.job_handler,
+                    model=get_model_id(obj),
+                    object=str(obj.pk)
+                )
+            else:
+                logger.debug("[%s|%s] Invalid job handler %s, skipping",
+                             obj, self.name, self.job_handler)
+
+    def on_leave_state(self, obj):
+        """
+        Called when object leaves state
+        :param obj:
+        :return:
+        """
+        if self.on_leave_handlers:
+            logger.debug("[%s|%s] Running on_leave_handlers",
+                         obj, self.name)
+            for hn in self.on_leave_handlers:
+                h = get_handler(hn)
+                if h:
+                    logger.debug("[%s|%s] Running %s",
+                                 obj, self.name, hn)
+                    h(obj)  # @todo: Catch exceptions
+                else:
+                    logger.debug("[%s|%s] Invalid handler %s, skipping",
+                                 obj, self.name, hn)
+
+    def fire_transtion(self, transition, obj):
+        """
+        Process transition from state
+        :param transition:
+        :param obj:
+        :return:
+        """
+        assert obj.state == self
+        assert transition.from_state == self
+        # Leave state
+        self.on_leave_state(obj)
+        # Process transition
+        transition.on_transition(obj)
+        # Set new state
+        # Raises on_enter handler
+        obj.set_state(transition.to_state)
+
+    def fire_event(self, event, obj):
+        """
+        Fire transition by event name
+        :param event:
+        :param obj:
+        :return:
+        """
+        from .transition import Transition
+
+        t = Transition.objects.filter(from_state=self.id,
+                                      event=event).first()
+        if t:
+            self.fire_transtion(t, obj)
+        else:
+            logger.debug("[%s|%s] No event handler for '%s'. Skipping",
+                         obj, self.name)

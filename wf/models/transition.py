@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 from threading import Lock
 import operator
+import logging
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, LongField,
@@ -21,8 +22,9 @@ from .state import State
 from noc.lib.nosql import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
+from noc.core.handler import get_handler
 
-
+logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 
@@ -45,25 +47,16 @@ class Transition(Document):
     # Some predefined names exists:
     # seen -- discovery confirms resource usage
     # expired - TTL expired
-    event = StringField(choices=[
-        ("seen", "Resource is seen"),
-        ("expired", "Resource is expired")
-    ])
+    event = StringField()
     # Text label
     label = StringField()
-    # Event name
-    event = StringField()
     # Arbbitrary description
     description = StringField()
     # Enable manual transition
     enable_manual = BooleanField(default=True)
     # Handler to be called on starting transitions
-    on_enter_handlers = ListField(StringField())
-    # Job to be started on entering transition
-    # Job key will be <transition id>-<resource model>-<resource id>
-    job_handler = StringField()
-    # Handlers to be called on leaving transitions
-    on_leave_handlers = ListField(StringField())
+    # Any exception aborts transtion
+    handlers = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -91,3 +84,24 @@ class Transition(Document):
         if self.from_state.workflow != self.to_state.workflow:
             raise ValueError("Workflow mismatch")
         self.workflow = self.from_state.workflow
+
+    def on_transition(self, obj):
+        """
+        Called during transition
+        :param obj:
+        :return:
+        """
+        if self.handlers:
+            logger.debug("[%s|%s|%s] Running transition handlers",
+                         obj, obj.state.name, self.label)
+            for hn in obj.state.on_leave_handlers:
+                h = get_handler(hn)
+                if h:
+                    logger.debug("[%s|%s|%s] Running %s",
+                                 obj, obj.state.name,
+                                 self.label, hn)
+                    h(obj)  # @todo: Catch exceptions
+                else:
+                    logger.debug("[%s|%s|%s] Invalid handler %s, skipping",
+                                 obj, obj.state.name,
+                                 self.label, hn)

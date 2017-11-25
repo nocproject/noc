@@ -142,15 +142,9 @@ Ext.define("NOC.wf.transition.Application", {
                     ]
                 },
                 {
-                    name: "on_enter_handlers",
+                    name: "handlers",
                     xtype: "stringsfield",
-                    fieldLabel: __("On Enter Handlers"),
-                    allowBlank: true
-                },
-                {
-                    name: "on_leave_handlers",
-                    xtype: "stringsfield",
-                    fieldLabel: __("On Enter Handlers"),
+                    fieldLabel: __("Handlers"),
                     allowBlank: true
                 }
             ]

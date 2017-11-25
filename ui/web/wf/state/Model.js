@@ -71,6 +71,10 @@ Ext.define("NOC.wf.state.Model", {
         {
             name: "name",
             type: "string"
+        },
+        {
+            name: "description",
+            type: "string"
         }
     ]
 });

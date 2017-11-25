@@ -59,10 +59,6 @@ Ext.define("NOC.wf.transition.Model", {
             type: "string"
         },
         {
-            name: "job_handler",
-            type: "string"
-        },
-        {
             name: "is_active",
             type: "boolean",
             defaultValue: true
@@ -71,10 +67,6 @@ Ext.define("NOC.wf.transition.Model", {
             name: "enable_manual",
             type: "boolean",
             defaultValue: true
-        },
-        {
-            name: "on_leave_handlers",
-            type: "auto"
         },
         {
             name: "bi_id",
@@ -89,7 +81,7 @@ Ext.define("NOC.wf.transition.Model", {
             type: "string"
         },
         {
-            name: "on_enter_handlers",
+            name: "handlers",
             type: "auto"
         }
     ]
