@@ -793,7 +793,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "Cannot clean interface %s:%s. Skipping",
                         self.object, l)
                     continue
-                ri = self.clean_interface(self.object, r)
+                ri = self.clean_interface(remote_object, r)
                 if not ri:
                     self.logger.info(
                         "Cannot clean interface %s:%s. Skipping",
