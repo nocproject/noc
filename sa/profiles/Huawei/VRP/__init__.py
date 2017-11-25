@@ -3,11 +3,11 @@
 # Vendor: Huawei
 # OS:     VRP
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.profile.base import BaseProfile
 import re
 
@@ -69,6 +69,7 @@ class Profile(BaseProfile):
         >>> Profile().convert_interface_name("MEth2/0/0")
         'M-Ethernet2/0/0'
         """
+        s = str(s)  # avoid `expected string or buffer` error
         match = self.rx_interface_name.match(s)
         if not match:
             return s
