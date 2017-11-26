@@ -287,6 +287,11 @@ config:
       description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
       label: "Keep max messages in memory"
       type: int
+    max_msg_size:
+      default: 1048576
+      description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
+      label: "Max message size"
+      type: int
   patroni:
     rest_password:
       description: "<strong> <a href=https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst target=_blank> https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst </a> </strong>"
@@ -352,16 +357,9 @@ config:
       label: "Listen SYSLOG"
       type: str
   tgsender:
-    proxy_addres:
-      label: "Proxy Addres (https://ip:port) If use auth (https://us:pass@ip:port)"
-      type: str
     token:
       label: Token
       type: str
-    use_proxy:
-      default: false
-      label: "Use Proxy"
-      type: bool
   trapcollector:
     listen_traps:
       default: "0.0.0.0:162"

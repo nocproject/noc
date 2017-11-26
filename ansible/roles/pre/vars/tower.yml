@@ -46,6 +46,7 @@ nginx_json_logging: "{{noc_config['config'].get('nginx-global-%s' % ansible_node
 nginx_self_signed_cerificate: "{{noc_config['config'].get('nginx-global-%s' % ansible_nodename, {}).get('certificate', true)}}"
 
 nsq_max_messages_in_memory: "{{ noc_config['config'].get('nsqd-global-%s' % ansible_nodename, {}).get('max_messages_in_memory', 10000) }}"
+nsq_max_msg_size: "{{ noc_config['config'].get('nsqd-global-%s' % ansible_nodename, {}).get('max_msg_size', 1048576) }}"
 
 pgbouncer_max_clients: "{{noc_config['config'].get('pgbouncer-global-%s' % ansible_nodename, {}).get('pgbouncer_max_clients', '3000') | int | abs}}"
 pgbouncer_max_db_connection: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_nodename, {}).get('pgbouncer_max_db_connections', '10'))}}"
