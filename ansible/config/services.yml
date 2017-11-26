@@ -275,6 +275,11 @@ config:
       label: "Self-signed certificate"
       description: "Is provided certificate is trusted by nodes?"
       type: bool
+    external_cert_managment:
+      default: False
+      label: "Use external certificate management"
+      description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
+      type: bool
   noc:
     python_interpreter:
       default: python
