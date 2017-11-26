@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app import ExtDocApplication
 from noc.wf.models.workflow import Workflow
 from noc.core.translation import ugettext as _
 
