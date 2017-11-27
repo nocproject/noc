@@ -137,11 +137,11 @@ class Script(BaseScript):
             match = self.rx_snmp.search(name)
             if match:
                 if name.startswith("Adsl"):
-                    snmp_ifindex = 201326592+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 201326592 + int(match.group("card"))*65536 + int(match.group("port"))*64
                 if name.startswith("Ethernet"):
-                    snmp_ifindex = 469762306+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 469762306 + int(match.group("card"))*65536 + int(match.group("port"))*64
                 if name.startswith("Gigabit"):
-                    snmp_ifindex = 503316993+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 503316993 + int(match.group("card"))*65536 + int(match.group("port"))*64
                 iface["snmp_ifindex"] = snmp_ifindex
             interfaces += [iface]
         for v in self.cli("show ip interface\n").split("\n\n"):
