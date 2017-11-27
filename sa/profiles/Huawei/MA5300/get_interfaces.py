@@ -181,3 +181,4 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["mac"] = mac
             interfaces += [iface]
         return [{"interfaces": interfaces}]
+
