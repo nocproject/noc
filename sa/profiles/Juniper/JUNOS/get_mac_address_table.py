@@ -42,7 +42,7 @@ class Script(BaseScript):
                 r += [{
                     "vlan_id": vlan_id,
                     "mac": match.group("mac"),
-                    "interfaces": [self.profile.get_interface_names(match.group("interfaces"))],
+                    "interfaces": self.profile.get_interface_names(match.group("interfaces")),
                     "type": {
                         "learn": "D",
                         "static": "S"
