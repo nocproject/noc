@@ -39,10 +39,13 @@ class Script(BaseScript):
                     vlan_id = int(vlans[match.group("vlan_name")])
                 else:
                     vlan_id = 1
+                ifname = match.group("interfaces")
+                if ifname.endswith(".0"):
+                    ifname = ifname[:-2]
                 r += [{
                     "vlan_id": vlan_id,
                     "mac": match.group("mac"),
-                    "interfaces": self.profile.get_interface_names(match.group("interfaces")),
+                    "interfaces": [ifname],
                     "type": {
                         "learn": "D",
                         "static": "S"
