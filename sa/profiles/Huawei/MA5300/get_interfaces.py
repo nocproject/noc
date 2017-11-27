@@ -10,7 +10,6 @@
 """
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -124,7 +123,7 @@ class Script(BaseScript):
                         break
             for vlan in vlan_table:
                 if name in vlan["tagged"]:
-                    if not "tagged_vlans" in sub:
+                    if "tagged_vlans" not in sub:
                         sub["tagged_vlans"] = []
                     sub["tagged_vlans"] += [vlan["vlan_id"]]
                 if name in vlan["untagged"]:
