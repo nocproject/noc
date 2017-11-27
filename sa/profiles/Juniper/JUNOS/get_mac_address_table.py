@@ -21,6 +21,16 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     def execute(self, interface=None, vlan=None, mac=None):
+        try:
+            self.cli("show ethernet-switching")
+        except self.CLISyntaxError:
+            # Juniper do not clear wrong input line
+            self.cli(
+                "\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08"
+                "\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08"
+                "\x08\x08\x08"
+            )
+            return []
         r = []
         vlans = {}
         for v in self.scripts.get_vlans():
