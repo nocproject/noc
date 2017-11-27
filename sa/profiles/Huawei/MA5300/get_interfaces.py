@@ -155,7 +155,6 @@ class Script(BaseScript):
                 mac = match1.group("mac")
             else:
                 mac = ""
-            #typ = self.types[ifname[:3]]
             iface = {
                 "name": ifname,
                 "type": self.types[ifname[:3]],
