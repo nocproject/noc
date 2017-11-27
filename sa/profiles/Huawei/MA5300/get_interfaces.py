@@ -11,7 +11,7 @@
 #Python modules
 import re
 from collections import defaultdict
-# NOC modules
+#NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -82,16 +82,16 @@ class Script(BaseScript):
             for v in self.rx_port.finditer(match.group("untagged")):
                 vlan["untagged"] += [v.group("port")]
             vlan_table += [vlan]
-        # ADSL ports state
+        #ADSL ports state
         adsl_state = {}
         v = self.cli("show adsl port state all")
         for match in self.rx_adsl_state.finditer(v):
             adsl_state[match.group("port")] = match.group("state")
-        # VDSL ports state
+        #VDSL ports state
         #vdsl_state = {}
         #v = self.cli("show vdsl port state all")
         #for match in self.rx_vdsl_state.finditer(v):
-        #    vdsl_state[match.group("port")] = match.group("state")
+            #vdsl_state[match.group("port")] = match.group("state")
         adsl_line = []
         v = self.cli("show adsl line config all")
         for match in self.rx_adsl_line.finditer(v):
