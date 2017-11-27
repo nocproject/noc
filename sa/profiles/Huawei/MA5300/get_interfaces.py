@@ -1,17 +1,17 @@
-#-*- coding: utf-8 -*-
-#---------------------------------------------------------------------
-#Huawei.MA5300.get_interfaces
-#---------------------------------------------------------------------
-#Copyright (C) 2007-2017 The NOC Project
-#See LICENSE for details
-#---------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Huawei.MA5300.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 """
 """
-#Python modules
+# Python modules
 import re
 from collections import defaultdict
-#NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -21,12 +21,14 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface_sep = re.compile(r"^ Vlan ID",
-        re.MULTILINE | re.IGNORECASE)
+                              re.MULTILINE | re.IGNORECASE)
     rx_vlan_id = re.compile(r"^: (?P<vlanid>\d+)$",
-        re.MULTILINE | re.IGNORECASE)
-    #rx_iface = re.compile(
-        #r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
-        #r"(?P<descr>.*)", re.MULTILINE)
+                            re.MULTILINE | re.IGNORECASE)
+    """
+    rx_iface = re.compile(
+        r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
+        r"(?P<descr>.*)", re.MULTILINE)
+    """
     rx_iface = re.compile(
         r"^(?P<port>\S+\d+) is (?P<admin_state>up|down)", re.MULTILINE)
     rx_adsl_state = re.compile(
@@ -82,16 +84,19 @@ class Script(BaseScript):
             for v in self.rx_port.finditer(match.group("untagged")):
                 vlan["untagged"] += [v.group("port")]
             vlan_table += [vlan]
-        #ADSL ports state
+        # ADSL ports state
         adsl_state = {}
         v = self.cli("show adsl port state all")
         for match in self.rx_adsl_state.finditer(v):
             adsl_state[match.group("port")] = match.group("state")
-        #VDSL ports state
-        #vdsl_state = {}
-        #v = self.cli("show vdsl port state all")
-        #for match in self.rx_vdsl_state.finditer(v):
-            #vdsl_state[match.group("port")] = match.group("state")
+
+        # VDSL ports state
+        """
+        vdsl_state = {}
+        v = self.cli("show vdsl port state all")
+        for match in self.rx_vdsl_state.finditer(v):
+            vdsl_state[match.group("port")] = match.group("state")
+        """
         adsl_line = []
         v = self.cli("show adsl line config all")
         for match in self.rx_adsl_line.finditer(v):
@@ -99,7 +104,7 @@ class Script(BaseScript):
         v = self.cli("show interface")
         for match in self.rx_iface.finditer(v):
             name = match.group("port")
-            #description = match.group("descr").strip()
+            # description = match.group("descr").strip()
             sub = {
                 "name": name,
                 "admin_status": True,
@@ -124,24 +129,26 @@ class Script(BaseScript):
                     sub["tagged_vlans"] += [vlan["vlan_id"]]
                 if name in vlan["untagged"]:
                     sub["untagged_vlan"] = vlan["vlan_id"]
-            iface= {
+            iface = {
                 "name": name,
                 "type": "physical",
                 "admin_status": True,
                 "oper_status": sub["oper_status"],
                 "subinterfaces": [sub],
             }
-            #if description:
-                #iface["description"] = description
-                #iface["subinterfaces"][0]["description"] = description
+            """
+            if description:
+                iface["description"] = description
+                iface["subinterfaces"][0]["description"] = description
+            """
             match = self.rx_snmp.search(name)
             if match:
                 if name.startswith("Adsl"):
-                    snmp_ifindex = 201326592 + int(match.group("card"))*65536 + int(match.group("port"))*64
+                    snmp_ifindex = 201326592 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 if name.startswith("Ethernet"):
-                    snmp_ifindex = 469762306 + int(match.group("card"))*65536 + int(match.group("port"))*64
+                    snmp_ifindex = 469762306 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 if name.startswith("Gigabit"):
-                    snmp_ifindex = 503316993 + int(match.group("card"))*65536 + int(match.group("port"))*64
+                    snmp_ifindex = 503316993 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 iface["snmp_ifindex"] = snmp_ifindex
             interfaces += [iface]
         for v in self.cli("show ip interface\n").split("\n\n"):
