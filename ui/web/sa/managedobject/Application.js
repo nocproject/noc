@@ -30,7 +30,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.inv.networksegment.LookupField",
         "NOC.main.timepattern.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.fm.ttsystem.LookupField"
+        "NOC.fm.ttsystem.LookupField",
+        "NOC.inv.platform.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -1085,6 +1086,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "service_terminator",
             ftype: "lookup",
             lookup: "sa.terminationgroup"
+        },
+        {
+            title: __("Platform"),
+            name: "platform",
+            ftype: "lookup",
+            lookup: "inv.platform"
         },
         {
             title: __("By Tags"),
