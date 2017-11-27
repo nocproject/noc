@@ -157,9 +157,9 @@ class Script(BaseScript):
         v = self.cli("show ip interface brief")
         for match in self.rx_vlan.finditer(v):
             vlan_id = match.group("vlan")
-            l = self.cli("show interface vlan %s" % vlan_id)
+            ll = self.cli("show interface vlan %s" % vlan_id)
             ifname = "VLAN%s" % vlan_id
-            match1 = self.rx_link.search(l)
+            match1 = self.rx_link.search(ll)
             iface = {
                 "name": ifname,
                 "type": "SVI",
@@ -176,11 +176,11 @@ class Script(BaseScript):
                     "vlan_ids": [int(vlan_id)]
                 }]
             }
-            match1 = self.rx_ipv4.search(l)
+            match1 = self.rx_ipv4.search(ll)
             if match1:
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv4"]
                 iface["subinterfaces"][0]["ipv4_addresses"] = [match1.group("ip")]
-            match1 = self.rx_ipv6.search(l)
+            match1 = self.rx_ipv6.search(ll)
             if match1:
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
                 iface["subinterfaces"][0]["ipv6_addresses"] = [match1.group("ip")]
