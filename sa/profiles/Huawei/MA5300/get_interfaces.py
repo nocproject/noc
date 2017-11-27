@@ -24,9 +24,11 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE)
     rx_vlan_id = re.compile(r"^: (?P<vlanid>\d+)$",
         re.MULTILINE | re.IGNORECASE)
+    #rx_iface = re.compile(
+        #r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
+        #r"(?P<descr>.*)", re.MULTILINE)
     rx_iface = re.compile(
-        r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
-        r"(?P<descr>.*)", re.MULTILINE)
+        r"^(?P<port>\S+\d+) is (?P<admin_state>up|down)", re.MULTILINE)
     rx_adsl_state = re.compile(
         r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)
     rx_vdsl_state = re.compile(
@@ -94,10 +96,10 @@ class Script(BaseScript):
         v = self.cli("show adsl line config all")
         for match in self.rx_adsl_line.finditer(v):
             adsl_line += [match.groupdict()]
-        v = self.cli("show interface description all")
+        v = self.cli("show interface")
         for match in self.rx_iface.finditer(v):
             name = match.group("port")
-            description = match.group("descr").strip()
+            #description = match.group("descr").strip()
             sub = {
                 "name": name,
                 "admin_status": True,
@@ -129,9 +131,9 @@ class Script(BaseScript):
                 "oper_status": sub["oper_status"],
                 "subinterfaces": [sub],
             }
-            if description:
-                iface["description"] = description
-                iface["subinterfaces"][0]["description"] = description
+            #if description:
+                #iface["description"] = description
+                #iface["subinterfaces"][0]["description"] = description
             match = self.rx_snmp.search(name)
             if match:
                 if name.startswith("Adsl"):
@@ -179,4 +181,3 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["mac"] = mac
             interfaces += [iface]
         return [{"interfaces": interfaces}]
-
