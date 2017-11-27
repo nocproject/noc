@@ -24,6 +24,7 @@ class Profile(BaseProfile):
     password_submit = "\r"
     pattern_more = "-- more --, next page: Space, continue: g, quit: ^"
     command_more = "g"
+    command_exit = "logout"
 
     def convert_interface_name(self, s):
         """

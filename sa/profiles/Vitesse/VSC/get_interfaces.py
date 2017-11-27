@@ -2,14 +2,13 @@
 # ---------------------------------------------------------------------
 # Vitesse.VSC.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
 from noc.lib.text import parse_table
 import re
 
@@ -39,6 +38,8 @@ class Script(BaseScript):
         r"^VLAN Trunking: \S+\s*\n"
         r"^Allowed VLANs:(?P<vlans>.*)\n", re.MULTILINE)
     rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+", re.MULTILINE)
+    rx_hybrid_vlan = re.compile(
+        r"^Hybrid Native Mode VLAN: (?P<native_vlan>\d+)", re.MULTILINE)
     rx_link = re.compile(
         r"^\s*LINK: (?P<mac>\S+) Mtu:(?P<mtu>\d+) \<(?P<options>.+?)\>",
         re.MULTILINE)
@@ -90,8 +91,6 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        descr = []
-        adm_status = []
         gvrp = self.get_gvrp()
         stp = self.get_stp()
         ctp = self.get_ctp()
@@ -143,7 +142,14 @@ class Script(BaseScript):
             elif match1.group("mode") == "trunk":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
                 sub["tagged_vlans"] = \
-                self.expand_rangelist(match1.group("vlans").strip())
+                    self.expand_rangelist(match1.group("vlans").strip())
+            elif match1.group("mode") == "hybrid":
+                sub["untagged_vlan"] = int(match1.group("native_vlan"))
+                sub["tagged_vlans"] = \
+                    self.expand_rangelist(match1.group("vlans").strip())
+                match2 = self.rx_hybrid_vlan.search(s)
+                if match2:
+                    sub["untagged_vlan"] = int(match2.group("native_vlan"))
             else:
                 raise self.NotSupportedError()
             iface["subinterfaces"] += [sub]
