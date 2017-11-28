@@ -286,6 +286,8 @@ _MODELS = {
     # crm models
     "crm.SubscriberProfile": "noc.crm.models.subscriberprofile.SubscriberProfile",
     "crm.SupplierProfile": "noc.crm.models.supplierprofile.SupplierProfile",
+    "crm.Subscriber": "noc.crm.models.subscriber.Subscriber",
+    "crm.Supplier": "noc.crm.models.supplier.Supplier",
     # sla models
     "sla.SLAProfile": "noc.sla.models.slaprofile.SLAProfile",
     "sla.SLAProbe": "noc.sla.models.slaprobe.SLAProbe",

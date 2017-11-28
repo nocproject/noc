@@ -16,13 +16,22 @@ class Migration(object):
     def forwards(self):
         db = get_db()
         # Workflow
-        db["workflows"].insert({
-            "_id": bson.ObjectId("5a01d980b6f529000100d37a"),
-            "name": "Default Resource",
-            "is_active": True,
-            "bi_id": long(1099501303790147280L),
-            "description": "Default resource workflow with external provisioning"
-        })
+        db["workflows"].insert([
+            {
+                "_id": bson.ObjectId("5a01d980b6f529000100d37a"),
+                "name": "Default Resource",
+                "is_active": True,
+                "bi_id": long(1099501303790147280L),
+                "description": "Default resource workflow with external provisioning"
+            },
+            {
+                "_id": bson.ObjectId("5a1d078e1bb627000151a17d"),
+                "name": "Default",
+                "is_active": True,
+                "bi_id": long(4397582378950796294L),
+                "description": "Default workflow with Ready state"
+            }
+        ])
         # State
         db["states"].insert([
             {
@@ -108,6 +117,20 @@ class Migration(object):
                 "on_leave_handlers": [],
                 "bi_id": long(8871888520366972039L),
                 "description": "Resource is temporary suspended/blocked for organisational reasons"
+            },
+            {
+                "_id": bson.ObjectId("5a1d07b41bb627000151a18b"),
+                "workflow": bson.ObjectId("5a1d078e1bb627000151a17d"),
+                "name": "Ready",
+                "is_default": True,
+                "is_productive": True,
+                "update_last_seen": True,
+                "ttl": 0,
+                "update_expired": False,
+                "on_enter_handlers": [],
+                "on_leave_handlers": [],
+                "bi_id": long(6481686024283854615L),
+                "description": "Resource is in productive usage"
             }
         ])
         # Transitions

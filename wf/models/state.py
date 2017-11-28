@@ -36,6 +36,8 @@ TRANSITION_HANDLER = "noc.core.wf.transition.transition_job"
 @on_delete_check(check=[
     ("wf.Transition", "from_state"),
     ("wf.Transition", "to_state"),
+    ("crm.Subscriber", "state"),
+    ("crm.Supplier", "state")
 ])
 class State(Document):
     meta = {
