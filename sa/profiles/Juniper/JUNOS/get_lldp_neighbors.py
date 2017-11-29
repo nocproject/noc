@@ -114,7 +114,7 @@ class Script(BaseScript):
             # Get capability
             cap = 0
             match = self.rx_caps.search(v)
-            if match.group("capability"):
+            if match:
                 s = match.group("capability")
                 # WLAN Access Point
                 s = s.replace(" Access Point", "")

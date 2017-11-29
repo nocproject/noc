@@ -10,7 +10,6 @@
 """
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -21,12 +20,16 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface_sep = re.compile(r"^ Vlan ID",
-        re.MULTILINE | re.IGNORECASE)
+                              re.MULTILINE | re.IGNORECASE)
     rx_vlan_id = re.compile(r"^: (?P<vlanid>\d+)$",
-        re.MULTILINE | re.IGNORECASE)
+                            re.MULTILINE | re.IGNORECASE)
+    """
     rx_iface = re.compile(
         r"^\s*(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)\s+:"
         r"(?P<descr>.*)", re.MULTILINE)
+    """
+    rx_iface = re.compile(
+        r"^(?P<port>\S+\d+) is (?P<admin_state>up|down)", re.MULTILINE)
     rx_adsl_state = re.compile(
         r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)
     rx_vdsl_state = re.compile(
@@ -85,19 +88,22 @@ class Script(BaseScript):
         v = self.cli("show adsl port state all")
         for match in self.rx_adsl_state.finditer(v):
             adsl_state[match.group("port")] = match.group("state")
+
         # VDSL ports state
-        #vdsl_state = {}
-        #v = self.cli("show vdsl port state all")
-        #for match in self.rx_vdsl_state.finditer(v):
-        #    vdsl_state[match.group("port")] = match.group("state")
+        """
+        vdsl_state = {}
+        v = self.cli("show vdsl port state all")
+        for match in self.rx_vdsl_state.finditer(v):
+            vdsl_state[match.group("port")] = match.group("state")
+        """
         adsl_line = []
         v = self.cli("show adsl line config all")
         for match in self.rx_adsl_line.finditer(v):
             adsl_line += [match.groupdict()]
-        v = self.cli("show interface description all")
+        v = self.cli("show interface")
         for match in self.rx_iface.finditer(v):
             name = match.group("port")
-            description = match.group("descr").strip()
+            # description = match.group("descr").strip()
             sub = {
                 "name": name,
                 "admin_status": True,
@@ -117,29 +123,31 @@ class Script(BaseScript):
                         break
             for vlan in vlan_table:
                 if name in vlan["tagged"]:
-                    if not "tagged_vlans" in sub:
+                    if "tagged_vlans" not in sub:
                         sub["tagged_vlans"] = []
                     sub["tagged_vlans"] += [vlan["vlan_id"]]
                 if name in vlan["untagged"]:
                     sub["untagged_vlan"] = vlan["vlan_id"]
-            iface= {
+            iface = {
                 "name": name,
                 "type": "physical",
                 "admin_status": True,
                 "oper_status": sub["oper_status"],
                 "subinterfaces": [sub],
             }
+            """
             if description:
                 iface["description"] = description
                 iface["subinterfaces"][0]["description"] = description
+            """
             match = self.rx_snmp.search(name)
             if match:
                 if name.startswith("Adsl"):
-                    snmp_ifindex = 201326592+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 201326592 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 if name.startswith("Ethernet"):
-                    snmp_ifindex = 469762306+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 469762306 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 if name.startswith("Gigabit"):
-                    snmp_ifindex = 503316993+int(match.group("card"))*65536+int(match.group("port"))*64
+                    snmp_ifindex = 503316993 + int(match.group("card")) * 65536 + int(match.group("port")) * 64
                 iface["snmp_ifindex"] = snmp_ifindex
             interfaces += [iface]
         for v in self.cli("show ip interface\n").split("\n\n"):
@@ -153,7 +161,6 @@ class Script(BaseScript):
                 mac = match1.group("mac")
             else:
                 mac = ""
-            typ = self.types[ifname[:3]]
             iface = {
                 "name": ifname,
                 "type": self.types[ifname[:3]],
@@ -179,4 +186,3 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["mac"] = mac
             interfaces += [iface]
         return [{"interfaces": interfaces}]
-
