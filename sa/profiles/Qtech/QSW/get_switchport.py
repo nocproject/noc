@@ -32,7 +32,6 @@ class Script(BaseScript):
     #    rx_vlan_stack = re.compile(
     #        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
-
     def execute(self):
         # TODO
         # Get portchannels
