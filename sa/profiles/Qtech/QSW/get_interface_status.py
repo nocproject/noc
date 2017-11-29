@@ -38,12 +38,12 @@ class Script(BaseScript):
                                 r.append({
                                     "interface": n,
                                     "status": int(s) == 1
-                                    })
+                                })
                         else:
                             r.append({
                                 "interface": n,
                                 "status": int(s) == 1
-                                })
+                            })
                 return r
             except self.snmp.TimeOutError:
                 pass
