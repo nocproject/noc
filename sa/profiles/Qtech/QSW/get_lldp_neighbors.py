@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -89,9 +89,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for match in self.rx_line.finditer(lldp):
-            local_interface = match.group("interface")
-            local_interface = \
-                self.profile.convert_interface_name(local_interface)
+            local_interface = self.profile.convert_interface_name(match.group("interface"))
             remote_chassis_id = match.group("chassis_id")
             remote_port = match.group("port_id")
             remote_system_name = match.group("name")

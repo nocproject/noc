@@ -53,6 +53,6 @@ class Profile(BaseProfile):
         """
         match = self.rx_ifname.match(s)
         if match:
-            return "Ethernet1/%d" % int(match.group("number"))
+            return "e1/%d" % int(match.group("number"))
         else:
             return s
