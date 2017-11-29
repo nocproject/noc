@@ -98,8 +98,8 @@ class Script(BaseScript):
 
             # Build neighbor data
             # Get capability
-            """
             cap = 0
+            """
             # for c in match.group("capabilities").split(","):
             if cap:
                 c = c.strip()
@@ -138,7 +138,7 @@ class Script(BaseScript):
                 n["remote_port_description"] = port_description
 
                 # TODO:
-                #n["remote_chassis_id_subtype"] = 4
+                # n["remote_chassis_id_subtype"] = 4
 
             i["neighbors"].append(n)
             r.append(i)
