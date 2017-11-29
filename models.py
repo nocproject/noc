@@ -286,6 +286,8 @@ _MODELS = {
     # crm models
     "crm.SubscriberProfile": "noc.crm.models.subscriberprofile.SubscriberProfile",
     "crm.SupplierProfile": "noc.crm.models.supplierprofile.SupplierProfile",
+    "crm.Subscriber": "noc.crm.models.subscriber.Subscriber",
+    "crm.Supplier": "noc.crm.models.supplier.Supplier",
     # sla models
     "sla.SLAProfile": "noc.sla.models.slaprofile.SLAProfile",
     "sla.SLAProbe": "noc.sla.models.slaprobe.SLAProbe",
@@ -297,6 +299,10 @@ _MODELS = {
     "phone.PhoneNumberProfile": "noc.phone.models.phonenumberprofile.PhoneNumberProfile",
     "phone.PhoneRange": "noc.phone.models.phonerange.PhoneRange",
     "phone.PhoneRangeProfile": "noc.phone.models.phonerangeprofile.PhoneRangeProfile",
+    # wf models
+    "wf.Workflow": "noc.wf.models.workflow.Workflow",
+    "wf.State": "noc.wf.models.state.State",
+    "wf.Transition": "noc.wf.models.transition.Transition"
 }
 
 FTS_MODELS = [
