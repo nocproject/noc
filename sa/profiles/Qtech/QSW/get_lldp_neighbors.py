@@ -26,21 +26,21 @@ class Script(BaseScript):
 
     rx_description = re.compile(
         r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
-#    rx_channel_description = re.compile(
-#        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-#    rx_vlan_stack = re.compile(
-#        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
+    #rx_channel_description = re.compile(
+    #r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    #rx_vlan_stack = re.compile(
+    #r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
 
 
     def execute(self):
 
         #TODO
         # Get portchannels
-#        portchannels = self.scripts.get_portchannel()
+        #portchannels = self.scripts.get_portchannel()
         portchannels = []
         portchannel_members = []
-#        for p in portchannels:
-#            portchannel_members += p["members"]
+        #for p in portchannels:
+            #portchannel_members += p["members"]
 
         # Get interafces status
         interface_status = {}
@@ -187,7 +187,7 @@ class Script(BaseScript):
 
         iface_conf = self.cli("show interface")
         # Correct Qtech BUG:
-        iface_conf = iface_conf.replace("\n\n                                                                          ", "\n")
+        iface_conf = iface_conf.replace("\n\n", "\n")
         iface_conf = iface_conf.splitlines()
         i = 0
         L = len(iface_conf) - 2
