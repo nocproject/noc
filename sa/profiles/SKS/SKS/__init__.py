@@ -24,6 +24,6 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal datadump"
     command_exit = "exit"
     pattern_more = [
-                    ("More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
-                    (r"^\n.+\[Yes/press\s+any\s+key\s+for\s+no\]", "Yes\n")
-                    ]
+        ("More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
+        (r"^\n.+\[Yes/press\s+any\s+key\s+for\s+no\]", "Yes\n")
+    ]
