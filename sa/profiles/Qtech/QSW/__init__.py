@@ -42,17 +42,17 @@ class Profile(BaseProfile):
     command_save_config = "copy running-config startup-config"
     pattern_prompt = r"^\S+#"
     rogue_chars = [re.compile(r"\s*\x1b\[74D\s+\x1b\[74D"), "\r"]
-    rx_ifname = re.compile(r"^(?:1/)?(?P<number>\d+)$")
+    rx_ifname = re.compile(r"^(?P<number>[\d/]+)$")
 
     def convert_interface_name(self, s):
         """
-        >>> Profile().convert_interface_name("Ethernet1/1")
-        'Ethernet1/1'
-        >>> Profile().convert_interface_name("1")
-        'Ethernet1/1'
+        >>> Profile().convert_interface_name("1/1")
+        'e1/1'
+        >>> Profile().convert_interface_name("e1/1")
+        'e1/1'
         """
-        match = self.rx_ifname.match(s)
+        match = self.rx_ifname.search(s)
         if match:
-            return "e1/%d" % int(match.group("number"))
+            return "e%s" % s
         else:
             return s

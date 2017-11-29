@@ -302,7 +302,7 @@ class Script(BaseScript):
                 if name in port_vlans:
                     if port_vlans[name]["untagged"]:
                         swp["untagged"] = port_vlans[name]["untagged"]
-                swp["interface"] = self.profile.convert_interface_name(name)
+                swp["interface"] = name
                 swp["members"] = members
                 r.append(swp)
                 write = False
