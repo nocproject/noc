@@ -15,8 +15,8 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Vitesse.VSC"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
-    pattern_syntax_error = r"% Invalid word detected at"
+    pattern_prompt = r"^(?P<hostname>\S+)\s*(\((config|config-\S+)\)|)\s*#"
+    pattern_syntax_error = r"\n% (Invalid|Ambiguous) word detected at"
     command_super = "enable"
     command_disable_pager = "terminal length 0"
     command_submit = "\r"
@@ -24,6 +24,9 @@ class Profile(BaseProfile):
     password_submit = "\r"
     pattern_more = "-- more --, next page: Space, continue: g, quit: ^"
     command_more = "g"
+    command_enter_config = "configure terminal"
+    command_leave_config = "end"
+    command_save_config = "copy running-config startup-config"
     command_exit = "logout"
 
     def convert_interface_name(self, s):
