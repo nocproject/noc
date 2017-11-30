@@ -25,7 +25,7 @@ class Script(BaseScript):
         fqdn = []
         v = self.cli("show configuration system", cached=True)
         match = self.rx_config.search(v)
-        if (match.group("hostname") and match.group("dname")):
+        if (match):
             fqdn += [match.group("hostname")]
             fqdn += [match.group("dname")]
             return ".".join(fqdn)
