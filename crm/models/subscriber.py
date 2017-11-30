@@ -19,10 +19,12 @@ from .subscriberprofile import SubscriberProfile
 from noc.main.models.remotesystem import RemoteSystem
 from noc.lib.nosql import PlainReferenceField
 from noc.wf.models.state import State
+from noc.core.wf.decorator import workflow
 
 id_lock = Lock()
 
 
+@workflow
 class Subscriber(Document):
     meta = {
         "collection": "noc.subscribers",
