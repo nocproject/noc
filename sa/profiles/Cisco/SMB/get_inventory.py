@@ -20,9 +20,9 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_item = re.compile(
-        r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>[\S ]+)?\s*, "
-        r"SN: (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
+        r"^NAME: \"(?P<name>[^\"]+)\"\s* DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
+        r"PID:\s+(?P<pid>\S+)?\s* VID:\s*(?P<vid>[\S ]+)?\s* SN: (?P<serial>\S+)\s*"
+        , re.MULTILINE | re.DOTALL)
 
     def execute(self):
         match = self.rx_item.search(self.cli("show inventory"))
