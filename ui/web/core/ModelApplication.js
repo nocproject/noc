@@ -33,6 +33,8 @@ Ext.define("NOC.core.ModelApplication", {
     preview: null,
     treeFilter: null,
     formLayout: "anchor",
+    formMinWidth: undefined,
+    formMaxWidth: undefined,
     //
     initComponent: function() {
         var me = this;
@@ -606,8 +608,11 @@ Ext.define("NOC.core.ModelApplication", {
                     xtype: "fieldset",
                     anchor: "100%",
                     minHeight: 130,
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
                     title: inline.title,
                     collapsible: true,
+                    collapsed: inline.collapsed,
                     items: [gp]
                 });
                 me.inlineStores.push(istore);
@@ -615,6 +620,8 @@ Ext.define("NOC.core.ModelApplication", {
         }
 
         me.formTitle = Ext.create("Ext.container.Container", {
+            minWidth: me.formMinWidth,
+            maxWidth: me.formMaxWidth,
             html: "Title",
             itemId: "form_title",
             padding: "0 0 4 0"
