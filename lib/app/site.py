@@ -95,6 +95,7 @@ class Site(object):
         self.log_api_calls = config.logging.log_api_calls
         self.log_sql_statements = config.logging.log_sql_statements
         self.app_contributors = defaultdict(set)
+        self.installed_applications = []
 
     @property
     def urls(self):
@@ -371,6 +372,14 @@ class Site(object):
         Fetch all view_* methods
         And register them
         """
+        self.installed_applications += [app_class]
+
+    def install_application(self, app_class):
+        """
+        Install application class to the router
+        :param app_class:
+        :return:
+        """
         # Register application
         app_id = app_class.get_app_id()
         if app_id in self.apps:
@@ -451,6 +460,7 @@ class Site(object):
             return
         # Connect to mongodb
         import noc.lib.nosql # noqa:F401
+        self.installed_applications = []
         prefix = "services/web/apps"
         # Load applications
         for app in [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]:
@@ -496,6 +506,10 @@ class Site(object):
                         }
                         self.set_menu_id(r, path + [title])
                         dm["children"] += [r]
+        # Install applications
+        for app_class in self.installed_applications:
+            self.install_application(app_class)
+        self.installed_applications = []
         # Finally, order the menu
         self.sort_menu()
 
