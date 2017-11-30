@@ -11,8 +11,7 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
     requires: [
         "NOC.crm.subscriberprofile.Model",
         "NOC.main.style.LookupField",
-        "NOC.main.ref.glyph.LookupField",
-        "NOC.wf.workflow.LookupField"
+        "NOC.main.ref.glyph.LookupField"
     ],
     model: "NOC.crm.subscriberprofile.Model",
     search: true,
@@ -41,12 +40,6 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     flex: 1
                 },
                 {
-                    text: __("Workflow"),
-                    dataIndex: "workflow",
-                    width: 150,
-                    renderer: NOC.render.Lookup("workflow")
-                },
-                {
                     text: __("Tags"),
                     dataIndex: "tags",
                     width: 150,
@@ -68,12 +61,6 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "expand"
-                },
-                {
-                    name: "workflow",
-                    xtype: "wf.workflow.LookupField",
-                    fieldLabel: __("Workflow"),
-                    allowBlank: false
                 },
                 {
                     name: "style",

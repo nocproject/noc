@@ -32,15 +32,6 @@ Ext.define("NOC.crm.supplierprofile.Model", {
             type: "auto"
         },
         {
-            name: "workflow",
-            type: "string"
-        },
-        {
-            name: "workflow__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "row_class",
             type: "string",
             persist: false
