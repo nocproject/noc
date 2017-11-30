@@ -36,8 +36,6 @@ class EnvItem(EmbeddedDocument):
 
 
 @on_delete_check(check=[
-    ("crm.Subscriber", "remote_system"),
-    ("inv.InterfaceProfile", "remote_system"),
     ("sa.ManagedObject", "remote_system"),
     ("sa.AdministrativeDomain", "remote_system"),
     ("sa.ManagedObjectProfile", "remote_system"),
@@ -46,9 +44,6 @@ class EnvItem(EmbeddedDocument):
     ("sa.TerminationGroup", "remote_system"),
     ("sa.Service", "remote_system"),
     ("inv.NetworkSegment", "remote_system"),
-    ("wf.State", "remote_system"),
-    ("wf.Transition", "remote_system"),
-    ("wf.Workflow", "remote_system")
 ])
 class RemoteSystem(Document):
     meta = {

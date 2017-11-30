@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Subscriber Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,9 +13,8 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, IntField
 import cachetools
 # NOC models
-from noc.lib.nosql import ForeignKeyField, PlainReferenceField
+from noc.lib.nosql import ForeignKeyField
 from noc.main.models.style import Style
-from noc.wf.models.workflow import Workflow
 
 
 class SubscriberProfile(Document):
@@ -28,7 +27,6 @@ class SubscriberProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     style = ForeignKeyField(Style, required=False)
-    workflow = PlainReferenceField(Workflow)
     # FontAwesome glyph
     glyph = StringField()
     tags = ListField(StringField())
