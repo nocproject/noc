@@ -249,8 +249,8 @@ class MetricsCheck(DiscoveryCheck):
         o_metrics = self.get_object_profile_metrics(self.object.object_profile.id)
         self.logger.debug("Object metrics: %s", o_metrics)
         for metric in o_metrics:
-            if ((self.is_box and not metric.enable_box) or
-                    (self.is_periodic and not metric.enable_periodic)):
+            if ((self.is_box and not o_metrics[metric].enable_box) or
+                    (self.is_periodic and not o_metrics[metric].enable_periodic)):
                 continue
             m_id = next(self.id_count)
             metrics += [{
@@ -307,8 +307,8 @@ class MetricsCheck(DiscoveryCheck):
                 subs = self.get_subinterfaces()
             ifindex = i.get("ifindex")
             for metric in ipr:
-                if ((self.is_box and not metric.enable_box) or
-                        (self.is_periodic and not metric.enable_periodic)):
+                if ((self.is_box and not ipr[metric].enable_box) or
+                        (self.is_periodic and not ipr[metric].enable_periodic)):
                     continue
                 m_id = next(self.id_count)
                 m = {
@@ -361,8 +361,8 @@ class MetricsCheck(DiscoveryCheck):
                 )
                 continue
             for metric in pm:
-                if ((self.is_box and not metric.enable_box) or
-                        (self.is_periodic and not metric.enable_periodic)):
+                if ((self.is_box and not pm[metric].enable_box) or
+                        (self.is_periodic and not pm[metric].enable_periodic)):
                     continue
                 m_id = next(self.id_count)
                 metrics += [{
