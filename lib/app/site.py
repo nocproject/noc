@@ -31,8 +31,10 @@ from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
 
+
 class ProxyNode:
     pass
+
 
 HTTP_METHODS = set(["GET", "POST", "PUT", "DELETE"])
 
@@ -200,15 +202,15 @@ class Site(object):
                         if f.is_valid():
                             kwargs.update(f.cleaned_data)
                         else:
-                            errors = dict([(f, "; ".join(e))
-                                           for f, e in f.errors.items()])
+                            errors = dict(
+                                (cf, "; ".join(e))
+                                for cf, e in f.errors.items())
                     if errors:
                         #
                         if to_log_api_call:
                             app_logger.error("ERROR: %s", errors)
                         # Return error response
-                        ext_format = ("__format=ext"
-                                    in request.META["QUERY_STRING"].split("&"))
+                        ext_format = "__format=ext" in request.META["QUERY_STRING"].split("&")
                         r = json.dumps({
                             "status": False,
                             "errors": errors
@@ -245,8 +247,8 @@ class Site(object):
                             sc[stmt] += 1
                             tsc += 1
                             app_logger.debug("SQL %(sql)s %(time)ss" % q)
-                    x = ", ".join(["%s: %d" % (k, v)
-                                   for k, v in sc.iteritems()])
+                    x = ", ".join("%s: %d" % (k, cv)
+                                  for k, cv in sc.iteritems())
                     if x:
                         x = " (%s)" % x
                     app_logger.debug("SQL statements: %d%s" % (tsc, x))
@@ -254,7 +256,7 @@ class Site(object):
                 return HttpResponseForbidden(e)
             except Http404 as e:
                 return HttpResponseNotFound(e)
-            except:
+            except Exception:
                 # Generate 500
                 r = HttpResponse(
                     content=error_report(logger=app_logger),
@@ -268,7 +270,7 @@ class Site(object):
                         json.dumps(r),
                         mimetype="text/json; charset=utf-8"
                     )
-                except:
+                except Exception:
                     error_report(logger=app_logger)
                     r = HttpResponse(error_report(), status=500)
             r["Pragma"] = "no-cache"
@@ -404,7 +406,7 @@ class Site(object):
             names = set()
             for u, v in umap[url]:
                 for m in u.method:
-                    #if m in mm:
+                    # if m in mm:
                     #    raise ValueError("Overlapping methods for same URL")
                     mm[m] = v
                 if hasattr(v, "menu") and v.menu:
@@ -426,8 +428,7 @@ class Site(object):
             for n in names:
                 self.register_named_view(app.module, app.app, n, sv)
         # Register application-level menu
-        if (hasattr(app, "launch_access") and
-            hasattr(app, "menu") and app.menu):
+        if hasattr(app, "launch_access") and hasattr(app, "menu") and app.menu:
             self.add_app_menu(app)
         # Register contributors
         for c in self.app_contributors[app.__class__]:
@@ -449,7 +450,7 @@ class Site(object):
             # Do not discover site twice
             return
         # Connect to mongodb
-        import noc.lib.nosql
+        import noc.lib.nosql # noqa:F401
         prefix = "services/web/apps"
         # Load applications
         for app in [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]:
@@ -552,6 +553,7 @@ class Site(object):
             if pr:
                 for pr in self.apps[app].predefined_reports:
                     yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
+
 
 #
 # Global application site instance
