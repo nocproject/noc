@@ -60,8 +60,15 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             renderer: NOC.render.Lookup("metric_type")
                         },
                         {
-                            text: __("Active"),
-                            dataIndex: "is_active",
+                            text: __("Box"),
+                            dataIndex: "enable_box",
+                            width: 50,
+                            renderer: NOC.render.Bool,
+                            editor: "checkbox"
+                        },
+                        {
+                            text: __("Periodic"),
+                            dataIndex: "enable_periodic",
                             width: 50,
                             renderer: NOC.render.Bool,
                             editor: "checkbox"

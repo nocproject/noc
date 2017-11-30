@@ -62,6 +62,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
         STPCheck
     ])
 
+    is_box = True
+
     def handler(self, **kwargs):
         with Span(sample=self.object.box_telemetry_sample):
             has_cli = "C" in self.object.get_access_preference()

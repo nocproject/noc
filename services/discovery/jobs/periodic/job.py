@@ -24,6 +24,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     # Store context
     context_version = 1
 
+    is_periodic = True
+
     def handler(self, **kwargs):
         with Span(sample=self.object.periodic_telemetry_sample):
             if self.object.auth_profile and self.object.auth_profile.type == "S":
@@ -70,7 +72,6 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
 
     def can_update_alarms(self):
         return self.object.can_create_periodic_alarms()
-
 
     def get_fatal_alarm_weight(self):
         return self.object.object_profile.periodic_discovery_fatal_alarm_weight

@@ -33,26 +33,32 @@ from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, Boolea
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
 
-m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
-                                   "is_active": BooleanParameter(default=False),
-                                   "is_stored": BooleanParameter(default=True),
-                                   "window_type": StringParameter(choices=["m", "t"],
-                                                                  default="m"),
-                                   "window": IntParameter(default=1),
-                                   "window_function": StringParameter(choices=["handler", "last", "avg",
-                                                                               "percentile", "q1", "q2", "q3",
-                                                                               "p95", "p99"],
-                                                                      default="last"),
-                                   "window_config": StringParameter(default=""),
-                                   "window_related": BooleanParameter(default=False),
-                                   "low_error": IntParameter(required=False),
-                                   "high_error": IntParameter(required=False),
-                                   "low_warn": IntParameter(required=False),
-                                   "high_warn": IntParameter(required=False),
-                                   "low_error_weight": IntParameter(default=10),
-                                   "low_warn_weight": IntParameter(default=1),
-                                   "high_warn_weight": IntParameter(default=1),
-                                   "high_error_weight": IntParameter(default=10)})
+m_valid = DictListParameter(attrs={
+    "metric_type": ObjectIdParameter(required=True),
+    "enable_box": BooleanParameter(default=True),
+    "enable_periodic": BooleanParameter(default=True),
+    "is_stored": BooleanParameter(default=True),
+    "window_type": StringParameter(
+        choices=["m", "t"],
+        default="m"),
+    "window": IntParameter(default=1),
+    "window_function": StringParameter(
+        choices=[
+            "handler", "last", "avg",
+            "percentile", "q1", "q2", "q3",
+            "p95", "p99"],
+        default="last"),
+    "window_config": StringParameter(default=""),
+    "window_related": BooleanParameter(default=False),
+    "low_error": IntParameter(required=False),
+    "high_error": IntParameter(required=False),
+    "low_warn": IntParameter(required=False),
+    "high_warn": IntParameter(required=False),
+    "low_error_weight": IntParameter(default=10),
+    "low_warn_weight": IntParameter(default=1),
+    "high_warn_weight": IntParameter(default=1),
+    "high_error_weight": IntParameter(default=10)
+})
 
 id_lock = Lock()
 

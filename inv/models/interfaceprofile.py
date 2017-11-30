@@ -29,8 +29,11 @@ id_lock = Lock()
 
 class InterfaceProfileMetrics(EmbeddedDocument):
     metric_type = ReferenceField(MetricType, required=True)
-    # Collect metric
-    is_active = BooleanField()
+    # Metric collection settings
+    # Enable during box discovery
+    enable_box = BooleanField(default=True)
+    # Enable during periodic discovery
+    enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Window depth
