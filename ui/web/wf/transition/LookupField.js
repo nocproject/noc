@@ -1,13 +1,12 @@
 //---------------------------------------------------------------------
-// NOC.wf.workflow.Lookup
+// NOC.wf.transition.Lookup
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.wf.workflow.LookupField");
+console.debug("Defining NOC.wf.transition.LookupField");
 
-Ext.define("NOC.wf.workflow.LookupField", {
+Ext.define("NOC.wf.transition.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.wf.workflow.LookupField",
-    uiStyle: "medium"
+    alias: "widget.wf.transition.LookupField"
 });
