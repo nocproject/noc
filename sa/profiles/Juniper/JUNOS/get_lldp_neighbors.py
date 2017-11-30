@@ -25,7 +25,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_neigh = re.compile(
         r"^(?P<local_if>.e-\S+?|me0|fxp0)\s.*?$",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
     rx_detail = re.compile(
@@ -80,7 +80,7 @@ class Script(BaseScript):
                 "show lldp neighbors interface %s" % i["local_interface"]
             )
             n = {}
-            match = self.rx_detail1.search(v)
+            match = self.rx_detail.search(v)
             n["remote_chassis_id_subtype"] = self.CHASSIS_TYPE[
                 match.group("ch_type")
             ]
