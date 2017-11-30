@@ -49,8 +49,7 @@ class Script(BaseScript):
                         neigh["remote_chassis_id"] = \
                             MAC(neigh["remote_chassis_id"])
                     if neigh["remote_port_subtype"] == 3:
-                        neigh["remote_port_subtype"] = \
-                            MAC(neigh["remote_port_subtype"])
+                        neigh["remote_port"] = MAC(neigh["remote_port"])
                     r += [{
                         "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
                         # @todo if local interface subtype != 5
