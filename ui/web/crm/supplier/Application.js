@@ -57,7 +57,7 @@ Ext.define("NOC.crm.supplier.Application", {
                     name: "profile",
                     xtype: "crm.supplierprofile.LookupField",
                     fieldLabel: __("Profile"),
-                    allowBlank: true
+                    allowBlank: false
                 },
                 {
                     name: "description",
