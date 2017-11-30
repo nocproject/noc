@@ -119,7 +119,10 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
-    @BaseScript.match(platform__regex=r"^C(3900|2951)")
+    #
+    # Cisco ISR series
+    #
+    @BaseScript.match(platform__regex=r"^C(1900|2900|2951|3900)")
     def execute_c3900(self):
         v = self.cli("show diag")
         macs = []
