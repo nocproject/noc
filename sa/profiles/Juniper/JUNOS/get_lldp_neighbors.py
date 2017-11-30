@@ -25,24 +25,16 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_neigh = re.compile(
         r"^(?P<local_if>.e-\S+?|me0|fxp0)\s.*?$",
-        re.MULTILINE | re.IGNORECASE)
+        re.MULTILINE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
-    rx_detail1 = re.compile(
+    rx_detail = re.compile(
         r"Chassis type\s+:\s+(?P<ch_type>.+)\n"
         r"Chassis ID\s+:\s(?P<id>\S+)\n"
         r"Port type\s+:\s(?P<p_type>.+)\n"
         r"Port ID\s+:\s(?P<p_id>.+)\n"
-        r"System name\s+:\s(?P<name>.+)\n",
-        re.MULTILINE
-    )
-    rx_detail2 = re.compile(
-        r"Chassis type\s+:\s+(?P<ch_type>.+)\n"
-        r"Chassis ID\s+:\s(?P<id>\S+)\n"
-        r"Port type\s+:\s(?P<p_type>.+)\n"
-        r"Port ID\s+:\s(?P<p_id>.+)\n"
-        r"Port description\s+:\s(?P<p_descr>.+)\n"
-        r"System name\s+:\s(?P<name>.+)\n",
+        r"(Port description\s+:\s(?P<p_descr>.+)\n)?"
+        r"(System name\s+:\s(?P<name>.+)\n)?",
         re.MULTILINE
     )
     rx_caps = re.compile(
@@ -87,30 +79,18 @@ class Script(BaseScript):
             v = self.cli(
                 "show lldp neighbors interface %s" % i["local_interface"]
             )
-            match = self.rx_detail1.search(v)
             n = {}
-            if match:
-                n["remote_chassis_id_subtype"] = self.CHASSIS_TYPE[
-                    match.group("ch_type")
-                ]
-                n["remote_port_subtype"] = self.PORT_TYPE[
-                    match.group("p_type")
-                ]
-                n["remote_chassis_id"] = match.group("id")
+            match = self.rx_detail.search(v)
+            n["remote_chassis_id_subtype"] = self.CHASSIS_TYPE[
+                match.group("ch_type")
+            ]
+            n["remote_chassis_id"] = match.group("id")
+            n["remote_port_subtype"] = self.PORT_TYPE[match.group("p_type")]
+            n["remote_port"] = match.group("p_id")
+            if match.group("p_descr"):
+                n["remote_port_description"] = match.group("p_descr")
+            if match.group("name"):
                 n["remote_system_name"] = match.group("name")
-                n["remote_port"] = match.group("p_id")
-            else:
-                match = self.rx_detail2.search(v)
-                if match:
-                    n["remote_chassis_id_subtype"] = self.CHASSIS_TYPE[
-                        match.group("ch_type")
-                    ]
-                    n["remote_port_subtype"] = self.PORT_TYPE[
-                        match.group("p_type")
-                    ]
-                    n["remote_chassis_id"] = match.group("id")
-                    n["remote_port"] = match.group("p_id")
-                    n["remote_port_description"] = match.group("p_descr")
             # Get capability
             cap = 0
             match = self.rx_caps.search(v)

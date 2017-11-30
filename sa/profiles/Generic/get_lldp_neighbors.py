@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # Generic.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.core.mib import mib
+# from noc.core.mib import mib
 from noc.core.mac import MAC
 
 
@@ -19,8 +19,11 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     def execute_snmp(self):
-        neighb = ("remote_chassis_id_subtype", "remote_chassis_id", "remote_port_subtype",
-                  "remote_port", "remote_port_description", "remote_system_name")
+        neighb = (
+            "remote_chassis_id_subtype", "remote_chassis_id",
+            "remote_port_subtype", "remote_port",
+            "remote_port_description", "remote_system_name"
+        )
         r = []
         local_ports = {}
         if self.has_snmp():
@@ -43,7 +46,10 @@ class Script(BaseScript):
                 if v:
                     neigh = dict(zip(neighb, v[2:]))
                     if neigh["remote_chassis_id_subtype"] == 4:
-                        neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
+                        neigh["remote_chassis_id"] = \
+                            MAC(neigh["remote_chassis_id"])
+                    if neigh["remote_port_subtype"] == 3:
+                        neigh["remote_port"] = MAC(neigh["remote_port"])
                     r += [{
                         "local_interface": local_ports[v[0].split(".")[1]]["local_interface"],
                         # @todo if local interface subtype != 5
