@@ -153,7 +153,7 @@ class RemoteSystem(Document):
         extractors = extractors or self.get_extractors()
         try:
             return self.get_handler().check(extractors)
-        except Exception as e:
+        except Exception:
             error_report()
 
     def get_loader_chain(self):
