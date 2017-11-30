@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 import demjson
+from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
 from noc.inv.models.interface import Interface
@@ -23,10 +24,11 @@ class MODashboard(BaseDashboard):
     name = "mo"
 
     def resolve_object(self, object):
-        try:
-            return ManagedObject.objects.get(id=object)
-        except ManagedObject.DoesNotExist:
+        o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
+        if not o:
             raise self.NotFound()
+        else:
+            return o[0]
 
     def resolve_object_data(self, object):
         def interface_profile_has_metrics(profile):
