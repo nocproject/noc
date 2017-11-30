@@ -25,16 +25,6 @@ Ext.define("NOC.crm.subscriber.Model", {
             persist: false
         },
         {
-            name: "state",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "state__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "description",
             type: "string"
         },

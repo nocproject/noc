@@ -40,15 +40,6 @@ Ext.define("NOC.crm.subscriberprofile.Model", {
             type: "int"
         },
         {
-            name: "workflow",
-            type: "string"
-        },
-        {
-            name: "workflow__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "row_class",
             type: "string",
             persist: false

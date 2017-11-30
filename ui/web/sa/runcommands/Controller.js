@@ -334,10 +334,7 @@ Ext.define('NOC.sa.runcommands.Controller', {
     },
     //
     onShowResult: function(grid, record) {
-        var acc = [];
-
-        this.makeReportRow(record, acc);
-        this.getViewModel().set('resultOutput', acc.join('\n'));
+        this.getViewModel().set('resultOutput', record.get('result'))
     },
     //
     toNext: function() {
@@ -504,14 +501,10 @@ Ext.define('NOC.sa.runcommands.Controller', {
     buildReport: function() {
         var r = [];
 
-        this.getStore('selectedStore').each(function (record) {
-            this.makeReportRow(record, r);
-        }, this);
+        this.getStore('selectedStore').each(function(record) {
+            r.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
+            r.push('<div class=\'noc-mrt-result\'>' + record.get('result') + '</div>');
+        });
         return r.join('\n');
-    },
-    //
-    makeReportRow: function(record, ac) {
-        ac.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
-        ac.push('<div class=\'noc-mrt-result\'>' + record.get('result').map(function(e){return '<b>#</b> ' + e;}).join('\n') + '</div>');
     }
 });
