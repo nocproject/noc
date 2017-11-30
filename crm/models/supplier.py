@@ -18,10 +18,12 @@ import cachetools
 from .supplierprofile import SupplierProfile
 from noc.lib.nosql import PlainReferenceField
 from noc.wf.models.state import State
+from noc.core.wf.decorator import workflow
 
 id_lock = Lock()
 
 
+@workflow
 class Supplier(Document):
     meta = {
         "collection": "noc.suppliers",
