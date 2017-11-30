@@ -393,20 +393,21 @@ Ext.define('NOC.sa.runcommands.Application', {
                     }]
                 },
                 {
-                    xtype: 'panel',
                     region: 'east',
                     width: '50%',
-                    scrollable: true,
-                    padding: 4,
                     items: {
-                        xtype: 'container',
+                        xtype: 'textarea',
                         layout: 'fit',
+                        width: '100%',
+                        height: 700,
+                        scrollable: true,
+                        padding: 4,
                         fieldStyle: {
                             'fontFamily': 'courier new',
                             'fontSize': '12px'
                         },
                         bind: {
-                            html: '{resultOutput}'
+                            value: '{resultOutput}'
                         }
                     }
                 }

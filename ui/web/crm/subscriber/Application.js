@@ -29,13 +29,8 @@ Ext.define("NOC.crm.subscriber.Application", {
                     text: __("Profile"),
                     dataIndex: "profile",
                     width: 200,
-                    renderer: NOC.render.Lookup("profile")
-                },
-                {
-                    text: __("State"),
-                    dataIndex: "state",
-                    width: 200,
-                    renderer: NOC.render.Lookup("state")
+                    renderer: NOC.render.Lookup("profile"),
+                    flex: 1
                 },
                 {
                     text: __("Tags"),

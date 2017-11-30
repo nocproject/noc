@@ -12,7 +12,8 @@ Ext.define("NOC.fm.eventclass.Application", {
         "NOC.fm.eventclass.Model",
         "NOC.fm.eventclass.LookupField",
         "NOC.fm.alarmclass.LookupField",
-        "Ext.ux.form.JSONField"
+        "Ext.ux.form.JSONField",
+        "Ext.ux.form.StringsField"
     ],
     model: "NOC.fm.eventclass.Model",
     search: true,
