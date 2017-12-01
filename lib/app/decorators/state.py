@@ -28,7 +28,7 @@ class StateHandlerDecorator(BaseAppDecorator):
             "api_make_transition",
             self.api_make_transition,
             method=["GET"],
-            url=r"^(?P<object_id>[^/]+)/transitions/(?P<transition_id>[0-9a-f]{24}/$$",
+            url=r"^(?P<object_id>[^/]+)/transitions/(?P<transition_id>[0-9a-f]{24})/$",
             access="write",
             api=True
         )
