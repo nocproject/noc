@@ -102,7 +102,10 @@ class State(Document):
         return State.objects.filter(bi_id=id).first()
 
     def on_save(self):
-        pass
+        if ((hasattr(self, "_changed_fields") and "is_default" in self._changed_fields) or
+                not hasattr(self, "_changed_field")) and self.is_default:
+            # New default
+            self.workflow.set_default_state(self)
 
     def on_enter_state(self, obj):
         """
