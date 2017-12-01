@@ -125,7 +125,7 @@ noc_var_lib: /var/lib/noc
 noc_var: /var/opt/noc
 noc_etc: "{{noc_root}}/etc"
 noc_reports_dir: "{{noc_var_lib}}/reports"
-noc_crashinfo_dir: "{{noc_root}}/var/cp/crashinfo/new"
+noc_crashinfo_dir: "{{noc_var_lib}}/var/cp/crashinfo/new"
 
 bi_export_dir: "{{noc_var_lib}}/bi"
 

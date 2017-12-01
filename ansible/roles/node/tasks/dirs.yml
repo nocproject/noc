@@ -4,6 +4,7 @@
     state: "directory"
     owner: "{{ noc_user }}"
     mode: 0755
+  when: "'python' in python_interpreter"
 
 - name: Create required directories
   file:
@@ -11,12 +12,15 @@
     state: "directory"
     owner: "{{noc_user}}"
     mode: 0755
+    recurse: yes
   with_items:
     - "{{noc_etc}}"
     - "{{noc_root}}/var"
     - "{{noc_logs}}"
     - "{{noc_var_lib}}"
     - "{{noc_reports_dir}}"
+    - "{{noc_crashinfo_dir}}"
+    - "{{bi_export_dir}}"
 
 - name: Create etc directories
   file:
@@ -29,30 +33,3 @@
     - "{{noc_etc}}/services/"
     - "{{noc_etc}}/address/"
     - "{{noc_etc}}/ssh/"
-
-- name: Create required directories
-  file:
-    path: "{{item}}"
-    state: "directory"
-    owner: "root"
-    mode: 0755
-  with_items:
-    - "{{noc_root}}/var/etc"
-    - "{{noc_root}}/var/db"
-
-- name: Create crashinfo directory
-  file:
-    path: "{{noc_crashinfo_dir}}"
-    state: "directory"
-    owner: "{{noc_user}}"
-    mode: 0755
-    recurse: yes
-
-- name: Create required directories for bi
-  file:
-    path: "{{item}}"
-    state: "directory"
-    owner: "{{noc_user}}"
-    mode: 0755
-  with_items:
-    - "{{bi_export_dir}}"
