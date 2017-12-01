@@ -19,7 +19,7 @@ import cachetools
 # NOC modules
 from .workflow import Workflow
 from noc.lib.nosql import PlainReferenceField
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.handler import get_handler
@@ -39,6 +39,7 @@ TRANSITION_HANDLER = "noc.core.wf.transition.transition_job"
     ("crm.Subscriber", "state"),
     ("crm.Supplier", "state")
 ])
+@on_save
 class State(Document):
     meta = {
         "collection": "states",
@@ -100,6 +101,9 @@ class State(Document):
     def get_by_bi_id(cls, id):
         return State.objects.filter(bi_id=id).first()
 
+    def on_save(self):
+        pass
+
     def on_enter_state(self, obj):
         """
         Called when object enters state
@@ -154,7 +158,7 @@ class State(Document):
                     logger.debug("[%s|%s] Invalid handler %s, skipping",
                                  obj, self.name, hn)
 
-    def fire_transtion(self, transition, obj):
+    def fire_transition(self, transition, obj):
         """
         Process transition from state
         :param transition:
