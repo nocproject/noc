@@ -89,6 +89,7 @@ class Site(object):
         self.urlresolvers = {}  # (module,appp) -> RegexURLResolver
         self.menu = []
         self.menu_index = {}  # id -> menu item
+        self.menu_roots = {}  # app -> menu
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
         self.testing_mode = hasattr(settings, "IS_TEST")
@@ -332,7 +333,7 @@ class Site(object):
             # Started without autodiscover
             # Add module menu
             self.add_module_menu(app.get_app_id().split(".")[0])
-        root = self.menu[-1]
+        root = self.menu_roots[app.module]
         path = [app.module]
         if isinstance(app.menu, six.string_types):
             parts = app.menu.split("|")
@@ -463,12 +464,14 @@ class Site(object):
         self.installed_applications = []
         prefix = "services/web/apps"
         # Load applications
-        for app in [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]:
+        installed_apps = [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]
+        self.menu_roots = {}
+        for app in installed_apps:
             app_path = os.path.join(prefix, app)
             if not os.path.isdir(app_path):
                 continue
             logger.debug("Loading %s applications", app)
-            root = self.add_module_menu("noc.%s" % app)
+            self.menu_roots[app] = self.add_module_menu("noc.%s" % app)
             # Initialize application
             for cs in ["custom", ""]:
                 for f in glob.glob("%s/*/views.py" % os.path.join(cs, app_path)):
@@ -478,38 +481,41 @@ class Site(object):
                         continue
                     __import__(".".join(["noc"] + f[:-3].split(os.path.sep)),
                                {}, {}, "*")
-            # Try to install dynamic menus
-            menu = None
-            try:
-                menu = __import__(app + ".menu", {}, {}, "DYNAMIC_MENUS")
-            except ImportError:
-                continue
-            if menu:
-                for d_menu in menu.DYNAMIC_MENUS:
-                    # Add dynamic menu folder
-                    dm = {
-                        "title": d_menu.title,
-                        "iconCls": d_menu.icon,
-                        "children": []
-                    }
-                    path = [app, d_menu.title]
-                    self.set_menu_id(dm, path)
-                    root["children"] += [dm]
-                    # Add items
-                    for title, app_id, access in d_menu.items:
-                        app = self.apps[app_id]
-                        r = {
-                            "title": title,
-                            "app": app,
-                            "access": access,
-                            "iconCls": app.icon,
-                        }
-                        self.set_menu_id(r, path + [title])
-                        dm["children"] += [r]
         # Install applications
         for app_class in self.installed_applications:
             self.install_application(app_class)
+        logger.info("%d applications are installed", len(self.installed_applications))
         self.installed_applications = []
+        # Install dynamic menus
+        for app in installed_apps:
+            # Try to install dynamic menus
+            try:
+                menu = __import__(app + ".menu", {}, {}, "DYNAMIC_MENUS")
+                if not menu:
+                    continue
+            except ImportError:
+                continue
+            for d_menu in menu.DYNAMIC_MENUS:
+                # Add dynamic menu folder
+                dm = {
+                    "title": d_menu.title,
+                    "iconCls": d_menu.icon,
+                    "children": []
+                }
+                path = [app, d_menu.title]
+                self.set_menu_id(dm, path)
+                self.menu_roots[app]["children"] += [dm]
+                # Add items
+                for title, app_id, access in d_menu.items:
+                    app = self.apps[app_id]
+                    r = {
+                        "title": title,
+                        "app": app,
+                        "access": access,
+                        "iconCls": app.icon,
+                    }
+                    self.set_menu_id(r, path + [title])
+                    dm["children"] += [r]
         # Finally, order the menu
         self.sort_menu()
 
