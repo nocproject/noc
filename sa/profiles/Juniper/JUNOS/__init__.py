@@ -24,8 +24,7 @@ class Profile(BaseProfile):
         (r"\? \[yes,no\] .*?", "y\n")
     ]
     pattern_syntax_error = \
-        r"\'\S+\' is ambiguous\.|syntax error, expecting|" \
-        r"unknown command\."
+        r"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
@@ -36,6 +35,11 @@ class Profile(BaseProfile):
         "is_switch": {
             "platform": {
                 "$regex": "ex|mx|qfx|acx"
+            }
+        },
+        "is_olive": {
+            "platform": {
+                "$regex": "olive"
             }
         }
     }
@@ -101,8 +105,8 @@ class Profile(BaseProfile):
     internal_interfaces_olive = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")
 
-    def valid_interface_name(self, name, platform):
-        if platform == "olive":
+    def valid_interface_name(self, script, name):
+        if script.is_olive:
             internal = self.internal_interfaces_olive
         else:
             internal = self.internal_interfaces
@@ -118,3 +122,10 @@ class Profile(BaseProfile):
             if int(unit) > 16385:
                 return False
         return True
+
+    def command_exist(self, script, cmd):
+        c = script.cli(
+            "help apropos \"%s\" | match \"^show %s\" " % (cmd, cmd),
+            cached=True, ignore_errors=True
+        )
+        return ("show " + cmd in c) and ("error: nothing matches" not in c)

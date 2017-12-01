@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_dhcp_binding
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,11 +24,10 @@ class Script(BaseScript):
         r"(?P<expires>\d+)\s+BOUND\s+\S+\s*$", re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
-        try:
-            data = self.cli("show dhcp server binding")
-        except self.CLISyntaxError:
-            raise self.NotSupportedError()
+        if not self.profile.command_exist(self, "dhcp server"):
+            return []
         r = []
+        data = self.cli("show dhcp server binding")
         for match in self.rx_line.finditer(data):
             e = match.group("expires")
             expire = datetime.datetime.fromtimestamp(time.time() + int(e))
