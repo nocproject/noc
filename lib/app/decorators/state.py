@@ -27,7 +27,7 @@ class StateHandlerDecorator(BaseAppDecorator):
         self.add_view(
             "api_make_transition",
             self.api_make_transition,
-            method=["GET"],
+            method=["POST"],
             url=r"^(?P<object_id>[^/]+)/transitions/(?P<transition_id>[0-9a-f]{24})/$",
             access="write",
             api=True
