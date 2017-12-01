@@ -873,8 +873,15 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 neighbors = list(iter_neighbors(mo))
             cache.set(key, neighbors, ttl=ttl,
                       version=self.NEIGHBOR_CACHE_VERSION)
+            alias_cache = {(mo.id, n[0]): self.interface_aliases[(mo.id, n[0])] for n in neighbors
+                           if (mo.id, n[0]) in self.interface_aliases}
+            cache.set("%s-aliases" % key, alias_cache, ttl=ttl,
+                      version=self.NEIGHBOR_CACHE_VERSION)
             metrics["neighbor_cache_misses"] += 1
         else:
+            alias_cache = cache.get("%s-aliases" % key, version=self.NEIGHBOR_CACHE_VERSION)
+            if alias_cache:
+                self.interface_aliases.update(alias_cache)
             metrics["neighbor_cache_hits"] += 1
         return neighbors
 
