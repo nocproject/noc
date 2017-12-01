@@ -34,7 +34,7 @@ class MODashboard(BaseDashboard):
             Check interface profile has metrics
             """
             for m in profile.metrics:
-                if m.is_active:
+                if m.enable_box or m.enable_periodic:
                     return True
             return False
 

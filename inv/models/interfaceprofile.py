@@ -31,7 +31,7 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     metric_type = ReferenceField(MetricType, required=True)
     # Metric collection settings
     # Enable during box discovery
-    enable_box = BooleanField(default=True)
+    enable_box = BooleanField(default=False)
     # Enable during periodic discovery
     enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store

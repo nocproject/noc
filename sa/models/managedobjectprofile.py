@@ -35,7 +35,7 @@ from noc.core.bi.decorator import bi_sync
 
 m_valid = DictListParameter(attrs={
     "metric_type": ObjectIdParameter(required=True),
-    "enable_box": BooleanParameter(default=True),
+    "enable_box": BooleanParameter(default=False),
     "enable_periodic": BooleanParameter(default=True),
     "is_stored": BooleanParameter(default=True),
     "window_type": StringParameter(
