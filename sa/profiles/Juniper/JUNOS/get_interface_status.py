@@ -32,8 +32,10 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
-                    if interface \
-                      and interface == self.profile.convert_interface_name(n):
+                    if (
+                        interface and
+                        interface == self.profile.convert_interface_name(n)
+                    ):
                         return [{"interface": n, "status": int(s) == 1}]
                     if not self.profile.valid_interface_name(self, n):
                         continue
