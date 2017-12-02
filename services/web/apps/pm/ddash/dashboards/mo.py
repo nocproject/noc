@@ -78,7 +78,7 @@ class MODashboard(BaseDashboard):
             object_metrics += ["rtt"]
         for m in (self.object.object_profile.metrics or []):
             mt = MetricType.get_by_id(m["metric_type"])
-            if not mt or not m.get("is_active", False):
+            if not mt or not (m.get("enable_periodic", False) or m.get("enable_box", False)):
                 continue
             object_metrics += [mt.name]
 
