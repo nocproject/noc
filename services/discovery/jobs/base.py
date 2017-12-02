@@ -49,6 +49,9 @@ class MODiscoveryJob(PeriodicJob):
     use_offset = True
     # Name of umbrella class to cover discovery problems
     umbrella_cls = None
+    # Job families
+    is_box = False
+    is_periodic = False
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
@@ -364,6 +367,8 @@ class DiscoveryCheck(object):
         self.if_ip_cache = {}
         self.sub_cache = {}
         self.profile_cache = {}
+        self.is_box = self.job.is_box
+        self.is_periodic = self.job.is_periodic
 
     def is_enabled(self):
         checks = self.job.attrs.get("_checks", set())
