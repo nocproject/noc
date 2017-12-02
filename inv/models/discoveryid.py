@@ -77,6 +77,8 @@ class DiscoveryID(Document):
             # Strip additional_macs intersected with chassis_mac
             additional_macs = sorted(additional_macs)
             for cm in chassis_mac:
+                if not cm:
+                    continue
                 first = cm["first_chassis_mac"]
                 last = cm["last_chassis_mac"]
                 ll = len(additional_macs)
