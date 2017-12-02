@@ -8,13 +8,13 @@
 
 # Third-party modules
 from pymongo import UpdateOne
-from noc.inv.models.interfaceprofile import InterfaceProfile
+from noc.sla.models.slaprofile import SLAProfile
 
 
 class Migration:
     def forwards(self):
         collections = [
-            InterfaceProfile._get_collection()
+            SLAProfile._get_collection()
         ]
         for collection in collections:
             bulk = []
