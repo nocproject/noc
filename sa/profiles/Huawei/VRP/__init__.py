@@ -31,9 +31,9 @@ class Profile(BaseProfile):
         r"Error:Too many parameters found|" \
         r"% Too many parameters found at|" \
         r"% Ambiguous command found at|" \
-        r"Error: Unrecognized command found at|" \
+        r"Error:\s*Unrecognized command found at|" \
         r"Error:\s*Wrong parameter found at|" \
-        r"Error:Incomplete command found at)"
+        r"Error:\s*Incomplete command found at)"
 
     command_more = " "
     config_volatile = ["^%.*?$"]
