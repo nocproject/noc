@@ -5,8 +5,7 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-# Python modules
-import re
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -20,17 +19,17 @@ class Script(BaseScript):
 
     INTERFACE_TYPES = {
 
-            "lo": "loopback",  # Loopback
+        "lo": "loopback",  # Loopback
 
-        }
+    }
 
     INTERFACE_TYPES2 = {
 
-            "brv": "unknown",  # No comment
-            "eth": "physical",  # No comment
-            "wla": "physical",  # No comment
+        "brv": "unknown",  # No comment
+        "eth": "physical",  # No comment
+        "wla": "physical",  # No comment
 
-        }
+    }
 
     @classmethod
     def get_interface_type(cls, name):
@@ -92,6 +91,18 @@ class Script(BaseScript):
                     continue
             if r[0] == "mac":
                 mac = r[1].strip()
+                if "eth" in name:
+                    iface = {
+                        "type": iftype,
+                        "name": name,
+                        "mac": mac,
+                        "subinterfaces": [{
+                            "name": name,
+                            "mac": mac,
+                            "enabled_afi": ["BRIDGE"],
+                        }]
+                    }
+                    interfaces += [iface]
             if r[0] == "ip":
                 ip_address = r[1].strip()
             if r[0] == "mask":
@@ -111,19 +122,7 @@ class Script(BaseScript):
                         }]
                     }
                     interfaces += [iface]
-                # no ip address + ip subnet
-                else:
-                    iface = {
-                        "type": iftype,
-                        "name": name,
-                        "mac": mac,
-                        "subinterfaces": [{
-                            "name": name,
-                            "mac": mac,
-                            "enabled_afi": ["BRIDGE"],
-                        }]
-                    }
-                    interfaces += [iface]
+
         descr_template = "ssid_broadcast=%s, ieee_mode=%s, channel=%s, freq=%s, channelbandwidth=%sMHz"
         for line in c.splitlines():
             r = line.split(' ', 1)
