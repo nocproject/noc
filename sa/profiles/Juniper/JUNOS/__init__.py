@@ -32,12 +32,16 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.Juniper.JUNOS.base.BaseJUNOSParser"
 
     matchers = {
-        "is_switch": {
+        "is_has_lldp": {
             "platform": {
                 "$regex": "ex|mx|qfx|acx"
             }
         },
-        "is_olive": {
+        "is_switch": {
+            "platform": {
+                "$regex": "ex|qfx"
+            }
+        },    "is_olive": {
             "platform": {
                 "$regex": "olive"
             }
