@@ -22,7 +22,10 @@ class Script(BaseScript):
     )
 
     def execute(self, interface=None, vlan=None, mac=None):
-        if not self.profile.command_exist(self, "ethernet-switching"):
+        if (
+            not self.is_switch or
+            not self.profile.command_exist(self, "ethernet-switching")
+        ):
             return []
         r = []
         vlans = {}
