@@ -22,6 +22,6 @@ class Script(BaseScript):
     )
 
     def execute(self):
-        if not self.profile.command_exist(self, "vlans"):
+        if not self.is_switch or not self.profile.command_exist(self, "vlans"):
             return []
         return self.cli("show vlans brief", list_re=self.rx_vlan_line)
