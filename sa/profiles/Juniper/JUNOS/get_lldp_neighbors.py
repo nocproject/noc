@@ -55,12 +55,12 @@ class Script(BaseScript):
     }
 
     def execute_cli(self):
-        if self.is_switch:
+        if self.is_has_lldp:
             return self.execute_switch()
         else:
             return self.execute_other()
 
-    # Match mx, ex, qfx, afx
+    # Match mx, ex, qfx, acx
     def execute_switch(self):
         r = []
         # Collect data
