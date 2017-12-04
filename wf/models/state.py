@@ -190,7 +190,7 @@ class State(Document):
         t = Transition.objects.filter(from_state=self.id,
                                       event=event).first()
         if t:
-            self.fire_transtion(t, obj)
+            self.fire_transition(t, obj)
         else:
             logger.debug("[%s|%s] No event handler for '%s'. Skipping",
                          obj, self.name)
