@@ -42,7 +42,7 @@ class Profile(BaseProfile):
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
-    @ classmethod
+    @classmethod
     def cmp_version(cls, v1, v2):
         """
         Compare two versions.
