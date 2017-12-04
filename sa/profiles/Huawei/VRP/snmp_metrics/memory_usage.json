@@ -11,6 +11,16 @@
         "platform": {
           "$regex": "AR1220"
         }
+      },
+    "is_S2300": {
+        "platform": {
+          "$regex": "S2300"
+        }
+      },
+    "is_switch_V200R005+": {
+        "platform": {
+          "$regex": "S2326|S3700|S5700"
+        }
       }
     },
   "$match": [{
@@ -23,6 +33,18 @@
     "$match": "is_AR1220",
     "$type": "oid",
     "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.9",
+    "type": "gauge",
+    "scale": 1
+  },{
+    "$match": "is_S2300",
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.150994945",
+    "type": "gauge",
+    "scale": 1
+  },{
+    "$match": "is_switch_V200R005+",
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7.67108873",
     "type": "gauge",
     "scale": 1
   },{
