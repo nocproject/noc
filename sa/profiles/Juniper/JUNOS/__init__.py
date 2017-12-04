@@ -41,7 +41,8 @@ class Profile(BaseProfile):
             "platform": {
                 "$regex": "ex|qfx"
             }
-        },    "is_olive": {
+        },
+        "is_olive": {
             "platform": {
                 "$regex": "olive"
             }
