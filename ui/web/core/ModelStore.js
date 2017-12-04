@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelStore
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelStore");
@@ -15,6 +15,7 @@ Ext.define("NOC.core.ModelStore", {
     remoteFilter: true,
     customFields: [],
     autoLoad: false,
+    rest_url: undefined,
 
     constructor: function(config) {
         var me = this,
@@ -34,6 +35,7 @@ Ext.define("NOC.core.ModelStore", {
             type: "boolean",
             persist: false
         });
+        me.rest_url = model.rest_url;
         var proxy = Ext.create("Ext.data.RestProxy", {
                 url: model.rest_url,
                 pageParam: "__page",
