@@ -43,7 +43,9 @@ class StateHandlerDecorator(BaseAppDecorator):
             r += [{
                 "id": str(t.id),
                 "label": str(t.label or ""),
-                "description": str(t.description or "")
+                "description": str(t.description or ""),
+                "to_state": str(t.to_state.id),
+                "to_state__label": str(t.to_state.name)
             }]
         return r
 
