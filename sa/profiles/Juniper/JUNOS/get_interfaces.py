@@ -75,9 +75,6 @@ class Script(BaseScript):
         l3_ids = {}
         vlans_requested = False
         interfaces = []
-        version = self.scripts.get_version()
-        platform = version["platform"]
-        time.sleep(1)
         ifaces = self.scripts.get_interface_status()
         time.sleep(10)
         for I in ifaces:
@@ -139,7 +136,7 @@ class Script(BaseScript):
             for s in L:
                 match = self.re_search(self.rx_log_name, s)
                 sname = match.group("name")
-                if not self.profile.valid_interface_name(sname, platform):
+                if not self.profile.valid_interface_name(self, sname):
                     continue
                 si = {
                     "name": sname,
@@ -210,16 +207,7 @@ class Script(BaseScript):
                         if proto.lower() == "eth-switch":
                             si["enabled_afi"] += ["BRIDGE"]
                         if not vlans_requested:
-                            cli_error = False
-                            try:
-                                v = self.cli("show vlans")
-                            except self.CLISyntaxError:
-                                # Juniper do not clear wrong input line
-                                self.cli(
-                                    "\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08"
-                                )
-                                cli_error = True
-                            if not cli_error:
+                            if self.is_switch and self.profile.command_exist(self, "vlans"):
                                 v = self.cli("show vlans detail")
                                 untagged, tagged, l3_ids = \
                                     self.get_vlan_port_mapping(v)
@@ -275,10 +263,7 @@ class Script(BaseScript):
             }
         }
         imap = {}  # interface -> VRF
-        try:
-            r = self.scripts.get_mpls_vpn()
-        except self.CLISyntaxError:
-            r = []
+        r = self.scripts.get_mpls_vpn()
         for v in r:
             if v["type"] == "VRF":
                 vrfs[v["name"]] = {
