@@ -207,7 +207,7 @@ class Script(BaseScript):
                         if proto.lower() == "eth-switch":
                             si["enabled_afi"] += ["BRIDGE"]
                         if not vlans_requested:
-                            if self.profile.command_exist(self, "vlans"):
+                            if self.is_switch and self.profile.command_exist(self, "vlans"):
                                 v = self.cli("show vlans detail")
                                 untagged, tagged, l3_ids = \
                                     self.get_vlan_port_mapping(v)
