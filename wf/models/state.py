@@ -114,7 +114,7 @@ class State(Document):
         :return:
         """
         # Process on enter handlers
-        if self.on_leave_handlers:
+        if self.on_enter_handlers:
             logger.debug("[%s|%s] Running on_enter_handlers",
                          obj, obj.state.name)
             for hn in self.on_enter_handlers:
