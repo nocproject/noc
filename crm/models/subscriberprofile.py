@@ -8,6 +8,7 @@
 
 # Python modules
 import operator
+from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, IntField, LongField
@@ -18,6 +19,8 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
 from noc.core.bi.decorator import bi_sync
+
+id_lock = Lock()
 
 
 @bi_sync
@@ -51,6 +54,6 @@ class SubscriberProfile(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
-    def get_by_id(self, id):
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
         return SubscriberProfile.objects.filter(id=id).first()
