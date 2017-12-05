@@ -12,7 +12,7 @@ from threading import Lock
 import operator
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ListField
+from mongoengine.fields import StringField, ListField, LongField
 import cachetools
 # NOC modules
 from .subscriberprofile import SubscriberProfile
@@ -20,10 +20,12 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.lib.nosql import PlainReferenceField
 from noc.wf.models.state import State
 from noc.core.wf.decorator import workflow
+from noc.core.bi.decorator import bi_sync
 
 id_lock = Lock()
 
 
+@bi_sync
 @workflow
 class Subscriber(Document):
     meta = {
@@ -50,6 +52,8 @@ class Subscriber(Document):
     remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
