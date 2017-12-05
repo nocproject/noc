@@ -55,12 +55,18 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
+    rx_ver_snmp6 = re.compile(
+        r"Huawei Versatile Routing Platform .* \((?P<platform>[A-Z0-9]+) (?P<version>\S+)\) .*?",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
+
     BAD_PLATFORM = ["", "Quidway S5600-HI"]
 
     def execute(self):
         v = ""
         match_re_list = [
             self.rx_ver,
+            self.rx_ver_snmp6,
             self.rx_ver_snmp,
             self.rx_ver_snmp2,
             self.rx_ver_snmp3,
