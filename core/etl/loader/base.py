@@ -323,9 +323,7 @@ class BaseLoader(object):
             if k == "tags":
                 # Merge tags
                 nv = sorted(
-                    [
-                        "%s:%s" % (self.system.name, x) for x in nv
-                    ]
+                    "%s:%s" % (self.system.name, x) for x in nv
                 )
                 v[k] = nv
         o = self.model(**v)
