@@ -333,3 +333,11 @@ TABLE {
 .fm-blur-4 {
     opacity: 1;
 }
+
+.x-form-trigger.fa {
+    display:table-cell;
+    background-image:none !important;
+    padding-top:5px;
+    border: 1px solid #b5b8c8;
+    background-color: #d7dbed;
+}

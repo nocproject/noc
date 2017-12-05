@@ -12,6 +12,7 @@ Ext.define("NOC.main.desktop.Application", {
         "Ext.ux.form.SearchField",
         "NOC.core.TagsField",
         "NOC.core.StringListField",
+        "NOC.core.StateField",
         "Ext.ux.form.GridField",
         "Ext.ux.form.DictField",
         "Ext.ux.form.ColorField",

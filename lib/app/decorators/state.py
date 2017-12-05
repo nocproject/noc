@@ -63,6 +63,10 @@ class StateHandlerDecorator(BaseAppDecorator):
         except Transition.DoesNotExist:
             return self.app.response_not_found()
         o.fire_transition(t)
+        return {
+            "state": str(o.state.id),
+            "state__label": str(o.state)
+        }
 
 
 def state_handler(cls):
