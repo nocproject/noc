@@ -30,69 +30,85 @@ Ext.define("NOC.core.StateField", {
         });
 
         me.stateField = Ext.create("Ext.form.field.Text", {
+            cls: "noc-wc-state",
+            baseBodyCls: "noc-wc-state-base-body",
+            uiStyle: "medium",
             editable: false,
             triggers: {
                 right: {
                     cls: me.showTransitionCls,
-                    tooltip: __("Transition"),
                     hidden: false,
                     scope: me,
                     handler: me.showTransitions
                 },
                 down: {
                     cls: me.shownTransitionCls,
-                    tooltip: __("Transition"),
                     hidden: true,
                     scope: me,
                     handler: me.hideTransitions
                 }
             },
-            uiStyle: "medium"
-        });
-
-        me.grid = Ext.create("Ext.grid.Panel", {
-            hidden: true,
-            border: false,
-            bodyBorder: false,
-            headerBorders: false,
-            clearRemovedOnLoad: true,
-            emptyText: __("No possible transitions"),
-            store: me.store,
-            componentCls: "arrow-up",
-            columns: [
-                {
-                    xtype: "widgetcolumn",
-                    width: 40,
-                    widget: {
-                        width: 25,
-                        xtype: "button",
-                        glyph: NOC.glyph.arrow_circle_right,
-                        handler: function (btn) {
-                            me.step(btn.getWidgetRecord())
-                        }
-                    }
-                },
-                {
-                    text: __("Transition"),
-                    flex: 1,
-                    dataIndex: "label"
-                },
-                {
-                    text: __("Description"),
-                    flex: 3,
-                    dataIndex: "description"
-                }
-            ],
             listeners: {
-                rowdblclick: function (grid, rec) {
-                    me.step(rec);
+                afterrender: function (field) {
+                    Ext.tip.QuickTipManager.register({
+                        target: field.getId(),
+                        text: __("Transition")
+                    });
                 }
             }
         });
 
+        me.gridContainer = Ext.create("Ext.container.Container", {
+            cls: "noc-wc-cloud",
+            hidden: true,
+            width: 500,
+            items: [
+                {
+                    xtype: "grid",
+                    padding: 5,
+                    border: false,
+                    bodyBorder: false,
+                    headerBorders: false,
+                    hideHeaders: true,
+                    clearRemovedOnLoad: true,
+                    emptyText: __("No possible transitions"),
+                    store: me.store,
+                    columns: [
+                        {
+                            xtype: "widgetcolumn",
+                            width: 40,
+                            widget: {
+                                width: 25,
+                                xtype: "button",
+                                glyph: NOC.glyph.arrow_circle_right,
+                                handler: function (btn) {
+                                    me.step(btn.getWidgetRecord())
+                                }
+                            }
+                        },
+                        {
+                            text: __("Transition"),
+                            flex: 1,
+                            dataIndex: "label"
+                        },
+                        {
+                            text: __("Description"),
+                            flex: 3,
+                            dataIndex: "description"
+                        }
+                    ],
+                    listeners: {
+                        rowdblclick: function (grid, rec) {
+                            me.step(rec);
+                        }
+                    }
+                }
+            ]
+        });
+
         me.items = [
             me.stateField,
-            me.grid
+            me.gridContainer
         ];
 
         me.callParent();
@@ -114,6 +130,7 @@ Ext.define("NOC.core.StateField", {
         me.stateField.setValue(v.label || "");
         me.itemId = v.itemId || null;
         me.restUrl = v.restUrl || null;
+        me.hideTransitions();
     },
 
     step: function (rec) {
@@ -153,7 +170,7 @@ Ext.define("NOC.core.StateField", {
 
     showTransitions: function () {
         var me = this;
-        me.grid.show();
+        me.gridContainer.show();
         me.stateField.getTriggers().right.hide();
         me.stateField.getTriggers().down.show();
         me.store.load({
@@ -165,6 +182,6 @@ Ext.define("NOC.core.StateField", {
         var me = this;
         me.stateField.getTriggers().right.show();
         me.stateField.getTriggers().down.hide();
-        me.grid.hide()
+        me.gridContainer.hide()
     }
 });
