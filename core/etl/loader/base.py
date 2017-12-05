@@ -649,10 +649,10 @@ class BaseLoader(object):
         m_data = {}  # field_number -> set of mapped ids
         # Load mapped ids
         for f in self.mapped_fields:
-            l = chain.get_loader(self.mapped_fields[f])
-            ls = l.get_new_state()
+            line = chain.get_loader(self.mapped_fields[f])
+            ls = line.get_new_state()
             if not ls:
-                ls = l.get_current_state()
+                ls = line.get_current_state()
             ms = csv.reader(ls)
             m_data[self.fields.index(f)] = set(row[0] for row in ms)
         # Process data
