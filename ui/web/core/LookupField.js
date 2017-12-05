@@ -139,9 +139,13 @@ Ext.define("NOC.core.LookupField", {
     // Called by ModelApplication
     cleanValue: function(record, restURL) {
         var me = this,
+            rv = record.get(me.name),
             mv = {};
-        mv[me.valueField] = record.get(me.name);
-        mv[me.displayField] = record.get(me.name + "__label") || mv[me.valueField];
+        if(rv === "" || rv === 0) {
+            return ""
+        }
+        mv[me.valueField] = rv;
+        mv[me.displayField] = record.get(me.name + "__label");
         return me.store.getModel().create(mv)
     }
 });
