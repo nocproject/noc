@@ -319,6 +319,15 @@ class BaseLoader(object):
         Create object with attributes. Override to save complex
         data structures
         """
+        for k, nv in six.iteritems(v):
+            if k == "tags":
+                # Merge tags
+                nv = sorted(
+                    [
+                        "%s:%s" % (self.system.name, x) for x in nv
+                    ]
+                )
+                v[k] = nv
         o = self.model(**v)
         try:
             o.save()
