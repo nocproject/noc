@@ -67,7 +67,7 @@ class BaseLoader(object):
 
     PREFIX = config.path.etl_import
     rx_archive = re.compile(
-            "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
+        "^import-\d{4}(?:-\d{2}){5}.csv.gz$"
     )
 
     # Discard records which cannot be dereferenced
@@ -84,7 +84,7 @@ class BaseLoader(object):
         self.chain = chain
         self.system = chain.system
         self.logger = PrefixLoggerAdapter(
-                logger, "%s][%s" % (self.system.name, self.name)
+            logger, "%s][%s" % (self.system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system.name, self.name)
@@ -185,8 +185,8 @@ class BaseLoader(object):
                 # @todo: Die
         if os.path.isdir(self.archive_dir):
             fn = sorted(
-                    f for f in os.listdir(self.archive_dir)
-                    if self.rx_archive.match(f)
+                f for f in os.listdir(self.archive_dir)
+                if self.rx_archive.match(f)
             )
         else:
             fn = []
@@ -319,6 +319,13 @@ class BaseLoader(object):
         Create object with attributes. Override to save complex
         data structures
         """
+        for k, nv in six.iteritems(v):
+            if k == "tags":
+                # Merge tags
+                nv = sorted(
+                    "%s:%s" % (self.system.name, x) for x in nv
+                )
+                v[k] = nv
         o = self.model(**v)
         try:
             o.save()
@@ -441,14 +448,14 @@ class BaseLoader(object):
         if not self.new_state_path:
             return
         self.logger.info(
-                "Summary: %d new, %d changed, %d removed",
-                self.c_add, self.c_change, self.c_delete
+            "Summary: %d new, %d changed, %d removed",
+            self.c_add, self.c_change, self.c_delete
         )
         t = time.localtime()
         archive_path = os.path.join(
-                self.archive_dir,
-                "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
-                        t[:6])
+            self.archive_dir,
+            "import-%04d-%02d-%02d-%02d-%02d-%02d.csv.gz" % tuple(
+                t[:6])
         )
         self.logger.info("Moving %s to %s",
                          self.new_state_path, archive_path)
@@ -640,10 +647,10 @@ class BaseLoader(object):
         m_data = {}  # field_number -> set of mapped ids
         # Load mapped ids
         for f in self.mapped_fields:
-            l = chain.get_loader(self.mapped_fields[f])
-            ls = l.get_new_state()
+            line = chain.get_loader(self.mapped_fields[f])
+            ls = line.get_new_state()
             if not ls:
-                ls = l.get_current_state()
+                ls = line.get_current_state()
             ms = csv.reader(ls)
             m_data[self.fields.index(f)] = set(row[0] for row in ms)
         # Process data
@@ -654,8 +661,8 @@ class BaseLoader(object):
             for i in r_index:
                 if not row[i]:
                     self.logger.error(
-                            "ERROR: Required field #%d(%s) is missed in row: %s",
-                            i, self.fields[i], ",".join(row)
+                        "ERROR: Required field #%d(%s) is missed in row: %s",
+                        i, self.fields[i], ",".join(row)
                     )
                     n_errors += 1
                     continue
@@ -664,8 +671,8 @@ class BaseLoader(object):
                 v = row[i]
                 if (i, v) in uv:
                     self.logger.error(
-                            "ERROR: Field #%d(%s) value is not unique: %s",
-                            i, self.fields[i], ",".join(row)
+                        "ERROR: Field #%d(%s) value is not unique: %s",
+                        i, self.fields[i], ",".join(row)
                     )
                     n_errors += 1
                 else:
