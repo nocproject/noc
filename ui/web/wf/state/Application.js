@@ -151,7 +151,7 @@ Ext.define("NOC.wf.state.Application", {
                 {
                     name: "on_leave_handlers",
                     xtype: "stringsfield",
-                    fieldLabel: __("On Enter Handlers"),
+                    fieldLabel: __("On Leave Handlers"),
                     allowBlank: true
                 }
             ]
