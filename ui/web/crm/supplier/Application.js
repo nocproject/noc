@@ -60,6 +60,12 @@ Ext.define("NOC.crm.supplier.Application", {
                     allowBlank: false
                 },
                 {
+                    name: "state",
+                    xtype: "statefield",
+                    fieldLabel: __("State"),
+                    allowBlank: true
+                },
+                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
