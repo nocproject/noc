@@ -20,7 +20,6 @@ Ext.define("NOC.core.StateField", {
 
     initComponent: function () {
         var me = this;
-
         me.store = Ext.create("Ext.data.Store", {
             model: "NOC.core.StateModel",
             autoLoad: false,
@@ -30,17 +29,24 @@ Ext.define("NOC.core.StateField", {
             }
         });
 
-        me.stateField = Ext.create({
-            xtype: "textfield",
+        me.stateField = Ext.create("Ext.form.field.Text", {
             editable: false,
-            triggers: [
-                {
+            triggers: {
+                right: {
                     cls: me.showTransitionCls,
                     tooltip: __("Transition"),
+                    hidden: false,
                     scope: me,
-                    handler: me.toggleTranstions
+                    handler: me.showTransitions
+                },
+                down: {
+                    cls: me.shownTransitionCls,
+                    tooltip: __("Transition"),
+                    hidden: true,
+                    scope: me,
+                    handler: me.hideTransitions
                 }
-            ],
+            },
             uiStyle: "medium"
         });
 
@@ -52,6 +58,7 @@ Ext.define("NOC.core.StateField", {
             clearRemovedOnLoad: true,
             emptyText: __("No possible transitions"),
             store: me.store,
+            componentCls: "arrow-up",
             columns: [
                 {
                     xtype: "widgetcolumn",
@@ -111,7 +118,6 @@ Ext.define("NOC.core.StateField", {
 
     step: function (rec) {
         var me = this;
-
         Ext.Msg.show({
             title: __("Transition"),
             msg: __("Do you wish to perform '" + rec.get("label") + "' transition? This operation cannot be undone!"),
@@ -129,7 +135,6 @@ Ext.define("NOC.core.StateField", {
     doTransition: function (record) {
         var me = this,
             url = Ext.String.format("/crm/supplier/{0}/transitions/{1}/", me.itemId, record.get("id"));
-
         Ext.Ajax.request({
             url: url,
             method: "POST",
@@ -146,25 +151,20 @@ Ext.define("NOC.core.StateField", {
         });
     },
 
-    showTransitions: function() {
+    showTransitions: function () {
         var me = this;
         me.grid.show();
+        me.stateField.getTriggers().right.hide();
+        me.stateField.getTriggers().down.show();
         me.store.load({
             url: me.restUrl + me.itemId + "/transitions/"
         })
     },
 
-    hideTransitions: function() {
+    hideTransitions: function () {
         var me = this;
+        me.stateField.getTriggers().right.show();
+        me.stateField.getTriggers().down.hide();
         me.grid.hide()
-    },
-
-    toggleTranstions: function() {
-        var me = this;
-        if(me.grid.hidden) {
-            me.showTransitions()
-        } else {
-            me.hideTransitions()
-        }
     }
 });
