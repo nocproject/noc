@@ -15,7 +15,7 @@ from noc.models import get_object
 logger = logging.getLogger(__name__)
 
 
-def transition_job(handler, model, object):
+def state_job(handler, model, object):
     """
     State.job_handler wrapper
     :param handler:

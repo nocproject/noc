@@ -29,7 +29,7 @@ from noc.models import get_model_id
 logger = logging.getLogger(__name__)
 id_lock = Lock()
 
-TRANSITION_HANDLER = "noc.core.wf.transition.transition_job"
+STATE_JOB = "noc.core.wf.transition.state_job"
 
 
 @bi_sync
@@ -133,7 +133,7 @@ class State(Document):
             h = get_handler(self.job_handler)
             if h:
                 call_later(
-                    TRANSITION_HANDLER,
+                    STATE_JOB,
                     handler=self.job_handler,
                     model=get_model_id(obj),
                     object=str(obj.pk)
