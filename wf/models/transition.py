@@ -94,7 +94,7 @@ class Transition(Document):
         if self.handlers:
             logger.debug("[%s|%s|%s] Running transition handlers",
                          obj, obj.state.name, self.label)
-            for hn in obj.state.on_leave_handlers:
+            for hn in self.handlers:
                 h = get_handler(hn)
                 if h:
                     logger.debug("[%s|%s|%s] Running %s",
