@@ -17,6 +17,7 @@ Ext.define("NOC.core.StateField", {
     itemId: undefined,
     showTransitionCls: "fa fa-arrow-circle-right",
     shownTransitionCls: "fa fa-arrow-circle-down",
+    currentRecord: undefined,
 
     initComponent: function () {
         var me = this;
@@ -116,6 +117,7 @@ Ext.define("NOC.core.StateField", {
 
     cleanValue: function (record, url) {
         var me = this;
+        me.currentRecord = record;
         return {
             value: record.get(me.name),
             label: record.get(me.name + "__label"),
@@ -157,7 +159,16 @@ Ext.define("NOC.core.StateField", {
             method: "POST",
             success: function (response) {
                 var data = Ext.decode(response.responseText);
-                me.stateField.setValue(data.state__label);
+                me.setValue({
+                    value: data.state,
+                    label: data.state__label,
+                    itemId: me.itemId,
+                    restUrl: me.restUrl
+                });
+                if(me.currentRecord) {
+                    me.currentRecord.set(me.name, data.state);
+                    me.currentRecord.set(me.name + "__label", data.state__label)
+                }
                 me.hideTransitions();
                 NOC.msg.complete(__("Transition started"))
             },
