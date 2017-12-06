@@ -126,7 +126,7 @@ INSTALLED_APPS = [
     # NOC modules
     "noc.main",
     "noc.project",
-    # "noc.wf",
+    "noc.wf",
     "noc.gis",
     "noc.crm",
     "noc.inv",

@@ -10,8 +10,9 @@
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.main.models.style import Style
+from noc.wf.models.workflow import Workflow
 
 
 class SupplierProfile(Document):
@@ -23,6 +24,7 @@ class SupplierProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
+    workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style, required=False)
     tags = ListField(StringField())
 
