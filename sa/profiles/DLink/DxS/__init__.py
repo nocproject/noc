@@ -239,7 +239,7 @@ class Profile(BaseProfile):
                         obj_parser=self.parse_interface,
                         cmd_next="n", cmd_stop="q"
                     )
-            except:
+            except script.CLISyntaxError:
                 objects = []
             # DES-3226S does not support `show ports description` command
             if objects == []:
@@ -351,6 +351,20 @@ class Profile(BaseProfile):
             raise BaseException("System locked by other session!")
         config = super(Profile, self).cleaned_config(config)
         return config
+
+
+def DES30xx(v):
+    """
+    DES-30xx-series
+    :param v:
+    :return:
+    """
+    return (
+        v["platform"].startswith("DES-3010") or
+        v["platform"].startswith("DES-3016") or
+        v["platform"].startswith("DES-3018") or
+        v["platform"].startswith("DES-3026")
+    )
 
 
 def DES3028(v):
