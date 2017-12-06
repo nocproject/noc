@@ -25,7 +25,7 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
             columns: [
                 {
                     text: __("Glyph"),
-                    data_index: "glyph",
+                    dataIndex: "glyph",
                     width: 25,
                     renderer: function(v) {
                         if(v !== undefined && v !== "")

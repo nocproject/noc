@@ -24,7 +24,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
             columns: [
                 {
                     text: __("Icon"),
-                    data_index: "glyph",
+                    dataIndex: "glyph",
                     width: 25,
                     renderer: function(v) {
                         if(v !== undefined && v !== "")
