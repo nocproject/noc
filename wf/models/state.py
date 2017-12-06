@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
+from exceptions import ImportError
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, ListField,
@@ -118,7 +119,11 @@ class State(Document):
             logger.debug("[%s|%s] Running on_enter_handlers",
                          obj, obj.state.name)
             for hn in self.on_enter_handlers:
-                h = get_handler(hn)
+                try:
+                    h = get_handler(str(hn))
+                except ImportError as e:
+                    logger.error("Error import on_enter handler: %s" % e)
+                    h = None
                 if h:
                     logger.debug("[%s|%s] Running %s",
                                  obj, self.name, hn)
@@ -130,7 +135,11 @@ class State(Document):
         if self.job_handler:
             logger.debug("[%s|%s] Running job handler %s",
                          obj.self.name, self.job_handler)
-            h = get_handler(self.job_handler)
+            try:
+                h = get_handler(self.job_handler)
+            except ImportError as e:
+                logger.error("Error import state job handler: %s" % e)
+                h = None
             if h:
                 call_later(
                     STATE_JOB,
@@ -152,7 +161,11 @@ class State(Document):
             logger.debug("[%s|%s] Running on_leave_handlers",
                          obj, self.name)
             for hn in self.on_leave_handlers:
-                h = get_handler(hn)
+                try:
+                    h = get_handler(str(hn))
+                except ImportError as e:
+                    logger.error("Error import on_leave_state handler: %s" % e)
+                    h = None
                 if h:
                     logger.debug("[%s|%s] Running %s",
                                  obj, self.name, hn)
