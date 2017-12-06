@@ -31,9 +31,8 @@ class Script(BaseScript):
             instance_id, _ = I.split("\n", 1)
             instance_id = int(instance_id)
             ports[instance_id] = {}
-            for R in parse_table(
-                # Skip empty first line on 3750
-                I.replace("---\n\n", "---\n")):
+            #                    Skip empty first line on 3750
+            for R in parse_table(I.replace("---\n\n", "---\n")):
                 interface = self.profile.convert_interface_name(R[0])
                 settings = R[-1]
                 ports[instance_id][interface] = {
@@ -41,9 +40,11 @@ class Script(BaseScript):
                     "edge": "edge" in settings.lower(),
                     "role": {
                         "dis": "disabled",
+                        "alt": "alternate",
                         "altn": "alternate",
                         "back": "backup",
                         "root": "root",
+                        "des": "designated",
                         "desg": "designated",
                         "mstr": "master",
                         "????": "nonstp",
@@ -97,7 +98,7 @@ class Script(BaseScript):
                     "root_priority") else match.group("bridge_priority"),
                 "bridge_id": match.group("bridge_id"),
                 "bridge_priority": match.group("bridge_priority"),
-                }]
+            }]
             for match in self.rx_pvst_interfaces.finditer(I):
                 instance_id = int(match.group("instance_id"))
                 if instance_id not in interfaces:
@@ -118,7 +119,7 @@ class Script(BaseScript):
                         "designated_port_id": match.group("designated_port_id"),
                         "point_to_point": port_attrs["point_to_point"],
                         "edge": port_attrs["edge"],
-                        }]
+                    }]
                 except KeyError:
                     pass
         for I in r["instances"]:
@@ -154,7 +155,7 @@ class Script(BaseScript):
                 "MSTP": {
                     "region": match.group("region"),
                     "revision": match.group("revision"),
-                    }
+                }
             }
         }
         iv = {}  # instance -> vlans
@@ -174,7 +175,7 @@ class Script(BaseScript):
                 "root_priority": match.group("root_priority"),
                 "bridge_id": match.group("bridge_id"),
                 "bridge_priority": match.group("bridge_priority"),
-                }]
+            }]
             for match in self.rx_mstp_interfaces.finditer(I):
                 instance_id = int(match.group("instance_id"))
                 if instance_id not in interfaces:
@@ -194,7 +195,7 @@ class Script(BaseScript):
                     "designated_port_id": match.group("designated_port_id"),
                     "point_to_point": port_attrs["point_to_point"],
                     "edge": port_attrs["edge"],
-                    }]
+                }]
         for I in r["instances"]:
             I["interfaces"] = interfaces[I["id"]]
         return r
