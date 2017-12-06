@@ -8,7 +8,6 @@
 
 # Python modules
 import re
-import functools
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -19,6 +18,7 @@ from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3620
 from noc.sa.profiles.DLink.DxS import DES3x2x
+from noc.sa.profiles.DLink.DxS import DES30xx
 
 
 class Script(BaseScript):
@@ -253,8 +253,10 @@ class Script(BaseScript):
                 pass
 
         if len(macs) == 0:
-            if self.match_version(DGS3620, version__gte="2.60.16") \
-            or self.match_version(DGS3120, version__gte="4.00.00"):
+            if (
+                self.match_version(DGS3620, version__gte="2.60.16") or
+                self.match_version(DGS3120, version__gte="4.00.00")
+            ):
                 try:
                     c = self.cli("show ports details")
                     for match in self.rx_pd.finditer(c):
@@ -307,8 +309,9 @@ class Script(BaseScript):
             pass
 
         stp = []
+        c = ""
         try:
-            if self.match_version(DES3x2x):
+            if (self.match_version(DES3x2x) or self.match_version(DES30xx)):
                 c = self.cli("show stp\nq")
             else:
                 c = self.cli("show stp")
@@ -455,8 +458,10 @@ class Script(BaseScript):
                     vlan_id = v['vlan_id']
                     i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
                     for f in fdb:
-                        if 'CPU' in f['interfaces'] \
-                        and vlan_id == f['vlan_id']:
+                        if (
+                            'CPU' in f['interfaces'] and
+                            vlan_id == f['vlan_id']
+                        ):
                             i.update({"mac": f['mac']})
                             i['subinterfaces'][0].update({"mac": f['mac']})
                             break
@@ -501,8 +506,10 @@ class Script(BaseScript):
                 ipv4_addresses += [ipv4_addr_pri]
                 if "IPv4" not in enabled_afi:
                     enabled_afi += ["IPv4"]
-            if ipv4_address is not None \
-            or ipv4_addr_pri is not None:
+            if (
+                ipv4_address is not None or
+                ipv4_addr_pri is not None
+            ):
                 i['subinterfaces'][0].update({
                     "ipv4_addresses": ipv4_addresses
                 })
@@ -521,8 +528,10 @@ class Script(BaseScript):
                     vlan_id = v['vlan_id']
                     i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
                     for f in fdb:
-                        if 'CPU' in f['interfaces'] \
-                        and vlan_id == f['vlan_id']:
+                        if (
+                            'CPU' in f['interfaces'] and
+                            vlan_id == f['vlan_id']
+                        ):
                             i.update({"mac": f['mac']})
                             i['subinterfaces'][0].update({"mac": f['mac']})
                             break
@@ -572,8 +581,10 @@ class Script(BaseScript):
                     vlan_id = v['vlan_id']
                     i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
                     for f in fdb:
-                        if 'CPU' in f['interfaces'] \
-                        and vlan_id == f['vlan_id']:
+                        if (
+                            'CPU' in f['interfaces'] and
+                            vlan_id == f['vlan_id']
+                        ):
                             i.update({"mac": f['mac']})
                             i['subinterfaces'][0].update({"mac": f['mac']})
                             break
@@ -581,8 +592,7 @@ class Script(BaseScript):
             interfaces += [i]
             ipif_found = True
 
-        if self.match_version(DGS3420) \
-        or self.match_version(DGS3620):
+        if self.match_version(DGS3420) or self.match_version(DGS3620):
             match = self.rx_ipmgmt.search(ipif)
             if match:
                 admin_status = match.group("admin_state") == "Enabled"

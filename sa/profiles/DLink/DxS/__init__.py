@@ -353,6 +353,20 @@ class Profile(BaseProfile):
         return config
 
 
+def DES30xx(v):
+    """
+    DES-30xx-series
+    :param v:
+    :return:
+    """
+    return (
+        v["platform"].startswith("DES-3010") or
+        v["platform"].startswith("DES-3016") or
+        v["platform"].startswith("DES-3018") or
+        v["platform"].startswith("DES-3026")
+    )
+
+
 def DES3028(v):
     """
     DES-3028-series
