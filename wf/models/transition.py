@@ -11,6 +11,7 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
+from exceptions import ImportError
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, LongField,
@@ -95,7 +96,11 @@ class Transition(Document):
             logger.debug("[%s|%s|%s] Running transition handlers",
                          obj, obj.state.name, self.label)
             for hn in self.handlers:
-                h = get_handler(hn)
+                try:
+                    h = get_handler(str(hn))
+                except ImportError as e:
+                    logger.error("Error import handler: %s" % e)
+                    h = None
                 if h:
                     logger.debug("[%s|%s|%s] Running %s",
                                  obj, obj.state.name,
