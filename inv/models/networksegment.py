@@ -16,6 +16,7 @@ from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 ListField, BooleanField, IntField,
                                 EmbeddedDocumentField, LongField)
+from mongoengine.errors import ValidationError
 from django.db.models.aggregates import Count
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
@@ -156,6 +157,8 @@ class NetworkSegment(Document):
             return [self.id]
 
     def clean(self):
+        if self.id and "parent" in self._changed_fields and self.has_loop:
+            raise ValidationError("Creating segments loop")
         if self.horizontal_transit_policy == "E":
             self.enable_horizontal_transit = True
         elif self.horizontal_transit_policy == "D":
