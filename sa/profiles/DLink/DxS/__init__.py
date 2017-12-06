@@ -239,7 +239,7 @@ class Profile(BaseProfile):
                         obj_parser=self.parse_interface,
                         cmd_next="n", cmd_stop="q"
                     )
-            except:
+            except script.CLISyntaxError:
                 objects = []
             # DES-3226S does not support `show ports description` command
             if objects == []:
