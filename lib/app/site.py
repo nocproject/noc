@@ -285,57 +285,23 @@ class Site(object):
         from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
         return inner
 
-    def add_to_menu(self, app, v):
-        if callable(v.menu):
-            menu = v.menu(app)
+    def register_app_menu(self, app, view=None):
+        # Get Menu title
+        if view:
+            menu = view.menu
         else:
-            menu = v.menu
-        if not menu:
-            return
+            menu = app.menu
+        if callable(menu):
+            menu = menu(app)
+        # Split to parts
+        root = self.menu_roots[app.module]
         path = [app.module]
         if isinstance(menu, six.string_types):
             parts = menu.split("|")
         else:
             parts = menu
         parts = [x.strip() for x in parts]
-        root = self.menu_roots[app.module]
-        while len(parts) > 1:
-            p = parts.pop(0)
-            path += [p]
-            exists = False
-            for n in root["children"]:
-                if p == n["title"]:
-                    exists = True
-                    break
-            if exists:
-                root = n
-            else:
-                r = {"title": p, "children": []}
-                if p in self.folder_glyps:
-                    r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
-                self.set_menu_id(r, path)
-                root["children"] += [r]
-                root = r
-        path += parts
-        app.menu_url = ("/%s/%s/%s" % (app.module, app.app,
-                                       v.url[1:])).replace("$", "")
-        r = {
-            "title": parts[0],
-            "app": app,
-            "access": self.site_access(app, v),
-            "iconCls": "fa fa-%s noc-edit" % app.glyph
-        }
-        self.set_menu_id(r, path)
-        root["children"] += [r]
-
-    def register_app_menu(self, app):
-        root = self.menu_roots[app.module]
-        path = [app.module]
-        if isinstance(app.menu, six.string_types):
-            parts = app.menu.split("|")
-        else:
-            parts = app.menu
-        parts = [x.strip() for x in parts]
+        # Find proper place
         while len(parts) > 1:
             p = parts.pop(0)
             path += [p]
@@ -344,22 +310,30 @@ class Site(object):
                 root = new_root[0]
             else:
                 r = {
+                    "id": self.get_menu_id(path),
                     "title": p,
                     "children": []
                 }
                 if p in self.folder_glyps:
                     r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
-                self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
         path += parts
+        # Create item
         r = {
+            "id": self.get_menu_id(path),
             "title": parts[0],
             "app": app,
-            "access": lambda user: app.launch_access.check(app, user),
             "iconCls": "fa fa-%s noc-edit" % app.glyph
         }
-        self.set_menu_id(r, path)
+        if view:
+            r["access"] = self.site_access(app, view)
+            app.menu_url = ("/%s/%s/%s" % (
+                app.module, app.app,
+                view.url[1:])
+            ).replace("$", "")
+        else:
+            r["access"] = lambda user: app.launch_access.check(app, user)
         root["children"] += [r]
 
     def register(self, app_class):
@@ -402,7 +376,7 @@ class Site(object):
                 for m in u.method:
                     mm[m] = v
                 if getattr(v, "menu", None):
-                    self.add_to_menu(app, v)
+                    self.register_app_menu(app, v)
                 if u.name:
                     names.add(u.name)
             sv = self.site_view(app, mm)
@@ -447,8 +421,11 @@ class Site(object):
     def add_module_menu(self, m):
         mn = "noc.services.web.apps.%s" % m[4:]  # Strip noc.
         mod_name = __import__(mn, {}, {}, ["MODULE_NAME"]).MODULE_NAME
-        r = {"title": mod_name, "children": []}
-        self.set_menu_id(r, [m])
+        r = {
+            "id": self.get_menu_id([m]),
+            "title": mod_name,
+            "children": []
+        }
         self.menu += [r]
         return r
 
@@ -486,36 +463,6 @@ class Site(object):
             self.install_application(app_class)
         logger.info("%d applications are installed", len(self.installed_applications))
         self.installed_applications = []
-        # Install dynamic menus
-        for app in installed_apps:
-            # Try to install dynamic menus
-            try:
-                menu = __import__(app + ".menu", {}, {}, "DYNAMIC_MENUS")
-                if not menu:
-                    continue
-            except ImportError:
-                continue
-            for d_menu in menu.DYNAMIC_MENUS:
-                # Add dynamic menu folder
-                dm = {
-                    "title": d_menu.title,
-                    "iconCls": d_menu.icon,
-                    "children": []
-                }
-                path = [app, d_menu.title]
-                self.set_menu_id(dm, path)
-                self.menu_roots[app]["children"] += [dm]
-                # Add items
-                for title, app_id, access in d_menu.items:
-                    app = self.apps[app_id]
-                    r = {
-                        "title": title,
-                        "app": app,
-                        "access": access,
-                        "iconCls": app.icon,
-                    }
-                    self.set_menu_id(r, path + [title])
-                    dm["children"] += [r]
         # Finally, order the menu
         self.sort_menu()
 
@@ -558,9 +505,8 @@ class Site(object):
         for m in self.menu:
             m["children"] = sorted_menu(m["children"])
 
-    def set_menu_id(self, item, path):
-        menu_id = hashlib.sha1(" | ".join(smart_str(path))).hexdigest()
-        item["id"] = menu_id
+    def get_menu_id(self, path):
+        return hashlib.sha1(" | ".join(smart_str(path))).hexdigest()
 
     def add_contributor(self, cls, contributor):
         self.app_contributors[cls].add(contributor)
