@@ -16,6 +16,7 @@ import hashlib
 import logging
 import json
 from collections import defaultdict
+import operator
 # Third-party modules
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
@@ -36,7 +37,7 @@ class ProxyNode:
     pass
 
 
-HTTP_METHODS = set(["GET", "POST", "PUT", "DELETE"])
+HTTP_METHODS = {"GET", "POST", "PUT", "DELETE"}
 
 
 class URL(object):
@@ -51,7 +52,7 @@ class URL(object):
         else:
             if isinstance(method, six.string_types):
                 method = [method]
-            if type(method) not in (types.ListType, types.TupleType):
+            if not isinstance(method, (list, tuple)):
                 raise TypeError("Invalid type for 'method'")
             for m in method:
                 if m not in HTTP_METHODS:
@@ -88,7 +89,6 @@ class Site(object):
             "^admin/", self.admin_patterns, namespace="admin")]
         self.urlresolvers = {}  # (module,appp) -> RegexURLResolver
         self.menu = []
-        self.menu_index = {}  # id -> menu item
         self.menu_roots = {}  # app -> menu
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
@@ -298,7 +298,7 @@ class Site(object):
         else:
             parts = menu
         parts = [x.strip() for x in parts]
-        root = self.menu[-1]
+        root = self.menu_roots[app.module]
         while len(parts) > 1:
             p = parts.pop(0)
             path += [p]
@@ -328,11 +328,7 @@ class Site(object):
         self.set_menu_id(r, path)
         root["children"] += [r]
 
-    def add_app_menu(self, app):
-        if not self.menu:
-            # Started without autodiscover
-            # Add module menu
-            self.add_module_menu(app.get_app_id().split(".")[0])
+    def register_app_menu(self, app):
         root = self.menu_roots[app.module]
         path = [app.module]
         if isinstance(app.menu, six.string_types):
@@ -343,15 +339,14 @@ class Site(object):
         while len(parts) > 1:
             p = parts.pop(0)
             path += [p]
-            exists = False
-            for n in root["children"]:
-                if p == n["title"]:
-                    exists = True
-                    break
-            if exists:
-                root = n
+            new_root = [n for n in root["children"] if n["title"] == p]
+            if new_root:
+                root = new_root[0]
             else:
-                r = {"title": p, "children": []}
+                r = {
+                    "title": p,
+                    "children": []
+                }
                 if p in self.folder_glyps:
                     r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
                 self.set_menu_id(r, path)
@@ -375,20 +370,9 @@ class Site(object):
         """
         self.installed_applications += [app_class]
 
-    def install_application(self, app_class):
-        """
-        Install application class to the router
-        :param app_class:
-        :return:
-        """
-        # Register application
-        app_id = app_class.get_app_id()
-        if app_id in self.apps:
-            raise Exception("Application %s is already registered" % app_id)
-        # Initialize application
-        app = app_class(self)
-        self.apps[app_id] = app
+    def register_url_resolver(self, app):
         # Install module URL resolver
+        # @todo: Legacy django part?
         try:
             mr = self.urlresolvers[app.module, None]
         except KeyError:
@@ -403,23 +387,21 @@ class Site(object):
             ar = patterns("")
             mr += [RegexURLResolver("^%s/" % app.app, ar, namespace=app.app)]
             self.urlresolvers[app.module, app.app] = ar
-        # Register application views
-        umap = {}  # url -> [(URL, view)]
+        return ar
+
+    def register_views(self, app, ar):
+        umap = defaultdict(list)  # url -> [(URL, view)]
         for view in app.get_views():
             if hasattr(view, "url"):
                 for u in self.view_urls(view):
-                    m = umap.get(u.url, [])
-                    m += [(u, view)]
-                    umap[u.url] = m
+                    umap[u.url] += [(u, view)]
         for url in umap:
             mm = {}
             names = set()
             for u, v in umap[url]:
                 for m in u.method:
-                    # if m in mm:
-                    #    raise ValueError("Overlapping methods for same URL")
                     mm[m] = v
-                if hasattr(v, "menu") and v.menu:
+                if getattr(v, "menu", None):
                     self.add_to_menu(app, v)
                 if u.name:
                     names.add(u.name)
@@ -437,12 +419,30 @@ class Site(object):
             ar += [RegexURLPattern(u.url, sv, name=u_name)]
             for n in names:
                 self.register_named_view(app.module, app.app, n, sv)
-        # Register application-level menu
-        if hasattr(app, "launch_access") and hasattr(app, "menu") and app.menu:
-            self.add_app_menu(app)
+
+    def install_application(self, app_class):
+        """
+        Install application class to the router
+        :param app_class:
+        :return:
+        """
+        # Register application
+        app_id = app_class.get_app_id()
+        if app_id in self.apps:
+            raise Exception("Application %s is already registered" % app_id)
+        # Initialize application
+        app = app_class(self)
+        self.apps[app_id] = app
+        # Install module URL resolver
+        ar = self.register_url_resolver(app)
+        # Register application views
+        self.register_views(app, ar)
         # Register contributors
         for c in self.app_contributors[app.__class__]:
             c.set_app(app)
+        # Register application-level menu
+        if hasattr(app, "launch_access") and hasattr(app, "menu") and app.menu:
+            self.register_app_menu(app)
 
     def add_module_menu(self, m):
         mn = "noc.services.web.apps.%s" % m[4:]  # Strip noc.
@@ -549,7 +549,7 @@ class Site(object):
         Sort application menu
         """
         def sorted_menu(c):
-            c = sorted(c, key=lambda x: x["title"])
+            c = sorted(c, key=operator.itemgetter("title"))
             for m in c:
                 if "children" in m:
                     m["children"] = sorted_menu(m["children"])
@@ -561,7 +561,6 @@ class Site(object):
     def set_menu_id(self, item, path):
         menu_id = hashlib.sha1(" | ".join(smart_str(path))).hexdigest()
         item["id"] = menu_id
-        self.menu_index[menu_id] = item
 
     def add_contributor(self, cls, contributor):
         self.app_contributors[cls].add(contributor)
