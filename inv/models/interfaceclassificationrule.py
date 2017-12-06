@@ -245,7 +245,10 @@ class InterfaceClassificationRule(Document):
                     "        return bson.ObjectId('%s')" % rule.profile.id
                 ]
             else:
-                mf += ["    return bson.ObjectId('%s')" % rule.profile.id]
+                mf += [
+                    "    if in_selector(mo, %d):" % rule.selector.id,
+                    "        return bson.ObjectId('%s')" % rule.profile.id
+                ]
         r += mf
         return "\n".join(r)
 
