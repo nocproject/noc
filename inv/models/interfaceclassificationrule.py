@@ -10,8 +10,8 @@
 import re
 # NOC modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
-    ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
-    IntField, PlainReferenceField)
+                           ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
+                           IntField, PlainReferenceField)
 from noc.core.ip import IP
 from noc.main.models import PrefixTable
 from interfaceprofile import InterfaceProfile
@@ -124,7 +124,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         ]
         return "\n".join(r)
 
-    ## Untagged
+    # Untagged
     def compile_untagged_eq(self, f_name):
         vlan = int(self.value)
         if vlan < 1 or vlan > 4096:
@@ -148,7 +148,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         ]
         return "\n".join(r)
 
-    ## Tagged
+    # Tagged
     def compile_tagged_eq(self, f_name):
         vlan = int(self.value)
         if vlan < 1 or vlan > 4096:
@@ -189,7 +189,7 @@ class InterfaceClassificationRule(Document):
         EmbeddedDocumentField(InterfaceClassificationMatch),
         required=False)
     profile = PlainReferenceField(InterfaceProfile,
-        default=InterfaceProfile.get_default_profile)
+                                  default=InterfaceProfile.get_default_profile)
 
     def __unicode__(self):
         r = [unicode(x) for x in self.match]
