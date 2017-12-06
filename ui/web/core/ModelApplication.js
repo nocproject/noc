@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -819,19 +819,15 @@ Ext.define("NOC.core.ModelApplication", {
     editRecord: function(record) {
         var me = this,
             r = {},
-            mv,
             field,
-            data,
-            isLookupValue = function(name) {
-                return name.indexOf("__label", name.length - 7) !== -1;
-            };
+            data;
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
         data = record.getData();
         Ext.iterate(data, function(v) {
-            if(isLookupValue(v)) {
-                return;
+            if(v.indexOf("__") !== -1) {
+                return
             }
             // hack to get instance of .TreeCombo class
             field = me.fields.filter(function(e) {
@@ -844,11 +840,11 @@ Ext.define("NOC.core.ModelApplication", {
                 if(!field) {
                     return;
                 }
-                if(field.isLookupField && data[v]) {
-                    mv = {};
-                    mv[field.valueField] = data[v];
-                    mv[field.displayField] = data[v + "__label"] || data[v];
-                    r[v] = field.store.getModel().create(mv);
+                if(Ext.isFunction(field.cleanValue)) {
+                    r[v] = field.cleanValue(
+                        me.currentRecord,
+                        me.store.rest_url
+                    )
                 } else {
                     r[v] = data[v];
                 }

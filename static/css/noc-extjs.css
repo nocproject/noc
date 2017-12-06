@@ -10,12 +10,13 @@
 /* Syntax highlight */
 /* Override default */
 pre.sh_sourceCode {
-    background-color:#e7e7e7;
+    background-color: #e7e7e7;
 }
 
 .sh_address {
     color: darkgreen;
 }
+
 /**/
 .noc-tp {
     padding: 4px;
@@ -35,7 +36,7 @@ pre.sh_sourceCode {
 
 .noc-tp TABLE TH {
     font-weight: bold;
-    background-color:#e0e0e0;
+    background-color: #e0e0e0;
 }
 
 TABLE {
@@ -162,7 +163,8 @@ TABLE {
     -webkit-filter: brightness(0.95);
 }
 
-.noc-offset-0 {}
+.noc-offset-0 {
+}
 
 .noc-offset-1 {
     padding-left: 4px;
@@ -175,6 +177,7 @@ TABLE {
 .noc-bold {
     font-weight: bold;
 }
+
 /*
  * Network Map styles
  */
@@ -185,12 +188,14 @@ TABLE {
 .stp-root tspan:before {
     content: "*";
 }
+
 /*
  * Fix ExtJS 6 toolbar buttons' text overflow
  */
 .x-btn-inner-default-toolbar-small {
     text-overflow: clip !important;
 }
+
 /*
  * Search styles
  */
@@ -201,6 +206,7 @@ TABLE {
 .noc-search-card {
     padding-left: 20px;
 }
+
 /*
  * Welcome page style
  */
@@ -234,18 +240,22 @@ TABLE {
 .noc-welcome-body h2 {
     font-size: 10pt;
 }
+
 /*
  * Statuses
  */
 .noc-status-waiting > td {
     background-color: #7f8c8d !important;
 }
+
 .noc-status-running > td {
     background-color: #f0c330 !important;
 }
+
 .noc-status-success > td {
     background-color: #39ca74 !important;
 }
+
 .noc-status-failed > td {
     background-color: #be3a31 !important;
 }
@@ -332,4 +342,54 @@ TABLE {
 
 .fm-blur-4 {
     opacity: 1;
+}
+
+.x-form-trigger.fa {
+    display: table-cell;
+    background-image: none !important;
+    padding-top: 5px;
+    border: 1px solid #b5b8c8;
+    background-color: #d7dbed;
+}
+
+.noc-wc-state-base-body {
+    min-width: 150px;
+    max-width: 300px;
+}
+
+.noc-wc-state {
+    position: relative;
+    display: inline-block;
+    width: 401px;
+}
+
+.noc-wc-state + .noc-wc-cloud {
+    background: #ecf0f1;
+    border: 1px solid #b5b8c8;
+    border-radius: 5px;
+    position: absolute;
+    padding: 10px 0;
+    margin-top: 3px;
+    margin-left: -5px;
+    z-index: 5;
+}
+
+.noc-wc-state + .noc-wc-cloud:before, .noc-wc-state + .noc-wc-cloud:after {
+    content: "";
+    position: absolute;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -200px;
+}
+
+.noc-wc-state + .noc-wc-cloud:before {
+    border-bottom: 10px solid #b5b8c8;
+}
+
+.noc-wc-state + .noc-wc-cloud:after {
+    border-bottom: 10px solid #ecf0f1;
+    margin-bottom: -2px;
+    z-index: 1;
 }

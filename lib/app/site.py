@@ -16,6 +16,7 @@ import hashlib
 import logging
 import json
 from collections import defaultdict
+import operator
 # Third-party modules
 from django.http import (HttpResponse, HttpResponseNotFound,
                          HttpResponseForbidden, Http404)
@@ -31,10 +32,12 @@ from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
 
+
 class ProxyNode:
     pass
 
-HTTP_METHODS = set(["GET", "POST", "PUT", "DELETE"])
+
+HTTP_METHODS = {"GET", "POST", "PUT", "DELETE"}
 
 
 class URL(object):
@@ -49,7 +52,7 @@ class URL(object):
         else:
             if isinstance(method, six.string_types):
                 method = [method]
-            if type(method) not in (types.ListType, types.TupleType):
+            if not isinstance(method, (list, tuple)):
                 raise TypeError("Invalid type for 'method'")
             for m in method:
                 if m not in HTTP_METHODS:
@@ -86,13 +89,14 @@ class Site(object):
             "^admin/", self.admin_patterns, namespace="admin")]
         self.urlresolvers = {}  # (module,appp) -> RegexURLResolver
         self.menu = []
-        self.menu_index = {}  # id -> menu item
+        self.menu_roots = {}  # app -> menu
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
         self.testing_mode = hasattr(settings, "IS_TEST")
         self.log_api_calls = config.logging.log_api_calls
         self.log_sql_statements = config.logging.log_sql_statements
         self.app_contributors = defaultdict(set)
+        self.installed_applications = []
 
     @property
     def urls(self):
@@ -200,15 +204,15 @@ class Site(object):
                         if f.is_valid():
                             kwargs.update(f.cleaned_data)
                         else:
-                            errors = dict([(f, "; ".join(e))
-                                           for f, e in f.errors.items()])
+                            errors = dict(
+                                (cf, "; ".join(e))
+                                for cf, e in f.errors.items())
                     if errors:
                         #
                         if to_log_api_call:
                             app_logger.error("ERROR: %s", errors)
                         # Return error response
-                        ext_format = ("__format=ext"
-                                    in request.META["QUERY_STRING"].split("&"))
+                        ext_format = "__format=ext" in request.META["QUERY_STRING"].split("&")
                         r = json.dumps({
                             "status": False,
                             "errors": errors
@@ -245,8 +249,8 @@ class Site(object):
                             sc[stmt] += 1
                             tsc += 1
                             app_logger.debug("SQL %(sql)s %(time)ss" % q)
-                    x = ", ".join(["%s: %d" % (k, v)
-                                   for k, v in sc.iteritems()])
+                    x = ", ".join("%s: %d" % (k, cv)
+                                  for k, cv in sc.iteritems())
                     if x:
                         x = " (%s)" % x
                     app_logger.debug("SQL statements: %d%s" % (tsc, x))
@@ -254,7 +258,7 @@ class Site(object):
                 return HttpResponseForbidden(e)
             except Http404 as e:
                 return HttpResponseNotFound(e)
-            except:
+            except Exception:
                 # Generate 500
                 r = HttpResponse(
                     content=error_report(logger=app_logger),
@@ -268,7 +272,7 @@ class Site(object):
                         json.dumps(r),
                         mimetype="text/json; charset=utf-8"
                     )
-                except:
+                except Exception:
                     error_report(logger=app_logger)
                     r = HttpResponse(error_report(), status=500)
             r["Pragma"] = "no-cache"
@@ -281,86 +285,55 @@ class Site(object):
         from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
         return inner
 
-    def add_to_menu(self, app, v):
-        if callable(v.menu):
-            menu = v.menu(app)
+    def register_app_menu(self, app, view=None):
+        # Get Menu title
+        if view:
+            menu = view.menu
         else:
-            menu = v.menu
-        if not menu:
-            return
+            menu = app.menu
+        if callable(menu):
+            menu = menu(app)
+        # Split to parts
+        root = self.menu_roots[app.module]
         path = [app.module]
         if isinstance(menu, six.string_types):
             parts = menu.split("|")
         else:
             parts = menu
         parts = [x.strip() for x in parts]
-        root = self.menu[-1]
+        # Find proper place
         while len(parts) > 1:
             p = parts.pop(0)
             path += [p]
-            exists = False
-            for n in root["children"]:
-                if p == n["title"]:
-                    exists = True
-                    break
-            if exists:
-                root = n
+            new_root = [n for n in root["children"] if n["title"] == p]
+            if new_root:
+                root = new_root[0]
             else:
-                r = {"title": p, "children": []}
+                r = {
+                    "id": self.get_menu_id(path),
+                    "title": p,
+                    "children": []
+                }
                 if p in self.folder_glyps:
                     r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
-                self.set_menu_id(r, path)
                 root["children"] += [r]
                 root = r
         path += parts
-        app.menu_url = ("/%s/%s/%s" % (app.module, app.app,
-                                       v.url[1:])).replace("$", "")
+        # Create item
         r = {
+            "id": self.get_menu_id(path),
             "title": parts[0],
             "app": app,
-            "access": self.site_access(app, v),
             "iconCls": "fa fa-%s noc-edit" % app.glyph
         }
-        self.set_menu_id(r, path)
-        root["children"] += [r]
-
-    def add_app_menu(self, app):
-        if not self.menu:
-            # Started without autodiscover
-            # Add module menu
-            self.add_module_menu(app.get_app_id().split(".")[0])
-        root = self.menu[-1]
-        path = [app.module]
-        if isinstance(app.menu, six.string_types):
-            parts = app.menu.split("|")
+        if view:
+            r["access"] = self.site_access(app, view)
+            app.menu_url = ("/%s/%s/%s" % (
+                app.module, app.app,
+                view.url[1:])
+            ).replace("$", "")
         else:
-            parts = app.menu
-        parts = [x.strip() for x in parts]
-        while len(parts) > 1:
-            p = parts.pop(0)
-            path += [p]
-            exists = False
-            for n in root["children"]:
-                if p == n["title"]:
-                    exists = True
-                    break
-            if exists:
-                root = n
-            else:
-                r = {"title": p, "children": []}
-                if p in self.folder_glyps:
-                    r["iconCls"] = "fa fa-%s" % self.folder_glyps[p]
-                self.set_menu_id(r, path)
-                root["children"] += [r]
-                root = r
-        path += parts
-        r = {
-            "title": parts[0],
-            "app": app,
-            "access": lambda user: app.launch_access.check(app, user),
-            "iconCls": "fa fa-%s noc-edit" % app.glyph
-        }
-        self.set_menu_id(r, path)
+            r["access"] = lambda user: app.launch_access.check(app, user)
         root["children"] += [r]
 
     def register(self, app_class):
@@ -369,14 +342,11 @@ class Site(object):
         Fetch all view_* methods
         And register them
         """
-        # Register application
-        app_id = app_class.get_app_id()
-        if app_id in self.apps:
-            raise Exception("Application %s is already registered" % app_id)
-        # Initialize application
-        app = app_class(self)
-        self.apps[app_id] = app
+        self.installed_applications += [app_class]
+
+    def register_url_resolver(self, app):
         # Install module URL resolver
+        # @todo: Legacy django part?
         try:
             mr = self.urlresolvers[app.module, None]
         except KeyError:
@@ -391,24 +361,22 @@ class Site(object):
             ar = patterns("")
             mr += [RegexURLResolver("^%s/" % app.app, ar, namespace=app.app)]
             self.urlresolvers[app.module, app.app] = ar
-        # Register application views
-        umap = {}  # url -> [(URL, view)]
+        return ar
+
+    def register_views(self, app, ar):
+        umap = defaultdict(list)  # url -> [(URL, view)]
         for view in app.get_views():
             if hasattr(view, "url"):
                 for u in self.view_urls(view):
-                    m = umap.get(u.url, [])
-                    m += [(u, view)]
-                    umap[u.url] = m
+                    umap[u.url] += [(u, view)]
         for url in umap:
             mm = {}
             names = set()
             for u, v in umap[url]:
                 for m in u.method:
-                    #if m in mm:
-                    #    raise ValueError("Overlapping methods for same URL")
                     mm[m] = v
-                if hasattr(v, "menu") and v.menu:
-                    self.add_to_menu(app, v)
+                if getattr(v, "menu", None):
+                    self.register_app_menu(app, v)
                 if u.name:
                     names.add(u.name)
             sv = self.site_view(app, mm)
@@ -425,19 +393,39 @@ class Site(object):
             ar += [RegexURLPattern(u.url, sv, name=u_name)]
             for n in names:
                 self.register_named_view(app.module, app.app, n, sv)
-        # Register application-level menu
-        if (hasattr(app, "launch_access") and
-            hasattr(app, "menu") and app.menu):
-            self.add_app_menu(app)
+
+    def install_application(self, app_class):
+        """
+        Install application class to the router
+        :param app_class:
+        :return:
+        """
+        # Register application
+        app_id = app_class.get_app_id()
+        if app_id in self.apps:
+            raise Exception("Application %s is already registered" % app_id)
+        # Initialize application
+        app = app_class(self)
+        self.apps[app_id] = app
+        # Install module URL resolver
+        ar = self.register_url_resolver(app)
+        # Register application views
+        self.register_views(app, ar)
         # Register contributors
         for c in self.app_contributors[app.__class__]:
             c.set_app(app)
+        # Register application-level menu
+        if hasattr(app, "launch_access") and hasattr(app, "menu") and app.menu:
+            self.register_app_menu(app)
 
     def add_module_menu(self, m):
         mn = "noc.services.web.apps.%s" % m[4:]  # Strip noc.
         mod_name = __import__(mn, {}, {}, ["MODULE_NAME"]).MODULE_NAME
-        r = {"title": mod_name, "children": []}
-        self.set_menu_id(r, [m])
+        r = {
+            "id": self.get_menu_id([m]),
+            "title": mod_name,
+            "children": []
+        }
         self.menu += [r]
         return r
 
@@ -449,15 +437,18 @@ class Site(object):
             # Do not discover site twice
             return
         # Connect to mongodb
-        import noc.lib.nosql
+        import noc.lib.nosql # noqa:F401
+        self.installed_applications = []
         prefix = "services/web/apps"
         # Load applications
-        for app in [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]:
+        installed_apps = [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]
+        self.menu_roots = {}
+        for app in installed_apps:
             app_path = os.path.join(prefix, app)
             if not os.path.isdir(app_path):
                 continue
             logger.debug("Loading %s applications", app)
-            root = self.add_module_menu("noc.%s" % app)
+            self.menu_roots[app] = self.add_module_menu("noc.%s" % app)
             # Initialize application
             for cs in ["custom", ""]:
                 for f in glob.glob("%s/*/views.py" % os.path.join(cs, app_path)):
@@ -467,34 +458,11 @@ class Site(object):
                         continue
                     __import__(".".join(["noc"] + f[:-3].split(os.path.sep)),
                                {}, {}, "*")
-            # Try to install dynamic menus
-            menu = None
-            try:
-                menu = __import__(app + ".menu", {}, {}, "DYNAMIC_MENUS")
-            except ImportError:
-                continue
-            if menu:
-                for d_menu in menu.DYNAMIC_MENUS:
-                    # Add dynamic menu folder
-                    dm = {
-                        "title": d_menu.title,
-                        "iconCls": d_menu.icon,
-                        "children": []
-                    }
-                    path = [app, d_menu.title]
-                    self.set_menu_id(dm, path)
-                    root["children"] += [dm]
-                    # Add items
-                    for title, app_id, access in d_menu.items:
-                        app = self.apps[app_id]
-                        r = {
-                            "title": title,
-                            "app": app,
-                            "access": access,
-                            "iconCls": app.icon,
-                        }
-                        self.set_menu_id(r, path + [title])
-                        dm["children"] += [r]
+        # Install applications
+        for app_class in self.installed_applications:
+            self.install_application(app_class)
+        logger.info("%d applications are installed", len(self.installed_applications))
+        self.installed_applications = []
         # Finally, order the menu
         self.sort_menu()
 
@@ -528,7 +496,7 @@ class Site(object):
         Sort application menu
         """
         def sorted_menu(c):
-            c = sorted(c, key=lambda x: x["title"])
+            c = sorted(c, key=operator.itemgetter("title"))
             for m in c:
                 if "children" in m:
                     m["children"] = sorted_menu(m["children"])
@@ -537,10 +505,8 @@ class Site(object):
         for m in self.menu:
             m["children"] = sorted_menu(m["children"])
 
-    def set_menu_id(self, item, path):
-        menu_id = hashlib.sha1(" | ".join(smart_str(path))).hexdigest()
-        item["id"] = menu_id
-        self.menu_index[menu_id] = item
+    def get_menu_id(self, path):
+        return hashlib.sha1(" | ".join(smart_str(path))).hexdigest()
 
     def add_contributor(self, cls, contributor):
         self.app_contributors[cls].add(contributor)
@@ -552,6 +518,7 @@ class Site(object):
             if pr:
                 for pr in self.apps[app].predefined_reports:
                     yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
+
 
 #
 # Global application site instance

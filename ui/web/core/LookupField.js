@@ -2,7 +2,7 @@
 // NOC.core.LookupField -
 // Lookup form field
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.LookupField");
@@ -134,5 +134,18 @@ Ext.define("NOC.core.LookupField", {
         } else {
             me.callParent([value]);
         }
+    },
+
+    // Called by ModelApplication
+    cleanValue: function(record, restURL) {
+        var me = this,
+            rv = record.get(me.name),
+            mv = {};
+        if(rv === "" || rv === 0) {
+            return ""
+        }
+        mv[me.valueField] = rv;
+        mv[me.displayField] = record.get(me.name + "__label");
+        return me.store.getModel().create(mv)
     }
 });
