@@ -153,7 +153,7 @@ Ext.define("NOC.core.StateField", {
 
     doTransition: function (record) {
         var me = this,
-            url = Ext.String.format("/crm/supplier/{0}/transitions/{1}/", me.itemId, record.get("id"));
+            url = Ext.String.format("{0}{1}/transitions/{2}/", me.restUrl, me.itemId, record.get("id"));
         Ext.Ajax.request({
             url: url,
             method: "POST",

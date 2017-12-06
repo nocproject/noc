@@ -11,7 +11,8 @@ Ext.define("NOC.wf.state.Application", {
     requires: [
         "NOC.wf.state.Model",
         "NOC.wf.workflow.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "Ext.ux.form.StringsField"
     ],
     model: "NOC.wf.state.Model",
     initComponent: function() {
