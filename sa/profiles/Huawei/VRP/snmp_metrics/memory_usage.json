@@ -17,7 +17,7 @@
           "$regex": "S2300"
         },
         "version": {
-          "$regex": "V100R003"
+          "$regex": "V100R00[1-4]"
         }
       },
     "is_switch_R005+": {
