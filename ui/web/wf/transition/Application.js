@@ -12,7 +12,8 @@ Ext.define("NOC.wf.transition.Application", {
         "NOC.wf.transition.Model",
         "NOC.wf.workflow.LookupField",
         "NOC.wf.state.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "Ext.ux.form.StringsField"
     ],
     model: "NOC.wf.transition.Model",
     initComponent: function() {
