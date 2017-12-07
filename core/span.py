@@ -12,12 +12,16 @@ import time
 import random
 import os
 import struct
+import logging
+import uuid
 # Third-party modules
 import tornado.gen
 # NOC modules
 from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
+from noc.config import config
 
+forensic_logger = logging.getLogger("forensic")
 span_lock = threading.Lock()
 
 # Collected spans, protected by lock
@@ -66,8 +70,16 @@ class Span(object):
         self.span_id = DEFAULT_ID
         self.span_context = DEFAULT_ID
         self.span_parent = DEFAULT_ID
+        if config.features.forensic:
+            self.forensic_id = str(uuid.uuid4())
 
     def __enter__(self):
+        if config.features.forensic:
+            forensic_logger.info(
+                "[>%s|%s|%s] %s",
+                self.forensic_id, self.server,
+                self.service, self.in_label
+            )
         if not self.is_sampled:
             return self
         # Generate span ID
@@ -97,6 +109,8 @@ class Span(object):
                 return str(s).encode("string_escape")
 
         global spans
+        if config.features.forensic:
+            forensic_logger.info("[<%s]", self.forensic_id)
         if not self.is_sampled:
             return
         if exc_type and not self.error_text and not self.is_ignorable_error(exc_type):
