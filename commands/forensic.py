@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # forensic
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import print_function
@@ -71,6 +71,7 @@ class Command(BaseCommand):
             self.print("Timestamp\t\tID\t\t\t\t\tServer\t\tService\t\tLabel")
         for s in sorted(spans.values(), key=operator.attrgetter("ts")):
             self.print("%s\t%s\t%s\t%s\t%s" % (s.ts, s.id, s.server, s.service, s.label))
+
 
 if __name__ == "__main__":
     Command().run()
