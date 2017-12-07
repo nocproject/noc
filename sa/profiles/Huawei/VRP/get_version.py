@@ -66,7 +66,6 @@ class Script(BaseScript):
         v = ""
         match_re_list = [
             self.rx_ver,
-            self.rx_ver_snmp6,
             self.rx_ver_snmp,
             self.rx_ver_snmp2,
             self.rx_ver_snmp3,
