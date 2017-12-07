@@ -141,7 +141,7 @@ Ext.define("NOC.core.LookupField", {
         var me = this,
             rv = record.get(me.name),
             mv = {};
-        if(rv === "" || rv === 0) {
+        if(!rv || rv === "" || rv === 0) {
             return ""
         }
         mv[me.valueField] = rv;
