@@ -482,7 +482,7 @@ class ExtModelApplication(ExtApplication):
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         # Tags
-        if hasattr(o, "tags") and "tags" in attrs:
+        if hasattr(o, "tags") and attrs.get("tags"):
             for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
                 Tag.unregister_tag(t, repr(self.model))
                 self.logger.info("Unregister Tag: %s" % t)
