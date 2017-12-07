@@ -220,6 +220,8 @@ class Script(BaseScript):
                 match = self.rx_vlan_t.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
+                    if vlans == "all":
+                        vlans = "1-4096"
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
@@ -227,6 +229,8 @@ class Script(BaseScript):
                 match = self.rx_vlan_at.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
+                    if vlans == "all":
+                        vlans = "1-4096"
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
