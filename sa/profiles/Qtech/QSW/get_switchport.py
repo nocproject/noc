@@ -23,24 +23,20 @@ class Script(BaseScript):
     rx_vlan_t = re.compile(r"^\s*Vlan\s+allowed\s*:\s*(?P<vlans>\S+)$")
     rx_vlan_at = re.compile(r"^\s*Tagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
     rx_vlan_au = re.compile(r"^\s*Untagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
+    rx_description = re.compile(r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
 
-    rx_description = re.compile(
-        r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
-#    rx_channel_description = re.compile(
-#        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
-#    rx_vlan_stack = re.compile(
-#        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
-
-
+    """
+    rx_channel_description = re.compile(r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+    rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
+    """
     def execute(self):
-
-        #TODO
+        # TODO
         # Get portchannels
-#        portchannels = self.scripts.get_portchannel()
+        # portchannels = self.scripts.get_portchannel()
         portchannels = []
         portchannel_members = []
-#        for p in portchannels:
-#            portchannel_members += p["members"]
+        # for p in portchannels:
+        #    portchannel_members += p["members"]
 
         # Get interafces status
         interface_status = {}
@@ -48,7 +44,7 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
-        #TODO
+        # TODO
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         """
@@ -184,10 +180,10 @@ class Script(BaseScript):
         port_vlans = {}
         port_channels = portchannels
 
-
         iface_conf = self.cli("show interface")
         # Correct Qtech BUG:
-        iface_conf = iface_conf.replace("\n\n                                                                          ", "\n")
+        iface_conf = iface_conf.replace(
+            "\n\n                                                                          ", "\n")
         iface_conf = iface_conf.splitlines()
         i = 0
         L = len(iface_conf) - 2
@@ -207,10 +203,10 @@ class Script(BaseScript):
                         break
             if interface not in port_vlans:
                 port_vlans.update({interface: {
-                                        "tagged": [],
-                                        "untagged": '',
-                                        }
-                                })
+                    "tagged": [],
+                    "untagged": '',
+                }
+                })
 
             i += 1
             match_mod = self.rx_mode.match(iface_conf[i])
@@ -224,6 +220,8 @@ class Script(BaseScript):
                 match = self.rx_vlan_t.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
+                    if vlans == "all":
+                        vlans = "1-4096"
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
@@ -231,6 +229,8 @@ class Script(BaseScript):
                 match = self.rx_vlan_at.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
+                    if vlans == "all":
+                        vlans = "1-4096"
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
@@ -243,11 +243,10 @@ class Script(BaseScript):
                         vlans = vlans.split("-")[0]
                     port_vlans[interface]["untagged"] = vlans
 
-
         iface_conf = []
         # Why portchannels=[] ???????
         # Get portchannels onse more!!!
-#        portchannels = self.scripts.get_portchannel()
+        #        portchannels = self.scripts.get_portchannel()
         portchannels = []
         # Get switchport data and overall result
         r = []
@@ -293,16 +292,16 @@ class Script(BaseScript):
                 else:
                     tagged = port_vlans[name]["tagged"]
                 swp = {
-                        "status": status,
-                        "description": description.strip(),
-                        "802.1Q Enabled": len(port_vlans.get(name, [])) > 0,
-                        "802.1ad Tunnel": vlan_stack_status.get(name, False),
-                        "tagged": tagged,
-                        }
+                    "status": status,
+                    "description": description.strip(),
+                    "802.1Q Enabled": len(port_vlans.get(name, [])) > 0,
+                    "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                    "tagged": tagged,
+                }
                 if name in port_vlans:
                     if port_vlans[name]["untagged"]:
                         swp["untagged"] = port_vlans[name]["untagged"]
-                swp["interface"] = self.profile.convert_interface_name(name)
+                swp["interface"] = name
                 swp["members"] = members
                 r.append(swp)
                 write = False
