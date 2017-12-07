@@ -56,3 +56,11 @@ class Profile(BaseProfile):
             return "e%s" % s
         else:
             return s
+
+    def get_interface_names(self, name):
+        r = []
+        if name.startswith("port "):
+            r += [name[5:]]
+        else:
+            r += [name]
+        return r
