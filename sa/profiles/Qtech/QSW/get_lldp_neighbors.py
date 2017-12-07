@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_mac
 
 
@@ -90,8 +89,6 @@ class Script(BaseScript):
             raise self.NotSupportedError()
         for match in self.rx_line.finditer(lldp):
             local_interface = match.group("interface")
-            local_interface = \
-                self.profile.convert_interface_name(local_interface)
             remote_chassis_id = match.group("chassis_id")
             remote_port = match.group("port_id")
             remote_system_name = match.group("name")
@@ -101,7 +98,8 @@ class Script(BaseScript):
             # Build neighbor data
             # Get capability
             cap = 0
-#            for c in match.group("capabilities").split(","):
+            """
+            for c in match.group("capabilities").split(","):
             if cap:
                 c = c.strip()
                 if c:
@@ -111,7 +109,7 @@ class Script(BaseScript):
                         "C": 64, "S": 128, "D": 256,
                         "H": 512, "TP": 1024,
                     }[c]
-
+            """
             # Get remote port subtype
             remote_port_subtype = 5
             if is_ipv4(remote_port):
@@ -130,7 +128,7 @@ class Script(BaseScript):
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
-                }
+            }
             if remote_system_name and remote_system_name != "NULL":
                 n["remote_system_name"] = remote_system_name
             if system_description and system_description != "NULL":
@@ -139,7 +137,7 @@ class Script(BaseScript):
                 n["remote_port_description"] = port_description
 
             # TODO:
-#            n["remote_chassis_id_subtype"] = 4
+            #            n["remote_chassis_id_subtype"] = 4
 
             i["neighbors"].append(n)
             r.append(i)

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -100,16 +100,14 @@ class Script(BaseScript):
                 # Not supported at all
                 raise self.NotSupportedError()
         for match in self.rx_line.finditer(v):
-            interfaces = "e" + match.group("interfaces")
+            interfaces = match.group("interfaces")
             if interfaces == '0' \
                     or interfaces.lower() == 'cpu':
                 continue
             r.append({
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
-                "interfaces": [
-                    self.profile.convert_interface_name(interfaces)
-                ],
+                "interfaces": [interfaces],
                 "type": {
                     "dynamic": "D",
                     "static": "S",
@@ -125,9 +123,7 @@ class Script(BaseScript):
             r.append({
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
-                "interfaces": [
-                    self.profile.convert_interface_name(interfaces)
-                ],
+                "interfaces": [interfaces],
                 "type": {
                     "dynamic": "D",
                     "static": "S",
