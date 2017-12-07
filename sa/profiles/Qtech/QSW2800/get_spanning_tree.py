@@ -138,7 +138,8 @@ class Script(BaseScript):
                             "ROOT": "root",
                             "DSGN": "designated",
                             "ALTR": "alternate",
-                            "BKUP": "backup"
+                            "BKUP": "backup",
+                            "MSTR": "master"
                         }[match.group("role")],
                         "designated_bridge_id": dsg_bridge[1],
                         "designated_bridge_priority": dsg_bridge[0],
