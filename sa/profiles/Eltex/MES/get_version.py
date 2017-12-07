@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -51,7 +51,8 @@ class Script(BaseScript):
         "54": "MES-5248",
         "59": "MES-2124P",
         "74": "MES-5324",
-        "81": "MES-3324F"
+        "81": "MES-3324F",
+        "89": "MES-2308P"
     }
 
     def execute(self):
@@ -70,15 +71,15 @@ class Script(BaseScript):
                 serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.67108992",
                                        cached=True)
                 return {
-                        "vendor": "Eltex",
-                        "platform": platform,
-                        "version": version,
-                        "attributes": {
-                            "Boot PROM": bootprom,
-                            "HW version": hardware,
-                            "Serial Number": serial
-                            }
-                        }
+                    "vendor": "Eltex",
+                    "platform": platform,
+                    "version": version,
+                    "attributes": {
+                        "Boot PROM": bootprom,
+                        "HW version": hardware,
+                        "Serial Number": serial
+                    }
+                }
             except self.snmp.TimeOutError:
                 pass
 
@@ -118,7 +119,7 @@ class Script(BaseScript):
         else:
             serial = self.re_search(self.rx_serial2, ser)
 
-        r =  {
+        r = {
             "vendor": "Eltex",
             "platform": platform,
             "version": version.group("version"),
@@ -128,5 +129,5 @@ class Script(BaseScript):
         }
         if bootprom:
             r["attributes"]["Boot PROM"] = bootprom.group("bootprom")
-            r["attributes"]["HW version"]= hardware.group("hardware")
+            r["attributes"]["HW version"] = hardware.group("hardware")
         return r
