@@ -872,6 +872,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return neighbors
         # Cached version
         neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
+        self.logger.debug("Use neighbors cache")
         if neighbors is None:
             neighbors = iter_neighbors(mo)
             if isinstance(neighbors, types.GeneratorType):
@@ -886,6 +887,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             metrics["neighbor_cache_misses"] += 1
         else:
             alias_cache = cache.get("%s-aliases" % key, version=self.NEIGHBOR_CACHE_VERSION)
+            self.logger.debug("Alias cache is %s", alias_cache)
             if alias_cache:
                 self.interface_aliases.update(alias_cache)
             metrics["neighbor_cache_hits"] += 1
@@ -970,7 +972,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :param interface:
         :return: Interface name or None if interface cannot be cleaned
         """
-        return self.interface_aliases.get((object, interface), interface)
+        return self.interface_aliases.get((object.id, interface), interface)
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
@@ -1323,7 +1325,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :param alias:
         :return:
         """
-        self.interface_aliases[object, alias] = interface_name
+        self.interface_aliases[object.id, alias] = interface_name
 
     @cachetools.cachedmethod(operator.attrgetter("_own_mac_check_cache"))
     def is_own_mac(self, mac):
