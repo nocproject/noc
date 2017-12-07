@@ -206,7 +206,7 @@ class Model(six.with_metaclass(ModelBase)):
         """
         if not user or user.is_superuser:
             return query  # No restrictions
-        if "dictionaries." in query["datasource"]:
+        if query["datasource"].startswith("dictionaries."):
             return query  # To dictionaries
         # Get user domains
         domains = UserAccess.get_domains(user)
