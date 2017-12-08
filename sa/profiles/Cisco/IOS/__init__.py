@@ -17,7 +17,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Cisco.IOS"
     pattern_more = [
-        (r"^ --More--", "\r\n"),
+        (r"^ --More-- ", "\r\n"),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
     ]
     pattern_unprivileged_prompt = r"^\S+?>"
