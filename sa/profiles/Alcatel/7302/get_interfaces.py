@@ -11,9 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.text import *
 from noc.core.ip import IPv4
-from collections import defaultdict
 
 
 class Script(BaseScript):
@@ -46,6 +44,7 @@ class Script(BaseScript):
         "atm": "physical",
         "atm-ima": "physical",
         "shdsl": "physical",
+        "l2-vlan": "SVI",
         "sw-loopback": "loopback",
         "bonding": "other",
         "bridge-port": "other"
@@ -96,6 +95,8 @@ class Script(BaseScript):
                     i["subinterfaces"][0]["mtu"] = match.group("mtu")
                 if iftype != "tunnel":
                     i["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
+                if i["name"].startswith("l2-vlan:"):
+                    i["subinterfaces"][0]["vlan_ids"] = [int(i["name"][8:])]
                 interfaces += [i]
             else:
                 vpi = match.group("vpi")
