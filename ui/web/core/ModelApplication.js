@@ -154,9 +154,20 @@ Ext.define("NOC.core.ModelApplication", {
             handler: me.onNewRecord
         });
 
+        me.unselectAll = Ext.create("Ext.button.Button", {
+            itemId: "unselect_all",
+            text: __('Unselect All'),
+            disabled: true,
+            glyph: NOC.glyph.minus,
+            tooltip: __('Unselect all records'),
+            scope: me,
+            handler: me.onUnselectAll
+        });
+
         me.exportButton = Ext.create("Ext.button.Button", {
             itemId: "export",
             text: __("Export"),
+            disabled: true,
             glyph: NOC.glyph.arrow_down,
             tooltip: __("Save screen"),
             scope: me,
@@ -165,7 +176,7 @@ Ext.define("NOC.core.ModelApplication", {
             }
         });
 
-        gridToolbar.push(me.searchField, me.refreshButton, me.createButton, me.exportButton);
+        gridToolbar.push(me.searchField, me.refreshButton, me.createButton, me.unselectAll, me.exportButton);
         // admin actions
         if(me.actions || me.hasGroupEdit) {
             gridToolbar.push(me.createActionMenu());
@@ -244,7 +255,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.actions) {
             selModel.on("selectionchange", me.onActionSelectionChange, me);
         }
-
+        selModel.on("selectionchange", me.onSelectionChange, me);
         var rowItems = [
             {
                 glyph: NOC.glyph.star,
@@ -1304,6 +1315,12 @@ Ext.define("NOC.core.ModelApplication", {
     onActionSelectionChange: function(o, selected, opts) {
         var me = this;
         me.actionMenu.setDisabled(!selected.length);
+        me.unselectAll.setDisabled(!selected.length);
+    },
+    onSelectionChange: function(o, selected, opts) {
+        var me = this;
+        me.exportButton.setDisabled(!selected.length);
+        me.unselectAll.setDisabled(!selected.length);
     },
     //
     // Override with
@@ -1489,6 +1506,13 @@ Ext.define("NOC.core.ModelApplication", {
                             handler: me.onGroupSave
                         },
                         {
+                            text: __("Reset"),
+                            glyph: NOC.glyph.undo,
+                            tooltip: __("Reset to default values"),
+                            scope: me,
+                            handler: me.onGroupReset
+                        },
+                        {
                             text: __("Close"),
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
@@ -1589,6 +1613,11 @@ Ext.define("NOC.core.ModelApplication", {
         });
     },
     //
+    onGroupReset: function() {
+        var me = this;
+        me.groupForm.reset();
+    },
+    //
     onMetrics: function(record) {
         var me = this;
         me.showItem(me.ITEM_METRIC_SETTINGS).preview(record);
@@ -1642,5 +1671,10 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             })
         }
+    },
+    //
+    onUnselectAll: function() {
+        var me = this;
+        me.grid.getSelectionModel().deselectAll();
     }
 });
