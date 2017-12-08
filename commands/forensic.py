@@ -64,7 +64,6 @@ class Command(BaseCommand):
         n_open = 0
         n_closed = 0
         for line in sys.stdin:
-            time.sleep(0.5)
             line = line.strip()
             if "[forensic] [>" in line:
                 # Open span
@@ -93,6 +92,7 @@ class Command(BaseCommand):
                     next_show = t + self.REFRESH_INTERVAL
                     show()
         show()
+
 
 if __name__ == "__main__":
     Command().run()
