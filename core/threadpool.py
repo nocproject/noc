@@ -119,7 +119,13 @@ class ThreadPoolExecutor(object):
                 "Cannot schedule new task after shutdown")
         future = Future()
         span_ctx, span = get_current_span()
-        self._put((future, fn, args, kwargs, span_ctx, span))
+        # Fetch span label
+        if "_in_label" in kwargs:
+            in_label = kwargs.pop("_in_label")
+        else:
+            in_label = None
+        # Put to the working queue
+        self._put((future, fn, args, kwargs, span_ctx, span, in_label))
         return future
 
     def shutdown(self, sync=False):
@@ -148,9 +154,7 @@ class ThreadPoolExecutor(object):
         try:
             while not self.to_shutdown:
                 try:
-                    future, fn, args, kwargs, span_ctx, span = self._get(
-                        self.idle_timeout
-                    )
+                    future, fn, args, kwargs, span_ctx, span, in_label = self._get(self.idle_timeout)
                 except IdleTimeout:
                     logger.debug("Closing idle thread")
                     break
@@ -162,7 +166,9 @@ class ThreadPoolExecutor(object):
                     continue
                 sample = 1 if span_ctx else 0
                 if config.features.forensic:
-                    in_label = str(fn)
+                    if in_label and callable(in_label):
+                        in_label = in_label(*args, **kwargs)
+                    in_label = in_label or str(fn)
                 else:
                     in_label = None
                 with Span(service="threadpool", sample=sample,
