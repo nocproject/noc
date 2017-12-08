@@ -6,8 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python module
-import socket
 # Third-party modules
 import tornado.gen
 # NOC modules
@@ -26,8 +24,10 @@ class ActivatorAPI(API):
     """
     name = "activator"
 
-    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=config.activator.http_connect_timeout,
-                                request_timeout=config.activator.http_request_timeout)
+    HTTP_CLIENT_DEFAULTS = dict(
+        connect_timeout=config.activator.http_connect_timeout,
+        request_timeout=config.activator.http_request_timeout
+    )
 
     @api
     @executor("script")
@@ -79,6 +79,10 @@ class ActivatorAPI(API):
         except script.ScriptError as e:
             raise APIError("Script error: %s" % e.__doc__)
         return result
+
+    @staticmethod
+    def get_script_label(name, credentials, *args, **kwargs):
+        return "%s %s" % (name, credentials.get("address", "-"))
 
     @api
     @tornado.gen.coroutine
