@@ -73,12 +73,6 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
             app = tab.items.first(),
             h = app.getHistoryHash();
         if(h !== "main.welcome") {
-            if(app && app.currentQuery) {
-                var filterNotEmpty = Object.keys(app.currentQuery).length > 0;
-                if(filterNotEmpty) {
-                    h += '?' + Ext.Object.toQueryString(app.currentQuery, true);
-                }
-            }
             Ext.History.setHash(h);
         }
     },
