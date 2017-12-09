@@ -8,7 +8,7 @@ flake8:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
-    - if [ ! -z $FLIST ]; then flake8 $FLIST; else true fi
+    - if [ ! -z "$FLIST" ]; then flake8 $FLIST; else true fi
   except:
     - microservices
   tags:
@@ -20,9 +20,10 @@ radon:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - x=0
     #- if [ ! -z $FLIST ]; then xenon --max-absolute B --max-modules B --max-average B  $FLIST; fi
-    - for i in $FLIST ; do (xenon --max-absolute B --max-modules B --max-average B $i; let x+=$?); done
-    - if [ $x -gt 0 ] ; then exit 1; fi
+    - for i in "$FLIST" ; do (xenon --max-absolute B --max-modules B --max-average B $i; let x+=$?); done
+    - if [ "$x" -gt 0 ] ; then exit 1; fi
   except:
     - microservices
   tags:
@@ -34,7 +35,7 @@ pylint:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
-    - pylint $FLIST
+    - pylint "$FLIST"
   except:
     - microservices
   tags:
