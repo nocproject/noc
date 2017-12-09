@@ -73,7 +73,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
         )
         in_label = None
         if config.features.forensic:
-            lh = getattr(api, "%s_get_label" % method)
+            lh = getattr(api, "%s_get_label" % method, None)
             if lh:
                 in_label = lh(*params)
         with Span(server=self.service.name,
