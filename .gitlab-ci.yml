@@ -24,7 +24,7 @@ radon:
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
     - x=0
     #- if [ ! -z $FLIST ]; then xenon --max-absolute B --max-modules B --max-average B  $FLIST; fi
-    - if [ ! -z $FLIST ]; for i in "$FLIST" ; do (xenon --max-absolute B --max-modules B --max-average B $i; let x+=$?); done; fi
+    - if [ ! -z $FLIST ]; then for i in "$FLIST" ; do (xenon --max-absolute B --max-modules B --max-average B $i; let x+=$?); done; fi
     - if [ "$x" -gt 0 ] ; then exit 1; fi
   except:
     - microservices
@@ -38,7 +38,7 @@ pylint:
   script:
     - set -x
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
-    - if [ ! -z $FLIST ]; pylint "$FLIST" ; else true; fi
+    - if [ ! -z $FLIST ]; then pylint "$FLIST" ; else true; fi
   except:
     - microservices
   tags:
