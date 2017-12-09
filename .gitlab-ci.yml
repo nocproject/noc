@@ -3,18 +3,55 @@ stages:
   - build
   - test
 
-job_lint:
+flake8:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - git rev-parse --abbrev-ref HEAD
-    - git merge-base origin/HEAD HEAD
-    - git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true
-    - for f in $(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD)|egrep ".py$"); do flake8 $f; done
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - if [ ! -z $FLIST ]; then flake8 $FLIST; else true fi
   except:
     - microservices
   tags:
     - docker
+
+# waiting for https://github.com/rubik/xenon/issues/21
+radon:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    #- if [ ! -z $FLIST ]; then xenon --max-absolute B --max-modules B --max-average B  $FLIST; fi
+    - for i in $FLIST ; do (xenon --max-absolute B --max-modules B --max-average B $i; let x+=$?); done
+    - if [ $x -gt 0 ] ; then exit 1; fi
+  except:
+    - microservices
+  tags:
+    - docker
+  allow_failure: true
+
+pylint:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - pylint $FLIST
+  except:
+    - microservices
+  tags:
+    - docker
+  allow_failure: true
+
+futurize:
+  stage: lint
+  image: registry.getnoc.com/infrastructure/noc-lint:master
+  script:
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - /bin/future.sh "$FLIST"
+  except:
+    - microservices
+  tags:
+    - docker
+  allow_failure: true
 
 build:
   stage: build
