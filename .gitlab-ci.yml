@@ -9,7 +9,7 @@ flake8:
   script:
     - set -x
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
-    - if [ ! -z "$FLIST" ]; then flake8 $FLIST; else true fi
+    - if [ ! -z "$FLIST" ]; then flake8 $FLIST; else true; fi
   except:
     - microservices
   tags:
@@ -38,7 +38,7 @@ pylint:
   script:
     - set -x
     - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
-    - if [ ! -z $FLIST ]; pylint "$FLIST" ; fi
+    - if [ ! -z $FLIST ]; pylint "$FLIST" ; else true; fi
   except:
     - microservices
   tags:
