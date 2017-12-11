@@ -17,7 +17,6 @@ class Script(BaseScript):
     name = "DLink.DxS..get_interface_status_ex"
     interface = IGetInterfaceStatusEx
     requires = []
-    HIGH_SPEED = 4294967295
 
     def get_iftable(self, oid):
         if "::" in oid:
@@ -55,43 +54,18 @@ class Script(BaseScript):
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
         self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
-        # Apply ifSpeed
+        # Apply ifSpeed (ifHighSpeed)
         highspeed = set()
-        for ifindex, s in self.get_iftable("IF-MIB::ifSpeed"):
-            ri = r.get(ifindex)
-            if ri:
-                s = int(s)
-                if self.is_high_speed(ri, s):
-                    highspeed.add(ifindex)
-                elif s:
-                    ri["in_speed"] = s // 1000
-                    ri["out_speed"] = s // 1000
-                    if ri["in_speed"] == 1410065:
-                        ri["in_speed"] = 10000000
-                    if ri["out_speed"] == 1410065:
-                        ri["out_speed"] = 10000000
-        # Refer to ifHighSpeed if necessary
-        if highspeed:
-            for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed"):
-                if ifindex in highspeed:
-                    s = int(s)
-                    if s:
-                        r[ifindex]["in_speed"] = s * 1000
-                        r[ifindex]["out_speed"] = s * 1000
+        for ifindex, s in self.get_iftable("IF-MIB::ifHighSpeed"):
+            s = int(s)
+            if s:
+                r[ifindex]["in_speed"] = s * 1000
+                r[ifindex]["out_speed"] = s * 1000
         # Log unknown interfaces
         if unknown_interfaces:
             self.logger.info("%d unknown interfaces has been ignored",
                              len(unknown_interfaces))
         return r.values()
-
-    def is_high_speed(self, data, speed):
-        """
-        Detect should we check ifHighSpeed
-        :param data: dict with
-        :param speed:
-        :return:
-        """
-        return speed == self.HIGH_SPEED
 
     def execute(self):
         r = []
