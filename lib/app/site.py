@@ -506,7 +506,7 @@ class Site(object):
             m["children"] = sorted_menu(m["children"])
 
     def get_menu_id(self, path):
-        return hashlib.sha1(" | ".join(smart_str(path))).hexdigest()
+        return hashlib.sha1(" | ".join(smart_str(p) for p in path)).hexdigest()
 
     def add_contributor(self, cls, contributor):
         self.app_contributors[cls].add(contributor)

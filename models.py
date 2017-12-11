@@ -250,6 +250,7 @@ _MODELS = {
     "vc.VCDomainProvisioningConfig": "noc.vc.models.vcdomainprovisioningconfig.VCDomainProvisioningConfig",
     "vc.VCFilter": "noc.vc.models.vcfilter.VCFilter",
     "vc.VCType": "noc.vc.models.vctype.VCType",
+    "vc.VPNProfile": "noc.vc.models.vpnprofile.VPNProfile",
     # dns models
     "dns.DNSServer": "noc.dns.models.dnsserver.DNSServer",
     "dns.DNSZone": "noc.dns.models.dnszone.DNSZone",
