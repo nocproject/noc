@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// vc.vpnprofile Model
+// vc.vpn Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.vc.vpnprofile.Model");
+console.debug("Defining NOC.vc.vpn.Model");
 
-Ext.define("NOC.vc.vpnprofile.Model", {
+Ext.define("NOC.vc.vpn.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/vc/vpnprofile/",
+    rest_url: "/vc/vpn/",
 
     fields: [
         {
@@ -16,26 +16,17 @@ Ext.define("NOC.vc.vpnprofile.Model", {
             type: "string"
         },
         {
-            name: "style",
-            type: "int"
+            name: "profile",
+            type: "string"
         },
         {
-            name: "style__label",
+            name: "profile__label",
             type: "string",
             persist: false
         },
         {
-            name: "remote_id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "type",
-            type: "string",
-            defaultValue: "vrf"
+            name: "route_target",
+            type: "auto"
         },
         {
             name: "remote_system",
@@ -43,6 +34,36 @@ Ext.define("NOC.vc.vpnprofile.Model", {
         },
         {
             name: "remote_system__label",
+            type: "string",
+            perisist: false
+        },
+        {
+            name: "name",
+            type: "string"
+        },
+        {
+            name: "tags",
+            type: "auto"
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "project",
+            type: "int"
+        },
+        {
+            name: "project__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "state",
+            type: "string"
+        },
+        {
+            name: "state__label",
             type: "string",
             persist: false
         },
@@ -54,19 +75,6 @@ Ext.define("NOC.vc.vpnprofile.Model", {
         {
             name: "description",
             type: "string"
-        },
-        {
-            name: "tags",
-            type: "auto"
-        },
-        {
-            name: "workflow",
-            type: "string"
-        },
-        {
-            name: "workflow__label",
-            type: "string",
-            persist: false
         }
     ]
 });

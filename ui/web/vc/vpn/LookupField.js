@@ -1,13 +1,12 @@
 //---------------------------------------------------------------------
-// NOC.vc.vpnprofile.Lookup
+// NOC.vc.vpn.Lookup
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.vc.vpnprofile.LookupField");
+console.debug("Defining NOC.vc.vpn.LookupField");
 
-Ext.define("NOC.vc.vpnprofile.LookupField", {
+Ext.define("NOC.vc.vpn.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.vc.vpnprofile.LookupField",
-    uiStyle: "medium"
+    alias: "widget.vc.vpn.LookupField"
 });
