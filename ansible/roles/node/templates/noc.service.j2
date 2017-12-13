@@ -1,0 +1,21 @@
+[Unit]
+Description=NOC Node Service
+Documentation=https://kb.nocproject.org/display/SITE/NOC
+After=network.target
+
+[Service]
+Type=forking
+ExecStart={{ noc_root }}/bin/supervisord -c {{ noc_etc }}/supervisord.conf
+ExecReload={{ noc_root }}/bin/supervisorctl serialrestart all
+Restart=on-failure
+ExecStop={{ noc_root }}/bin/supervisorctl shutdown
+WorkingDirectory={{ noc_root }}
+KillMode=process
+Restart=on-failure
+TimeoutStopSec=240
+LimitNOFILE=8192
+MemoryMax={{ ansible_memtotal_mb * 0.93}}M
+MemoryLimit={{ ansible_memtotal_mb * 0.93}}M
+
+[Install]
+WantedBy=multi-user.target

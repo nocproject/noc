@@ -1,9 +1,0 @@
-{
-  "url": "https://cdn.getnoc.com/noc/",
-  "packages": [
-    {
-      "name": "collections",
-      "version": "latest"
-    }
-  ]
-}

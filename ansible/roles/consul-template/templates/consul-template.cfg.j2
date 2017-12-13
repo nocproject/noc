@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+consul = {
+    address = "{{ consul_template_consul_server }}:{{ consul_template_consul_port }}"
+}
+{% if consul_template_log_level -%}
+    log_level = "{{consul_template_log_level}}"
+{% endif %}
+
+{% if consul_template_wait is defined %}
+wait = "{{consul_template_wait}}"
+{% endif %}

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# PROVIDE: consul_template
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+# {{ ansible_managed }}
+
+. /etc/rc.subr
+
+name="consul_template"
+rcvar=consul_template_enable
+
+load_rc_config $name
+: "${consul_template_enable="NO"}"
+: "${consul_template_users="{{ consul_user }}"}"
+
+
+pidfile="/var/run/consul/consul-template.pid"
+command="{{ consul_template_bin_path }}/consul-template"
+command_args="-config {{consul_template_config_dir}}/ -pid-file=${pidfile} -kill-signal=SIGTERM &"
+start_precmd="${name}_prestart"
+extra_commands="reload"
+
+consul_template_prestart()
+{
+    install -d /var/run/consul
+    chown -R "{{ consul_user }}:{{ consul_group }}" /var/run/consul/
+}
+
+run_rc_command "$1"

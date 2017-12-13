@@ -1,0 +1,8 @@
+#!/bin/sh
+isok=$(timeout 1 {{ postgres_bin_dir }}/psql --host 127.0.0.1 -qAt0 --port 6432 {{ noc_pg_db }} -c "select 'ok'")
+if [ "$isok" = "ok" ]
+then
+    exit 0
+else
+    exit 2
+fi

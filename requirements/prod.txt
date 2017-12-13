@@ -1,3 +1,0 @@
-alerta
-raven==6.3.0
-supervisor-wildcards==0.1.3

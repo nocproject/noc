@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# PROVIDE: nsqadmin
+# REQUIRE: DAEMON
+# BEFORE: LOGIN
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf to
+# enable nsqadmin:
+#
+# nsqadmin_enable (bool): Set to NO by default.
+#                     Set it to YES to enable nsqd
+#
+
+. /etc/rc.subr
+
+name="nsqadmin"
+rcvar=nsqadmin_enable
+
+load_rc_config $name
+
+: ${nsqadmin_enable="NO"}
+: ${nsqadmin_config="{{nsqd_config_dir}}/${name}.conf"}
+
+command="{{ noc_root }}/bin/${name}"
+required_files="${nsqadmin_config}"
+start_precmd=nsqadmin_prestart
+
+command_args="-config ${nsqadmin_config} > {{ nsd_log_dir }}/nsqadmin.log 2>&1 &"
+
+nsqadmin_prestart() {
+# Have to empty rc_flags so they don't get passed to daemon(8)
+        rc_flags=""
+}
+
+run_rc_command "$1"

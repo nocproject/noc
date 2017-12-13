@@ -1,0 +1,12 @@
+{
+  "service": {
+    "check": {
+      "tcp": "127.0.0.1:4150",
+      "interval": "10s"
+    },
+    "enableTagOverride": false,
+    "name": "nsqd",
+    "port": 4150,
+    "tags": []
+  }
+}

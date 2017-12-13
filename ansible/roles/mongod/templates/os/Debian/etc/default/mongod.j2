@@ -1,0 +1,8 @@
+#
+# mongod configuation
+# Set by ansible
+# Do not edit
+#
+CONF={{ mongo_conf }}
+chown {{ mongo_user }} {{ mongo_dir }}/mongo.key
+chmod 0400 {{ mongo_dir }}/mongo.key

@@ -1,9 +1,0 @@
-{
-  "url": "https://cdn.getnoc.com/npkg/",
-  "packages": [
-    {
-      "name": "mibs",
-      "version": "1.0.0"
-    }
-  ]
-}

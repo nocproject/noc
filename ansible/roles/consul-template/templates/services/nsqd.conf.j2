@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+template {
+  source = "{{ consul_template_templates_dir }}/nsqd.conf.ctmpl"
+  destination = "{{nsqd_config_dir}}/nsqd.conf"
+  command = "{{ nsqd_reload_command }}"
+  command_timeout = "60s"
+  perms = 0644
+  backup = true
+  wait {
+    min = "2s"
+    max = "10s"
+  }
+}

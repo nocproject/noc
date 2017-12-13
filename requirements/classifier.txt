@@ -1,2 +1,0 @@
-esmre==0.3.1
-bitarray==0.8.1

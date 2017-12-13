@@ -1,0 +1,9 @@
+[[inputs.nginx]]
+  ## An array of Nginx stub_status URI to gather stats.
+  urls = ["https://{{ noc_web_host }}/ng_stats"]
+{# waits for telegraf 1.4
+  insecure_skip_verify = {% if nginx_self_signed_cerificate %}true{% else %}false{% endif %}
+#}
+
+[[inputs.procstat]]
+pid_file = "/var/run/nginx.pid"

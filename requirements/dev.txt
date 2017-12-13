@@ -1,4 +1,0 @@
-ipython<6
-Babel==2.3.4
-pojson==0.6
-

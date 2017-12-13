@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# PROVIDE: nsqlookupd
+# REQUIRE: DAEMON
+# BEFORE: LOGIN
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf to
+# enable nsqlookupd:
+#
+# nsqlookupd_enable (bool): Set to NO by default.
+#                     Set it to YES to enable nsqd
+#
+
+. /etc/rc.subr
+
+name="nsqlookupd"
+rcvar=nsqlookupd_enable
+
+load_rc_config $name
+
+: ${nsqlookupd_enable="NO"}
+: ${nsqlookupd_config="{{nsqd_config_dir}}/${name}.conf"}
+
+command="{{ noc_root }}/bin/${name}"
+required_files="${nsqlookupd_config}"
+start_precmd=nsqlookupd_prestart
+
+command_args="-config ${nsqlookupd_config} > {{ nsd_log_dir }}/nsqlookupd.log 2>&1 &"
+
+nsqlookupd_prestart() {
+# Have to empty rc_flags so they don't get passed to daemon(8)
+        rc_flags=""
+}
+
+run_rc_command "$1"

@@ -1,0 +1,22 @@
+# mongod.conf
+
+storage:
+  journal:
+    enabled: true
+  engine: {{ noc_mongo_storageengine }}
+
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+
+security:
+  keyFile: {{ mongo_dir }}/mongo.key
+  clusterAuthMode: keyFile
+  authorization: enabled
+
+replication:
+  replSetName: {{ noc_mongo_replicaset }}
+
+#operationProfiling:
+
+#sharding:

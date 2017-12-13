@@ -1,0 +1,10 @@
+# NOC PostgreSQL tuning
+listen_addresses = '*'
+max_connections = {{postgres_max_connections}}
+{% if postgresql_version == "9.6" %}
+max_replication_slots = 5
+max_wal_senders = 5
+wal_level = 'replica'
+wal_log_hints = 'on'
+hot_standby = 'on'
+{% endif %}

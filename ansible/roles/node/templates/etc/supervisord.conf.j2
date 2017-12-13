@@ -1,0 +1,48 @@
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[ctlplugin:serialrestart]
+supervisor.ctl_factory = supervisorserialrestart.controllerplugin:make_serialrestart_controllerplugin
+
+{% if noc_env_type == "prod" %}
+[ctlplugin:wildcards]
+supervisor.ctl_factory = supervisorwildcards.controllerplugin:make_wildcards_controllerplugin
+match_group = 1
+{% endif %}
+
+[supervisorctl]
+serverurl = unix://{{ supervisor_sock_path }}
+username = {{ noc_user }}
+password = {{ supervisorctl_key }}
+prompt={{ noc_user }}@{{ noc_env }}/{{ noc_dc }}/{{ ansible_nodename }}
+
+[supervisord]
+directory = {{ noc_root }}
+logfile = {{ noc_logs }}/supervisord.log
+pidfile = {{ noc_service_pidfile }}
+logfile_maxbytes = 10MB
+logfile_backups = 3
+loglevel = info
+nodaemon = false
+minfds = 1024
+minprocs = 200
+umask = 022
+identifier = {{ noc_env }}-{{ noc_dc }}-{{ ansible_nodename }}
+environment = NOC_DC="{{ noc_dc }}",NOC_NODE="{{ ansible_nodename }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}"
+
+[unix_http_server]
+file = {{ supervisor_sock_path}}
+username = {{ noc_user }}
+password = {{supervisorctl_key}}
+chown = {{ noc_user }}
+
+{% if noc_env_type == "prod" %}
+[inet_http_server]
+port = {{ ansible_nodename }}:9001
+username = {{ noc_user }}
+password = {{ supervisorctl_key }}
+{% endif %}
+
+
+[include]
+files = {{ noc_services_file }}

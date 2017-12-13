@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# PROVIDE: consul
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="consul"
+rcvar=$(set_rcvar)
+
+load_rc_config $name
+: "${consul_enable="NO"}"
+: "${consul_users="consul"}"
+
+restart_cmd=consul_restart
+start_cmd=consul_start
+stop_cmd=consul_stop
+extra_commands="reload"
+pidfile="/var/run/consul/consul.pid"
+
+consul_start() {
+    echo "Starting ${name}."
+    for user in ${consul_users}; do
+        install -d /var/run/consul
+        chown -R "${user}:{{ consul_group }}" /var/run/consul/
+        su -m "${user}" -c "{{ consul_bin_path }}/consul agent -config-file={{ consul_config_path }}/config.json -config-dir={{ consul_configd_path }} -pid-file=${pidfile} &"
+    done
+}
+
+consul_stop() {
+    echo "Stopping $name."
+    pids=$(pgrep consul)
+    pkill consul
+    wait_for_pids "${pids}"
+}
+
+consul_restart() {
+    consul_stop
+    consul_start
+}
+
+run_rc_command "$1"

@@ -1,0 +1,27 @@
+[Unit]
+Description=High-performance, schema-free document-oriented database
+Documentation=man:mongod(1)
+After=syslog.target network.target
+
+[Service]
+Type=forking
+LimitFSIZE=infinity
+LimitCPU=infinity
+LimitAS=infinity
+LimitNOFILE=64000
+LimitRSS=infinity
+LimitNPROC=64000
+TasksMax=infinity
+TasksAccounting=false
+User={{ mongo_user }}
+Group={{ mongo_user }}
+PIDFile={{ mongo_pid }}
+Environment="OPTIONS= -f {{ mongo_conf }}"
+ExecStartPre=/usr/bin/mkdir -p /var/run/mongodb
+ExecStartPre=/usr/bin/chown {{ mongo_user }}:{{ mongo_user }} /var/run/mongodb
+ExecStartPre=/usr/bin/chmod 0755 /var/run/mongodb
+PermissionsStartOnly=true
+ExecStart=/usr/bin/mongod $OPTIONS run
+
+[Install]
+WantedBy=multi-user.target

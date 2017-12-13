@@ -1,0 +1,12 @@
+[Unit]
+Description=Admin interface Realtime distributed messaging (nsddmin)
+After=network.target
+
+[Service]
+ExecStart={{noc_root}}/bin/nsqadmin -config {{nsqd_config_dir}}/nsqadmin.conf
+Restart=always
+User=nsq
+Group=nsq
+
+[Install]
+WantedBy=multi-user.target

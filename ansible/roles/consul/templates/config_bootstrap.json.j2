@@ -1,0 +1,36 @@
+{
+  "bind_addr": "{{ consul_bind_address }}",
+  "addresses": {
+    "dns": "{{ consul_dns_bind_address }}",
+    "http": "{{ consul_http_bind_address }}",
+    "https": "{{ consul_https_bind_address }}"
+  },
+  {% if consul_ports -%}
+    "ports": {{ consul_ports | to_nice_json }},
+  {% endif -%}
+  {% if consul_recursors|length > 0 -%}
+    "recursors": [ {% set comma = joiner(", ") -%}
+      {% for recursor in consul_recursors -%}
+        {{ comma() }}"{{ recursor }}"
+      {%- endfor %} ],
+  {% endif -%}
+  "bootstrap": true,
+  "server": true,
+  "ui": true,
+  "check_update_interval": "0s",
+  "node_name": "{{ consul_node_name }}",
+  "datacenter": "{{ consul_datacenter }}",
+  "data_dir": "{{ consul_data_path }}",
+  "encrypt": "{{ consul_raw_key }}",
+  "log_level": "{{ consul_log_level }}",
+  "enable_syslog": {{ consul_syslog_enable|lower }},
+  "domain": "{{ consul_domain }}",
+  "enable_script_checks": true,
+  {% if consul_acl_enable -%}
+    "acl_datacenter": "{{ consul_acl_datacenter }}",
+    "acl_default_policy": "{{ consul_acl_default_policy }}",
+    "acl_down_policy": "{{ consul_acl_down_policy }}",
+    "acl_master_token": "{{ consul_acl_master_token }}",
+    "acl_replication_token": "{{ consul_acl_replication_token }}"
+  {% endif -%}
+}

@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "telegraf",
+    "tags": ["telegraf"],
+    "port": 9126,
+    "enableTagOverride": false,
+    "check": {
+        "tcp": "localhost:9126",
+        "interval": "10s"
+    }
+  }
+}

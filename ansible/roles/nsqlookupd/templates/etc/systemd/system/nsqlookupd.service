@@ -1,0 +1,12 @@
+[Unit]
+Description=Realtime distributed messaging (nsqlookupd)
+After=network.target
+
+[Service]
+ExecStart={{noc_root}}/bin/nsqlookupd -config {{nsqd_config_dir}}/nsqlookupd.conf
+Restart=always
+User=nsq
+Group=nsq
+
+[Install]
+WantedBy=multi-user.target

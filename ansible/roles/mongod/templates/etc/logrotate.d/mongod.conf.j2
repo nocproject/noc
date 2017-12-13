@@ -1,0 +1,14 @@
+{{ mongo_log_path }} {
+    daily
+    rotate 30
+    compress
+    maxsize 250M
+    dateext
+    missingok
+    notifempty
+    sharedscripts
+    copytruncate
+    postrotate
+        /bin/kill -SIGUSR1 `cat {{ mongo_pid }} 2> /dev/null` 2> /dev/null || true
+    endscript
+}

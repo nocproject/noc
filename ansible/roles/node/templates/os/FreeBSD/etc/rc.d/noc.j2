@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# PROVIDE: noc
+# REQUIRE: DAEMON ldconfig
+# BEFORE: LOGIN
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf to enable noc:
+#  noc_enable (bool):    Set to "NO" by default.
+#                        Set it to "YES" to enable noc.
+#
+
+. /etc/rc.subr
+
+name="noc"
+rcvar=`set_rcvar`
+
+# set defaults
+
+load_rc_config $name
+
+: ${noc_enable="NO"}
+: ${noc_config="{{ noc_etc }}/supervisord.conf"}
+: ${noc_flags="-c ${noc_config}"}
+
+export PATH=$PATH:/usr/local/bin
+
+noc_chdir={{ noc_root }}
+command={{ noc_root }}/bin/supervisord
+command_interpreter=`/bin/realpath {{ noc_root }}/bin/python`
+pidfile=/var/run/$name.pid
+required_files=${noc_config}
+
+run_rc_command "$1"

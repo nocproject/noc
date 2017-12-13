@@ -1,0 +1,12 @@
+! Configuration File for keepalived
+
+global_defs {
+   router_id {{ ansible_nodename }}
+}
+
+{% if has_svc_nginx | default(False)%}
+include /etc/keepalived/nginx.cnf
+{% endif %}
+{% if has_svc_haproxy | default(False)%}
+include /etc/keepalived/patroni.cnf
+{% endif %}

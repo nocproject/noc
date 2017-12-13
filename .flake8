@@ -1,5 +1,0 @@
-[flake8]
-exclude=.hg,var,share
-# E501 line too long
-#    Not a real bug
-ignore=E501
