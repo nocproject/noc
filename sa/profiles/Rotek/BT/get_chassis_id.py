@@ -38,14 +38,15 @@ class Script(BaseScript):
 
         # Fallback to CLI
         get = "http://" + self.credentials.get("address", "") + "/"
-        self.logger.info("HTTP GET %s", get)
         code, header, body = fetch_sync(
-            get
-        )
+                        get,
+                        allow_proxy = False,
+                        eof_mark="</html>"
+                    )
         if 200 <= code <= 299:
             match = self.rx_mac.search(body)
             if match:
-                mac = match.group("mac")
+                mac = (match.group("mac")).strip()
                 return [{
                     "first_chassis_mac": mac,
                     "last_chassis_mac": mac
