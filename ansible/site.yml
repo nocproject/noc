@@ -94,6 +94,7 @@
     - "config/services.yml"
   roles:
     - role: node
+    - role: custom
 
 - name: Install and configure patroni
   hosts: svc-patroni

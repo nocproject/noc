@@ -18,6 +18,7 @@
     repo: "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongo_version }} multiverse"
     state: present
     update_cache: yes
+  register: mongo_repo_stat
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -30,6 +31,22 @@
             echo never > /sys/kernel/mm/transparent_hugepage/defrag;
          fi
   notify: restart mongod
+
+- name: ReInstall MongoDB on version change
+  apt:
+    name: "{{item}}"
+    state: latest
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  when: mongo_repo_stat.changed
+  with_items:
+    - mongodb-org
+    - mongodb-org-server
+    - mongodb-org-shell
+    - mongodb-org-tools
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: Install MongoDB
   apt:

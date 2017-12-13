@@ -12,6 +12,7 @@
     - python-dev
     - python-virtualenv
     - mercurial
+    - git
     - libjemalloc1
     - gcc
     - libpq-dev
@@ -21,6 +22,7 @@
     - libmemcached-dev
     - zlib1g-dev
     - patch
+    - bzip2
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

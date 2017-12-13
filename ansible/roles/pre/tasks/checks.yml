@@ -41,7 +41,12 @@
 
   - name: tower version is old
     fail:
-      msg: "tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'. \n\n\n  See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md  \n\n\n "
+      msg: |
+
+        tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'.
+
+        See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md
+
     when: "tower_version|version_compare(tower_minimum_version, '<')"
   when: tower_version != ''
 
@@ -49,6 +54,15 @@
   fail:
     msg: "No mongodb server set. Please setup at least one. "
   when: "'svc-mongod' not in groups"
+
+- name: Mongo version is too old
+  fail:
+    msg: |
+      To use bi you have to setup at least 3.4 mongo.
+      Check https://kb.nocproject.org/x/TIHJAQ for more details.
+      Current version selected:  {{mongo_version}}
+      Otherwise you can disable bi service on services tab
+  when: "groups['svc-bi'] | count > 0 and mongo_version | version_compare('3.4', operator='lt', strict=True)"
 
 - block:
   - name: No postgres server set

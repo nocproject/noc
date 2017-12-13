@@ -98,6 +98,12 @@ config:
       description: "<strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>"
       label: "consul token"
       type: str
+  consultemplate:
+    use_dedup:
+      label: "Use dedup"
+      type: bool
+      default: false
+      description: "Useful start from 20 nodes"
   correlator:
     max_threads:
       default: 10
@@ -269,16 +275,27 @@ config:
       label: "Self-signed certificate"
       description: "Is provided certificate is trusted by nodes?"
       type: bool
+    external_cert_managment:
+      default: False
+      label: "Use external certificate management"
+      description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
+      type: bool
   noc:
-    config:
-      type: text
-      label: "Settings"
-      description: "<strong> <a href=https://kb.nocproject.org/x/8oKYAQ target=_blank> Doc in russian</a> </strong>"
+    python_interpreter:
+      default: python
+      label: Interpreter
+      description: Python interpreter either <strong>python</strong> or <strong>pypy</strong>.
+      type: str
   nsqd:
     max_messages_in_memory:
       default: 10000
       description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
       label: "Keep max messages in memory"
+      type: int
+    max_msg_size:
+      default: 1048576
+      description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
+      label: "Max message size"
       type: int
   patroni:
     rest_password:
@@ -345,16 +362,9 @@ config:
       label: "Listen SYSLOG"
       type: str
   tgsender:
-    proxy_addres:
-      label: "Proxy Addres (https://ip:port) If use auth (https://us:pass@ip:port)"
-      type: str
     token:
       label: Token
       type: str
-    use_proxy:
-      default: false
-      label: "Use Proxy"
-      type: bool
   trapcollector:
     listen_traps:
       default: "0.0.0.0:162"
@@ -492,6 +502,16 @@ services:
     level: global
     category: external
     port: 8500
+  consultemplate:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Config Manager based on consul kv <br/>
+      <strong>Long description</strong>: Gets data from consul and renders nginx and some other service configs and reload them if needed
+      <strong>Scale Recommendations</strong>: Will be placed on each node.<br/>
+      <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
+      <strong>Placement constraint</strong>: Just tick it on any node to configure dedup feature. <br/>
+    level: global
+    category: external
   correlator:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -522,7 +542,7 @@ services:
     category: internal
     command: "./services/datasource/service.py"
     process_name: "%(program_name)s-%(process_num)02d"
-    oom_score_adj: 500
+    oom_score_adj: 999
     priority: 100
     startretries: 999
     stopwaitsecs: 3

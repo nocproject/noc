@@ -1,0 +1,74 @@
+- name: archive current noc dir
+  archive:
+    path: "{{noc_root}}"
+    dest: "{{noc_root}}/../noc_before_git_migrations.tbz"
+    format: bz2
+
+- name: add everything to mercurial
+  shell: hg add .
+  args:
+    chdir: "{{noc_root}}"
+
+- name: make diff
+  shell: hg diff > /tmp/noc_diff.diff
+  args:
+    chdir: "{{noc_root}}"
+
+- name: reset current dir
+  hg:
+    repo: "{{noc_root}}"
+    dest: "{{noc_root}}"
+    revision: "feature/microservices"
+    force: yes
+    purge: yes
+
+- name: remove .hg
+  file:
+    path: "{{noc_root}}/.hg"
+    state: absent
+
+- name: git init
+  shell: git init "{{noc_root}}"
+
+- block:
+  - name: set up dummy git user email
+    git_config:
+      name: user.email
+      repo: "{{noc_root}}"
+      scope: local
+      value: 'noc_user@{{ ansible_fqdn }}'
+
+  - name: set up dummy git user name
+    git_config:
+      name: user.name
+      repo: "{{noc_root}}"
+      scope: local
+      value: 'Noc User {{ansible_fqdn}}'
+  when: not git_user_email.config_value
+
+- name: add correct origin
+  shell: "git remote add origin {{noc_repo}}"
+  args:
+    chdir: "{{noc_root}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: git reset branch
+  shell: git pull origin
+  args:
+    chdir: "{{noc_root}}"
+  ignore_errors: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: git reset branch
+  shell: git checkout {{noc_revision}} -f
+  args:
+    chdir: "{{noc_root}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: patch new dir with old hg
+  shell: patch -f -p 1 < /tmp/noc_diff.diff
+  args:
+    chdir: "{{noc_root}}"

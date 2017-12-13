@@ -1,0 +1,100 @@
+- name: Get pypy portable
+  get_url:
+    url: "{{ pypy_download_url }}"
+    dest: "{{ pypy_tmp_path }}"
+    validate_certs: yes
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: create consul-template tmp dir
+  file:
+    dest: "{{ pypy_path }}"
+    state: directory
+
+- name: Unarchive pypy
+  unarchive:
+    src: "{{pypy_tmp_path}}"
+    dest: "{{ pypy_path }}"
+    creates: "{{ pypy_path }}/bin/virtualenv-pypy"
+    extra_opts: ['--strip-components=1']
+
+- name: check if venv is already init
+  stat:
+    path: "{{noc_root}}/bin/pip"
+  register: venv_init
+
+- block:
+  - name: remove lib dir
+    file:
+      path: "{{noc_root}}/lib"
+      state: absent
+
+  - name: init venv
+    shell: "{{ pypy_path }}/bin/virtualenv-pypy {{noc_root}}"
+    args:
+      chdir: "{{noc_root | dirname }}"
+
+  - name: refetch actual source
+    shell: "git checkout {{noc_root}}/lib"
+    args:
+      chdir: "{{noc_root }}"
+  when: venv_init.stat.exists is defined and not venv_init.stat.exists
+
+- name: Install node pypy numpy(should take a while for a first time)
+  pip:
+    chdir: "{{noc_root}}"
+    name: "https://bitbucket.org/pypy/numpy/get/master.tar.bz2#numpy==1.10.0"
+    virtualenv: "{{noc_root}}"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
+    CFLAGS: "{{ pip_cflags | default('') }}"
+    LDFLAGS: "{{ pip_ldflags | default('') }}"
+  tags:
+    - requirements
+
+- name: Install node python packages(should take a while for a first time)
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/pypynode.txt"
+    virtualenv: "{{noc_root}}"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
+    CFLAGS: "{{ pip_cflags | default('') }}"
+    LDFLAGS: "{{ pip_ldflags | default('') }}"
+  tags:
+    - requirements
+
+- name: Install noc.pth
+  template:
+    src: "lib/python/site-packages/noc.pth.j2"
+    dest: "{{noc_root}}/site-packages/noc.pth"
+
+- name: Check sitecustomize
+  stat:
+    path: "{{noc_root}}/site-packages/sitecustomize.py"
+  register: sitecustomizes
+  tags:
+    - config
+
+- name: Install sitecustomize.py
+  template:
+    src: "lib/python/site-packages/sitecustomize.py.j2"
+    dest: "{{noc_root}}/site-packages/sitecustomize.py"
+  when: sitecustomizes.stat.exists == False
+  tags:
+    - config
+
+- name: Update site.py
+  replace:
+    dest: "{{noc_root}}/lib-python/2.7/site.py"
+    regexp: "encoding = 'ascii'"
+    replace: "encoding = 'utf-8'"
+  when: sitecustomizes.stat.exists == True

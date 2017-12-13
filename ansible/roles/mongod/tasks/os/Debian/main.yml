@@ -17,6 +17,7 @@
     repo: "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/{{mongo_version}} main"
     state: present
     update_cache: yes
+  register: mongo_repo_stat
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -57,6 +58,22 @@
     dest: "/etc/security/limits.d/mongo_limits.conf"
   tags:
     - config
+
+- name: ReInstall MongoDB on version change
+  apt:
+    name: "{{item}}"
+    state: latest
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  when: mongo_repo_stat.changed
+  with_items:
+    - mongodb-org
+    - mongodb-org-server
+    - mongodb-org-shell
+    - mongodb-org-tools
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: Install MongoDB
   apt:

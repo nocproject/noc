@@ -37,6 +37,24 @@
                  <null_value>Unknown</null_value>
                  <hierarchical>false</hierarchical>
              </attribute>
+             <attribute>
+                 <name>profile</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
+             <attribute>
+                 <name>platform</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
+             <attribute>
+                 <name>version</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
         </structure>
     </dictionary>
 </dictionaries>

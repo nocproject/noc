@@ -17,11 +17,34 @@
     comment: "NOC user"
     state: present
 
+- name: check if noc_root exists
+  stat:
+    path: "{{noc_root}}"
+  register: noc_root_state
+
+- name:
+  git_config:
+    name: user.email
+    scope: global
+    repo: "{{noc_root}}"
+  register: git_user_email
+
+- block:
+  - name: check if noc under mercurial control
+    stat:
+      path: "{{noc_root}}/.hg"
+    register: noc_hg_state
+
+  - name: migrate to git
+    include: "migrate_git.yml"
+    when: noc_hg_state.stat.exists is defined and noc_hg_state.stat.exists
+  when: noc_root_state.stat.exists is defined and noc_root_state.stat.exists
+
 - name: Include {{install_method}} install method
   include: "{{install_method}}.yml"
 
-- name: Include venv init
-  include: "init_venv.yml"
+- name: Include venv init for {{python_interpreter}}
+  include: "init_venv_{{python_interpreter}}.yml"
 
 - name: Include requirements install
   include: "requirements.yml"

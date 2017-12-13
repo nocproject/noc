@@ -8,6 +8,7 @@
     gpgcheck: yes
     gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongo_version }}.asc
     enabled: yes
+  register: mongo_repo_stat
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
@@ -27,6 +28,28 @@
          fi
   when: dht_status.changed
   notify: restart mongod
+
+- name: Clean Mongodb repo cache
+  shell: yum clean all --enablerepo=mongodb
+  when: mongo_repo_stat.changed
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+
+- name: ReInstall MongoDB on version change
+  yum:
+    name: "{{item}}"
+    state: latest
+    update_cache: yes
+  when: mongo_repo_stat.changed
+  with_items:
+    - mongodb-org
+    - mongodb-org-server
+    - mongodb-org-shell
+    - mongodb-org-tools
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: Install MongoDB
   yum:

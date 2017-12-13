@@ -1,6 +1,9 @@
 ##
 ## Do not forget to sync with main/management/commands/build-manifest.py
 ##
+syntax: regexp
+^custom/
+
 syntax: glob
 *.pyc
 *.pyo
@@ -10,7 +13,6 @@ dist/
 build/
 noc.egg-info/
 bin/*
-custom/
 etc/**
 include/*
 lib/python*
@@ -38,3 +40,4 @@ speedup/*.so
 ui/bi/**
 ui/bi2/**
 collections/
+

@@ -36,6 +36,8 @@
    - net-tools
    - man
    - mercurial
+   - git
+   - patch
    - python-virtualenv
    - telnet
    - gcc
@@ -48,6 +50,7 @@
    - libmemcached-devel
    - zlib-devel
    - jemalloc
+   - bzip2
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

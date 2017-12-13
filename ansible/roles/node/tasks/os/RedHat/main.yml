@@ -39,6 +39,7 @@
    - net-tools
    - man
    - mercurial
+   - git
    - python-virtualenv
    - telnet
    - gcc
@@ -61,6 +62,7 @@
    - libffi-devel
    - libmemcached
    - zlib-devel
+   - bzip2
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
