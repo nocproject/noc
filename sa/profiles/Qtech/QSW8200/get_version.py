@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "Qtech.QSW2800.get_version"
+    name = "Qtech.QSW8200.get_version"
     interface = IGetVersion
     cache = True
 

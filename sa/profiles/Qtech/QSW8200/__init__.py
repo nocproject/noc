@@ -18,9 +18,11 @@ class Profile(BaseProfile):
         (r"^ --More-- $", " ")
     ]
     pattern_unprivileged_prompt = r"^\S+>"
+    pattern_prompt = r"^(?P<hostname>\S+)?#"
     pattern_syntax_error = \
         r"Error input in the position market by|%  Incomplete command"
-    command_disable_pager = "terminal page-break disable"
+    # Do not use this. Bogus hardware.
+    # command_disable_pager = "terminal page-break disable"
     command_super = "enable"
     command_submit = "\r"
-    pattern_prompt = r"^(?P<hostname>\S+)?#"
+    command_exit = "quit"
