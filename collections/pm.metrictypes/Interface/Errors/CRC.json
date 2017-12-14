@@ -1,0 +1,10 @@
+{
+    "name": "Interface | Errors | CRC",
+    "$collection": "pm.metrictypes",
+    "uuid": "7a876995-fed8-46dd-8a9b-d68530e593ac",
+    "scope__name": "Interface",
+    "field_name": "errors_crc_in",
+    "field_type": "UInt32",
+    "description": "Errors when recieved packets which have CRC checking errors ",
+    "measure": "packet/s"
+}
