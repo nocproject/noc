@@ -59,6 +59,15 @@ Ext.define("NOC.vc.vpn.Model", {
             persist: false
         },
         {
+            name: "parent",
+            type: "string"
+        },
+        {
+            name: "parent__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "state",
             type: "string"
         },

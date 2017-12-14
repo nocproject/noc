@@ -13,7 +13,8 @@ Ext.define("NOC.vc.vpn.Application", {
         "NOC.vc.vpnprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.sa.managedobject.LookupField"
+        "NOC.sa.managedobject.LookupField",
+        "NOC.vc.vpn.LookupField"
     ],
     model: "NOC.vc.vpn.Model",
     rowClassField: "row_class",
@@ -72,6 +73,12 @@ Ext.define("NOC.vc.vpn.Application", {
                     name: "state",
                     xtype: "statefield",
                     fieldLabel: __("State"),
+                    allowBlank: true
+                },
+                {
+                    name: "parent",
+                    xtype: "vc.vpn.LookupField",
+                    fieldLabel: __("Parent"),
                     allowBlank: true
                 },
                 {
