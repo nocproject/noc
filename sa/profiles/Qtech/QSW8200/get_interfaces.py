@@ -31,9 +31,9 @@ class Script(BaseScript):
         r"^\s+Hardware is (?P<iftype>\S+), MAC address is (?P<mac>\S+)",
         re.MULTILINE)
     rx_ipv4 = re.compile(
-        "r^\s+Internet Address is (?P<ipv4>\S+)", re.MULTILINE)
+        r"^\s+Internet Address is (?P<ipv4>\S+)", re.MULTILINE)
     rx_ipv6 = re.compile(
-        "r^\s+Internet v6 Address is (?P<ipv6>\S+)", re.MULTILINE)
+        r"^\s+Internet v6 Address is (?P<ipv6>\S+)", re.MULTILINE)
     # rx_jumbo = re.compile("^\s+JUMBOFRAME (?P<mtu>\d+) bytes")
     rx_mtu = re.compile("^\s+MTU (?P<mtu>\d+) bytes", re.MULTILINE)
     rx_vlan_id = re.compile("^vlan(?P<vlan_id>\d+)", re.MULTILINE)
@@ -54,8 +54,8 @@ class Script(BaseScript):
         r"^Trunk Native VLAN:.*\n"
         r"^Administrative Trunk Allowed VLANs:.*\n"
         r"^Operational Trunk Allowed VLANs:(?P<t_vlans>.*)\n"
-        r"^Administrative Trunk Untagged VLANs:.*\n"
-        r"^Operational Trunk Untagged VLANs:(?P<t_uvlan>.*)\n",
+        r"^Administrative Trunk Untagged VLANs:(?P<t_uvlan>.*)\n"
+        r"^Operational Trunk Untagged VLANs:.*\n",
         re.MULTILINE
     )
 
@@ -63,7 +63,9 @@ class Script(BaseScript):
         "fastethernet": "physical",
         "gigaethernet": "physical",
         "tengigabitethernet": "physical",
-        "vlan-interface": "SVI"
+        "trunk": "aggregated",
+        "vlan-interface": "SVI",
+        "unknown": "unknown"
     }
 
     def execute(self):
@@ -82,17 +84,19 @@ class Script(BaseScript):
                 "name": ifname,
                 "admin_status": match.group("admin_status") == "UP",
                 "oper_status": match.group("oper_status") == "UP",
-                "enable_afi": []
+                "enabled_afi": []
             }
             match = self.rx_hw_mac.search(l)
             if ifname.startswith("loopback"):
                 iface["type"] = "loopback"
+            elif ifname.startswith("NULL"):
+                iface["type"] = "null"
             else:
                 iface["type"] = self.IFTYPES[match.group("iftype")]
                 iface["mac"] = match.group("mac")
                 sub["mac"] = match.group("mac")
             if iface["type"] == "physical":
-                sub["enable_afi"] += ["BRIDGE"]
+                sub["enabled_afi"] += ["BRIDGE"]
             if iface["type"] == "SVI":
                 match = self.rx_vlan_id.search(ifname)
                 if match:
@@ -107,18 +111,19 @@ class Script(BaseScript):
                 sub["mtu"] = match.group("mtu")
             for match in self.rx_ipv4.finditer(l):
                 if "IPv4" not in sub["enabled_afi"]:
-                    sub["enable_afi"] += ["IPv4"]
+                    sub["enabled_afi"] += ["IPv4"]
                 if "ipv4_addresses" not in sub:
                     sub["ipv4_addresses"] = []
-                sub["ipv4_addresses"] += match.group("ipv4")
+                sub["ipv4_addresses"] += [match.group("ipv4")]
             for match in self.rx_ipv6.finditer(l):
                 if "IPv6" not in sub["enabled_afi"]:
-                    sub["enable_afi"] += ["IPv6"]
+                    sub["enabled_afi"] += ["IPv6"]
                 if "ipv6_addresses" not in sub:
                     sub["ipv6_addresses"] = []
-                sub["ipv6_addresses"] += match.group("ipv6")
+                sub["ipv6_addresses"] += [match.group("ipv6")]
             iface["subinterfaces"] = [sub]
             r += [iface]
+        p = self.scripts.get_portchannel()
         for i in r:
             match = self.rx_ifname.search(i["name"])
             if match:
@@ -144,4 +149,9 @@ class Script(BaseScript):
                         if untagged and (untagged in tagged):
                             tagged.remove(untagged)
                         i["subinterfaces"][0]["tagged_vlans"] = tagged
+            for pc in p:
+                if i["name"] in pc["members"]:
+                    i["aggregated_interface"] = pc["interface"]
+                    if pc["type"] == "L":
+                        i["enabled_protocols"] = ["LACP"]
         return [{"interfaces": r}]
