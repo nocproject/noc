@@ -8,7 +8,7 @@ flake8:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
     - if [ ! -z "$FLIST" ]; then flake8 $FLIST; else true; fi
   except:
     - microservices
@@ -21,7 +21,7 @@ radon:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
     - x=0
     #- if [ ! -z $FLIST ]; then xenon --max-absolute B --max-modules B --max-average B  $FLIST; fi
     - if [ ! -z $FLIST ]; then for i in "$FLIST" ; do (xenon --max-absolute B --max-modules B --max-average B $i; let x+=$?); done; fi
@@ -37,7 +37,7 @@ pylint:
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
     - set -x
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
     - if [ ! -z $FLIST ]; then pylint "$FLIST" ; else true; fi
   except:
     - microservices
@@ -49,7 +49,7 @@ futurize:
   stage: lint
   image: registry.getnoc.com/infrastructure/noc-lint:master
   script:
-    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep -q ".py$" || true)
+    - FLIST=$(git --no-pager diff --name-only $(git rev-parse --abbrev-ref HEAD) $(git merge-base origin/HEAD HEAD) |egrep ".py$" || true)
     - /bin/future.sh "$FLIST"
   except:
     - microservices
