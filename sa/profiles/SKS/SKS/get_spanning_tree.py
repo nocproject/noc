@@ -111,7 +111,7 @@ class Script(BaseScript):
                         c = self.cli("show spanning-tree mst-configuration")
                         match = self.rx_vlans.search(c)
                         inst["vlans"] = match.group("vlans")
-                    except:
+                    except self.CLISyntaxError:
                         inst["vlans"] = "1-4095"
             for port in v.split("\n\n"):
                 match = self.rx_port.search(port)
