@@ -20,10 +20,10 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"Product Name: (?P<platform>.*)\s*\n"
-        r"Product Version:.*\n"
+        r"(Product Version:.*\n)?"
         r"Hardware Version:(?P<hardware>.*)\n"
         r"Software Version: (?P<version>\S+)\(.+\)\s*\n"
-        r"OS Version:.*\n"
+        r"Q?OS Version:.*\n"
         r"REAP Version:.*\n"
         r"Bootrom Version:(?P<bootprom>.*)\n"
         r"\s*\n"
