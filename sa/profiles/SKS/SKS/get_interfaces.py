@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.core.ip import IPv4
-import re
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
@@ -42,6 +44,23 @@ class Script(BaseScript):
     rx_lldp = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?:Rx|Tx)",
         re.MULTILINE | re.IGNORECASE)
+    rx_iface = re.compile(
+        r"^(?P<ifname>\S+\d) is( administratively)? "
+        r"(?P<admin_status>up|down), "
+        r"line protocol is (?P<oper_status>up|down)\s*\n"
+        r"^\s+Ifindex is (?P<snmp_ifindex>\d+).*\n"
+        r"(^\s+Description: (?P<descr>.+?)\s*\n)?"
+        r"^\s+Hardware is (?P<hardware>\S+)"
+        r"(, [Aa]ddress is (?P<mac>\S+)\s*\(.+\))?\s*\n"
+        r"(^\s+Interface address is (?P<ip>\S+)\s*\n)?"
+        r"^\s+MTU (?P<mtu>\d+) bytes", re.MULTILINE)
+
+    IFTYPES = {
+        "100BASE-TX": "physical",
+        "Giga-Combo-TX": "physical",
+        "EtherSVI": "SVI",
+        "Null": "null"
+    }
 
     def get_gvrp(self):
         try:
@@ -77,7 +96,7 @@ class Script(BaseScript):
             return []
         return []
 
-    def execute(self):
+    def get_old_sks(self, c):
         interfaces = []
         descr = []
         adm_status = []
@@ -85,7 +104,7 @@ class Script(BaseScript):
         stp = self.get_stp()
         ctp = self.get_ctp()
         lldp = self.get_lldp()
-        for l in self.cli("show interfaces description").split("\n"):
+        for l in c.split("\n"):
             match = self.rx_descr.match(l.strip())
             if match:
                 if match.group("port") == "Port":
@@ -172,4 +191,56 @@ class Script(BaseScript):
         for l in self.cli("show ipv6 interface").split("\n"):
             continue
         """
+        return interfaces
+
+    def get_new_sks(self):
+        interfaces = []
+        for match in self.rx_iface.finditer(self.cli("show interface")):
+            iface = {
+                "name": match.group("ifname"),
+                "type": self.IFTYPES[match.group("hardware")],
+                "admin_status": match.group("admin_status") == "up",
+                "oper_status": match.group("oper_status") == "up",
+                "snmp_ifindex": match.group("snmp_ifindex"),
+            }
+            sub = {
+                "name": match.group("ifname"),
+                "admin_status": match.group("admin_status") == "up",
+                "oper_status": match.group("oper_status") == "up",
+                "mtu": match.group("mtu")
+            }
+            if iface["type"] == "physical":
+                sub["enabled_afi"] = ["BRIDGE"]
+                c = self.cli("show vlan interface %s" % iface["name"])
+                t = parse_table(c, allow_wrap=True)
+                for i in t:
+                    if i[1] == "Access":
+                        sub["untagged_vlan"] = int(i[4])
+                    elif i[1] == "Trunk":
+                        sub["untagged_vlan"] = int(i[2])
+                        sub["tagged_vlans"] = self.expand_rangelist(i[3])
+                    else:
+                        # Need more examples
+                        raise self.NotSupportedError()
+            if iface["name"].startswith("VLAN"):
+                sub["vlan_ids"] = [iface["name"][4:]]
+            if match.group("descr"):
+                iface["description"] = match.group("descr")
+                sub["description"] = match.group("descr")
+            if match.group("mac"):
+                iface["mac"] = match.group("mac")
+                sub["mac"] = match.group("mac")
+            if match.group("ip"):
+                sub["ip_addresses"] = [match.group("ip")]
+                sub["enabled_afi"] = ["IPv4"]
+            iface["subinterfaces"] = [sub]
+            interfaces += [iface]
+        return interfaces
+
+    def execute(self):
+        try:
+            c = self.cli("show interfaces description")
+            interfaces = self.get_old_sks(c)
+        except self.CLISyntaxError:
+            interfaces = self.get_new_sks()
         return [{"interfaces": interfaces}]
