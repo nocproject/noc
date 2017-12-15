@@ -95,7 +95,7 @@ class TerminationGroup(models.Model):
         Retuns dict of dynamic pool name -> technology -> usage counter
         """
         # Avoid circular references
-        from noc.ip.models.vrf import VRF
+        from noc.ip.models.vrf import VRF  # noqa
         from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
 
         usage = {}
