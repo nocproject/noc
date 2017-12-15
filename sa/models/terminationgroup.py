@@ -12,8 +12,10 @@ from django.db import models
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.core.model.decorator import on_delete_check
+from noc.core.bi.decorator import bi_sync
 
 
+@bi_sync
 @on_delete_check(check=[
     # ("ip.DynamicIPPoolUsage", "termination_group"),
     ("sa.ManagedObject", "termination_group"),
