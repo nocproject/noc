@@ -63,7 +63,8 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
-            f = lambda x: x
+            def f(x):
+                return x
         for ifindex, v in self.get_iftable(mib):
             s = r.get(ifindex)
             if s:
