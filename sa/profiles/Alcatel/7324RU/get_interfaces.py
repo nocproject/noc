@@ -59,7 +59,7 @@ class Script(BaseScript):
         }]
         # ADSL ports
         phy_ports = self.cli("adsl show")
-        oper_ports = self.cli("statistics adsl show")
+        oper_ports = self.cli("statistics adsl show")  # noqa
         sub_ports = self.cli("adsl pvc show")
         vlans = self.cli("switch vlan show *")
         phy_ports = phy_ports.split("Subscriber Info:")
