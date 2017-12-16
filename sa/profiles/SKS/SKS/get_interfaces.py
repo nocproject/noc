@@ -100,6 +100,7 @@ class Script(BaseScript):
         interfaces = []
         descr = []
         adm_status = []
+        switchport_support = True
         gvrp = self.get_gvrp()
         stp = self.get_stp()
         ctp = self.get_ctp()
@@ -152,15 +153,22 @@ class Script(BaseScript):
                     iface["description"] = i["descr"]
                     sub["description"] = i["descr"]
                     break
-            s = self.cli("show interfaces switchport %s" % ifname)
-            for match1 in self.rx_vlan.finditer(s):
-                vlan_id = match1.group("vlan_id")
-                if match1.group("membership") == "System":
-                    continue
-                if match1.group("type") == "Untagged":
-                    sub["untagged_vlan"] = int(vlan_id)
-                else:
-                    sub["tagged_vlans"] += [int(vlan_id)]
+            if switchport_support:
+                # 1.5.11.3 supported, but 1.5.3 is not supported "show interfaces switchport" command
+                try:
+                    s = self.cli("show interfaces switchport %s" % ifname)
+                    for match1 in self.rx_vlan.finditer(s):
+                        vlan_id = match1.group("vlan_id")
+                        if match1.group("membership") == "System":
+                            continue
+                        if match1.group("type") == "Untagged":
+                            sub["untagged_vlan"] = int(vlan_id)
+                        else:
+                            sub["tagged_vlans"] += [int(vlan_id)]
+                except self.CLISyntaxError:
+                    self.logger.info("Model not supported switchport information")
+                    switchport_support = False
+                    pass
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
         match = self.re_search(self.rx_mac, self.cli("show system"))
@@ -240,7 +248,10 @@ class Script(BaseScript):
     def execute(self):
         try:
             c = self.cli("show interfaces description")
-            interfaces = self.get_old_sks(c)
         except self.CLISyntaxError:
+            c = None
+        if c:
+            interfaces = self.get_old_sks(c)
+        else:
             interfaces = self.get_new_sks()
         return [{"interfaces": interfaces}]
