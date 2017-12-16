@@ -76,6 +76,10 @@ class Script(BaseScript):
                 description = t1[1] + " " + t1[2]
             sub = []
             for s in parse_table(sub_ports):
+                if s[3] == "*":
+                    # Perhaps star - is default vlan
+                    self.logger.info("Skipping star vlan")
+                    continue
                 if s[0] == phy[0]:
                     sub += [{
                         "name": s[0],
