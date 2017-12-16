@@ -329,7 +329,8 @@ class BaseLoader(object):
         o = self.model(**v)
         try:
             o.save()
-        except self.integrity_exception:
+        except self.integrity_exception as e:
+            self.logger.warning("Integrity error: %s", e)
             assert self.unique_field
             if not self.is_document:
                 from django.db import connection
