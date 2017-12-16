@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | RG| RG-1404GF-W sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c513fc61-38aa-4ebc-b9ca-ecd602107e80",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.46",
+    "action": "match",
+    "profile__name": "Eltex.RG"
+}
