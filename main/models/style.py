@@ -30,8 +30,11 @@ id_lock = Lock()
         ("ip.VRF", "style"),
         ("vc.VC", "style"),
         ("vc.VCDomain", "style"),
+        ("vc.VPNProfile", "style"),
         ("fm.AlarmSeverity", "style"),
-        ("fm.ActiveAlarm", "style")
+        ("fm.ActiveAlarm", "style"),
+        ("phone.PhoneNumberProfile", "style"),
+        ("phone.PhoneRangeProfile", "style")
     ]
 )
 class Style(models.Model):

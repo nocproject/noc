@@ -2,16 +2,16 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
-from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
@@ -111,7 +111,7 @@ class Script(BaseScript):
                         c = self.cli("show spanning-tree mst-configuration")
                         match = self.rx_vlans.search(c)
                         inst["vlans"] = match.group("vlans")
-                    except:
+                    except self.CLISyntaxError:
                         inst["vlans"] = "1-4095"
             for port in v.split("\n\n"):
                 match = self.rx_port.search(port)

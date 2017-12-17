@@ -2,9 +2,10 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_config
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -17,4 +18,6 @@ class Script(BaseScript):
 
     def execute(self):
         config = self.cli("show running-config")
+        i = config.index('!')
+        config = config[i:]
         return self.cleaned_config(config)

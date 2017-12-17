@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_tech_support
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-import re
+
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igettechsupport import IGetTechSupport
 

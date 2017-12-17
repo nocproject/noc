@@ -80,10 +80,10 @@ class BaseCommand(object):
             self.print("Ctrl+C")
             return 3
         except AssertionError as e:
-            if e.args[0]:
+            if e.args and e.args[0]:
                 self.print("ERROR: %s" % e.args[0])
             else:
-                self.print("Assertion error")
+                self.print("Assertion error: %s" % e)
             return 4
         except Exception:
             error_report()

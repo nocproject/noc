@@ -45,7 +45,8 @@ class VersionCheck(DiscoveryCheck):
             self.object.platform = platform
             changed = True
             # Platform changed, clear links
-            self.clear_links()
+            if self.object.object_profile.clear_links_on_platform_change:
+                self.clear_links()
         # Sync version
         version = Firmware.ensure_firmware(self.object.profile, vendor, result["version"])
         if not self.object.version or version.id != self.object.version.id:

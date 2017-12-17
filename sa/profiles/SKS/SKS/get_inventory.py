@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
@@ -25,5 +25,5 @@ class Script(BaseScript):
             "revision": v["attributes"]["HW version"]
         }
         if "Serial Number" in v["attributes"]:
-            r["serial"] =  v["attributes"]["Serial Number"]
+            r["serial"] = v["attributes"]["Serial Number"]
         return [r]
