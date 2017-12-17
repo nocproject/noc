@@ -43,20 +43,21 @@ class Script(BaseScript):
                     macs += [mac]
         except:
             pass
-        try:
-            v = self.cli("show stack_information", cached=True)
-            for i in parse_table(v):
-                if not i[5]:
-                    continue
-                found = False
-                for m in macs:
-                    if m == i[5]:
-                        found = True
-                        break
-                if not found:
-                    macs += [i[5]]
-        except:
-            pass
+        if not self.match_version(platform__contains="DXS-33"):
+            try:
+                v = self.cli("show stack_information", cached=True)
+                for i in parse_table(v):
+                    if not i[5]:
+                        continue
+                    found = False
+                    for m in macs:
+                        if m == i[5]:
+                            found = True
+                            break
+                    if not found:
+                        macs += [i[5]]
+            except:
+                pass
         if macs:
             macs.sort()
             return [{
