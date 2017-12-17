@@ -12,10 +12,11 @@ import argparse
 import os
 import datetime
 import re
-# NOC modules
+# Third-party modules
 from django.template import Template, Context
 from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
+import six
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
 from noc.settings import INSTALLED_APPS
@@ -106,22 +107,22 @@ class Command(BaseCommand):
     def create_dir(self, path):
         if os.path.isdir(path):
             return
-        print("    Creating directory %s ..." % path,)
+        self.print("    Creating directory %s ..." % path)
         try:
             os.mkdir(path)
-            print("done")
-        except OSError, why:
-            print("failed:", why)
+            self.print("done")
+        except OSError as e:
+            self.print("failed:", e)
             raise CommandError("Failed to create directory")
 
     def create_file(self, path, data):
-        print("    Writing file %s ..." % path,)
+        self.print("    Writing file %s ..." % path,)
         try:
             with open(path, "w") as f:
                 f.write(data)
-            print("done")
-        except OSError, why:
-            print("failed:", why)
+            self.print("done")
+        except OSError as e:
+            self.print("failed:", e)
             raise CommandError("Failed to write file")
 
     def to_js(self, data, indent=0):
@@ -144,7 +145,7 @@ class Command(BaseCommand):
                 :param s:
                 :return:
                 """
-                if isinstance(s, basestring):
+                if isinstance(s, six.string_types):
                     return "\"%s\"" % s
                 elif isinstance(s, bool):
                     return "true" if s else "false"
@@ -193,7 +194,7 @@ class Command(BaseCommand):
         modules = set([a[4:] for a in INSTALLED_APPS if a.startswith("noc.")])
         # Fill templates
         for app in args:
-            print("Creating skeleton for %s" % app)
+            self.print("Creating skeleton for %s" % app)
             m, a = app.split(".", 1)
             if "." in a:
                 raise CommandError("Application name must be in form <module>.<app>")

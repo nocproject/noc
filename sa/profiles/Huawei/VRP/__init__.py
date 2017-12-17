@@ -7,9 +7,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-from noc.core.profile.base import BaseProfile
+# Python modules
 import re
+from collections import defaultdict
+# NOC modules
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
@@ -163,4 +165,40 @@ class Profile(BaseProfile):
                 r[part_name]["table"] = row
             # r[part_name] = dict(k_v_list)
             # r[part_name]["table"] = row
+        return r
+
+    @staticmethod
+    def parse_ifaces(e=""):
+        # Parse display interfaces output command for Huawei
+        r = defaultdict(dict)
+        current_iface = ""
+        for line in e.splitlines():
+            print line
+            if not line:
+                continue
+            if (line.startswith("LoopBack") or line.startswith("MEth") or
+                    line.startswith("Ethernet") or
+                    line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or
+                    line.startswith("Vlanif") or line.startswith("NULL")):
+                current_iface = line.split()[0]
+                continue
+            # k, v count
+            split = line.count(":") + line.count(" is ") + line.count(" rate ")
+            if "Switch Port" in line:
+                line = line[12:]
+            elif "Route Port" in line:
+                line = line[11:]
+            print line
+            # while split:
+            for part in line.split(",", split - 1):
+                if ":" in part:
+                    k, v = part.split(":", 1)
+                elif " is " in part:
+                    k, v = part.split("is", 1)
+                elif " rate " in part:
+                    k, v = part.split("rate", 1)
+                    k = k + "rate"
+                else:
+                    continue
+                r[current_iface][k.strip()] = v.strip()
         return r

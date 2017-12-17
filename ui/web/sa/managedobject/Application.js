@@ -57,7 +57,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     formMinWidth: 800,
     formMaxWidth: 1000,
     //
-    initComponent: function () {
+    initComponent: function() {
         var me = this,
             padding = 10,
             fieldSetDefaults = {
@@ -311,6 +311,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     border: false,
                     items: [
                         {
+                            xtype: "container",
                             items: [ // first column
                                 {
                                     name: "name",
@@ -339,6 +340,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 }
                             ]
                         }, {
+                            xtype: "container",
                             items: [ // second column
                                 {
                                     name: "bi_id",
@@ -368,6 +370,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsible: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "object_profile",
@@ -380,6 +383,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 }]
                         },
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "shape",
@@ -401,6 +405,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsible: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "profile",
@@ -424,6 +429,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 }
                             ]
                         }, {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "version",
@@ -451,6 +457,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsible: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "scheme",
@@ -496,7 +503,6 @@ Ext.define("NOC.sa.managedobject.Application", {
 
                                 },
                                 {
-
                                     name: "cli_session_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Session Policy"),
@@ -532,6 +538,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             ]
                         },
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "auth_profile",
@@ -619,6 +626,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsible: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "administrative_domain",
@@ -646,6 +654,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 }
                             ]
                         }, {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "vrf",
@@ -690,6 +699,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsible: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "event_processing_policy",
@@ -719,10 +729,10 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     value: "d",
                                     listeners: {
                                         scope: me,
-                                        change: function (combo, newValue, oldValue, eOpts) {
+                                        change: function(combo, newValue, oldValue, eOpts) {
                                             combo.nextSibling().setHidden(newValue !== "s");
                                         },
-                                        afterrender: function (combo, eOpts) {
+                                        afterrender: function(combo, eOpts) {
                                             combo.nextSibling().setHidden(combo.value !== "s");
                                         }
                                     }
@@ -735,6 +745,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     // uiStyle: "medium"
                                 }]
                         }, {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "syslog_source_type",
@@ -750,10 +761,10 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     value: "d",
                                     listeners: {
                                         scope: me,
-                                        change: function (combo, newValue, oldValue, eOpts) {
+                                        change: function(combo, newValue, oldValue, eOpts) {
                                             combo.nextSibling().setHidden(newValue !== "s");
                                         },
-                                        afterrender: function (combo, eOpts) {
+                                        afterrender: function(combo, eOpts) {
                                             combo.nextSibling().setHidden(combo.value !== "s");
                                         }
                                     }
@@ -787,8 +798,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsed: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
-
                                 {
                                     name: "termination_group",
                                     xtype: "sa.terminationgroup.LookupField",
@@ -799,6 +810,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             ]
                         },
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "service_terminator",
@@ -821,6 +833,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsed: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "controller",
@@ -837,6 +850,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 }]
                         },
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "global_cpe_id",
@@ -864,6 +878,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsed: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "config_filter_rule",
@@ -880,6 +895,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     groupEdit: true
                                 }]
                         }, {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "config_validation_rule",
@@ -902,6 +918,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsed: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "remote_system",
@@ -917,6 +934,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     // uiStyle: "medium"
                                 }]
                         }, {
+                            xtype: "container",
                             items: []
                         }
                     ]
@@ -932,6 +950,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsed: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "escalation_policy",
@@ -954,6 +973,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     allowBlank: true
                                 }]
                         }, {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "tt_queue",
@@ -983,6 +1003,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsed: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "box_discovery_alarm_policy",
@@ -998,6 +1019,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     value: "P"
                                 }]
                         }, {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "periodic_discovery_alarm_policy",
@@ -1026,6 +1048,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     collapsed: true,
                     items: [
                         {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "box_discovery_telemetry_policy",
@@ -1047,6 +1070,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     // uiStyle: "medium"
                                 }]
                         }, {
+                            xtype: "container",
                             items: [
                                 {
                                     name: "periodic_discovery_telemetry_policy",
@@ -1197,102 +1221,102 @@ Ext.define("NOC.sa.managedobject.Application", {
             ]
         }],
     //
-    onCard: function () {
+    onCard: function() {
         var me = this;
-        if (me.currentRecord) {
+        if(me.currentRecord) {
             window.open(
                 "/api/card/view/managedobject/" + me.currentRecord.get("id") + "/"
             );
         }
     },
     //
-    onDashboard: function () {
+    onDashboard: function() {
         var me = this;
-        if (me.currentRecord) {
+        if(me.currentRecord) {
             window.open(
                 "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + me.currentRecord.get("id")
             );
         }
     },
     //
-    onShowMap: function () {
+    onShowMap: function() {
         var me = this;
         NOC.launch("inv.map", "history", {
             args: [me.currentRecord.get("segment")]
         });
     },
     //
-    onConsole: function () {
+    onConsole: function() {
         var me = this;
         me.showItem(me.ITEM_CONSOLE).preview(me.currentRecord);
     },
     //
-    onInteractions: function () {
+    onInteractions: function() {
         var me = this;
         me.showItem(me.ITEM_INTERACTIONS).preview(me.currentRecord);
     },
     //
-    onConfig: function () {
+    onConfig: function() {
         var me = this;
         me.previewItem(me.ITEM_CONFIG, me.currentRecord);
     },
     //
-    onInventory: function () {
+    onInventory: function() {
         var me = this;
         me.previewItem(me.ITEM_INVENTORY, me.currentRecord);
     },
     //
-    onInterfaces: function () {
+    onInterfaces: function() {
         var me = this;
         me.previewItem(me.ITEM_INTERFACE, me.currentRecord);
     },
     //
-    onScripts: function () {
+    onScripts: function() {
         var me = this;
         me.previewItem(me.ITEM_SCRIPTS, me.currentRecord);
     },
     //
-    onLinks: function () {
+    onLinks: function() {
         var me = this;
         me.previewItem(me.ITEM_LINKS, me.currentRecord);
     },
     //
-    onDiscovery: function () {
+    onDiscovery: function() {
         var me = this;
         me.showItem(me.ITEM_DISCOVERY).preview(me.currentRecord);
     },
     //
-    onAlarm: function () {
+    onAlarm: function() {
         var me = this;
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
     },
     //
-    onCaps: function () {
+    onCaps: function() {
         var me = this;
         me.previewItem(me.ITEM_CAPS, me.currentRecord);
     },
     //
-    onFacts: function () {
+    onFacts: function() {
         var me = this;
         me.previewItem(me.ITEM_FACTS, me.currentRecord);
     },
     //
-    onInterfaceClick: function (record) {
+    onInterfaceClick: function(record) {
         var me = this;
         me.previewItem(me.ITEM_INTERFACE, record);
     },
     //
-    onLinkClick: function (record) {
+    onLinkClick: function(record) {
         var me = this;
         me.previewItem(me.ITEM_LINKS, record);
     },
     //
-    onValidationSettings: function () {
+    onValidationSettings: function() {
         var me = this;
         me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
     },
     //
-    showForm: function () {
+    showForm: function() {
         var me = this;
         me.callParent();
         // Change button's visibility
@@ -1313,13 +1337,13 @@ Ext.define("NOC.sa.managedobject.Application", {
     // [<id>, "config", <rev>] -- show revision
     // [<id>, "config", <rev1>, <rev2>] -- show diff
     //
-    restoreHistory: function (args) {
+    restoreHistory: function(args) {
         var me = this;
-        me.loadById(args[0], function (record) {
+        me.loadById(args[0], function(record) {
             me.onEditRecord(record);
-            switch (args[1]) {
+            switch(args[1]) {
                 case "config":
-                    switch (args.length) {
+                    switch(args.length) {
                         case 2:
                             me.onConfig();
                             break;

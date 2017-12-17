@@ -2,9 +2,10 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
 
 # Python modules
 import re
@@ -17,9 +18,13 @@ class Script(BaseScript):
     name = "SKS.SKS.get_mac_address_table"
     interface = IGetMACAddressTable
 
-    rx_line = re.compile(
+    rx_line1 = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
+        r"(?P<iface>\S+)", re.MULTILINE)
+    rx_line2 = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+"
         r"(?P<type>\S+)", re.MULTILINE)
+    rx_status = re.compile("Vlan\s+Mac Address\s+Type\s+Ports", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
@@ -30,7 +35,12 @@ class Script(BaseScript):
             cmd += " interface %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
-        for match in self.rx_line.finditer(self.cli(cmd)):
+        c = self.cli(cmd)
+        if bool(self.rx_status.search(c)):
+            rx_line = self.rx_line1
+        else:
+            rx_line = self.rx_line2
+        for match in rx_line.finditer(c):
             r += [{
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
