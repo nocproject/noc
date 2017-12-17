@@ -632,9 +632,9 @@ class ReportObjectDetailApplication(ExtApplication):
             selector = ManagedObjectSelector.get_by_id(int(selector))
             mos = mos.filter(selector.Q)
         if segment:
-            segment = NetworkSegment.objects.filter(name=segment).first()
+            segment = NetworkSegment.objects.filter(id=segment).first()
             if segment:
-                mos = mos.filter(segment=segment)
+                mos = mos.filter(segment__in=segment.get_nested_ids())
         mos_id = list(mos.values_list("id", flat=True))
         avail = {}
         segment_lookup = {}
