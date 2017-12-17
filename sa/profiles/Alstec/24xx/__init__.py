@@ -20,3 +20,12 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"ERROR: Wrong or incomplete command"
     command_super = "enable"
     command_exit = "logout"
+
+    @staticmethod
+    def parse_kv_out(out):
+        r = {}
+        for line in out.splitlines():
+            if "....." in line:
+                el1, el2 = line.split(".....", 1)
+                r[el1.strip(".").strip()] = el2.strip(".").strip()
+        return r
