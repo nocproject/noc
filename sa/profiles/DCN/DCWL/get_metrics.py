@@ -1,27 +1,32 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # DCN.DCWL.get_metrics
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
 
 # Python modules
 from __future__ import division
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+from noc.lib.validators import is_ipv4
+
 
 class Script(GetMetricsScript):
     name = "DCN.DCWL.get_metrics"
 
-    ALL_METRICS = set(["Radio | TxPower", "Radio | Quality", "Interface | Load | In", "Interface | Load | Out", "Interface | Packets | In",
+    ALL_METRICS = set(["Radio | TxPower", "Radio | Quality",
+                       "Interface | Load | In", "Interface | Load | Out", "Interface | Packets | In",
                        "Interface | Packets | OUT", "Interface | Errors | In", "Interface | Errors | Out",
                        "Radio | Channel | Util", "Radio | Channel | Free", "Radio | Channel | Busy",
                        "Radio | Channel | TxFrame", "Radio | Channel | RxFrame"])
     MEMORY = set(["Memory | Usage"])
     CPU = set(["CPU | Usage"])
+    CHECKS = set(["Check | Avail"])
 
     TYPE = {
+        "Check | Avail": "gauge",
         "Radio | TxPower": "gauge",
         "Radio | Quality": "gauge",
         "Interface | Load | In": "counter",
@@ -39,8 +44,7 @@ class Script(GetMetricsScript):
 
     @classmethod
     def get_metric_type(cls, name):
-         c = cls.TYPE.get(name)
-         return c
+        return cls.TYPE.get(name)
 
     def collect_profile_metrics(self, metrics):
         self.logger.debug("Merics %s" % metrics)
@@ -53,6 +57,9 @@ class Script(GetMetricsScript):
         if self.CPU.intersection(set(m.metric for m in metrics)):
             # check
             self.collect_cpu_metrics(metrics)
+        if self.CHECKS.intersection(set(m.metric for m in metrics)) and self.credentials.get("path"):
+            # check
+            self.collect_avail_metrics(metrics)
 
     def collect_cli_metrics(self, metrics):
         ts = self.get_ts()
@@ -81,8 +88,9 @@ class Script(GetMetricsScript):
                         metric=bv.metric,
                         value=m[slot],
                         ts=ts,
-                        #path=["", slot, ""]
+                        # path=["", slot, ""]
                     )
+
     def collect_cpu_metrics(self, metrics):
         ts = self.get_ts()
         m = self.get_cpu_metrics()
@@ -94,8 +102,23 @@ class Script(GetMetricsScript):
                         metric=bv.metric,
                         value=m[slot],
                         ts=ts,
-                        #path=["", slot, ""]
+                        # path=["", slot, ""]
                     )
+
+    def collect_avail_metrics(self, metrics):
+        ts = self.get_ts()
+        m = self.get_avail_metrics()
+        for bv in metrics:
+            if bv.metric in self.CHECKS:
+                for slot in m:
+                    self.set_metric(
+                        id=bv.id,
+                        metric=bv.metric,
+                        value=m[slot],
+                        ts=ts,
+                        path=slot[:-1]
+                    )
+
     def get_cli_metrics(self):
         res = {}
         wres = {}
@@ -139,7 +162,7 @@ class Script(GetMetricsScript):
             if ssid:
                 res[name] = {"rxbytes": rxbytes, "rxpackets": rxpackets, "rxerrors": rxerrors, "txbytes": txbytes, "txpackets": txpackets, "txerrors": txerrors, "iface": "%s.%s" % (name, ssid), "bss": bss}
         for s in res.items():
-            if not "bss" in s[1]:
+            if "bss" not in s[1]:
                 continue
             v = self.cli("get bss %s detail" % s[1]["bss"])
             for vline in v.splitlines():
@@ -210,14 +233,22 @@ class Script(GetMetricsScript):
                     mtotal = mr[1].strip().split(" ")[0]
                 if mr[0] == "MemFree":
                     mfree = mr[1].strip().split(" ")[0]
-                    memory = (100/int(mtotal))*int(mfree)
-                    r[("Memory | Usage")] = memory
+                    memory = (100 / int(mtotal)) * int(mfree)
+                    r[("Memory | Usage", )] = memory
             return r
 
     def get_cpu_metrics(self):
-        r = {}
         with self.profile.shell(self):
             c = self.cli("cat /proc/loadavg")
             cpu = c.split(" ")[1].strip()
-            r[("CPU | Usage")] = round(float(cpu) + 0.5)
+            r = {("CPU | Usage", ): round(float(cpu) + 0.5)}
             return r
+
+    def get_avail_metrics(self):
+        r = {}
+        for ip in self.credentials["path"].split(","):
+            if is_ipv4(ip.strip()):
+                result = self.scripts.ping(address=ip)
+                if result["success"]:
+                    r[("", "", ip, "Check | Avail")] = bool(result["success"])
+        return r
