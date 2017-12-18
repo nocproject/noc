@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegment application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegment.Application");
@@ -14,7 +14,10 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.remotesystem.LookupField",
         "Ext.ux.form.DictField",
-        "NOC.inv.networksegmentprofile.LookupField"
+        "NOC.inv.networksegmentprofile.LookupField",
+        "NOC.inv.allocationgroup.LookupField",
+        "NOC.vc.vcfilter.LookupField",
+        "NOC.vc.vlan.LookupField"
     ],
     model: "NOC.inv.networksegment.Model",
     search: true,
@@ -168,6 +171,55 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "enable_horizontal_transit",
                     xtype: "checkbox",
                     boxLabel: __("Enable Horizontal Transit")
+                },
+                {
+                    name: "vlan_border",
+                    xtype: "checkbox",
+                    boxLabel: __("VLAN Border")
+                },
+                {
+                    name: "allocation_group",
+                    xtype: "inv.allocationgroup.LookupField",
+                    boxLabel: __("Allocation Group"),
+                    allowBlank: false
+                },
+                {
+                    name: "vlan_translation",
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Filter"),
+                            dataIndex: "filter",
+                            width: 300,
+                            renderer: NOC.render.Lookup("filter"),
+                            editor: "vc.vcfilter.LookupField"
+                        },
+                        {
+                            text: __("Rule"),
+                            dataIndex: "rule",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["map", "map"],
+                                    ["push", "push"]
+                                ]
+                            }
+                        },
+                        {
+                            text: __("Parent VLAN"),
+                            dataIndex: "parent_vlan",
+                            flex: 1,
+                            editor: "vc.vlan.LookupField"
+                        }
+                    ]
+                },
+                {
+                    name: "l2_mtu",
+                    xtype: "numberfield",
+                    fieldLabel: __("L2 MTU"),
+                    allowBlank: true
                 },
                 {
                     xtype: "fieldset",

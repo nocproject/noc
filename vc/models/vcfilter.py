@@ -13,6 +13,7 @@ import operator
 # Third-party modules
 from django.db import models
 import cachetools
+import six
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 
@@ -101,7 +102,7 @@ class VCFilter(models.Model):
         :return: SQL WHERE part
         """
         s = []
-        if isinstance(name, basestring):
+        if isinstance(name, six.string_types):
             name = "\"%s\"" % name.replace("\"", "\"\"")
         elif type(name) in (int, long):
             name = "%d" % name

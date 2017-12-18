@@ -102,6 +102,27 @@ Ext.define("NOC.inv.networksegment.Model", {
         {
             name: "enable_horizontal_transit",
             type: "boolean"
+        },
+        {
+            name: "vlan_border",
+            type: "boolean"
+        },
+        {
+            name: "vlan_translation",
+            type: "auto"
+        },
+        {
+            name: "allocation_group",
+            type: "string"
+        },
+        {
+            name: "allocation_group__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "l2_mtu",
+            type: "int"
         }
     ]
 });
