@@ -86,8 +86,11 @@ class Script(BaseScript):
                 }[remote_port_subtype.strip().lower()]
                 n["remote_port"] = m.group("port_id").strip()
                 if n["remote_port_subtype"] == 3:
-                    n["remote_port"] = \
-                        MACAddressParameter().clean(n["remote_port"])
+                    try:
+                        n["remote_port"] = \
+                            MACAddressParameter().clean(n["remote_port"])
+                    except ValueError:
+                        continue
                 if n["remote_port_subtype"] == 4:
                     n["remote_port"] = \
                         IPv4Parameter().clean(n["remote_port"])
