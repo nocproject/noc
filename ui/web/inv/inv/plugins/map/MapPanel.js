@@ -8,8 +8,7 @@ console.debug("Defining NOC.inv.inv.plugins.map.MapPanel");
 
 Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     extend: "Ext.panel.Panel",
-    requires: [
-    ],
+    requires: [],
     title: __("Map"),
     closable: false,
     layout: "fit",
@@ -169,7 +168,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
         me.callParent();
         //
-        me.infoTemplate = '<b>{0}</b><br><i>{1}</i><br><hr><a href="api/card/view/object/{3}/" target="_blank">Show...</a><br><hr>Objects:<br>{2}';
+        me.infoTemplate = '<b>{0}</b><br><i>{1}</i><br><hr><a id="{2}" href="api/card/view/object/{3}/" target="_blank">Show...</a>';
     },
     //
     //
@@ -411,10 +410,17 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         var me = this,
             showLinkId = "noc-ol-tip-show-link-" + me.id,
             text, ttEl, showLink;
-        obj = Object.keys(data.moname).map(function(key) {return '<a href=\"api/card/view/managedobject/' + key + '/\" target="_blank">'+ data.moname[key].moname + '</a>'}).join("<br>");
-        text = Ext.String.format(me.infoTemplate, data.name, data.model, obj, data.id);
-        if(Object.keys(data.moname).length  == 2) {
-            text += "<br>More...";
+        text = Ext.String.format(me.infoTemplate, data.name, data.model, showLinkId, data.id);
+        if(!Ext.Object.isEmpty(data.moname)) {
+            var listLenght = 10;
+            var objects = Object.keys(data.moname).map(function(key) {
+                return '<li><a href="api/card/view/managedobject/' + key + '/" target="_blank">'
+                    + data.moname[key].moname.replace(/\s/g, "&nbsp;") + '</a></li>'
+            }).slice(0, listLenght).join("");
+            text += "<br><hr>Objects:<br><ul>" + objects + "</ul>";
+            if(Object.keys(data.moname).length >= listLenght) {
+                text += "<br>More...";
+            }
         }
         if(me.infoPopup) {
             me.olMap.removePopup(me.infoPopup);
