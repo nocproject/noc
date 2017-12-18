@@ -36,7 +36,7 @@ class Profile(BaseProfile):
 
     rx_hw = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
-        r"Current CPU Load\.+ \d+%\n"
+        r"Current CPU (?:Load|Usage)\.+ \d+%\n"
         r"Board Type\.+ (?P<platform>\S+)\n"
         r"Burned In MAC Address\.+ (?P<mac>\S+)\n"
         r"Board Serial Number\.+ (?P<serial>\S+)\n"
@@ -46,7 +46,6 @@ class Profile(BaseProfile):
         r"Puma API Version\.+ (?P<api_ver>\S+)\n"
         r"Puma Microcode Version\.+ (?P<micr_ver>\S+)\n",
         re.MULTILINE)
-
     rx_hw2 = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
         r"Machine Type\.+ (?P<descr>.+)\n"
