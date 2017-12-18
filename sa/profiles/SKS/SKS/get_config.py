@@ -18,6 +18,9 @@ class Script(BaseScript):
 
     def execute(self):
         config = self.cli("show running-config")
-        i = config.index('!')
-        config = config[i:]
+        try:
+            i = config.index('!')
+            config = config[i:]
+        except ValueError:
+            pass
         return self.cleaned_config(config)
