@@ -9,6 +9,7 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.lib.validators import is_mac
 from noc.lib.text import parse_table
 import re
 
@@ -18,8 +19,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_ver = re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+    rx_ver = re.compile(
+        r"^MAC Address\s+:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)
     rx_line = re.compile(
         r"^\s*\d+\s+(?:\S+\s+)?"
         r"([0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-"
@@ -41,12 +42,12 @@ class Script(BaseScript):
                         break
                 if not found:
                     macs += [mac]
-        except:
+        except self.CLISyntaxError:
             pass
         try:
             v = self.cli("show stack_information", cached=True)
             for i in parse_table(v):
-                if not i[5]:
+                if not i[5] or not is_mac(i[5]):
                     continue
                 found = False
                 for m in macs:
@@ -55,7 +56,7 @@ class Script(BaseScript):
                         break
                 if not found:
                     macs += [i[5]]
-        except:
+        except self.CLISyntaxError:
             pass
         if macs:
             macs.sort()
