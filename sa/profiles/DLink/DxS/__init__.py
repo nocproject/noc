@@ -29,7 +29,7 @@ class Profile(BaseProfile):
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
-    
+
     matchers = {
         "is_skip_stack": {
             "platform": {
@@ -37,7 +37,7 @@ class Profile(BaseProfile):
             }
         }
     }
-    
+
     #
     # Version comparison
     # Version format:
