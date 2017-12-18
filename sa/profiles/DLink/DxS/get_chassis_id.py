@@ -42,7 +42,7 @@ class Script(BaseScript):
                         break
                 if not found:
                     macs += [mac]
-        except:
+        except self.CLISyntaxError:
             pass
         try:
             v = self.cli("show stack_information", cached=True)
@@ -56,7 +56,7 @@ class Script(BaseScript):
                         break
                 if not found:
                     macs += [i[5]]
-        except:
+        except self.CLISyntaxError:
             pass
         if macs:
             macs.sort()
