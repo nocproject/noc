@@ -41,7 +41,7 @@ class Script(BaseScript):
                         break
                 if not found:
                     macs += [mac]
-        except:
+        except self.CLISyntaxError:
             pass
         if not self.is_skip_stack:
             try:
@@ -56,7 +56,7 @@ class Script(BaseScript):
                             break
                     if not found:
                         macs += [i[5]]
-            except:
+            except self.CLISyntaxError:
                 pass
         if macs:
             macs.sort()
