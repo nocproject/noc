@@ -34,4 +34,4 @@ class Script(BaseScript):
         """
         # Spanning Tree Enabled/Disabled : Enabled
         cmd = self.cli("show stp")
-        return self.rx_stp.search(cmd) is not None
+        return bool(self.rx_stp.search(cmd))
