@@ -92,6 +92,10 @@ class NetworkSegmentProfile(Document):
     # List of enabled topology method
     # in order of preference (most preferable first)
     topology_methods = ListField(EmbeddedDocumentField(SegmentTopologySettings))
+    # Enable VLAN discovery for appropriative management objects
+    enable_vlan = BooleanField(default=False)
+    # Default VLAN profile for discovered VLANs
+    default_vlan_profile = PlainReferenceField("vc.VLANProfile")
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
