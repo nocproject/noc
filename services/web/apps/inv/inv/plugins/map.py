@@ -150,28 +150,34 @@ class MapPlugin(InvPlugin):
         return {"status": True}
 
     def api_object_data(self, request, id):
+        from noc.sa.models.managedobject import ManagedObject
+        mos = {}
         o = self.app.get_object_or_404(Object, id=id)
+        for mo in ManagedObject.objects.filter(container=id)[:10]:
+            if mo:
+                mos[mo.id] = {"moname": mo.name}
         return {
             "id": str(o.id),
             "name": o.name,
-            "model": o.model.name
+            "model": o.model.name,
+            "moname": mos
         }
 
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
-        l = Layer.get_by_code("conduits")
+        line = Layer.get_by_code("conduits")
         return map.get_connection_layer(
-            l, x0, y0, x1, y1, srid
+            line, x0, y0, x1, y1, srid
         )
 
     def get_pop_links_layer(self, layer, x0, y0, x1, y1, srid):
-        l = Layer.get_by_code(layer)
+        line = Layer.get_by_code(layer)
         return map.get_connection_layer(
-            l, x0, y0, x1, y1, srid
+            line, x0, y0, x1, y1, srid
         )
 
     def api_set_layer_visibility(self, request, layer, status):
-        l = self.app.get_object_or_404(Layer, code=layer)
-        LayerUserSettings.set_layer_visibility(request.user, l, status)
+        line = self.app.get_object_or_404(Layer, code=layer)
+        LayerUserSettings.set_layer_visibility(request.user, line, status)
         return {"status": True}
 
     def get_add_menu(self):
