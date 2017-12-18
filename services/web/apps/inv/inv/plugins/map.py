@@ -2,12 +2,13 @@
 # ---------------------------------------------------------------------
 # inv.inv map plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from base import InvPlugin
+from __future__ import absolute_import
+from .base import InvPlugin
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
