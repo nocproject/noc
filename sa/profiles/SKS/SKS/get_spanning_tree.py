@@ -18,8 +18,9 @@ class Script(BaseScript):
     name = "SKS.SKS.get_spanning_tree"
     interface = IGetSpanningTree
 
-    rx_mode = re.compile(
+    rx_mode1 = re.compile(
         r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
+    rx_mode2 = re.compile("^\s*(?P<mode>\S+STP)\s+\(running\)")
     rx_mstp = re.compile(
         r"^\s*Name: (?P<region>\S+)\s*\n"
         r"^\s*Revision: (?P<revision>\d+)", re.MULTILINE)
@@ -45,8 +46,14 @@ class Script(BaseScript):
         "^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
         "^\s*Address\s+(?P<root_id>\S+)\s*\n"
         "^\s*This switch is the root\s*\n", re.MULTILINE)
+    rx_inst3 = re.compile(
+        "^\s*The bridge has priority (?P<root_priority>\d+), "
+        r"address (?P<root_id>\S+)\s*\n"
+        r"^\s*Configured hello time \d+, max age \d+, forward time \d+\s*\n"
+        r"^\s*We are the root of the spanning tree\s*\n",
+        re.MULTILINE)
     rx_vlans = re.compile("^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
-    rx_port = re.compile(
+    rx_port1 = re.compile(
         "^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
         "^\s*State: (?P<state>\S+)\s+Role: (?P<role>\S+)\s*\n"
         "^\s*Port id: (?P<port_id>\S+)\s+Port cost: (?P<priority>\d+)\s*\n"
@@ -57,13 +64,32 @@ class Script(BaseScript):
         "^\s*Designated port id: (?P<designated_port_id>\S+)\s+"
         "Designated path cost: \d+\s*\n",
         re.MULTILINE)
+    rx_port2 = re.compile(
+        r"^\s*Port \d+ \((?P<interface>\S+)\) of RSTP is (?P<state>\S+)\s*\n"
+        r"^\s*Edge port\(\S+\), Link type is .+\n"
+        r"^\s*Port Identifier (?P<port_id>\S+), Port role (?P<role>\S+)\s*\n"
+        r"^\s*Port path cost \d+, Port priority (?P<priority>\d+)\s*\n"
+        r"^\s*Designated root has priority \d+, address \S+\s*\n"
+        r"^\s*Designated bridge has priority "
+        r"(?P<designated_bridge_priority>\d+), address "
+        r"(?P<designated_bridge_id>\S+)\s*\n"
+        r"^\s*Designated port id is (?P<designated_port_id>\S+)",
+        re.MULTILINE)
+    PORT_STATE = {
+        "Forwarding": "forwarding"
+    }
+    PORT_ROLE = {
+        "DesignatedPort": "designated"
+    }
 
     def execute(self):
         try:
             v = self.cli("show spanning-tree detail")
         except self.CLISyntaxError:
             return {"mode": "None", "instances": []}
-        match = self.rx_mode.search(v)
+        match = self.rx_mode1.search(v)
+        if not match:
+            match = self.rx_mode2.search(v)
         mode = match.group("mode")
         stp = {"mode": mode, "instances": []}
         if mode == "MSTP":
@@ -102,25 +128,46 @@ class Script(BaseScript):
                     inst["vlans"] = "1-4095"
                 else:
                     match = self.rx_inst2.search(v)
-                    inst = match.groupdict()
-                    inst["id"] = 0
-                    inst["bridge_priority"] = inst["root_priority"]
-                    inst["bridge_id"] = inst["root_id"]
-                    inst["interfaces"] = []
-                    try:
-                        c = self.cli("show spanning-tree mst-configuration")
-                        match = self.rx_vlans.search(c)
-                        inst["vlans"] = match.group("vlans")
-                    except self.CLISyntaxError:
+                    if match:
+                        inst = match.groupdict()
+                        inst["id"] = 0
+                        inst["bridge_priority"] = inst["root_priority"]
+                        inst["bridge_id"] = inst["root_id"]
+                        inst["interfaces"] = []
+                        try:
+                            c = self.cli("show spanning-tree mst-configuration")
+                            match = self.rx_vlans.search(c)
+                            inst["vlans"] = match.group("vlans")
+                        except self.CLISyntaxError:
+                            inst["vlans"] = "1-4095"
+                    else:
+                        match = self.rx_inst3.search(v)
+                        inst = match.groupdict()
+                        inst["id"] = 0
+                        inst["bridge_priority"] = inst["root_priority"]
+                        inst["bridge_id"] = inst["root_id"]
+                        inst["interfaces"] = []
                         inst["vlans"] = "1-4095"
             for port in v.split("\n\n"):
-                match = self.rx_port.search(port)
+                match = self.rx_port1.search(port)
                 if match:
                     iface = match.groupdict()
                     iface["point_to_point"] = "Type: P2P" in port
                     iface["priority"] = \
                         match.group("port_id").split(".")[0]
                     iface["edge"] = False
+                    inst["interfaces"] += [iface]
+                else:
+                    match = self.rx_port2.search(port)
+                    if not port.strip().startswith("Port"):
+                        continue
+                    iface = match.groupdict()
+                    iface["point_to_point"] = "auto ptop" in port
+                    # iface["priority"] = \
+                    #    match.group("port_id").split(".")[0]
+                    iface["edge"] = "Edge port(TRUE)" in port
+                    iface["role"] = self.PORT_ROLE[iface["role"]]
+                    iface["state"] = self.PORT_STATE[iface["state"]]
                     inst["interfaces"] += [iface]
             stp["instances"] = [inst]
         return stp
