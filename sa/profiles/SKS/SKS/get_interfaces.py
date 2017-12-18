@@ -58,6 +58,8 @@ class Script(BaseScript):
     IFTYPES = {
         "100BASE-TX": "physical",
         "Giga-TX": "physical",
+        "Giga-FX": "physical",
+        "Giga-FX-SFP": "physical",
         "Giga-Combo-TX": "physical",
         "EtherSVI": "SVI",
         "Null": "null"
