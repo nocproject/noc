@@ -127,6 +127,7 @@ class Script(BaseScript):
                 "type": {
                     "dynamic": "D",
                     "static": "S",
+                    "secured": "S",
                     "permanent": "S",
                     "self": "S"
                 }[match.group("type").lower()],
