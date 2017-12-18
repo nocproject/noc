@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_ver = re.compile(r"^MAC Address\s+:\s*(?P<id>\S+)",
-        re.IGNORECASE | re.MULTILINE)
+                        re.IGNORECASE | re.MULTILINE)
     rx_line = re.compile(
         r"^\s*\d+\s+(?:\S+\s+)?"
         r"([0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-"
