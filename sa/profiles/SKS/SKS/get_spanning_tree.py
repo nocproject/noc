@@ -56,12 +56,12 @@ class Script(BaseScript):
     rx_port1 = re.compile(
         "^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
         "^\s*State: (?P<state>\S+)\s+Role: (?P<role>\S+)\s*\n"
-        "^\s*Port id: (?P<port_id>\S+)\s+Port cost: (?P<priority>\d+)\s*\n"
+        "^\s*Port id:\s+(?P<port_id>\S+)\s+Port cost: (?P<priority>\d+)\s*\n"
         "^\s*.+\n"
         "^\s*Designated bridge Priority\s*: "
         "(?P<designated_bridge_priority>\S+)\s+Address: "
         "(?P<designated_bridge_id>\S+)\s*\n"
-        "^\s*Designated port id: (?P<designated_port_id>\S+)\s+"
+        "^\s*Designated port id:\s+(?P<designated_port_id>\S+)\s+"
         "Designated path cost: \d+\s*\n",
         re.MULTILINE)
     rx_port2 = re.compile(
