@@ -10,6 +10,7 @@
 import six
 # NOC modules
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+from noc.lib.text import parse_table
 
 
 class Script(GetMetricsScript):
@@ -18,6 +19,8 @@ class Script(GetMetricsScript):
     ALL_IFACE_METRICS = set(["Interface | Errors | CRC", "Interface | Errors | Frame"])
     ALL_ENV_METRICS = set(["Environment | Electric current", "Environment | Sensor Status",
                            "Environment | Temperature", "Environment | Voltage"])
+    ALL_CPU_METRICS = set(["CPU | Load | 1min"])
+    ALL_MEMORY_METRICS = set(["Memory | Load | 1min"])
 
     def collect_profile_metrics(self, metrics):
         if self.has_capability("DB | Interfaces"):
@@ -53,8 +56,55 @@ class Script(GetMetricsScript):
                             metric=bv.metric,
                             value=value,
                             ts=ts,
-                            path=path,
+                            path=path[:-1],
                         )
+            elif bv.metric in self.ALL_CPU_METRICS:
+                cpu_m = self.get_cpu_metrics()
+                for path, value in six.iteritems(cpu_m):
+                    if path[-1] == bv.metric:
+                        self.set_metric(
+                            id=bv.id,
+                            metric=bv.metric,
+                            value=value,
+                            ts=ts,
+                            path=path[:-1],
+                        )
+            elif bv.metric in self.ALL_MEMORY_METRICS:
+                memory_m = self.get_memory_metrics()
+                for path, value in six.iteritems(memory_m):
+                    if path[-1] == bv.metric:
+                        self.set_metric(
+                            id=bv.id,
+                            metric=bv.metric,
+                            value=value,
+                            ts=ts,
+                            path=path[:-1],
+                        )
+
+    def get_cpu_metrics(self):
+        v = self.cli("show process cpu")
+        v = parse_table(v)
+        if v:
+            return {("", "", "", "", "CPU | Load | 1min"): float(v[-1][-1][:-1])}
+        return {}
+
+    def get_memory_metrics(self):
+        v = self.cli("show resources")
+        r = {}
+        column = None
+        for line in v.splitlines():
+            if not line:
+                continue
+            if not line.startswith("  "):
+                column = line.strip().lower()
+            if column:
+                k, v = line.split(":")
+                r[column + k.strip().lower()] = v.strip()
+        if r.get("ram:total") and r.get("ram:used"):
+            used = int(r.get("ram:used").split(" ")[0])
+            total = int(r.get("ram:total").split(" ")[0])
+            return {("", "", "", "Memory | Load | 1min"): round(used * 100.0 / total)}
+        return {}
 
     def get_boxshso_metrics(self):
         modules = {"black_box": "show box-shso bb",
