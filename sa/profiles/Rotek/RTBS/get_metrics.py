@@ -42,8 +42,9 @@ class Script(GetMetricsScript):
         for ip in self.credentials["path"].split(","):
             if is_ipv4(ip.strip()):
                 result = self.scripts.ping(address=ip)
+                r[("ping", ip, "Check | Result")] = bool(result["success"])
                 if result["success"]:
-                    r[("", "", ip, "Check | Avail")] = bool(result["success"])
+                    r[("ping", ip, "Check | RTT")] = float(result["avg"])
         return r
 
 
