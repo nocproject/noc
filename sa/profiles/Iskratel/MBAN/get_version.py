@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # Iskratel.MBAN.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 # NOC modules
@@ -20,21 +20,31 @@ class Script(BaseScript):
     cache = True
 
     rx_ver = re.compile(
-        r"^\s*CPU: IskraTEL SGN MPC8560\s*\n"
+        r"^\s*CPU: IskraTEL (?P<platform>\S+) .+\n"
         r"^\s*VxWorks: \S+\s*\n"
         r"^\s*Kernel: WIND version \S+\s*\n"
-        r"^\s*ADSL2PLUS over POTS GS firmware version:\s+(?P<version>\S+)\s*\n",
+        r"^\s*ADSL(2PLUS)? over POTS GS firmware version:\s+(?P<version>\S+)\s*\n",
         re.MULTILINE)
+    rx_inv1 = re.compile(
+        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+"
+        r"(?P<serial>[NZ]\S+)\s+", re.MULTILINE)
+    rx_inv2 = re.compile(
+        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+U\S+\s+"
+        r"(?P<serial>[0-9A-Z]+)\s+", re.MULTILINE)
 
     def execute(self):
-        v = self.scripts.get_inventory()
-        match = self.rx_ver.search(self.cli("show version"))
+        c = self.cli("show version", cached=True)
+        match = self.rx_ver.search(c)
         r = {
             "vendor": "Iskratel",
-            "platform": "SGN",
+            "platform": match.group("platform"),
             "version": match.group("version")
         }
-        if "serial" in v[0]:
+        c = self.cli("show board", cached=True)
+        match = self.rx_inv1.search(c)
+        if not match:
+            match = self.rx_inv2.search(c)
+        if match.group("serial") != "N/A":
             r["attributes"] = {}
-            r["attributes"]["Serial Number"] = v[0]["serial"]
+            r["attributes"]["Serial Number"] = match.group("serial")
         return r
