@@ -43,6 +43,12 @@ Ext.define("NOC.vc.vlan.Application", {
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
+                    text: __("State"),
+                    dataIndex: "state",
+                    width: 150,
+                    renderer: NOC.render.Lookup("state")
+                },
+                {
                     text: __("VLAN"),
                     dataIndex: "vlan",
                     width: 75
