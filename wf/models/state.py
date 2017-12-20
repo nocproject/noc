@@ -206,4 +206,4 @@ class State(Document):
             self.fire_transition(t, obj)
         else:
             logger.debug("[%s|%s] No event handler for '%s'. Skipping",
-                         obj, self.name)
+                         obj, self.name, event)
