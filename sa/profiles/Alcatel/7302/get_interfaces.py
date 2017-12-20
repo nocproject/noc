@@ -23,7 +23,9 @@ class Script(BaseScript):
     rx_ififo = re.compile("info : \"(?P<info>.+?)\"")
     rx_type = re.compile("type : (?P<type>\S+)")
     rx_mac = re.compile("phy-addr : (?P<mac>\S+)")
-    rx_admin_status = re.compile("admin-status : (?P<admin_status>up|down|not-appl)")
+    rx_admin_status = re.compile(
+        r"admin-status : (?P<admin_status>up|admin-up|down|admin-down|not-appl)"
+    )
     rx_oper_status = re.compile("opr-status : (?P<oper_status>up|down)")
     rx_mtu = re.compile("largest-pkt-size : (?P<mtu>\d+)")
     rx_vpi_vci = re.compile("(?P<ifname>\S+\d+):(?P<vpi>\d+):(?P<vci>\d+)")
@@ -63,7 +65,7 @@ class Script(BaseScript):
                 continue
             ifname = match.group("ifname")
             match = self.rx_admin_status.search(p)
-            admin_status = match.group("admin_status") == "up"
+            admin_status = match.group("admin_status") in ["up", "admin-up"]
             match = self.rx_oper_status.search(p)
             oper_status = match.group("oper_status") == "up"
             match = self.rx_vpi_vci.search(ifname)
