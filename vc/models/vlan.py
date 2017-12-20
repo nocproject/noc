@@ -82,7 +82,7 @@ class VLAN(Document):
     bi_id = LongField(unique=True)
     # Discovery integration
     # Timestamp when object first discovered
-    first_discovered = DateTimeField(default=datetime.datetime.now)
+    first_discovered = DateTimeField()
     # Timestamp when object last seen by discovery
     last_seen = DateTimeField()
     # Timestamp when send "expired" event

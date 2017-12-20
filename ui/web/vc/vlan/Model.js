@@ -121,6 +121,21 @@ Ext.define("NOC.vc.vlan.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "first_discovered",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "last_seen",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "expired",
+            type: "string",
+            persist: false
         }
     ]
 });

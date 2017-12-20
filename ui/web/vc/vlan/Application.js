@@ -181,6 +181,35 @@ Ext.define("NOC.vc.vlan.Application", {
                     ]
                 },
                 {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Discovery"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "first_discovered",
+                            xtype: "displayfield",
+                            fieldLabel: __("Discovered"),
+                            allowBlank: false
+                        },
+                        {
+                            name: "last_seen",
+                            xtype: "displayfield",
+                            fieldLabel: __("Last Seen"),
+                            allowBlank: false
+                        },
+                        {
+                            name: "expired",
+                            xtype: "displayfield",
+                            fieldLabel: __("Expired"),
+                            allowBlank: false
+                        }
+                    ]
+                },
+                {
                     name: "tags",
                     xtype: "tagsfield",
                     fieldLabel: __("Tags"),
