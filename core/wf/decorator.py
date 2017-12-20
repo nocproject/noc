@@ -8,6 +8,9 @@
 
 # Python modules
 import logging
+import datetime
+# Third-party modules
+from pymongo import UpdateOne
 # NOC modules
 from noc.models import is_document
 
@@ -61,6 +64,30 @@ def document_set_state(self, state):
         ic_handler()
     # Call state on_enter_handlers
     self.state.on_enter_state(self)
+
+
+def document_touch(self, bulk=None):
+    opset = {}
+    ts = datetime.datetime.now()
+    if self.state.update_last_seen:
+        opset["last_seen"] = ts
+        self.last_seen = ts
+    if self.state.update_expired and self.state.ttl:
+        expired = ts + datetime.timedelta(seconds=self.state.ttl)
+        opset["expired"] = expired
+        self.expired = expired
+    if not self.first_discovered:
+        self.first_discovered = ts
+        opset["first_discovered"] = ts
+    if not opset:
+        return  # No changes
+    op = {"$set": opset}
+    if bulk:
+        # Queue to bulk operation
+        bulk += [UpdateOne({"_id": self.pk}, op)]
+    else:
+        # Direct update
+        self._get_collection().update({"_id": self.pk}, op)
 
 
 def model_set_state(self, state):
@@ -147,6 +174,8 @@ def workflow(cls):
             _on_document_post_save,
             sender=cls
         )
+        if "last_seen" in cls._fields and "expired" in cls._fields and "first_discovered" in cls._fields:
+            cls.touch = document_touch
     else:
         # Django model
         from django.db.models import signals as django_signals
