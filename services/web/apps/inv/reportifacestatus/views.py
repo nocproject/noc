@@ -24,9 +24,9 @@ class ReportIfaceStatus(SimpleReport):
     form = ReportForm
     def get_data(self, request, sel):
         data = []
-        qs = ManagedObject.objects
-        if not request.user.is_superuser:
-            qs = ManagedObject.objects.filter(administrative_domain__in=UserAccess.get_domains(request.user))
+        #qs = ManagedObject.objects
+        #if not request.user.is_superuser:
+        #    qs = ManagedObject.objects.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         columns = [_("Managed Objects"), _("Switch availability status"), _("IP address"), _("Model"), _("Software"), _("Port name"), _("Port status"), _("Link status"), _("VLAN id")]
         ip = InterfaceProfile.objects.get(name=sel.name)
         interf = Interface.objects.filter(profile=ip, type="physical")
