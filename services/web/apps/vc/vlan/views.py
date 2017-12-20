@@ -7,11 +7,13 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app import ExtDocApplication
 from noc.vc.models.vlan import VLAN
+from noc.lib.app.decorators.state import state_handler
 from noc.core.translation import ugettext as _
 
 
+@state_handler
 class VLANApplication(ExtDocApplication):
     """
     VLAN application
