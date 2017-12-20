@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # VCDomain model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.db import models
 # NOC modules
-from vctype import VCType
-from vcfilter import VCFilter
+from .vctype import VCType
+from .vcfilter import VCFilter
 from noc.main.models.style import Style
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.model.decorator import on_delete_check
@@ -76,6 +78,8 @@ class VCDomain(models.Model):
         :returns: Free label or None
         :rtype: int or None
         """
+        from .vc import VC
+
         l_min = self.type.label1_min
         l_max = self.type.label1_max
         # Get valid ranges
@@ -98,5 +102,4 @@ class VCDomain(models.Model):
 
 
 # Avoid circular references
-from vc import VC
 from noc.sa.models.selectorcache import SelectorCache
