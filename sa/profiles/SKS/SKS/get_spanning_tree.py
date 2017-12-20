@@ -47,10 +47,17 @@ class Script(BaseScript):
         "^\s*Address\s+(?P<root_id>\S+)\s*\n"
         "^\s*This switch is the root\s*\n", re.MULTILINE)
     rx_inst3 = re.compile(
-        "^\s*The bridge has priority (?P<root_priority>\d+), "
-        r"address (?P<root_id>\S+)\s*\n"
+        "^\s*The bridge has priority (?P<bridge_priority>\d+), "
+        r"address (?P<bridge_id>\S+)\s*\n"
         r"^\s*Configured hello time \d+, max age \d+, forward time \d+\s*\n"
         r"^\s*We are the root of the spanning tree\s*\n",
+        re.MULTILINE)
+    rx_inst4 = re.compile(
+        "^\s*The bridge has priority (?P<bridge_priority>\d+), "
+        r"address (?P<bridge_id>\S+)\s*\n"
+        r"^\s*Configured hello time \d+, max age \d+, forward time \d+\s*\n"
+        "^\s*The root bridge has priority (?P<root_priority>\d+), "
+        r"address (?P<root_id>\S+)\s*\n",
         re.MULTILINE)
     rx_vlans = re.compile("^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port1 = re.compile(
@@ -142,12 +149,20 @@ class Script(BaseScript):
                             inst["vlans"] = "1-4095"
                     else:
                         match = self.rx_inst3.search(v)
-                        inst = match.groupdict()
-                        inst["id"] = 0
-                        inst["bridge_priority"] = inst["root_priority"]
-                        inst["bridge_id"] = inst["root_id"]
-                        inst["interfaces"] = []
-                        inst["vlans"] = "1-4095"
+                        if match:
+                            inst = match.groupdict()
+                            inst["id"] = 0
+                            inst["root_priority"] = inst["bridge_priority"]
+                            inst["root_id"] = inst["bridge_id"]
+                            inst["interfaces"] = []
+                            inst["vlans"] = "1-4095"
+                        else:
+                            match = self.rx_inst4.search(v)
+                            inst = match.groupdict()
+                            inst["id"] = 0
+                            inst["interfaces"] = []
+                            inst["vlans"] = "1-4095"
+
             for port in v.split("\n\n"):
                 match = self.rx_port1.search(port)
                 if match:
