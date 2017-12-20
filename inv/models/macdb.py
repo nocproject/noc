@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # MAC Database
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from noc.lib.nosql import (Document, StringField, ForeignKeyField,
                            IntField)
 from interface import Interface
 from noc.sa.models.managedobject import ManagedObject
-from noc.vc.models import VCDomain
+from noc.vc.models.vcdomain import VCDomain
 from maclog import MACLog
 from noc.core.mac import MAC
 
@@ -68,7 +68,7 @@ class MACDB(Document):
         m = MACDB.objects.filter(mac=mac, vc_domain=vcd).first()
         if m:
             if (managed_object != m.managed_object or
-                interface != m.interface or vlan != m.vlan):
+                    interface != m.interface or vlan != m.vlan):
                 # Database change, write history
                 MACLog(
                     timestamp=m.last_changed,

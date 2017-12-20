@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # vc.vcdomain application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.vc.models import VCDomain
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.vc.models.vcdomain import VCDomain
 from noc.core.translation import ugettext as _
 
 

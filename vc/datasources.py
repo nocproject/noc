@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # VC module datasources
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.datasource import DataSource
-from noc.vc.models import VCDomain, VC
+from noc.vc.models.vc import VC
 
 
 class VCDS(DataSource):
