@@ -180,7 +180,7 @@ Ext.define("NOC.inv.networksegment.Application", {
                 {
                     name: "allocation_group",
                     xtype: "inv.allocationgroup.LookupField",
-                    boxLabel: __("Allocation Group"),
+                    fieldLabel: __("Allocation Group"),
                     allowBlank: false
                 },
                 {
