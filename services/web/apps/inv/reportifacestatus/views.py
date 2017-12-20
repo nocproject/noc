@@ -5,7 +5,6 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
 from django import forms
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport
@@ -55,4 +54,3 @@ class ReportIfaceStatus(SimpleReport):
             data=data,
             enumerate=True
         )
-
