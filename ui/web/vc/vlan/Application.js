@@ -193,19 +193,19 @@ Ext.define("NOC.vc.vlan.Application", {
                             name: "first_discovered",
                             xtype: "displayfield",
                             fieldLabel: __("Discovered"),
-                            allowBlank: false
+                            allowBlank: true
                         },
                         {
                             name: "last_seen",
                             xtype: "displayfield",
                             fieldLabel: __("Last Seen"),
-                            allowBlank: false
+                            allowBlank: true
                         },
                         {
                             name: "expired",
                             xtype: "displayfield",
                             fieldLabel: __("Expired"),
-                            allowBlank: false
+                            allowBlank: true
                         }
                     ]
                 },
