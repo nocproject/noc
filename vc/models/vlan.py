@@ -11,9 +11,11 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
+import datetime
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, LongField, ListField, IntField, BooleanField
+from mongoengine.fields import (StringField, LongField, ListField,
+                                IntField, BooleanField, DateTimeField)
 import cachetools
 # NOC modules
 from .vlanprofile import VLANProfile
@@ -41,7 +43,10 @@ class VLAN(Document):
     meta = {
         "collection": "vlans",
         "strict": False,
-        "auto_create_index": False
+        "auto_create_index": False,
+        "indexes": [
+            ("segment", "vlan")
+        ]
     }
 
     name = StringField(unique=True)
@@ -75,8 +80,13 @@ class VLAN(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    # @todo: last_seen
-    # @todo: expired
+    # Discovery integration
+    # Timestamp when object first discovered
+    first_discovered = DateTimeField(default=datetime.datetime.now)
+    # Timestamp when object last seen by discovery
+    last_seen = DateTimeField()
+    # Timestamp when send "expired" event
+    expired = DateTimeField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
