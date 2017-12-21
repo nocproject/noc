@@ -144,8 +144,8 @@ class VLANCheck(DiscoveryCheck):
                 if vlan in segment_vlans[segment]:
                     segment_vlans[segment][vlan] = (
                         # @todo: Smarter merge
-                        segment_vlans[vlan][0] or name,
-                        segment_vlans[vlan][1] or description
+                        segment_vlans[segment][vlan][0] or name,
+                        segment_vlans[segment][vlan][1] or description
                     )
                 else:
                     segment_vlans[segment][vlan] = (name, description)
