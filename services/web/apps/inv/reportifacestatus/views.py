@@ -1,5 +1,5 @@
+# -*- coding: utf8 -*-
 """Report interface status."""
-# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ip.reportobgectsportstatus
 # ---------------------------------------------------------------------
@@ -25,7 +25,7 @@ class ReportForm(forms.Form):
 class ReportIfaceStatus(SimpleReport):
     """Create Report form."""
 
-    title = _("Отчет статуса интерфейсов")
+    title = _(u"Отчет статуса интерфейсов")
     form = ReportForm
 
     def get_data(self, request, sel):
