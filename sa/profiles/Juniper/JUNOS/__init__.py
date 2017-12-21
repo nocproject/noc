@@ -49,6 +49,7 @@ class Profile(BaseProfile):
         }
     }
 
+    # https://www.juniper.net/documentation/en_US/junos/topics/reference/general/junos-release-numbers.html
     def cmp_version(self, x, y):
         """
         Compare versions.
@@ -56,14 +57,39 @@ class Profile(BaseProfile):
         Version format:
         <major>.<minor>R<h>.<l>
         """
-        def c(v):
-            v = v.upper()
-            l, r = v.split("R")
+        def c(v, t):
+            # v = v.upper()
+            l, r = v.split(t)
             return [int(x) for x in l.split(".")] + [
                 int(x) for x in r.split(".")
             ]
 
-        return cmp(c(x), c(y))
+        # FRS/maintenance release software
+        if "R" in x and "R" in y:
+            return cmp(c(x, "R"), c(y, "R"))
+        # Feature velocity release software
+        elif "F" in x and "F" in y:
+            return cmp(c(x, "F"), c(y, "F"))
+        # Beta release software
+        elif "B" in x and "B" in y:
+            return cmp(c(x, "B"), c(y, "B"))
+        # Internal release software:
+        # private software release for verifying fixes
+        elif "I" in x and "I" in y:
+            return cmp(c(x, "I"), c(y, "I"))
+        # Service release software:
+        # released to customers to solve a specific problem—this release
+        # will be maintained along with the life span of the underlying release
+        elif "S" in x and "S" in y:
+            return cmp(c(x, "S"), c(y, "S"))
+        # Special (eXception) release software:
+        # releases that follow a numbering system that differs from
+        # the standard Junos OS release numbering
+        elif "X" in x and "X" in y:
+            return cmp(c(x, "X"), c(y, "X"))
+        # https://kb.juniper.net/InfoCenter/index?page=content&id=KB30092
+        else:
+            return None
 
     def generate_prefix_list(self, name, pl):
         """
