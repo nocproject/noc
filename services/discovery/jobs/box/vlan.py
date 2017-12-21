@@ -31,67 +31,53 @@ class VLANCheck(DiscoveryCheck):
                 self.object.segment.name
             )
             return
-        # Get list of VLANs from equipment
-        obbject_vlans = [
-            (v["vlan_id"], v.get("name"))
-            for v in self.object.scripts.get_vlans()
-        ]
-        if not obbject_vlans:
-            self.logger.info("No any VLAN found. Skipping")
-            return
-        # Cache in case of large amount of vlans on equipment
+        # Get effective border segment
         segment = NetworkSegment.get_border_segment(self.object.segment)
-        if len(obbject_vlans) >= self.FULL_VLANS_THRESHOLD:
-            metrics["vlan_segment_fetch"] += 1
-            vlan_cache = dict(
-                (v.vlan, v)
-                for v in VLAN.objects.filter(segment=segment.id)
-            )
-        else:
-            vlan_cache = {}
-        # Refresh vlans
-        vlans = [
-            self.ensure_vlan(vlan_id, vlan_name, segment, vlan_cache)
-            for vlan_id, vlan_name in obbject_vlans
-        ]
+        # Get list of VLANs from equipment
+        object_vlans = self.get_vlans(segment)
+        # Merge with artifactory ones
+        collected_vlans = self.merge_vlans(object_vlans)
+        # Check we have collected any VLAN
+        if not collected_vlans:
+            self.logger.info("No any VLAN collected. Skipping")
+            return
+        # Refresh vlans in database
+        ensured_vlans = self.ensure_vlans(collected_vlans)
         # Refresh discovery timestamps
-        bulk = []
-        for vlan in vlans:
-            vlan.touch(bulk)
-        if bulk:
-            self.logger.info("Bulk update %d timestamps", len(bulk))
-            VLAN._get_collection().bulk_write(bulk, ordered=True)
-        # Send seen events
-        for vlan in vlans:
-            vlan.fire_event("seen")
+        self.refresh_discovery_timestamps(ensured_vlans)
+        # Send "seen" events
+        self.send_seen_events(ensured_vlans)
 
-    def ensure_vlan(self, vlan_id, vlan_name, segment, vlan_cache):
+    def ensure_vlan(self, segment, vlan, name, description, cache):
         """
         Refresh VLAN status in database, create when necessary
-        :param vlan_id:
-        :param vlan_name:
-        :param segment:
-        :param vlan_cache:
+        :param segment: NetworkSegment instance
+        :param vlan: VLAN id
+        :param name: VLAN name
+        :param description: VLAN description
+        :param cache: VLAN cache dictionary
         :return:
         """
-        if vlan_cache:
+        # Get existing VLAN
+        if cache:
             # Get from cache
             metrics["vlan_cached_get"] += 1
-            vlan = vlan_cache.get(vlan_id)
+            vlan = cache.get((segment, vlan))
         else:
             # Get from database
             metrics["vlan_db_get"] += 1
-            vlan = VLAN.objects.filter(segment=segment, vlan=vlan_id).first()
-        # Create VLAN when neccessary
+            vlan = VLAN.objects.filter(segment=segment.id,
+                                       vlan=vlan).first()
+        # Create VLAN when necessary
         if not vlan:
             self.logger.info("[%s] Creating VLAN %s(%s)",
-                             segment.name, vlan_id, vlan_name)
+                             segment.name, vlan, name)
             vlan = VLAN(
-                name=vlan_name or self.get_default_vlan_name(vlan_id),
+                name=name,
                 profile=segment.profile.default_vlan_profile,
-                vlan=vlan_id,
+                vlan=vlan,
                 segment=segment,
-                description=self.get_default_vlan_description(vlan_id)
+                description=description
             )
             vlan.save()
             metrics["vlan_created"] += 1
@@ -112,3 +98,125 @@ class VLANCheck(DiscoveryCheck):
         :return:
         """
         return "Discovered at %s(%s)" % (self.object.name, self.object.address)
+
+    def get_vlans(self, segment):
+        """
+        Get vlans from equipment
+        :return:
+        """
+        if self.object.segment.profile.enable_vlan:
+            self.logger.info("[%s] Collecting VLANs", self.object.segment.name)
+            vlans = [
+                # segment, vlan, name, description
+                (segment, v["vlan_id"], v.get("name"), None)
+                for v in self.object.scripts.get_vlans()
+            ]
+            if not vlans:
+                self.logger.info("No any VLAN found")
+            return vlans
+        else:
+            self.logger.info(
+                "[%s] VLAN discovery is disabled. Not collecting VLANs",
+                self.object.segment.name
+            )
+            return []
+
+    def merge_vlans(self, vlans):
+        """
+        Merge object vlans with artifactory ones
+        :param vlans:
+        :return:
+        """
+        # @todo: Collect artifact
+        return vlans
+
+    def get_segment_vlans(self, vlans):
+        """
+        Group by vlans by segment
+        :param vlans: List of (segment, vlan id, name, description)
+        :return: segment -> vlan id -> (name, description)
+        """
+        segment_vlans = {}  # segment -> vlan -> (name, description)
+        for segment, vlan, name, description in vlans:
+            name = name or self.get_default_vlan_name(vlan)
+            description = description or self.get_default_vlan_description(vlan)
+            if segment in segment_vlans:
+                if vlan in segment_vlans[segment]:
+                    segment_vlans[vlan] = (
+                        # @todo: Smarter merge
+                        segment_vlans[vlan][0] or name,
+                        segment_vlans[vlan][1] or description
+                    )
+                else:
+                    segment_vlans[vlan] = (name, description)
+            else:
+                segment_vlans[segment] = {
+                    vlan: (name, description)
+                }
+        return segment_vlans
+
+    def get_vlan_cache(self, segments):
+        """
+        Fetch existing vlans from segment
+        :param segments: List of segment instances
+        :return: (segment, vlan id) -> VLAN instance
+        """
+        metrics["vlan_segment_fetch"] += 1
+        self.logger.info("Bulk fetching vlans from segments: %s",
+                         ",".join(s.name for s in segments))
+        return dict(
+            ((v.segment, v.vlan), v)
+            for v in VLAN.objects.filter(
+                segment__in=[s.id for s in segments]
+            )
+        )
+
+    def ensure_vlans(self, vlans):
+        """
+        Synchronize all vlans
+        :param segment_vlans:
+        :param use_cache:
+        :return:
+        """
+        # Group by segments
+        segment_vlans = self.get_segment_vlans(vlans)
+        # Bulk fetch VLANs from segments when necessary
+        if len(vlans) >= self.FULL_VLANS_THRESHOLD:
+            cache = self.get_vlan_cache(list(segment_vlans))
+        else:
+            cache = None
+        result = []
+        for segment in segment_vlans:
+            result += [
+                self.ensure_vlan(
+                    segment,
+                    vlan,
+                    segment_vlans[vlan][0],
+                    segment_vlans[vlan][1],
+                    cache
+                )
+                for vlan in segment_vlans[segment]
+            ]
+        return result
+
+    def refresh_discovery_timestamps(self, vlans):
+        """
+        Bulk update discovery timestamps of all vlans from list
+        :param vlans: List of VLAN instances
+        :return: None
+        """
+        bulk = []
+        for vlan in vlans:
+            vlan.touch(bulk)
+        if bulk:
+            self.logger.info("Bulk update %d timestamps", len(bulk))
+            VLAN._get_collection().bulk_write(bulk, ordered=True)
+
+    def send_seen_events(self, vlans):
+        """
+        Send *seen* event to all vlans from list
+        :param vlans: List of VLAN instances
+        :return: None
+        """
+        for vlan in vlans:
+            vlan.fire_event("seen")
