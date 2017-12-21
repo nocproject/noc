@@ -59,7 +59,7 @@ def document_set_state(self, state):
     # Set state field
     self.state = state
     # Fill expired field
-    if "expired" in self._fields:
+    if self._has_expired:
         if state.ttl:
             self.expired = datetime.datetime.now() + datetime.timedelta(seconds=state.ttl)
         else:
@@ -183,6 +183,8 @@ def workflow(cls):
     """
     cls.fire_event = fire_event
     cls.fire_transition = fire_transition
+    cls._has_workflow = True
+    cls._has_expired = False
     if is_document(cls):
         # MongoEngine model
         from mongoengine import signals as mongo_signals
@@ -193,6 +195,7 @@ def workflow(cls):
         )
         if "last_seen" in cls._fields and "expired" in cls._fields and "first_discovered" in cls._fields:
             cls.touch = document_touch
+            cls._has_expired = True
     else:
         # Django model
         from django.db.models import signals as django_signals

@@ -45,7 +45,8 @@ class VLAN(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            ("segment", "vlan")
+            ("segment", "vlan"),
+            "expired"
         ]
     }
 
