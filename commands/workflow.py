@@ -106,7 +106,7 @@ class Command(BaseCommand):
             if not getattr(c, "_has_expired", False):
                 self.die("Model %s does not support expiration" % m)
             self.print("Expiring %s:" % m)
-            for c in c.objects.filter(expired__gt=now):
+            for c in c.objects.filter(expired__lt=now):
                 if not c.state.ttl:
                     continue
                 self.print("  %s" % c)
