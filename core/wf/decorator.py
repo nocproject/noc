@@ -23,6 +23,11 @@ def fire_event(self, event):
     :param event: event name
     :return:
     """
+    if not self.state:
+        logger.info(
+            "[%s] Cannot fire event '%s'. No default state. Skipping",
+            self, event)
+        return
     self.state.fire_event(event, self)
 
 
@@ -68,7 +73,7 @@ def document_set_state(self, state):
 
 def document_touch(self, bulk=None):
     if not self.state:
-        logger.info("[%s] No default state. Skipping")
+        logger.info("[%s] No default state. Skipping", self)
         return
     opset = {}
     ts = datetime.datetime.now()
