@@ -67,6 +67,9 @@ def document_set_state(self, state):
 
 
 def document_touch(self, bulk=None):
+    if not self.state:
+        logger.info("[%s] No default state. Skipping")
+        return
     opset = {}
     ts = datetime.datetime.now()
     if self.state.update_last_seen:
@@ -121,11 +124,11 @@ def _on_document_post_save(sender, document, *args, **kwargs):
         # Get workflow
         profile = getattr(document, getattr(document, "PROFILE_LINK", "profile"))
         if not profile:
-            logger.debug("[%s] Cannot set default state: No profile", document)
+            logger.info("[%s] Cannot set default state: No profile", document)
             return
         new_state = profile.workflow.get_default_state()
         if not new_state:
-            logger.debug(
+            logger.info(
                 "[%s] Cannot set default state: No default state for workflow %s",
                 document, profile.workflow.name)
             return
@@ -140,11 +143,11 @@ def _on_model_post_save(sender, instance, *args, **kwargs):
         # Get workflow
         profile = getattr(instance, getattr(instance, "PROFILE_LINK", "profile"))
         if not profile:
-            logger.debug("[%s] Cannot set default state: No profile", instance)
+            logger.info("[%s] Cannot set default state: No profile", instance)
             return
         new_state = profile.workflow.get_default_state()
         if not new_state:
-            logger.debug(
+            logger.info(
                 "[%s] Cannot set default state: No default state for workflow %s",
                 instance, profile.workflow.name)
             return
