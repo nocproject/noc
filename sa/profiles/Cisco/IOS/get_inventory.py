@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ from itertools import groupby
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -28,9 +27,12 @@ class Script(BaseScript):
     rx_idprom = re.compile(
         r"\s*Vendor Name\s+(:|=)(\s+)?(?P<t_vendor>\S+[\S ]*)\n"
         r"(\s*Vendor OUI\s+(:|=)(\s+)?[\S+ ]*(\s+)?\n)?"
-        r"\s*Vendor (PN|Part No.|Part Number)\s+(:|=)(\s+)?(?P<t_part_no>\S+[\S ]*)\n"
-        r"\s*Vendor (rev|Revision|Part Rev.)\s+(:|=)(\s+)?(?P<t_rev>\S+[\S ]*)?\n"
-        r"\s*Vendor (SN|Serial No.|Serial Number)\s+(:|=)(\s+)?(?P<t_sn>\S+)(\s+)?\n",
+        r"\s*Vendor (PN|Part No.|Part Number)\s+(:|=)(\s+)?(?P<t_part_no>\S+"
+        r"[\S ]*)\n"
+        r"\s*Vendor (rev|Revision|Part Rev.)\s+(:|=)(\s+)?(?P<t_rev>\S+"
+        r"[\S ]*)?\n"
+        r"\s*Vendor (SN|Serial No.|Serial Number)\s+(:|=)(\s+)?(?P<t_sn>\S+)"
+        r"(\s+)?\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
     rx_ver = re.compile(
         r"Model revision number\s+:\s+(?P<revision>\S+)\s*\n"
@@ -47,7 +49,8 @@ class Script(BaseScript):
         r"(?:Universal Broadband Router|chassis)")
 
     rx_slot_id = re.compile(
-        r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)(?P<slot_id>[\d|\w]+).*", re.IGNORECASE)
+        r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)"
+        r"(?P<slot_id>[\d|\w]+).*", re.IGNORECASE)
     slot_id = 0
 
     IGNORED_SERIAL = set([
@@ -68,7 +71,6 @@ class Script(BaseScript):
         "CISCO2811"
     ])
 
-
     def get_inv(self):
         objects = []
         try:
@@ -77,9 +79,15 @@ class Script(BaseScript):
             for match in self.rx_item.finditer(v):
                 vendor, serial = "", ""
                 if match.group("name") in self.IGNORED_NAMES:
-                    self.logger.debug("Part %s in ignored name. Skipping" % match.group("name"))
+                    self.logger.debug(
+                        "Part %s in ignored name. Skipping" %
+                        match.group("name")
+                    )
                     continue
-                self.logger.debug("Get type: %s, %s, %s", match.group("name"), match.group("pid"), match.group("descr"))
+                self.logger.debug(
+                    "Get type: %s, %s, %s", match.group("name"),
+                    match.group("pid"), match.group("descr")
+                )
                 type, number, part_no = self.get_type(
                     match.group("name"), match.group("pid"),
                     match.group("descr"), len(objects)
@@ -89,21 +97,27 @@ class Script(BaseScript):
                     self.logger.debug("Type equal slot_id")
                     self.slot_id = number
                     continue
-                if not match.group("pid") and not match.group("vid") and not match.group("serial"):
-                    self.logger.debug("PID, VID, Serial is not match. Continue...")
+                if (
+                    not match.group("pid") and
+                    not match.group("vid") and
+                    not match.group("serial")
+                ):
+                    self.logger.debug(
+                        "PID, VID, Serial is not match. Continue..."
+                    )
                     continue
                 serial = match.group("serial")
                 if not part_no:
                     if type and "XCVR" in type:
                         # Last chance to get idprom
-                        if match.group("name").startswith("Transceiver"): 
+                        if match.group("name").startswith("Transceiver"):
                             int = match.group("name").split()[1]
                         elif match.group("name").startswith("GigabitEthernet"):
                             int = match.group("name").split()[0]
                         else:
                             int = match.group("name")
                         vendor, t_sn, t_rev, part_no = self.get_idprom(
-                        int, match.group("descr").upper()
+                            int, match.group("descr").upper()
                         )
                         if not serial:
                             serial = t_sn
@@ -134,11 +148,14 @@ class Script(BaseScript):
                 }]
 
                 # if gbic slots in module
-                if (part_no in self.GBIC_MODULES or
-                    "GBIC ETHERNET" in match.group("descr").upper()):
-                        # Need get transceivers from idprom
-                        objects += self.get_transceivers("sh int " +
-                            "status module " + str(number))
+                if (
+                    part_no in self.GBIC_MODULES or
+                    "GBIC ETHERNET" in match.group("descr").upper()
+                ):
+                    # Need get transceivers from idprom
+                    objects += self.get_transceivers(
+                        "sh int " + "status module " + str(number)
+                    )
         except self.CLISyntaxError:
             c = self.cli("show version", cached=True)
             match = self.rx_ver.search(c)
@@ -165,19 +182,21 @@ class Script(BaseScript):
                     raise self.NotSupportedError()
         return objects
 
-
     def get_transceivers(self, cmd):
         try:
             # Get phy interfaces
             i = self.cli(cmd)
             objects = []
             for s in i.split("\n"):
-                if (not s or "BaseTX" in s or s.startswith("Po")
-                or "No Transceiver" in s):
+                if (
+                    not s or "BaseTX" in s or s.startswith("Po") or
+                    "No Transceiver" in s
+                ):
                     continue
                 else:
                     t_num = s.split()[0].split("/")[-1]
-                    t_vendor, t_sn, t_rev, pid = self.get_idprom(s.split()[0], s.split()[-1].upper())
+                    t_vendor, t_sn, t_rev, pid = \
+                        self.get_idprom(s.split()[0], s.split()[-1].upper())
                     objects += [{
                         "type": "XCVR",
                         "number": t_num,
@@ -200,8 +219,10 @@ class Script(BaseScript):
                 v = self.rx_cvend.search(match.group("t_vendor").upper())
                 if v and "SYSTEMS" not in v.group("ven"):
                     t_vendor = v.group("ven")
-                elif ("SYSTEMS" in match.group("t_vendor").upper()
-                    and "CISCO" in match.group("t_vendor").upper()):
+                elif (
+                    "SYSTEMS" in match.group("t_vendor").upper() and
+                    "CISCO" in match.group("t_vendor").upper()
+                ):
                         # Different variations of "CISCO@/-/_SYSTEMS" vendor
                         t_vendor = "CISCO"
                 else:
@@ -209,21 +230,30 @@ class Script(BaseScript):
                     t_vendor = match.group("t_vendor").upper().strip()
 
                 # Ignored serial
-                t_sn = match.group("t_sn") if match.group("t_sn") not in self.IGNORED_SERIAL else None
+                t_sn = match.group("t_sn") \
+                    if match.group("t_sn") not in self.IGNORED_SERIAL else None
 
                 # Decode hex revision (need rewrite)
                 if match.group("t_rev"):
                     t_rev = match.group("t_rev").strip()
                 else:
                     t_rev = None
-                if self.rx_trans.search(match.group("t_part_no").upper().replace("-", "")):
+                if self.rx_trans.search(
+                    match.group("t_part_no").upper().replace("-", "")
+                ):
                     pid = self.get_transceiver_pid(match.group("t_part_no"))
                 else:
                     if ("GBIC" in match.group("t_part_no") and
                        "Gi" in int):
-                            pid = self.get_transceiver_pid("1000BASE" + match.group("t_part_no")[5:].strip())
+                            pid = self.get_transceiver_pid(
+                                "1000BASE" +
+                                match.group("t_part_no")[5:].strip()
+                            )
                     else:
-                        if "NONAME" in t_vendor and self.rx_trans.search(descr):
+                        if (
+                            "NONAME" in t_vendor and
+                            self.rx_trans.search(descr)
+                        ):
                             pid = self.get_transceiver_pid(descr)
                         else:
                             pid = match.group("t_part_no").strip()
@@ -233,13 +263,15 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             return None, None, None, None
 
-
     def get_type(self, name, pid, descr, lo):
         """
         Get type, number and part_no
         """
         if pid is None:
-            if ("Motherboard" in name or "motherboard" in name or "Mother board" in name):
+            if (
+                "Motherboard" in name or "motherboard" in name or
+                "Mother board" in name
+            ):
                 # Cisco ISR series not have PID for motherboard
                 if "1921" in name:
                     return "MOTHERBOARD", None, "CISCO1921-MB"
@@ -253,16 +285,21 @@ class Script(BaseScript):
             match = self.rx_slot_id.search(name)
             if match:
                 return "SLOTID", match.group("slot_id"), None
-        if ("Transceiver" in descr or
-                name.startswith("GigabitEthernet") or
-                name.startswith("TenGigabitEthernet") or
-                pid.startswith("X2-") or
-                pid.startswith("XENPAK") or
-                pid.startswith("Xenpak") or
-                name.startswith("Converter")):
+        if (
+            "Transceiver" in descr or
+            name.startswith("GigabitEthernet") or
+            name.startswith("TenGigabitEthernet") or
+            pid.startswith("X2-") or
+            pid.startswith("XENPAK") or
+            pid.startswith("Xenpak") or
+            name.startswith("Converter")
+        ):
             # Transceivers
             # Get number
-            if name.startswith("Transceiver ") or name.startswith("Converter "):
+            if (
+                name.startswith("Transceiver ") or
+                name.startswith("Converter ")
+            ):
                 # Get port number
                 _, number = name.rsplit("/", 1)
             elif name.startswith("GigabitEthernet"):
@@ -274,8 +311,10 @@ class Script(BaseScript):
                     number = name.split("/")[-1]
             else:
                 number = None
-            if pid in ("", "N/A", "Unspecified") or self.rx_trans.search(pid) \
-            or len(list(groupby(pid))) == 1:
+            if (
+                pid in ("", "N/A", "Unspecified") or
+                self.rx_trans.search(pid) or len(list(groupby(pid))) == 1
+            ):
                 # Non-Cisco transceivers
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
@@ -284,54 +323,80 @@ class Script(BaseScript):
                     return "XCVR", number, pid
             else:
                 # Normalization of pids "GBIC_LX/LH/BX"
-                if (pid.startswith("GBIC_") and ("gigabit" in descr.lower()
-                or "gigabit" in name.lower())):
+                if (
+                    pid.startswith("GBIC_") and (
+                        "gigabit" in descr.lower() or
+                        "gigabit" in name.lower()
+                    )
+                ):
                     pid = self.get_transceiver_pid("1000BASE" + pid[5:])
                 return "XCVR", number, pid
-        elif ("Motherboard" in name or "motherboard" in name
-              or "Mother board" in name):
+        elif (
+            "Motherboard" in name or "motherboard" in name or
+            "Mother board" in name
+        ):
             # Motherboard for Cisco 2800, 2900
             if pid == "CISCO2801":
                 return "MOTHERBOARD", None, "CISCO2801-MB"
             elif "1921" in name:
                 return "MOTHERBOARD", None, "CISCO1921-MB"
             return "MOTHERBOARD", None, pid
-        elif (pid.startswith("WS-X4920") or (pid.startswith("WS-C4900M") and "Linecard" in name)):
+        elif (
+            pid.startswith("WS-X4920") or
+            (pid.startswith("WS-C4900M") and "Linecard" in name)
+        ):
             return "LINECARD", self.slot_id, pid
-        elif ((lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
-              and not pid.startswith("WS-CAC-") and not pid.endswith("-MB")
-              and "Clock" not in descr and "VTT FRU" not in descr
-              and "C2801 Motherboard " not in descr):
+        elif (
+            (lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C")) and
+            not pid.startswith("WS-CAC-") and not pid.endswith("-MB") and
+            "Clock" not in descr and "VTT FRU" not in descr and
+            "C2801 Motherboard " not in descr
+        ):
             if pid in ("", "N/A"):
                 if self.rx_7100.search(descr):
                     pid = "CISCO7100"
+            if (len(pid) - len(descr) == 2) and pid[len(descr)] == "-":
+                pid = descr
             return "CHASSIS", self.slot_id, pid
-        elif (("SUP" in pid or "S2U" in pid)
-              and "supervisor" in descr):
-                # Sup2
-                return "SUP", self.slot_id, pid
+        elif (("SUP" in pid or "S2U" in pid) and "supervisor" in descr):
+            # Sup2
+            return "SUP", self.slot_id, pid
         elif name.startswith("module "):
             # Linecards or supervisors
-            if (pid.startswith("RSP")
-                or ((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
-                    and "Supervisor Engine" in descr)):
+            if (
+                pid.startswith("RSP") or (
+                    (
+                        pid.startswith("WS-SUP") or pid.startswith("VS-S")
+                    ) and "Supervisor Engine" in descr
+                )
+            ):
                 return "SUP", self.slot_id, pid
             else:
                 if (pid == "N/A" and "Gibraltar,G-20" in descr):
                     # 2-port 100BASE-TX Fast Ethernet port adapter
                     pid = "CISCO7100-MB"
                 if pid in ("ASR1001", "ASR1001-X"):
-                    return "RP", self.slot_id, pid+"-RP"
+                    return "RP", self.slot_id, pid + "-RP"
                 return "MOTHERBOARD", self.slot_id, pid
-        elif ((pid.startswith("WS-X64") or pid.startswith("WS-X67")
-              or pid.startswith("WS-X65")) and "port" in descr):
+        elif (
+            (
+                pid.startswith("WS-X64") or pid.startswith("WS-X67") or
+                pid.startswith("WS-X65")
+            ) and "port" in descr
+        ):
             return "LINECARD", self.slot_id, pid
-        elif (((pid.startswith("WS-SUP") or pid.startswith("VS-S"))
-               and "Supervisor Engine" in descr)
-              or ((pid.startswith("C72")
-                   or pid.startswith("NPE") or pid.startswith("uBR7200-NPE")
-                   or pid.startswith("7301-NPE") or pid.startswith("7304-NPE"))
-                  and "Network Processing Engine" in descr)):
+        elif (
+            (
+                (pid.startswith("WS-SUP") or pid.startswith("VS-S")) and
+                "Supervisor Engine" in descr
+            ) or (
+                (
+                    pid.startswith("C72") or
+                    pid.startswith("NPE") or pid.startswith("uBR7200-NPE") or
+                    pid.startswith("7301-NPE") or pid.startswith("7304-NPE")
+                ) and "Network Processing Engine" in descr
+            )
+        ):
             return "SUP", self.slot_id, pid
         elif "-PFC" in pid:
             # PFC subcard
@@ -356,8 +421,10 @@ class Script(BaseScript):
         elif pid.startswith("FAN") or pid == "WS-X4992":
             # Fan module
             return "FAN", self.slot_id, pid
-        elif (pid.startswith("NM-") or pid.startswith("NME-")
-              or pid.startswith("EVM-") or pid.startswith("EM-")):
+        elif (
+            pid.startswith("NM-") or pid.startswith("NME-") or
+            pid.startswith("EVM-") or pid.startswith("EM-")
+        ):
             # Network Module
             return "NM", self.slot_id, pid
         elif pid.startswith("SM-"):
@@ -366,12 +433,14 @@ class Script(BaseScript):
         elif "-NM-" in pid:
             # Network module 2
             return "NM", self.slot_id, pid
-        elif (pid.startswith("WIC-") or pid.startswith("HWIC-")
-              or pid.startswith("VWIC-") or pid.startswith("VWIC2-")
-              or pid.startswith("EHWIC-") or pid.startswith("VWIC3-")
-              or pid.startswith("VIC2-") or pid.startswith("VIC3-")):
-                # DaughterCard
-                return "DCS", self.slot_id, pid
+        elif (
+            pid.startswith("WIC-") or pid.startswith("HWIC-") or
+            pid.startswith("VWIC-") or pid.startswith("VWIC2-") or
+            pid.startswith("EHWIC-") or pid.startswith("VWIC3-") or
+            pid.startswith("VIC2-") or pid.startswith("VIC3-")
+        ):
+            # DaughterCard
+            return "DCS", self.slot_id, pid
         elif pid.startswith("AIM-"):
             # Network Module
             return "AIM", self.slot_id, pid
