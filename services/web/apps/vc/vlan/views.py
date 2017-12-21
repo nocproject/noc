@@ -24,3 +24,7 @@ class VLANApplication(ExtDocApplication):
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
+
+    def clean_list_data(self, data):
+        
+        return data

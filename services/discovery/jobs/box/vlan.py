@@ -142,13 +142,13 @@ class VLANCheck(DiscoveryCheck):
             description = description or self.get_default_vlan_description(vlan)
             if segment in segment_vlans:
                 if vlan in segment_vlans[segment]:
-                    segment_vlans[vlan] = (
+                    segment_vlans[segment][vlan] = (
                         # @todo: Smarter merge
                         segment_vlans[vlan][0] or name,
                         segment_vlans[vlan][1] or description
                     )
                 else:
-                    segment_vlans[vlan] = (name, description)
+                    segment_vlans[segment][vlan] = (name, description)
             else:
                 segment_vlans[segment] = {
                     vlan: (name, description)

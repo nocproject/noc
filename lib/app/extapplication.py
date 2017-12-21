@@ -207,6 +207,9 @@ class ExtApplication(Application):
                 fav_items = self.get_favorite_items(request.user)
             for r in out:
                 r[self.fav_status] = r[self.pk] in fav_items
+        # Bulk update result. Enrich with proper fields
+        out = self.clean_list_data(out)
+        #
         if request.is_extjs:
             ld = len(out)
             if limit and (ld == limit or start > 0):
@@ -219,6 +222,15 @@ class ExtApplication(Application):
                 "data": out
             }
         return self.response(out, status=self.OK)
+
+    def clean_list_data(self, data):
+        """
+        Finally process list_data result. Override to enrich with
+        additional fields
+        :param data:
+        :return:
+        """
+        return data
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
           method=["POST"],
