@@ -52,16 +52,25 @@ def document_set_state(self, state):
     :param object:
     :return:
     """
-    # Set field
+    # Direct update arguments
+    set_op = {
+        "state": state.id
+    }
+    # Set state field
     self.state = state
+    # Fill expired field
+    if "expired" in self._fields:
+        if state.ttl:
+            self.expired = datetime.datetime.now() + datetime.timedelta(seconds=state.ttl)
+        else:
+            self.expired = None
+        set_op["expired"] = self.expired
     # Update database directly
     # to avoid full save
     self._get_collection().update_one({
         "_id": self.id
     }, {
-        "$set": {
-            "state": state.id
-        }
+        "$set": set_op
     })
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
