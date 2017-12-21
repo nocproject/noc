@@ -191,8 +191,8 @@ class VLANCheck(DiscoveryCheck):
                 self.ensure_vlan(
                     segment,
                     vlan,
-                    segment_vlans[vlan][0],
-                    segment_vlans[vlan][1],
+                    segment_vlans[segment][vlan][0],
+                    segment_vlans[segment][vlan][1],
                     cache
                 )
                 for vlan in segment_vlans[segment]
