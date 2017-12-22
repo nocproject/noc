@@ -12,6 +12,7 @@ from .base import InvPlugin
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import (StringParameter, FloatParameter,
@@ -151,12 +152,10 @@ class MapPlugin(InvPlugin):
         return {"status": True}
 
     def api_object_data(self, request, id):
-        from noc.sa.models.managedobject import ManagedObject
         mos = {}
         o = self.app.get_object_or_404(Object, id=id)
         for mo in ManagedObject.objects.filter(container=id)[:10]:
-            if mo:
-                mos[mo.id] = {"moname": mo.name}
+            mos[mo.id] = {"moname": mo.name}
         return {
             "id": str(o.id),
             "name": o.name,
