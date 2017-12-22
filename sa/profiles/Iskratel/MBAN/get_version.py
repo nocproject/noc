@@ -29,8 +29,8 @@ class Script(BaseScript):
         r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+"
         r"(?P<serial>[NZ]\S+)\s+", re.MULTILINE)
     rx_inv2 = re.compile(
-        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+U\S+\s+"
-        r"(?P<serial>[0-9A-Z]+)\s+", re.MULTILINE)
+        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+[UN]\S+\s+"
+        r"(?P<serial>[0-9A-Z\/]+)\s+", re.MULTILINE)
 
     def execute(self):
         c = self.cli("show version", cached=True)
