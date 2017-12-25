@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # inv.inv map plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from base import InvPlugin
+from __future__ import absolute_import
+from .base import InvPlugin
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import (StringParameter, FloatParameter,
@@ -150,28 +152,32 @@ class MapPlugin(InvPlugin):
         return {"status": True}
 
     def api_object_data(self, request, id):
+        mos = {}
         o = self.app.get_object_or_404(Object, id=id)
+        for mo in ManagedObject.objects.filter(container=id)[:10]:
+            mos[mo.id] = {"moname": mo.name}
         return {
             "id": str(o.id),
             "name": o.name,
-            "model": o.model.name
+            "model": o.model.name,
+            "moname": mos
         }
 
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
-        l = Layer.get_by_code("conduits")
+        line = Layer.get_by_code("conduits")
         return map.get_connection_layer(
-            l, x0, y0, x1, y1, srid
+            line, x0, y0, x1, y1, srid
         )
 
     def get_pop_links_layer(self, layer, x0, y0, x1, y1, srid):
-        l = Layer.get_by_code(layer)
+        line = Layer.get_by_code(layer)
         return map.get_connection_layer(
-            l, x0, y0, x1, y1, srid
+            line, x0, y0, x1, y1, srid
         )
 
     def api_set_layer_visibility(self, request, layer, status):
-        l = self.app.get_object_or_404(Layer, code=layer)
-        LayerUserSettings.set_layer_visibility(request.user, l, status)
+        line = self.app.get_object_or_404(Layer, code=layer)
+        LayerUserSettings.set_layer_visibility(request.user, line, status)
         return {"status": True}
 
     def get_add_menu(self):
