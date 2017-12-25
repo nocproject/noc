@@ -1,0 +1,38 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2">
+            {{ object.name }} VLAN: {{ object.vlan }}
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Profile") }}</th>
+        <td>{{object.profile.name}}</td>
+    <tr>
+    <tr>
+        <th scope="row">{{ _("Segment") }}</th>
+        <td><a href="/api/card/view/segment/{{object.segment.id}}/">{{object.segment.name}}</a></td>
+    <tr>
+    {% if object.description %}
+    <tr>
+        <th scope="row">{{ _("Description") }}</th>
+        <td>{{object.description}}</td>
+    </tr>
+    {% endif %}
+    {% if object.parent %}
+    <tr>
+        <th scope="row">{{ _("Translation") }}</th>
+        <td>
+            {{object.translation_rule}}: {{object.parent.vlan}} ->
+            {% if object.translation_rule == "map" %}
+            [<a href="/api/card/view/vlan/{{object.parent.id}}/">{{object.parent.vlan}}</a>]
+            {% endif %}
+            {% if object.translation_rule == "push" %}
+            [<a href="/api/card/view/vlan/{{object.parent.id}}/">{{object.parent.vlan}}</a>,
+            <a href="/api/card/view/vlan/{{object.id}}/">{{object.vlan}}</a>]
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+</tbody>
+</table>
