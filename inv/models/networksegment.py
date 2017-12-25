@@ -156,6 +156,8 @@ class NetworkSegment(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _border_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _vlan_domains_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _vlan_domains_mo_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DISCOVERY_JOB = "noc.services.discovery.jobs.segment.job.SegmentDiscoveryJob"
 
@@ -512,3 +514,51 @@ class NetworkSegment(Document):
             if current.vlan_border or not current.parent:
                 return current
             current = current.parent
+
+    @classmethod
+    def iter_vlan_domain_segments(cls, segment):
+        """
+        Get all segments related to same VLAN domains
+        :param segment:
+        :return:
+        """
+        def iter_segments(ps):
+            # Return segment
+            yield ps
+            # Iterate and recurse over all non vlan-border children
+            for s in NetworkSegment.objects.filter(parent=ps.id):
+                if s.vlan_border:
+                    continue
+                for cs in iter_segments(s):
+                    yield cs
+
+        # Get domain root
+        root = cls.get_border_segment(segment)
+        # Yield all children segments
+        for rs in iter_segments(root):
+            yield rs
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_cache"), lock=lambda _: id_lock)
+    def get_vlan_domain_segments(cls, segment):
+        """
+        Get list of all segments related to same VLAN domains
+        :param segment:
+        :return:
+        """
+        return list(cls.iter_vlan_domain_segments(segment))
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_mo_cache"), lock=lambda _: id_lock)
+    def get_vlan_domain_object_ids(cls, segment):
+        """
+        Get list of all managed object ids belonging to
+        same VLAN domain
+        :param segment:
+        :return:
+        """
+        from noc.sa.models.managedobject import ManagedObject
+
+        return ManagedObject.objects.filter(
+            segment__in=[s.id for s in cls.get_vlan_domain_segments(segment)]
+        ).values_list("id", flat=True)

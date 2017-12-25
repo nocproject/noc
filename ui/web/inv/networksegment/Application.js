@@ -181,7 +181,7 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "allocation_group",
                     xtype: "inv.allocationgroup.LookupField",
                     fieldLabel: __("Allocation Group"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "vlan_translation",
@@ -211,7 +211,8 @@ Ext.define("NOC.inv.networksegment.Application", {
                             text: __("Parent VLAN"),
                             dataIndex: "parent_vlan",
                             flex: 1,
-                            editor: "vc.vlan.LookupField"
+                            editor: "vc.vlan.LookupField",
+                            renderer: NOC.render.Lookup("parent_vlan")
                         }
                     ]
                 },
