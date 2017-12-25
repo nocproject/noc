@@ -38,7 +38,7 @@ class VLANApplication(ExtDocApplication):
         """
         Returns a dict of {untagged: ..., tagged: ...., l3: ...}
         :param request:
-        :param vc_id:
+        :param vlan_id:
         :return:
         """
         vlan = self.get_object_or_404(VLAN, id=vlan_id)
@@ -84,10 +84,6 @@ class VLANApplication(ExtDocApplication):
                "interfaces": sorted(si_objects[o],
                                     key=lambda x: x["name"])
                } for o in si_objects]
-        # Update caches
-        ic = sum(len(x["interfaces"]) for x in untagged)
-        ic += sum(len(x["interfaces"]) for x in tagged)
-        ic += sum(len(x["interfaces"]) for x in l3)
         #
         return {
             "untagged": sorted(untagged,

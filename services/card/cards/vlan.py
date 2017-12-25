@@ -6,8 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from collections import defaultdict
 # NOC modules
 from base import BaseCard
+from noc.inv.models.networksegment import NetworkSegment
+from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.vlan import VLAN
 
 
@@ -27,5 +31,56 @@ class VLANCard(BaseCard):
 
     def get_data(self):
         return {
-            "object": self.object
+            "object": self.object,
+            "interfaces": self.get_interfaces()
+        }
+
+    def get_interfaces(self):
+        # Managed objects in VC domain
+        objects = NetworkSegment.get_vlan_domain_object_ids(
+            self.object.segment)
+        # Find untagged interfaces
+        si_objects = defaultdict(list)
+        for si in SubInterface.objects.filter(
+                managed_object__in=objects,
+                untagged_vlan=self.object.vlan,
+                enabled_afi="BRIDGE"):
+            si_objects[si.managed_object] += [{"name": si.name}]
+        untagged = [{
+            "managed_object": o,
+            "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
+        } for o in si_objects]
+        # Find tagged interfaces
+        si_objects = defaultdict(list)
+        for si in SubInterface.objects.filter(
+                managed_object__in=objects,
+                tagged_vlans=self.object.vlan,
+                enabled_afi="BRIDGE"):
+            si_objects[si.managed_object] += [{"name": si.name}]
+        tagged = [{
+            "managed_object": o,
+            "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
+        } for o in si_objects]
+        # Find l3 interfaces
+        si_objects = defaultdict(list)
+        for si in SubInterface.objects.filter(
+                managed_object__in=objects,
+                vlan_ids=self.object.vlan):
+            si_objects[si.managed_object] += [{
+                "name": si.name,
+                "ipv4_addresses": si.ipv4_addresses,
+                "ipv6_addresses": si.ipv6_addresses
+            }]
+        l3 = [{"managed_object": o,
+               "interfaces": sorted(si_objects[o],
+                                    key=lambda x: x["name"])
+               } for o in si_objects]
+        #
+        return {
+            "has_interfaces": bool(len(untagged) + len(tagged) + len(l3)),
+            "untagged": sorted(untagged,
+                               key=lambda x: x["managed_object"].name),
+            "tagged": sorted(tagged,
+                             key=lambda x: x["managed_object"].name),
+            "l3": sorted(l3, key=lambda x: x["managed_object"].name)
         }
