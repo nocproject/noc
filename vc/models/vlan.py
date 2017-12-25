@@ -120,16 +120,16 @@ class VLAN(Document):
             return
         # Find matching rule
         for vt in self.segment.vlan_translation:
-            if vt.filter.match(self.vlan):
+            if vt.filter.check(self.vlan):
                 logger.debug(
                     "[%s|%s|%s] Matching translation rule <%s|%s|%s>",
                      self.segment.name, self.name, self.vlan,
-                     vt.filter.expression, vt.translation_rule,
-                     vt.parent.name)
+                     vt.filter.expression, vt.rule,
+                     vt.parent_vlan.vlan)
                 if self.parent != vt.parent_vlan or self.translation_rule != vt.translation_rule:
                     self.modify(
                         parent=vt.parent_vlan,
-                        translation_rule=vt.translation_rule
+                        translation_rule=vt.rule
                     )
                 return
         # No matching rule
