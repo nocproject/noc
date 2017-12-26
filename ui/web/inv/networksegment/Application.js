@@ -43,6 +43,13 @@ Ext.define("NOC.inv.networksegment.Application", {
             handler: me.onShowMap
         });
 
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -185,6 +192,7 @@ Ext.define("NOC.inv.networksegment.Application", {
                 },
                 {
                     name: "vlan_translation",
+                    fieldLabel: __("VLAN Translation"),
                     xtype: "gridfield",
                     allowBlank: true,
                     columns: [
@@ -263,7 +271,8 @@ Ext.define("NOC.inv.networksegment.Application", {
 
             formToolbar: [
                 me.settingsButton,
-                me.showMapButton
+                me.showMapButton,
+                me.cardButton
             ]
         });
         me.callParent();
@@ -279,6 +288,15 @@ Ext.define("NOC.inv.networksegment.Application", {
         NOC.launch("inv.map", "history", {
             args: [me.currentRecord.get("id")]
         });
+    },
+    //
+    onCard: function () {
+        var me = this;
+        if (me.currentRecord) {
+            window.open(
+                "/api/card/view/segment/" + me.currentRecord.get("id") + "/"
+            );
+        }
     },
     filters: [
         {
