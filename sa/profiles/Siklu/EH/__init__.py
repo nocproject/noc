@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     name = "Siklu.EH"
     pattern_username = "[Ll]ogin: "
     pattern_password = "[Pp]assword: "
-    pattern_prompt = r"^\S+?>"
+    pattern_prompt = r"^(?P<hostname>[A-Za-z0-9-_ \:\.\*\'\"\,\(\)\/]+)?>"
     command_submit = "\r"
 
     def cleaned_input(self, input):
