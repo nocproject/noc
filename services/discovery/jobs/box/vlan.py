@@ -71,7 +71,7 @@ class VLANCheck(DiscoveryCheck):
         # Create VLAN when necessary
         if not vlan:
             self.logger.info("[%s] Creating VLAN %s(%s)",
-                             segment.name, vlan, name)
+                             segment.name, vlan_id, name)
             vlan = VLAN(
                 name=name,
                 profile=segment.profile.default_vlan_profile,
