@@ -48,11 +48,11 @@ class VLANCheck(DiscoveryCheck):
         # Send "seen" events
         self.send_seen_events(ensured_vlans)
 
-    def ensure_vlan(self, segment, vlan, name, description, cache):
+    def ensure_vlan(self, segment, vlan_id, name, description, cache):
         """
         Refresh VLAN status in database, create when necessary
         :param segment: NetworkSegment instance
-        :param vlan: VLAN id
+        :param vlan_id: VLAN id
         :param name: VLAN name
         :param description: VLAN description
         :param cache: VLAN cache dictionary
@@ -62,12 +62,12 @@ class VLANCheck(DiscoveryCheck):
         if cache:
             # Get from cache
             metrics["vlan_cached_get"] += 1
-            vlan = cache.get((segment, vlan))
+            vlan = cache.get((segment, vlan_id))
         else:
             # Get from database
             metrics["vlan_db_get"] += 1
             vlan = VLAN.objects.filter(segment=segment.id,
-                                       vlan=vlan).first()
+                                       vlan=vlan_id).first()
         # Create VLAN when necessary
         if not vlan:
             self.logger.info("[%s] Creating VLAN %s(%s)",
@@ -75,7 +75,7 @@ class VLANCheck(DiscoveryCheck):
             vlan = VLAN(
                 name=name,
                 profile=segment.profile.default_vlan_profile,
-                vlan=vlan,
+                vlan=vlan_id,
                 segment=segment,
                 description=description
             )
