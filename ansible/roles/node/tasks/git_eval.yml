@@ -26,7 +26,7 @@
   git:
     repo: "{{noc_repo}}"
     dest: "{{noc_root}}"
-    version: "{{noc_revision}}"
+    version: "{{noc_version}}"
     force: no
     clone: yes
   register: pull_state
