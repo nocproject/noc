@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Segment card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.objectstatus import ObjectStatus
+from noc.vc.models.vlan import VLAN
 
 
 class SegmentCard(BaseCard):
@@ -73,10 +74,16 @@ class SegmentCard(BaseCard):
                     "subscriber": SummaryItem.items_to_dict(ns.total_subscribers),
                 }
             }]
+        # Calculate VLANs
+        vlans = []
+        if self.object.vlan_border:
+            vlans = list(VLAN.objects.filter(segment=self.object.id).order_by("vlan"))
+        #
         return {
             "object": self.object,
             "managed_objects": sorted(objects, key=operator.itemgetter("name")),
             "children": sorted(children, key=operator.itemgetter("name")),
             "parent": self.object.parent,
-            "summary": summary
+            "summary": summary,
+            "vlans": vlans
         }

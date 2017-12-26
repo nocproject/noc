@@ -13,6 +13,7 @@ import operator
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, LongField, ListField, EmbeddedDocumentField
+from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
 from .vpnprofile import VPNProfile
@@ -44,7 +45,9 @@ class RouteTargetItem(EmbeddedDocument):
 
 
 @bi_sync
-@on_delete_check(check=[])
+@on_delete_check(check=[
+    ("vc.VPN", "parent")
+])
 @workflow
 class VPN(Document):
     meta = {
@@ -57,6 +60,8 @@ class VPN(Document):
     profile = PlainReferenceField(VPNProfile)
     description = StringField()
     state = PlainReferenceField(State)
+    # Link to parent overlay
+    parent = PlainReferenceField("self")
     project = ForeignKeyField(Project)
     route_target = ListField(EmbeddedDocumentField(RouteTargetItem))
     tags = ListField(StringField())
@@ -85,3 +90,22 @@ class VPN(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return VPN.objects.filter(bi_id=id).first()
+
+    def clean(self):
+        super(VPN, self).clean()
+        if self.id and "parent" in self._changed_fields and self.has_loop:
+            raise ValidationError("Creating VPN loop")
+
+    @property
+    def has_loop(self):
+        """
+        Check if object creates loop
+        """
+        if not self.id:
+            return False
+        p = self.parent
+        while p:
+            if p.id == self.id:
+                return True
+            p = p.parent
+        return False

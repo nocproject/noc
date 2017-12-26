@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import print_function
 import argparse
+import datetime
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.models import get_model
@@ -22,6 +23,10 @@ class Command(BaseCommand):
         "crm.SubscriberProfile": "crm.Subscriber",
         "crm.SupplierProfile": "crm.Supplier"
     }
+
+    EXPIRE_MODELS = [
+        "vc.VLAN"
+    ]
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -47,6 +52,19 @@ class Command(BaseCommand):
             "profiles",
             help="Profile ids",
             nargs=argparse.REMAINDER
+        )
+        # expire command
+        expire_parser = subparsers.add_parser("expire")
+        expire_parser.add_argument(
+            "--dry-run",
+            dest="dry_run",
+            action="store_true",
+            help="Dump statistics. Do not perform updates"
+        )
+        expire_parser.add_argument(
+            "--model",
+            action="append",
+            help="Models to expire"
         )
 
     def handle(self, cmd, *args, **options):
@@ -77,6 +95,23 @@ class Command(BaseCommand):
                 if c and not dry_run:
                     for o in imodel.objects.filter(state=ostate.id):
                         o.set_state(tr[ostate])
+
+    def handle_expire(self, dry_run=False, model=None, *args, **kwargs):
+        model = model or self.EXPIRE_MODELS
+        now = datetime.datetime.now()
+        for m in model:
+            c = get_model(m)
+            if not c:
+                self.die("Invalid model: %s" % m)
+            if not getattr(c, "_has_expired", False):
+                self.die("Model %s does not support expiration" % m)
+            self.print("Expiring %s:" % m)
+            for c in c.objects.filter(expired__lt=now):
+                if not c.state.ttl:
+                    continue
+                self.print("  %s" % c)
+                if not dry_run:
+                    c.fire_event("expired")
 
 
 if __name__ == "__main__":

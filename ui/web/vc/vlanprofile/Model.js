@@ -1,14 +1,14 @@
 //---------------------------------------------------------------------
-// vc.vpn Model
+// vc.vlanprofile Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.vc.vpn.Model");
+console.debug("Defining NOC.vc.vlanprofile.Model");
 
-Ext.define("NOC.vc.vpn.Model", {
+Ext.define("NOC.vc.vlanprofile.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/vc/vpn/",
+    rest_url: "/vc/vlanprofile/",
 
     fields: [
         {
@@ -16,17 +16,17 @@ Ext.define("NOC.vc.vpn.Model", {
             type: "string"
         },
         {
-            name: "profile",
-            type: "string"
+            name: "enable_provisioning",
+            type: "boolean"
         },
         {
-            name: "profile__label",
+            name: "style",
+            type: "int"
+        },
+        {
+            name: "style__label",
             type: "string",
             persist: false
-        },
-        {
-            name: "route_target",
-            type: "auto"
         },
         {
             name: "remote_system",
@@ -35,10 +35,10 @@ Ext.define("NOC.vc.vpn.Model", {
         {
             name: "remote_system__label",
             type: "string",
-            perisist: false
+            persist: false
         },
         {
-            name: "name",
+            name: "description",
             type: "string"
         },
         {
@@ -46,44 +46,33 @@ Ext.define("NOC.vc.vpn.Model", {
             type: "auto"
         },
         {
+            name: "enable_management",
+            type: "boolean"
+        },
+        {
             name: "remote_id",
             type: "string"
         },
         {
-            name: "project",
-            type: "int"
-        },
-        {
-            name: "project__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "parent",
+            name: "workflow",
             type: "string"
         },
         {
-            name: "parent__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "state",
-            type: "string"
-        },
-        {
-            name: "state__label",
-            type: "string",
-            persist: false
+            name: "enable_multicast",
+            type: "boolean"
         },
         {
             name: "bi_id",
-            type: "string",
-            persist: false
+            type: "int"
         },
         {
-            name: "description",
+            name: "name",
             type: "string"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

@@ -135,6 +135,7 @@ _MODELS = {
     "gis.Overlay": "noc.gis.models.Overlay",
     "gis.Street": "noc.gis.models.street.Street",
     # inv models
+    "inv.AllocationGroup": "noc.inv.models.allocationgroup.AllocationGroup",
     "inv.Capability": "noc.inv.models.capability.Capability",
     "inv.ConnectionRule": "noc.inv.models.connectionrule.ConnectionRule",
     "inv.ConnectionType": "noc.inv.models.connectiontype.ConnectionType",
@@ -250,6 +251,8 @@ _MODELS = {
     "vc.VCDomainProvisioningConfig": "noc.vc.models.vcdomainprovisioningconfig.VCDomainProvisioningConfig",
     "vc.VCFilter": "noc.vc.models.vcfilter.VCFilter",
     "vc.VCType": "noc.vc.models.vctype.VCType",
+    "vc.VLANProfile": "noc.vc.models.vlanprofile.VLANProfile",
+    "vc.VLAN": "noc.vc.models.vlan.VLAN",
     "vc.VPNProfile": "noc.vc.models.vpnprofile.VPNProfile",
     "vc.VPN": "noc.vc.models.vpn.VPN",
     # dns models

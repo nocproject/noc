@@ -10,7 +10,8 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.inv.networksegmentprofile.Model",
-        "NOC.inv.networksegmentprofile.LookupField"
+        "NOC.inv.networksegmentprofile.LookupField",
+        "NOC.vc.vlanprofile.LookupField"
     ],
     model: "NOC.inv.networksegmentprofile.Model",
     initComponent: function() {
@@ -20,7 +21,13 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                 {
                     text: __("Name"),
                     dataIndex: "name",
-                    flex: 1
+                    width: 150
+                },
+                {
+                    text: __("VLAN Discovery"),
+                    dataIndex: "enable_vlan",
+                    width: 50,
+                    renderer: NOC.render.Bool
                 }
             ],
 
@@ -133,6 +140,17 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                             flex: 1
                         }
                     ]
+                },
+                {
+                    name: "enable_vlan",
+                    xtype: "checkbox",
+                    boxLabel: __("Enable VLAN Discovery")
+                },
+                {
+                    name: "default_vlan_profile",
+                    xtype: "vc.vlanprofile.LookupField",
+                    fieldLabel: __("Default VLAN Profile"),
+                    allowBlank: true
                 }
             ]
         });

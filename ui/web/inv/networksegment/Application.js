@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegment application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegment.Application");
@@ -14,7 +14,10 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.remotesystem.LookupField",
         "Ext.ux.form.DictField",
-        "NOC.inv.networksegmentprofile.LookupField"
+        "NOC.inv.networksegmentprofile.LookupField",
+        "NOC.inv.allocationgroup.LookupField",
+        "NOC.vc.vcfilter.LookupField",
+        "NOC.vc.vlan.LookupField"
     ],
     model: "NOC.inv.networksegment.Model",
     search: true,
@@ -38,6 +41,13 @@ Ext.define("NOC.inv.networksegment.Application", {
             glyph: NOC.glyph.globe,
             scope: me,
             handler: me.onShowMap
+        });
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
         });
 
         Ext.apply(me, {
@@ -170,6 +180,57 @@ Ext.define("NOC.inv.networksegment.Application", {
                     boxLabel: __("Enable Horizontal Transit")
                 },
                 {
+                    name: "vlan_border",
+                    xtype: "checkbox",
+                    boxLabel: __("VLAN Border")
+                },
+                {
+                    name: "allocation_group",
+                    xtype: "inv.allocationgroup.LookupField",
+                    fieldLabel: __("Allocation Group"),
+                    allowBlank: true
+                },
+                {
+                    name: "vlan_translation",
+                    fieldLabel: __("VLAN Translation"),
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Filter"),
+                            dataIndex: "filter",
+                            width: 300,
+                            renderer: NOC.render.Lookup("filter"),
+                            editor: "vc.vcfilter.LookupField"
+                        },
+                        {
+                            text: __("Rule"),
+                            dataIndex: "rule",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["map", "map"],
+                                    ["push", "push"]
+                                ]
+                            }
+                        },
+                        {
+                            text: __("Parent VLAN"),
+                            dataIndex: "parent_vlan",
+                            flex: 1,
+                            editor: "vc.vlan.LookupField",
+                            renderer: NOC.render.Lookup("parent_vlan")
+                        }
+                    ]
+                },
+                {
+                    name: "l2_mtu",
+                    xtype: "numberfield",
+                    fieldLabel: __("L2 MTU"),
+                    allowBlank: true
+                },
+                {
                     xtype: "fieldset",
                     layout: "hbox",
                     title: __("Integration"),
@@ -210,7 +271,8 @@ Ext.define("NOC.inv.networksegment.Application", {
 
             formToolbar: [
                 me.settingsButton,
-                me.showMapButton
+                me.showMapButton,
+                me.cardButton
             ]
         });
         me.callParent();
@@ -226,6 +288,15 @@ Ext.define("NOC.inv.networksegment.Application", {
         NOC.launch("inv.map", "history", {
             args: [me.currentRecord.get("id")]
         });
+    },
+    //
+    onCard: function () {
+        var me = this;
+        if (me.currentRecord) {
+            window.open(
+                "/api/card/view/segment/" + me.currentRecord.get("id") + "/"
+            );
+        }
     },
     filters: [
         {

@@ -1,0 +1,119 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2">
+            {{ object.name }} VLAN: {{ object.vlan }}
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Profile") }}</th>
+        <td>{{object.profile.name}}</td>
+    <tr>
+    <tr>
+        <th scope="row">{{ _("Segment") }}</th>
+        <td><a href="/api/card/view/segment/{{object.segment.id}}/">{{object.segment.name}}</a></td>
+    <tr>
+    {% if object.description %}
+    <tr>
+        <th scope="row">{{ _("Description") }}</th>
+        <td>{{object.description}}</td>
+    </tr>
+    {% endif %}
+    {% if object.parent %}
+    <tr>
+        <th scope="row">{{ _("Translation") }}</th>
+        <td>
+            {{object.translation_rule}}: {{object.parent.vlan}} ->
+            {% if object.translation_rule == "map" %}
+            [<a href="/api/card/view/vlan/{{object.parent.id}}/">{{object.parent.vlan}}</a>]
+            {% endif %}
+            {% if object.translation_rule == "push" %}
+            [<a href="/api/card/view/vlan/{{object.parent.id}}/">{{object.parent.vlan}}</a>,
+            <a href="/api/card/view/vlan/{{object.id}}/">{{object.vlan}}</a>]
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    {% if interfaces["has_interfaces"] %}
+    <tr>
+        <th scope="row">{{ _("Interfaces") }}</th>
+        <td>
+            <table class="table table-stripped">
+            <thead>
+                <th class="col-sm-2">{{ _("Object") }}</th>
+                <th class="col-sm-2">{{ _("Address") }}</th>
+                <th class="col-sm-8">{{ _("Interfaces") }}</th>
+            </thead>
+            <tbody>
+            <!-- Untagged -->
+            {% if interfaces["untagged"] %}
+            <th colspan="3">{{ _("Untagged") }}</th>
+            {% for i in interfaces["untagged"] %}
+            <tr>
+                <td><a href="/api/card/view/managedobject/{{ i["managed_object"].id }}/">{{ i["managed_object"].name }}</a></td>
+                <td><a href="/api/card/view/managedobject/{{ i["managed_object"].id }}/">{{ i["managed_object"].address }}</a></td>
+                <td>
+                    {% for vi in i["interfaces"] %}
+                        {{vi["name"]}}{% if not loop.last%}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            <!-- Tagged -->
+            {% if interfaces["tagged"] %}
+            <th colspan="3">{{ _("Tagged") }}</th>
+            {% for i in interfaces["tagged"] %}
+            <tr>
+                <td>
+                    <a href="/api/card/view/managedobject/{{ i["managed_object"].id }}/">{{ i["managed_object"].name }}</a>
+                    {% if i["managed_object"].platform %}
+                    <br>{{ i["managed_object"].platform.name }}
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/api/card/view/managedobject/{{ i["managed_object"].id }}/">{{ i["managed_object"].address }}</a>
+                    {% if i["managed_object"].platform %}
+                    <br>{{ i["managed_object"].platform.name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% for vi in i["interfaces"] %}
+                        {{vi["name"]}}{% if not loop.last%}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            <!-- L3 -->
+            {% if interfaces["l3"] %}
+            <th colspan="3">{{ _("L3") }}</th>
+            {% for i in interfaces["l3"] %}
+            <tr>
+                <td>
+                    <a href="/api/card/view/managedobject/{{ i["managed_object"].id }}/">{{ i["managed_object"].name }}</a>
+                    {% if i["managed_object"].platform %}
+                    <br>{{ i["managed_object"].platform.name }}
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/api/card/view/managedobject/{{ i["managed_object"].id }}/">{{ i["managed_object"].address }}</a>
+                    {% if i["managed_object"].platform %}
+                    <br>{{ i["managed_object"].platform.name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% for vi in i["interfaces"] %}
+                        {{vi["name"]}} ({{vi["ipv4_addresses"]}}){% if not loop.last%}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+            </tbody>
+            </table>
+        </td>
+    </tr>
+    {% endif %}
+</tbody>
+</table>

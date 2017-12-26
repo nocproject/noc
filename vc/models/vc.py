@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # VC model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 import operator
 from threading import Lock
@@ -16,8 +17,8 @@ from django.db import models
 from mongoengine.queryset import Q as MEQ
 import cachetools
 # NOC modules
-from error import InvalidLabelException, MissedLabelException
-from vcdomain import VCDomain
+from .error import InvalidLabelException, MissedLabelException
+from .vcdomain import VCDomain
 from noc.main.models.style import Style
 from noc.main.models import ResourceState
 from noc.project.models.project import Project
