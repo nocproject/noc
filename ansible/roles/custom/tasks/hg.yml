@@ -1,0 +1,14 @@
+- name: Pull NOC Customizations
+  hg:
+    repo: "{{ noc_custom_repo [3:] }}"
+    dest: "{{noc_root}}/custom"
+    revision: "{{ noc_custom_version }}"
+    update: yes
+    force: yes
+    purge: yes
+  when: "noc_custom_enabled==True and noc_custom_repo is defined and noc_custom_version is defined"
+  environment:
+    LC_ALL: C
+  tags:
+    - mercurial
+    - custom

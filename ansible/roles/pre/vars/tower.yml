@@ -67,9 +67,6 @@ web_ui_language: "{% if noc_config['config'].get('web-global-%s' % groups['svc-w
 
 install_method: "git_{{noc_env_type}}"
 
-noc_repo: "https://github.com/nocproject/noc.git"
-noc_revision: "microservices"
-
 clickhouse_user: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0]).get('user', 'noc')}}"
 clickhouse_password: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0]).get('password', 'noc')}}"
 clickhouse_ro_password: "{{noc_config['config'].get('clickhouse-global-%s' % groups['svc-clickhouse'][0]).get('ro_password', 'noc') }}"
@@ -94,3 +91,5 @@ python_interpreter: "{{noc_config['config'].get('noc-global-%s' % ansible_nodena
 consul_template_dedup: "{% if groups['svc-consultemplate'] | count > 0 -%}
 {{noc_config.config.get('consultemplate-global-%s' % groups['svc-consultemplate'][0]).get('use_dedup', False)}}
 {%- endif%}"
+
+custom_install_method: git
