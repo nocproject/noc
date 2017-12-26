@@ -23,6 +23,14 @@ Ext.define("NOC.vc.vlan.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -225,7 +233,8 @@ Ext.define("NOC.vc.vlan.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onVLANInterfaces
-                }
+                },
+                me.cardButton
             ]
         });
 
@@ -312,5 +321,22 @@ Ext.define("NOC.vc.vlan.Application", {
     onInterfacesCellClick: function(record) {
         var me = this;
         me.showVLANInterfaces(record);
-    }
+    },
+    //
+    onCard: function () {
+        var me = this;
+        if (me.currentRecord) {
+            window.open(
+                "/api/card/view/vlan/" + me.currentRecord.get("id") + "/"
+            );
+        }
+    },
+    filters: [
+        {
+            title: __("By Segment"),
+            name: "segment",
+            ftype: "tree",
+            lookup: "inv.networksegment"
+        }
+    ]
 });
