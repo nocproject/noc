@@ -11,22 +11,26 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
 
-rx_sys = re.compile(r"actual-type\s*?:\s*(?P<platform>.+?)\s*$",
-    re.MULTILINE | re.DOTALL)
-rx_ver = re.compile(r".+?\/*(?P<version>[A-Za-z0-9.]+?)\s+\S+\s+active.*$",
-    re.MULTILINE | re.DOTALL)
 
 class Script(BaseScript):
     name = "Alcatel.7302.get_version"
     cache = True
     interface = IGetVersion
 
+    rx_sys = re.compile(
+        r"actual-type\s*?:\s*(?P<platform>.+?)\s*$", re.MULTILINE)
+    rx_ver = re.compile(
+        r".+?\/*(?P<version>[A-Za-z0-9.]+?)\s+\S+\s+active.*$", re.MULTILINE)
+
     def execute(self):
-        self.cli("environment inhibit-alarms mode batch")
-        v = self.cli("show equipment isam")
-        match_sys = rx_sys.search(v)
+        self.cli("environment inhibit-alarms mode batch", ignore_errors=True)
+        try:
+            v = self.cli("show equipment isam")
+        except self.CLISyntaxError:
+            v = self.cli("show equipment gebc")
+        match_sys = self.rx_sys.search(v)
         v = self.cli("show software-mngt oswp")
-        match_ver = rx_ver.search(v)
+        match_ver = self.rx_ver.search(v)
         return {
             "vendor": "Alcatel",
             "platform": match_sys.group("platform"),
