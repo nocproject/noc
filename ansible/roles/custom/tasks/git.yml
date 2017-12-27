@@ -1,3 +1,5 @@
+- debug: var=noc_custom_version
+
 - name: Pull NOC custom
   git:
     repo: "{{noc_custom_repo}}"
@@ -5,7 +7,11 @@
     version: "{{noc_custom_version}}"
     force: yes
     clone: yes
-  when: "noc_custom_enabled==True and noc_custom_repo is defined and noc_custom_version is defined"
+  when:
+    - noc_custom_enabled
+    - noc_custom_repo is defined
+    - noc_custom_version is defined
+    - noc_custom_version
   environment:
     https_proxy: "{{http_proxy}}"
   tags:
