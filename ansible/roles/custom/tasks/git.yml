@@ -1,5 +1,3 @@
-- debug: var=noc_custom_version
-
 - name: Pull NOC custom
   git:
     repo: "{{noc_custom_repo}}"
