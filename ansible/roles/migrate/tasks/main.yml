@@ -36,6 +36,7 @@
   command: ./noc ensure-indexes
   args:
     chdir: "{{ noc_root }}"
+  become: yes
   become_user: "{{ noc_user }}"
   changed_when: False
 

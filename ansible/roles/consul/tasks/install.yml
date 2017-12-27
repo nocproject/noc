@@ -15,7 +15,7 @@
   when: "'Linux' in ansible_system"
 
 - name: Get Consul package checksum
-  shell: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
+  command: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
   register: consul_sha256
   delegate_to: 127.0.0.1
   become: no

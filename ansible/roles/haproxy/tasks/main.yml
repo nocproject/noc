@@ -19,7 +19,7 @@
   template:
     src: haproxy_check.sh.j2
     dest: /usr/local/sbin/haproxy_check.sh
-    mode: 755
+    mode: 0755
   when: "'svc-patroni' in groups"
 
 - name: Install haproxy monitoring

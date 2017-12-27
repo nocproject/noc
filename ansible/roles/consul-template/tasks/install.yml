@@ -10,7 +10,7 @@
     https_proxy: "{{http_proxy}}"
 
 - name: Get Consul-template package checksum
-  shell: "grep {{ consul_template_pkg }} {{ consul_template_temp_file_checksum }}"
+  command: "grep {{ consul_template_pkg }} {{ consul_template_temp_file_checksum }}"
   register: consul_sha256
   delegate_to: 127.0.0.1
   become: no
