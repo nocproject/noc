@@ -26,46 +26,62 @@
 }
 
 .marker-cluster-good {
-    background-color: rgba(181, 226, 140, 0.6);
+    /*background-color: rgba(181, 226, 140, 0.6);*/
+    background-color: rgba(110, 204, 57, 0.6);
 }
 .marker-cluster-good div {
-    background-color: rgba(110, 204, 57, 0.6);
+    background-color: rgba(175,238,238, 0.6);
+    /*color: white;*/
+    /*background-color: rgba(110, 204, 57, 0.6);*/
 }
 
 .marker-cluster-warning {
-    background-color: rgba(241, 211, 87, 0.6);
+    /*background-color: rgba(255, 255, 0, 0.6);*/
+    background-color: rgba(240, 194, 12, 0.6);
 }
 .marker-cluster-warning div {
-    background-color: rgba(240, 194, 12, 0.6);
+    background-color: rgba(175,238,238, 0.6);
+    /*color: white;*/
+    /*background-color: rgba(240, 194, 12, 0.6);*/
 }
 
 .marker-cluster-error {
-    background-color: rgba(253, 156, 115, 0.6);
+    /*background-color: rgba(255, 69, 0, 0.6);*/
+    background-color: rgba(255, 0, 0, 0.6);
 }
 .marker-cluster-error div {
-    background-color: rgba(241, 128, 23, 0.6);
+    /*background-color: rgba(255, 0, 0, 0.6);*/
+    background-color: rgba(175,238,238, 0.6);
+    /*color: white;*/
 }
 
 /* IE 6-8 fallback colors */
 .leaflet-oldie .marker-cluster-good {
-    background-color: rgb(181, 226, 140);
+    /*background-color: rgba(181, 226, 140, 0.6);*/
+    background-color: rgba(110, 204, 57, 0.6);
 }
 .leaflet-oldie .marker-cluster-good div {
-    background-color: rgb(110, 204, 57);
+    background-color: rgba(181, 226, 140, 0.6);
+    /*background-color: rgba(110, 204, 57, 0.6);*/
 }
 
 .leaflet-oldie .marker-cluster-warning {
-    background-color: rgb(241, 211, 87);
+    /*background-color: rgba(255, 255, 0, 0.6);*/
+    background-color: rgba(240, 194, 12, 0.6);
 }
 .leaflet-oldie .marker-cluster-warning div {
-    background-color: rgb(240, 194, 12);
+    background-color: rgba(255, 255, 0, 0.6);
+    /*background-color: rgba(240, 194, 12, 0.6);*/
 }
 
 .leaflet-oldie .marker-cluster-error {
-    background-color: rgb(253, 156, 115);
+    /*background-color: rgba(255, 69, 0, 0.6);*/
+    background-color: rgba(255, 0, 0, 0.6);
 }
 .leaflet-oldie .marker-cluster-error div {
-    background-color: rgb(241, 128, 23);
+    /*background-color: rgba(255, 0, 0, 0.6);*/
+    background-color: rgba(255, 69, 50, 0.6);
+    color: white;
 }
 
 .marker-cluster {
