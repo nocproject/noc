@@ -39,5 +39,5 @@ class MonRequestHandler(tornado.web.RequestHandler):
             cleared_name = str(metric_name).translate(TR)
             response.update({cleared_name: mdata[key]})
         self.write(
-            ujson.dumps(response, indent=2, sort_keys=True)
+            ujson.dumps(response)
         )
