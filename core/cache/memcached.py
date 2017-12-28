@@ -8,14 +8,17 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
+
 # Third-party modules
 import pylibmc
 import pylibmc.pools
-# NOC modules
-from .base import BaseCache
 from noc.config import config
 from noc.core.perf import metrics
+
+# NOC modules
+from .base import BaseCache
 
 logger = logging.getLogger(__name__)
 ignorable_memcache_errors = (
@@ -28,6 +31,7 @@ class MemcachedCache(BaseCache):
     """
     Memcached backend
     """
+
     def __init__(self):
         super(BaseCache, self).__init__()
         self.tpl_client = pylibmc.Client(
@@ -49,12 +53,14 @@ class MemcachedCache(BaseCache):
         """
         Returns value or raise KeyError
         :param key:
-        :return:
+        :param default:
+        :param version:
+        :return: value
         """
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                v = c.get(k)
+                v = cache.get(k)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "get")] += 1
                 v = None
@@ -74,27 +80,25 @@ class MemcachedCache(BaseCache):
         """
         k = self.make_key(key, version)
         ttl = ttl or config.memcached.default_ttl
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                c.set(k, value, ttl)
+                cache.set(k, value, ttl)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "set")] += 1
-                pass
 
     def delete(self, key, version=None):
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                c.delete(k)
+                cache.delete(k)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "delete")] += 1
-                pass
 
     def get_many(self, keys, version=None):
         k = [self.make_key(x, version) for x in keys]
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                r = c.get_multi(k)
+                r = cache.get_multi(k)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "get_many")] += 1
                 r = None
@@ -106,41 +110,39 @@ class MemcachedCache(BaseCache):
 
     def set_many(self, data, ttl=None, version=None):
         ttl = ttl or config.memcached.default_ttl
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                c.set_multi(
+                cache.set_multi(
                     dict((self.make_key(k, version), data[k])
                          for k in data),
                     ttl
                 )
             except ignorable_memcache_errors:
                 metrics["error", ("type", "set_many")] += 1
-                pass
 
     def delete_many(self, keys, version=None):
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                c.delete_multi(
+                cache.delete_multi(
                     [self.make_key(k, version) for k in keys]
                 )
             except ignorable_memcache_errors:
                 metrics["error", ("type", "delete_many")] += 1
-                pass
 
     def incr(self, key, delta=1, version=None):
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                return c.incr(k, delta)
+                return cache.incr(k, delta)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "incr")] += 1
                 return None
 
     def decr(self, key, delta=1, version=None):
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True) as c:
+        with self.pool.reserve(block=True) as cache:
             try:
-                return c.decr(k, delta)
+                return cache.decr(k, delta)
             except ignorable_memcache_errors:
                 metrics["error", ("type", "decr")] += 1
                 return None

@@ -8,21 +8,24 @@
 
 # Python modules
 from __future__ import absolute_import
-import uuid
+
 import random
 import time
+import ujson
+import uuid
+
 # Third-party modules
-from six.moves.urllib.parse import unquote
-import tornado.gen
-import tornado.ioloop
 import consul.base
 import consul.tornado
-import ujson
+import tornado.gen
+import tornado.ioloop
 # NOC modules
-from .base import DCSBase, ResolverBase
-from noc.core.perf import metrics
-from noc.core.http.client import fetch
 from noc.config import config
+from noc.core.http.client import fetch
+from noc.core.perf import metrics
+from six.moves.urllib.parse import unquote
+
+from .base import DCSBase, ResolverBase
 
 ConsulRepearableCodes = set([500, 598, 599])
 ConsulRepeatableErrors = consul.base.Timeout
@@ -36,6 +39,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
     """
     Gentler version of tornado http client
     """
+
     @tornado.gen.coroutine
     def _request(self, callback, url, method="GET", body=None):
         code, headers, body = yield fetch(

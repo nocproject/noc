@@ -33,9 +33,9 @@ class MetricsHandler(tornado.web.RequestHandler):
             "node": config.node,
         }
         if self.service.pooled:
-            labels.update({"pool": config.pool})
+            labels["pool"] = config.pool
         if hasattr(self.service, "slot_number"):
-            labels.update({"slot": self.service.slot_number})
+            labels["slot"] = self.service.slot_number
         out = []
         mdata = self.service.get_mon_data()
         for key in mdata:

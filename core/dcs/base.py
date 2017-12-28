@@ -8,23 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
-import signal
-import os
-from threading import Lock, Event
 import random
-import datetime
+import signal
 import sys
+from threading import Lock, Event
+
+import datetime
+import os
+import six
+from six.moves.urllib.parse import urlparse
 # Third-party modules
 import tornado.gen
-import tornado.locks
 import tornado.ioloop
-from six.moves.urllib.parse import urlparse
-import six
+import tornado.locks
+
+from noc.config import config
+from noc.core.perf import metrics
+
 # Python modules
 from .error import ResolutionError
-from noc.core.perf import metrics
-from noc.config import config
 
 
 class DCSBase(object):
@@ -141,6 +145,7 @@ class DCSBase(object):
         :param full_result:
         :return:
         """
+
         @tornado.gen.coroutine
         def _resolve():
             try:

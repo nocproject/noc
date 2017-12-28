@@ -33,7 +33,7 @@ class MonRequestHandler(tornado.web.RequestHandler):
             if isinstance(key, tuple):
                 metric_name = key[0]
                 for k in key[1:]:
-                    metric_name += "_" + "_".join(str(i) for i in k)
+                    metric_name += "_%s" % "_".join(str(i) for i in k)
             else:
                 metric_name = key.lower()
             cleared_name = str(metric_name).translate(TR)
