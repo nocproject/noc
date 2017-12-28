@@ -45,12 +45,15 @@ class VLAN(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            ("segment", "vlan"),
+            {
+                "fields": ["segment", "vlan"],
+                "unique": True
+            },
             "expired"
         ]
     }
 
-    name = StringField(unique=True)
+    name = StringField()
     profile = PlainReferenceField(VLANProfile)
     vlan = IntField(min_value=1, max_value=4095)
     segment = PlainReferenceField(NetworkSegment)
