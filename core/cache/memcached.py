@@ -62,7 +62,7 @@ class MemcachedCache(BaseCache):
             try:
                 v = cache.get(k)
             except ignorable_memcache_errors:
-                metrics["error", ("type", "get")] += 1
+                metrics["error", ("type", "memcache_get_failed")] += 1
                 v = None
         if v is None:
             return default
@@ -84,7 +84,7 @@ class MemcachedCache(BaseCache):
             try:
                 cache.set(k, value, ttl)
             except ignorable_memcache_errors:
-                metrics["error", ("type", "set")] += 1
+                metrics["error", ("type", "memcache_set_failed")] += 1
 
     def delete(self, key, version=None):
         k = self.make_key(key, version)
@@ -92,7 +92,7 @@ class MemcachedCache(BaseCache):
             try:
                 cache.delete(k)
             except ignorable_memcache_errors:
-                metrics["error", ("type", "delete")] += 1
+                metrics["error", ("type", "memcache_delete_failed")] += 1
 
     def get_many(self, keys, version=None):
         k = [self.make_key(x, version) for x in keys]
@@ -100,7 +100,7 @@ class MemcachedCache(BaseCache):
             try:
                 r = cache.get_multi(k)
             except ignorable_memcache_errors:
-                metrics["error", ("type", "get_many")] += 1
+                metrics["error", ("type", "memcache_get_many_failed")] += 1
                 r = None
         if r:
             m = dict(zip(k, keys))
@@ -118,7 +118,7 @@ class MemcachedCache(BaseCache):
                     ttl
                 )
             except ignorable_memcache_errors:
-                metrics["error", ("type", "set_many")] += 1
+                metrics["error", ("type", "memcache_set_many_failed")] += 1
 
     def delete_many(self, keys, version=None):
         with self.pool.reserve(block=True) as cache:
@@ -127,7 +127,7 @@ class MemcachedCache(BaseCache):
                     [self.make_key(k, version) for k in keys]
                 )
             except ignorable_memcache_errors:
-                metrics["error", ("type", "delete_many")] += 1
+                metrics["error", ("type", "memcache_delete_many_failed")] += 1
 
     def incr(self, key, delta=1, version=None):
         k = self.make_key(key, version)
@@ -135,7 +135,7 @@ class MemcachedCache(BaseCache):
             try:
                 return cache.incr(k, delta)
             except ignorable_memcache_errors:
-                metrics["error", ("type", "incr")] += 1
+                metrics["error", ("type", "memcache_incr_failed")] += 1
                 return None
 
     def decr(self, key, delta=1, version=None):
@@ -144,5 +144,5 @@ class MemcachedCache(BaseCache):
             try:
                 return cache.decr(k, delta)
             except ignorable_memcache_errors:
-                metrics["error", ("type", "decr")] += 1
+                metrics["error", ("type", "memcache_decr_failed")] += 1
                 return None
