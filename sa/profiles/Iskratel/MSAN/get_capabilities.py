@@ -21,5 +21,10 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        cmd = self.cli("show lldp")
+        try:
+            cmd = self.cli("show lldp")
+        except self.CLISyntaxError:
+            # Not clearing command line when SyntaxError
+            self.cli("\x1b[B")
+            return False
         return "disabled on all interfaces" not in cmd
