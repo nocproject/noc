@@ -11,7 +11,6 @@ from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
-import datetime
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, LongField, ListField,
@@ -126,9 +125,10 @@ class VLAN(Document):
             if vt.filter.check(self.vlan):
                 logger.debug(
                     "[%s|%s|%s] Matching translation rule <%s|%s|%s>",
-                     self.segment.name, self.name, self.vlan,
-                     vt.filter.expression, vt.rule,
-                     vt.parent_vlan.vlan)
+                    self.segment.name, self.name, self.vlan,
+                    vt.filter.expression, vt.rule,
+                    vt.parent_vlan.vlan
+                )
                 if self.parent != vt.parent_vlan or self.translation_rule != vt.translation_rule:
                     self.modify(
                         parent=vt.parent_vlan,
