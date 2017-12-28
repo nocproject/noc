@@ -34,8 +34,8 @@ class Script(BaseScript):
 
     platforms_snmp = {
         "3.2.10": "DVG-2101S",
-        "?.?.?": "DVG-2102S",
-        "?.?.?": "DVG-4032S",
+        "???": "DVG-2102S",
+        "?.??": "DVG-4032S",
         "1.2.1": "DVG-5004S",
         "?.?.?": "DVG-7111S"
     }
