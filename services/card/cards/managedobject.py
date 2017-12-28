@@ -27,6 +27,7 @@ from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
+from noc.core.perf import metrics
 
 
 class ManagedObjectCard(BaseCard):
@@ -93,6 +94,7 @@ class ManagedObjectCard(BaseCard):
                         })
                     c = o.container
                 except Object.DoesNotExist:
+                    metrics["error", ("type", "no_such_object")] += 1
                     break
         # MAC addresses
         macs = []

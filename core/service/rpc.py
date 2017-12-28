@@ -105,7 +105,7 @@ class RPCProxy(object):
                 self._service_name,
                 method, args, kwargs
             )
-            metrics["rpc_call_%s_%s" % (self._service_name, method)] += 1
+            metrics["rpc_call", ("called_service", self._service_name), ("method", method)] += 1
             tid = next(self._tid)
             msg = {
                 "method": method,

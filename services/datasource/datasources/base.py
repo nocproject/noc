@@ -29,7 +29,7 @@ class BaseDataSource(object):
     def clean(self, row):
         s = "\t".join(str(x) for x in row)
         if "\n" in s or "\\" in s or row.count("\t") >= len(row):
-            metrics["ch_datasource_rogue_charts"] += 1
+            metrics["error", ("type", "rogue_charts")] += 1
             self.logger.error("Rogue charts in row %s", row)
             row = map(lambda x: self.rogue_replace(x) if isinstance(x, six.string_types) else x, list(row))
         return row

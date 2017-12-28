@@ -39,6 +39,8 @@ class MetricsHandler(tornado.web.RequestHandler):
         out = []
         mdata = self.service.get_mon_data()
         for key in mdata:
+            if key == 'pid':
+                continue
             metric_name = key
             local_labels = {}
             if isinstance(mdata[key], (bool, six.string_types)):
@@ -48,7 +50,7 @@ class MetricsHandler(tornado.web.RequestHandler):
                 for k in key[1:]:
                     local_labels.update({k[0]: k[1]})
             local_labels.update(labels)
-            out_labels = ",".join(["%s=%s" % (i.lower(), local_labels[i]) for i in local_labels])
+            out_labels = ",".join(['%s="%s"' % (i.lower(), local_labels[i]) for i in local_labels])
             cleared_name = str(metric_name).translate(TR)
             out += ["# TYPE %s untyped" % cleared_name.lower()]
             out += ["%s{%s} %s" % (cleared_name.lower(), out_labels, mdata[key])]

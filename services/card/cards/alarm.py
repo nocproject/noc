@@ -20,6 +20,7 @@ from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
 from noc.maintenance.models.maintenance import Maintenance, MaintenanceObject
+from noc.core.perf import metrics
 
 
 class AlarmCard(BaseCard):
@@ -33,6 +34,7 @@ class AlarmCard(BaseCard):
         elif set(self.get_user_domains()) & set(a.adm_path):
             return a
         else:
+            metrics["error", ("type", "no_such_alarm")] += 1
             return None
 
     def get_data(self):
@@ -53,6 +55,7 @@ class AlarmCard(BaseCard):
                         })
                     c = o.container
                 except Object.DoesNotExist:
+                    metrics["error", ("type", "user_not_found")] += 1
                     break
         # Build log
         log = []

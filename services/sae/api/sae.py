@@ -11,7 +11,7 @@ import tornado.gen
 # NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
-from noc.sa.models.managedobject import ManagedObject  # Do not delete
+from noc.sa.models.managedobject import ManagedObject  # noqa Do not delete
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.sa.models.profile import Profile
 from noc.inv.models.vendor import Vendor
@@ -20,6 +20,7 @@ from noc.inv.models.firmware import Firmware
 from noc.core.cache.decorator import cachedmethod
 from noc.core.dcs.base import ResolutionError
 from noc.config import config
+from noc.core.perf import metrics
 
 
 class SAEAPI(API):
@@ -62,6 +63,7 @@ class SAEAPI(API):
                 raise tornado.gen.Return(svc)
             except ResolutionError as e:
                 self.logger.info("Cannot resolve %s: %s", sn, e)
+                metrics["error", ("type", "resolve_activator")] += 1
         raise tornado.gen.Return(None)
 
     @tornado.gen.coroutine
@@ -70,6 +72,7 @@ class SAEAPI(API):
         if svc:
             raise tornado.gen.Return("http://%s/api/activator/" % svc)
         else:
+            metrics["error", ("type", "empty_activator_list_response")] += 1
             raise tornado.gen.Return(None)
 
     @api
@@ -89,10 +92,12 @@ class SAEAPI(API):
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
+            metrics["error", ("type", "pool_not_found")] += 1
             raise APIError("Pool not found")
         # Check script is exists
         script_name = "%s.%s" % (data["profile"], script)
         if not loader.has_script(script_name):
+            metrics["error", ("type", "invalid_scripts_request")] += 1
             raise APIError("Invalid script")
         #
         url = yield self.get_activator_url(pool)
@@ -115,6 +120,7 @@ class SAEAPI(API):
         # Find pool name
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
+            metrics["error", ("type", "pool_not_found")] += 1
             raise APIError("Pool not found")
         data["pool"] = pool
         raise tornado.gen.Return(data)
@@ -133,6 +139,7 @@ class SAEAPI(API):
             cursor.execute(self.RUN_SQL, [object_id])
             data = cursor.fetchall()
         if not data:
+            metrics["error", ("type", "object_not_found")] += 1
             raise APIError("Object is not found")
         # Build capabilities
         capabilities = ObjectCapabilities.get_capabilities(object_id)
@@ -149,13 +156,14 @@ class SAEAPI(API):
          access_preference, p_access_preference) = data[0]
         # Check object is managed
         if not is_managed:
+            metrics["error", ("type", "object_not_managed")] += 1
             raise APIError("Object is not managed")
         if auth_profile_id:
             user = ap_user
             password = ap_password
             super_password = ap_super_password
             snmp_ro = ap_snmp_ro
-            snmp_rw = ap_snmp_rw
+            snmp_rw = ap_snmp_rw  # noqa just to be
         #
         if privilege_policy == "E":
             raise_privileges = True

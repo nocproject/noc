@@ -15,6 +15,7 @@ import pylibmc.pools
 # NOC modules
 from .base import BaseCache
 from noc.config import config
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 ignorable_memcache_errors = (
@@ -55,6 +56,7 @@ class MemcachedCache(BaseCache):
             try:
                 v = c.get(k)
             except ignorable_memcache_errors:
+                metrics["error", ("type", "get")] += 1
                 v = None
         if v is None:
             return default
@@ -76,6 +78,7 @@ class MemcachedCache(BaseCache):
             try:
                 c.set(k, value, ttl)
             except ignorable_memcache_errors:
+                metrics["error", ("type", "set")] += 1
                 pass
 
     def delete(self, key, version=None):
@@ -84,6 +87,7 @@ class MemcachedCache(BaseCache):
             try:
                 c.delete(k)
             except ignorable_memcache_errors:
+                metrics["error", ("type", "delete")] += 1
                 pass
 
     def get_many(self, keys, version=None):
@@ -92,6 +96,7 @@ class MemcachedCache(BaseCache):
             try:
                 r = c.get_multi(k)
             except ignorable_memcache_errors:
+                metrics["error", ("type", "get_many")] += 1
                 r = None
         if r:
             m = dict(zip(k, keys))
@@ -109,6 +114,7 @@ class MemcachedCache(BaseCache):
                     ttl
                 )
             except ignorable_memcache_errors:
+                metrics["error", ("type", "set_many")] += 1
                 pass
 
     def delete_many(self, keys, version=None):
@@ -118,6 +124,7 @@ class MemcachedCache(BaseCache):
                     [self.make_key(k, version) for k in keys]
                 )
             except ignorable_memcache_errors:
+                metrics["error", ("type", "delete_many")] += 1
                 pass
 
     def incr(self, key, delta=1, version=None):
@@ -126,6 +133,7 @@ class MemcachedCache(BaseCache):
             try:
                 return c.incr(k, delta)
             except ignorable_memcache_errors:
+                metrics["error", ("type", "incr")] += 1
                 return None
 
     def decr(self, key, delta=1, version=None):
@@ -134,4 +142,5 @@ class MemcachedCache(BaseCache):
             try:
                 return c.decr(k, delta)
             except ignorable_memcache_errors:
+                metrics["error", ("type", "decr")] += 1
                 return None

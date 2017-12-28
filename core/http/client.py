@@ -131,8 +131,7 @@ def fetch(url, method="GET",
         return ssl_options
 
     logger.debug("HTTP %s %s", method, url)
-    metrics["httpclient_requests"] += 1
-    metrics["httpclient_%s_requests" % method] += 1
+    metrics["httpclient_requests", ("method", method.lower())] += 1
     # Detect proxy when necessary
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
     u = urlparse.urlparse(str(url))
