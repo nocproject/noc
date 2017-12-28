@@ -23,6 +23,7 @@ from noc.core.debug import error_report
 from noc.main.models import User
 from noc.config import config
 from noc.core.debug import ErrorReport
+from noc.core.perf import metrics
 
 user_lock = Lock()
 
@@ -45,6 +46,7 @@ class CardRequestHandler(UIHandler):
         try:
             return User.objects.get(username=name)
         except User.DoesNotExist:
+            metrics["error", ("type", "user_not_found")] += 1
             return None
 
     def get_current_user(self):

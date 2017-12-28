@@ -221,6 +221,7 @@ class BIAPI(API):
         for ds in self.get_datasources():
             if ds["name"] == name:
                 return ds
+        self.service.perf_metrics["error", ("type", "info_invalid_datasource")] += 1
         raise APIError("Invalid datasource")
 
     @executor("query")
@@ -234,9 +235,11 @@ class BIAPI(API):
         :return:
         """
         if "datasource" not in query:
+            self.service.perf_metrics["error", ("type", "query_no_datasource")] += 1
             raise APIError("No datasource")
         model = self.get_model(query["datasource"])
         if not model:
+            self.service.perf_metrics["error", ("type", "query_invalid_datasource")] += 1
             raise APIError("Invalid datasource")
         return model.query(query, self.handler.current_user)
 
@@ -295,6 +298,7 @@ class BIAPI(API):
             elif i.group and i.group.id in groups and i.level >= access_level:
                 return d
         # No access
+        self.service.perf_metrics["error", ("type", "no_permission")] += 1
         raise APIError("User have no permission to access dashboard")
 
     @executor("query")
@@ -309,6 +313,7 @@ class BIAPI(API):
         if d:
             return ujson.loads(zlib.decompress(d.config))
         else:
+            self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
 
     @executor("query")
@@ -322,10 +327,12 @@ class BIAPI(API):
         if "id" in config:
             d = self._get_dashboard(config["id"], access_level=1)
             if not d:
+                self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
                 raise APIError("Dashboard not found")
         else:
             d = Dashboard.objects.filter(title=config.get("title")).first()
             if d:
+                self.service.perf_metrics["error", ("type", "bad_dashboard_name")] += 1
                 raise APIError("Dashboard name exists")
             d = Dashboard(id=str(bson.ObjectId()), owner=self.handler.current_user)
         d.format = config.get("format", 1)
@@ -351,6 +358,7 @@ class BIAPI(API):
             d.delete()
             return True
         else:
+            self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
 
     @executor("query")
@@ -385,13 +393,17 @@ class BIAPI(API):
                     sort_children(n)
 
         if "datasource" not in params:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_no_datasource")] += 1
             raise APIError("No datasource")
         if "dic_name" not in params:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_no_dict_name")] += 1
             raise APIError("No dictionary name")
         if "field_name" not in params:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_no_field_name")] += 1
             raise APIError("No field name")
         model = Model.get_model_class(params["datasource"])
         if not model:
+            self.service.perf_metrics["error", ("type", "get_hierarchy_invalid_datasource")] += 1
             raise APIError("Invalid datasource")
         query = {
             "fields": [
@@ -537,10 +549,12 @@ class BIAPI(API):
         d = self._get_dashboard(id)
         if not d:
             self.logger.error("Dashboards not find %s", id)
+            self.service.perf_metrics["error", ("type", "dashboard_not_found")] += 1
             raise APIError("Dashboard not found")
         if d.get_user_access(self.handler.current_user) < DAL_ADMIN:
             self.logger.error("Access for user Dashboards %s", self.handler.current_user)
-            raise APIError("User no permission for set rights")
+            self.service.perf_metrics["error", ("type", "no_permissions_to_set_permissions")] += 1
+            raise APIError("User have no permission to set permissions")
         access = []
         if acc_limit == "user":
             access = list(itertools.ifilter(lambda x: x.user, d.access))
@@ -553,6 +567,7 @@ class BIAPI(API):
             items = I_VALID.clean(items)
         except ValueError as e:
             self.logger.error("Validation items with rights", e)
+            self.service.perf_metrics["error", ("type", "validation")] += 1
             raise APIError("Validation error %s" % e)
         for i in items:
             da = DashboardAccess(level=i.get("level", -1))
@@ -575,6 +590,7 @@ class BIAPI(API):
         :return:
         """
         if not id.get("id"):
+            self.service.perf_metrics["error", ("type", "wrong_json")] += 1
             raise APIError("Not id field in JSON")
         return self._set_dashboard_access(id.get("id"), items.get("items"))
 

@@ -8,8 +8,10 @@
 
 # NOC modules
 from __future__ import absolute_import
-from .base import cache as x_cache
+
 from noc.core.perf import metrics
+
+from .base import cache as x_cache
 
 
 def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
@@ -25,15 +27,23 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
     :param version: External cache version
     :return:
     """
+
     def decorator(method):
         if lock:
             def wrapper(self, *args, **kwargs):
-                perf_key = key.replace("%s", "X").replace("-", "_")
-                perf_key_requests = metrics["%s_requests" % perf_key]
-                perf_key_l1_hits = metrics["%s_l1_hits" % perf_key]
-                perf_key_l2_hits = metrics["%s_l2_hits" % perf_key]
-                perf_key_misses = metrics["%s_misses" % perf_key]
-                perf_key_lock_acquires = metrics["%s_locks_acquires" % perf_key]
+                perf_key = key.replace("-%s", "").replace("-", "_")
+                perf_key_requests = metrics["cache_requests",
+                                            ("cache_key", perf_key)]
+                perf_key_l1_hits = metrics["cache_hits",
+                                           ("cache_key", perf_key),
+                                           ("cache_level", "internal")]
+                perf_key_l2_hits = metrics["cache_hits",
+                                           ("cache_key", perf_key),
+                                           ("cache_level", "external")]
+                perf_key_misses = metrics["cache_misses",
+                                          ("cache_key", perf_key)]
+                perf_key_lock_acquires = metrics["cache_locks_acquires",
+                                                 ("cache_key", perf_key)]
                 perf_key_requests += 1
                 k = key % args
                 with lock(self):
@@ -79,12 +89,17 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
                 return v
         else:
             def wrapper(self, *args, **kwargs):
-                perf_key = key.replace("%s", "X").replace("-", "_")
-                perf_key_requests = metrics["%s_requests" % perf_key]
-                perf_key_l1_hits = metrics["%s_l1_hits" % perf_key]
-                perf_key_l2_hits = metrics["%s_l2_hits" % perf_key]
-                perf_key_misses = metrics["%s_misses" % perf_key]
-                perf_key_lock_acquires = metrics["%s_locks_acquires" % perf_key]
+                perf_key = key.replace("-%s", "").replace("-", "_")
+                perf_key_requests = metrics["cache_requests",
+                                            ("cache_key", perf_key)]
+                perf_key_l1_hits = metrics["cache_hits",
+                                           ("cache_key", perf_key),
+                                           ("cache_level", "internal")]
+                perf_key_l2_hits = metrics["cache_hits",
+                                           ("cache_key", perf_key),
+                                           ("cache_level", "external")]
+                perf_key_misses = metrics["cache_misses",
+                                          ("cache_key", perf_key)]
                 perf_key_requests += 1
                 k = key % args
                 if cache:

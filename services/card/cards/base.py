@@ -14,6 +14,7 @@ from jinja2 import Template, Environment
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
+from noc.core.perf import metrics
 
 
 class BaseCard(object):
@@ -73,6 +74,7 @@ class BaseCard(object):
             try:
                 return self.get_object(id)
             except self.model.DoesNotExist:
+                metrics["error", ("type", "no_such_object")] += 1
                 return None
         else:
             return None
@@ -216,6 +218,7 @@ class BaseCard(object):
         """
         from noc.inv.models.object import Object
         if not object.container:
+            metrics["error", ("type", "no_such_container")] += 1
             return _("N/A")
         path = []
         c = object.container
@@ -230,6 +233,7 @@ class BaseCard(object):
             if c:
                 c = Object.get_by_id(c)
         if not path:
+            metrics["error", ("type", "no_such_path")] += 1
             return _("N/A")
         return ", ".join(reversed(path))
 

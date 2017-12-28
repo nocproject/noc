@@ -66,11 +66,14 @@ class LoginService(UIService):
             )
             try:
                 user = backend.authenticate(**credentials)
+                self.perf_metrics['auth_try', ('method', method)] += 1
             except backend.LoginError as e:
                 self.logger.info("[%s] Login Error: %s", method, e)
+                self.perf_metrics['auth_fail', ('method', method)] += 1
                 le = str(e)
                 continue
             self.logger.info("Authorized credentials %s as user %s", c, user)
+            self.perf_metrics['auth_success', ('method', method)] += 1
             # Set cookie
             handler.set_secure_cookie(
                 "noc_user",

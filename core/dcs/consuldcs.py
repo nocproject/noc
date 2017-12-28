@@ -8,21 +8,24 @@
 
 # Python modules
 from __future__ import absolute_import
-import uuid
+
 import random
 import time
+import ujson
+import uuid
+
 # Third-party modules
-from six.moves.urllib.parse import unquote
-import tornado.gen
-import tornado.ioloop
 import consul.base
 import consul.tornado
-import ujson
+import tornado.gen
+import tornado.ioloop
 # NOC modules
-from .base import DCSBase, ResolverBase
-from noc.core.perf import metrics
-from noc.core.http.client import fetch
 from noc.config import config
+from noc.core.http.client import fetch
+from noc.core.perf import metrics
+from six.moves.urllib.parse import unquote
+
+from .base import DCSBase, ResolverBase
 
 ConsulRepearableCodes = set([500, 598, 599])
 ConsulRepeatableErrors = consul.base.Timeout
@@ -36,6 +39,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
     """
     Gentler version of tornado http client
     """
+
     @tornado.gen.coroutine
     def _request(self, callback, url, method="GET", body=None):
         code, headers, body = yield fetch(
@@ -259,6 +263,7 @@ class ConsulDCS(DCSBase):
                         check=checks
                     )
                 except ConsulRepeatableErrors as e:
+                    metrics["error", ("type", "cant_register_consul")] += 1
                     self.logger.info("Cannot register service %s: %s",
                                      name, e)
                     yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
@@ -276,23 +281,27 @@ class ConsulDCS(DCSBase):
             try:
                 yield self.destroy_session()
             except ConsulRepeatableErrors:
+                metrics["error", ("type", "cant_destroy_consul_session_soft")] += 1
                 pass
             except Exception as e:
+                metrics["error", ("type", "cant_destroy_consul_session")] += 1
                 self.logger.error("Cannot destroy session: %s", e)
         if self.svc_id and config.features.service_registration:
             try:
                 yield self.consul.agent.service.deregister(self.svc_id)
             except ConsulRepeatableErrors:
+                metrics["error", ("type", "cant_deregister_consul_soft")] += 1
                 pass
             except Exception as e:
+                metrics["error", ("type", "cant_deregister_consul")] += 1
                 self.logger.error("Cannot deregister service: %s", e)
             self.svc_id = None
 
     @tornado.gen.coroutine
     def keep_alive(self):
-        metrics["dcs.consul.keepalives"] += 1
+        metrics["dcs_consul_keepalives"] += 1
         if self.in_keep_alive:
-            metrics["dcs.consul.overlapped_keepalives"] += 1
+            metrics["error", ("type", "dcs_consul_overlapped_keepalives")] += 1
             raise tornado.gen.Return()
         self.in_keep_alive = True
         try:
@@ -309,7 +318,7 @@ class ConsulDCS(DCSBase):
                         break
                     except ConsulRepeatableErrors as e:
                         self.logger.warning("Cannot refresh session due to ignorable error: %s", e)
-                        metrics["dcs.consul.keepalive_retries"] += 1
+                        metrics["error", ("type", "dcs_consul_keepalive_retries")] += 1
                         yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 if not touched:
                     self.logger.critical("Cannot refresh session, stopping")
@@ -344,6 +353,7 @@ class ConsulDCS(DCSBase):
                 if status:
                     break
                 else:
+                    metrics["error", ("type", "dcs_consul_failed_get_lock")] += 1
                     self.logger.info("Failed to acquire lock")
                     yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
             except ConsulRepeatableErrors:
@@ -397,6 +407,7 @@ class ConsulDCS(DCSBase):
                 if status:
                     break
                 else:
+                    metrics["error", ("type", "dcs_consul_failed_get_slot")] += 1
                     self.logger.info("Failed to write contender slot info")
                     yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
             except ConsulRepeatableErrors:
@@ -494,14 +505,18 @@ class ConsulDCS(DCSBase):
                     token=self.consul_token
                 )
             except ConsulRepeatableErrors as e:
+                metrics["error", ("type", "dcs_consul_failed_resolve_near")] += 1
                 self.logger.info("Consul error: %s", e)
                 if critical:
+                    metrics["error", ("type", "dcs_consul_failed_resolve_critical_near")] += 1
                     self.set_faulty_status("Consul error: %s" % e)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
             if not services and wait:
+                metrics["error", ("type", "dcs_consul_no_active_service %s" % name)] += 1
                 self.logger.info("No active service %s. Waiting", name)
                 if critical:
+                    metrics["error", ("type", "dcs_consul_no_active_critical_service %s" % name)] += 1
                     self.set_faulty_status("No active service %s. Waiting" % name)
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue

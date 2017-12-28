@@ -23,7 +23,6 @@ from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
 from probesetting import ProbeSetting
-from noc.core.perf import metrics
 
 
 class PingService(Service):
@@ -42,7 +41,6 @@ class PingService(Service):
     def __init__(self):
         super(PingService, self).__init__()
         self.messages = []
-        self.metrics = []
         self.send_callback = None
         self.mappings_callback = None
         self.metrics_callback = None
@@ -71,7 +69,7 @@ class PingService(Service):
         except OSError as e:
             self.logger.info("Cannot set nice level to -20: %s", e)
         #
-        metrics["down_objects"] = 0
+        self.perf_metrics["down_objects"] = 0
         # Open ping sockets
         self.ping = Ping(self.ioloop, tos=config.ping.tos)
         # Register RPC aliases
@@ -156,7 +154,7 @@ class PingService(Service):
         for d in xd & nd:
             if self.probes[d].is_differ(sm[d]):
                 self.update_probe(d, sm[d])
-        metrics["ping_objects"] = len(self.probes)
+        self.perf_metrics["ping_objects"] = len(self.probes)
 
     def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
@@ -175,7 +173,7 @@ class PingService(Service):
         )
         ps.task = pt
         pt.start()
-        metrics["ping_probe_create"] += 1
+        self.perf_metrics["ping_probe_create"] += 1
 
     def delete_probe(self, ip):
         if ip not in self.probes:
@@ -185,9 +183,9 @@ class PingService(Service):
         ps.task.stop()
         ps.task = None
         del self.probes[ip]
-        metrics["ping_probe_delete"] += 1
+        self.perf_metrics["ping_probe_delete"] += 1
         if ps.status is not None and not ps.status:
-            metrics["down_objects"] -= 1
+            self.perf_metrics["down_objects"] -= 1
 
     def update_probe(self, ip, data):
         self.logger.info("Update probe: %s (%ds)", ip, data["interval"])
@@ -195,7 +193,7 @@ class PingService(Service):
         if ps.interval != data["interval"]:
             ps.task.set_callback_time(data["interval"] * 1000)
         self.probes[ip].update(**data)
-        metrics["ping_probe_update"] += 1
+        self.perf_metrics["ping_probe_update"] += 1
 
     @tornado.gen.coroutine
     def ping_check(self, ps):
@@ -209,11 +207,11 @@ class PingService(Service):
         t0 = time.time()
         if address not in self.probes:
             return
-        metrics["ping_check_total"] += 1
+        self.perf_metrics["ping_check_total"] += 1
         if ps.time_cond:
             dt = datetime.datetime.fromtimestamp(t0)
             if not eval(ps.time_cond, {"T": dt}):
-                metrics["ping_check_skips"] += 1
+                self.perf_metrics["ping_check_skips"] += 1
                 return
         rtt, attempts = yield self.ping.ping_check_rtt(
             ps.address,
@@ -224,19 +222,19 @@ class PingService(Service):
         )
         s = rtt is not None
         if s:
-            metrics["ping_check_success"] += 1
+            self.perf_metrics["ping_check_success"] += 1
         else:
-            metrics["ping_check_fail"] += 1
+            self.perf_metrics["ping_check_fail"] += 1
         if ps and s != ps.status:
             if s:
-                metrics["down_objects"] -= 1
+                self.perf_metrics["down_objects"] -= 1
             else:
-                metrics["down_objects"] += 1
+                self.perf_metrics["down_objects"] += 1
             if config.ping.throttle_threshold:
                 # Process throttling
                 down_ratio = (
-                    float(metrics["down_objects"]) * 100.0 /
-                    float(metrics["ping_objects"])
+                    float(self.perf_metrics["down_objects"]) * 100.0 /
+                    float(self.perf_metrics["ping_objects"])
                 )
                 if self.is_throttled:
                     restore_ratio = config.ping.restore_threshold or config.ping.throttle_threshold
