@@ -26,7 +26,10 @@ class Script(BaseScript):
             try:
                 mac = self.snmp.get("1.3.6.1.2.1.2.2.1.6.2",
                                     cached=True)  # IF-MIB
-                return mac
+                return {
+                    "first_chassis_mac": mac,
+                    "last_chassis_mac": mac
+                }
             except self.snmp.TimeOutError:
                 pass
 
