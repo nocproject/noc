@@ -1,0 +1,43 @@
+version: "2"
+services:
+  shell:
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    working_dir: /docs
+    volumes:
+      - .:/docs
+
+  build-html-en:
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    volumes:
+      - .:/docs
+    working_dir: /docs
+    command: sphinx-build -a -E -b html src/en build/en
+
+  build-html-ru:
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    volumes:
+      - .:/docs
+    working_dir: /docs
+    command: sphinx-build -a -E -b html src/ru build/ru
+
+  build-html:
+    depends_on:
+      - build-html-en
+      - build-html-ru
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    volumes:
+      - .:/docs
+    working_dir: /docs
+    command: /bin/true
+
+  serve:
+    image: "nginx:mainline"
+    restart: "no"
+    volumes:
+      - ./build/:/usr/share/nginx/html
+    ports:
+      - 48888:80
