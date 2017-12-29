@@ -27,12 +27,12 @@ belong to one Network Segment. Typical Network Segment hierarchy:
         ACC12(Access #1-2)
         ACC21(Access #2-1)
         ACC22(Access #2-2)
-        CORE -> AGG1
-        CORE -> AGG2
-        AGG1 -> ACC11
-        AGG1 -> ACC12
-        AGG2 -> ACC21
-        AGG2 -> ACC22
+        CORE --- AGG1
+        CORE --- AGG2
+        AGG1 --- ACC11
+        AGG1 --- ACC12
+        AGG2 --- ACC21
+        AGG2 --- ACC22
 
 .. note::
 
@@ -73,17 +73,17 @@ Tree topology contains exactly one path between any Object.
 .. mermaid::
 
     graph TB
-        MO1 -> MO2
-        MO1 -> MO3
-        MO1 -> MO4
-        MO2 -> MO5
-        MO2 -> MO6
-        MO6 -> MO7
-        MO3 -> MO8
-        MO3 -> MO9
-        MO4 -> MO10
-        MO4 -> MO11
-        MO10 -> MO12
+        MO1 --- MO2
+        MO1 --- MO3
+        MO1 --- MO4
+        MO2 --- MO5
+        MO2 --- MO6
+        MO6 --- MO7
+        MO3 --- MO8
+        MO3 --- MO9
+        MO4 --- MO10
+        MO4 --- MO11
+        MO10 --- MO12
 
 *Tree* offers no redundancy. Any failed Object makes its children
 unavailable. Following example shows failed *MO3* makes *MO8* and *MO9*
@@ -95,17 +95,17 @@ unavailable.
         style MO3 fill:#c0392b
         style MO8 fill:#7f8c8d
         style MO9 fill:#7f8c8d
-        MO1 -> MO2
-        MO1 -> MO3
-        MO1 -> MO4
-        MO2 -> MO5
-        MO2 -> MO6
-        MO6 -> MO7
-        MO3 -> MO8
-        MO3 -> MO9
-        MO4 -> MO10
-        MO4 -> MO11
-        MO10 -> MO12
+        MO1 --- MO2
+        MO1 --- MO3
+        MO1 --- MO4
+        MO2 --- MO5
+        MO2 --- MO6
+        MO6 --- MO7
+        MO3 --- MO8
+        MO3 --- MO9
+        MO4 --- MO10
+        MO4 --- MO11
+        MO10 --- MO12
 
 NOC performs auto-layout of *Tree* segment maps and proper RCA
 
@@ -124,12 +124,12 @@ neighbors
 .. mermaid::
 
     graph TB
-        MO1 -> MO2
-        MO2 -> MO3
-        MO3 -> MO4
-        MO5 -> MO6
-        MO6 -> MO7
-        MO7 -> MO4
+        MO1 --- MO2
+        MO1 --- MO5
+        MO2 --- MO3
+        MO3 --- MO4
+        MO5 --- MO6
+        MO6 --- MO4
 
 *Ring* offers protection against single node failure. Following example
 shows *MO3* failure not affects other objects
@@ -138,27 +138,27 @@ shows *MO3* failure not affects other objects
 
     graph TB
         style MO3 fill:#c0392b
-        MO1 -> MO2
-        MO2 -> MO3
-        MO3 -> MO4
-        MO5 -> MO6
-        MO6 -> MO7
-        MO7 -> MO4
+        MO1 --- MO2
+        MO1 --- MO5
+        MO2 --- MO3
+        MO3 --- MO4
+        MO5 --- MO6
+        MO6 --- MO4
 
-Though additional failure of *MO7* leads to *MO4* unavailability
+Though additional failure of *MO6* leads to *MO4* unavailability
 
 .. mermaid::
 
     graph TB
         style MO3 fill:#c0392b
-        style MO7 fill:#c0392b
+        style MO6 fill:#c0392b
         style MO4 fill:#7f8c8d
-        MO1 -> MO2
-        MO2 -> MO3
-        MO3 -> MO4
-        MO5 -> MO6
-        MO6 -> MO7
-        MO7 -> MO4
+        MO1 --- MO2
+        MO1 --- MO5
+        MO2 --- MO3
+        MO3 --- MO4
+        MO5 --- MO6
+        MO6 --- MO4
 
 Pure *Ring* topology is rather expensive, as any Object must be
 capable of forwarding all ring's traffic and is not very flexible
@@ -179,34 +179,15 @@ Mesh
 .. mermaid::
 
     graph TB
-        MO1 -> MO2
-        MO1 -> MO3
-        MO2 -> MO3
-        MO3 -> MO4
-        MO4 -> MO5
-        MO1 -> MO5
+        MO1 --- MO2
+        MO1 --- MO3
+        MO2 --- MO3
+        MO3 --- MO4
+        MO4 --- MO5
+        MO1 --- MO5
 
-NOC performs probabilistic spring layout for mesh networks and perform
-proper RCA in most cases
-
-.. _network-segment-horizontal-transit:
-
-Horizontal Transit
-------------------
-    # Horizontal transit policy
-    horizontal_transit_policy = StringField(
-        choices=[
-            ("E", "Always Enable"),
-            ("C", "Calculate"),
-            ("D", "Disable"),
-            ("P", "Profile")
-        ], default="P"
-    )
-    # Horizontal transit settings
-    # i.e. Allow traffic flow not only from parent-to-childrens and
-    # children-to-children, but parent-to-parent and parent-to-neighbors
-    # Calculated automatically during topology research
-    enable_horizontal_transit = BooleanField(default=False)
+NOC performs probabilistic spring layout for mesh networks which may
+require manual correction and performs proper RCA in most cases
 
 .. _network-segment-object-uplinks:
 
@@ -216,10 +197,38 @@ Object Uplinks
 .. mermaid::
 
     graph TB
-        MO1 -> MO2
-        MO1 -> MO3
-        MO2 -> MO4
-        MO3 -> MO4
+        MO1 --- MO2
+        MO1 --- MO3
+        MO2 --- MO4
+        MO3 --- MO4
+
+.. _network-segment-horizontal-transit:
+
+Horizontal Transit
+------------------
+Sometimes network segments of same level connected together
+for backup purposes. So in case of uplink failure one segment
+can use other as temporary uplink (*S2* - *S3* dotted link).
+
+.. mermaid::
+
+    graph TB
+        S1 --- S2
+        S1 --- S3
+        S2 -.- S3
+
+NOC offers additional Network Segment setting to specify whether
+such horizontal traffic flow is acceptable. *Horizontal Transit Policy*
+configured on per-segment and per- Network Segment Profile basis via
+*Horizontal Transit Policy* setting. Possible values are:
+
+* **Profile** (default): Use *Horizontal Transit Policy* from Network Segment Profile.
+* **Always Enable**: *Horizontal Transit* is always enabled.
+* **Disable**: *Horizontal Transit* is always disabled.
+* **Calculate**: *Horizontal Transit* is enabled if horizontal link is present
+
+NOC adjust RCA behavior in according to *Horizontal Transit Policy*,
+considering neighbor segment as additional uplink.
 
 .. _network-segment-sibling-segments:
 
