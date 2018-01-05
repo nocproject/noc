@@ -207,6 +207,14 @@ Consider the scheme:
 .. mermaid::
 
     graph TB
+        subgraph Parent
+        MO1
+        end
+        subgraph Segment
+        MO2
+        MO3
+        MO4
+        end
         MO1 --- MO2
         MO1 --- MO3
         MO2 --- MO4
@@ -264,6 +272,95 @@ considering neighbor segment as additional *Uplink Path*.
 
 Sibling Segments
 ----------------
+Network topology may change over time. Consider typical scheme
+of broadband access network:
+
+.. mermaid::
+
+    graph TB
+        subgraph Parent
+        AGG1
+        end
+        subgraph ODF
+        P1
+        P2
+        P3
+        P4
+        end
+        subgraph Segment1
+        MO11
+        MO12
+        MO13
+        end
+        subgraph Segment2
+        MO21
+        MO22
+        MO23
+        end
+        AGG1 --- P1
+        P1   --- MO11
+        AGG1 --- P2
+        P2   --- MO13
+        MO11 --- MO12
+        MO13 --- MO12
+        AGG1 --- P3
+        P3   --- MO21
+        AGG1 --- P4
+        P4   --- MO23
+        MO21 --- MO22
+        MO23 --- MO22
+
+Two separate optic cables build two access ring and terminated on
+four ports on aggregation switch. Consider we'd overestimated
+demands on *Segment1* or on *Segment2* or on both of them and total
+load on segments remains relatively low. Then we became short of
+ports in *AGG1*. We'd decided to connect *MO13* and *MO21* directly
+bypassing *AGG1*, so we'd disconnected two ports on *AGG1* and shorted
+ports *P2* and *P3* on *ODF* by optical patch-cord:
+
+.. mermaid::
+
+    graph TB
+        subgraph Parent
+        AGG1
+        end
+        subgraph ODF
+        P1
+        P2
+        P3
+        P4
+        end
+        subgraph Segment1
+        MO11
+        MO12
+        MO13
+        end
+        subgraph Segment2
+        MO21
+        MO22
+        MO23
+        end
+        AGG1 --- P1
+        P1   --- MO11
+        P2   -.- P3
+        P2   --- MO13
+        MO11 --- MO12
+        MO13 --- MO12
+        P3   --- MO21
+        AGG1 --- P4
+        P4   --- MO23
+        MO21 --- MO22
+        MO23 --- MO22
+
+Technically, we'd merged *Segment1* and *Segment2* building larger
+segment. We can simple move *MO21*, *MO22* and *MO23* to *Segment1*
+and eliminate *Segment2*. But sometimes is necessary to leave
+*Segment1* and *Segment2* separation (lots of printed documentation,
+maintenance service's habbits, reporting and direct links). NOC allows
+to declare *Segment1* and *Segment2* as the *Sibling Segments*.
+*Sibling Segments* considered as single segment in hierarchy,
+processed as one in *Uplinks* calculations and shown as a single
+map, though remaining two separate segments in database and reporting.
 
 VLAN Domains
 ------------
