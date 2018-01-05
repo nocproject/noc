@@ -193,6 +193,16 @@ require manual correction and performs proper RCA in most cases
 
 Object Uplinks
 --------------
+While *Network Segments* establish network's hierarchy, almost each
+segment obtains one direct *Parent Segment*. Each of segment's
+*Managed Objects* should have one or more *Paths* to *Parent Segment*
+in order to establish *Connectivity* with all network. Those paths
+are called *Uplink Paths* and all direct *Neighbors* along the *Uplink Path*
+considered *Uplinks*. The role of *Uplink* is to provide *Connectivity*
+to its *Downlinks*. For reserved topologies object's *Uplink* may be
+its *Downlink* at the same time.
+
+Consider the scheme:
 
 .. mermaid::
 
@@ -201,6 +211,26 @@ Object Uplinks
         MO1 --- MO3
         MO2 --- MO4
         MO3 --- MO4
+
+Lets *MO1* belong to *Parent Segment*, while *MO2*, *MO3* and *MO4* are
+in current *Segment*. The table of *Uplinks* and *Downlinks*:
+
+======== ========= ===========
+Object   Uplinks   Downlinks
+======== ========= ===========
+MO2      MO1, MO4  MO4
+MO3      MO1, MO4  MO4
+MO4      MO2, MO3  MO2, MO3
+======== ========= ===========
+
+*Uplinks* are key concept for *Topology-based Root-cause Analysis*.
+If all object's uplinks are unavailable, object's unavailability
+is *Consequence* of uplinks' failure. This is why correct segmentation
+and link detection is necessary for proper RCA.
+
+NOC rebuilds uplinks map for segment automatically every time
+*Managed Object* joins or leaves segment or segment topology changed.
+It is advised to avoid very large segments (>100 Objects)
 
 .. _network-segment-horizontal-transit:
 
@@ -228,7 +258,7 @@ configured on per-segment and per- Network Segment Profile basis via
 * **Calculate**: *Horizontal Transit* is enabled if horizontal link is present
 
 NOC adjust RCA behavior in according to *Horizontal Transit Policy*,
-considering neighbor segment as additional uplink.
+considering neighbor segment as additional *Uplink Path*.
 
 .. _network-segment-sibling-segments:
 
