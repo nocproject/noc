@@ -380,12 +380,35 @@ to declare *Segment1* and *Segment2* as the *Sibling Segments*.
 processed as one in *Uplinks* calculations and shown as a single
 map, though remaining two separate segments in database and reporting.
 
+.. _networksegment-vlan-domains:
+
 VLAN Domains
 ------------
+*Network Segments* are closely tied with *VLAN* concept. VLANs are
+not obliged to be network-wise, so VLAN 100 in one part of network
+may not be same VLAN 100 from other part so VLAN space may be *overlapped*.
+Unlike IPv4/IPv6 address space, which uses *VRF* to deal with address
+space overlaps, 802.1 set of standards do not introduce global
+distingueisher for VLAN space. So NOC uses concept of *VLAN Domain*.
+*VLAN Domain*, shortly, is an area with unique VLAN space.
+So VLAN 100 from different domains is not same VLAN 100, while
+VLAN 100 on differen *Managed Objects* from same VLAN domain may
+be considered same VLAN 100
+
+For clearance and ease of maintenance NOC considers *VLAN Domain*
+as a part of segment hierarchy. NOC uses *VLAN border* mark on segment
+to split segments tree to *VLAN Domain*. *VLAN Domain* covers
+*VLAN border* segment and all its descendants until next VLAN border.
+
+Consider example:
 
 .. mermaid::
 
     graph TB
+        style S1 stroke-width:4px
+        style S6 fill:#0f0,stroke-width:4px
+        style S10 fill:#0f0
+        style S11 fill:#0f0
         S1 --- S2
         S1 --- S3
         S1 --- S4
@@ -396,23 +419,84 @@ VLAN Domains
         S4 --- S9
         S6 --- S10
         S6 --- S11
-        classDef vb stroke-width:2px;
-        classDef d1 fill:#ccc;
-        classDef d2 fill:#fff;
-        class S1,S6 vb
-        class S1,S2,S3,S4,S5,S7,S8,S9 d1
-        class S6,S10,S11 d2
 
-.. todo::
-    # VLAN namespace demarcation
-    # * False - share namespace with parent VLAN
-    # * True - split own namespace
-    vlan_border = BooleanField(default=True)
-    # VLAN translation policy when marking border
-    # (vlan_border=True)
-    # Dynamically recalculated and placed to VLAN.translation_rule
-    # and VLAN.parent
-    vlan_translation = ListField(EmbeddedDocumentField(VLANTranslation))
+VLAN borders marked by thick frame: S1 and S6. First VLAN domain (blue)
+consist of S1, S2, S3, S4, S5, S7, S8 and S9. Second VLAN domain (green):
+S6, S10 and S11. Though S6 is descendant of S1 it is marked as VLAN border,
+so it starts its own domain.
+
+.. note::
+    Though *VLAN domains* are groups of *Network Segments* and
+    *VLAN domain* is a set of *Managed Object*, empty network segments
+    can be attached to *Subinterfaces*, so one *Managed Object* can
+    still handle multiple *VLAN domains*
+
+For ease of maintenance NOC automatically attaches all *VLAN domain's*
+VLANs to appropriative *VLAN border*.
+
+.. _network-segment-vlan-translation:
+
+VLAN Translation
+----------------
+NOC consider any implicit VLAN passing stops at *VLAN border*. Though it
+possible to propagate VLAN further via *VLAN Translation Rules*.
+Consider scheme:
+
+.. mermaid::
+
+    graph TB
+        style S1 stroke-width:4px
+        style S2 fill:#0f0,stroke-width:4px
+        S1 --- S2
+
+S1 and S2 both *VLAN borders*. *Managed Objects* MO1 and MO2 belongs to
+S1 and S2 respectively.
+
+*VLAN Translation Rules* are defined at *VLAN border* segments as a list
+of rules. Each rule contains following fields:
+
+* filter: :doc:`/reference/vc-filter`
+* rule: king of operation
+* parent_vlan: reference to VLAN from parent segment
+
+Rules are processed in definition order. First matching rule wins.
+
+NOC supports two kind of rules: *Map* and *Push*.
+
+Map
+^^^
+*Map* rule converts VLAN 802.1Q tag from target *VLAN domain* to
+802.1Q tag from parent's segment.
+
+VLANs can be either *rewritten*
+
+.. mermaid::
+    :caption: filter=2-200,rule=map,parent_vlan=200
+
+    sequenceDiagram
+        MO1 ->> Border: Tag=100
+        Border ->> MO2: Tag=200
+
+Or *extended* (rewritten to same tag)
+
+.. mermaid::
+    :caption: filter=2-200,rule=map,parent_vlan=100
+
+    sequenceDiagram
+        MO1 ->> Border: Tag=100
+        Border ->> MO2: Tag 100
+
+Push
+^^^^
+*Push* rule appends additional 802.1Q tag in top of existing 802.1Q tag,
+allowing Q-in-Q tunneling.
+
+.. mermaid::
+    :caption: filter=2-200,rule=push,parent_vlan=300
+
+    sequenceDiagram
+        MO1 ->> Border: Tag=100
+        Border ->> MO2: Tag=300,100
 
 VLAN Allocation Group
 ---------------------
