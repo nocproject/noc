@@ -7,3 +7,6 @@ Administrative Domain
     :backlinks: none
     :depth: 1
     :class: singlecol
+
+.. todo::
+    Describe *Administrative Domains*

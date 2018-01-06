@@ -382,6 +382,28 @@ map, though remaining two separate segments in database and reporting.
 
 VLAN Domains
 ------------
+
+.. mermaid::
+
+    graph TB
+        S1 --- S2
+        S1 --- S3
+        S1 --- S4
+        S2 --- S5
+        S2 --- S6
+        S3 --- S7
+        S3 --- S8
+        S4 --- S9
+        S6 --- S10
+        S6 --- S11
+        classDef vb stroke-width:2px;
+        classDef d1 fill:#ccc;
+        classDef d2 fill:#fff;
+        class S1,S6 vb
+        class S1,S2,S3,S4,S5,S7,S8,S9 d1
+        class S6,S10,S11 d2
+
+.. todo::
     # VLAN namespace demarcation
     # * False - share namespace with parent VLAN
     # * True - split own namespace
@@ -409,6 +431,7 @@ Autosegmentation
 
 Redudancy
 ---------
+.. todo::
     # True if segment has alternative paths
     is_redundant = BooleanField(default=False)
     # True if segment is redundant and redundancy
@@ -444,11 +467,13 @@ netflow_collector Yes   NetFlow collector's address
 
 L2 MTU
 ------
+.. todo::
     # Provided L2 MTU
     l2_mtu = IntField(default=1504)
 
 Network Map Settings
 --------------------
+.. todo::
     # Collapse object's downlinks on network map
     # when count is above the threshold
     max_shown_downlinks = IntField(default=1000)

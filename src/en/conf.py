@@ -207,7 +207,7 @@ extlinks = {
 rst_epilog = "\n".join([
     '.. |copy| unicode:: U+000A9',
     '.. |year| replace:: {0}'.format(year),
-    '.. |branch| replace:: ``{}``'.format(branch)
+    '.. |branch| replace:: {0}'.format(branch)
 ])
 # Mermaid settings
 # The output format for Mermaid when building HTML files.
