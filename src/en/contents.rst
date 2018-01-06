@@ -9,4 +9,7 @@ this Manual and additional editions of this text.
     :titlesonly:
 
     /reference
+    /services
     /profiles
+    /glossary
+    /todos

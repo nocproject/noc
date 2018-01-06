@@ -11,7 +11,7 @@ Container
 Container is a part of local logical hierarchy allowing to organize
 :doc:`/reference/managed-object` in any desired way. Each container
 can hold other containers building *container tree*. *Container tree*
-is accessible via *Inventory* :doc:`web` of via :doc:`card`
+is accessible via *Inventory* :doc:`/services/web` of via :doc:`/services/card`
 
 Container can be any of *Container Types*
 

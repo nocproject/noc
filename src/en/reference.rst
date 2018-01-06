@@ -11,5 +11,4 @@ Reference
     /reference/network-segment
     /reference/network-segment-profile
     /reference/allocation-group
-    /reference/glossary
 

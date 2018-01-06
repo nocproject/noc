@@ -12,7 +12,6 @@ Network Segment Profile is a group settings for :doc:`/reference/network-segment
 
 .. todo::
     Complete documentation
-
     name = StringField(unique=True)
     description = StringField(required=False)
     #

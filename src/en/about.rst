@@ -33,5 +33,3 @@ also access this content in the following editions:
 - :hardlink:`HTML tar.gz <manual.tar.gz>`
 
 - :hardlink:`EPUB Format <NOC-manual.epub>`
-
-.. todo:

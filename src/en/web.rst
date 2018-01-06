@@ -1,7 +1,0 @@
-=============
-Web Interface
-=============
-
-.. toctree::
-    :titlesonly:
-
