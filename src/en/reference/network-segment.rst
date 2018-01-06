@@ -112,9 +112,27 @@ NOC performs auto-layout of *Tree* segment maps and proper RCA
 Forest
 ^^^^^^
 *Forest* is common case with two-or-more independ trees. Like a *Tree*
+
+.. mermaid::
+
+    graph TB
+        MO1 --- MO4
+        MO1 --- MO5
+        MO5 --- MO6
+        MO2 --- MO7
+        MO2 --- MO8
+        MO3 --- MO9
+        MO3 --- MO10
+        MO9 --- MO11
+
 *Forest* offers no redundancy. Any failed Object makes its children
 unavailable.
 NOC performs auto-layout of *Forest* segment maps and proper RCA
+
+.. note::
+
+    *Forest* segments should be split to several *Tree* segment
+    unless you have explicit reason to use *Forest*
 
 Ring
 ^^^^
