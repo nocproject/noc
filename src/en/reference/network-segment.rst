@@ -498,6 +498,8 @@ allowing Q-in-Q tunneling.
         MO1 ->> Border: Tag=100
         Border ->> MO2: Tag=300,100
 
+.. _network-segment-vlan-allocation-group:
+
 VLAN Allocation Group
 ---------------------
 

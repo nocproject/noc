@@ -11,5 +11,6 @@ this Manual and additional editions of this text.
     /reference
     /services
     /profiles
+    /discovery
     /glossary
     /todos
