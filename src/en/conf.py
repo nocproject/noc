@@ -28,9 +28,13 @@ import os
 
 
 def get_branch():
-    return subprocess.check_output([
-        "git", "symbolic-ref", "--short", "HEAD"
-    ])
+    try: 
+        branch = subprocess.check_output([
+            "git", "symbolic-ref", "--short", "HEAD"
+        ])
+    except:
+        branch = "master"
+    return branch
 
 
 def get_language():
