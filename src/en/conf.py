@@ -218,7 +218,7 @@ rst_epilog = "\n".join([
 # This must be either 'raw' 'png' or 'svg'; the default is 'raw'.
 # mermaid-cli is required if it's not raw
 # Also note 'svg' support is very experimental in mermaid.
-mermaid_output_format = 'svg'
+mermaid_output_format = 'raw'
 # The command name with which to invoke mermaid-cli program.
 # The default is 'mmdc'; you may need to set this to a full path
 # if it's not in the executable search path.
