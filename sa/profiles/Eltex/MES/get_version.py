@@ -52,6 +52,7 @@ class Script(BaseScript):
         "59": "MES-2124P",
         "74": "MES-5324",
         "81": "MES-3324F",
+        "88": "MES-2308",
         "89": "MES-2308P"
     }
 
