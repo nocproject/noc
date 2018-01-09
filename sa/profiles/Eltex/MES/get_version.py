@@ -52,6 +52,7 @@ class Script(BaseScript):
         "59": "MES-2124P",
         "74": "MES-5324",
         "81": "MES-3324F",
+        "88": "MES-2308",
         "89": "MES-2308P"
     }
 
@@ -119,7 +120,7 @@ class Script(BaseScript):
         else:
             serial = self.re_search(self.rx_serial2, ser)
 
-        r = {
+        res = {
             "vendor": "Eltex",
             "platform": platform,
             "version": version.group("version"),
@@ -128,6 +129,6 @@ class Script(BaseScript):
             }
         }
         if bootprom:
-            r["attributes"]["Boot PROM"] = bootprom.group("bootprom")
-            r["attributes"]["HW version"] = hardware.group("hardware")
-        return r
+            res["attributes"]["Boot PROM"] = bootprom.group("bootprom")
+            res["attributes"]["HW version"] = hardware.group("hardware")
+        return res
