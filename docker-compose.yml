@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/docs
 
-  build-html-en:
+  html-en:
     image: "registry.getnoc.com/infrastructure/docs:master"
     restart: "no"
     volumes:
@@ -15,18 +15,46 @@ services:
     working_dir: /docs
     command: sphinx-build -a -E -b html src/en build/en
 
-  build-html-ru:
+  html-en-inc:
     image: "registry.getnoc.com/infrastructure/docs:master"
     restart: "no"
     volumes:
       - .:/docs
     working_dir: /docs
-    command: sphinx-build -a -E -b html src/ru build/ru
+    command: sphinx-build -b html src/en build/en
 
-  build-html:
+  html:
     depends_on:
-      - build-html-en
-      - build-html-ru
+      - html-en
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    volumes:
+      - .:/docs
+    working_dir: /docs
+    command: /bin/true
+
+  epub-en:
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    volumes:
+      - .:/docs
+    working_dir: /docs
+    command: sphinx-build -b epub src/en build/epub/en
+
+  epub:
+    depends_on:
+      - epub-en
+    image: "registry.getnoc.com/infrastructure/docs:master"
+    restart: "no"
+    volumes:
+      - .:/docs
+    working_dir: /docs
+    command: /bin/true
+
+  build:
+    depends_on:
+      - html
+      - epub
     image: "registry.getnoc.com/infrastructure/docs:master"
     restart: "no"
     volumes:
