@@ -48,6 +48,7 @@ Proper segmentation is the key concept for various areas:
 * Root-Cause Analysis (RCA) for Fault Management
 * Network Maps
 * VLAN management
+* Configuration generation and checking
 
 .. note::
 
@@ -65,6 +66,10 @@ Group settings for Network Segments are contained in :doc:`/reference/network-se
 
 Segment Topology
 ----------------
+Segment is the set of *Managed Objects* and links between them so
+it can be considered a *Graph*. NOC extends Graph with all *Managed Objects*
+from adjacent segments, connected to given segment to build
+*Segment Topology*. NOC automatically recognizes following topologies
 
 Tree
 ^^^^
@@ -484,7 +489,7 @@ Or *extended* (rewritten to same tag)
 
     sequenceDiagram
         MO1 ->> Border: Tag=100
-        Border ->> MO2: Tag 100
+        Border ->> MO2: Tag=100
 
 Push
 ^^^^
