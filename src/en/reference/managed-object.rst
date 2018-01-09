@@ -29,6 +29,7 @@ answering particular question:
 * **Container:** *Where object is located?*
   See :doc:`/reference/container`
 
+Managed Object must belong to only one division of particular type
 
 .. todo::
     Complete documentation

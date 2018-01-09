@@ -12,3 +12,5 @@ Reference
     /reference/network-segment-profile
     /reference/allocation-group
     /reference/vc-filter
+    /reference/user
+    /reference/group
