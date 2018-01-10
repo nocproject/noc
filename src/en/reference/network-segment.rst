@@ -571,12 +571,31 @@ netflow_collector Yes   NetFlow collector's address
 
 L2 MTU
 ------
-.. todo::
-    # Provided L2 MTU
-    l2_mtu = IntField(default=1504)
+Network Segment's L2 MTU is minimal ethernet payload size guaranteed
+to pass via Segment. MTU is accounted without 802.3 ethernet header
+but with all other encapsulation headers (802.1Q, MPLS, etc).
 
-.. todo::
-    Without 802.3 header
+Common L2 MTU values
+
+====== =================================================================
+L2 MTU Description
+====== =================================================================
+1500   Common untagged ethernet packet
+1504   802.1Q VLAN tagged packet
+1508   Q-in-Q packet
+1536   MPLS packet with up to 3 labels
+<1600  Baby giant
+>1600  Jumbo
+====== =================================================================
+
+Understanding real segment's L2 MTU is viable part of providing effective
+ethernet transit services. Transit interface with improper MTU may lead
+to occasional packet drops. Such drops can lead to hard-to-diagnose
+disruption of services.
+
+.. note::
+    Automatic detection of segment's L2 MTU is work-in-progress
+    See :issue:`#624 <624>` for details
 
 Network Map Settings
 --------------------
