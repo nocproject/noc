@@ -516,15 +516,36 @@ class TableSection(ReportSection):
 
         s = [
             "<script type='text/javascript' src='/static/js/jquery.table2CSV.js'></script>",
-            "<form action='/main/desktop/dlproxy/' method='POST'>",
+            "<form id='report' action='/main/desktop/dlproxy/' method='POST'>",
             "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
             "<input type='hidden' name='filename' value='report.csv'>",
             "<input type='hidden' name='data' id='csv_data'>",
-            "<input type='submit' value='CSV' onclick='getCSVData(\".report-table\");'>",
-            "<input type='button' value='" + _("Print") + "'onclick='window.print()'>",
-            "<input type='button' value='PDF' onclick='getPDF(\".report-table\")'>",
-            "<input type='submit' value='SSV' onclick='getSSVData(\".report-table\");'>",
+            "<input class='button' disabled type='submit' value='CSV' onclick='getData(\".report-table\", \",\");'>",
+            "<input class='button' disabled type='button' value='" + _("Print") + "'onclick='window.print()'>",
+            "<input class='button' disabled type='button' value='PDF' onclick='getPDFReport(\".report-table\")'>",
+            "<input class='button' disabled type='submit' value='SSV' onclick='getData(\".report-table\", \";\");'>",
             "</form>",
+            "<script>",
+            "function getData(t, delimiter) {",
+            "  $('.button').attr('disabled','disabled');",
+            "  setTimeout(function() {",
+            "      var v = $(t).TableCSVExport({delivery: 'value', separator: ';'});",
+            "      $('#csv_data').val($(t).TableCSVExport({delivery: 'value', separator: delimiter}));",
+            "      $('.button').prop('disabled', false);",
+            "      $('#report').submit();",
+            "  }, 0);",
+            "}",
+            "function getPDFReport(t) {",
+            "  $('.button').attr('disabled','disabled');",
+            "  setTimeout(function() {",
+            "      getPDF(t)",
+            "      $('.button').prop('disabled', false);",
+            "  }, 0);",
+            "}",
+            "$( document ).ready(function() {",
+            "   var buttons = $('.button').prop('disabled', false);",
+            "});",
+            "</script>",
             "<table class='report-table' summary='%s'>" % self.quote(self.name)
         ]
         # Render header
@@ -580,17 +601,6 @@ class TableSection(ReportSection):
             s += ["</tr>"]
         s += ["</tbody>"]
         s += ["</table>"]
-        s += ["<script>"]
-        s += ["function getCSVData(t) {"]
-        s += ["  var v = $(t).TableCSVExport({delivery: 'value', separator: ','});"]
-        s += ["  $('#csv_data').val(v);"]
-        s += ["}"]
-        s += ["function getSSVData(t) {"]
-        s += ["  var v = $(t).TableCSVExport({delivery: 'value', separator: ';'});"]
-        s += ["  $('#csv_data').val(v);"]
-        s += ["}"]
-
-        s += ["</script>"]
         return "\n".join(s)
 
     def to_csv(self, delimiter=","):
