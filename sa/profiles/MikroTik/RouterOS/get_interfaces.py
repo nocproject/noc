@@ -106,8 +106,7 @@ class Script(BaseScript):
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
                 if r["type"].startswith("ipip-") \
-                or r["type"].startswith("eoip-") \
-                or r["type"].startswith("gre-"):
+                or r["type"].startswith("eoip-"):
                     self.si = {
                         "name": r["name"],
                         "admin_status": "X" not in f,
