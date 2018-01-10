@@ -573,7 +573,7 @@ L2 MTU
 ------
 Network Segment's L2 MTU is minimal ethernet payload size guaranteed
 to pass via Segment. MTU is accounted without 802.3 ethernet header
-but with all other encapsulation headers (802.1Q, MPLS, etc).
+(which is 14 bytes in length) but with all other encapsulation headers (802.1Q, MPLS, etc).
 
 Common L2 MTU values
 
