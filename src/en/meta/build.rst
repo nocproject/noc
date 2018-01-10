@@ -110,6 +110,7 @@ Attach NOC Docker Registry
 Build Commands
 ~~~~~~~~~~~~~~
 "docker-compose.yml" provided with documentation offers following commands
+
 ============= ==========================================================
 Command       Description
 ============= ==========================================================
