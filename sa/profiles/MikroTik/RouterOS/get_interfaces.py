@@ -126,12 +126,12 @@ class Script(BaseScript):
         time.sleep(1)
         # Refine ethernet parameters
         for n, f, r in self.cli_detail(
-            "/interface ethernet print detail without-paging"):
+                "/interface ethernet print detail without-paging"):
             iface = ifaces[r["name"]]
             ifaces[r["name"]]["mac"] = r["mac-address"]
         # Attach `vlan` subinterfaces to parent
         for n, f, r in self.cli_detail(
-            "/interface vlan print detail without-paging"):
+                "/interface vlan print detail without-paging"):
             if r["interface"] in ifaces:
                 i = ifaces[r["interface"]]
                 self.si = {
@@ -150,13 +150,12 @@ class Script(BaseScript):
         vlan_tags = {}
         # "RB532", "x86", CCR1009 not support internal switch port
         try:
-            v = self.cli_detail(
-                    "/interface ethernet switch port print detail without-paging")
+            v = self.cli_detail("/interface ethernet switch port print detail without-paging")
             for n, f, r in v:
                 if "vlan-mode" not in r:
                     continue
                 if (r["vlan-mode"] in ["check", "secure"]) \
-                and (r["vlan-header"] in ["add-if-missing", "leave-as-is"]):
+                        and (r["vlan-header"] in ["add-if-missing", "leave-as-is"]):
                     vlan_tags[r["name"]] = True
                 else:
                     vlan_tags[r["name"]] = False
@@ -165,9 +164,8 @@ class Script(BaseScript):
         # "RB532", "x86", CCR1009 not support internal switch port
         try:
             # Attach subinterfaces with `BRIDGE` AFI to parent
-            v = self.cli_detail(
-                    "/interface ethernet switch vlan print detail without-paging")
-            for n, f, r in v: 
+            v = self.cli_detail("/interface ethernet switch vlan print detail without-paging")
+            for n, f, r in v:
                 vlan_id = int(r["vlan-id"])
                 ports = r["ports"].split(",")
                 if not ports:
@@ -208,7 +206,7 @@ class Script(BaseScript):
             pass
         # Refine ip addresses
         for n, f, r in self.cli_detail(
-            "/ip address print detail without-paging"):
+                "/ip address print detail without-paging"):
             if "X" in f:
                 continue
             self.si = {}
@@ -226,8 +224,8 @@ class Script(BaseScript):
                     }
                     i["subinterfaces"] += [self.si]
                 else:
-                    self.logger.debug('\nError: subinterfaces already exists in ' \
-                        'interface \n%s\n' % i)
+                    self.logger.debug('\nError: subinterfaces already exists in '
+                            'interface \n%s\n' % i)
                     continue
             else:
                 for i in ifaces:
