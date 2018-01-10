@@ -94,7 +94,7 @@ Monmap.prototype.poll_data = function() {
         s = bbox.getSouth(),
         zoom = me.map.getZoom();
 
-    // $("#summary").html('<i class="fa fa-spinner fa-spin"></i>' + "Loading ...");
+    $("#summary").html('<i class="fa fa-spinner fa-spin"></i>' + "Loading ...");
     // $.getJSON( "/ui/card/js/data.json", function( data ) { // test
     $.ajax("/api/card/view/monmap/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s + "&maintenance=" + this.maintenance).done(function(data) {
         me.markers.clearLayers();
@@ -130,7 +130,8 @@ Monmap.prototype.poll_data = function() {
             me.markers.addLayer(marker);
         }
         me.map.addLayer(me.markers);
-        // $("#summary").html("");
+        // Replace summary
+        $("#summary").html(data.summary);
         setTimeout(function() {me.poll_data(); }, 60000);
     });
 };
