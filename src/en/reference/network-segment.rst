@@ -139,6 +139,8 @@ NOC performs auto-layout of *Forest* segment maps and proper RCA
     *Forest* segments should be split to several *Tree* segment
     unless you have explicit reason to use *Forest*
 
+.. _network-segment-topology-ring:
+
 Ring
 ^^^^
 Common *Ring* topology considers each object connected with exactly two
@@ -194,6 +196,8 @@ is performed with cheap switches contained within same PoP with backbone nodes.
     Show Ring-and-Tree topology and describe fault propagation
 
 NOC performs neat auto-layout of *Ring* segment maps and proper RCA
+
+.. _network-segment-topology-mesh:
 
 Mesh
 ^^^^
@@ -507,33 +511,42 @@ allowing Q-in-Q tunneling.
 
 VLAN Allocation Group
 ---------------------
+.. todo::
+    Describe VLAN allocation group
 
 .. _network-segment-mac-discovery:
 
 MAC Discovery
 -------------
+MAC topology discovery can be used as last resort when other
+methods are failed. Contrary to other per-object methods MAC
+discovery performed is per-segment basis using previously collected
+MAC addresses. See :ref:`discovery-segment-mac` for details.
 
 .. _network-segment-autosegmentation:
 
 Autosegmentation
 ----------------
+Segmentation may be performed automatically during box discovery.
+See :ref:`discovery-box-segmentation` for details
 
-.. _network-segment-redudancy:
+.. _network-segment-redundancy:
 
-Redudancy
----------
-.. todo::
-    # True if segment has alternative paths
-    is_redundant = BooleanField(default=False)
-    # True if segment is redundant and redundancy
-    # currently broken
-    lost_redundancy = BooleanField(default=False)
+Redundancy
+----------
+:ref:`network-segment-topology-ring` and :ref:`network-segment-topology-mesh`
+offer path redundancy. NOC detects segment redundancy automatically.
+Outages in redundant segments can leave to *Lost of Redundancy*.
+*Lost of Redundancy* means that currently working services are left
+without proper redundancy and are at risk in case of following outage.
+During the outage NOC calculates affected services and services
+with *Lost of Redundancy* and provides information to escalated
+*Trouble Tickets*.
 
 .. _network-segment-settings:
 
 Object Settings
 ---------------
-
 Segments can hold Managed Object's recommended settings for config generation
 and validation Settings can be either scalar (defined once)
 or list (can be declared multiple times).
@@ -561,6 +574,9 @@ L2 MTU
 .. todo::
     # Provided L2 MTU
     l2_mtu = IntField(default=1504)
+
+.. todo::
+    Without 802.3 header
 
 Network Map Settings
 --------------------

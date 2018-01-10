@@ -44,5 +44,5 @@ changes in the product and in users' needs.
 
 *Files* in the ``src/`` directory represent the tip of a logical
 tree of documents, while *directories* are containers of types of
-content. There is only one level of sub-directories in the ``src/``
+content. There is only one or two levels of sub-directories in the ``src/``
 directory
