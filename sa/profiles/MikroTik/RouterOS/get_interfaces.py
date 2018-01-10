@@ -107,13 +107,13 @@ class Script(BaseScript):
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
                 if r["type"].startswith("ipip-") \
                     or r["type"].startswith("eoip-"):
-                        self.si = {
-                            "name": r["name"],
-                            "admin_status": "X" not in f,
-                            "oper_status": "R" in f,
-                            "enabled_afi": ["IPv4"],
-                            "enabled_protocols": []
-                        }
+                    self.si = {
+                        "name": r["name"],
+                        "admin_status": "X" not in f,
+                        "oper_status": "R" in f,
+                        "enabled_afi": ["IPv4"],
+                        "enabled_protocols": []
+                    }
                     if self.get_mtu(r) is not None:
                         self.si["mtu"] = self.get_mtu(r)
                     if r["type"].startswith("ipip-"):
