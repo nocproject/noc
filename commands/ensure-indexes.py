@@ -72,7 +72,7 @@ class Command(BaseCommand):
                 coll.drop_index(x_indexes[fn])
         # Apply indexes
         model.ensure_indexes()
-        #self.print("[%s] Indexes: %s || %s" % (model_id, model.list_indexes(), model._get_collection().index_information()))
+
 
 if __name__ == "__main__":
     Command().run()
