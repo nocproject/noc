@@ -224,8 +224,7 @@ class Script(BaseScript):
                     }
                     i["subinterfaces"] += [self.si]
                 else:
-                    self.logger.debug('\nError: subinterfaces already exists in '
-                            'interface \n%s\n' % i)
+                    self.logger.debug('\nError: subinterfaces already exists in interface \n%s\n' % i)
                     continue
             else:
                 for i in ifaces:
@@ -361,7 +360,7 @@ class Script(BaseScript):
                     for si in ifaces[i].get("subinterfaces", []):
                         if si["name"] == r["interface"]:
                             for p in proto:
-                                if not p in si["enabled_protocols"]:
+                                if p not in si["enabled_protocols"]:
                                     si["enabled_protocols"] += [p]
         except self.CLISyntaxError:
             pass
