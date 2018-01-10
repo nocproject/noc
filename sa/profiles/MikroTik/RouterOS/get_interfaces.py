@@ -62,7 +62,7 @@ class Script(BaseScript):
         ifname = self.cli_detail("/interface %s print detail without-paging" % iftype, cached=True)
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
-                #in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
+                # in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
                 if "local-address" in r1.keys():
                     tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
@@ -106,14 +106,14 @@ class Script(BaseScript):
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
                 if r["type"].startswith("ipip-") \
-                or r["type"].startswith("eoip-"):
-                    self.si = {
-                        "name": r["name"],
-                        "admin_status": "X" not in f,
-                        "oper_status": "R" in f,
-                        "enabled_afi": ["IPv4"],
-                        "enabled_protocols": []
-                    }
+                    or r["type"].startswith("eoip-"):
+                        self.si = {
+                            "name": r["name"],
+                            "admin_status": "X" not in f,
+                            "oper_status": "R" in f,
+                            "enabled_afi": ["IPv4"],
+                            "enabled_protocols": []
+                        }
                     if self.get_mtu(r) is not None:
                         self.si["mtu"] = self.get_mtu(r)
                     if r["type"].startswith("ipip-"):
