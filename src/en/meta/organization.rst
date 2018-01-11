@@ -1,3 +1,5 @@
+.. _meta-organization:
+
 ===========================
 NOC Manual Organization
 ===========================

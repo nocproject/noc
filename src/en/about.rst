@@ -70,6 +70,7 @@ For more information on the NOC documentation process, see:
 .. toctree::
    :maxdepth: 1
 
+   /meta/style-guide
    /meta/organization
    /meta/build
 

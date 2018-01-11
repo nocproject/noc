@@ -13,27 +13,27 @@ This document contains direct instructions for building the NOC documentation.
 Getting Started
 ---------------
 Install Git
-~~~~~~~~~~~~
+~~~~~~~~~~~
 Ensure Git is installed on you system
 
 macOS
-^^^^^^
+`````
 macOS is supplied with Git out-of-box. You are free to use
 `SourceTree <https://www.sourcetreeapp.com>`_ or any other tool of your
 choices.
 
 RHEL/Fedora/Centos
-^^^^^^^^^^^^^^^^^^
+``````````````````
 .. todo::
     Describe Git installation on RHEL/Centos
 
 Debian/Ubuntu
-^^^^^^^^^^^^^
+`````````````
 .. todo::
     Describe Git installation on Debian/Ubuntu
 
 FreeBSD
-^^^^^^^
+```````
 .. todo::
     Describe Git installation on FreeBSD
 
@@ -84,21 +84,21 @@ Install Dependencies
 Docker is required for manual documentation build
 
 macOS
-^^^^^
+`````
 To install Docker follow `instruction <https://docs.docker.com/docker-for-mac/>`_
 
 RHEL/Fedora/Centos
-^^^^^^^^^^^^^^^^^^
+``````````````````
 .. todo::
     Describe Docker installation for RHEL/Centos
 
 Debian/Ubuntu
-^^^^^^^^^^^^^
+`````````````
 .. todo::
     Describe Docker installation for Debian/Ubuntu
 
 FreeBSD
-^^^^^^^
+```````
 .. todo::
     Describe Docker installation for Debian/Ubuntu
 
