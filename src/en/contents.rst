@@ -14,5 +14,6 @@ this Manual and additional editions of this text.
     /profiles
     /discovery
     /admin
+    /man
     /glossary
     /todos
