@@ -2,15 +2,17 @@
 # ----------------------------------------------------------------------
 # Load config from consul
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 # NOC modules
-from base import BaseProtocol
+from .base import BaseProtocol
 from noc.core.consul import ConsulClient
 
 
