@@ -1,8 +1,8 @@
 .. _man-config:
 
-======================================
+======
 config
-======================================
+======
 
 .. contents:: On this page
     :local:
@@ -12,24 +12,28 @@ config
 
 Name
 ----
-config - 
-
-.. todo::
-    Short description for config
+*config*: Config manipulation tool
 
 Synopsis
 --------
-.. todo::
-   Describe syntax here
+::
+
+    noc config dump
 
 Description
 -----------
-.. todo::
-    Describe config
+*config* loads effective configuration and dumps it in YAML format to stdout.
+Effective configuration defined by :ref:`noc_config` environment variable.
+Refer to :ref:`admin-configuration` for details.
 
 Examples
 --------
+::
+
+    /opt/noc$ ./noc config dump
+    /opt/noc$ NOC_CONFIG=legacy:/// ./noc config dump
 
 See also
 --------
-
+* :ref:`noc_config`
+* :ref:`admin-configuration`

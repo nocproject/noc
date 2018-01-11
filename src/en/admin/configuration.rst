@@ -1,3 +1,5 @@
+.. _admin-configuration:
+
 ====================
 Configuration System
 ====================
@@ -210,3 +212,7 @@ Examples::
 
     /opt/noc# NOC_CONFIG=legacy:/// ./noc config dump > etc/settings.yml
 
+
+Tools
+-----
+Refer to :ref:`man-config` command for usage details
