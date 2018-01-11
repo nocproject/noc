@@ -17,10 +17,7 @@ change request and how to contribute a manual
 
 License
 -------
-
-This Manual is licensed under a `Creative Commons
-Attribution-NonCommercial-ShareAlike 4.0 International License
-<http://creativecommons.org/licenses/by-nc-sa/4.0/>`_
+This Manual is licensed under a :ref:`doc-license`.
 
 |copy| The NOC Project. 2007-|year|
 
