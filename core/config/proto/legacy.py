@@ -2,16 +2,17 @@
 # ----------------------------------------------------------------------
 # Load legacy noc.yml
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 # Third-party modules
 import yaml
 # NOC modules
-from base import BaseProtocol
+from .base import BaseProtocol
 
 
 class LegacyProtocol(BaseProtocol):

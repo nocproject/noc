@@ -2,19 +2,19 @@
 # ----------------------------------------------------------------------
 # Load config from YAML
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 import itertools
 import os
 import six
 # Third-party modules
 import yaml
 # NOC modules
-from base import BaseProtocol
+from .base import BaseProtocol
 
 
 class YAMLProtocol(BaseProtocol):
@@ -24,6 +24,7 @@ class YAMLProtocol(BaseProtocol):
         yaml:///<path>
     """
     INDENT = "  "
+    ESCAPE_START = ("@", "%", "&")
 
     def __init__(self, config, url):
         super(YAMLProtocol, self).__init__(config, url)
@@ -59,7 +60,7 @@ class YAMLProtocol(BaseProtocol):
                 for pp in prefix[len(current):]:
                     r += ["%s%s:" % (self.INDENT * len(current), pp)]
                     current += [pp]
-            if isinstance(v, six.string_types) and (v.startswith("%") or v.startswith("@")):
+            if isinstance(v, six.string_types) and v.startswith(self.ESCAPE_START):
                 v = "\\" + v
             r += ["%s%s: %s" % (self.INDENT * len(current), p[-1], v)]
         r = "\n".join(r)
