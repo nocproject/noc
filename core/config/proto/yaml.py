@@ -24,6 +24,7 @@ class YAMLProtocol(BaseProtocol):
         yaml:///<path>
     """
     INDENT = "  "
+    ESCAPE_START = ("@", "%", "&")
 
     def __init__(self, config, url):
         super(YAMLProtocol, self).__init__(config, url)
@@ -59,7 +60,7 @@ class YAMLProtocol(BaseProtocol):
                 for pp in prefix[len(current):]:
                     r += ["%s%s:" % (self.INDENT * len(current), pp)]
                     current += [pp]
-            if isinstance(v, six.string_types) and (v.startswith("%") or v.startswith("@")):
+            if isinstance(v, six.string_types) and v.startswith(self.ESCAPE_START):
                 v = "\\" + v
             r += ["%s%s: %s" % (self.INDENT * len(current), p[-1], v)]
         r = "\n".join(r)
