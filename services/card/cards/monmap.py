@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Monmap
+# MonMap
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
@@ -8,21 +8,24 @@
 
 # Python modules
 import operator
+import itertools
 from collections import defaultdict
 # Third-party modules
 import cachetools
-import geojson
+# import geojson
+import random
 # NOC modules
-from base import BaseCard
+from noc.services.card.cards.base import BaseCard
+from noc.inv.models.object import Object
+from noc.lib.nosql import DoesNotExist
+from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.gis.models.layer import Layer
-from noc.inv.models.objectconnection import ObjectConnection
-from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 
 
-class MonmapCard(BaseCard):
+class MonMapCard(BaseCard):
     name = "monmap"
     card_css = [
         "/ui/pkg/leaflet/leaflet.css",
@@ -37,9 +40,23 @@ class MonmapCard(BaseCard):
     ]
 
     default_template_name = "monmap"
+    o_default_name = "Root"
+
+    color_map = {"error": "#FF0000",
+                 "warning": "#F0C20C",
+                 "default": "#6ECC39"}
 
     _layer_cache = {}
     TOOLTIP_LIMIT = config.card.alarmheat_tooltip_limit
+
+    def get_object(self, id=None):
+        self.root = Object.objects.get(name=self.o_default_name)
+        if id:
+            try:
+                self.root = Object.objects.get(id=id)
+            except DoesNotExist:
+                pass
+        print id
 
     def get_data(self):
         p = self.current_user.get_profile()
@@ -65,121 +82,126 @@ class MonmapCard(BaseCard):
                 else:
                     d[k] = s[k]
 
-        zoom = int(self.handler.get_argument("z"))
-        west = float(self.handler.get_argument("w"))
-        east = float(self.handler.get_argument("e"))
-        north = float(self.handler.get_argument("n"))
-        south = float(self.handler.get_argument("s"))
-        ms = int(self.handler.get_argument("maintenance"))
-        active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
-        alarms = []
-        services = {}
-        subscribers = {}
-        t_data = defaultdict(list)
-        if self.current_user.is_superuser:
-            qs = ActiveAlarm.objects.all()
-        else:
-            qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
-        if ms == 0:
-            # Filter out equipment under maintenance
-            qs = qs.filter(managed_object__nin=Maintenance.currently_affected())
-        for a in qs.only("id", "managed_object", "direct_subscribers", "direct_services"):
-            s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
-            s_service = SummaryItem.items_to_dict(a.direct_services)
-            mo = a.managed_object
-            if mo.x and mo.y:
-                w = ServiceSummary.get_weight({
-                    "subscriber": s_sub,
-                    "service": s_service
-                })
-                # @todo: Should we add the object's weight to summary?
-                # @todo: Check west/south hemisphere
-                if active_layers and west <= mo.x <= east and south <= mo.y <= north:
-                    t_data[mo.x, mo.y] += [(mo, w)]
-            else:
-                w = 0
-            alarms += [{
-                "alarm_id": str(a.id),
-                "managed_object": mo.name,
-                "x": mo.x,
-                "y": mo.y,
-                "w": max(w, 1)
-            }]
-            update_dict(services, s_service)
-            update_dict(subscribers, s_sub)
-        links = None
-        o_seen = set()
-        points = None
-        o_data = {}
-        if t_data and active_layers:
-            # Create lines
-            bbox = geojson.Polygon([[
-                [west, north],
-                [east, north],
-                [east, south],
-                [west, south],
-                [west, north]
-            ]])
-            lines = []
-            for d in ObjectConnection._get_collection().find({
-                "type": "pop_link",
-                "layer": {
-                    "$in": [l.id for l in active_layers]
-                },
-                "line": {
-                    "$geoIntersects": {
-                        "$geometry": bbox
-                    }
-                }
-            }, {
-                "_id": 0,
-                "connection": 1,
-                "line": 1
-            }):
-                for c in d["line"]["coordinates"]:
-                    if tuple(c) in t_data:
-                        for c in d["line"]["coordinates"]:
-                            tc = tuple(c)
-                            o_data[tc] = t_data.get(tc, [])
-                        o_seen.add(tuple(c))
-                        lines += [d["line"]]
-                        break
-            if lines:
-                links = geojson.FeatureCollection(features=lines)
-            # Create points
-            points = []
-            for x, y in o_data:
-                mos = {}
-                for mo, w in o_data[x, y]:
-                    if mo not in mos:
-                        mos[mo] = w
-                mos = sorted(
-                    mos,
-                    key=lambda z: mos[z],
-                    reverse=True
-                )[:self.TOOLTIP_LIMIT]
-                points += [
-                    geojson.Feature(
-                        geometry=geojson.Point(
-                            coordinates=[x, y]
-                        ),
-                        properties={
-                            "alarms": len(t_data[x, y]),
-                            "objects": [{
-                                "id": mo.id,
-                                "name": mo.name,
-                                "address": mo.address
-                            } for mo in mos]
-                        }
-                    )
-                ]
-            points = geojson.FeatureCollection(features=points)
+        # zoom = int(self.handler.get_argument("z"))
+        # west = float(self.handler.get_argument("w"))
+        # east = float(self.handler.get_argument("e"))
+        # north = float(self.handler.get_argument("n"))
+        # south = float(self.handler.get_argument("s"))
+        # ms = int(self.handler.get_argument("maintenance"))
+        # active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
+        objects = []
+        sss = {"error": {},
+               "warning": {},
+               "good": {}}
+
+        services = defaultdict(list)
+        moss = ManagedObject.objects.filter(is_managed=True).exclude(container=None)
+
+        alarms = dict(ActiveAlarm.objects.filter(managed_object__in=list(moss.values_list("id", flat=True))).scalar("managed_object", "severity"))
+
+        for container, mol in itertools.groupby(moss, key=lambda o: o.container):
+            x = container.get_data("geopoint", "x")
+            y = container.get_data("geopoint", "y")
+            mos = list(mol)
+            if not x or not y or not len(mos):
+                continue
+            ss = {
+                "name": container.name,
+                "id": str(container.id),
+                "x": x,
+                "y": y,
+                "objects": [],
+                "total": len(mos),
+                "error": 0,
+                "warning": 0,
+                "good": 0}
+            for mo in mos:
+                s_service = ServiceSummary.get_object_summary(mo)
+                status = "good"
+                if random.randint(0, 10) > 8:
+                    status = "error"
+                elif alarms.get(mo) < 2000:
+                    status = "warning"
+                elif alarms.get(mo) > 2000:
+                    status = "error"
+                update_dict(sss[status], s_service["service"])
+                ss[status] += 1
+                ss["objects"] += [{"id": mo.id, "name": mo.name, "status": status}]
+
+            objects += [ss.copy()]
+        for r in ["error", "warning", "good"]:
+            for p in sss[r]:
+                services[p] += [(self.color_map.get(r, self.color_map["default"]),
+                                 sss[r].get(p, 0))]
         return {
-            "alarms": alarms,
+            "objects": objects,
             "summary": self.f_glyph_summary({
-                "service": services,
-                "subscriber": subscribers
+                "service": services
+                # "subscriber": subscribers
             }),
-            "links": links,
-            "pops": points
         }
+
+    @staticmethod
+    def get_containers_by_root(root_id=None):
+        # @todo containers only with coordinates (Filter by models)
+        # from noc.sa.models.managedobject import ManagedObject
+        # from noc.inv.models.object import Object
+        # If None - all objects
+        root = Object.get_by_id(root_id)
+        work_set = {root.id}
+        os = set()
+        kk = None
+        for r in range(1, 9):
+            work_set = set(Object.objects.filter(container__in=list(work_set)).values_list("id"))
+            # work_set |= work_set.union(os)
+            os |= work_set
+            if len(work_set) == kk:
+                break
+            kk = len(work_set)
+            print len(work_set)
+            print len(os)
+        return os
+
+    def f_glyph_summary(self, s, collapse=False):
+        def get_summary(d, profile):
+            v = []
+            if hasattr(profile, "show_in_summary"):
+                def show_in_summary(p):
+                    return p.show_in_summary
+            else:
+                def show_in_summary(p):
+                    return True
+            # for p, c in sorted(d.items(), key=lambda x: -x[1]):
+            for p, c in sorted(d.items()):
+                pv = profile.get_by_id(p)
+                if pv and show_in_summary(pv):
+                    if isinstance(c, list):
+                        badge = "".join(" <span class=\"badge\" style=\"color: %s\">%s</span>" % cc for cc in c)
+                    else:
+                        if collapse and c < 2:
+                            badge = ""
+                        else:
+                            badge = " <span class=\"badge\">%s</span>" % c
+                    v += [
+                        "<i class=\"%s\" title=\"%s\"></i>%s" % (
+                            pv.glyph,
+                            pv.name,
+                            badge
+                        )
+                    ]
+            return " ".join(v)
+
+        if not isinstance(s, dict):
+            return ""
+        r = []
+        if "subscriber" in s:
+            from noc.crm.models.subscriberprofile import SubscriberProfile
+            r += [get_summary(s["subscriber"], SubscriberProfile)]
+        if "service" in s:
+            from noc.sa.models.serviceprofile import ServiceProfile
+            r += [get_summary(s["service"], ServiceProfile)]
+        if "fresh_alarms" in s and s["fresh_alarms"]:
+            r += ["<i class=\"fa fa-exclamation-triangle\"></i><span class=\"badge\">%s</span>"
+                  % s["fresh_alarms"]["FreshAlarm"]]
+        r = [x for x in r if x]
+        return "&nbsp;".join(r)
