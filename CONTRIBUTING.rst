@@ -23,4 +23,5 @@ Do not hesitate to open a ticket in our `GitLab`_ project
 or to contact the `documentation team`_ if you have any questions.
 
 .. _`GitLab`: https://code.getnoc.com/noc/docs
-.. _`documentation team`: docs@nocproject.org
+.. _`documentation team`: http://t.me/nocdocs
+

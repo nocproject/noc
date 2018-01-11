@@ -74,5 +74,6 @@ For more information on the NOC documentation process, see:
    /meta/organization
    /meta/build
 
-If you have any questions, please feel free to open a :issue:`GitLab Issue
-<noc/docs>`.
+If you have any questions, please feel free to open a `GitLab Issue
+<https://code.getnoc.com/noc/docs/issues/>`_
+and join `NOC Docs Telegram channel <http://t.me/nocdocs>`_
