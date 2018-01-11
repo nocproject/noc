@@ -99,6 +99,8 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
             return cls._rx_env_sh.sub(env_repl, value)
 
     def set_parameter(self, path, value):
+        if value is None:
+            return
         if isinstance(value, six.string_types):
             value = self.expand(value)
         self._params[path].set_value(value)
