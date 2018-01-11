@@ -133,6 +133,15 @@ class HandlerParameter(BaseParameter):
 
 
 class SecondsParameter(BaseParameter):
+    SHORT_FORM = (
+        (365 * 24 * 3600, "y"),
+        (30 * 24 * 3600, "m"),
+        (7 * 24 * 3600, "w"),
+        (24 * 3600, "d"),
+        (3600, "h"),
+        (60, "m")
+    )
+
     def clean(self, v):
         m = 1
         if isinstance(v, six.integer_types):
@@ -163,6 +172,15 @@ class SecondsParameter(BaseParameter):
         except ValueError:
             raise ValueError("Invalid value: %s" % v)
         return v * m
+
+    def dump_value(self):
+        if not self.value > 0:
+            return 0
+        for d, s in self.SHORT_FORM:
+            n, r = divmod(self.value, d)
+            if not r:
+                return "%d%s" % (n, s)
+        return "%ss" % self.value
 
 
 class ListParameter(BaseParameter):
