@@ -101,7 +101,28 @@ Monmap.prototype.poll_data = function() {
         for(var i = 0; i < data.objects.length; i++) {
             var a = data.objects[i];
             var color, fillColor;
-            var title = a.name + "</br>error:" + a.error + "</br>warning: " + a.warning;
+            var link = "/api/card/view/object/" + a.id + "/";
+            var text = "";
+            if(typeof a !== 'undefined' && a.objects.length) {
+                var listLength = 10;
+                var objects = a.objects.map(function(obj) {
+                var linkColor;
+                if(obj.status === "error") {
+                    linkColor = "#FF0000";
+                } else if (obj.status === "warning") {
+                    linkColor = "#F0C20C";
+                } else {
+                    linkColor = "#6ECC39";
+                }
+                    return '<li><a href="/api/card/view/managedobject/' + obj.id + '/" target="_blank" style="color: ' + linkColor + ';">'
+                        + obj.name + '</a></li>'
+                }).slice(0, listLength).join("");
+                text += "<hr>Objects:<br><ul>" + objects + "</ul>";
+                if(a.objects.length >= listLength) {
+                    text += "<br><a href='" + link + "' target='_blank'>More...</a>";
+                }
+            }
+            var title = "<a href='" + link + "' target='_blank'>" + a.name + "</a><br>good: " + a.good + "</br>error: " + a.error + "</br>warning: " + a.warning + text;
             var markerOptions = {
                 title: title,
                 error: a.error,
@@ -132,6 +153,8 @@ Monmap.prototype.poll_data = function() {
         me.map.addLayer(me.markers);
         // Replace summary
         $("#summary").html(data.summary);
-        setTimeout(function() {me.poll_data(); }, 60000);
+        setTimeout(function() {
+            me.poll_data();
+        }, 60000);
     });
 };
