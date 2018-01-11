@@ -85,7 +85,7 @@ Docker is required for manual documentation build
 
 macOS
 ^^^^^
-To install Docker follow `instruction <https://docs.docker.com/docker-for-mac/>`
+To install Docker follow `instruction <https://docs.docker.com/docker-for-mac/>`_
 
 RHEL/Fedora/Centos
 ^^^^^^^^^^^^^^^^^^
