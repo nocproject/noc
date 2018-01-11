@@ -13,5 +13,6 @@ this Manual and additional editions of this text.
     /services
     /profiles
     /discovery
+    /admin
     /glossary
     /todos
