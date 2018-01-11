@@ -112,6 +112,14 @@ class MapParameter(BaseParameter):
         except KeyError:
             raise ValueError("Invalid value %s" % v)
 
+    def dump_value(self):
+        if not self.mappings:
+            return super(MapParameter, self).dump_value()
+        for mv in self.mappings:
+            if self.mappings[mv] == self.value:
+                return mv
+        return self.value
+
 
 class HandlerParameter(BaseParameter):
     def clean(self, v):
