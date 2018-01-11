@@ -79,6 +79,20 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
             name: "default_vlan_profile__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "style",
+            type: "int"
+        },
+        {
+            name: "style__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegmentprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegmentprofile.Application");
@@ -11,9 +11,13 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
     requires: [
         "NOC.inv.networksegmentprofile.Model",
         "NOC.inv.networksegmentprofile.LookupField",
+        "NOC.main.style.LookupField",
         "NOC.vc.vlanprofile.LookupField"
     ],
     model: "NOC.inv.networksegmentprofile.Model",
+    search: true,
+    rowClassField: "row_class",
+
     initComponent: function() {
         var me = this;
         Ext.apply(me, {
@@ -28,6 +32,12 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     dataIndex: "enable_vlan",
                     width: 50,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Style"),
+                    dataIndex: "style",
+                    renderer: NOC.render.Lookup("style"),
+                    flex: 1
                 }
             ],
 
@@ -43,6 +53,12 @@ Ext.define("NOC.inv.networksegmentprofile.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
+                    allowBlank: true
+                },
+                {
+                    name: "style",
+                    xtype: "main.style.LookupField",
+                    fieldLabel: __("Style"),
                     allowBlank: true
                 },
                 {
