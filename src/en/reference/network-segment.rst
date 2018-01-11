@@ -569,6 +569,8 @@ tacacs_collector  Yes   TACACS+ collector's address
 netflow_collector Yes   NetFlow collector's address
 ================= ===== ====================================================
 
+.. _network-segment-l2-mtu:
+
 L2 MTU
 ------
 Network Segment's L2 MTU is minimal ethernet payload size guaranteed
@@ -597,9 +599,25 @@ disruption of services.
     Automatic detection of segment's L2 MTU is work-in-progress
     See :issue:`#624 <624>` for details
 
+.. _network-segment-network-map-settings:
+
 Network Map Settings
 --------------------
-.. todo::
-    # Collapse object's downlinks on network map
-    # when count is above the threshold
-    max_shown_downlinks = IntField(default=1000)
+NOC displays Network Map on per-segment basis. To provide seamless
+navigation along segment hierarchy in additional to segment's objects
+NOC shows all connected objects from adjacent segments. Sometimes is
+necessary to suppress displaying very large amount of downlinks
+on network map.
+
+*Network Segment* has following settings for network map tuning
+
+=================== ======= ============================================================================
+Name                Default Description
+=================== ======= ============================================================================
+max_shown_downlinks 1000    Collapse object's downlinks on network map when count is above the threshold
+=================== ======= ============================================================================
+
+.. note::
+
+    When Network Map contains over 300 objects "Too many objects" message
+    will be shown. Larger maps may cause browser freeze or crash.
