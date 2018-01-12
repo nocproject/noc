@@ -1,5 +1,3 @@
-##
-##
 syntax: glob
 *.pyc
 *.pyo
@@ -22,6 +20,8 @@ contrib/share/*
 .*
 !/.gitlab-ci.yml
 !/.gitignore
+!/.flake8
+!/.pylintrc
 ext_*
 etc/requirements/local.txt
 static/pkg/
@@ -29,7 +29,6 @@ share/
 static/test/
 pip-selfcheck.json
 var/
-scripts/custom/*
 django/*
 ui/pkg/
 ansible/vars/local.yml
