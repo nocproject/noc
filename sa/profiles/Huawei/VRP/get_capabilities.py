@@ -20,7 +20,7 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         try:
-            r = self.cli("display stp global | include Enabled")
+            r = self.cli("display stp global | include Protocol")
             return "Enabled" in r
         except self.CLISyntaxError:
             try:
