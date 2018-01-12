@@ -89,8 +89,8 @@ class Command(BaseCommand):
             elif "[forensic] [=Process restarted]" in line:
                 # Process restarted, clear spans
                 if not watch:
-                    self.print("===[ Process Restarted ]==============")
                     show()
+                    self.print("===[ Process Restarted ]==============")
                 # Reset spans
                 spans = {}
                 next_show = 0
