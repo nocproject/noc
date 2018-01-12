@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Authentication Backends
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ class BaseAuthBackend(object):
         ]:
             try:
                 m = __import__(mm, {}, {}, "*")
-            except ImportError as e:
+            except ImportError:
                 pass
         if m is None:
             return None

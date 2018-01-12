@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # Local Authentication backend
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import BaseAuthBackend
 from noc.main.models import User
 from noc.core.translation import ugettext as _
+from .base import BaseAuthBackend
 
 
 class LocalBackend(BaseAuthBackend):

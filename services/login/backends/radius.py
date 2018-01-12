@@ -2,17 +2,19 @@
 # ---------------------------------------------------------------------
 # RADIUS Authentication backend
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
-from pyrad.packet import AccessAccept
+from pyrad.packet import AccessAccept, AccessRequest
 from pyrad.client import Client
 from pyrad.dictionary import Dictionary
 # NOC modules
-from base import BaseAuthBackend
 from noc.config import config
+from .base import BaseAuthBackend
 
 
 class RADIUSBackend(BaseAuthBackend):
@@ -30,7 +32,7 @@ class RADIUSBackend(BaseAuthBackend):
             dict=self.RADIUS_DICT
         )
         req = client.CreateAuthPacket(
-            code=packet.AccessRequest,
+            code=AccessRequest,
             User_Name=user,
             NAS_Identifier="noc"
         )
