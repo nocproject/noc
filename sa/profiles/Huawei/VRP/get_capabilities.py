@@ -20,14 +20,14 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         try:
-            r = self.cli("display stp global | include Protocol")
+            res = self.cli("display stp global | include Protocol")
             return "Enabled" in r
         except self.CLISyntaxError:
             try:
-                r = self.cli("display stp | include disabled")
+                res = self.cli("display stp | include disabled")
                 return "Protocol Status" not in r
             except self.CLISyntaxError:
-                r = self.cli("display stp")
+                res = self.cli("display stp")
                 return "Protocol Status" not in r
 
     @false_on_cli_error
@@ -35,35 +35,35 @@ class Script(BaseScript):
         """
         Check box has LLDP enabled
         """
-        r = self.cli("display lldp local")
+        res = self.cli("display lldp local")
         return "LLDP is not enabled" not in r \
             and "Global status of LLDP: Disable" not in r \
-                and "LLDP enable status:           disable" not in r
+                and "LLDP enable status:           disable" not in res
 
     @false_on_cli_error
     def has_ndp_cli(self):
         """
         Check box has NDP enabled
         """
-        r = self.cli("display ndp")
-        return "enabled" in r
+        res = self.cli("display ndp")
+        return "enabled" in res
 
     @false_on_cli_error
     def has_bfd_cli(self):
         """
         Check box has BFD enabled
         """
-        r = self.cli("display bfd configuration all")
-        return r and not ("Please enable BFD in global mode first" in r)
+        res = self.cli("display bfd configuration all")
+        return res and not ("Please enable BFD in global mode first" in r)
 
     @false_on_cli_error
     def has_udld_cli(self):
         """
         Check box has UDLD enabled
         """
-        r = self.cli("display dldp")
-        return "Global DLDP is not enabled" not in r \
-            and "DLDP global status : disable" not in r
+        res = self.cli("display dldp")
+        return "Global DLDP is not enabled" not in res \
+            and "DLDP global status : disable" not in res
 
     @false_on_cli_error
     def has_stack(self):
@@ -74,8 +74,8 @@ class Script(BaseScript):
         out = self.cli("display stack")
         if "device is not in stacking" in out:
             return []
-        r = self.profile.parse_table(out, part_name="stack")
-        return [l[0] for l in r["stack"]["table"]] if "table" in r["stack"] else []
+        res = self.profile.parse_table(out, part_name="stack")
+        return [l[0] for l in res["stack"]["table"]] if "table" in res["stack"] else []
 
     def has_slot(self):
         """
@@ -108,23 +108,23 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.cli("display lacp statistics eth-trunk")
-        return r
+        res = self.cli("display lacp statistics eth-trunk")
+        return res
 
     def execute_platform_cli(self, caps):
         if self.has_ndp_cli():
             caps["Huawei | NDP"] = True
-        s = self.has_stack()
-        sl = self.has_slot()
-        if s:
-            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
-            caps["Stack | Member Ids"] = " | ".join(s)
+        stk = self.has_stack()
+        slt = self.has_slot()
+        if stk:
+            caps["Stack | Members"] = len(stk) if len(stk) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(stk)
         if sl:
-            caps["Slot | Members"] = len(sl) if len(sl) != 1 else 0
-            caps["Slot | Member Ids"] = " | ".join(sl)
+            caps["Slot | Members"] = len(slt) if len(slt) != 1 else 0
+            caps["Slot | Member Ids"] = " | ".join(slt)
 
     def execute_platform_snmp(self, caps):
-        sl = self.has_slot()
-        if sl:
-            caps["Slot | Members"] = len(sl) if len(sl) != 1 else 0
-            caps["Slot | Member Ids"] = " | ".join(sl)
+        slt = self.has_slot()
+        if slt:
+            caps["Slot | Members"] = len(slt) if len(slt) != 1 else 0
+            caps["Slot | Member Ids"] = " | ".join(slt)
