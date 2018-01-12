@@ -21,14 +21,14 @@ class Script(BaseScript):
         """
         try:
             res = self.cli("display stp global | include Protocol")
-            return "Enabled" in r
+            return "Enabled" in res
         except self.CLISyntaxError:
             try:
                 res = self.cli("display stp | include disabled")
-                return "Protocol Status" not in r
+                return "Protocol Status" not in res
             except self.CLISyntaxError:
                 res = self.cli("display stp")
-                return "Protocol Status" not in r
+                return "Protocol Status" not in res
 
     @false_on_cli_error
     def has_lldp_cli(self):
@@ -36,8 +36,8 @@ class Script(BaseScript):
         Check box has LLDP enabled
         """
         res = self.cli("display lldp local")
-        return "LLDP is not enabled" not in r \
-            and "Global status of LLDP: Disable" not in r \
+        return "LLDP is not enabled" not in res \
+            and "Global status of LLDP: Disable" not in res \
                 and "LLDP enable status:           disable" not in res
 
     @false_on_cli_error
@@ -54,7 +54,7 @@ class Script(BaseScript):
         Check box has BFD enabled
         """
         res = self.cli("display bfd configuration all")
-        return res and not ("Please enable BFD in global mode first" in r)
+        return res and not ("Please enable BFD in global mode first" in res)
 
     @false_on_cli_error
     def has_udld_cli(self):
@@ -75,7 +75,7 @@ class Script(BaseScript):
         if "device is not in stacking" in out:
             return []
         res = self.profile.parse_table(out, part_name="stack")
-        return [l[0] for l in res["stack"]["table"]] if "table" in res["stack"] else []
+        return [line[0] for line in res["stack"]["table"]] if "table" in res["stack"] else []
 
     def has_slot(self):
         """
@@ -119,7 +119,7 @@ class Script(BaseScript):
         if stk:
             caps["Stack | Members"] = len(stk) if len(stk) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(stk)
-        if sl:
+        if slt:
             caps["Slot | Members"] = len(slt) if len(slt) != 1 else 0
             caps["Slot | Member Ids"] = " | ".join(slt)
 
