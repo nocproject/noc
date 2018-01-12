@@ -86,6 +86,16 @@ class Command(BaseCommand):
                     if sid in spans:
                         del spans[sid]
                         n_closed += 1
+            elif "[forensic] [=Process restarted]" in line:
+                # Process restarted, clear spans
+                if not watch:
+                    self.print("===[ Process Restarted ]==============")
+                    show()
+                # Reset spans
+                spans = {}
+                next_show = 0
+                n_open = 0
+                n_closed = 0
             if watch:
                 t = time.time()
                 if t > next_show:
