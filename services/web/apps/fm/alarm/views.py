@@ -141,7 +141,6 @@ class AlarmApplication(ExtApplication):
             if c != "0":
                 q["root__exists"] = False
         if status == "C":
-            print q
             if ("timestamp__gte" not in q and "timestamp__lte" not in q and
                     "escalation_tt__contains" not in q and "managed_object" not in q):
                 q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
@@ -218,7 +217,6 @@ class AlarmApplication(ExtApplication):
         if not alarm:
             self.response_not_found()
         user = request.user
-        lang = "en"
         d = self.instance_to_dict(alarm)
         d["body"] = alarm.body
         d["symptoms"] = alarm.alarm_class.symptoms
@@ -446,12 +444,18 @@ class AlarmApplication(ExtApplication):
 
     @classmethod
     def f_glyph_summary(cls, s, collapse=False):
+        def be_true(p):
+            return True
+
+        def be_show(p):
+            return p.show_in_summary
+
         def get_summary(d, profile):
             v = []
             if hasattr(profile, "show_in_summary"):
-                show_in_summary = lambda p: p.show_in_summary
+                show_in_summary = be_show
             else:
-                show_in_summary = lambda p: True
+                show_in_summary = be_true
             for p, c in sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
