@@ -12,6 +12,9 @@ Ext.define('NOC.fm.alarm.Application', {
     mixins: [
         'NOC.core.Export'
     ],
+    requires: [
+        'Ext.ux.form.SearchField'
+    ],
     STATUS_MAP: {
         A: 'Active',
         C: 'Archived'
@@ -168,6 +171,22 @@ Ext.define('NOC.fm.alarm.Application', {
                 select: me.onChangeFilter,
                 change: me.onChange,
                 clear: me.onChangeFilter
+            }
+        });
+
+        me.ttSearch = Ext.create('Ext.ux.form.SearchField', {
+            fieldLabel: __('TT'),
+            width: 198,
+            listeners: {
+                scope: me,
+                specialkey: me.onChangeFilter
+            },
+            triggers: {
+                clear: {
+                    cls: 'x-form-clear-trigger',
+                    scope: me,
+                    handler: me.onChangeFilter
+                }
             }
         });
 
@@ -760,6 +779,7 @@ Ext.define('NOC.fm.alarm.Application', {
                 me.admdomCombo,
                 me.selectorCombo,
                 me.alarmClassCombo,
+                me.ttSearch,
                 {
                     xtype: 'fieldset',
                     layout: 'hbox',
@@ -893,6 +913,8 @@ Ext.define('NOC.fm.alarm.Application', {
         setIf('timestamp__gte', me.fromDateField.getValue());
         // To Date
         setIf('timestamp__lte', me.toDateField.getValue());
+        //
+        setIf('escalation_tt__contains', me.ttSearch.getValue());
         me.currentQuery = q;
         me.reloadStore();
     },
@@ -957,7 +979,7 @@ Ext.define('NOC.fm.alarm.Application', {
             // Check for new alarms and play sound
             me.checkNewAlarms();
             // Poll only application tab is visible
-            if (!me.isActiveApp()) {
+            if(!me.isActiveApp()) {
                 return;
             }
             // Poll only when in grid preview
@@ -965,9 +987,9 @@ Ext.define('NOC.fm.alarm.Application', {
             //     return;
             // }
             // Poll only if polling is not locked
-            if (!me.isPollLocked()) {
+            if(!me.isPollLocked()) {
                 me.store.load();
-                if (me.recentShow.down('#combo').getValue()) {
+                if(me.recentShow.down('#combo').getValue()) {
                     me.recentStore.load();
                 }
             }
