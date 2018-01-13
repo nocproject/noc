@@ -52,24 +52,37 @@ class Command(BaseCommand):
         coll = model._get_collection()
         # Get existing unique indexes
         idx_info = coll.index_information()
-        x_indexes = {}  # fields -> name
+        x_name = {}  # fields -> name
+        x_unique = {}  # fields -> bool(is_unique)
+        left_unique = set()
         for xn in idx_info:
-            if idx_info[xn].get("unique", False):
-                fields = ",".join(str(k[0]) for k in idx_info[xn]["key"])
-                x_indexes[fields] = xn
-        # Get declared unique indexes
-        if x_indexes:
+            fields = ",".join(str(k[0]) for k in idx_info[xn]["key"])
+            x_name[fields] = xn
+            is_unique = idx_info[xn].get("unique", False)
+            x_unique[fields] = is_unique
+            if is_unique:
+                left_unique.add(fields)
+        if x_name:
+            # Get declared indexes
             xspecs = model._meta["index_specs"]
             for xi in xspecs:
-                if not xi.get("unique", False):
-                    continue
                 fields = ",".join(str(k[0]) for k in xi["fields"])
-                if fields in x_indexes:
-                    del x_indexes[fields]
+                if fields in x_name:
+                    # Check for uniqueness match
+                    du = xi.get("unique", False)
+                    if du != x_unique[fields]:
+                        # Uniqueness mismatch
+                        self.print("[%s] Dropping mismatched index %s" % (
+                            model_id, x_name[fields]))
+                        coll.drop_index(x_name[fields])
+                    elif du and x_unique[fields]:
+                        # Remove unique index from left
+                        left_unique.remove(fields)
             # Delete state unique indexes
-            for fn in x_indexes:
-                self.print("[%s] Drop stale unique index %s" % (model_id, x_indexes[fn]))
-                coll.drop_index(x_indexes[fn])
+            for fields in left_unique:
+                self.print("[%s] Dropping stale unique index %s" % (
+                    model_id, x_name[fields]))
+                coll.drop_index(x_name[fields])
         # Apply indexes
         model.ensure_indexes()
 
