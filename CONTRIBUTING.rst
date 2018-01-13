@@ -5,7 +5,7 @@ Contributing to the NOC Documentation Project
 We welcome your contributions to the NOC documentation project.
 The primary site is http://docs.getnoc.com/ and translated versions
 of the site are listed in `NOC Manual Translation
-<http://docs.getnoc.com/en/meta/translation/>`_.
+<http://docs.getnoc.com/en/latest/meta/translation/>`_.
 
 NOC documentation is distributed under a
 `Attribution-NonCommercial-ShareAlike 4.0 International`_ license.
@@ -15,9 +15,9 @@ NOC documentation is distributed under a
 Please review the following documents for our style, conventions,
 processes and practices for the NOC Documentation:
 
-- `Style Guide <http://docs.getnoc.com/en/meta/style-guide/>`_
-- `Documentation Organization <http://docs.getnoc.com/en/meta/organization/>`_
-- `Build Instructions <http://docs.getnoc.com/en/meta/build/>`_
+- `Style Guide <http://docs.getnoc.com/en/latest/meta/style-guide/>`_
+- `Documentation Organization <http://docs.getnoc.com/en/latest/meta/organization/>`_
+- `Build Instructions <http://docs.getnoc.com/en/latest/meta/build/>`_
 
 Do not hesitate to open a ticket in our `GitLab`_ project
 or to contact the `documentation team`_ if you have any questions.
