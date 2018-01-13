@@ -361,7 +361,7 @@ class CorrelatorService(Service):
                     )
             except:
                 error_report()
-                self.perf_metrics["alarm_handler_errors"] += 1
+                self.perf_metrics["error", ("type", "alarm_handler")] += 1
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
