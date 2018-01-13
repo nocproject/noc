@@ -141,7 +141,9 @@ class AlarmApplication(ExtApplication):
             if c != "0":
                 q["root__exists"] = False
         if status == "C":
-            if "timestamp__gte" not in q and "timestamp__lte" not in q:
+            print q
+            if ("timestamp__gte" not in q and "timestamp__lte" not in q and
+                    "escalation_tt__contains" not in q and "managed_object" not in q):
                 q["timestamp__gte"] = datetime.datetime.now() - self.DEFAULT_ARCH_ALARM
         return q
 
