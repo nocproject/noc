@@ -1,6 +1,8 @@
-=============================
-caps
-=============================
+.. _discovery-box-caps:
+
+==========
+caps check
+==========
 
 .. toctree::
     :titlesonly:
@@ -9,3 +11,6 @@ caps
 .. todo::
     Describe *caps* check
 
+Requirements
+------------
+* get_capabilities

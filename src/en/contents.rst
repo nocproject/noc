@@ -15,6 +15,7 @@ this Manual and additional editions of this text.
     /discovery
     /admin
     /man
+    /caps
     /alarms
     /events
     /glossary

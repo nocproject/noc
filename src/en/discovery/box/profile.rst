@@ -1,6 +1,8 @@
-=============================
-profile
-=============================
+.. _discovery-box-profile:
+
+=============
+profile check
+=============
 
 .. toctree::
     :titlesonly:

@@ -1,6 +1,8 @@
-=============================
-cpe
-=============================
+.. _discovery-box-cpe:
+
+=========
+cpe check
+=========
 
 .. toctree::
     :titlesonly:
@@ -8,3 +10,7 @@ cpe
 .. todo::
     Describe *cpe* check
 
+Requirements
+------------
+* :ref:`caps-cpe-controller`
+* get_cpe

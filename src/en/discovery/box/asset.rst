@@ -1,6 +1,8 @@
-=============================
-asset
-=============================
+.. _discovery-box-asset:
+
+===========
+asset check
+===========
 
 .. toctree::
     :titlesonly:
@@ -8,3 +10,6 @@ asset
 .. todo::
     Describe *asset* check
 
+Requirements
+------------
+* get_inventory

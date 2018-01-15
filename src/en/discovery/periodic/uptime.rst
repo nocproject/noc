@@ -1,6 +1,8 @@
-=============================
-uptime
-=============================
+.. _discovery-periodic-uptime:
+
+============
+uptime check
+============
 
 .. toctree::
     :titlesonly:
@@ -8,3 +10,9 @@ uptime
 .. todo::
     Describe *uptime* check
 
+.. todo::
+    Describe reboots
+
+Requirements
+------------
+* get_uptime

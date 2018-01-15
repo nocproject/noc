@@ -1,6 +1,6 @@
-=============================
-fdp
-=============================
+=========
+fdp check
+=========
 
 .. toctree::
     :titlesonly:
@@ -8,3 +8,7 @@ fdp
 .. todo::
     Describe *fdp* check
 
+Requirements
+------------
+* get_fdp_neighbors
+* :ref:`caps-network-fdp`

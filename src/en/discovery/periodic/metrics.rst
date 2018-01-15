@@ -1,6 +1,8 @@
-=============================
-metrics
-=============================
+.. _discovery-periodic-metrics:
+
+=============
+metrics check
+=============
 
 .. toctree::
     :titlesonly:
@@ -8,3 +10,6 @@ metrics
 .. todo::
     Describe *metrics* check
 
+Requirements
+------------
+* get_metrics

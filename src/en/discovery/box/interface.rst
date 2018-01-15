@@ -1,3 +1,5 @@
+.. _discovery-box-interface:
+
 =============================
 interface
 =============================
@@ -7,3 +9,7 @@ interface
 
 .. todo::
     Describe *interface* check
+
+Requirements
+------------
+* get_interfaces

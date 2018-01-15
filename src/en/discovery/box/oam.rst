@@ -1,6 +1,8 @@
-=============================
-oam
-=============================
+.. _discovery-box-alarm:
+
+=========
+oam check
+=========
 
 .. toctree::
     :titlesonly:
@@ -8,3 +10,7 @@ oam
 .. todo::
     Describe *oam* check
 
+Requirements
+------------
+* get_oam_status
+* :ref:`caps-network-oam`

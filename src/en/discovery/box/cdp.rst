@@ -1,6 +1,8 @@
-=============================
-cdp
-=============================
+.. _discovery-box-cdp:
+
+=========
+cdp check
+=========
 
 .. toctree::
     :titlesonly:
@@ -8,3 +10,7 @@ cdp
 .. todo::
     Describe *cdp* check
 
+Requirements
+------------
+* get_cdp_neighbors
+* :ref:`caps-network-cdp`

@@ -1,6 +1,8 @@
-=============================
-rep
-=============================
+.. _disovery-box-rep:
+
+=========
+rep check
+=========
 
 .. toctree::
     :titlesonly:
@@ -8,3 +10,7 @@ rep
 .. todo::
     Describe *rep* check
 
+Requirements
+------------
+* get_rep_neighbors
+* :ref:`caps-network-rep`
