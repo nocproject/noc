@@ -27,6 +27,7 @@ Reference
     /reference/phone-range-profile
     /reference/phone-number
     /reference/phone-number-profile
+    /reference/workflow
     /reference/user
     /reference/group
     /reference/pool
