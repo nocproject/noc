@@ -1,0 +1,40 @@
+.. _event-class-chassis-hardware-hardware-port-error:
+
+========================================
+Chassis | Hardware | Hardware Port Error
+========================================
+.. contents:: On this page
+    :local:
+    :backlinks: none
+    :depth: 1
+    :class: singlecol
+
+Hardware port or slot error occured
+
+Symptoms
+--------
+Link becomes unstable or is not responding
+
+Probable Causes
+---------------
+.. todo::
+    Describe Chassis | Hardware | Hardware Port Error probable causes
+
+Recommended Actions
+-------------------
+.. todo::
+    Describe Chassis | Hardware | Hardware Port Error recommended actions
+
+Variables
+----------
+==================== ==================================================
+Name                 Description
+==================== ==================================================
+interface            Hardware port
+==================== ==================================================
+
+Alarms
+------
+================= ======================================================================
+Opening Event for :ref:`alarm-class-chassis-hardware-hardware-port-error`
+================= ======================================================================

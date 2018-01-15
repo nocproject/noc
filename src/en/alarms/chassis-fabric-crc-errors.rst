@@ -1,0 +1,39 @@
+.. _alarm-class-chassis-fabric-crc-errors:
+
+=============================
+Chassis | Fabric | CRC Errors
+=============================
+.. contents:: On this page
+    :local:
+    :backlinks: none
+    :depth: 1
+    :class: singlecol
+
+Symptoms
+--------
+.. todo::
+    Describe Chassis | Fabric | CRC Errors symptoms
+
+Probable Causes
+---------------
+.. todo::
+    Describe Chassis | Fabric | CRC Errors probable causes
+
+Recommended Actions
+-------------------
+.. todo::
+    Describe Chassis | Fabric | CRC Errors recommended actions
+
+Variables
+----------
+==================== ==================================================
+Name                 Description
+==================== ==================================================
+name                 Fabric Module
+==================== ==================================================
+
+Events
+------
+============= ======================================================================
+Opening Event :ref:`event-class-chassis-fabric-crc-errors`
+============= ======================================================================
