@@ -225,7 +225,7 @@ class ServiceSummary(Document):
             if iface not in new_summary:
                 # Stale, delete
                 bulk += [
-                    DeleteOne({"_id": old_summary["iface"]["_id"]})
+                    DeleteOne({"_id": old_summary[iface]["_id"]})
                 ]
                 continue
             oi = old_summary[iface]
