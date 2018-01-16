@@ -1,3 +1,5 @@
+.. _discovery-box-sla:
+
 =========
 sla check
 =========

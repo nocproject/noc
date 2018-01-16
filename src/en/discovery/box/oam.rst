@@ -1,4 +1,4 @@
-.. _discovery-box-alarm:
+.. _discovery-box-oam:
 
 =========
 oam check

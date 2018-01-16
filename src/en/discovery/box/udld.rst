@@ -1,3 +1,5 @@
+.. _discovery-box-udld:
+
 ==========
 udld check
 ==========

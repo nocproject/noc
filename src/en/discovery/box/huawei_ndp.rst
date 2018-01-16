@@ -1,3 +1,5 @@
+.. _discovery-box-huawei_ndp:
+
 ================
 huawei_ndp check
 ================

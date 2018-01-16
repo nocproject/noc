@@ -1,4 +1,4 @@
-.. _disovery-box-rep:
+.. _discovery-box-rep:
 
 =========
 rep check
