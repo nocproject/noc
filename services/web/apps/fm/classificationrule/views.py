@@ -89,13 +89,13 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     v = None
                     try:
                         k = re.compile(p["key_re"])
-                    except re.error, why:
+                    except re.error as why:
                         errors += [
                             "Invalid key regular expression <<<%s>>>: %s" % (
                                 p["key_re"], why)]
                     try:
                         v = re.compile(p["value_re"])
-                    except re.error, why:
+                    except re.error as why:
                         errors += [
                             "Invalid value regular expression <<<%s>>>: %s" % (
                                 p["value_re"], why)]
@@ -162,7 +162,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     # Evaluate
                     try:
                         vars[v["name"]] = eval(v["value"][1:], {}, vars)
-                    except Exception, why:
+                    except Exception as why:
                         errors += [
                             "Error when evaluating '%s': %s" % (v["name"], why)
                         ]
