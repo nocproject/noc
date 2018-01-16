@@ -18,5 +18,6 @@ this Manual and additional editions of this text.
     /caps
     /alarms
     /events
+    /metrics
     /glossary
     /todos
