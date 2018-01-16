@@ -179,13 +179,21 @@ Ext.define('NOC.fm.alarm.Application', {
             width: 198,
             listeners: {
                 scope: me,
-                specialkey: me.onChangeFilter
+                specialkey: function(self, e) {
+                    if(e.getKey() === e.ESC){
+                        self.setValue('');
+                    }
+                    me.onChangeFilter();
+                }
             },
             triggers: {
                 clear: {
                     cls: 'x-form-clear-trigger',
                     scope: me,
-                    handler: me.onChangeFilter
+                    handler: function(self) {
+                        self.setValue('');
+                        me.onChangeFilter();
+                    }
                 }
             }
         });
