@@ -612,7 +612,7 @@ class ClassifierService(Service):
         for h in self.handlers[event.event_class.id]:
             try:
                 h(event)
-            except:
+            except Exception:
                 error_report()
             if event.to_drop:
                 self.logger.info(
@@ -638,7 +638,7 @@ class ClassifierService(Service):
         for t in self.triggers[event.event_class.id]:
             try:
                 t.call(event)
-            except:
+            except Exception:
                 error_report()
             if event.to_drop:
                 # Delete event and stop processing
