@@ -207,17 +207,17 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if not event:
             self.response_not_found()
         event_name = " | ".join(event.managed_object.profile.name.split(".")) + " | <name> "
-        if event["source"] == "syslog":
+        if event.source == "syslog":
             event_name += "(SYSLOG)"
-        elif event["source"] == "SNMP Trap":
+        elif event.source == "SNMP Trap":
             event_name += "(SNMP)"
         data = {
             "name": event_name,
             "preference": 1000
         }
-        if event["source"] == "syslog":
+        if event.source == "syslog":
             data["description"] = event.raw_vars["message"]
-        elif (event["source"] == "SNMP Trap" and
+        elif (event.source == "SNMP Trap" and
               "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
         patterns = {}
