@@ -734,13 +734,16 @@ class ClassifierService(Service):
         return False
 
     def on_event(self, message, ts=None, object=None, data=None,
-                 *args, **kwargs):
-        event_id = bson.ObjectId()
+                 id=None, *args, **kwargs):
+        # Generate or reuse existing object id
+        event_id = bson.ObjectId(id)
+        # Calculate messate processing delay
         lag = (time.time() - ts) * 1000
         metrics["lag_us"] = int(lag * 1000)
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)",
                           event_id, data, lag)
         metrics[CR_PROCESSED] += 1
+        # Resolve managed object
         mo = ManagedObject.get_by_id(object)
         if not mo:
             self.logger.info("[%s] Unknown managed object id %s. Skipping",
@@ -749,16 +752,17 @@ class ClassifierService(Service):
             return True
         self.logger.info("[%s|%s|%s] Managed object found",
                          event_id, mo.name, mo.address)
+        # Process event
         ts = datetime.datetime.fromtimestamp(ts)
         source = data.pop("source", "other")
         event = ActiveEvent(
-            id=bson.ObjectId(),
+            id=event_id,
             timestamp=ts,
             start_timestamp=ts,
             managed_object=mo,
             source=source,
             repeats=1
-        )
+        )  # raw_vars will be filled by classify_event()
         # Classify event
         try:
             self.classify_event(event, data)
