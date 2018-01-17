@@ -51,6 +51,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 if event:
                     data = event.raw_vars.copy()
                     data["profile"] = event.managed_object.profile.name
+                    data["source"] = event.source
                 else:
                     errors += ["Event not found: %s" % q["data"]]
             else:
