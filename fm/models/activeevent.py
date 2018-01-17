@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import struct
 from threading import Lock
@@ -19,12 +20,12 @@ from mongoengine.fields import (StringField, DateTimeField, IntField,
                                 DictField, ObjectIdField)
 from bson import Binary
 # NOC modules
-from eventlog import EventLog
-from eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.dateutils import total_seconds
 from noc.core.cache.decorator import cachedmethod
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
+from .eventlog import EventLog
+from .eventclass import EventClass
 
 id_lock = Lock()
 
@@ -235,6 +236,6 @@ class ActiveEvent(Document):
 
 
 # Avoid circular references
-from newevent import NewEvent
-from failedevent import FailedEvent
-from archivedevent import ArchivedEvent
+from .newevent import NewEvent
+from .failedevent import FailedEvent
+from .archivedevent import ArchivedEvent
