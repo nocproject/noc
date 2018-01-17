@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ActiveEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -206,15 +206,15 @@ class ActiveEvent(Document):
         if alarm.id in self.alarms:
             return
         self._get_collection().update_one({
-                "_id": self.id,
-            }, {
-                "$set": {
-                    "expires": None,
-                },
-                "$push": {
-                    "alarms": alarm.id
-                }
-            })
+            "_id": self.id,
+        }, {
+            "$set": {
+                "expires": None,
+            },
+            "$push": {
+                "alarms": alarm.id
+            }
+        })
         self.alarms.append(alarm.id)
         self.expires = None
 
