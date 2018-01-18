@@ -13,7 +13,7 @@ from collections import defaultdict
 # Third-party modules
 import cachetools
 # import geojson
-import random
+# import random
 # NOC modules
 from noc.services.card.cards.base import BaseCard
 from noc.inv.models.object import Object
@@ -95,40 +95,55 @@ class MonMapCard(BaseCard):
                "good": {}}
 
         services = defaultdict(list)
-        moss = ManagedObject.objects.filter(is_managed=True).exclude(container=None)
+        moss = ManagedObject.objects.filter(is_managed=True).exclude(container=None).order_by(
+            "container")
+        alarms = {aa["managed_object"]: aa["severity"] for aa in ActiveAlarm.objects.filter(
+            managed_object__in=list(moss.values_list("id", flat=True))
+        ).scalar("managed_object", "severity").as_pymongo()}
 
-        alarms = dict(ActiveAlarm.objects.filter(managed_object__in=list(moss.values_list("id", flat=True))).scalar("managed_object", "severity"))
-
-        for container, mol in itertools.groupby(moss, key=lambda o: o.container):
-            x = container.get_data("geopoint", "x")
-            y = container.get_data("geopoint", "y")
-            mos = list(mol)
-            if not x or not y or not len(mos):
+        containers = {str(o[0]): o[1:] for o in Object.objects.filter(
+            data__exists=True, data__geopoint__exists=True).scalar("id", "name", "data")}
+        for container, mol in itertools.groupby(moss.values_list("id", "name", "container"), key=lambda o: o[2]):
+            # x = container.get_data("geopoint", "x")
+            # y = container.get_data("geopoint", "y")
+            if container not in containers:
                 continue
-            ss = {
-                "name": container.name,
-                "id": str(container.id),
-                "x": x,
-                "y": y,
-                "objects": [],
-                "total": len(mos),
-                "error": 0,
-                "warning": 0,
-                "good": 0}
-            for mo in mos:
-                s_service = ServiceSummary.get_object_summary(mo)
+            name, data = containers[container]
+            x = data["geopoint"].get("x")
+            y = data["geopoint"].get("y")
+            if not x or not y:
+                continue
+            ss = {"objects": [],
+                  "total": 0,
+                  "error": 0,
+                  "warning": 0,
+                  "good": 0
+                  }
+            for mo_id, mo_name, container in mol:
+                s_service = ServiceSummary.get_object_summary(mo_id)
                 status = "good"
-                if random.randint(0, 10) > 8:
-                    status = "error"
-                elif alarms.get(mo) < 2000:
+                # if random.randint(0, 10) > 6:
+                #    status = "error"
+                if 100 < alarms.get(mo_id) < 2000:
                     status = "warning"
-                elif alarms.get(mo) > 2000:
+                elif alarms.get(mo_id) > 2000:
                     status = "error"
                 update_dict(sss[status], s_service["service"])
                 ss[status] += 1
-                ss["objects"] += [{"id": mo.id, "name": mo.name, "status": status}]
+                ss["total"] += 1
+                ss["objects"] += [{"id": mo_id, "name": mo_name, "status": status}]
+            objects += [{
+                "name": name,
+                "id": str(container),
+                "x": x,
+                "y": y,
+                "objects": [],
+                "total": 0,
+                "error": 0,
+                "warning": 0,
+                "good": 0}]
+            objects[-1].update(ss)
 
-            objects += [ss.copy()]
         for r in ["error", "warning", "good"]:
             for p in sss[r]:
                 services[p] += [(self.color_map.get(r, self.color_map["default"]),
@@ -176,14 +191,14 @@ class MonMapCard(BaseCard):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if isinstance(c, list):
-                        badge = "".join(" <span class=\"badge\" style=\"color: %s\">%s</span>" % cc for cc in c)
+                        badge = "".join(" <span class=\"badge\" style=\"color: %s\">%s</span></div>" % cc for cc in c)
                     else:
                         if collapse and c < 2:
-                            badge = ""
+                            badge = "</div>"
                         else:
-                            badge = " <span class=\"badge\">%s</span>" % c
+                            badge = "<span class=\"badge\">%s</span></div>" % c
                     v += [
-                        "<i class=\"%s\" title=\"%s\"></i>%s" % (
+                        "<div style='float: left;clear: left;'><i style='width: 50px;' class=\"%s\" title=\"%s\"></i>%s" % (
                             pv.glyph,
                             pv.name,
                             badge
