@@ -67,8 +67,9 @@ class ManagedObjectLoader(BaseLoader):
         """
         v = super(ManagedObjectLoader, self).clean(row)
         v["pool"] = self.pools[v["pool"]]
-        v["tags"] = [x.strip().strip('"') for x in v["tags"].split(",")
-                     if x.strip()] if v["tags"] else []
+        if "tags" in v:
+            v["tags"] = [x.strip().strip('"') for x in v["tags"].split(",")
+                         if x.strip()] if v["tags"] else []
         v["profile"] = Profile.get_by_name(v["profile_name"])
         del v["profile_name"]
         return v
