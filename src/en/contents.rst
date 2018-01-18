@@ -16,8 +16,10 @@ this Manual and additional editions of this text.
     /admin
     /man
     /caps
+    /scripts
     /alarms
     /events
+    /bi
     /metrics
     /glossary
     /todos
