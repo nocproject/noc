@@ -311,6 +311,53 @@ class ServiceSummary(Document):
         return r
 
     @classmethod
+    def get_objects_summary(cls, mos_ids):
+        def to_dict(v):
+            return dict(
+                (r["profile"], r["summary"])
+                for r in v
+            )
+
+        # if hasattr(managed_object, "id"):
+        #    managed_object = managed_object.id
+        kk = {}
+        for ss in ServiceSummary._get_collection().find({
+            "managed_object": {
+                "$in": mos_ids
+            }
+        }, {
+            "managed_object": 1,
+            "interface": 1,
+            "service": 1,
+            "subscriber": 1
+        }):
+            r = {
+                "service": {},
+                "subscriber": {},
+                "interface": {}
+            }
+            ds = to_dict(ss["service"])
+            if ss.get("interface"):
+                r["interface"][ss["interface"]] = {
+                    "service": ds
+                }
+            for k, v in ds.items():
+                if k in r["service"]:
+                    r["service"][k] += v
+                else:
+                    r["service"][k] = v
+            ds = to_dict(ss["subscriber"])
+            if ss.get("interface"):
+                r["interface"][ss["interface"]]["subscriber"] = ds
+            for k, v in ds.items():
+                if k in r["subscriber"]:
+                    r["subscriber"][k] += v
+                else:
+                    r["subscriber"][k] = v
+            kk[ss["managed_object"]] = r
+        return kk
+
+    @classmethod
     def get_weight(cls, summary):
         """
         Convert result of *get_object_summary* to alarm weight
