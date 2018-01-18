@@ -48,7 +48,6 @@
   command: '{{postgres_bin_dir}}/postgresql{{postgresql_version|replace(".","")}}-setup initdb'
   args:
     creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
-  when: not patroni_enabled
 
 
 - name: Install postgres limits file
