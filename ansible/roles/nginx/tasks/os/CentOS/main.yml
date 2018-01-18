@@ -13,18 +13,6 @@
   tags:
     - repo
 
-- name: Install service monitoring
-  template:
-    src: "{{item}}"
-    dest: "/{{item[:-3]}}"
-    force: no
-  with_items:
-    - "etc/telegraf/telegraf.d/discovery.conf.j2"
-    - "etc/telegraf/telegraf.d/fm-monitor.conf.j2"
-  notify: reload telegraf
-  tags:
-    - config
-
 - name: Install Nginx
   yum:
     name: nginx
@@ -46,6 +34,6 @@
     enabled: yes
     state: started
 
-- include: "firewall.yml"
+- import_tasks: "firewall.yml"
   tags:
     - firewall

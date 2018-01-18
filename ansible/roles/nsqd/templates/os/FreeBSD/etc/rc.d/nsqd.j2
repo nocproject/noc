@@ -22,7 +22,7 @@ load_rc_config $name
 : ${nsqd_enable="NO"}
 : ${nsqd_config="{{nsqd_config_dir}}/${name}.conf"}
 
-command="{{ noc_root }}/bin/${name}"
+command="{{nsq_root}}/${name}"
 required_files="${nsqd_config}"
 start_precmd=nsqd_prestart
 extra_commands="reload"

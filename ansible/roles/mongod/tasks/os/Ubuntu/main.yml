@@ -70,7 +70,7 @@
     src: etc/tmpfiles.d/mongo.conf.j2
     dest: /etc/tmpfiles.d/mongo.conf
 
-- include: "arbiter.yml"
+- include_tasks: "arbiter.yml"
   when: "has_svc_mongod_arbiter | default(False)"
 
 - name: Reload systemd daemon

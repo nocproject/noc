@@ -3,7 +3,7 @@
 #
 ---
 - name: "Include OS-specific tasks"
-  include: "os/{{ ansible_distribution }}/main.yml"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Create NOC group
   group:
@@ -36,31 +36,31 @@
     register: noc_hg_state
 
   - name: migrate to git
-    include: "migrate_git.yml"
+    include_tasks: "migrate_git.yml"
     when: noc_hg_state.stat.exists is defined and noc_hg_state.stat.exists
   when: noc_root_state.stat.exists is defined and noc_root_state.stat.exists
 
 - name: Include {{install_method}} install method
-  include: "{{install_method}}.yml"
+  include_tasks: "{{install_method}}.yml"
 
 - name: Include venv init for {{python_interpreter}}
-  include: "init_venv_{{python_interpreter}}.yml"
+  include_tasks: "init_venv_{{python_interpreter}}.yml"
 
 - name: Include requirements install
-  include: "requirements.yml"
+  import_tasks: "requirements.yml"
 
 - name: Create dirs
-  include: "dirs.yml"
+  import_tasks: "dirs.yml"
 
 - name: Generate configs
-  include: "config.yml"
+  import_tasks: "config.yml"
   tags:
     - config
     - noc_config
 
 - name: Include noc hacks
-  include: "hacks.yml"
+  import_tasks: "hacks.yml"
 
 - name: Include post install
-  include: "post_install.yml"
+  import_tasks: "post_install.yml"
 

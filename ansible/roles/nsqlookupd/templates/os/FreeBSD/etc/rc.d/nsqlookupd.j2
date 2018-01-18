@@ -22,7 +22,7 @@ load_rc_config $name
 : ${nsqlookupd_enable="NO"}
 : ${nsqlookupd_config="{{nsqd_config_dir}}/${name}.conf"}
 
-command="{{ noc_root }}/bin/${name}"
+command="{{nsq_root}}/${name}"
 required_files="${nsqlookupd_config}"
 start_precmd=nsqlookupd_prestart
 

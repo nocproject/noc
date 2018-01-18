@@ -14,86 +14,77 @@
     - config
   when: "'Linux' in ansible_system"
 
-- include: "os/{{ ansible_distribution }}/main.yml"
+- include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
-- block:
-  - name: Setting pg_hba.conf
-    lineinfile:
-      dest: "{{postgresql_hba_path}}"
-      line: "host    all             all             0.0.0.0/0            md5"
-    notify: reload postgres
-    tags:
-      - config
+- name: Setting pg_hba.conf
+  lineinfile:
+    dest: "{{postgresql_hba_path}}"
+    line: "host    all             all             0.0.0.0/0            md5"
+  notify: reload postgres
+  tags:
+    - config
 
-  - name: Exclude postgres.conf
-    lineinfile:
-      dest: "{{postgresql_conf_path}}"
-      line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
-      state: absent
-    notify: restart postgres
-    tags:
-      - config
+- name: Exclude postgres.conf
+  lineinfile:
+    dest: "{{postgresql_conf_path}}"
+    line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
+    state: absent
+  notify: restart postgres
+  tags:
+    - config
 
-  - name: Including postgres.conf
-    lineinfile:
-      dest: "{{postgresql_conf_path}}"
-      line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
-    notify: restart postgres
-    tags:
-      - config
+- name: Including postgres.conf
+  lineinfile:
+    dest: "{{postgresql_conf_path}}"
+    line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
+  notify: restart postgres
+  tags:
+    - config
 
-  - name: Setting config
-    template:
-      src: "postgres.conf.j2"
-      dest: "{{ postgresql_conf_prefix }}/noc.conf"
-    notify: restart postgres
-    tags:
-      - config
+- name: Setting config
+  template:
+    src: "postgres.conf.j2"
+    dest: "{{ postgresql_conf_prefix }}/noc.conf"
+  notify: restart postgres
+  tags:
+    - config
 
-  - name: Enable postgres system service
-    service:
-      name: "{{postgres_system_service}}"
-      enabled: yes
-      state: started
+- name: Enable postgres system service
+  service:
+    name: "{{postgres_system_service}}"
+    enabled: yes
+    state: started
 
-  - include: "users.yml"
-    become_user: "{{postgres_user}}"
+- import_tasks: "users.yml"
+  become_user: "{{postgres_user}}"
 
-  - name: install pgpassword for consul user
-    file:
-      src: "pgpass.j2"
-      dest: "{{ consul_home }}/.pgpass"
-      mode: "0400"
-      owner: "{{consul_user}}"
-      state: absent
-    no_log: true
+- name: copy postgres consul templates
+  template:
+    src: postgres.json.j2
+    dest: "{{consul_configd_path}}/postgres.json"
+  notify: reload consul
+  tags:
+    - consul
 
-  - name: copy postgres consul templates
-    template:
-      src: postgres.json.j2
-      dest: "{{consul_configd_path}}/postgres.json"
-    notify: reload consul
-    tags:
-      - consul
-
-  - name: copy postgres check script
-    template:
-      src: postgres_check.sh.j2
-      dest: "{{consul_scripts_path}}/postgres_check.sh"
-      mode: u+rx
-      owner: "{{consul_user}}"
-    no_log: true
-    notify: reload consul
-    tags:
-      - consul
-
-  when: not patroni_enabled
+- name: copy postgres check script
+  template:
+    src: postgres_check.sh.j2
+    dest: "{{consul_scripts_path}}/postgres_check.sh"
+    mode: u+rx
+    owner: "{{consul_user}}"
+  no_log: true
+  notify: reload consul
+  tags:
+    - consul
 
 - name: Install postgres monitoring
   template:
     src: "etc/telegraf/telegraf.d/postgres.conf.j2"
     dest: "{{ telegraf_confd_path }}/postgres.conf"
   notify: reload telegraf
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
   no_log: true
   tags:
     - config

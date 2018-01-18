@@ -1,7 +1,4 @@
 ---
-- name: include nsqd os specific tasks
-  include: "os/{{ ansible_distribution }}/main.yml"
-
 - name: add nsqd group
   group:
     name: nsq
@@ -21,6 +18,10 @@
   with_items:
     - "{{nsqd_db_dir}}"
     - "{{nsqd_config_dir}}"
+    - "{{nsq_root}}"
+
+- name: include nsqd os specific tasks
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: create nsqd log dir
   file:
@@ -35,11 +36,11 @@
 
 - name: check if nsq already exists
   stat:
-    path: "{{ noc_root }}/bin/nsqd"
+    path: "{{nsq_root}}/nsqd"
   register: nsqd_binary
 
 - name: check if version is ok
-  command: "{{ noc_root }}/bin/nsqd --version"
+  command: "{{nsq_root}}/nsqd --version"
   register: nsq_installed_version
   changed_when: false
   when: nsqd_binary.stat.exists
@@ -53,6 +54,9 @@
     src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
     dest: "{{ telegraf_confd_path }}/nsqd.conf"
   notify: reload telegraf
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
   tags:
     - config
     - telegraf

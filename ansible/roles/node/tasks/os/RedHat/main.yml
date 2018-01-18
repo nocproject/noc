@@ -79,7 +79,7 @@
   environment:
     http_proxy: "{{http_proxy}}"
 
-- include: "firewall.yml"
+- import_tasks: "firewall.yml"
   tags:
     - firewall
 

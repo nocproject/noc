@@ -1,0 +1,315 @@
+- block:
+  - name: install noc_activator template
+    copy:
+      src: noc_activator.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_activator.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_activator config for template
+    template:
+      src: services/noc_activator.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_activator.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_activator is defined
+
+
+- block:
+  - name: install noc_bi template
+    copy:
+      src: noc_bi.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_bi.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_bi config for template
+    template:
+      src: services/noc_bi.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_bi.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_bi is defined
+
+- block:
+  - name: install noc_datasource template
+    copy:
+      src: noc_bi.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_datasource.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_datasource config for template
+    template:
+      src: services/noc_datasource.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_datasource.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_ch_datasource is defined
+
+- block:
+  - name: install noc_chwriter template
+    copy:
+      src: noc_chwriter.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_chwriter.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_chwriter config for template
+    template:
+      src: services/noc_chwriter.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_chwriter.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_chwriter is defined
+
+- block:
+  - name: install noc_card template
+    copy:
+      src: noc_card.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_card.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_card config for template
+    template:
+      src: services/noc_card.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_card.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_card is defined
+
+- block:
+  - name: install noc_classifier template
+    copy:
+      src: noc_classifier.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_classifier.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_classifier config for template
+    template:
+      src: services/noc_classifier.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_classifier.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_classifier
+
+- block:
+  - name: install noc_correlator template
+    copy:
+      src: noc_correlator.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_correlator.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_correlator config for template
+    template:
+      src: services/noc_correlator.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_correlator.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_correlator is defined
+
+- block:
+  - name: install noc_discovery template
+    copy:
+      src: noc_discovery.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_discovery.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_discovery config for template
+    template:
+      src: services/noc_discovery.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_discovery.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_discovery is defined
+
+- block:
+  - name: install noc_escalator template
+    copy:
+      src: noc_escalator.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_escalator.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_escalator config for template
+    template:
+      src: services/noc_escalator.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_escalator.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_escalator is defined
+
+- block:
+  - name: install noc_grafanads template
+    copy:
+      src: noc_grafanads.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_grafanads.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_grafanads config for template
+    template:
+      src: services/noc_grafanads.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_grafanads.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_grafanads is defined
+
+- block:
+  - name: install noc_login template
+    copy:
+      src: noc_login.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_login.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_login config for template
+    template:
+      src: services/noc_login.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_login.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_login is defined
+
+- block:
+  - name: install noc_mailsender template
+    copy:
+      src: noc_mailsender.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_mailsender.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_mailsender config for template
+    template:
+      src: services/noc_mailsender.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_mailsender.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_mailsender is defined
+
+- block:
+  - name: install noc_mrt template
+    copy:
+      src: noc_mrt.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_mrt.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_mrt config for template
+    template:
+      src: services/noc_mrt.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_mrt.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_mrt is defined
+
+- block:
+  - name: install noc_omap template
+    copy:
+      src: noc_omap.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_omap.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_omap config for template
+    template:
+      src: services/noc_omap.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_omap.conf"
+    notify: reload consul-template
+  when:
+   - has_svc_omap is defined
+
+- block:
+  - name: install noc_ping template
+    copy:
+      src: noc_ping.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_ping.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_ping config for template
+    template:
+      src: services/noc_ping.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_ping.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_ping is defined
+
+- block:
+  - name: install noc_sae template
+    copy:
+      src: noc_sae.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_sae.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_sae config for template
+    template:
+      src: services/noc_sae.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_sae.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_sae is defined
+
+- block:
+  - name: install noc_scheduler template
+    copy:
+      src: noc_scheduler.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_scheduler.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_scheduler config for template
+    template:
+      src: services/noc_scheduler.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_scheduler.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_scheduler is defined
+
+- block:
+  - name: install noc_syslogcollector template
+    copy:
+      src: noc_syslogcollector.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_syslogcollector.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_syslogcollector config for template
+    template:
+      src: services/noc_syslogcollector.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_syslogcollector.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_syslogcollector is defined
+
+- block:
+  - name: install noc_trapcollector template
+    copy:
+      src: noc_trapcollector.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_trapcollector.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_trapcollector config for template
+    template:
+      src: services/noc_trapcollector.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_trapcollector.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_trapcollector is defined
+
+- block:
+  - name: install noc_web template
+    copy:
+      src: noc_web.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_web.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_web config for template
+    template:
+      src: services/noc_web.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_web.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_web is defined
+
+- block:
+  - name: install noc_tgsender template
+    copy:
+      src: noc_tgsender.ctmpl
+      dest: "{{ consul_template_templates_dir }}/noc_tgsender.ctmpl"
+    notify: reload consul-template
+
+  - name: install noc_tgsender config for template
+    template:
+      src: services/noc_tgsender.conf.j2
+      dest: "{{consul_template_config_dir}}/noc_tgsender.conf"
+    notify: reload consul-template
+  when:
+    - has_svc_tgsender is defined

@@ -8,7 +8,7 @@
     - config
 
 - name: "Include OS-specific tasks"
-  include: "os/{{ ansible_distribution }}/main.yml"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Check bootstrapped state
   stat:
@@ -18,21 +18,21 @@
   tags: always
 
 - name: Include user/group settings
-  include: user_group.yml
+  import_tasks: user_group.yml
 
 - name: Include dir settings
-  include: dirs.yml
+  import_tasks: dirs.yml
 
 - name: Install OS packages and consul - remotely
-  include: install.yml
+  import_tasks: install.yml
 
 - name: Consul config
-  include: config.yml
+  import_tasks: config.yml
   tags:
     - config
 
 - name: ACL config
-  include: acl.yml
+  include_tasks: acl.yml
   when: consul_acl_enable
   tags:
     - config
@@ -60,6 +60,9 @@
   template:
     src: "etc/telegraf/telegraf.d/consul.conf.j2"
     dest: "{{ telegraf_confd_path }}/consul.conf"
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
   notify: reload telegraf
   tags:
     - config

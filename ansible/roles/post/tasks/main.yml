@@ -1,7 +1,7 @@
 # Post-deployment tasks
 ---
 - name: Include post install
-  include: "post_install.yml"
+  import_tasks: "post_install.yml"
 
 - name: check if noc running
   shell: "{{ noc_root }}/noc ctl status"
@@ -11,27 +11,6 @@
     - config
     - soft_restart
     - noc_config
-
-- name: Create alerta blackout
-  uri:
-    url: "{{alerta_url}}/api/blackout?api-key={{alerta_token}}"
-    method: POST
-    body:
-      environment: Production
-      service:
-        - supervisord
-      duration: "{{alerta_blackout_duration}}"
-    body_format: json
-    status_code: 201
-    validate_certs: no
-  when: "alerta_notified.changed"
-  register: blackout
-  changed_when: "blackout.status == 201"
-  environment:
-    https_proxy: "{{http_proxy}}"
-  run_once: true
-  tags:
-    - always
 
 - name: Reread config
   shell: "{{ noc_root }}/noc ctl reread"
@@ -138,27 +117,3 @@
   tags:
     - config
 
-- name: notify alerta of deployment end
-  uri:
-    url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
-    method: POST
-    body:
-      resource: "tower {{noc_env}}"
-      event: Deploy
-      environment: Production
-      type: AnsibleDeploy
-      attributes:
-        env_name: "{{noc_env}}"
-      service:
-        - NOC
-      status: closed
-      text: "Deployment on {{noc_env}} finished with tags: {{ ansible_tags }}"
-    body_format: json
-    status_code: 201, 202
-    validate_certs: no
-  when: "alerta_notified.changed"
-  run_once: true
-  environment:
-    https_proxy: "{{http_proxy}}"
-  tags:
-    - always

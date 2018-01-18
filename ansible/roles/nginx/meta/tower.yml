@@ -1,8 +1,11 @@
 config:
   nginx:
+    nginx_cert:
+      label: Certificates
+      description: Paste you cert+key here
+      type: text
     nginx_http_redirect:
       default: true
-      description: "<strong> <a href=https://nginx.org/en/docs/ target=_blank> https://nginx.org/en/docs/</a> </strong>"
       label: "Redirect http to https"
       type: bool
     nginx_json_logging:
@@ -19,7 +22,6 @@ config:
       label: "Use external certificate management"
       description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
       type: bool
-
 services:
   nginx:
     description: >

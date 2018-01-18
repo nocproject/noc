@@ -1,5 +1,5 @@
 - name: "Include OS-specific tasks"
-  include: "os/{{ ansible_distribution }}/main.yml"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Install assets
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"

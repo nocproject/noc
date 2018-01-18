@@ -7,10 +7,12 @@
   environment:
     https_proxy: "{{http_proxy}}"
 
-- name: install nsq on FreeBSD
-  command: /usr/bin/tar --strip-components=1 -xf /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz -C {{ noc_root }}
-  args:
-    creates: "{{ noc_root }}/bin/nsqlookupd"
+- name: unanchive nsqd
+  unarchive:
+    src: "{{nsq_temp_file}}"
+    dest: "{{nsq_root}}"
+    extra_opts: ['--strip-components=1']
+    creates: "{{nsq_root}}/nsqlookupd"
 
 - name: Install nsqlookupd init script
   template: src="os/FreeBSD/etc/rc.d/nsqlookupd.j2" dest="/usr/local/etc/rc.d/nsqlookupd" mode="a+rx"

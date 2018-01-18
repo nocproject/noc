@@ -1,13 +1,6 @@
-mongo_conf: "/etc/mongod.conf"
-mongo_db_path: /var/lib/mongodb/
-mongo_dir: "/etc/mongod"
-mongo_fork: True
 mongo_logging_driver: "syslog"
 mongo_path: /usr/bin/mongo
-mongo_pid: " "
-mongo_user: "mongod"
-mongo_version: "3.2"
-mongod_system_service: mongod
+mongo_version: "3.4"
 noc_mongo_admin_password: "noc"
 noc_mongo_admin_user: "root"
 noc_mongo_db: "noc"
@@ -21,7 +14,6 @@ mongo_arbiter_pid: /var/run/mongodb/mongod-arbiter.pid
 mongo_db_path: /var/lib/mongo/
 mongo_fork: "false"
 mongo_log_path: /var/log/mongodb/mongod.log
-mongo_path: /usr/bin/mongo
 mongo_pid: /var/run/mongodb/mongod.pid
 mongo_user: mongodb
 mongod_arbiter_system_service: mongod-arbiter

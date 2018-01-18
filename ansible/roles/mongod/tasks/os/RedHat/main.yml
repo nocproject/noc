@@ -82,5 +82,5 @@
   tags:
     - config
 
-- include: "arbiter.yml"
+- include_tasks: "arbiter.yml"
   when: "has_svc_mongo_arbiter | default(False)"

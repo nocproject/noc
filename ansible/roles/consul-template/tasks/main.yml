@@ -8,7 +8,7 @@
     - "{{consul_template_templates_dir}}"
 
 - name: include install
-  include: "install.yml"
+  import_tasks: "install.yml"
 
 - name: consul-template config file
   template:
@@ -42,13 +42,22 @@
     - config
 
 - name: include services
-  include: "services.yml"
+  import_tasks: "services.yml"
+  tags:
+    - requirements
+    - config
+
+- name: include telegraf services
+  import_tasks: "telegraf_services.yml"
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
   tags:
     - requirements
     - config
 
 - name: include ch_dictionaries
-  include: "ch_dictionaries.yml"
+  import_tasks: "ch_dictionaries.yml"
   when: ansible_nodename in groups['svc-clickhouse']
   tags:
     - requirements

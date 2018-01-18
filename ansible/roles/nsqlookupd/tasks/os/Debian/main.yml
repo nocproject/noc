@@ -13,9 +13,9 @@
 - name: unanchive nsqd
   unarchive:
     src: "{{nsq_temp_file}}"
-    dest: "{{ noc_root }}"
+    dest: "{{nsq_root}}"
     extra_opts: ['--strip-components=1']
-    creates: "{{ noc_root }}/bin/nsqlookupd"
+    creates: "{{nsq_root}}/nsqlookupd"
 
 - name: install nsqlookupd.service file
   template:

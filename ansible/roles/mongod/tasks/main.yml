@@ -30,7 +30,7 @@
     dest: "{{ mongo_dir }}/mongo.key"
   no_log: true
 
-- include: "os/{{ ansible_distribution }}/main.yml"
+- include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Setting mongo.key permissions
   file:
@@ -84,7 +84,7 @@
     state: started
   when: "has_svc_mongod_arbiter | default(False)"
 
-- include: "master.yml"
+- include_tasks: "master.yml"
   when: "has_svc_mongod_master  | default(False)"
   tags:
     - rs_init
@@ -94,6 +94,9 @@
     src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
     dest: "{{ telegraf_confd_path }}/mongodb.conf"
   notify: reload telegraf
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
   no_log: true
   tags:
     - config

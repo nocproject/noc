@@ -1,6 +1,7 @@
 # General settings
 #
 # for os specific see pre role
+etc_prefix: /etc
 
 # packages
 postgresql_version: "{{ lookup('env','POSTGRES_VERSION') | default(9.4, True)}}"
@@ -18,10 +19,16 @@ tower_dist_dir: "{{tower_path}}/var/tower/data/src_dist"
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
 tower_minimum_version: "0.2.0"
 
+noc_system_service: noc
+nsqd_db_dir: "/var/spool/nsqd"
+ch_etc_path: "{{etc_prefix}}/clickhouse-server"
+ch_dictionaries_path: "{{ch_etc_path}}/dictionaries"
+grafana_pg_user: grafana
+grafana_pg_db: grafana
+mongo_dir: "{{etc_prefix}}/mongod"
 
-
-etc_prefix: /etc
-
+nginx_conf_upstream_path: "{{etc_prefix}}/nginx/upstream.conf"
+postgres_listen: 5432
 
 telegraf_confd_path: "{{etc_prefix}}/telegraf/telegraf.d"
 
@@ -31,9 +38,10 @@ nsqd_reload_command: "systemctl reload nsqd"
 nsqadmin_reload_command: "systemctl reload nsqadmin"
 zookeeper_reload_command: "systemctl reload zookeeper"
 
+# for scripts
 consul_configd_path: "{{etc_prefix}}/consul.d"
 consul_scripts_path: "{{consul_configd_path}}/scripts"
-
+consul_user: "consul"
 
 nsqd_config_dir: "{{etc_prefix}}/nsq"
 
@@ -44,9 +52,3 @@ fake_shell: /bin/false
 
 
 haproxy_clickhouse_listen: 8124
-
-
-
-# Keys
-
-patroni_enabled: "{{'svc-patroni' in groups}}"

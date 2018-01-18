@@ -57,7 +57,7 @@
   tags:
     - requirements
 
-- include: "firewall.yml"
+- import_tasks: "firewall.yml"
   tags:
     - firewall
 

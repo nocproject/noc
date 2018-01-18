@@ -72,7 +72,7 @@ server {
 
     location /ng_stats {
         stub_status;
-{% for host in groups["svc-nginx"] %}
+{% for host in groups["svc-nginx-exec"] %}
     {% for ip in hostvars[host].ansible_all_ipv4_addresses %}
         allow {{ ip }};
     {% endfor %}

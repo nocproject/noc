@@ -1,0 +1,27 @@
+
+- name: Set up SSL directory
+  file:
+    path: "{{ nginx_ssl_key_path | dirname }}"
+    mode: 0700
+    owner: "{{ nginx_user }}"
+    state: directory
+
+- name: Set up SSL key
+  copy:
+    content: "{{ noc_ssl_key }}"
+    dest: "{{ nginx_ssl_key_path }}"
+    mode: 0400
+    owner: "{{ nginx_user }}"
+    force: "{{nginx_external_cert_management}}"
+  notify: reload nginx
+  no_log: true
+
+- name: Set up SSL certificate
+  copy:
+    content: "{{ noc_ssl_cert }}"
+    dest: "{{ nginx_ssl_cert_path }}"
+    mode: 0400
+    owner: "{{ nginx_user }}"
+    force: "{{nginx_external_cert_management}}"
+  notify: reload nginx
+  no_log: true

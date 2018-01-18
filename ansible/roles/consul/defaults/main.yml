@@ -72,4 +72,3 @@ consul_token: ""
 
 consul_home: "/home/{{consul_user}}"
 consul_config_path: "{{etc_prefix}}/consul"
-consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"

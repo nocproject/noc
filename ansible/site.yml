@@ -11,19 +11,6 @@
   roles:
     - role: pre
 
-- name: Common tasks
-  hosts: all
-  become: yes
-  any_errors_fatal: false
-  gather_facts: True
-  tags:
-    - telegraf
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: telegraf
-
-
 - name: Consul tasks
   hosts: svc-consul-server
   become: yes
@@ -54,64 +41,8 @@
         - consul-template
         - external
 
-- name: haproxy tasks
-  hosts: svc-haproxy
-  become: yes
-  any_errors_fatal: True
-  gather_facts: True
-  tags:
-    - haproxy
-    - ha
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: haproxy
-
-
-- name: keepalived tasks
-  hosts: svc-keepalived
-  become: yes
-  any_errors_fatal: True
-  gather_facts: True
-  tags:
-    - keepalived
-    - ha
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: keepalived
-
-- name: Install NOC
-  hosts: all
-  become: yes
-  any_errors_fatal: false
-  gather_facts: True
-  tags:
-    - node
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: node
-    - role: custom
-
-- name: Install and configure patroni
-  hosts: svc-patroni
-  become: yes
-  serial: 1
-  any_errors_fatal: true
-  tags:
-    - postgres
-    - patroni
-    - external
-    - ha
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: patroni
-
 - name: Install and configure postgres
-  hosts: svc-postgres
+  hosts: svc-postgres-exec
   become: yes
   serial: 1
   any_errors_fatal: true
@@ -124,7 +55,7 @@
     - role: postgres
 
 - name: Install and configure grafana
-  hosts: svc-grafana
+  hosts: svc-grafana-exec
   become: yes
   serial: 50%
   any_errors_fatal: true
@@ -137,7 +68,7 @@
     - role: grafana
 
 - name: Install and configure nsqlookupd
-  hosts: svc-nsqlookupd
+  hosts: svc-nsqlookupd-exec
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -151,7 +82,7 @@
     - role: nsqlookupd
 
 - name: Install and configure nsq
-  hosts: all
+  hosts: svc-nsqd-exec
   become: yes
   any_errors_fatal: true
   tags:
@@ -164,7 +95,7 @@
     - role: nsqd
 
 - name: Install and configure mongo
-  hosts: svc-mongod
+  hosts: svc-mongod-exec
   become: yes
   serial: 30%
   any_errors_fatal: true
@@ -177,7 +108,7 @@
     - role: mongod
 
 - name: clickhouse tasks
-  hosts: svc-clickhouse
+  hosts: svc-clickhouse-exec
   become: yes
   any_errors_fatal: false
   gather_facts: True
@@ -189,34 +120,8 @@
   roles:
     - role: clickhouse
 
-- name: Install and configure pgbouncer
-  hosts: svc-pgbouncer
-  become: yes
-  any_errors_fatal: true
-  tags:
-    - pgbouncer
-    - external
-  strategy: free
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: pgbouncer
-
-- name: Install and configure influxdb
-  hosts: svc-influxdb
-  become: yes
-  serial: 1
-  tags:
-    - influxdb
-    - external
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: influxdb
-
 - name: Install and configure nginx
-  hosts: svc-nginx
+  hosts: svc-nginx-exec
   serial: 50%
   become: yes
   tags:
@@ -229,327 +134,40 @@
   roles:
     - role: nginx
 
-- name: Install and configure memcached
-  hosts: svc-memcached
+- name: Install NOC
+  hosts: noc-svc-*
   become: yes
   any_errors_fatal: true
-  tags:
-    - memcached
-    - external
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: memcached
-
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-login
-  become: yes
   strategy: free
-  any_errors_fatal: true
+  gather_facts: True
   tags:
-    - login
+    - node
     - noc
   vars_files:
     - "vars/main.yml"
   roles:
+    - role: node
     - role: login
-
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-mrt
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - mrt
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: mrt
-
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-escalator
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - escalator
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: escalator
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-web
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - node
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: web
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-card
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - card
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: card
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-ch_datasource
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - ch_datasource
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: ch_datasource
-
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-omap
-  become: yes
-  strategy: free
-  tags:
-    - omap
-    - noc
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: omap
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-activator
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - activator
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: activator
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-grafanads
-  become: yes
-  strategy: free
-  tags:
-    - node
-    - noc
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: grafanads
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-mailsender
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - mailsender
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: mailsender
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-tgsender
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - tgsender
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: tgsender
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-chwriter
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - chwriter
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: chwriter
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-classifier
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - classifier
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: classifier
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-correlator
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - correlator
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: correlator
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-syslogcollector
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - syslogcollector
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: syslogcollector
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-trapcollector
-  strategy: free
-  become: yes
-  any_errors_fatal: true
-  tags:
-    - trapcollector
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: trapcollector
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-ping
-  strategy: free
-  become: yes
-  any_errors_fatal: true
-  tags:
-    - ping
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: ping
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-sae
-  become: yes
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - sae
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: sae
-      become: yes
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-scheduler
-  become: no
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - scheduler
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: scheduler
-      become: yes
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-discovery
-  become: no
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - discovery
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: discovery
-      become: yes
-
-- name: Install and upgrade NOC
-  hosts: noc-svc-bi
-  become: no
-  strategy: free
-  any_errors_fatal: true
-  tags:
-    - bi
-    - noc
-  vars_files:
-    - "vars/main.yml"
-  roles:
     - role: bi
-      become: yes
-
-- name: Install and configure dev tools
-  hosts: svc-dev
-  strategy: free
-  become: yes
-  any_errors_fatal: false
-  tags:
-    - dev
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: dev
-      become: yes
-      when: "has_svc_dev | default(False) or has_svc_notebook | default(False) or consul_env"
-
-    - role: notebook
-      become: yes
-      when: "has_svc_notebook | default(False) or consul_env"
-      tags:
-        - notebook
-        - external
-
-    - role: nsqadmin
-      become: yes
-      when: "has_svc_nsqadmin | default(False) or consul_env"
-      tags:
-        - nsq
-        - nsqadmin
-        - external
 
 - name: Finally
   hosts: all

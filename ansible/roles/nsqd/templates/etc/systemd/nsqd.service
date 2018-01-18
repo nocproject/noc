@@ -3,7 +3,7 @@ Description=Realtime distributed messaging (nsqd)
 After=network.target
 
 [Service]
-ExecStart={{noc_root}}/bin/nsqd -config {{nsqd_config_dir}}/nsqd.conf
+ExecStart={{nsq_root}}/nsqd -config {{nsqd_config_dir}}/nsqd.conf
 Restart=always
 User=nsq
 Group=nsq

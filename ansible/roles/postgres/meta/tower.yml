@@ -5,7 +5,7 @@ config:
       label: "Postgresql max clients"
       type: int
     postgres_version:
-      default: 9.4
+      default: 9.6
       description: "<strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field."
       label: "Postgresql version"
       type: str
@@ -31,10 +31,6 @@ config:
       default: noc
       type: str
       label: Password
-    postgres_version:
-      default: 9.6
-      type: str
-      label: Postgresql version
 services:
   postgres:
     description: >

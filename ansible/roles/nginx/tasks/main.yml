@@ -1,43 +1,39 @@
 # nginx role
 ---
-- include: "os/{{ ansible_distribution }}/main.yml"
+- include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Install nginx monitoring
   template:
     src: "etc/telegraf/telegraf.d/nginx.conf.j2"
     dest: "{{ telegraf_confd_path }}/nginx.conf"
   notify: reload telegraf
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
   tags:
     - config
     - telegraf
 
+- name: Install service monitoring
+  template:
+    src: "{{item}}"
+    dest: "{{ telegraf_confd_path }}/{{item[25:]}}"
+    force: no
+  with_items:
+    - "etc/telegraf/telegraf.d/discovery.conf.j2"
+    - "etc/telegraf/telegraf.d/fm-monitor.conf.j2"
+  notify: reload telegraf
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
+  tags:
+    - config
 
-- name: Set up SSL directory
-  file:
-    path: "{{ nginx_ssl_key_path | dirname }}"
-    mode: 0700
-    owner: "{{ nginx_user }}"
-    state: directory
-
-- name: Set up SSL key
-  copy:
-    content: "{{ noc_ssl_key }}"
-    dest: "{{ nginx_ssl_key_path }}"
-    mode: 0400
-    owner: "{{ nginx_user }}"
-    force: "{{nginx_external_cert_management}}"
-  notify: reload nginx
-  no_log: true
-
-- name: Set up SSL certificate
-  copy:
-    content: "{{ noc_ssl_cert }}"
-    dest: "{{ nginx_ssl_cert_path }}"
-    mode: 0400
-    owner: "{{ nginx_user }}"
-    force: "{{nginx_external_cert_management}}"
-  notify: reload nginx
-  no_log: true
+- name: include certs
+  import_tasks: certs.yml
+  static: true
+  tags:
+    - config
 
 - name: Setup nginx
   template:
@@ -49,20 +45,6 @@
       path: "{{ nginx_conf_path }}"
   tags:
     - config
-
-- name: Install assets
-  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
-  args:
-    chdir: "{{ noc_root }}"
-  register: s
-  changed_when: "'CHANGED' in s.stdout"
-  with_items: "{{ required_assets }}"
-  environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-    NOC_CONFIG: "{{config_order}}"
-  tags:
-    - requirements
 
 - name: Enable Nginx system service
   service:
