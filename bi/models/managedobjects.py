@@ -2,18 +2,15 @@
 # ----------------------------------------------------------------------
 # ManagedObject model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.clickhouse.model import Model
-from noc.core.clickhouse.fields import (DateField, DateTimeField,
-                                        UInt16Field,
-                                        Int32Field, BooleanField,
-                                        StringField,
-                                        Float64Field, ReferenceField,
-                                        IPv4Field, UInt8Field)
+from noc.core.clickhouse.fields import (
+    DateField, DateTimeField, UInt16Field, Int32Field, BooleanField,
+    StringField, Float64Field, ReferenceField, IPv4Field)
 from noc.core.clickhouse.engines import MergeTree
 from noc.core.bi.dictionaries.managedobject import ManagedObject as ManagedObjectDict
 from noc.core.bi.dictionaries.pool import Pool

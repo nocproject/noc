@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Dashboard storage
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ class Dashboard(Document):
         return level
 
     def save(self, force_insert=False, validate=True, clean=True,
-             write_concern=None,  cascade=None, cascade_kwargs=None,
+             write_concern=None, cascade=None, cascade_kwargs=None,
              _refs=None, save_condition=None, **kwargs):
         # Split DashBoard Acces to {User, level}, {Group, level}
         # self.update(add_to_set__access=[parent_1, parent_2, parent_1])
@@ -106,9 +106,11 @@ class Dashboard(Document):
                     processed += ["g%d" % da.group.id]
             self.access = access
 
-        super(Dashboard, self).save(force_insert=force_insert, validate=validate, clean=clean,
-                                    write_concern=write_concern,  cascade=cascade, cascade_kwargs=cascade_kwargs,
-                                    _refs=_refs, save_condition=save_condition, **kwargs)
+        super(Dashboard, self).save(
+            force_insert=force_insert, validate=validate, clean=clean,
+            write_concern=write_concern, cascade=cascade,
+            cascade_kwargs=cascade_kwargs, _refs=_refs,
+            save_condition=save_condition, **kwargs)
 
     def clean_access(self, item=None):
         """
