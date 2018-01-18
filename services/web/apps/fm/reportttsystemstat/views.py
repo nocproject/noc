@@ -141,8 +141,8 @@ class ReportTTSystemStatApplication(SimpleReport):
                         pass
                 elif row[2] in ["change_massive_damage_outer_close"]:
                     row[2] = u"Закрытие ТТ"
-                    row[3] = aa[row[3]].managed_object if row[3] in aa else row[3]
                     row[4] = row[3]
+                    row[3] = aa[row[3]].managed_object if row[3] in aa else row[3]
                 else:
                     continue
                 r += [row]
