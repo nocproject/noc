@@ -58,7 +58,6 @@ consul_servers: "\
     {% endif %}\
   {% endfor %}\
   {{ _consul_servers }}"
-consul_gather_server_facts: no
 
 ## ACL
 consul_acl_enable: True
@@ -67,3 +66,10 @@ consul_acl_default_policy: "allow"
 consul_acl_down_policy: "allow"
 consul_acl_master_token_display: False
 consul_acl_replication_token_display: False
+
+consul_replication_token: ""
+consul_token: ""
+
+consul_home: "/home/{{consul_user}}"
+consul_config_path: "{{etc_prefix}}/consul"
+consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"

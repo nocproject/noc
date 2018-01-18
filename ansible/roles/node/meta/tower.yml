@@ -1,0 +1,45 @@
+config:
+  noc:
+    python_interpreter:
+      default: python
+      label: Interpreter
+      description: Python interpreter either <strong>python</strong> or <strong>pypy</strong>.
+      type: str
+    noc_repo:
+      default: https://github.com/nocproject/noc.git
+      label: Repo
+      description: Probably you wan't change it
+      type: str
+    noc_version:
+      default: microservices
+      label: Noc version
+      description: What version of the repository to check out. This can be the the literal string HEAD, a branch name, a tag name. It can also be a SHA-1 hash, in which case refspec needs to be specified if the given revision is not already available.
+      type: str
+    noc_root:
+      default: /opt/noc
+      label: Prefix
+      description: Place noc source there
+      type: str
+    noc_user:
+      default: noc
+      label: Noc user
+      description: System user
+      type: str
+    noc_group:
+      default: noc
+      label: Noc group
+      description: System group
+      type: str
+
+services:
+  noc:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: NOC settings <br/>
+      <strong>Long description</strong>: Write settings.yml. file will not be overwritten once created<br/>
+      <strong>Scale Recommendations</strong>: At one any node <br/>
+      <strong>docs</strong>: <br/>
+      <strong>Placement constraint</strong>: Any <br/>
+    level: system
+    category: config
+    promote: system

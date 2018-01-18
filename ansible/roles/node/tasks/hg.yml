@@ -9,7 +9,7 @@
   environment:
     LC_ALL: C
   tags:
-    - mercurial
+    - get_source
 
 - name: Pull NOC
   hg:
@@ -20,4 +20,4 @@
   environment:
     LC_ALL: C
   tags:
-    - mercurial
+    - get_source

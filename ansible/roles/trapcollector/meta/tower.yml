@@ -1,0 +1,26 @@
+config:
+  trapcollector:
+    listen_traps:
+      default: "0.0.0.0:162"
+      label: "Listen SNNP Traps"
+      type: str
+services:
+  trapcollector:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: SNMP Trap listener service<br/>
+      <strong>Long description</strong>: Listen for SNMP Traps from network equipment adds them to nsqd queue<br/>
+      <strong>Scale Recommendations</strong>: One per pool. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/trapcollector/ target=_blank>Trapcollector</a><br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
+    level: pool
+    category: internal
+    command: "./services/trapcollector/service.py"
+    process_name: "%(program_name)s"
+    oom_score_adj: 50
+    priority: 200
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
+    user: root

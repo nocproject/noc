@@ -1,0 +1,25 @@
+config:
+  scheduler:
+    max_threads:
+      default: 10
+      label: "Scheduler threads"
+      type: int
+services:
+  scheduler:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Scheduler service<br/>
+      <strong>Long description</strong>: Launches internal tasks. <br/>
+      <strong>Scale Recommendations</strong>: At least one per system. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/scheduler/ target=_blank>Scheduler</a><br/>
+      <strong>Placement constraint</strong>: On node with discovery<br/>
+    level: global
+    category: internal
+    command: "./services/scheduler/service.py"
+    process_name: "%(program_name)s"
+    oom_score_adj: 100
+    priority: 50
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3

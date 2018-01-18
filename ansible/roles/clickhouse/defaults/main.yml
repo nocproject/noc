@@ -4,3 +4,6 @@ ch_big_query_dir: "{{ch_data_dir}}/tmp"
 clickhouse_http_port: 8123
 
 clickhouse_service_name: clickhouse-server
+
+ch_etc_path: "{{etc_prefix}}/clickhouse-server"
+ch_dictionaries_path: "{{ch_etc_path}}/dictionaries"

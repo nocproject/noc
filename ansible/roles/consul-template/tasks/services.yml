@@ -10,7 +10,7 @@
       src: services/upstream.conf.j2
       dest: "{{consul_template_config_dir}}/upstream.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-nginx']
+  when: has_svc_nginx is defined
 
 - block:
   - name: install noc_activator template
@@ -24,7 +24,7 @@
       src: services/noc_activator.conf.j2
       dest: "{{consul_template_config_dir}}/noc_activator.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-activator'] and telegraf_influxdb_enabled
+  when: has_svc_activator is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_bi template
@@ -38,7 +38,7 @@
       src: services/noc_bi.conf.j2
       dest: "{{consul_template_config_dir}}/noc_bi.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-bi'] and telegraf_influxdb_enabled
+  when: has_svc_bi is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_datasource template
@@ -52,7 +52,7 @@
       src: services/noc_datasource.conf.j2
       dest: "{{consul_template_config_dir}}/noc_datasource.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-ch_datasource'] and telegraf_influxdb_enabled
+  when: has_svc_ch_datasource is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_chwriter template
@@ -66,7 +66,7 @@
       src: services/noc_chwriter.conf.j2
       dest: "{{consul_template_config_dir}}/noc_chwriter.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-chwriter'] and telegraf_influxdb_enabled
+  when: has_svc_chwriter is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_card template
@@ -80,7 +80,7 @@
       src: services/noc_card.conf.j2
       dest: "{{consul_template_config_dir}}/noc_card.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-card'] and telegraf_influxdb_enabled
+  when: has_svc_card is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_classifier template
@@ -94,7 +94,7 @@
       src: services/noc_classifier.conf.j2
       dest: "{{consul_template_config_dir}}/noc_classifier.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-classifier'] and telegraf_influxdb_enabled
+  when: has_svc_classifier is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_correlator template
@@ -108,7 +108,7 @@
       src: services/noc_correlator.conf.j2
       dest: "{{consul_template_config_dir}}/noc_correlator.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-correlator'] and telegraf_influxdb_enabled
+  when: has_svc_correlator is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_discovery template
@@ -122,7 +122,7 @@
       src: services/noc_discovery.conf.j2
       dest: "{{consul_template_config_dir}}/noc_discovery.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-discovery'] and telegraf_influxdb_enabled
+  when: has_svc_discovery is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_escalator template
@@ -136,7 +136,7 @@
       src: services/noc_escalator.conf.j2
       dest: "{{consul_template_config_dir}}/noc_escalator.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-escalator'] and telegraf_influxdb_enabled
+  when: has_svc_escalator is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_grafanads template
@@ -150,7 +150,7 @@
       src: services/noc_grafanads.conf.j2
       dest: "{{consul_template_config_dir}}/noc_grafanads.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-grafanads'] and telegraf_influxdb_enabled
+  when: has_svc_grafanads is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_login template
@@ -164,7 +164,7 @@
       src: services/noc_login.conf.j2
       dest: "{{consul_template_config_dir}}/noc_login.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-login'] and telegraf_influxdb_enabled
+  when: has_svc_login is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_mailsender template
@@ -178,7 +178,7 @@
       src: services/noc_mailsender.conf.j2
       dest: "{{consul_template_config_dir}}/noc_mailsender.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-mailsender'] and telegraf_influxdb_enabled
+  when: has_svc_mailsender is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_mrt template
@@ -192,7 +192,7 @@
       src: services/noc_mrt.conf.j2
       dest: "{{consul_template_config_dir}}/noc_mrt.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-mrt'] and telegraf_influxdb_enabled
+  when: has_svc_mrt is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_omap template
@@ -206,7 +206,7 @@
       src: services/noc_omap.conf.j2
       dest: "{{consul_template_config_dir}}/noc_omap.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-omap'] and telegraf_influxdb_enabled
+  when: has_svc_omap is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_ping template
@@ -220,7 +220,7 @@
       src: services/noc_ping.conf.j2
       dest: "{{consul_template_config_dir}}/noc_ping.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-ping'] and telegraf_influxdb_enabled
+  when: has_svc_ping is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_sae template
@@ -234,7 +234,7 @@
       src: services/noc_sae.conf.j2
       dest: "{{consul_template_config_dir}}/noc_sae.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-sae'] and telegraf_influxdb_enabled
+  when: has_svc_sae is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_scheduler template
@@ -248,7 +248,7 @@
       src: services/noc_scheduler.conf.j2
       dest: "{{consul_template_config_dir}}/noc_scheduler.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-scheduler'] and telegraf_influxdb_enabled
+  when: has_svc_scheduler is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_syslogcollector template
@@ -262,7 +262,7 @@
       src: services/noc_syslogcollector.conf.j2
       dest: "{{consul_template_config_dir}}/noc_syslogcollector.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-syslogcollector'] and telegraf_influxdb_enabled
+  when: has_svc_syslogcollector is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_trapcollector template
@@ -276,7 +276,7 @@
       src: services/noc_trapcollector.conf.j2
       dest: "{{consul_template_config_dir}}/noc_trapcollector.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-trapcollector'] and telegraf_influxdb_enabled
+  when: has_svc_trapcollector is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_web template
@@ -290,7 +290,7 @@
       src: services/noc_web.conf.j2
       dest: "{{consul_template_config_dir}}/noc_web.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-web'] and telegraf_influxdb_enabled
+  when: has_svc_web is defined and telegraf_influxdb_enabled
 
 - block:
   - name: install noc_tgsender template
@@ -304,7 +304,7 @@
       src: services/noc_tgsender.conf.j2
       dest: "{{consul_template_config_dir}}/noc_tgsender.conf"
     notify: reload consul-template
-  when: ansible_nodename in groups['svc-tgsender'] and telegraf_influxdb_enabled
+  when: has_svc_tgsender is defined and telegraf_influxdb_enabled
 
 - name: install nsqd config for template
   template:
@@ -316,7 +316,7 @@
       dest: "{{consul_template_config_dir}}/nsqd.conf"
     - src: services/nsqd.conf.ctmpl
       dest: "{{ consul_template_templates_dir }}/nsqd.conf.ctmpl"
-  when: ansible_nodename in groups['svc-nsqd']
+  when: has_svc_nsqd is defined
 
 - name: install nsqadmin config for template
   template:
@@ -328,18 +328,5 @@
       dest: "{{consul_template_config_dir}}/nsqadmin.conf"
     - src: services/nsqadmin.conf.ctmpl
       dest: "{{ consul_template_templates_dir }}/nsqadmin.conf.ctmpl"
-  when: ansible_nodename in groups['svc-nsqadmin']
+  when: has_svc_nsqadmin is defined
 
-- block:
-  - name: install zookeeper template
-    copy:
-      src: zoo.cfg.ctmpl
-      dest: "{{ consul_template_templates_dir }}/zoo.cfg.ctmpl"
-    notify: reload consul-template
-
-  - name: install zookeeper config for template
-    template:
-      src: services/zookeeper.conf.j2
-      dest: "{{consul_template_config_dir}}/zookeeper.conf"
-    notify: reload consul-template
-  when: "'svc-zookeeper' in groups and groups['svc-zookeeper'] | count > 0 and ansible_nodename in groups['svc-zookeeper']"

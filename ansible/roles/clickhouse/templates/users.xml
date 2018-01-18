@@ -10,13 +10,13 @@
             <!-- Use cache of uncompressed blocks of data. Meaningful only for processing many of very short queries. -->
             <use_uncompressed_cache>0</use_uncompressed_cache>
             <load_balancing>random</load_balancing>
-            <max_query_size>{{ clickhouse_max_query_size }}</max_query_size>
+            <max_query_size>{{ clickhouse_query_size }}</max_query_size>
         </default>
 
         <!-- Profile that allows only read queries. -->
         <readonly>
             <readonly>1</readonly>
-            <max_query_size>{{ clickhouse_max_query_size }}</max_query_size>
+            <max_query_size>{{ clickhouse_query_size }}</max_query_size>
         </readonly>
     </profiles>
 
@@ -47,7 +47,7 @@
             {% for n in groups['svc-clickhouse'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
-            {% for n in groups['svc-scheduler'] %}
+            {% for n in groups['noc-svc-scheduler'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
             </networks>
@@ -68,20 +68,24 @@
             {% for n in groups['svc-grafana'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
-            {% for n in groups['svc-bi'] %}
+                {% if 'noc-svc-bi' in groups %}
+            {% for n in groups['noc-svc-bi'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
-            {% for n in groups['svc-web'] %}
+                {% endif %}
+            {% for n in groups['noc-svc-web'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
+                {% if 'svc-haproxy' in groups %}
             {% for n in groups['svc-haproxy'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
+                {% endif %}
                 <ip>{{tower_ip}}</ip>
-            {% for n in groups['svc-scheduler'] %}
+            {% for n in groups['noc-svc-scheduler'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
-            {% for n in groups['svc-discovery'] %}
+            {% for n in groups['noc-svc-discovery'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
             </networks>

@@ -7,7 +7,7 @@ After=basic.target network.target
 Environment=HOSTNAME={{ ansible_nodename }}
 User=root
 Group=root
-ExecStart={{ consul_template_bin_path }}/consul-template -config {{consul_template_config_dir}}{%  if consul_template_dedup %} -dedup{% endif %}
+ExecStart={{ consul_template_bin_path }}/consul-template -config {{consul_template_config_dir}}{%  if consultemplate_use_dedup %} -dedup{% endif %}
 
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process

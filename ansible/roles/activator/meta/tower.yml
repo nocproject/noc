@@ -1,0 +1,30 @@
+services:
+  activator:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Activator service <br/>
+      <strong>Long description</strong>: Responsible for the collecting and processing data from network equipment.<br/>
+      <strong>Scale Recommendations</strong>: At least two per core on node. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/activator/ target=_blank>Activator</a><br/>
+      <strong>Placement constraint</strong>: On separate node<br/>
+    level: pool
+    category: internal
+    command: "./services/activator/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    priority: 100
+    oom_score_adj: 300
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
+
+config:
+  activator:
+    script_threads:
+      default: 20
+      label: "Script threads"
+      type: int
+    tos:
+      default: 0
+      label: "IP ToS mark"
+      type: int

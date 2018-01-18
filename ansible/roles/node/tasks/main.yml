@@ -54,6 +54,9 @@
 
 - name: Generate configs
   include: "config.yml"
+  tags:
+    - config
+    - noc_config
 
 - name: Include noc hacks
   include: "hacks.yml"

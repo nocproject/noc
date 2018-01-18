@@ -1,0 +1,19 @@
+pg:
+  db: {{postgres_noc_db}}
+  password: {{postgres_noc_password}}
+  user: {{postgres_noc_user}}
+
+mongo:
+  db: {{mongod_db}}
+  password: {{mongod_password}}
+  rs: {{mongod_rs}}
+  user: {{mongod_user}}
+{% for service in noc_services %}
+    {%- if not service.pool %}
+        {%- if service.config %}
+
+{{ service.name }}:
+{{ service.config |  to_nice_yaml | indent(2, true)}}
+        {%- endif %}
+    {%- endif %}
+{% endfor %}

@@ -23,7 +23,7 @@
 
     <!-- Maximum number of concurrent queries. -->
     <max_concurrent_queries>100</max_concurrent_queries>
-    <max_query_size>{{ clickhouse_max_query_size }}</max_query_size>
+    <max_query_size>{{ clickhouse_query_size }}</max_query_size>
 
 
     <!-- Set limit on number of open files (default: maximum). This setting makes sense on Mac OS X because getrlimit() fails to retrieve

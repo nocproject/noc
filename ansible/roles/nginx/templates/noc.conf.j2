@@ -10,7 +10,7 @@ http {
 
 include upstream.conf;
 
-{% if nginx_json_logging == "1" %}
+{% if nginx_json_logging %}
 log_format noc_format '{ "@timestamp": "$time_iso8601", '
                          '"@fields": { '
                          '"remote_addr": "$remote_addr", '
@@ -34,7 +34,7 @@ log_format noc_format '$remote_addr - $remote_user [$time_local] '
 
 {% endif %}
 
-{% if nginx_http_redirect_enabled == "1" %}
+{% if nginx_http_redirect %}
 server {
     listen 80;
     server_name {{ noc_web_host }};
@@ -77,7 +77,7 @@ server {
         allow {{ ip }};
     {% endfor %}
 {% endfor %}
-{% if keepalived_nginx_virtual_ip %}
+{% if keepalived_nginx_virtual_ip is defined and keepalived_nginx_virtual_ip %}
         allow {{ keepalived_nginx_virtual_ip }};
 {% endif %}
         deny all;
@@ -120,7 +120,7 @@ server {
         access_log off;
     }
 
-{% if 'svc-login' in groups and groups['svc-login'] | length > 0 %}
+{% if 'noc-svc-login' in groups and groups['noc-svc-login'] | length > 0 %}
     # Login service api
     location /api/auth/ {
         internal;
@@ -153,7 +153,7 @@ server {
     }
 {% endif %}
 
-{% if 'svc-card' in groups and groups['svc-card'] | length > 0 %}
+{% if 'noc-svc-card' in groups and groups['noc-svc-card'] | length > 0 %}
     # Card service api
     location /api/card/ {
         proxy_pass http://card;
@@ -174,7 +174,7 @@ server {
     }
 {% endif %}
 
-{% if 'svc-mrt' in groups and groups['svc-mrt'] | length > 0 %}
+{% if 'noc-svc-mrt' in groups and groups['noc-svc-mrt'] | length > 0 %}
     # mrt service api
     location /api/mrt/ {
         proxy_pass http://mrt;
@@ -196,7 +196,7 @@ server {
     }
 {% endif %}
 
-{% if 'svc-bi' in groups and groups['svc-bi'] | length > 0 %}
+{% if 'noc-svc-bi' in groups and groups['noc-svc-bi'] | length > 0 %}
 
     # bi service api
     location /api/bi/ {
@@ -225,7 +225,7 @@ server {
     }
 {% endif %}
 
-{% if 'svc-grafanads' in groups and groups['svc-grafanads'] | length > 0 %}
+{% if 'noc-svc-grafanads' in groups and groups['noc-svc-grafanads'] | length > 0 %}
 
     # grafanads service api
     location /api/grafanads/ {
@@ -270,7 +270,7 @@ server {
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
-{% if 'svc-bi' in groups and groups['svc-bi'] | length > 0 %}
+{% if 'noc-svc-bi' in groups and groups['noc-svc-bi'] | length > 0 %}
     location /ui/bi/editor/ {
         alias {{ noc_root }}/ui/bi/;
         try_files $uri /index.html =404;

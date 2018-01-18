@@ -1,5 +1,7 @@
 # Debian settings
 ---
+apt_cache_valid_time: 86400
+
 mongo_arbiter_pid: " "
 mongo_db_path: /var/lib/mongodb/
 mongo_pid: " "

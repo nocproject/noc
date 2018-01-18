@@ -62,7 +62,7 @@
       Check https://kb.nocproject.org/x/TIHJAQ for more details.
       Current version selected:  {{mongo_version}}
       Otherwise you can disable bi service on services tab
-  when: "groups['svc-bi'] | count > 0 and mongo_version | version_compare('3.4', operator='lt', strict=True)"
+  when: "has_svc_bi is defined and mongo_version | version_compare('3.4', operator='lt', strict=True)"
 
 - block:
   - name: No postgres server set
@@ -122,12 +122,12 @@
 - name: fail if patroni not for debian/rhel
   fail:
     msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
-  when: groups['svc-patroni'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
+  when: has_svc_patroni and ansible_distribution not in ['RedHat', 'Debian']
 
 - name: fail if patroni enabled and postgres not 9.6
   fail:
     msg: "Patroni can be installed only with postgres 9.6"
-  when: groups['svc-patroni'] | length > 0 and postgresql_version|version_compare("9.6", '<')
+  when: has_svc_patroni and postgresql_version|version_compare("9.6", '<')
 
 - name: fail if patroni set for one node
   fail:
@@ -165,3 +165,8 @@
   fail:
     msg: "Pgbouncer has more connections to postgres that postgres can handle postgres_max_connections={{postgres_max_connections}} is more than pgbouncer_max_cons={{groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int}}"
   when: groups['svc-pgbouncer'] | length > 1 and groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int > postgres_max_connections
+
+- name: to many influxdb servers
+  fail:
+    msg: Too many influxdb servers and no collector set
+  when: groups['svc-influxdb'] | length > 1 and not noc_metrics_collector

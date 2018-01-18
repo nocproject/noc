@@ -1,0 +1,5 @@
+pools:
+{% for pool in noc_all_pools %}
+  {{ pool.name }}:
+    description: '{{ pool.description }}'
+{% endfor %}

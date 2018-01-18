@@ -1,0 +1,38 @@
+config:
+  clickhouse:
+    clickhouse_user:
+      default: noc
+      label: "RW user"
+      type: str
+      description: "RW user"
+    clickhouse_password:
+      default: noc
+      label: "Password for user default"
+      type: str
+      description: "RW user password"
+    clickhouse_ro_password:
+      label: "Password for user readonly"
+      description: "RO user password"
+      default: noc
+      type: str
+    clickhouse_db:
+      default: noc
+      label: "db name"
+      type: str
+    clickhouse_query_size:
+      default: 262144
+      label: "Max query size"
+      type: int
+
+services:
+  clickhouse:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: ClickHouse database <br/>
+      <strong>Long description</strong>: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.<br/>
+      <strong>Scale Recommendations</strong>: See docs<br/>
+      <strong>docs</strong>: "https://clickhouse.yandex/docs/en/"<br/>
+      <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
+    level: system
+    category: external
+    port: 8123

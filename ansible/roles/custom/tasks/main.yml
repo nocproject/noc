@@ -1,7 +1,0 @@
-- name: set proper custom method
-  set_fact:
-    custom_install_method: hg
-  when: "'hg+https' in noc_custom_repo"
-
-- name: Include {{custom_install_method}} install method
-  include: "{{custom_install_method}}.yml"

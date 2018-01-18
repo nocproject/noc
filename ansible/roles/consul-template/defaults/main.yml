@@ -29,3 +29,8 @@ consul_template_dl_dir: "/tmp"
 
 consul_template_user: root
 consul_template_group: bin
+consultemplate_use_dedup: false
+
+consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
+consul_template_templates_dir: "{{etc_prefix}}/consul-template/templates"
+consul_template_ch_dictionaries_dir: "{{etc_prefix}}/consul-template/templates/ch_dictionaries"

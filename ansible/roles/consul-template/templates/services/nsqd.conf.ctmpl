@@ -31,7 +31,7 @@ nsqlookupd_tcp_addresses = [
 data_path = "[%nsqd_db_dir%]"
 
 ## number of messages to keep in memory (per topic/channel)
-mem_queue_size = [%nsq_max_messages_in_memory%]
+mem_queue_size = [%nsqd_max_messages_in_memory%]
 
 ## number of bytes per diskqueue file before rolling
 max_bytes_per_file = 104857600
@@ -50,13 +50,13 @@ msg_timeout = "60s"
 max_msg_timeout = "15m"
 
 ## maximum size of a single message in bytes
-max_msg_size = [%nsq_max_msg_size%]
+max_msg_size = [%nsqd_max_msg_size%]
 
 ## maximum requeuing timeout for a message
 max_req_timeout = "1h"
 
 ## maximum size of a single command body
-max_body_size = [%nsq_max_msg_size | int * 5 %]
+max_body_size = [%nsqd_max_msg_size | int * 5 %]
 
 
 ## maximum client configurable duration of time between client heartbeats

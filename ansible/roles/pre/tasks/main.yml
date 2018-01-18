@@ -34,54 +34,6 @@
     - config
     - always
 
-- name: "Load variables from consul"
-  include_vars: "consul.yml"
-  when: consul_env
-  environment:
-    CONSUL_URL: "{{consul_url}}"
-    CONSUL_TOKEN: "{{consul_token}}"
-  tags:
-    - config
-    - always
-
-- name: "Load variables from tower"
-  include_vars: "tower.yml"
-  when: not consul_env
-  tags:
-    - always
-
-- name: resolv web_ui_language
-  set_fact:
-    web_ui_language: "{{web_ui_language}}"
-  tags:
-    - config
-    - always
-
-- name: resolv virtual vars
-  set_fact:
-    keepalived_nginx_virtual_ip: "{{keepalived_nginx_virtual_ip}}"
-    keepalived_patroni_virtual_ip: "{{keepalived_patroni_virtual_ip}}"
-  tags:
-    - config
-    - always
-
-- name: set proxy
-  set_fact:
-    http_proxy: "{{ proxy }}"
-  when: "proxy is defined"
-  tags:
-    - config
-    - always
-
-- name: Elect postgres master
-  set_fact:
-    postgres_master: "{{keepalived_patroni_virtual_ip}}"
-    postgres_listen: "{{haproxy_patroni_listen}}"
-  when: groups['svc-haproxy'] | count > 1
-  tags:
-    - config
-    - always
-
 - name: create tower dist dir
   file:
     path: "{{tower_dist_dir}}"
@@ -96,12 +48,11 @@
   tags:
     - always
 
-- name: Various env checks
-  include: "checks.yml"
-  run_once: true
-  tags:
-    - always
-    - env_checks
+#- name: Various env checks
+#  include: "checks.yml"
+#  tags:
+#    - always
+#    - env_checks
 
 - name: notify alerta of deployment start
   uri:
@@ -122,7 +73,12 @@
     body_format: json
     status_code: 201
     validate_certs: no
-  when: "alerta_url is defined and 'http' in alerta_url and alerta_token is defined and 'prod' in noc_env_type"
+  when:
+    - "alerta_url is defined"
+    - "alerta_url"
+    - "'http' in alerta_url"
+    - "alerta_token is defined"
+    - "'prod' in noc_env_type"
   register: alerta_notified
   changed_when: "alerta_notified.status == 201"
   run_once: true
@@ -181,9 +137,8 @@
     regexp: ".*{{ item }}$"
     create: no
   become: false
-  with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
+  with_items: "{{groups['all']}}"
   delegate_to: 127.0.0.1
-  when: "'nodes' in groups"
   register: hostsc
   run_once: true
   tags:
@@ -198,7 +153,6 @@
     create: no
   become: false
   delegate_to: 127.0.0.1
-  when: "'nodes' in groups"
   register: hostsc
   run_once: true
   tags:

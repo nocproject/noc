@@ -11,11 +11,11 @@
 
 - name: Add firewall permissions for nodes
   firewalld:
-    rich_rule: "rule family='ipv4' source address={{ item.value.address }} accept"
+    rich_rule: "rule family='ipv4' source address={{ hostvars[item].ansible_host}} accept"
     permanent: true
     state: enabled
     immediate: true
-  with_dict: "{{ noc_config.nodes }}"
+  with_items: "{{ groups['all'] }}"
   when: "firewalld_state.stdout == 'active'"
   tags:
     - config

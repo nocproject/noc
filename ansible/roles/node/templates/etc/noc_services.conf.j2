@@ -1,47 +1,44 @@
-{% for service in noc_config.config if not service == 'noc' %}
-
-    {%- set srv = service.split('-')[0] -%}
-    {%- set p = service.split('-')[1] -%}
-    {%- set host = service.split('-')[2:] | join("-") -%}
-    {%- if 'category' in services[srv] and 'internal' in services[srv].category -%}
-        {%- if host == ansible_nodename -%}
-            {% if not 'global' in p -%}
-                {% set prg = srv+"-"+p %}
-            {% else %}
-                {% set prg = srv %}
-            {%- endif %}
-
-[program:{{prg}}]
-command = {{ services[srv].command  | mandatory }}
-process_name = {{ services[srv].process_name | default("%(program_name)s-%(process_num)02d", True) }}
-numprocs = {{noc_config.config[service].n_instances + noc_config.config[service].n_backup_instances | default(0, True)}}
+{% for service in noc_services %}
+[program:{{service.name}}]
+command = {{ service.environment.command  | mandatory }}
+process_name = {{ service.environment.process_name | default("%(program_name)s-%(process_num)02d", True) }}
+numprocs = {{service.n_instances + service.n_backup_instances | default(0, True)}}
 umask = 022
-priority = {{ services[srv].priority | default(50, True) }}
+priority = {{ service.environment.priority | default(50, True) }}
 autostart = true
 autorestart = unexpected
-startsecs = {{ services[srv].startsecs  | default(2, True)}}
+startsecs = {{ service.environment.startsecs  | default(2, True)}}
 startretries = 999
 exitcodes = 0
 stopsignal = TERM
-stopwaitsecs = {{ services[srv].stopwaitsecs  | default(50, True)}}
+stopwaitsecs = {{ service.environment.stopwaitsecs  | default(50, True)}}
 stopasgroup = false
 killasgroup = true
-user = {% if 'user' in services[srv] %}{{services[srv].user}}{% else %}{{noc_user}}{% endif %}
-
-{% if not 'FreeBSD' in ansible_system %}
-oom_score_adj = {{ services[srv].oom_score_adj  | default(50, True) }}
-{% endif %}
+{% if 'user' in service.environment %}
+user = {{ service.environment.user }}
+{% else %}
+user = {{ noc_user }}
+{% endif -%}
+{% if not 'FreeBSD' in ansible_system -%}
+oom_score_adj = {{ service.environment.oom_score_adj  | default(50, True) }}
+{% endif -%}
 redirect_stderr = true
-stdout_logfile = {{noc_logs}}/{{ services[srv].process_name | default("%(program_name)s-%(process_num)02d", True) }}.log
-stdout_logfile_maxbytes = {{ services[srv].stdout_logfile_maxbytes  | default('10MB', True)}}
-stdout_logfile_backups = {{ services[srv].stdout_logfile_backups  | default(3, True)}}
+stdout_logfile = {{noc_logs}}/{{ service.environment.process_name | default("%(program_name)s-%(process_num)02d", True) }}.log
+stdout_logfile_maxbytes = {{ service.environment.stdout_logfile_maxbytes  | default('10MB', True)}}
+stdout_logfile_backups = {{ service.environment.stdout_logfile_backups  | default(3, True)}}
 stdout_events_enabled = false
-stderr_logfile = {{noc_logs}}/{{ services[srv].process_name | default("%(program_name)s-%(process_num)02d", True) }}.err
-stderr_logfile_maxbytes = {{ services[srv].stderr_logfile_maxbytes  | default('10MB', True)}}
-stderr_logfile_backups = {{ services[srv].stderr_logfile_backups  | default(3, True)}}
+stderr_logfile = {{noc_logs}}/{{ service.environment.process_name | default("%(program_name)s-%(process_num)02d", True) }}.err
+stderr_logfile_maxbytes = {{ service.environment.stderr_logfile_maxbytes  | default('10MB', True)}}
+stderr_logfile_backups = {{ service.environment.stderr_logfile_backups  | default(3, True)}}
 stderr_events_enabled = false
-environment=NOC_CONFIG="{{config_order}}"{% if not 'global' in p -%},NOC_POOL="{{ p }}"{% endif %},NOC_DC="{{ noc_dc }}",NOC_NODE="{{ ansible_nodename }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{noc_config.config[service].loglevel }}"{% if not 'FreeBSD' in ansible_system and jemalloc_path %},LD_PRELOAD="{{ jemalloc_path }}"{% endif %}
+environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodename }}",NOC_DC="{{ noc_dc }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{service.loglevel }}"
 
-        {% endif %}
-    {% endif %}
-{%- endfor -%}
+{%- if not 'FreeBSD' in ansible_system and jemalloc_path -%}
+    ,LD_PRELOAD="{{ jemalloc_path }}"
+{%- endif -%}
+
+{%- if service.pool -%}
+    ,NOC_POOL="{{ service.pool }}"
+{%- endif %}
+
+{% endfor %}

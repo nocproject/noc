@@ -1,0 +1,26 @@
+config:
+  escalator:
+    max_threads:
+      default: 10
+      label: "Escalator threads"
+      type: int
+
+services:
+  escalator:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Escalator service <br/>
+      <strong>Long description</strong>: Send notifications to external TT systems.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per system. Can be more than one. Will select active one via consul lock.<br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/escalator/ target=_blank>Escalator</a><br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: global
+    category: internal
+    command: "./services/escalator/service.py"
+    process_name: "%(program_name)s"
+    oom_score_adj: 5
+    priority: 50
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 10

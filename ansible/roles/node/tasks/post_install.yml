@@ -5,6 +5,8 @@
   register: result
   changed_when: "'CHANGED' in result.stdout"
   failed_when: "'ERROR' in result.stdout"
+  environment:
+    NOC_CONFIG: "{{config_order}}"
 
 - name: Compiling binary modules
   command: ./scripts/deploy/cythonize
@@ -13,6 +15,8 @@
   register: result
   changed_when: "'CHANGED' in result.stdout"
   failed_when: "'ERROR' in result.stdout"
+  environment:
+    NOC_CONFIG: "{{config_order}}"
   tags:
     - requirements
-    - mercurial
+    - get_source

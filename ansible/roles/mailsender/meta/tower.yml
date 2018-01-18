@@ -1,0 +1,46 @@
+config:
+  mailsender:
+    from_address:
+      default: "noc@example.com"
+      label: "Email sender address"
+      type: str
+    helo_hostname:
+      default: noc
+      label: "SMTP HELO hostname"
+      type: str
+    smtp_password:
+      label: "SMTP Password"
+      type: str
+    smtp_port:
+      default: 25
+      label: "SMTP server port"
+      type: int
+    smtp_server:
+      label: "SMTP server address"
+      type: str
+    smtp_user:
+      label: "SMTP User"
+      type: str
+    use_tls:
+      default: false
+      label: "Use SMTP TLS"
+      type: bool
+services:
+  mailsender:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Sends emails. <br/>
+      <strong>Long description</strong>: Reads mail queue from nsqd and sends via gateway<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/mailsender/ target=_blank>Mailsender</a><br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: global
+    category: internal
+    command: "./services/mailsender/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 100
+    priority: 600
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3

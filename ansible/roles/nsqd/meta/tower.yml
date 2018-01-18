@@ -1,0 +1,24 @@
+config:
+  nsqd:
+    nsqd_max_messages_in_memory:
+      default: 10000
+      description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
+      label: "Keep max messages in memory"
+      type: int
+    nsqd_max_msg_size:
+      default: 1048576
+      description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
+      label: "Max message size"
+      type: int
+services:
+  nsqd:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: NSQd daemon <br/>
+      <strong>Long description</strong>: nsqd is the daemon that receives, queues, and delivers messages to clients. <br/>
+      <strong>Scale Recommendations</strong>: Have to be on each node. <br/>
+      <strong>docs</strong>: http://nsq.io/components/nsqd.html <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: system
+    category: external
+    port: 4151

@@ -14,35 +14,6 @@
     - config
   when: "'Linux' in ansible_system"
 
-
-#
-# Remove me after 1 dec 2017
-#
-- block:
-  - name: setup env
-    file:
-      src: "{{item.name}}"
-      dest: "{{item.dest}}"
-      mode: "{{item.mode}}"
-      owner: "{{noc_user}}"
-      state: absent
-    ignore_errors: true
-    no_log: true
-    with_items:
-      - name: env.j2
-        dest: "{{ noc_root }}/var/etc/postgres/env"
-        mode: "u=rw,g=r,o=r"
-      - name: pgpass.j2
-        dest: "{{ noc_root }}/var/etc/postgres/.pgpass"
-        mode: "u=rw,g-rwx,o-rwx"
-
-  - name: Creating postgres directories
-    file:
-      path: "{{item}}"
-      state: absent
-    with_items:
-      - "{{noc_root}}/var/etc/postgres"
-
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - block:

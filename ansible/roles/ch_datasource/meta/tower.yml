@@ -1,0 +1,22 @@
+config:
+  ch_datasource:
+
+services:
+  ch_datasource:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Clickhouse disctionary Datasource <br/>
+      <strong>Long description</strong>: Used to load data from mongo/postgres into clickhouse dictionaries <br/>
+      <strong>Scale Recommendations</strong>:  At least one per system <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/datasource/ target=_blank>CH_datasource</a><br/>
+      <strong>Placement constraint</strong>: On node with clickhouse<br/>
+    level: global
+    category: internal
+    command: "./services/datasource/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 999
+    priority: 100
+    startretries: 999
+    stopwaitsecs: 3
+    stdout_logfile_maxbytes: 1MB
+    stdout_logfile_backups: 3

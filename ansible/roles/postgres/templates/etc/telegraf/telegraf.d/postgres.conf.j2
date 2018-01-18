@@ -11,6 +11,6 @@
   ## connection with the server and doesn't restrict the databases we are trying
   ## to grab metrics for.
   ##
-  address = "host={{ ansible_host }} user={{noc_pg_user}} password={{noc_pg_password}} sslmode=disable database={{noc_pg_db}}"
+  address = "host={{ ansible_host }} user={{postgres_noc_user}} password={{postgres_noc_password}} sslmode=disable database={{postgres_noc_db}}"
 
   ignored_databases = ["postgres", "template0", "template1"]

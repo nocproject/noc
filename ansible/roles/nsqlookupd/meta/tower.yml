@@ -1,0 +1,15 @@
+config:
+  nsqlookupd:
+
+services:
+  nsqlookupd:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Nsqlookupd daemon <br/>
+      <strong>Long description</strong>: Clients query nsqlookupd to discover nsqd producers for a specific topic and nsqd nodes broadcasts topic and channel information.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one <br/>
+      <strong>docs</strong>: http://nsq.io/components/nsqlookupd.html <br/>
+      <strong>Placement constraint</strong>: Long living node. <br/>
+    level: system
+    category: external
+    port: 4161

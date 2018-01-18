@@ -1,0 +1,26 @@
+config:
+  grafanads:
+    db_threads:
+      default: 10
+      label: "Concurrent query limit per process"
+      type: int
+
+services:
+  grafanads:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Grafanads service <br/>
+      <strong>Long description</strong>: Displays annotations on grafanas graphs with alarms info <br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/grafanads/ target=_blank>Grafanads</a><br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
+    level: global
+    category: internal
+    command: "./services/grafanads/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 900
+    priority: 500
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 1

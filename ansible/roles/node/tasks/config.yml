@@ -1,36 +1,46 @@
-- name: add clickhouse data to legacy config
-  set_fact:
-    noc_config: "{{noc_config | combine({
-    'config':{
-        'noc':{
-            'ch_db': clickhouse_db,
-            'ch_user': clickhouse_user,
-            'ch_password': clickhouse_password,
-            'ch_ro_password': clickhouse_ro_password
-        }
-    }}, recursive=True) }}"
-  when: "'svc-clickhouse' in groups and groups['svc-clickhouse'] | length >= 1"
-  tags:
-    - config
-    - noc_config
-
 - name: Generate NOC config
   template:
-    src: "etc/noc.yml.j2"
-    dest: "{{ noc_etc }}/noc.yml"
+    src: "etc/tower.yml.j2"
+    dest: "{{ noc_etc }}/tower.yml"
   no_log: true
-  tags:
-    - config
-    - noc_config
+
+- name: Generate NOC config for pooled services
+  template:
+    src: "etc/pooled.yml.j2"
+    dest: "{{ noc_etc }}/pool-{{item.name}}.yml"
+  no_log: true
+  vars:
+    pool_name: "{{item.name}}"
+  with_items:
+    - "{{noc_all_pools}}"
 
 - name: Setup supervisor config
   template:
     src: "etc/supervisord.conf.j2"
     dest: "{{ noc_etc }}/supervisord.conf"
   no_log: true
-  tags:
-    - config
-    - noc_config
+
+- name: Build services config
+  template:
+    src: "etc/noc_services.conf.j2"
+    dest: "{{noc_root}}/etc/noc_services.conf"
+    owner: "{{noc_user}}"
+    mode: "0640"
+
+- name: Build pools config
+  template:
+    src: "etc/pools.yml.j2"
+    dest: "{{noc_root}}/etc/noc.yml"
+    owner: "{{noc_user}}"
+    mode: "0640"
+
+- name: install .env file
+  template:
+    src: "env.j2"
+    dest: "{{noc_root}}/.env"
+    owner: "{{noc_user}}"
+    mode: "0644"
+  no_log: true
 
 - name: remove services templates
   file:
@@ -63,27 +73,5 @@
     - tgsender.conf
     - trapcollector.conf
     - web.conf
-  tags:
-    - config
-    - noc_config
 
-- name: Build supervisor config
-  template:
-    src: "etc/noc_services.conf.j2"
-    dest: "{{noc_root}}/etc/noc_services.conf"
-    owner: "{{noc_user}}"
-    mode: "0640"
-  tags:
-    - config
-    - noc_config
 
-- name: install .env file
-  template:
-    src: "env.j2"
-    dest: "{{noc_root}}/.env"
-    owner: "{{noc_user}}"
-    mode: "0644"
-  no_log: true
-  tags:
-    - config
-    - noc_config

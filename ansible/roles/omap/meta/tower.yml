@@ -1,0 +1,22 @@
+config:
+  omap:
+
+services:
+  omap:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Omap service <br/>
+      <strong>Long description</strong>: Maps ip<->database_id for ping service<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/omap/ target=_blank>Omap</a><br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: global
+    category: internal
+    command: "./services/omap/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 100
+    priority: 120
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 1

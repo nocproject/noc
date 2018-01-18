@@ -1,0 +1,34 @@
+config:
+  ping:
+    restore_threshold:
+      default: 0
+      label: "Amount of down objects (in percents) to leave throttling mode"
+      type: int
+    throttle_threshold:
+      default: 0
+      label: "Amount of down objects (in percents) to enter throttling mode"
+      type: int
+    tos:
+      default: 0
+      label: "IP ToS mark"
+      type: int
+services:
+  ping:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Ping service <br/>
+      <strong>Long description</strong>: Pings network equipment with icmp. Creates events on state changes<br/>
+      <strong>Scale Recommendations</strong>: At least one per pool.  <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
+    level: pool
+    category: internal
+    command: "./services/ping/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 200
+    priority: 90
+    startretries: 999
+    stopwaitsecs: 1
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
+    user: root

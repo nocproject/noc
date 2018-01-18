@@ -1,0 +1,24 @@
+config:
+  tgsender:
+    token:
+      label: Token
+      type: str
+services:
+  tgsender:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Telegram sender<br/>
+      <strong>Long description</strong>: Sends alarms and messages to Telegram messandger.<br/>
+      <strong>Scale Recommendations</strong>: One per system. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/tgsender/ target=_blank>tgsender</a><br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: global
+    category: internal
+    command: "./services/tgsender/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 300
+    priority: 600
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 5

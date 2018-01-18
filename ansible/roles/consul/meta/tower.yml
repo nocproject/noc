@@ -1,0 +1,22 @@
+config:
+  consul:
+    consul_replication_token:
+      label: "consul replication token"
+      type: str
+    consul_token:
+      description: "<strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>"
+      label: "consul token"
+      type: str
+
+services:
+  consul:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Consul KV <br/>
+      <strong>Long description</strong>: Key/Value and Service discovery service. Have to be installed in quorum with 1,3,5 nodes. One node with instance count 2 will be "bootstrap" node other nodes with 1 instance will be run in server mode. If no node with instance count 2 is set some node will be selected. Other nodes will get agent only service. They will not participate in quorum. For production type installation fast timimgs mode will be enabled.<br/>
+      <strong>Scale Recommendations</strong>: See docs<br/>
+      <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
+      <strong>Placement constraint</strong>: Long living node. <br/>
+    level: system
+    category: external
+    port: 8500

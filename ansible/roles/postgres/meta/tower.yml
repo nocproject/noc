@@ -1,0 +1,50 @@
+config:
+  postgres:
+    postgres_max_clients:
+      default: 300
+      label: "Postgresql max clients"
+      type: int
+    postgres_version:
+      default: 9.4
+      description: "<strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field."
+      label: "Postgresql version"
+      type: str
+    postgres_replicator_password:
+      default: noc
+      description: "Password for user \"replicator\""
+      label: "Postgresql replicator password"
+      type: str
+    postgres_superuser_password:
+      default: noc
+      description: "Password for user \"superuser\""
+      label: "Postgresql superuser password"
+      type: str
+    postgres_noc_db:
+      default: noc
+      type: str
+      label: Db name
+    postgres_noc_user:
+      default: noc
+      type: str
+      label: Username
+    postgres_noc_password:
+      default: noc
+      type: str
+      label: Password
+    postgres_version:
+      default: 9.6
+      type: str
+      label: Postgresql version
+services:
+  postgres:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: PostgresSQL database <br/>
+      <strong>Long description</strong>: Secondary DB. Used to store network equipment info, IPAM and others. <br/>
+      <strong>Scale Recommendations</strong>: At least one per system. <br/>
+      <strong>docs</strong>: https://www.postgresql.org/docs/9.6/static/index.html<br/>
+      <strong>Placement constraint</strong>: Low cpu usage, low memory usage. low io usage. Nothing works without it.<br/>
+    level: system
+    category: external
+    port: 5432
+    promote: system

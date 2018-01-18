@@ -1,0 +1,39 @@
+config:
+  nginx:
+    nginx_http_redirect:
+      default: true
+      description: "<strong> <a href=https://nginx.org/en/docs/ target=_blank> https://nginx.org/en/docs/</a> </strong>"
+      label: "Redirect http to https"
+      type: bool
+    nginx_json_logging:
+      default: false
+      label: "Use JSON logging"
+      type: bool
+    nginx_self_signed_cerificate:
+      default: true
+      label: "Self-signed certificate"
+      description: "Is provided certificate is trusted by nodes?"
+      type: bool
+    nginx_external_cert_management:
+      default: False
+      label: "Use external certificate management"
+      description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
+      type: bool
+
+services:
+  nginx:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Nginx <br/>
+      <strong>Long description</strong>: Primary web service.<br/>
+      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
+      <strong>docs</strong>: http://nginx.org/en/docs/http/ngx_http_upstream_module.html <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: system
+    category: external
+    port: 443
+    require_cert: true
+    required_assets:
+      - web
+      - card
+      - bi

@@ -4,10 +4,12 @@ required_assets:
   - card
   - web
   - bi
-web_weight: 1
-card_weight: 1
-login_weight: 1
-mrt_weight: 1
-bi_weight: 1
-grafana_weight: 1
-grafanads_weight: 1
+
+nginx_log_dir: /var/log/nginx
+nginx_path: /usr/sbin/nginx
+nginx_conf_path: "{{etc_prefix}}/nginx/conf.d/noc.conf"
+nginx_conf_upstream_path: "{{etc_prefix}}/nginx/upstream.conf"
+nginx_ssl_cert_path: "{{etc_prefix}}/nginx/ssl/noc.crt"
+nginx_ssl_key_path: "{{etc_prefix}}/nginx/ssl/noc.key"
+nginx_system_service: nginx
+nginx_user: nginx

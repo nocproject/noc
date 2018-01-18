@@ -15,3 +15,19 @@ noc_mongo_password: "noc"
 noc_mongo_replicaset: "noc"
 noc_mongo_storageengine: "wiredTiger"
 noc_mongo_user: "noc"
+
+mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
+mongo_arbiter_pid: /var/run/mongodb/mongod-arbiter.pid
+mongo_db_path: /var/lib/mongo/
+mongo_fork: "false"
+mongo_log_path: /var/log/mongodb/mongod.log
+mongo_path: /usr/bin/mongo
+mongo_pid: /var/run/mongodb/mongod.pid
+mongo_user: mongodb
+mongod_arbiter_system_service: mongod-arbiter
+mongod_path: /usr/bin/mongod
+mongod_system_service: mongod
+
+mongo_dir: "{{etc_prefix}}/mongod"
+mongo_conf: "{{ etc_prefix }}/mongod.conf"
+mongo_key: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"

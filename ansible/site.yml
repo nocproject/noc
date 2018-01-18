@@ -91,7 +91,6 @@
     - noc
   vars_files:
     - "vars/main.yml"
-    - "config/services.yml"
   roles:
     - role: node
     - role: custom
@@ -177,19 +176,6 @@
   roles:
     - role: mongod
 
-#- name: zookeeper tasks
-#  hosts: svc-zookeeper
-#  become: yes
-#  any_errors_fatal: false
-#  gather_facts: True
-#  tags:
-#    - zookeeper
-#    - external
-#  vars_files:
-#    - "vars/main.yml"
-#  roles:
-#    - role: zookeeper
-
 - name: clickhouse tasks
   hosts: svc-clickhouse
   become: yes
@@ -257,7 +243,7 @@
 
 
 - name: Install and upgrade NOC
-  hosts: svc-login
+  hosts: noc-svc-login
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -271,7 +257,7 @@
 
 
 - name: Install and upgrade NOC
-  hosts: svc-mrt
+  hosts: noc-svc-mrt
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -285,7 +271,7 @@
 
 
 - name: Install and upgrade NOC
-  hosts: svc-escalator
+  hosts: noc-svc-escalator
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -298,7 +284,7 @@
     - role: escalator
 
 - name: Install and upgrade NOC
-  hosts: svc-web
+  hosts: noc-svc-web
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -311,7 +297,7 @@
     - role: web
 
 - name: Install and upgrade NOC
-  hosts: svc-card
+  hosts: noc-svc-card
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -324,7 +310,7 @@
     - role: card
 
 - name: Install and upgrade NOC
-  hosts: svc-ch_datasource
+  hosts: noc-svc-ch_datasource
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -338,7 +324,7 @@
 
 
 - name: Install and upgrade NOC
-  hosts: svc-omap
+  hosts: noc-svc-omap
   become: yes
   strategy: free
   tags:
@@ -351,7 +337,7 @@
     - role: omap
 
 - name: Install and upgrade NOC
-  hosts: svc-activator
+  hosts: noc-svc-activator
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -364,7 +350,7 @@
     - role: activator
 
 - name: Install and upgrade NOC
-  hosts: svc-grafanads
+  hosts: noc-svc-grafanads
   become: yes
   strategy: free
   tags:
@@ -377,7 +363,7 @@
     - role: grafanads
 
 - name: Install and upgrade NOC
-  hosts: svc-mailsender
+  hosts: noc-svc-mailsender
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -390,7 +376,7 @@
     - role: mailsender
 
 - name: Install and upgrade NOC
-  hosts: svc-tgsender
+  hosts: noc-svc-tgsender
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -403,7 +389,7 @@
     - role: tgsender
 
 - name: Install and upgrade NOC
-  hosts: svc-chwriter
+  hosts: noc-svc-chwriter
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -416,7 +402,7 @@
     - role: chwriter
 
 - name: Install and upgrade NOC
-  hosts: svc-classifier
+  hosts: noc-svc-classifier
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -429,7 +415,7 @@
     - role: classifier
 
 - name: Install and upgrade NOC
-  hosts: svc-correlator
+  hosts: noc-svc-correlator
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -442,7 +428,7 @@
     - role: correlator
 
 - name: Install and upgrade NOC
-  hosts: svc-syslogcollector
+  hosts: noc-svc-syslogcollector
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -455,7 +441,7 @@
     - role: syslogcollector
 
 - name: Install and upgrade NOC
-  hosts: svc-trapcollector
+  hosts: noc-svc-trapcollector
   strategy: free
   become: yes
   any_errors_fatal: true
@@ -468,7 +454,7 @@
     - role: trapcollector
 
 - name: Install and upgrade NOC
-  hosts: svc-ping
+  hosts: noc-svc-ping
   strategy: free
   become: yes
   any_errors_fatal: true
@@ -481,7 +467,7 @@
     - role: ping
 
 - name: Install and upgrade NOC
-  hosts: svc-sae
+  hosts: noc-svc-sae
   become: yes
   strategy: free
   any_errors_fatal: true
@@ -495,7 +481,7 @@
       become: yes
 
 - name: Install and upgrade NOC
-  hosts: svc-scheduler
+  hosts: noc-svc-scheduler
   become: no
   strategy: free
   any_errors_fatal: true
@@ -509,7 +495,7 @@
       become: yes
 
 - name: Install and upgrade NOC
-  hosts: svc-discovery
+  hosts: noc-svc-discovery
   become: no
   strategy: free
   any_errors_fatal: true
@@ -523,7 +509,7 @@
       become: yes
 
 - name: Install and upgrade NOC
-  hosts: svc-bi
+  hosts: noc-svc-bi
   become: no
   strategy: free
   any_errors_fatal: true

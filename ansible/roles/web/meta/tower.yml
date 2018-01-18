@@ -1,0 +1,37 @@
+config:
+  web:
+    language:
+      default: en
+      label: "Translation language"
+      type: str
+      description: "en-us, ru, pt_BR"
+    max_threads:
+      default: 10
+      label: "Web threads"
+      type: int
+    weight:
+      default: 5
+      label: "Http nginx Weight"
+      type: int
+services:
+  web:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Web interface daemon<br/>
+      <strong>Long description</strong>: Nginx upstream to show web interface<br/>
+      <strong>Scale Recommendations</strong>: At least two per system. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/web/ target=_blank>Web</a><br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
+    level: global
+    category: internal
+    command: "./services/web/service.py"
+    process_name: "%(program_name)s-%(process_num)02d"
+    oom_score_adj: 300
+    priority: 50
+    startretries: 999
+    stopwaitsecs: 2
+    stdout_logfile_maxbytes: 10MB
+    stdout_logfile_backups: 3
+    required_assets:
+      - web
+      - mib
