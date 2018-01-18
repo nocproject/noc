@@ -8,17 +8,17 @@ config:
     noc_repo:
       default: https://github.com/nocproject/noc.git
       label: Repo
-      description: Probably you wan't change it
+      description: Perhaps you do not want to change it
       type: str
     noc_version:
       default: microservices
       label: Noc version
-      description: What version of the repository to check out. This can be the the literal string HEAD, a branch name, a tag name. It can also be a SHA-1 hash, in which case refspec needs to be specified if the given revision is not already available.
+      description: What version of the repository to check out.
       type: str
     noc_root:
       default: /opt/noc
       label: Prefix
-      description: Place noc source there
+      description: Put noc source to
       type: str
     noc_user:
       default: noc
