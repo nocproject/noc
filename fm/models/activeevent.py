@@ -80,8 +80,8 @@ class ActiveEvent(Document):
         """
         from noc.core.nsq.pub import nsq_pub
 
-        if message is None:
-            message = "Reclassification requested"
+        # if message is None:
+        #    message = "Reclassification requested"
         # log = self.log + [EventLog(timestamp=datetime.datetime.now(),
         #                            from_status="A", to_status="N",
         #                            message=message)]
@@ -106,10 +106,16 @@ class ActiveEvent(Document):
         log = self.log + [EventLog(timestamp=datetime.datetime.now(),
                                    from_status="N", to_status="F",
                                    message=message)]
-        e = FailedEvent(id=self.id, timestamp=self.timestamp,
-                        managed_object=self.managed_object,
-                        raw_vars=self.raw_vars, version=version,
-                        traceback=traceback, log=log)
+        e = FailedEvent(
+            id=self.id,
+            timestamp=self.timestamp,
+            managed_object=self.managed_object,
+            source=self.source,
+            raw_vars=self.raw_vars,
+            version=version,
+            traceback=traceback,
+            log=log
+        )
         e.save()
         self.delete()
         return e

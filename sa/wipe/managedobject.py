@@ -18,7 +18,6 @@ from noc.inv.models.link import Link
 from noc.inv.models.macdb import MACDB
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
@@ -54,7 +53,6 @@ def wipe(o):
         )
     # Wiping FM events
     log.debug("Wiping events")
-    NewEvent.objects.filter(managed_object=o.id).delete()
     FailedEvent.objects.filter(managed_object=o.id).delete()
     ActiveEvent.objects.filter(managed_object=o.id).delete()
     ArchivedEvent.objects.filter(managed_object=o.id).delete()

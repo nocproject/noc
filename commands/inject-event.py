@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Inject event from JSON files
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -13,10 +13,12 @@ import sys
 import datetime
 import json
 import argparse
+# Third-party modules
+import bson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
-from noc.fm.models.newevent import NewEvent
+from noc.core.nsq.pub import nsq_pub
 
 
 class Command(BaseCommand):
@@ -62,35 +64,38 @@ class Command(BaseCommand):
                 self.die("Failed to decode JSON file \"%s\": %s" % (
                     path, str(e)))
         # Load events
+        topic = "events.%s" % obj.pool.name
         for e in data:
             if e["profile"] != obj.profile.name:
                 self.stdout.write("Profile mismatch in %s: %s != %s %s" % (
                     path, obj.profile.name, e["profile"], e))
                 continue
-            ne = NewEvent(
-                timestamp=datetime.datetime.now(),
-                managed_object=obj,
-                raw_vars=e["raw_vars"],
-                log=[]
-            )
-            ne.save()
-            self.stdout.write(ne.id)
+            msg = {
+                "id": str(bson.ObjectId()),
+                "ts": datetime.datetime.now().isoformat(),
+                "object": obj.id,
+                "data": e["raw_vars"]
+            }
+            nsq_pub(topic, msg)
+            self.stdout.write(msg["id"])
 
     def syslog_message(self, obj, msg):
+        topic = "events.%s" % obj.pool.name
         raw_vars = {
             "source": "syslog",
             "facility": "23",
             "severity": "6",
             "message": msg
         }
-        ne = NewEvent(
-            timestamp=datetime.datetime.now(),
-            managed_object=obj,
-            raw_vars=raw_vars,
-            log=[]
-        )
-        ne.save()
-        self.stdout.write(ne.id)
+        msg = {
+            "id": str(bson.ObjectId()),
+            "ts": datetime.datetime.now().isoformat(),
+            "object": obj.id,
+            "data": raw_vars
+        }
+        nsq_pub(topic, msg)
+        self.stdout.write(msg["id"])
+
 
 if __name__ == "__main__":
     Command().run()

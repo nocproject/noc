@@ -2,17 +2,17 @@
 # ---------------------------------------------------------------------
 # fm.event application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 import inspect
 import re
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.fm.models.newevent import NewEvent
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.failedevent import FailedEvent
@@ -37,7 +37,6 @@ class EventApplication(ExtApplication):
     icon = "icon_find"
 
     model_map = {
-        "N": NewEvent,
         "A": ActiveEvent,
         "F": FailedEvent,
         "S": ArchivedEvent
@@ -51,12 +50,11 @@ class EventApplication(ExtApplication):
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
-        from plugins.base import EventPlugin
+        from .plugins.base import EventPlugin
         # Load plugins
         self.plugins = {}
         for f in os.listdir("services/web/apps/fm/event/plugins/"):
-            if (not f.endswith(".py") or
-                        f == "base.py" or f.startswith("_")):
+            if not f.endswith(".py") or f == "base.py" or f.startswith("_"):
                 continue
             mn = "noc.services.web.apps.fm.event.plugins.%s" % f[:-3]
             m = __import__(mn, {}, {}, "*")
@@ -76,7 +74,8 @@ class EventApplication(ExtApplication):
         for p in (
             self.limit_param, self.page_param, self.start_param,
             self.format_param, self.sort_param, self.query_param,
-            self.only_param):
+            self.only_param
+        ):
             if p in q:
                 del q[p]
         # Normalize parameters
@@ -85,11 +84,11 @@ class EventApplication(ExtApplication):
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
         if "administrative_domain" in q:
-            a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
-            q["managed_object__in"] = a.managedobject_set.values_list("id", flat = True)
+            a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
+            q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
             q.pop("administrative_domain")
         if "managedobjectselector" in q:
-            s = SelectorCache.objects.filter(selector = q["managedobjectselector"]).values_list("object")
+            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
             if "managed_object__in" in q:
                 q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:
