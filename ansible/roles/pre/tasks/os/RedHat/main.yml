@@ -1,7 +1,4 @@
 ---
-- name: include vars file with RHEL registration
-  include_vars: "vars/local.yml"
-
 - name: Set proxy for yum
   lineinfile:
     dest: /etc/yum.conf
@@ -24,6 +21,13 @@
 
 - name: Add Devel repos
   command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
+  ignore_errors: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+  when: "register_done.changed==True"
+
+- name: Desable beta repo
+  command: "/sbin/subscription-manager repos --disable rhel-7-server-rt-beta-rpms"
   ignore_errors: yes
   environment:
     http_proxy: "{{http_proxy}}"
