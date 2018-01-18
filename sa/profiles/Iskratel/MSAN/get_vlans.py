@@ -25,12 +25,16 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        c = self.cli("show vlan brief", cached=True)
+        try:
+            c = self.cli("show vlan brief", cached=True)
+        except self.CLISyntaxError:
+            # Iskratel SGR Not clearing command line when SyntaxError
+            self.cli("\x1b[B")
+            raise self.NotSupportedError
         for match in self.rx_vlan.finditer(c):
             if match.group('id') == "1":
                 continue
-            d = {}
-            d["vlan_id"] = int(match.group('id'))
+            d = {"vlan_id": int(match.group('id'))}
             if match.group('name'):
                 d["name"] = match.group('name')
             r += [d]

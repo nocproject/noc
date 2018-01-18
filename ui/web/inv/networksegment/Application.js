@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegment application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegment.Application");
@@ -20,6 +20,7 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.vc.vlan.LookupField"
     ],
     model: "NOC.inv.networksegment.Model",
+    rowClassField: "row_class",
     search: true,
 
     initComponent: function() {
@@ -304,6 +305,12 @@ Ext.define("NOC.inv.networksegment.Application", {
             name: "parent",
             ftype: "tree",
             lookup: "inv.networksegment"
+        },
+        {
+            title: __("By Profile"),
+            name: "profile",
+            ftype: "lookup",
+            lookup: "inv.networksegmentprofile"
         }
     ],
     levelFilter: {

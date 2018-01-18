@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Subscriner loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Subscriner loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
-## Third-party modules
+# Third-party modules
 import cachetools
-## NOC modules
+# NOC modules
 from base import BaseLoader
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.crm.models.subscriber import Subscriber

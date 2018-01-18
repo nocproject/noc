@@ -73,6 +73,7 @@ class RemoteSystem(Document):
     enable_networksegment = BooleanField()
     enable_networksegmentprofile = BooleanField()
     enable_service = BooleanField()
+    enable_serviceprofile = BooleanField()
     enable_subscriber = BooleanField()
     enable_terminationgroup = BooleanField()
     enable_ttsystem = BooleanField()

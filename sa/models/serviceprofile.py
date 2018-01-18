@@ -20,11 +20,13 @@ import cachetools
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
+from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later
 
 id_lock = Lock()
 
 
+@bi_sync
 @on_save
 class ServiceProfile(Document):
     meta = {

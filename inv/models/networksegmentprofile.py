@@ -17,6 +17,8 @@ from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 LongField)
 # NOC modules
+from noc.lib.nosql import ForeignKeyField
+from noc.main.models.style import Style
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.lib.nosql import PlainReferenceField
@@ -67,8 +69,10 @@ class NetworkSegmentProfile(Document):
 
     name = StringField(unique=True)
     description = StringField(required=False)
-    #
+    # segment discovery interval
     discovery_interval = IntField(default=86400)
+    # Segment style
+    style = ForeignKeyField(Style, required=False)
     # Restrict MAC discovery to management vlan
     mac_restrict_to_management_vlan = BooleanField(default=False)
     # Management vlan, to restrict MAC search for MAC topology discovery

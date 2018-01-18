@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegment Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegment.Model");
@@ -123,6 +123,11 @@ Ext.define("NOC.inv.networksegment.Model", {
         {
             name: "l2_mtu",
             type: "int"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

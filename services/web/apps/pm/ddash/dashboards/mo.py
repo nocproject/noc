@@ -57,6 +57,8 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
+                if iface.type == 'SVI' and not iface.profile.allow_subinterface_metrics:
+                    continue
                 if iface.type == u"aggregated" and iface.lag_members:
                     lags += [{
                         "name": iface.name,

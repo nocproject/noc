@@ -85,24 +85,41 @@ class ServiceSummary(Document):
 
     @classmethod
     def build_summary_for_object(cls, managed_object):
+        """
+        Build active services summary for managed object
+        :param managed_object: Managed Object id
+        :return: dict of interface id -> {service: ..., subscriber: ....}
+            interface None means unbound or box-wise services
+        """
         from noc.inv.models.interface import Interface
         from noc.sa.models.service import Service
 
-        def update_children(parent):
-            for s in Service._get_collection().find({
-                "parent": parent,
+        def iter_services(sd):
+            yield sd
+            for cs in Service._get_collection().find({
+                "parent": sd["_id"],
                 "logical_status": "R"
             }, {
                 "_id": 1,
                 "subscriber": 1,
                 "profile": 1
             }):
-                subscribers.add(s["subscriber"])
-                profiles[s["profile"]] += 1
-                update_children(s["_id"])
+                for ns in iter_services(cs):
+                    yield ns
 
-        interfaces = dict(
-            (x["_id"], x["service"])
+        def add_dict(d1, d2):
+            """
+            Add all d2 values to d1
+            :param d1:
+            :param d2:
+            :return:
+            """
+            for k in d2:
+                d1[k] = d1.get(k, 0) + d2[k]
+
+        # service -> interface bindings
+        svc_interface = dict(
+            (x["service"], x["_id"])
             for x in Interface._get_collection().find({
                 "managed_object": managed_object,
                 "service": {
@@ -113,30 +130,24 @@ class ServiceSummary(Document):
                 "service": 1
             })
         )
-        services = dict(
-            (x["_id"], x)
-            for x in Service._get_collection().find({
-                "_id": {
-                    "$in": list(interfaces.values())
-                },
-                "logical_status": "R"
-            }, {
-                "_id": 1,
-                "subscriber": 1,
-                "profile": 1
-            })
-        )
-
+        # Iterate over object's services
+        # And walk underlying tree
         ri = {}
-        for i in interfaces:
+        for svc in Service._get_collection().find({
+            "managed_object": managed_object,
+            "logical_status": "R"
+        }, {
+            "_id": 1,
+            "subscriber": 1,
+            "profile": 1
+        }):
+            # All subscribers for underlying tree
             subscribers = set()
-            profiles = defaultdict(int)
-            service = services.get(interfaces[i])
-            if not service:
-                continue
-            subscribers.add(service["subscriber"])
-            profiles[service["profile"]] += 1
-            update_children(interfaces[i])
+            # profile_id -> count
+            svc_profiles = defaultdict(int)
+            for s in iter_services(svc):
+                subscribers.add(s["subscriber"])
+                svc_profiles[s["profile"]] += 1
             # Get subscriber profiles count
             ra = Subscriber._get_collection().aggregate([
                 {
@@ -154,11 +165,18 @@ class ServiceSummary(Document):
                     }
                 }
             ])
-            subscribers = dict((x["_id"], x["total"]) for x in ra)
-            ri[i] = {
-                "service": dict(profiles),
-                "subscriber": subscribers
-            }
+            subscriber_profiles = dict((x["_id"], x["total"]) for x in ra)
+            # Bind to interface
+            # None for unbound services
+            iface = svc_interface.get(svc["_id"])
+            if iface in ri:
+                add_dict(ri[iface]["service"], svc_profiles)
+                add_dict(ri[iface]["subscriber"], subscriber_profiles)
+            else:
+                ri[iface] = {
+                    "service": dict(svc_profiles),  # defaultdict -> dict
+                    "subscriber": subscriber_profiles
+                }
         return ri
 
     @classmethod
@@ -186,50 +204,62 @@ class ServiceSummary(Document):
 
         if hasattr(managed_object, "id"):
             managed_object = managed_object.id
-        collection = ServiceSummary._get_collection()
+        coll = ServiceSummary._get_collection()
         bulk = []
-        summary = cls.build_summary_for_object(managed_object)
-        for s in ServiceSummary._get_collection().find({
-            "managed_object": managed_object
-        }, {
-            "_id": 1,
-            "interface": 1,
-            "service": 1,
-            "subscriber": 1
-        }):
-            ss = summary.get(s["interface"])
-            if ss:
-                service_profiles = to_dict(s["service"])
-                subscriber_profiles = to_dict(s["subscriber"])
-                if (service_profiles != ss["service"] or
-                        subscriber_profiles != ss["subscriber"]):
-                    bulk += [UpdateOne({
-                        "_id": s["_id"]
+        # Get existing summary
+        old_summary = dict(
+            (x["interface"], x)
+            for x in coll.find({
+                "managed_object": managed_object
+            }, {
+                "_id": 1,
+                "interface": 1,
+                "service": 1,
+                "subscriber": 1
+            })
+        )
+        # Get actual summary
+        new_summary = ServiceSummary.build_summary_for_object(managed_object)
+        # Merge summaries
+        for iface in old_summary:
+            if iface not in new_summary:
+                # Stale, delete
+                bulk += [
+                    DeleteOne({"_id": old_summary[iface]["_id"]})
+                ]
+                continue
+            oi = old_summary[iface]
+            old_services = to_dict(oi["service"])
+            old_subs = to_dict(oi["subscriber"])
+            ni = new_summary[iface]
+            if old_services != ni["service"] or old_subs != ni["subscriber"]:
+                # Changed, update
+                bulk += [
+                    UpdateOne({
+                        "_id": oi["_id"]
                     }, {
                         "$set": {
-                            "service": to_list(ss["service"]),
-                            "subscriber": to_list(ss["subscriber"])
+                            "service": to_list(ni["service"]),
+                            "subscriber": to_list(ni["subscriber"])
                         }
-                    })]
-                del summary[s["interface"]]
-            else:
-                bulk += [DeleteOne({
-                    "_id": s["_id"]
-                })]
-
-        # add new
-        for si, s in summary.items():
-            # New interface
-            bulk += [InsertOne({
+                    })
+                ]
+            # Mark as processed
+            del new_summary[iface]
+        # Process new items
+        bulk += [
+            InsertOne({
                 "managed_object": managed_object,
-                "interface": si,
-                "service": to_list(s["service"]),
-                "subscriber": to_list(s["subscriber"])
-            })]
+                "interface": iface,
+                "service": to_list(new_summary[iface]["service"]),
+                "subscriber": to_list(new_summary[iface]["subscriber"])
+
+            }) for iface in new_summary
+        ]
         if bulk:
-            logger.info("Commiting changes to database")
+            logger.info("Committing changes to database")
             try:
-                r = collection.bulk_write(bulk, ordered=False)
+                r = coll.bulk_write(bulk, ordered=False)
                 logger.info("Database has been synced")
                 logger.info("Modify: %d, Deleted: %d", r.modified_count, r.deleted_count)
             except BulkWriteError as e:

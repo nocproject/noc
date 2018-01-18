@@ -25,6 +25,9 @@ class VLANApplication(ExtDocApplication):
     title = "VLAN"
     menu = [_("VLAN")]
     model = VLAN
+    query_fields = ["name", "description"]
+    query_condition = "icontains"
+    int_query_fields = ["vlan"]
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
