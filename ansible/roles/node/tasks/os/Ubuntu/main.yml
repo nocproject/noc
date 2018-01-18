@@ -22,6 +22,7 @@
     - libmemcached-dev
     - patch
     - bzip2
+    - zlib1g-dev
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
