@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+import time
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, StringField, EmbeddedDocumentField, ListField
@@ -52,7 +53,7 @@ class FailedEvent(Document):
         data.update(self.raw_vars)
         msg = {
             "id": str(self.id),
-            "ts": self.timestamp.isoformat(),
+            "ts": time.mktime(self.timestamp.timetuple()),
             "object": self.managed_object.id,
             "data": data
         }

@@ -9,6 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import datetime
+import time
 from threading import Lock
 # Django modules
 from django.template import Template, Context
@@ -91,7 +92,7 @@ class ActiveEvent(Document):
         data.update(self.raw_vars)
         msg = {
             "id": str(self.id),
-            "ts": self.timestamp.isoformat(),
+            "ts": time.mktime(self.timestamp.timetuple()),
             "object": self.managed_object.id,
             "data": data
         }

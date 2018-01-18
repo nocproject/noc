@@ -151,7 +151,7 @@ class EventApplication(ExtApplication):
     def api_event(self, request, id):
         event = get_event(id)
         if not event:
-            self.response_not_found()
+            return self.response_not_found()
         d = self.instance_to_dict(event)
         dd = dict((v, None) for v in (
             "body", "symptoms", "probable_causes",

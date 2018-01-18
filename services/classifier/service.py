@@ -735,6 +735,7 @@ class ClassifierService(Service):
 
     def on_event(self, message, ts=None, object=None, data=None,
                  id=None, *args, **kwargs):
+        event_ts = datetime.datetime.fromtimestamp(ts)
         # Generate or reuse existing object id
         event_id = bson.ObjectId(id)
         # Calculate messate processing delay
@@ -753,12 +754,11 @@ class ClassifierService(Service):
         self.logger.info("[%s|%s|%s] Managed object found",
                          event_id, mo.name, mo.address)
         # Process event
-        ts = datetime.datetime.fromtimestamp(ts)
         source = data.pop("source", "other")
         event = ActiveEvent(
             id=event_id,
-            timestamp=ts,
-            start_timestamp=ts,
+            timestamp=event_ts,
+            start_timestamp=event_ts,
             managed_object=mo,
             source=source,
             repeats=1

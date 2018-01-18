@@ -10,7 +10,7 @@
 # Python modules
 from __future__ import with_statement
 import sys
-import datetime
+import time
 import json
 import argparse
 # Third-party modules
@@ -72,7 +72,7 @@ class Command(BaseCommand):
                 continue
             msg = {
                 "id": str(bson.ObjectId()),
-                "ts": datetime.datetime.now().isoformat(),
+                "ts": time.time(),
                 "object": obj.id,
                 "data": e["raw_vars"]
             }
@@ -89,7 +89,7 @@ class Command(BaseCommand):
         }
         msg = {
             "id": str(bson.ObjectId()),
-            "ts": datetime.datetime.now().isoformat(),
+            "ts": time.time(),
             "object": obj.id,
             "data": raw_vars
         }
