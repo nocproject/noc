@@ -12,4 +12,5 @@ asset check
 
 Requirements
 ------------
-* get_inventory
+* :ref:`script-get_inventory`
+
