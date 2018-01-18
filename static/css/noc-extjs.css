@@ -393,3 +393,11 @@ TABLE {
     margin-bottom: -2px;
     z-index: 1;
 }
+
+.x-component, .x-container {
+    position: initial;
+}
+
+.x-panel-body {
+    overflow: unset;
+}
