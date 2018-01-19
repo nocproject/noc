@@ -93,22 +93,25 @@ class MonMapCard(BaseCard):
         sss = {"error": {},
                "warning": {},
                "good": {}}
-
+        s_def = {
+            "service": {},
+            "subscriber": {},
+            "interface": {}
+        }
         services = defaultdict(list)
         moss = ManagedObject.objects.filter(is_managed=True).exclude(container=None).order_by(
             "container")
+        # Getting Alarms, services and containers
         alarms = {aa["managed_object"]: aa["severity"] for aa in ActiveAlarm.objects.filter(
             managed_object__in=list(moss.values_list("id", flat=True))
         ).scalar("managed_object", "severity").as_pymongo()}
 
-        containers = {str(o[0]): o[1:] for o in Object.objects.filter(
-            data__exists=True, data__geopoint__exists=True).scalar("id", "name", "data")}
+        s_services = ServiceSummary.get_objects_summary(list(moss.values_list("id", flat=True)))
+        containers = {str(o["_id"]): (o["name"], o["data"]) for o in Object.objects.filter(
+            data__geopoint__exists=True).fields(id=1, name=1, data__geopoint__x=1,
+                                                data__geopoint__y=1).as_pymongo()}
         for container, mol in itertools.groupby(moss.values_list("id", "name", "container"), key=lambda o: o[2]):
-            # x = container.get_data("geopoint", "x")
-            # y = container.get_data("geopoint", "y")
-            if container not in containers:
-                continue
-            name, data = containers[container]
+            name, data = containers.get(container, ("", {"geopoint": {}}))
             x = data["geopoint"].get("x")
             y = data["geopoint"].get("y")
             if not x or not y:
@@ -120,10 +123,8 @@ class MonMapCard(BaseCard):
                   "good": 0
                   }
             for mo_id, mo_name, container in mol:
-                s_service = ServiceSummary.get_object_summary(mo_id)
+                s_service = s_services.get(mo_id, s_def)
                 status = "good"
-                # if random.randint(0, 10) > 6:
-                #    status = "error"
                 if 100 < alarms.get(mo_id) < 2000:
                     status = "warning"
                 elif alarms.get(mo_id) > 2000:
@@ -158,10 +159,14 @@ class MonMapCard(BaseCard):
 
     @staticmethod
     def get_containers_by_root(root_id=None):
+        """
+        Getting all containers from root object
         # @todo containers only with coordinates (Filter by models)
+        # @todo containers only
         # from noc.sa.models.managedobject import ManagedObject
         # from noc.inv.models.object import Object
         # If None - all objects
+        """
         root = Object.get_by_id(root_id)
         work_set = {root.id}
         os = set()
@@ -173,8 +178,8 @@ class MonMapCard(BaseCard):
             if len(work_set) == kk:
                 break
             kk = len(work_set)
-            print len(work_set)
-            print len(os)
+            # print len(work_set)
+            # print len(os)
         return os
 
     def f_glyph_summary(self, s, collapse=False):
