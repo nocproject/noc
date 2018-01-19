@@ -1,0 +1,16 @@
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Install assets
+  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
+  with_items: "{{ required_assets }}"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    NOC_CONFIG: "{{config_order}}"
+  tags:
+    - requirements

@@ -1,0 +1,79 @@
+---
+- name: add nsqd group
+  group:
+    name: nsq
+
+- name: add nsqd user
+  user:
+    name: nsq
+    shell: "{{fake_shell}}"
+
+- name: create path for on-disk queue files
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  with_items:
+    - "{{nsqd_db_dir}}"
+    - "{{nsqd_config_dir}}"
+    - "{{nsq_root}}"
+
+- name: include nsqd os specific tasks
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
+
+- name: create nsqd log dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  when: "'FreeBSD' in ansible_system"
+  with_items:
+    - "{{nsd_log_dir}}"
+
+- name: check if nsq already exists
+  stat:
+    path: "{{nsq_root}}/nsqd"
+  register: nsqd_binary
+
+- name: check if version is ok
+  command: "{{nsq_root}}/nsqd --version"
+  register: nsq_installed_version
+  changed_when: false
+  when: nsqd_binary.stat.exists
+
+- name: check version
+  set_fact: nsq_version_is_ok=True
+  when: "nsq_version in nsq_installed_version and nsq_installed_version is defined"
+
+- name: Install nsqd monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
+    dest: "{{ telegraf_confd_path }}/nsqd.conf"
+  notify: reload telegraf
+  when:
+    - "'svc-telegraf' in groups"
+    - "inventory_hostname in groups['svc-telegraf-exec']"
+  tags:
+    - config
+    - telegraf
+
+- name: Enable nsq system service
+  service:
+    name: "nsqd"
+    enabled: yes
+    state: started
+
+- name: copy nsqd consul templates
+  template:
+    src: "{{item}}"
+    dest: "{{consul_configd_path}}/"
+  notify: reload consul
+  with_items:
+    - nsqd.json
+    - nsqdhttp.json
+  tags:
+    - consul

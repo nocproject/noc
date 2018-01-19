@@ -1,0 +1,7 @@
+[[inputs.procstat]]
+pattern = "nsqd"
+
+[[inputs.nsq]]
+  ## An array of NSQD HTTP API endpoints
+  endpoints = ["http://{{ansible_nodename}}:4151"]
+  tagexclude = ["client_deflate","client_address","client_hostname","client_name","client_snappy","client_tls","client_user_agent","client_version","server_version"]

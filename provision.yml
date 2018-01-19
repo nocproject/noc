@@ -1,0 +1,122 @@
+- name: Consul tasks
+  hosts: svc-consul-server
+  become: yes
+  any_errors_fatal: true
+  gather_facts: True
+  tags:
+    - consul
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: consul
+
+- name: Consul tasks
+  hosts: svc-consul-exec
+  become: yes
+  any_errors_fatal: false
+  serial: 50%
+  gather_facts: True
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: consul
+      tags:
+        - consul
+
+    - role: consul-template
+      tags:
+        - consul-template
+        - external
+
+- name: Install and configure postgres
+  hosts: svc-postgres-exec
+  become: yes
+  serial: 1
+  any_errors_fatal: true
+  tags:
+    - postgres
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: postgres
+
+- name: Install and configure grafana
+  hosts: svc-grafana-exec
+  become: yes
+  serial: 50%
+  any_errors_fatal: true
+  tags:
+    - grafana
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: grafana
+
+- name: Install and configure nsqlookupd
+  hosts: svc-nsqlookupd-exec
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - nsq
+    - nsqlookupd
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: nsqlookupd
+
+- name: Install and configure nsq
+  hosts: svc-nsqd-exec
+  become: yes
+  any_errors_fatal: true
+  tags:
+    - nsq
+    - nsqd
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: nsqd
+
+- name: Install and configure mongo
+  hosts: svc-mongod-exec
+  become: yes
+  serial: 30%
+  any_errors_fatal: true
+  tags:
+    - mongod
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: mongod
+
+- name: clickhouse tasks
+  hosts: svc-clickhouse-exec
+  become: yes
+  any_errors_fatal: false
+  gather_facts: True
+  tags:
+    - clickhouse
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: clickhouse
+
+- name: Install and configure nginx
+  hosts: svc-nginx-exec
+  serial: 50%
+  become: yes
+  tags:
+    - nginx
+    - web
+    - external
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: nginx

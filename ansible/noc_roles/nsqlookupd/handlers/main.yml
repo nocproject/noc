@@ -1,0 +1,23 @@
+---
+- name: reload systemd
+  systemd:
+    name: nsqlookupd
+    daemon_reload: yes
+
+- name: restart nsqlookupd
+  become: yes
+  service:
+    name: nsqlookupd
+    state: restarted
+
+- name: reload telegraf
+  become: yes
+  service:
+    name: telegraf
+    state: reloaded
+
+- name: reload consul
+  become: yes
+  service:
+    name: consul
+    state: reloaded
