@@ -33,8 +33,9 @@ class BERDecoder(object):
             if tag_class:
                 pt += " application"
             raise DecodeError(
-                "Cannot find BER decoder for %s class %d (%X)" % (
-                    pt, tag, tag))
+                "Cannot find BER decoder for %s class %d (%X): %s" % (
+                    pt, tag, tag, value.encode('hex'))
+            )
 
     def parse_eoc(self, msg):
         return None
@@ -285,13 +286,13 @@ class BEREncoder(object):
         t = tag
         t |= 0 if primitive else 0x20
         # Encode length
-        l = len(data)
-        if l < 0x80:
+        ln = len(data)
+        if ln < 0x80:
             # Short form
-            return "%s%s%s" % (chr(t), chr(l), data)
+            return "%s%s%s" % (chr(t), chr(ln), data)
         else:
             # Prepare length's representation
-            ll = self.struct_Q.pack(l).lstrip("\x00")
+            ll = self.struct_Q.pack(ln).lstrip("\x00")
             return "%s%s%s%s" % (chr(t), chr(0x80 | len(ll)), ll, data)
 
     def encode_octet_string(self, data):
@@ -344,15 +345,15 @@ class BEREncoder(object):
         elif data < 0:
             data = -data
             r = self.struct_Q.pack(data).lstrip("\x00")
-            l = len(r)
-            comp = 1 << (l * 8 - 1)
+            ln = len(r)
+            comp = 1 << (ln * 8 - 1)
             if comp < data:
                 comp <<= 8
             r = self.struct_Q.pack(comp - data).lstrip("\x00")
             if r:
                 r = chr(ord(r[0]) | 0x80) + r[1:]
             else:
-                r = "\x80" + "\x00" * (l - 1)
+                r = "\x80" + "\x00" * (ln - 1)
         return self.encode_tlv(2, True, r)
 
     def encode_real(self, data):
