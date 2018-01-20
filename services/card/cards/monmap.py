@@ -12,6 +12,7 @@ import itertools
 from collections import defaultdict
 # Third-party modules
 import cachetools
+from mongoengine import ValidationError
 # import geojson
 # import random
 # NOC modules
@@ -44,6 +45,7 @@ class MonMapCard(BaseCard):
 
     color_map = {"error": "#FF0000",
                  "warning": "#F0C20C",
+                 "good": "#6ECC39",
                  "default": "#6ECC39"}
 
     _layer_cache = {}
@@ -82,6 +84,7 @@ class MonMapCard(BaseCard):
                 else:
                     d[k] = s[k]
 
+        object_id = self.handler.get_argument("object_id")
         # zoom = int(self.handler.get_argument("z"))
         # west = float(self.handler.get_argument("w"))
         # east = float(self.handler.get_argument("e"))
@@ -99,17 +102,28 @@ class MonMapCard(BaseCard):
             "interface": {}
         }
         services = defaultdict(list)
-        moss = ManagedObject.objects.filter(is_managed=True).exclude(container=None).order_by(
-            "container")
-        # Getting Alarms, services and containers
+        try:
+            object_root = Object.objects.filter(id=object_id).first()
+        except ValidationError:
+            object_root = None
+        if object_root:
+            con = self.get_containers_by_root(object_root.id)
+            moss = ManagedObject.objects.filter(is_managed=True,
+                                                container__in=con).exclude(container=None).order_by("container")
+        else:
+            moss = ManagedObject.objects.filter(is_managed=True).exclude(container=None).order_by("container")
+
+        # Getting Alarms severity dict MO: Severity @todo List alarms
         alarms = {aa["managed_object"]: aa["severity"] for aa in ActiveAlarm.objects.filter(
             managed_object__in=list(moss.values_list("id", flat=True))
         ).scalar("managed_object", "severity").as_pymongo()}
-
+        # Getting services
         s_services = ServiceSummary.get_objects_summary(list(moss.values_list("id", flat=True)))
+        # Getting containers name and coordinates
         containers = {str(o["_id"]): (o["name"], o["data"]) for o in Object.objects.filter(
             data__geopoint__exists=True).fields(id=1, name=1, data__geopoint__x=1,
                                                 data__geopoint__y=1).as_pymongo()}
+        # Main Loop. Get ManagedObject group by container
         for container, mol in itertools.groupby(moss.values_list("id", "name", "container"), key=lambda o: o[2]):
             name, data = containers.get(container, ("", {"geopoint": {}}))
             x = data["geopoint"].get("x")
@@ -123,6 +137,7 @@ class MonMapCard(BaseCard):
                   "good": 0
                   }
             for mo_id, mo_name, container in mol:
+                # Status by alarm severity
                 s_service = s_services.get(mo_id, s_def)
                 status = "good"
                 if 100 < alarms.get(mo_id) < 2000:
@@ -196,7 +211,8 @@ class MonMapCard(BaseCard):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if isinstance(c, list):
-                        badge = "".join(" <span class=\"badge\" style=\"color: %s\">%s</span></div>" % cc for cc in c)
+                        badge = "".join(" <span class=\"badge\" style=\"color: %s\">%s</span>" % cc for cc in c)
+                        badge += "</div>"
                     else:
                         if collapse and c < 2:
                             badge = "</div>"
