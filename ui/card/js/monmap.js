@@ -17,6 +17,7 @@ Monmap.prototype.initialize = function(lon, lat, zoom) {
     // lon = q.lon ? parseFloat(q.lon) : lon || 37.5077,
     // lat = q.lat ? parseFloat(q.lat) : lat || 55.7766,
     // scale = q.zoom ? parseInt(q.zoom) : zoom || 11;
+    this.objectId = (window.location.pathname.split("/").slice(-2))[0];
     this.map = L.map("map");
     // Set up OSM layer
     var osm = L.tileLayer(
@@ -96,7 +97,7 @@ Monmap.prototype.poll_data = function() {
 
     $("#summary").html('<i class="fa fa-spinner fa-spin"></i>' + "Loading ...");
     // $.getJSON( "/ui/card/js/data.json", function( data ) { // test
-    $.ajax("/api/card/view/monmap/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s + "&maintenance=" + this.maintenance).done(function(data) {
+    $.ajax("/api/card/view/monmap/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s + "&maintenance=" + this.maintenance + "&object_id=" + this.objectId).done(function(data) {
         me.markers.clearLayers();
         for(var i = 0; i < data.objects.length; i++) {
             var a = data.objects[i];
