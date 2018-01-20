@@ -14,11 +14,12 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Angtel.Topaz"
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)\s*>"
-    pattern_prompt = r"^(?P<hostname>\S+)\s*#"
+    pattern_prompt = r"^(?P<hostname>\S+)\s*(?:\(config[^\)]*\))?#"
     pattern_syntax_error = r"% Unrecognized command|% Wrong number of parameters"
     command_super = "enable"
     command_disable_pager = "terminal datadump"
-    pattern_more = "More: <space>,  Quit: q or CTRL+Z, One line: <return>"
+    pattern_more = [(r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
+                    (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n")]
     command_more = "a"
     command_exit = "exit"
 
