@@ -18,7 +18,6 @@ from mongoengine import ValidationError
 # NOC modules
 from noc.services.card.cards.base import BaseCard
 from noc.inv.models.object import Object
-from noc.lib.nosql import DoesNotExist
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary
