@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# TTronics.CUBE_Femto.get_interfaces
+# Qtech.BFC-PBIC-S.get_interfaces
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "TTronics.CUBE_Femto.get_interfaces"
+    name = "Qtech.BFC-PBIC-S.get_interfaces"
     interface = IGetInterfaces
     cache = True
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# TTronics.CUBE_Femto.get_version
+# Qtech.BFC-PBIC-S.get_version
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -11,7 +11,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "TTronics.CUBE_Femto.get_version"
+    name = "Qtech.BFC-PBIC-S.get_version"
     cache = True
     interface = IGetVersion
     reuse_cli_session = False
