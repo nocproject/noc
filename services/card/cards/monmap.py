@@ -55,10 +55,9 @@ class MonMapCard(BaseCard):
         self.root = Object.objects.get(name=self.o_default_name)
         if id:
             try:
-                self.root = Object.objects.get(id=id)
+                self.root = Object.get_by_id(id=id)
             except DoesNotExist:
                 pass
-        print id
 
     def get_data(self):
         p = self.current_user.get_profile()
