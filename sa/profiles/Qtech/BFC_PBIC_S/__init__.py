@@ -12,7 +12,7 @@ from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
-    name = "Qtech.BFC-PBIC-S"
+    name = "Qtech.BFC_PBIC_S"
     # to one SNMP GET request
     snmp_metrics_get_chunk = 3
     # Timeout for snmp GET request

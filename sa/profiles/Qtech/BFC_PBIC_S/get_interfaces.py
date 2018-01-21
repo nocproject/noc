@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-    name = "Qtech.BFC-PBIC-S.get_interfaces"
+    name = "Qtech.BFC_PBIC_S.get_interfaces"
     interface = IGetInterfaces
     cache = True
 

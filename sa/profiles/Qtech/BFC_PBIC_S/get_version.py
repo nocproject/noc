@@ -11,7 +11,7 @@ from noc.sa.interfaces.igetversion import IGetVersion
 
 
 class Script(BaseScript):
-    name = "Qtech.BFC-PBIC-S.get_version"
+    name = "Qtech.BFC_PBIC_S.get_version"
     cache = True
     interface = IGetVersion
     reuse_cli_session = False

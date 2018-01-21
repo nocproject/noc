@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
-    name = "Qtech.BFC-PBIC-S.get_chassis_id"
+    name = "Qtech.BFC_PBIC_S.get_chassis_id"
     cache = True
     interface = IGetChassisID
 
