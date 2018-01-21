@@ -1,0 +1,13 @@
+{
+    "name": "Hikvision | DS2CD | HTTP",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "25df2cfe-a328-403f-89ce-53738447583e",
+    "description": null,
+    "preference": 100,
+    "method": "http_get",
+    "param": ":8080/api/v2/monitoring.json",
+    "match_method": "re",
+    "value": "HikVision",
+    "action": "match",
+    "profile__name": "Hikvision.DS2CD"
+}

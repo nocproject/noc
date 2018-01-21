@@ -20,7 +20,7 @@ test:empty:
       alias: postgres 
     - name: registry.getnoc.com/infrastructure/mongo:master
       alias: mongo
-    - name: yandex/clickhouse-server:latest
+    - name: yandex/clickhouse-server:1.1.54327
       alias: clickhouse
   script:
     - export NOC_PG_ADDRESSES=registry.getnoc.com-infrastructure-postgres:5432
