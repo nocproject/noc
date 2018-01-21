@@ -52,12 +52,10 @@ class MonMapCard(BaseCard):
     TOOLTIP_LIMIT = config.card.alarmheat_tooltip_limit
 
     def get_object(self, id=None):
-        self.root = Object.objects.get(name=self.o_default_name)
         if id:
-            try:
-                self.root = Object.get_by_id(id=id)
-            except DoesNotExist:
-                pass
+            self.root = Object.get_by_id(id=id)
+        else:
+            self.root = Object.objects.get(name=self.o_default_name)
 
     def get_data(self):
         p = self.current_user.get_profile()
