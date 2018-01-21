@@ -9,6 +9,6 @@
 
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Hikvision.DS2CD"
-
