@@ -29,7 +29,7 @@ class Script(BaseScript):
                 else:
                     version = "None"
                 result = {
-                    "vendor": "TTronics",
+                    "vendor": "Qtech",
                     "version": version,
                     "platform": platform,
                 }
