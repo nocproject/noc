@@ -1,0 +1,6 @@
+{
+  "$metric": "Environment | Dry Contact | 1",
+  "$type": "oid",
+  "oid": "1.3.6.1.4.1.35419.20.1.101.0",
+  "type": "gauge"
+}
