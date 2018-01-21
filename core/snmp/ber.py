@@ -235,7 +235,7 @@ class BERDecoder(object):
         did(0, False, 20): parse_p_t61_string,  # T61String	P/C	20	14
         # VideotexString	P/C	21	15
         # IA5String	P/C	22	16
-        did(0, False, 2): parse_utctime,  # 23, 0x17, UTCTime
+        did(0, False, 23): parse_utctime,  # 23, 0x17, UTCTime
         # GeneralizedTime	P/C	24	18
         # GraphicString	P/C	25	19
         # VisibleString	P/C	26	1A
@@ -278,12 +278,10 @@ class BERDecoder(object):
         did(64, False, 3): parse_int,  # TimeTicks
         did(64, False, 4): parse_p_octetstring,  # Opaque
         # 5: NsapAddress
-        did(64, False, 6): parse_int,   # Counter64
+        did(64, False, 6): parse_int,   # 6, Counter64
         # 7: UInteger32
-        # 14: Uncompressed delta identifier
-        did(64, False, 14): parse_p_oid,
-        # 15: Compressed delta identifier
-        did(64, False, 15): parse_compressed_oid
+        did(64, False, 14): parse_p_oid,  # 14: Uncompressed delta identifier
+        did(64, False, 15): parse_compressed_oid  # 15: Compressed delta identifier
     }
 
 
