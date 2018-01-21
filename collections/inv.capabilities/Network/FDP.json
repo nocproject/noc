@@ -1,0 +1,8 @@
+{
+    "name": "Network | FDP",
+    "$collection": "inv.capabilities",
+    "uuid": "6e4cd2b6-5f27-4935-b97d-d856b92b3f80",
+    "description": "FDP is enabled",
+    "type": "bool",
+    "card_template": null
+}
