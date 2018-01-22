@@ -20,3 +20,21 @@
   tags:
     - requirements
     - get_source
+
+- name: Cleanup hanging .pyc files
+  command: ./scripts/deploy/cleanup-pyc
+  args:
+    chdir: "{{noc_root}}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
+  failed_when: "'ERROR' in result.stdout"
+  tags:
+    - get_source
+
+- name: migrate ch db
+  command: ./noc migrate-ch --host 127.0.0.1
+  args:
+    chdir: "{{ noc_root }}"
+  when: "has_svc_clickhouse | default(False)"
+  tags:
+    - migrate

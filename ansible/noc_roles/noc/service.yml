@@ -36,7 +36,7 @@
     - role: bi
 
 - name: migrate
-  hosts: svc-postgres-master
+  hosts: svc-noc-exec
   become: yes
   gather_facts: True
   tags:
