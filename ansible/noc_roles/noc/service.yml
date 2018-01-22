@@ -11,7 +11,6 @@
   pre_tasks:
     - meta: flush_handlers
   roles:
-    - role: node
     - role: login
     - role: mrt
     - role: escalator
