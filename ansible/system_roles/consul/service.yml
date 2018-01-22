@@ -7,6 +7,7 @@
     - consul
   vars_files:
     - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: consul
   post_tasks:
@@ -22,6 +23,7 @@
   gather_facts: True
   vars_files:
     - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: consul
       tags:

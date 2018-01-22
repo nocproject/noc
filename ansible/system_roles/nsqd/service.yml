@@ -8,6 +8,7 @@
     - external
   vars_files:
     - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: nsqd
   post_tasks:

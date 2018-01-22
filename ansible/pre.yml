@@ -6,6 +6,7 @@
   gather_facts: True
   vars_files:
     - "vars/main.yml"
+    - "vars/{{ ansible_distribution }}.yml"
   vars:
     ansible_tags: "{{ lookup('get_tags') }}"
   roles:

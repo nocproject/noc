@@ -1,11 +1,5 @@
 # Pre-deployment tasks
 ---
-- name: "Loading system-dependend settings"
-  include_vars: "os/{{ ansible_distribution }}.yml"
-  tags:
-    - config
-    - always
-
 - name: Display ansible_connection type
   debug:
     var: ansible_connection
@@ -28,13 +22,6 @@
   when: "'smart' not in ansible_connection and 'ssh' not in ansible_connection"
   tags:
     - always
-
-- name: create tower dist dir
-  file:
-    path: "{{tower_dist_dir}}"
-    state: directory
-  run_once: true
-  delegate_to: 127.0.0.1
 
 - name: Display all variables/facts known for a host
   debug:

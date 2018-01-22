@@ -29,6 +29,7 @@ mongo_dir: "{{etc_prefix}}/mongod"
 
 nginx_conf_upstream_path: "{{etc_prefix}}/nginx/upstream.conf"
 postgres_listen: 5432
+postgres_user: postgres
 
 telegraf_confd_path: "{{etc_prefix}}/telegraf/telegraf.d"
 

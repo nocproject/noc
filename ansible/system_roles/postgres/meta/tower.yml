@@ -44,3 +44,5 @@ services:
     category: external
     port: 5432
     promote: system
+    depends:
+      - consul

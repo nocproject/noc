@@ -8,6 +8,7 @@
     - noc
   vars_files:
     - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
   pre_tasks:
     - meta: flush_handlers
   roles:
