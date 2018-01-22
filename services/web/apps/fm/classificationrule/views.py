@@ -51,13 +51,14 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 if event:
                     data = event.raw_vars.copy()
                     data["profile"] = event.managed_object.profile.name
+                    data["source"] = event.source
                 else:
                     errors += ["Event not found: %s" % q["data"]]
             else:
                 # Decode json
                 try:
                     e = self.deserialize(q["data"])
-                except:
+                except Exception:
                     errors += ["Cannot decode JSON"]
                     e = None
                 if isinstance(e, list):
@@ -68,6 +69,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     data = e["raw_vars"]
                     if "profile" in e:
                         data["profile"] = e["profile"]
+                    if "source" in e:
+                        data["source"] = e["source"]
             if data.get("source") == "SNMP Trap":
                 # Resolve MIBs
                 data.update(MIB.resolve_vars(data))
@@ -87,13 +90,13 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     v = None
                     try:
                         k = re.compile(p["key_re"])
-                    except re.error, why:
+                    except re.error as why:
                         errors += [
                             "Invalid key regular expression <<<%s>>>: %s" % (
                                 p["key_re"], why)]
                     try:
                         v = re.compile(p["value_re"])
-                    except re.error, why:
+                    except re.error as why:
                         errors += [
                             "Invalid value regular expression <<<%s>>>: %s" % (
                                 p["value_re"], why)]
@@ -103,12 +106,12 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if patterns and not errors:
             s_patterns = []
             i_patterns = []
-            for pk, pv in patterns:
+            for pkey, pvalue in patterns:
                 matched = False
                 for k in data:
-                    k_match = pk.search(k)
+                    k_match = pkey.search(k)
                     if k_match:
-                        v_match = pv.search(data[k])
+                        v_match = pvalue.search(data[k])
                         if v_match:
                             # Line match
                             # Update vars
@@ -121,8 +124,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
                                 "status": True,
                                 "key": k,
                                 "value": data[k],
-                                "key_re": pk.pattern,
-                                "value_re": pv.pattern,
+                                "key_re": pkey.pattern,
+                                "value_re": pvalue.pattern,
                                 "vars": [{"key": k, "value": v[k]}
                                          for k in v]
                             }]
@@ -132,8 +135,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
                                     "status": False,
                                     "key": k,
                                     "value": data[k],
-                                    "key_re": pk.pattern,
-                                    "value_re": pv.pattern,
+                                    "key_re": pkey.pattern,
+                                    "value_re": pvalue.pattern,
                                     "vars": {}
                                 }
                             ]
@@ -145,8 +148,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
                             "status": False,
                             "key": None,
                             "value": None,
-                            "key_re": pk.pattern,
-                            "value_re": pv.pattern,
+                            "key_re": pkey.pattern,
+                            "value_re": pvalue.pattern,
                             "vars": {}
                         }
                     ]
@@ -160,19 +163,19 @@ class EventClassificationRuleApplication(ExtDocApplication):
                     # Evaluate
                     try:
                         vars[v["name"]] = eval(v["value"][1:], {}, vars)
-                    except Exception, why:
+                    except Exception as why:
                         errors += [
                             "Error when evaluating '%s': %s" % (v["name"], why)
                         ]
                 else:
                     vars[v["name"]] = v["value"]
         # Check required variables
-        for rv in required_vars:
-            if rv not in vars:
-                errors += ["Missed required variable: %s" % rv]
+        for rvars in required_vars:
+            if rvars not in vars:
+                errors += ["Missed required variable: %s" % rvars]
         # Fill event class template
         if event_class:
-            lang = "en"
+            # lang = "en"
             ctx = Context(vars)
             subject = Template(event_class.subject_template).render(ctx)
             body = Template(event_class.body_template).render(ctx)
@@ -205,17 +208,17 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if not event:
             self.response_not_found()
         event_name = " | ".join(event.managed_object.profile.name.split(".")) + " | <name> "
-        if event.raw_vars["source"] == "syslog":
+        if event.source == "syslog":
             event_name += "(SYSLOG)"
-        elif event.raw_vars["source"] == "SNMP Trap":
+        elif event.source == "SNMP Trap":
             event_name += "(SNMP)"
         data = {
             "name": event_name,
             "preference": 1000
-            }
-        if event.raw_vars["source"] == "syslog":
+        }
+        if event.source == "syslog":
             data["description"] = event.raw_vars["message"]
-        elif (event.raw_vars["source"] == "SNMP Trap" and
+        elif (event.source == "SNMP Trap" and
               "SNMPv2-MIB::snmpTrapOID.0" in event.resolved_vars):
             data["description"] = event.resolved_vars["SNMPv2-MIB::snmpTrapOID.0"]
         patterns = {}
@@ -225,8 +228,8 @@ class EventClassificationRuleApplication(ExtDocApplication):
         if hasattr(event, "resolved_vars"):
             for k in event.resolved_vars:
                 if k not in (
-                    "RFC1213-MIB::sysUpTime.0",
-                    "SNMPv2-MIB::sysUpTime.0") and not is_oid(k):
+                        "RFC1213-MIB::sysUpTime.0",
+                        "SNMPv2-MIB::sysUpTime.0") and not is_oid(k):
                     patterns[k] = event.resolved_vars[k]
         data["patterns"] = [
             {
