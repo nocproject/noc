@@ -1,8 +1,5 @@
 # Post-deployment tasks
 ---
-- name: Include post install
-  import_tasks: "post_install.yml"
-
 - name: check if noc running
   command: "{{ noc_root }}/noc ctl status"
   changed_when: false
