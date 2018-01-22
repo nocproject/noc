@@ -1,0 +1,103 @@
+#map {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#summary {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: auto;
+    width: auto;
+    text-align: right;
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.6);
+    font-size: 24pt;
+    border-bottom-left-radius: 12pt;
+    z-index: 10000;
+}
+
+#summary .badge {
+    font-size: 24pt;
+    border-radius: 12pt;
+}
+
+.marker-cluster-good {
+    /*background-color: rgba(181, 226, 140, 0.6);*/
+    background-color: rgba(110, 204, 57, 0.6);
+}
+.marker-cluster-good div {
+    background-color: rgba(175,238,238, 0.6);
+    /*color: white;*/
+    /*background-color: rgba(110, 204, 57, 0.6);*/
+}
+
+.marker-cluster-warning {
+    /*background-color: rgba(255, 255, 0, 0.6);*/
+    background-color: rgba(240, 194, 12, 0.6);
+}
+.marker-cluster-warning div {
+    background-color: rgba(175,238,238, 0.6);
+    /*color: white;*/
+    /*background-color: rgba(240, 194, 12, 0.6);*/
+}
+
+.marker-cluster-error {
+    /*background-color: rgba(255, 69, 0, 0.6);*/
+    background-color: rgba(255, 0, 0, 0.6);
+}
+.marker-cluster-error div {
+    /*background-color: rgba(255, 0, 0, 0.6);*/
+    background-color: rgba(175,238,238, 0.6);
+    /*color: white;*/
+}
+
+/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-good {
+    /*background-color: rgba(181, 226, 140, 0.6);*/
+    background-color: rgba(110, 204, 57, 0.6);
+}
+.leaflet-oldie .marker-cluster-good div {
+    background-color: rgba(181, 226, 140, 0.6);
+    /*background-color: rgba(110, 204, 57, 0.6);*/
+}
+
+.leaflet-oldie .marker-cluster-warning {
+    /*background-color: rgba(255, 255, 0, 0.6);*/
+    background-color: rgba(240, 194, 12, 0.6);
+}
+.leaflet-oldie .marker-cluster-warning div {
+    background-color: rgba(255, 255, 0, 0.6);
+    /*background-color: rgba(240, 194, 12, 0.6);*/
+}
+
+.leaflet-oldie .marker-cluster-error {
+    /*background-color: rgba(255, 69, 0, 0.6);*/
+    background-color: rgba(255, 0, 0, 0.6);
+}
+.leaflet-oldie .marker-cluster-error div {
+    /*background-color: rgba(255, 0, 0, 0.6);*/
+    background-color: rgba(255, 69, 50, 0.6);
+    color: white;
+}
+
+.marker-cluster {
+    background-clip: padding-box;
+    border-radius: 20px;
+}
+.marker-cluster div {
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
+    margin-top: 5px;
+
+    text-align: center;
+    border-radius: 15px;
+    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+.marker-cluster span {
+    line-height: 30px;
+}
