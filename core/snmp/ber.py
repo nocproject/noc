@@ -17,24 +17,39 @@ class DecodeError(Exception):
     pass
 
 
+def did(tag_class, is_constructed, tag_id):
+    """
+    Calculate decoder_id as <tag id > | tag_class | constructed
+    :param tag_class:
+    :param is_constructed:
+    :param tag_id:
+    :return:
+    """
+    did = tag_class >> 5
+    if is_constructed:
+        did |= 1
+    return did | (tag_id << 3)
+
+
 class BERDecoder(object):
     def parse_tlv(self, msg):
-        tag_class, tag, is_primitive, is_implicit, offset, length = parse_tlv_header(msg)
+        decoder_id, tag_class, tag, is_constructed, is_implicit, offset, length = parse_tlv_header(msg)
         value, rest = msg[offset:offset + length], msg[offset + length:]
         if is_implicit:
             return self.parse_implicit(value, tag), rest
         try:
-            decoder = self.DECODERS[tag_class][is_primitive][tag]
+            decoder = self.DECODERS[decoder_id]
             return decoder(self, value), rest
         except KeyError:
-            pt = "primitive" if is_primitive else "constructed"
+            pt = "constructed" if is_constructed else "primitive"
             if is_implicit:
                 pt = "implicit " + pt
             if tag_class:
-                pt += " application"
+                pt += " application %d" % tag_class
             raise DecodeError(
-                "Cannot find BER decoder for %s class %d (%X)" % (
-                    pt, tag, tag))
+                "Cannot find BER decoder for %s class %d (0x%X): %s" % (
+                    pt, tag, tag, value.encode('hex'))
+            )
 
     def parse_eoc(self, msg):
         return None
@@ -133,7 +148,17 @@ class BERDecoder(object):
     def parse_p_octetstring(self, msg):
         return msg
 
+    def parse_p_t61_string(self, msg):
+        return msg
+
     def parse_c_octetstring(self, msg):
+        r = []
+        while msg:
+            v, msg = self.parse_tlv(msg)
+            r += [v]
+        return r
+
+    def parse_c_t61_string(self, msg):
         r = []
         while msg:
             v, msg = self.parse_tlv(msg)
@@ -190,85 +215,73 @@ class BERDecoder(object):
         return msg  # @todo: Convert to datetime
 
     DECODERS = {
-        # Universal types
-        0: {
-            # Primitive types
-            True: {
-                0: parse_eoc,  # 0, 0, EOC (End-of-Content)
-                1: parse_boolean,  # 1, 0x1, BOOLEAN
-                2: parse_int,  # 2, 0x2, INTEGER
-                3: parse_p_bitstring,  # 3, 0x3, BIT STRING
-                4: parse_p_octetstring,  # 4, 0x4, OCTET STRING
-                5: parse_null,  # 5, 0x5, NULL
-                6: parse_p_oid,  # 6, 0x6, OBJECT IDENTIFIER
-                # Object Descriptor	P/C	7	7
-                # EXTERNAL	C	8	8
-                9: parse_real,  # REAL (float)	P	9	9
-                10: parse_int,  # 10, 0xA, ENUMERATED
-                # UTF8String	P/C	12	C
-                # RELATIVE-OID	P	13	D
-                # NumericString	P/C	18	12
-                # PrintableString	P/C	19	13
-                # T61String	P/C	20	14
-                # VideotexString	P/C	21	15
-                # IA5String	P/C	22	16
-                22: parse_utctime,  # 23, 0x17, UTCTime
-                # GeneralizedTime	P/C	24	18
-                # GraphicString	P/C	25	19
-                # VisibleString	P/C	26	1A
-                # GeneralString	P/C	27	1B
-                # UniversalString	P/C	28	1C
-                # CHARACTER STRING	P/C	29	1D
-                # BMPString	P/C	30	1E
-                # (use long-form)	-	31	1F
-                0x80: parse_null,  # missed instance?
-            },
-            # Constructed types
-            False: {
-                # BIT STRING	P/C	3	3
-                4: parse_c_octetstring,  # 4, 0x4, OCTET STRING
-                6: parse_sequence,  # 6, 0x6, OBJECT IDENTIFIER
-                # Object Descriptor	P/C	7	7
-                7: parse_sequence,
-                # EXTERNAL	C	8	8
-                # EMBEDDED PDV	C	11	B
-                # UTF8String	P/C	12	C
-                16: parse_sequence,  # 10, 0x10, SEQUENCE and SEQUENCE OF
-                17: parse_set,  # 17, 0x11, SET and SET OF
-                # NumericString	P/C	18	12
-                # PrintableString	P/C	19	13
-                # T61String	P/C	20	14
-                # VideotexString	P/C	21	15
-                # IA5String	P/C	22	16
-                # UTCTime	P/C	23	17
-                # GeneralizedTime	P/C	24	18
-                # GraphicString	P/C	25	19
-                # VisibleString	P/C	26	1A
-                # GeneralString	P/C	27	1B
-                # UniversalString	P/C	28	1C
-                # CHARACTER STRING	P/C	29	1D
-                # BMPString	P/C	30	1E
-                # (use long-form)	-	31	1F
-            }
-        },
-        # SNMP application types
-        64: {
-            True: {
-                0: parse_a_ipaddress,  # IpAddress
-                1: parse_int,  # Counter32
-                2: parse_int,  # Gauge32
-                3: parse_int,  # TimeTicks
-                4: parse_p_octetstring,  # Opaque
-                # 5: NsapAddress
-                6: parse_int,   # Counter64
-                # 7: UInteger32
-                # 14: Uncompressed delta identifier
-                14: parse_p_oid,
-                # 15: Compressed delta identifier
-                15: parse_compressed_oid
-            },
-            False: {}
-        }
+        # > Universal types
+        # >> Universal, Primitive types
+        did(0, False, 0): parse_eoc,  # 0, 0, EOC (End-of-Content)
+        did(0, False, 1): parse_boolean,  # 1, 0x1, BOOLEAN
+        did(0, False, 2): parse_int,  # 2, 0x2, INTEGER
+        did(0, False, 3): parse_p_bitstring,  # 3, 0x3, BIT STRING
+        did(0, False, 4): parse_p_octetstring,  # 4, 0x4, OCTET STRING
+        did(0, False, 5): parse_null,  # 5, 0x5, NULL
+        did(0, False, 6): parse_p_oid,  # 6, 0x6, OBJECT IDENTIFIER
+        # Object Descriptor	P/C	7	7
+        # EXTERNAL	C	8	8
+        did(0, False, 9): parse_real,  # REAL (float)	P	9	9
+        did(0, False, 10): parse_int,  # 10, 0xA, ENUMERATED
+        # UTF8String	P/C	12	C
+        # RELATIVE-OID	P	13	D
+        # NumericString	P/C	18	12
+        # PrintableString	P/C	19	13
+        did(0, False, 20): parse_p_t61_string,  # T61String	P/C	20	14
+        # VideotexString	P/C	21	15
+        # IA5String	P/C	22	16
+        did(0, False, 23): parse_utctime,  # 23, 0x17, UTCTime
+        # GeneralizedTime	P/C	24	18
+        # GraphicString	P/C	25	19
+        # VisibleString	P/C	26	1A
+        # GeneralString	P/C	27	1B
+        # UniversalString	P/C	28	1C
+        # CHARACTER STRING	P/C	29	1D
+        # BMPString	P/C	30	1E
+        # (use long-form)	-	31	1F
+        did(0, False, 0x80): parse_null,  # missed instance?
+        # >> Universal, Constructed types
+        # BIT STRING	P/C	3	3
+        did(0, True, 4): parse_c_octetstring,  # 4, 0x4, OCTET STRING
+        did(0, True, 6): parse_sequence,  # 6, 0x6, OBJECT IDENTIFIER
+        # Object Descriptor	P/C	7	7
+        did(0, True, 7): parse_sequence,
+        # EXTERNAL	C	8	8
+        # EMBEDDED PDV	C	11	B
+        # UTF8String	P/C	12	C
+        did(0, True, 16): parse_sequence,  # 16, 0x10, SEQUENCE and SEQUENCE OF
+        did(0, True, 17): parse_set,  # 17, 0x11, SET and SET OF
+        # NumericString	P/C	18	12
+        # PrintableString	P/C	19	13
+        did(0, True, 20): parse_c_t61_string,  # T61String	P/C	20	14
+        # VideotexString	P/C	21	15
+        # IA5String	P/C	22	16
+        # UTCTime	P/C	23	17
+        # GeneralizedTime	P/C	24	18
+        # GraphicString	P/C	25	19
+        # VisibleString	P/C	26	1A
+        # GeneralString	P/C	27	1B
+        # UniversalString	P/C	28	1C
+        # CHARACTER STRING	P/C	29	1D
+        # BMPString	P/C	30	1E
+        # (use long-form)	-	31	1F
+        # > SNMP application types
+        # >> SNMP, Primitive types
+        did(64, False, 0): parse_a_ipaddress,  # IpAddress
+        did(64, False, 1): parse_int,  # Counter32
+        did(64, False, 2): parse_int,  # Gauge32
+        did(64, False, 3): parse_int,  # TimeTicks
+        did(64, False, 4): parse_p_octetstring,  # Opaque
+        # 5: NsapAddress
+        did(64, False, 6): parse_int,   # 6, Counter64
+        # 7: UInteger32
+        did(64, False, 14): parse_p_oid,  # 14: Uncompressed delta identifier
+        did(64, False, 15): parse_compressed_oid  # 15: Compressed delta identifier
     }
 
 
@@ -285,13 +298,13 @@ class BEREncoder(object):
         t = tag
         t |= 0 if primitive else 0x20
         # Encode length
-        l = len(data)
-        if l < 0x80:
+        ln = len(data)
+        if ln < 0x80:
             # Short form
-            return "%s%s%s" % (chr(t), chr(l), data)
+            return "%s%s%s" % (chr(t), chr(ln), data)
         else:
             # Prepare length's representation
-            ll = self.struct_Q.pack(l).lstrip("\x00")
+            ll = self.struct_Q.pack(ln).lstrip("\x00")
             return "%s%s%s%s" % (chr(t), chr(0x80 | len(ll)), ll, data)
 
     def encode_octet_string(self, data):
@@ -344,15 +357,15 @@ class BEREncoder(object):
         elif data < 0:
             data = -data
             r = self.struct_Q.pack(data).lstrip("\x00")
-            l = len(r)
-            comp = 1 << (l * 8 - 1)
+            ln = len(r)
+            comp = 1 << (ln * 8 - 1)
             if comp < data:
                 comp <<= 8
             r = self.struct_Q.pack(comp - data).lstrip("\x00")
             if r:
                 r = chr(ord(r[0]) | 0x80) + r[1:]
             else:
-                r = "\x80" + "\x00" * (l - 1)
+                r = "\x80" + "\x00" * (ln - 1)
         return self.encode_tlv(2, True, r)
 
     def encode_real(self, data):

@@ -12,23 +12,26 @@ from libc.stdio cimport snprintf
 def parse_tlv_header(bytes msg):
     """
     Parse TLV header
-    :returns tag_class, tag_id, is_primitive, is implicit, offset, length
+    :returns decoder_id, tag_class, tag_id, is_primitive, is implicit, offset, length
     """
     cdef unsigned char* ptr
     cdef unsigned char v, c
-    cdef int tag_class, tag_id, i, skip, l, tl
-    cdef bint is_primitive, is_implicit
+    cdef int tag_class, tag_id, i, skip, l, tl, decoder_id
+    cdef bint is_constructed, is_implicit
 
     ptr = msg
     v = ptr[0]
     # 0xc0 == 11000000
     tag_class = v & 0xc0
     # 0x20 == 00100000
-    is_primitive = not bool(v & 0x20)
+    is_constructed = bool(v & 0x20)
     #
     is_implicit = False
     # 0x1f == 00011111
     tag_id = v & 0x1f
+    # e0 == 11100000
+    # (tag_class | is_constructed) >> 5
+    decoder_id = (v & 0xe0) >> 5
     #
     skip = 1
     if tag_id == 0x1f:
@@ -43,10 +46,15 @@ def parse_tlv_header(bytes msg):
     elif v & 0x80:
         # Implicit types
         tag_class = 0
-        if is_primitive and ptr[1] == 0:
+        if not is_constructed and ptr[1] == 0:
             tag_id = 5
         else:
             is_implicit = True
+        # Recalculate decoder_id
+        if is_constructed:
+            decoder_id = 1
+        else:
+            decoder_id = 0
     # Parse length
     l = ptr[skip]
     skip += 1
@@ -58,8 +66,10 @@ def parse_tlv_header(bytes msg):
             l = (l << 8) + ptr[skip]
             skip += 1
             tl -= 1
+    # Apply tag_id to decoder id
+    decoder_id = decoder_id | (tag_id << 3)
     #
-    return tag_class, tag_id, is_primitive, is_implicit, skip, l
+    return decoder_id, tag_class, tag_id, is_constructed, is_implicit, skip, l
 
 
 def parse_p_oid(bytes msg):
