@@ -8,9 +8,12 @@
 
 # Python modules
 from __future__ import absolute_import
-# Django modules
+import operator
+from threading import Lock
+# Third-party modules
 from django.db import models, connection
 from django.contrib.auth.models import User
+import cachetools
 # NOC modules
 from noc.project.models.project import Project
 from noc.peer.models import AS
@@ -26,6 +29,8 @@ from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
 from .vrf import VRF
 from .afi import AFI_CHOICES
+
+id_lock = Lock()
 
 
 @full_text_search
@@ -113,9 +118,19 @@ class Prefix(models.Model):
     )
 
     csv_ignored_fields = ["parent"]
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return u"%s(%s): %s" % (self.vrf.name, self.afi, self.prefix)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        mo = Prefix.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
 
     def get_absolute_url(self):
         return site.reverse("ip:ipam:vrf_index", self.vrf.id, self.afi,
@@ -570,6 +585,7 @@ class Prefix(models.Model):
                 can_change=pa.can_change
             ).save()
         # @todo: Rebase bookmarks
+        # @todo: Update caches
         # Return rebased prefix
         return Prefix.objects.get(pk=self.pk)  # Updated object
 
