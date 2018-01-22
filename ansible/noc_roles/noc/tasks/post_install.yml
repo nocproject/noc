@@ -38,3 +38,21 @@
   when: "has_svc_clickhouse | default(False)"
   tags:
     - migrate
+
+- name: check if noc running
+  command: "{{ noc_root }}/noc ctl status"
+  changed_when: false
+  register: noc_ctl_status
+  tags:
+    - config
+    - soft_restart
+    - noc_config
+
+- name: Reread config
+  command: "{{ noc_root }}/noc ctl reread"
+  when: "'RUNNING' in noc_ctl_status.stdout"
+  register: noc_ctl_reread
+  tags:
+    - config
+    - soft_restart
+    - noc_config

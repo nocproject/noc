@@ -1,22 +1,5 @@
 # Post-deployment tasks
 ---
-- name: check if noc running
-  command: "{{ noc_root }}/noc ctl status"
-  changed_when: false
-  register: noc_ctl_status
-  tags:
-    - config
-    - soft_restart
-    - noc_config
-
-- name: Reread config
-  command: "{{ noc_root }}/noc ctl reread"
-  when: "'RUNNING' in noc_ctl_status.stdout"
-  register: noc_ctl_reread
-  tags:
-    - config
-    - soft_restart
-    - noc_config
 
 - name: Serial NOC restart
   command: "{{ noc_root }}/noc ctl serialrestart all"
@@ -31,7 +14,7 @@
     state: restarted
     sleep: 3
     enabled: yes
-  changed_when: False
+  changed_when: True
   tags:
     - restart
 
@@ -41,24 +24,6 @@
   tags:
     - soft_restart
     - restart
-
-- name: set ch_host to clickhouse when we have only one clickhouse
-  set_fact:
-    ch_host: "{{ hostvars[groups['svc-clickhouse'][0]].ansible_host}}"
-    ch_port: 8123
-  when: "'svc-clickhouse' in groups and groups['svc-clickhouse'] | length == 1"
-
-- name: set ch_host to virtual_ip when we have complex clickhouse setup
-  set_fact:
-    ch_host: "{{keepalived_clickhouse_virtual_ip}}"
-    ch_port: "{{haproxy_clickhouse_listen}}"
-  when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1 and keepalived_clickhouse_virtual_ip"
-
-- name: set ch_host to virtual_ip when we have complex clickhouse setup
-  set_fact:
-    ch_host: "{{hostvars[groups['svc-haproxy'][0]].ansible_host}}"
-    ch_port: "{{haproxy_clickhouse_listen}}"
-  when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1 and not keepalived_clickhouse_virtual_ip"
 
 - name: Add default CH datasource
   uri:
