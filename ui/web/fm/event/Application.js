@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.event application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.event.Application");
@@ -10,8 +10,9 @@ Ext.define("NOC.fm.event.Application", {
     extend: "NOC.core.Application",
     layout: "card",
     STATUS_MAP: {
-        N: "New", A: "Active",
-        F: "Failed", S: "Archived"
+        A: "Active",
+        S: "Archived",
+        F: "Failed"
     },
     pollingInterval: 30000,
     //
@@ -42,7 +43,6 @@ Ext.define("NOC.fm.event.Application", {
             store: Ext.create("Ext.data.Store", {
                 fields: ["id", "name"],
                 data: [
-                    {id: "N", name: "New"},
                     {id: "A", name: "Active"},
                     {id: "S", name: "Archived"},
                     {id: "F", name: "Failed"}

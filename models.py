@@ -217,7 +217,6 @@ _MODELS = {
     "fm.MIBAlias": "noc.fm.models.mibalias.MIBAlias",
     "fm.MIBData": "noc.fm.models.mibdata.MIBData",
     "fm.MIBPreference": "noc.fm.models.mibpreference.MIBPreference",
-    "fm.NewEvent": "noc.fm.models.newevent.NewEvent",
     "fm.OIDAlias": "noc.fm.models.oidalias.OIDAlias",
     "fm.Outage": "noc.fm.models.outage.Outage",
     "fm.Reboot": "noc.fm.models.reboot.Reboot",
