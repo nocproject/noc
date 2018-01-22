@@ -15,11 +15,14 @@ services:
       <strong>Placement constraint</strong>: On node with discovery<br/>
     level: global
     category: internal
-    command: "./services/scheduler/service.py"
-    process_name: "%(program_name)s"
-    oom_score_adj: 100
-    priority: 50
-    startretries: 999
-    stopwaitsecs: 3
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 3
+    supervisord:
+      command: "./services/scheduler/service.py"
+      process_name: "%(program_name)s"
+      oom_score_adj: 100
+      priority: 50
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc

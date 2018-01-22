@@ -1,7 +1,7 @@
 ---
 # ignore erros will be even here or later
 - name: check firewalld state
-  shell: systemctl is-active firewalld
+  command: systemctl is-active firewalld
   register: firewalld_state
   changed_when: false
   ignore_errors: yes

@@ -36,3 +36,5 @@ services:
     level: system
     category: external
     port: 8123
+    depends:
+      - consul-template

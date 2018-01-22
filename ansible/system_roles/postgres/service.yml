@@ -1,0 +1,16 @@
+- name: Install and configure postgres
+  hosts: svc-postgres-exec
+  become: yes
+  serial: 1
+  any_errors_fatal: true
+  tags:
+    - postgres
+    - external
+  vars_files:
+    - "../../vars/main.yml"
+  roles:
+    - role: postgres
+  post_tasks:
+    - name: set postgres complete
+      set_fact:
+        postgres_complete: True

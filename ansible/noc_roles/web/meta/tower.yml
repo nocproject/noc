@@ -24,14 +24,18 @@ services:
       <strong>Placement constraint</strong>: On node with activator<br/>
     level: global
     category: internal
-    command: "./services/web/service.py"
-    process_name: "%(program_name)s-%(process_num)02d"
-    oom_score_adj: 300
-    priority: 50
-    startretries: 999
-    stopwaitsecs: 2
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 3
+    supervisord:
+      command: "./services/web/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 300
+      priority: 50
+      startretries: 999
+      stopwaitsecs: 2
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
     required_assets:
       - web
       - mib
+    depends:
+      - noc
+      - nginx

@@ -1,0 +1,49 @@
+- name: Install NOC
+  hosts: noc-svc-*
+  become: yes
+  strategy: free
+  gather_facts: True
+  tags:
+    - node
+    - noc
+  vars_files:
+    - "../../vars/main.yml"
+  pre_tasks:
+    - meta: flush_handlers
+  roles:
+    - role: node
+    - role: login
+    - role: mrt
+    - role: escalator
+    - role: web
+    - role: card
+    - role: ch_datasource
+    - role: omap
+    - role: activator
+    - role: grafanads
+    - role: mailsender
+    - role: tgsender
+    - role: chwriter
+    - role: classifier
+    - role: correlator
+    - role: syslogcollector
+    - role: trapcollector
+    - role: ping
+    - role: sae
+    - role: scheduler
+    - role: discovery
+    - role: bi
+
+- name: migrate
+  hosts: svc-postgres-master
+  become: yes
+  gather_facts: True
+  tags:
+    - node
+    - noc
+  roles:
+    - role: migrate
+      become: yes
+      run_once: true
+      tags:
+        - migrate

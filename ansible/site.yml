@@ -1,11 +1,6 @@
 ---
 - import_playbook: pre.yml
 
-- import_playbook: provision.yml
-
-- import_playbook: deploy.yml
-
-- import_playbook: "../../../roles/NOC/custom/site.yml"
-  when: "'svc-custom' in groups"
+- import_playbook: tower.yml
 
 - import_playbook: post.yml

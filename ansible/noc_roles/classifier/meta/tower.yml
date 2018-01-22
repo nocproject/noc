@@ -20,11 +20,15 @@ services:
       <strong>Placement constraint</strong>: On node with correlator<br/>
     level: pool
     category: internal
-    command: "./services/classifier/service.py"
-    process_name: "%(program_name)s-%(process_num)02d"
-    oom_score_adj: 50
-    priority: 300
-    startretries: 999
-    stopwaitsecs: 3
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 3
+    supervisord:
+      command: "./services/classifier/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 50
+      priority: 300
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc
+      - mongod

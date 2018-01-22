@@ -9,14 +9,19 @@ services:
       <strong>Placement constraint</strong>: On separate node<br/>
     level: pool
     category: internal
-    command: "./services/activator/service.py"
-    process_name: "%(program_name)s-%(process_num)02d"
-    priority: 100
-    oom_score_adj: 300
-    startretries: 999
-    stopwaitsecs: 3
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 3
+    supervisord:
+      command: "./services/activator/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      priority: 100
+      oom_score_adj: 300
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc
+      - sae
+      - discovery
 
 config:
   activator:

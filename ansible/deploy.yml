@@ -1,3 +1,5 @@
+- import_playbook: pre.yml
+
 - name: Install NOC
   hosts: noc-svc-*
   become: yes
@@ -9,7 +11,7 @@
   vars_files:
     - "vars/main.yml"
   roles:
-    - role: node
+    - role: noc
     - role: login
     - role: mrt
     - role: escalator
@@ -36,3 +38,5 @@
       run_once: true
       tags:
         - migrate
+
+- import_playbook: post.yml

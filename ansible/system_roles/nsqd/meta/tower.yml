@@ -22,3 +22,6 @@ services:
     level: system
     category: external
     port: 4151
+    depends:
+      - nsqlookupd
+      - consul-template

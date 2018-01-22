@@ -10,3 +10,7 @@
     ansible_tags: "{{ lookup('get_tags') }}"
   roles:
     - role: pre
+  post_tasks:
+    - name: set pre complete
+      set_fact:
+        pre_complete: True

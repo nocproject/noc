@@ -10,7 +10,7 @@
         };
 
     members = [];
-{% for n in groups["svc-mongod"] %}
+{% for n in groups["svc-mongod-exec"] %}
     members.push({
         _id: {{ hostvars[n]["node_id"] }},
         host: "{{ n }}:27017",

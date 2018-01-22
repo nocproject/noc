@@ -43,3 +43,8 @@ services:
     level: system
     category: config
     promote: system
+    depends:
+      - postgres
+      - mongod
+      - nsqd
+      - nginx

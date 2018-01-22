@@ -55,8 +55,18 @@
     enabled: yes
     state: started
 
-- import_tasks: "users.yml"
-  become_user: "{{postgres_user}}"
+- include_tasks: users.yml
+  vars:
+    db_name: "{{item.name}}"
+    db_password: "{{item.password}}"
+    db_user: "{{item.user}}"
+  with_items:
+    - name: "{{grafana_pg_db}}"
+      password: "{{grafana_pg_password}}"
+      user: "{{grafana_pg_user}}"
+    - name: "{{postgres_noc_db}}"
+      password: "{{postgres_noc_password}}"
+      user: "{{postgres_noc_user}}"
 
 - name: copy postgres consul templates
   template:

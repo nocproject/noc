@@ -15,11 +15,14 @@ services:
       <strong>Placement constraint</strong>: On node with discovery<br/>
     level: global
     category: internal
-    command: "./services/sae/service.py"
-    process_name: "%(program_name)s-%(process_num)02d"
-    oom_score_adj: 300
-    priority: 90
-    startretries: 999
-    stopwaitsecs: 1
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 3
+    supervisord:
+      command: "./services/sae/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 300
+      priority: 90
+      startretries: 999
+      stopwaitsecs: 1
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc

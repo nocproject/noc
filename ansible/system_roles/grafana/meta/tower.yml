@@ -17,3 +17,7 @@ services:
     level: system
     category: external
     port: 8002
+    depends:
+      - nginx
+      - postgres
+      - noc

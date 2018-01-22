@@ -5,7 +5,7 @@
     format: bz2
 
 - name: add everything to mercurial
-  shell: hg add .
+  command: hg add .
   args:
     chdir: "{{noc_root}}"
 
@@ -28,7 +28,7 @@
     state: absent
 
 - name: git init
-  shell: git init "{{noc_root}}"
+  command: git init "{{noc_root}}"
 
 - block:
   - name: set up dummy git user email
@@ -47,14 +47,14 @@
   when: not git_user_email.config_value
 
 - name: add correct origin
-  shell: "git remote add origin {{noc_repo}}"
+  command: git remote add origin {{noc_repo}}
   args:
     chdir: "{{noc_root}}"
   environment:
     https_proxy: "{{http_proxy}}"
 
 - name: git reset branch
-  shell: git pull origin
+  command: git pull origin
   args:
     chdir: "{{noc_root}}"
   ignore_errors: yes
@@ -62,7 +62,7 @@
     https_proxy: "{{http_proxy}}"
 
 - name: git reset branch
-  shell: git checkout {{noc_version}} -f
+  command: git checkout {{noc_version}} -f
   args:
     chdir: "{{noc_root}}"
   environment:

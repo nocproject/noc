@@ -4,7 +4,7 @@
   import_tasks: "post_install.yml"
 
 - name: check if noc running
-  shell: "{{ noc_root }}/noc ctl status"
+  command: "{{ noc_root }}/noc ctl status"
   changed_when: false
   register: noc_ctl_status
   tags:
@@ -13,7 +13,7 @@
     - noc_config
 
 - name: Reread config
-  shell: "{{ noc_root }}/noc ctl reread"
+  command: "{{ noc_root }}/noc ctl reread"
   when: "'RUNNING' in noc_ctl_status.stdout"
   register: noc_ctl_reread
   tags:
@@ -22,7 +22,7 @@
     - noc_config
 
 - name: Serial NOC restart
-  shell: "{{ noc_root }}/noc ctl serialrestart all"
+  command: "{{ noc_root }}/noc ctl serialrestart all"
   when: "noc_ctl_reread"
   changed_when: False
   tags:

@@ -1,0 +1,17 @@
+- name: Consul tasks
+  hosts: svc-consul-exec
+  become: yes
+  any_errors_fatal: false
+  serial: 50%
+  gather_facts: True
+  vars_files:
+    - "../../vars/main.yml"
+  roles:
+    - role: consul-template
+      tags:
+        - consul-template
+        - external
+  post_tasks:
+    - name: set consul-template complete
+      set_fact:
+        ct_complete: True

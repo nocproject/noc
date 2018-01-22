@@ -1,33 +1,19 @@
----
-- name: Create postgres NOC user
+- name: "Create postgres {{db_name}} user"
   postgresql_user:
-    name: "{{postgres_noc_user}}"
-    password: "{{postgres_noc_password}}"
+    name: "{{db_name}}"
+    password: "{{db_password}}"
     login_user: "{{ postgres_user }}"
     db: postgres
     role_attr_flags: CREATEDB,NOSUPERUSER
+  become_user: "{{postgres_user}}"
+  when: db_name is defined
 
-- name: Create postgres Grafana user
-  postgresql_user:
-    name: "{{grafana_pg_user}}"
-    password: '{{grafana_pg_password}}'
-    login_user: "{{ postgres_user }}"
-    db: postgres
-    role_attr_flags: CREATEDB,NOSUPERUSER
-
-- name: Create postgres NOC database
+- name: "Create postgres {{db_name}} database"
   postgresql_db:
-    name: "{{postgres_noc_db}}"
+    name: "{{db_name}}"
     encoding: "UTF-8"
-    owner: "{{postgres_noc_user}}"
+    owner: "{{db_user}}"
     login_user: "{{ postgres_user }}"
     state: "present"
-
-- name: Create postgres Grafana database
-  postgresql_db:
-    name: "{{grafana_pg_db}}"
-    encoding: "UTF-8"
-    owner: "{{grafana_pg_user}}"
-    login_user: "{{ postgres_user }}"
-    state: "present"
-
+  become_user: "{{postgres_user}}"
+  when: db_name is defined

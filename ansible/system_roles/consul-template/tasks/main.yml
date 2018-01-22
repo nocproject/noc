@@ -48,10 +48,16 @@
     - config
 
 - name: include telegraf services
-  import_tasks: "telegraf_services.yml"
+  include_tasks: "telegraf_services.yml"
+  vars:
+    service: "{{item['name']}}"
   when:
     - "'svc-telegraf' in groups"
     - "inventory_hostname in groups['svc-telegraf-exec']"
+    - "'influx' in telegraf_outpul_plugin"
+  with_items:
+     - "{{noc_services}}"
+  no_log: yes
   tags:
     - requirements
     - config

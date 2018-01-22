@@ -16,11 +16,16 @@ services:
       <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
     category: internal
-    command: "./services/grafanads/service.py"
-    process_name: "%(program_name)s-%(process_num)02d"
-    oom_score_adj: 900
-    priority: 500
-    startretries: 999
-    stopwaitsecs: 1
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 1
+    supervisord:
+      command: "./services/grafanads/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 900
+      priority: 500
+      startretries: 999
+      stopwaitsecs: 1
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 1
+    depends:
+      - noc
+      - grafana
+      - nginx

@@ -1,0 +1,17 @@
+- name: Install and configure nginx
+  hosts: svc-nginx-exec
+  serial: 50%
+  become: yes
+  tags:
+    - nginx
+    - web
+    - external
+  any_errors_fatal: true
+  vars_files:
+    - "../../vars/main.yml"
+  roles:
+    - role: nginx
+  post_tasks:
+    - name: set nginx complete
+      set_fact:
+        nginx_complete: True

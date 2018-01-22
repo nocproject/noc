@@ -16,3 +16,5 @@ services:
       <strong>Placement constraint</strong>: Just tick it on any node to configure dedup feature. <br/>
     level: system
     category: external
+    depends:
+      - consul

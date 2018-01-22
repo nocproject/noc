@@ -8,7 +8,7 @@
     - config
 
 - name: Check replica set is initialized
-  shell: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ ansible_hostname }} --eval 1"
+  command: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ ansible_hostname }} --eval 1"
   register: rs_status
   changed_when: rs_status.rc != 0
   failed_when: False
@@ -16,7 +16,7 @@
     - config
 
 - name: Initial replica set configuration
-  shell: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
+  command: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
   when: rs_status.rc != 0
 
 - name: Create admin user configuration script
@@ -34,7 +34,7 @@
   when: rs_status.rc != 0
 
 - name: Create admin user
-  shell: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
+  command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
   when: rs_status.rc != 0
 
 - name: Create database user configuration script
@@ -47,9 +47,9 @@
     - config
 
 - name: Create database user
-  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' {{ noc_mongo_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' {{ noc_mongo_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"
   when: user_status.changed
 
 - name: Update replica set configuration
-  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ mongo_dir }}/rsinit.js"
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ mongo_dir }}/rsinit.js"
   when: rs_conf_status.changed and rs_status.rc == 0

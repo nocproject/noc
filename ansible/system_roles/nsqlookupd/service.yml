@@ -1,0 +1,16 @@
+- name: Install and configure nsqlookupd
+  hosts: svc-nsqlookupd-exec
+  become: yes
+  any_errors_fatal: true
+  tags:
+    - nsq
+    - nsqlookupd
+    - external
+  vars_files:
+    - "../../vars/main.yml"
+  roles:
+    - role: nsqlookupd
+  post_tasks:
+    - name: set nsqlookupd complete
+      set_fact:
+        nsqlookupd_complete: True

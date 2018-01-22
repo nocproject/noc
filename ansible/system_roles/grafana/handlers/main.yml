@@ -6,6 +6,12 @@
     name: grafana-server
     daemon_reload: yes
 
+- name: reload postgres
+  become: yes
+  service:
+    name: "{{postgres_system_service}}"
+    state: reloaded
+
 - name: restart grafana
   become: yes
   service:

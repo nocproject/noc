@@ -1,0 +1,33 @@
+- name: Consul tasks
+  hosts: svc-consul-server
+  become: yes
+  any_errors_fatal: true
+  gather_facts: True
+  tags:
+    - consul
+  vars_files:
+    - "../../vars/main.yml"
+  roles:
+    - role: consul
+  post_tasks:
+    - name: set consul complete
+      set_fact:
+        consul_complete: True
+
+- name: Consul tasks
+  hosts: all
+  become: yes
+  any_errors_fatal: false
+  serial: 50%
+  gather_facts: True
+  vars_files:
+    - "../../vars/main.yml"
+  roles:
+    - role: consul
+      tags:
+        - consul
+      when: consul_complete is not defined
+  post_tasks:
+    - name: set consul complete
+      set_fact:
+        consul_complete: True

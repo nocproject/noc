@@ -15,12 +15,15 @@ services:
       <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
     category: internal
-    command: "./services/trapcollector/service.py"
-    process_name: "%(program_name)s"
-    oom_score_adj: 50
-    priority: 200
-    startretries: 999
-    stopwaitsecs: 2
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 3
-    user: root
+    supervisord:
+      command: "./services/trapcollector/service.py"
+      process_name: "%(program_name)s"
+      oom_score_adj: 50
+      priority: 200
+      startretries: 999
+      stopwaitsecs: 2
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+      user: root
+    depends:
+      - noc

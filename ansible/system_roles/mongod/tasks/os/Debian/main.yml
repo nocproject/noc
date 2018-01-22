@@ -33,7 +33,7 @@
     line: 'GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'
   register: dht_status
 
-- shell: update-grub
+- command: update-grub
   notify: restart mongod
   when: dht_status.changed
 

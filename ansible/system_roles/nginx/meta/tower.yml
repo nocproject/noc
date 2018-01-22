@@ -35,6 +35,8 @@ services:
     category: external
     port: 443
     require_cert: true
+    depends:
+      - consul-template
     required_assets:
       - web
       - card

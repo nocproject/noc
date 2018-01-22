@@ -15,11 +15,14 @@ services:
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: pool
     category: internal
-    command: "./services/correlator/service.py"
-    process_name: "%(program_name)s-%(process_num)02d"
-    oom_score_adj: 20
-    priority: 150
-    startretries: 999
-    stopwaitsecs: 5
-    stdout_logfile_maxbytes: 10MB
-    stdout_logfile_backups: 3
+    supervisord:
+      command: "./services/correlator/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 20
+      priority: 150
+      startretries: 999
+      stopwaitsecs: 5
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc
