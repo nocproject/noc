@@ -1,6 +1,6 @@
 ---
 - name: Finally
-  hosts: all
+  hosts: svc-noc-exec
   become: no
   any_errors_fatal: true
   vars_files:
