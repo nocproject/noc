@@ -13,6 +13,7 @@
     - sudo
     - curl
     - unzip
+    - gtar
   tags:
     - requirements
 
@@ -21,10 +22,13 @@
 #  tags:
 #    - config
 
-- name: create rc.d dir
+- name: create dirs
   file:
     state: directory
-    path: "{{etc_prefix}}/rc.d"
+    path: "{{item}}"
     owner: root
     group: wheel
     mode: 0755
+  with_items:
+    - "{{etc_prefix}}/newsyslog.conf.d"
+    - "{{etc_prefix}}/rc.d"

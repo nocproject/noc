@@ -22,9 +22,16 @@
     name: telegraf
     state: reloaded
 
-
 - name: reload consul
   become: yes
   service:
     name: consul
     state: reloaded
+  when: "'Linux' in ansible_system"
+
+- name: freebsd reload consul
+  become: yes
+  service:
+    name: consul
+    state: restarted
+  when: "'FreeBSD' in ansible_system"

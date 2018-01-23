@@ -4,6 +4,32 @@
     name: nsqd
     daemon_reload: yes
 
+- name: restart consul-template
+  become: yes
+  service:
+    name: consul-template
+    state: restarted
+
+- name: freebsd reload consul
+  become: yes
+  service:
+    name: consul
+    state: reloaded
+  when: "'Linux' in ansible_system"
+
+- name: reload consul
+  become: yes
+  service:
+    name: consul
+    state: restarted
+  when: "'FreeBSD' in ansible_system"
+
+- name: reload telegraf
+  become: yes
+  service:
+    name: telegraf
+    state: reloaded
+
 - name: restart nsqd
   become: yes
   service:
@@ -15,16 +41,3 @@
   service:
     name: nsqd
     state: reloaded
-
-- name: reload consul
-  become: yes
-  service:
-    name: consul
-    state: reloaded
-
-- name: reload telegraf
-  become: yes
-  service:
-    name: telegraf
-    state: reloaded
-

@@ -106,7 +106,9 @@
   template:
     src: mongodb.json
     dest: "{{consul_configd_path}}"
-  notify: reload consul
+  notify:
+    - reload consul
+    - freebsd reload consul
   tags:
     - consul
 
@@ -115,7 +117,9 @@
     src: mongodb.sh.j2
     dest: "{{consul_scripts_path}}/mongodb.sh"
     mode: 0755
-  notify: reload consul
+  notify:
+    - reload consul
+    - freebsd reload consul
   no_log: true
   tags:
     - consul

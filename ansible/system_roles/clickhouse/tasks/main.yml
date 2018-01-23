@@ -48,7 +48,9 @@
   template:
     src: clickhouse.json.j2
     dest: "{{consul_configd_path}}/clickhouse.json"
-  notify: reload consul
+  notify:
+    - reload consul
+    - freebsd reload consul
   tags:
     - consul
 

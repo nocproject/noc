@@ -64,7 +64,9 @@
   template:
     src: "{{item}}"
     dest: "{{consul_configd_path}}/"
-  notify: reload consul
+  notify:
+    - reload consul
+    - freebsd reload consul
   with_items:
     - nsqlookupd.json
     - nsqlookupdhttp.json

@@ -72,7 +72,9 @@
   template:
     src: postgres.json.j2
     dest: "{{consul_configd_path}}/postgres.json"
-  notify: reload consul
+  notify:
+    - reload consul
+    - freebsd reload consul
   tags:
     - consul
 
@@ -83,7 +85,9 @@
     mode: u+rx
     owner: "{{consul_user}}"
   no_log: true
-  notify: reload consul
+  notify:
+    - reload consul
+    - freebsd reload consul
   tags:
     - consul
 

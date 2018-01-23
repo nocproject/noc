@@ -4,6 +4,14 @@
   service:
     name: consul
     state: reloaded
+  when: "'Linux' in ansible_system"
+
+- name: freebsd reload consul
+  become: yes
+  service:
+    name: consul
+    state: restarted
+  when: "'FreeBSD' in ansible_system"
 
 - name: reload clickhouse-server
   become: no

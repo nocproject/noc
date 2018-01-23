@@ -1,6 +1,8 @@
 ---
 - name: Install FreeBSD system packages
-  pkgng: name={{item}} state=present
+  pkgng:
+    name: "{{item}}"
+    state: present
   with_items:
     - postgresql{{postgresql_version|replace(".","")}}-client
     - python2
@@ -10,14 +12,10 @@
     - libffi
     - libmemcached
     - lsof
+    - git
+    - zstd
   tags:
     - requirements
-
-- name: Create required directories
-  file: path={{item}} state=directory mode=0755
-  with_items:
-    - /usr/local/etc/rc.d
-    - /usr/local/etc/newsyslog.conf.d
 
 - name: Install supervisord init script
   template: src="os/FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"

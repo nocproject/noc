@@ -1,9 +1,12 @@
 ---
 - name: download nsq daemon
   get_url:
-    url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz
-    dest: /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz
+    url: "{{nsq_url}}"
+    dest: "{{nsq_temp_file}}"
     validate_certs: yes
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: true
   environment:
     https_proxy: "{{http_proxy}}"
 

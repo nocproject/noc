@@ -17,6 +17,7 @@
     mode: 0755
   notify:
     - reload consul-template
+    - freebsd reload consul-template
   tags:
     - config
 
