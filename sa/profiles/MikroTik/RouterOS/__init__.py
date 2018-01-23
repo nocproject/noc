@@ -4,12 +4,13 @@
 # OS:     RouterOS
 # Compatible: 3.14 and above
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+import time
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -46,7 +47,8 @@ class Profile(BaseProfile):
 
     def setup_session(self, script):
         # MikroTik Remove duplicates prompt
-        script.cli("\n")
+        time.sleep(1)
+        script.cli("")
 
     def cli_detail(self, script, cmd, cached=False):
         """
