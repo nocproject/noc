@@ -79,10 +79,6 @@
   environment:
     http_proxy: "{{http_proxy}}"
 
-- include_tasks: "firewall.yml"
-  tags:
-    - firewall
-
 - name: Install supervisord init script
   template:
     src: "noc.service.j2"

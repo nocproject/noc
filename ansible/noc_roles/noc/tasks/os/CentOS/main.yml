@@ -57,10 +57,6 @@
   tags:
     - requirements
 
-- include_tasks: "firewall.yml"
-  tags:
-    - firewall
-
 - name: Install supervisord init script
   template:
     src: "noc.service.j2"
