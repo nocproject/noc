@@ -20,3 +20,11 @@
 #  command: hostname {{ ansible_nodename }}
 #  tags:
 #    - config
+
+- name: create rc.d dir
+  file:
+    state: directory
+    path: "{{etc_prefix}}/rc.d"
+    owner: root
+    group: wheel
+    mode: 0755
