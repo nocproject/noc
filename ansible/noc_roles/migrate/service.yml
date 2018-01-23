@@ -1,0 +1,13 @@
+- name: migrate
+  hosts: svc-noc-exec
+  become: yes
+  gather_facts: True
+  tags:
+    - node
+    - noc
+  roles:
+    - role: migrate
+      become: yes
+      run_once: true
+      tags:
+        - migrate
