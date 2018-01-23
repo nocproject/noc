@@ -36,6 +36,7 @@ class DataSourceCache(Document):
     name = StringField(primary_key=True)
     data = BinaryField()
     expires = DateTimeField()
+    chunks = IntField(min_value=0, max_value=5)
     version = IntField()
 
     @classmethod
@@ -51,23 +52,45 @@ class DataSourceCache(Document):
         if d["version"] < CURRENT_VERSION:
             # Version bump, rebuild cache
             return None
+        if d.get("chunks") > 0:
+            for i in range(0, d["chunks"]):
+                chunk = cls._get_collection().find_one({"_id": "%s_%02d" % (name, i)})
+                d["data"] += chunk["data"]
         return cls.decode(d["data"])
 
     @classmethod
-    def set_data(cls, name, data, ttl):
+    def set_data(cls, name, data, ttl, chunks=0):
         # Compressed size: 17425159
         data = cls.encode(data)
         size = len(data)
         if size > MAX_DATA_SIZE:
             logger.warning("[%s] Compressed size data: %s over max size %s" % (name, size, MAX_DATA_SIZE))
-        else:
+            chunks = size // MAX_DATA_SIZE
+        cls._get_collection().update({
+            "_id": name
+        }, {
+            "$set": {
+                "data": bson.Binary(data[:MAX_DATA_SIZE]),
+                "version": CURRENT_VERSION,
+                "expires": datetime.datetime.now() + datetime.timedelta(seconds=ttl),
+                "chunks": chunks
+            },
+            "$setOnInsert": {
+                "name": name
+            }
+        }, upsert=True)
+        for i in range(0, chunks):
+            data = data[MAX_DATA_SIZE * (i + 1):MAX_DATA_SIZE * (i + 2)]
+            name = "%s_%02d" % (name, i)
+            # cls.set_data(name, data, ttl, chunks, chunk=True)
             cls._get_collection().update({
                 "_id": name
             }, {
                 "$set": {
                     "data": bson.Binary(data),
                     "version": CURRENT_VERSION,
-                    "expires": datetime.datetime.now() + datetime.timedelta(seconds=ttl)
+                    "expires": datetime.datetime.now() + datetime.timedelta(seconds=ttl),
+                    "chunks": chunks
                 },
                 "$setOnInsert": {
                     "name": name
