@@ -2,14 +2,18 @@
 # ---------------------------------------------------------------------
 # IGetInterfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from __future__ import absolute_import
+# NOC modules
 from noc.core.interface.base import BaseInterface
-from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
-                  MACAddressParameter, VLANIDParameter, VLANStackParameter,
-                  RDParameter, IPParameter, IPv4PrefixParameter, IPv6PrefixParameter,
-                  StringParameter, BooleanParameter, IntParameter)
+from .base import (ListOfParameter, DictParameter, InterfaceNameParameter,
+                   MACAddressParameter, VLANIDParameter, VLANStackParameter,
+                   RDParameter, IPParameter, IPv4PrefixParameter, IPv6PrefixParameter,
+                   StringParameter, BooleanParameter, IntParameter)
 
 
 class IGetInterfaces(BaseInterface):
@@ -209,18 +213,29 @@ class IGetInterfaces(BaseInterface):
         "interfaces": ListOfParameter(element=DictParameter(attrs={
             "name": InterfaceNameParameter(),
             "type": StringParameter(choices=[
-                "physical", "SVI", "aggregated",
-                "loopback", "management",
-                "null", "tunnel", "other",
-                "template", "unknown"]),
+                "physical",
+                "SVI",
+                "aggregated",
+                "loopback",
+                "management",
+                "null",
+                "tunnel",
+                "other",
+                "template",
+                "dry",  # Dry contact
+                "unknown"
+            ]),
             "admin_status": BooleanParameter(default=False),
             "oper_status": BooleanParameter(default=False),
-            "aggregated_interface": InterfaceNameParameter(required=False), # Not empty for portchannel members
+            "aggregated_interface": InterfaceNameParameter(required=False),  # Not empty for portchannel members
             # L2 protocols enabled on interface
             "enabled_protocols": ListOfParameter(
                 element=StringParameter(choices=[
                     "LACP", "LLDP", "CDP", "UDLD", "CTP", "GVRP", "VTP", "STP",
-                    "BFD", "OAM", "NDP"
+                    "BFD", "OAM", "NDP",
+                    "DRY_NO",  # Dry contact, Normal Open
+                    "DRY_NC",  # Dry contact, Normal Closed
+                    "DRY_PULSE",  # Dry contact, pulse mode
                 ]), required=False),
             "description": StringParameter(required=False),
             "mac": MACAddressParameter(required=False),
@@ -241,17 +256,19 @@ class IGetInterfaces(BaseInterface):
                 ),
                 "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),  # enabled_afi = [... IPv4 ...]
                 "ipv6_addresses": ListOfParameter(element=IPv6PrefixParameter(), required=False),  # enabled_afi = [... IPv6 ...]
-                "iso_addresses": ListOfParameter(element=StringParameter(), required=False),  #   # enabled_afi = [... ISO ...]
+                "iso_addresses": ListOfParameter(element=StringParameter(), required=False),  # enabled_afi = [... ISO ...]
                 "vpi": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 "vci": IntParameter(required=False),  # enabled afi = [ ... ATM ... ]
                 # Enabled L3 protocols
                 "enabled_protocols": ListOfParameter(
-                                element=StringParameter(choices=[
-                                    "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
-                                    "BGP",
-                                    "LDP", "RSVP",
-                                    "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
-                                ]), required=False),
+                    element=StringParameter(choices=[
+                        "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
+                        "BGP",
+                        "LDP", "RSVP",
+                        "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
+                    ]),
+                    required=False
+                ),
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
                 "tagged_vlans": ListOfParameter(element=VLANIDParameter(), required=False),  # enabled_afi = [BRIDGE]
                 "ip_unnumbered_subinterface": InterfaceNameParameter(required=False),
