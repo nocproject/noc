@@ -8,31 +8,6 @@
   tags:
     - config
 
-- name: Register to RHN
-  redhat_subscription:
-    state: present
-    username: "{{rhel_subscription_username}}"
-    password: "{{rhel_subscription_password}}"
-    autosubscribe: true
-  when: "rhel_subscription_username is defined and rhel_subscription_username !=''"
-  environment:
-    http_proxy: "{{http_proxy}}"
-  register: register_done
-
-- name: Add Devel repos
-  command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
-  ignore_errors: yes
-  environment:
-    http_proxy: "{{http_proxy}}"
-  when: "register_done.changed==True"
-
-- name: Desable beta repo
-  command: "/sbin/subscription-manager repos --disable rhel-7-server-rt-beta-rpms"
-  ignore_errors: yes
-  environment:
-    http_proxy: "{{http_proxy}}"
-  when: "register_done.changed==True"
-
 - name: Disable selinux
   selinux:
     policy: targeted
@@ -51,3 +26,7 @@
     http_proxy: "{{http_proxy}}"
   tags:
     - requirements
+
+- include_tasks: "firewall.yml"
+  tags:
+    - firewall
