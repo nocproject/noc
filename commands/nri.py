@@ -35,34 +35,24 @@ class Command(BaseCommand):
     def handle_portmap(self, portmap_objects=[]):
         for po in portmap_objects:
             for o in ManagedObjectSelector.resolve_expression(po):
-                nri_tags = [t[4:] for t in o.tags if
-                            t.startswith("src:")]
-                if len(nri_tags) == 0:
-                    self.stdout.write("%s (%s, %s) NRI: N/A\n" % (
-                        o.name, o.address, o.platform)
-                                      )
+                if not o.remote_system:
+                    self.stdout.write(
+                        "%s (%s, %s) NRI: N/A\n" % (o.name, o.address, o.platform)
+                    )
                     continue
-                elif len(nri_tags) > 1:
-                    self.stdout.write("%s (%s, %s) NRI: %s?\n" % (
-                        o.name, o.address, o.platform,
-                        ", ".join(nri_tags))
-                                      )
-                    continue
-                portmapper = loader.get_loader(nri_tags[0])(o)
-                nri = nri_tags[0]
+                portmapper = loader.get_loader(o.remote_system.name)(o)
+                nri = o.remote_system.name
                 self.stdout.write("%s (%s, %s) NRI: %s\n" % (
                     o.name, o.address, o.platform, nri))
                 r = []
                 for i in Interface._get_collection().find({
-                        "managed_object": o.id,
-                        "type": "physical"
-                    },
-                    {
-                        "_id": 1,
-                        "name": 1,
-                        "nri_name": 1
-                    }
-                ):
+                    "managed_object": o.id,
+                    "type": "physical"
+                }, {
+                    "_id": 1,
+                    "name": 1,
+                    "nri_name": 1
+                }):
                     rn = portmapper.to_remote(i["name"]) or self.PORT_ERROR
                     if rn == self.PORT_ERROR:
                         ln = self.PORT_ERROR
@@ -80,8 +70,9 @@ class Command(BaseCommand):
                     r += [(i["name"], rn, i.get("nri_name", "--"), status)]
                 r = [("Local", "Remote", "Interface NRI", "Status")] + sorted(r, key=lambda x: split_alnum(x[0]))
                 self.stdout.write(
-                    "%s\n" % format_table([0, 0, 0, 0], r, sep=" | ", hsep = "-+-")
+                    "%s\n" % format_table([0, 0, 0, 0], r, sep=" | ", hsep="-+-")
                 )
+
 
 if __name__ == "__main__":
     Command().run()
