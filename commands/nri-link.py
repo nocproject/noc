@@ -158,9 +158,8 @@ class Command(BaseCommand):
 
     @staticmethod
     def get_port_mapper(mo):
-        for t in mo.tags:
-            if t.startswith("src:"):
-                return loader.get_loader(t[4:])
+        if mo.remote_system:
+                return loader.get_loader(mo.remote_system.name)
         return None
 
     @staticmethod
