@@ -7,6 +7,15 @@
   tags:
     - config
 
+# Add user
+- name: Add Consul user
+  user:
+    name: "{{ consul_user }}"
+    comment: "Consul user"
+    group: "{{ consul_group }}"
+    system: yes
+    home: "{{ consul_home }}"
+
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
@@ -17,14 +26,13 @@
   ignore_errors: true
   tags: always
 
-- name: Include user/group settings
-  import_tasks: user_group.yml
-
 - name: Include dir settings
   import_tasks: dirs.yml
 
 - name: Install OS packages and consul - remotely
   import_tasks: install.yml
+  tags:
+    - requirements
 
 - name: Consul config
   import_tasks: config.yml

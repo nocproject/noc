@@ -21,7 +21,6 @@ consul_log_path: "/var/log/consul"
 consul_pid_path: "/var/run/consul/consul.pid"
 
 ### System user and group
-consul_manage_user: yes
 consul_user: "consul"
 consul_group: "bin"
 

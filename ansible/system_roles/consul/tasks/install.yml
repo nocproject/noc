@@ -1,5 +1,4 @@
 ---
-# File: install_remote.yml - package installation tasks for Consul
 - name: Get Consul package checksum file
   get_url:
     url: "{{ consul_checksum_file_url }}"
@@ -8,11 +7,8 @@
   delegate_to: 127.0.0.1
   become: no
   run_once: yes
-  tags:
-    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
-  when: "'Linux' in ansible_system"
 
 - name: Get Consul package checksum
   command: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
@@ -21,9 +17,6 @@
   become: no
   run_once: yes
   changed_when: false
-  tags:
-    - requirements
-  when: "'Linux' in ansible_system"
 
 - name: Download Consul
   get_url:
@@ -35,18 +28,14 @@
   delegate_to: 127.0.0.1
   become: no
   run_once: yes
-  tags:
-    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
-  when: "'Linux' in ansible_system"
 
 - name: create consul tmp dir
   file:
     dest: "{{ consul_temp_unarchive }}"
     state: directory
-  tags:
-    - requirements
+
 
 - name: Unarchive Consul and install binary
   unarchive:
@@ -56,9 +45,6 @@
     group: "{{ consul_group }}"
     mode: 0755
     creates: "{{ consul_temp_unarchive }}/consul"
-  tags:
-    - requirements
-  when: "'Linux' in ansible_system"
 
 - name: Overwrite Consul binary if needed
   copy:
@@ -66,8 +52,5 @@
     dest : "{{ consul_bin_path }}/consul"
     remote_src: yes
     mode: 0755
-  tags:
-    - requirements
   notify:
     - restart consul
-  when: "'Linux' in ansible_system"
