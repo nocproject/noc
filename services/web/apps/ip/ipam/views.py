@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IP Address space management application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ from noc.lib.validators import (is_ipv4, is_ipv4_prefix, is_ipv6,
 from noc.lib.widgets import *
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
+from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.prefixaccess import PrefixAccess
 from noc.ip.models.prefixbookmark import PrefixBookmark
@@ -42,7 +43,7 @@ from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.reducetask import ReduceTask
 from noc.vc.models.vcbindfilter import VCBindFilter
-from noc.core.colors import *
+from noc.core.colors import get_colors
 
 
 class IPAMApplication(Application):
@@ -338,11 +339,11 @@ class IPAMApplication(Application):
             [a for a in addresses if a.managed_object]) > 0
         # Build custom styles
         styles = {}
-        if prefix.style:
-            styles[prefix.style.css_class_name] = prefix.style.css
+        if prefix.profile.style:
+            styles[prefix.profile.style.css_class_name] = prefix.profile.style.css
         for p in prefixes:
-            if p.style and p.style.css_class_name not in styles:
-                styles[p.style.css_class_name] = p.style.css
+            if p.profile.style and p.profile.style.css_class_name not in styles:
+                styles[p.profile.style.css_class_name] = p.profile.style.css
         for a in addresses:
             if a.style and a.style.css_class_name not in styles:
                 styles[a.style.css_class_name] = a.style.css
@@ -448,11 +449,22 @@ class IPAMApplication(Application):
         Add prefix
         """
         def get_form_class():
+            def get_profiles():
+                return [
+                    (str(pp.id), pp.name)
+                    for pp in PrefixProfile.objects.order_by("name")
+                ]
+
             class AddPrefixForm(NOCForm):
                 prefix = forms.CharField(
                     label=_("Prefix"),
                     help_text=_("IPv%(afi)s prefix") % {"afi": afi}
                 )
+                profile = forms.ChoiceField(
+                    label=_("Profile"),
+                    required=True,
+                    choices=get_profiles(),
+                    help_text=_("Profile"))
                 state = forms.ModelChoiceField(
                     label=_("State"),
                     queryset=ResourceState.objects.filter(
@@ -482,12 +494,6 @@ class IPAMApplication(Application):
                     label=_("TT #"),
                     required=False,
                     help_text=_("Ticket #"))
-                style = forms.ModelChoiceField(
-                    label=_("Style"),
-                    queryset=Style.objects.filter(
-                        is_active=True).order_by("name"),
-                    required=False,
-                    help_text=_("Visual appearance"))
                 dual_stack_prefix = forms.CharField(
                     label=_("Dual-stack prefix"),
                     required=False,
@@ -566,13 +572,13 @@ class IPAMApplication(Application):
                     vrf=vrf,
                     afi=afi,
                     prefix=form.cleaned_data["prefix"].strip(),
+                    profile=form.cleaned_data["profile"],
                     state=form.cleaned_data["state"],
                     project=form.cleaned_data["project"],
                     asn=form.cleaned_data["asn"],
                     description=form.cleaned_data["description"],
                     tags=form.cleaned_data["tags"],
                     tt=form.cleaned_data["tt"],
-                    style=form.cleaned_data["style"],
                     enable_ip_discovery=form.cleaned_data["enable_ip_discovery"]
                 )
                 self.apply_custom_fields(
@@ -647,7 +653,19 @@ class IPAMApplication(Application):
         Change prefix
         """
         def get_form_class():
+            def get_profiles():
+                return [
+                    (str(pp.id), pp.name)
+                    for pp in PrefixProfile.objects.order_by("name")
+                ]
+
             class EditPrefixForm(NOCForm):
+                profile = forms.ModelChoiceField(
+                    label=_("Profile"),
+                    queryset=PrefixProfile.objects.order_by("name"),
+                    required=True,
+                    help_text=_("Profile")
+                )
                 asn = forms.ModelChoiceField(
                     label=_("ASN"),
                     queryset=AS.objects.order_by("asn"),
@@ -683,11 +701,6 @@ class IPAMApplication(Application):
                     label=_("TT #"),
                     required=False,
                     help_text=_("Ticket #"))
-                style = forms.ModelChoiceField(
-                    label=_("Style"),
-                    queryset=Style.objects.filter(is_active=True).order_by("name"),
-                    required=False,
-                    help_text=_("Visual appearance"))
                 dual_stack_prefix = forms.CharField(
                     label=_("Dual-stack prefix"),
                     required=False,
@@ -763,6 +776,7 @@ class IPAMApplication(Application):
                     ds_prefix = prefix.ipv4_transition.prefix
             initial = {
                 "asn": prefix.asn.id,
+                "profile": prefix.profile.id,
                 "state": prefix.state.id,
                 "project": prefix.project.id if prefix.project else None,
                 "vc": prefix.vc.id if prefix.vc else None,
@@ -770,7 +784,6 @@ class IPAMApplication(Application):
                 "dual_stack_prefix": ds_prefix,
                 "tags": prefix.tags,
                 "tt": prefix.tt,
-                "style": prefix.style.id if prefix.style else None,
                 "enable_ip_discovery": prefix.enable_ip_discovery
             }
             self.apply_custom_initial(prefix, initial, "ip_prefix")

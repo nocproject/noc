@@ -242,6 +242,7 @@ _MODELS = {
     "ip.Prefix": "noc.ip.models.prefix.Prefix",
     "ip.PrefixAccess": "noc.ip.models.prefixaccess.PrefixAccess",
     "ip.PrefixBookmark": "noc.ip.models.prefixbookmark.PrefixBookmark",
+    "ip.PrefixProfile": "noc.ip.models.prefixprofile.PrefixProfile",
     "ip.VRF": "noc.ip.models.vrf.VRF",
     "ip.VRFGroup": "noc.ip.models.vrfgroup.VRFGroup",
     # vc models

@@ -28,6 +28,7 @@ id_lock = Lock()
 @bi_sync
 @on_delete_check(check=[
     ("wf.State", "workflow"),
+    ("ip.PrefixProfile", "workflow"),
     ("crm.SubscriberProfile", "workflow"),
     ("crm.SupplierProfile", "workflow")
 ])

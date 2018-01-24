@@ -18,17 +18,18 @@ import cachetools
 from noc.project.models.project import Project
 from noc.peer.models import AS
 from noc.vc.models.vc import VC
-from noc.main.models.style import Style
 from noc.main.models import ResourceState
 from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
+from noc.core.model.fields import DocumentReferenceField
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
 from .vrf import VRF
 from .afi import AFI_CHOICES
+from .prefixprofile import PrefixProfile
 
 id_lock = Lock()
 
@@ -61,6 +62,10 @@ class Prefix(models.Model):
         max_length=1,
         choices=AFI_CHOICES)
     prefix = CIDRField(_("Prefix"))
+    profile = DocumentReferenceField(
+        PrefixProfile,
+        null=False, blank=False
+    )
     asn = models.ForeignKey(
         AS, verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
@@ -87,8 +92,6 @@ class Prefix(models.Model):
         blank=True,
         null=True,
         help_text=_("Ticket #"))
-    style = models.ForeignKey(Style, verbose_name=_("Style"), blank=True,
-                              null=True)
     state = models.ForeignKey(
         ResourceState,
         verbose_name=_("State"),
