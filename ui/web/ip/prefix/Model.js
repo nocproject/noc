@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // ip.prefix Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.ip.prefix.Model");
@@ -72,11 +72,11 @@ Ext.define("NOC.ip.prefix.Model", {
             type: "int"
         },
         {
-            name: "style",
-            type: "int"
+            name: "profile",
+            type: "string"
         },
         {
-            name: "style__label",
+            name: "profile__label",
             type: "string",
             persist: false
         },
@@ -109,6 +109,11 @@ Ext.define("NOC.ip.prefix.Model", {
         {
             name: "last_changed_by",
             type: "string"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

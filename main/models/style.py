@@ -26,7 +26,7 @@ id_lock = Lock()
         ("crm.SupplierProfile", "style"),
         ("sla.SLAProfile", "style"),
         ("ip.Address", "style"),
-        ("ip.Prefix", "style"),
+        ("ip.PrefixProfile", "style"),
         ("ip.VRF", "style"),
         ("vc.VC", "style"),
         ("vc.VCDomain", "style"),
