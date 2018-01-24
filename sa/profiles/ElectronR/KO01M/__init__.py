@@ -3,7 +3,7 @@
 # Vendor: ElectronR
 # OS:     KO01M
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 '''
