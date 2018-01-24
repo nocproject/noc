@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Clickhouse engines
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Clickhouse engines
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 from noc.config import config
 DEFAULT_MERGE_TREE_GRANULARITY = config.clickhouse.default_merge_tree_granularity
