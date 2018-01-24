@@ -21,9 +21,9 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                platform = self.snmp.get("1.3.6.1.2.1.1.1.0").strip().replace(" ",".")
+                platform = self.snmp.get("1.3.6.1.2.1.1.1.0").strip().replace(" ", ".")
                 sn = self.snmp.get("1.3.6.1.4.1.35419.1.1.1.0")
-                version =self.snmp.get("1.3.6.1.4.1.35419.1.1.2.0")
+                version = self.snmp.get("1.3.6.1.4.1.35419.1.1.2.0")
                 result = {
                     "vendor": "ElectronR",
                     "version": version,
@@ -34,4 +34,3 @@ class Script(BaseScript):
                 return result
             except self.snmp.TimeOutError:
                 pass
-
