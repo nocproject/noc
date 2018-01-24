@@ -27,23 +27,21 @@ Ext.define("NOC.ip.ipam.LegacyPanel", {
     afterRender: function() {
         var me = this;
         me.callParent();
-        me.iframe = window.frames[me.id];
+        me.iframe = document.getElementById(me.id);
         me.iframe.addEventListener(
             "load",
             Ext.bind(me.injectContext, me)
         );
-        //me.injectContext();
     },
 
     preview: function(record, backItem) {
         var me = this;
-        me.iframe.window.location = record;
+        me.iframe.src = record;
     },
     //
     injectContext: function() {
         var me = this;
-        console.log("inject", me);
-        me.iframe.window.panel = me;
-        me.iframe.window.app = me.app;
+        me.iframe.contentWindow.panel = me;
+        me.iframe.contentWindow.app = me.app;
     }
 });
