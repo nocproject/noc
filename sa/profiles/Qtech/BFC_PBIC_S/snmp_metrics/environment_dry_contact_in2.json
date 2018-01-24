@@ -1,6 +1,0 @@
-{
-  "$metric": "Environment | Dry Contact | 2",
-  "$type": "oid",
-  "oid": "1.3.6.1.3.55.1.3.1.4.1",
-  "type": "gauge"
-}
