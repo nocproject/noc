@@ -48,7 +48,7 @@ function on_mynetworks(n)
                 <a href="{% url ip:ipam:index %}">VRF: {{vrf.name}}<a/> &#x203a;
                 <a href="{% url ip:ipam:index %}">IPv{{afi}}</a> &#x203a;
                 {% for p in path %}
-                    <a href="{% url ip:ipam:vrf_index p.vrf.id p.afi p.prefix %}" title="{{p.short_description}}">{{p.prefix}}</a> &#x203a;
+                    <a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{p.short_description}}">{{p.prefix}}</a> &#x203a;
                 {% endfor %}
             </td>
             <td class="nav-label">
@@ -151,7 +151,7 @@ function on_mynetworks(n)
             {% for f, pp, p  in l_prefixes %}
                 {% if f %}
                     <tr class="{% if p.style %}{{p.style.css_class_name}}{% else %}{% cycle 'row1' 'row2' %}{% endif %}">
-                        <td><a href="{% url ip:ipam:vrf_index p.vrf.id p.afi p.prefix %}">{{p.prefix}}</a></td>
+                        <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
                         <td>{{ p.state }}</td>
                         <td>{% if p.project %}{{ p.project.code }}{% endif %}</td>
                         <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
@@ -453,13 +453,13 @@ function on_mynetworks(n)
         {%  if prefix.afi == "4" and prefix.ipv6_transition %}
             <tr class="row1">
                 <td><b>Dual-stack allocation</b></td>
-                <td><a href="{% url ip:ipam:vrf_index prefix.vrf.id "6" prefix.ipv6_transition.prefix %}">{{ prefix.ipv6_transition.prefix }}</a></td>
+                <td><a href="#" onclick="app.showPrefix({{ prefix.vrf.id }}, '6', '{{ prefix.ipv6_transition.prefix }}')">{{ prefix.ipv6_transition.prefix }}</a></td>
             </tr>
         {%  endif %}
         {%  if prefix.afi == "6" and prefix.ipv4_transition %}
             <tr class="row1">
                 <td><b>Dual-stack allocation</b></td>
-                <td><a href="{% url ip:ipam:vrf_index prefix.vrf.id "4" prefix.ipv4_transition.prefix %}">{{ prefix.ipv4_transition.prefix }}</a></td>
+                <td><a href="#" onclick="app.showPrefix(prefix.vrf.id, '4', '{{ prefix.ipv4_transition.prefix }}')">{{ prefix.ipv4_transition.prefix }}</a></td>
             </tr>
         {%  endif %}
         {% if prefix.tags %}

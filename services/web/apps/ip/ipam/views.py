@@ -16,7 +16,7 @@ from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.translation import ugettext_lazy as _
 from noc.core.ip import IP
 # NOC modules
-from noc.lib.app.application import Application, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.db import SQL
 from noc.lib.forms import NOCForm
 from noc.lib.validators import (is_ipv4, is_ipv4_prefix, is_ipv6,
@@ -46,7 +46,7 @@ from noc.vc.models.vcbindfilter import VCBindFilter
 from noc.core.colors import get_colors
 
 
-class IPAMApplication(Application):
+class IPAMApplication(ExtApplication):
     title = _("Assigned Addresses")
     extra_permissions = ["bind_vc"]
 
