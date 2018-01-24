@@ -31,6 +31,7 @@ class ModelBase(type):
             engine=getattr(cls.Meta, "engine", None),
             db_table=getattr(cls.Meta, "db_table", None),
             description=getattr(cls.Meta, "description", None),
+            sample=getattr(cls.Meta, "sample", False),
             tags=getattr(cls.Meta, "tags", None),
         )
         for k in attrs:
@@ -45,10 +46,11 @@ class ModelBase(type):
 
 class ModelMeta(object):
     def __init__(self, engine=None, db_table=None, description=None,
-                 tags=None):
+                 sample=False, tags=None):
         self.engine = engine
         self.db_table = db_table
         self.description = description
+        self.sample = sample
         self.tags = tags
 
 
@@ -57,6 +59,7 @@ class Model(six.with_metaclass(ModelBase)):
         engine = None
         db_table = None
         description = None
+        sample = False
         tags = None
 
     def __init__(self, **kwargs):

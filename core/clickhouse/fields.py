@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Clickhouse field types
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Clickhouse field types
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python collections
+# Python collections
 import itertools
 import socket
 import struct
@@ -174,3 +174,26 @@ class IPv4Field(BaseField):
             return "0"
         else:
             return str(struct.unpack("!I", socket.inet_aton(value))[0])
+
+
+class AggregatedField(BaseField):
+    def __init__(self, field_type, agg_functions, description=None, f_expr=""):
+        super(AggregatedField, self).__init__(description=description)
+        self.field_type = field_type
+        self.agg_functions = agg_functions
+        self.f_expr = f_expr
+
+    def to_tsv(self, value):
+        return self.field_type.to_tsv()
+
+    @property
+    def db_type(self):
+        return self.field_type.db_type
+
+    def get_create_sql(self):
+        pass
+
+    def get_expr(self, function, f_param):
+        return self.f_expr.format(p={"field": self.name,
+                                     "function": function,
+                                     "f_param": f_param})
