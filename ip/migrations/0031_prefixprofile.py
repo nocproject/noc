@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Prefix.profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.db import models
 import bson
 # Third-party modules
 from south.db import db

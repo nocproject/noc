@@ -1030,22 +1030,22 @@ class IPAMApplication(Application):
                 p = IP.prefix(prefix.prefix)
                 p0 = p.first.iter_address()
                 if afi == "4":
-                    p0.next()  # Skip network address
+                    next(p0)  # Skip network address
                 addresses = list(prefix.address_set.order_by("address"))
                 if not addresses:
                     # No addresses in block yet.
                     # Get first address
-                    initial["address"] = p0.next().address
+                    initial["address"] = next(p0).address
                 else:
                     # Repeat while uses addresses are continuous
                     for a in addresses:
-                        a0 = p0.next()
+                        a0 = next(p0)
                         if a0.address != a.address:
                             initial["address"] = a0.address
                             break
                     if not initial:
                         # Beyond the last address
-                        a0 = p0.next()
+                        a0 = next(p0)
                         if IP.prefix(prefix.prefix).contains(a0):
                             a0 = a0.address
                             if afi == "6" or (afi == "4" and a0 != p.last.address):
