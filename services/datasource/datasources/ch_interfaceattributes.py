@@ -16,7 +16,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 
 
-class CHManagedObjectDataSource(BaseDataSource):
+class CHInterfaceAttributesDataSource(BaseDataSource):
     name = "ch_interfaceattributes"
 
     def extract(self):
