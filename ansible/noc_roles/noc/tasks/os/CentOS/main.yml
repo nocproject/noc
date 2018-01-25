@@ -32,14 +32,9 @@
     state: present
     update_cache: yes
   with_items:
-   - tcpdump
-   - net-tools
-   - man
-   - mercurial
    - git
    - patch
    - python-virtualenv
-   - telnet
    - gcc
    - postgresql{{ postgresql_version|replace(".","") }}
    - postgresql-devel

@@ -35,29 +35,12 @@
     state: present
     update_cache: yes
   with_items:
-   - tcpdump
-   - net-tools
-   - man
-   - mercurial
    - git
    - python-virtualenv
-   - telnet
    - gcc
    - postgresql{{postgresql_version|replace(".","")}}
    - postgresql{{postgresql_version|replace(".","")}}-devel
-   - diffstat
-   - dwz
-   - elfutils
-   - gdb
    - patch
-   - perl-Thread-Queue
-   - perl-srpm-macros
-   - procmail
-   - redhat-rpm-config
-   - rpm-build
-   - zip
-   - lsof
-   - numactl
    - libffi
    - libffi-devel
    - libmemcached

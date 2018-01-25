@@ -5,13 +5,9 @@
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   with_items:
-    - less
-    - telnet
-    - tcpdump
     - python
     - python-dev
     - python-virtualenv
-    - mercurial
     - git
     - libjemalloc1
     - gcc

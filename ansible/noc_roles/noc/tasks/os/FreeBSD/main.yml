@@ -7,18 +7,16 @@
     - postgresql{{postgresql_version|replace(".","")}}-client
     - python2
     - py27-virtualenv
-    - mercurial
     - curl
     - libffi
     - libmemcached
-    - lsof
     - git
     - zstd
   tags:
     - requirements
 
 - name: Install supervisord init script
-  template: src="os/FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"
-
-- name: Enable NOC system service
-  service: name="{{ noc_system_service }}" enabled=yes
+  template:
+    src: "os/FreeBSD/etc/rc.d/noc.j2"
+    dest: "/usr/local/etc/rc.d/{{ noc_system_service }}"
+    mode: "a+rx"
