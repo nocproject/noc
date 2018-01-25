@@ -13,13 +13,10 @@ from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 class Script(BaseScript):
     name = "ElectronR.KO01M.get_capabilities"
 
-    def execute(self):
+    oid = "1.3.6.1.2.1.1.1"
+
+    def check_snmp_getnext(self, oid, bulk=False, only_first=True, version=None):
         """
-        Check basic SNMP support
+        Check SNMP response to GETNEXT/BULK
         """
-        return {
-            'SNMP': True,
-            "SNMP | Bulk": False,
-            'SNMP | v1': True,
-            'SNMP | v2c': True,
-            'SNMP | v3': False}
+        return False
