@@ -31,7 +31,9 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.main.timepattern.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.fm.ttsystem.LookupField",
-        "NOC.inv.platform.LookupField"
+        "NOC.inv.platform.LookupField",
+        "NOC.inv.map.Maintenance",
+        "NOC.maintenance.maintenancetype.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -66,7 +68,18 @@ Ext.define("NOC.sa.managedobject.Application", {
                 layout: "form",
                 columnWidth: 0.5
             };
-
+        me.actions.push(
+            {
+                title: __("New Maintaince"),
+                glyph: NOC.glyph.wrench,
+                run: me.newMaintaince
+            },
+            {
+                title: __("Add to Maintaince"),
+                glyph: NOC.glyph.plus,
+                run: me.addToMaintaince
+            }
+        );
         me.configPreviewButton = Ext.create("Ext.button.Button", {
             text: __("Config"),
             glyph: NOC.glyph.file,
@@ -137,6 +150,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             glyph: NOC.glyph.exclamation_triangle,
             scope: me,
             handler: me.onAlarm
+        });
+
+        me.maintainceButton = Ext.create("Ext.button.Button", {
+            text: __("New Maintaince"),
+            glyph: NOC.glyph.wrench,
+            scope: me,
+            handler: me.onMaintaince
         });
 
         me.inventoryButton = Ext.create("Ext.button.Button", {
@@ -1107,6 +1127,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.linksButton,
                 me.discoveryButton,
                 me.alarmsButton,
+                me.maintainceButton,
                 me.interactionsButton,
                 me.validationSettingsButton,
                 me.capsButton,
@@ -1291,6 +1312,54 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
     },
     //
+    onMaintaince: function() {
+        var me = this;
+        me.newMaintaince([{
+            object: me.currentRecord.get("id"),
+            object__label: me.currentRecord.get("name")
+        }]);
+    },
+    //
+    addToMaintaince: function(objects) {
+        NOC.run(
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
+            {
+                args: [
+                    {mode: 'Object'},
+                    objects
+                ]
+            }
+        );
+    },
+    //
+    newMaintaince: function(objects) {
+        var args = {
+            direct_objects: objects,
+            subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+            contacts: NOC.username,
+            start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+            start_time: Ext.Date.format(new Date(), 'H:i'),
+            stop_time: '12:00',
+            suppress_alarms: true
+        };
+        Ext.create("NOC.maintenance.maintenancetype.LookupField")
+        .getStore()
+        .load({
+            params: {__query: 'РНР'},
+            callback: function(records) {
+                if(records.length > 0) {
+                    Ext.apply(args, {
+                        type: records[0].id
+                    })
+                }
+                NOC.launch("maintenance.maintenance", "new", {
+                    args: args
+                });
+            }
+        });
+    },
+    //
     onCaps: function() {
         var me = this;
         me.previewItem(me.ITEM_CAPS, me.currentRecord);
@@ -1328,6 +1397,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.linksButton.setDisabled(disabled);
         me.discoveryButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
         me.alarmsButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
+        me.maintainceButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
 
     },
     //
