@@ -69,7 +69,7 @@ Ext.define("NOC.ip.prefix.Application", {
                         name: "profile",
                         xtype: "ip.prefixprofile.LookupField",
                         fieldLabel: __("Profile"),
-                        allowBlank: true
+                        allowBlank: false
                     },
                     {
                         name: "afi",

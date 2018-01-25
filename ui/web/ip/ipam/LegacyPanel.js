@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // ip.ipam Legacy application panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.ip.ipam.LegacyPanel");

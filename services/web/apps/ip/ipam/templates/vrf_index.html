@@ -15,7 +15,7 @@
             <li><a href="{% url ip:tools:index prefix.vrf.id prefix.afi prefix.prefix %}" class="changelink">Tools</a></li>
         {% endif %}
         {% if can_add_prefix %}
-            <li><a href="{% url ip:ipam:add_prefix prefix.vrf.id prefix.afi prefix.prefix %}" class="addlink">Add Prefix</a></li>
+            <li><a href="#" onclick="app.onAddPrefix({{ prefix.id }})" class="addlink">Add Prefix</a></li>
         {% endif %}
         {% if can_add_address %}
             <li><a href="{% url ip:ipam:add_address prefix.vrf.id prefix.afi prefix.prefix %}" class="addlink">Add Address</a></li>
@@ -181,7 +181,7 @@ function on_mynetworks(n)
 {% if addresses %}
     <style>
     .noc-r-none {
-        background-color: 0xffffff;
+        background-color: #ffffff;
     }
     
     .noc-ri-none {
@@ -499,7 +499,7 @@ function on_mynetworks(n)
         {%  if can_rebase %}
             <a href="{% url ip:ipam:rebase vrf.id afi prefix.prefix %}" class="changelink">Rebase</a>
         {% endif %}
-        <a href="{% url ip:ipam:change_prefix vrf.id afi prefix.prefix %}" class="changelink">Change</a>
+        <a href="#" onclick="app.onChangePrefix({{ prefix.id }})" class="changelink">Change</a>
         {% if prefix.parent %}
             <a href="{% url ip:ipam:delete_prefix vrf.id afi prefix.prefix %}" class="deletelink" style="float: left">Delete</a>
         {% endif %}
