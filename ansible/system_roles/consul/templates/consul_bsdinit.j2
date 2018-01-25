@@ -1,43 +1,52 @@
 #!/bin/sh
 
+# $FreeBSD$
+#
 # PROVIDE: consul
 # REQUIRE: LOGIN
 # KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# consul_enable (bool): Set to NO by default.
+#       Set it to YES to enable consul.
+# consul_user (user):        Set user to run consul.
+#                               Default is "consul".
+# consul_group (group):      Set group to run consul.
+#                               Default is "consul".
+# consul_dir (dir):          Set dir to run consul in.
+#                               Default is "/var/db/consul".
 
 . /etc/rc.subr
 
-name="consul"
-rcvar=$(set_rcvar)
+name=consul
+rcvar=consul_enable
+extra_commands="reload configtest"
 
 load_rc_config $name
-: "${consul_enable="NO"}"
-: "${consul_users="consul"}"
 
-restart_cmd=consul_restart
-start_cmd=consul_start
-stop_cmd=consul_stop
-extra_commands="reload"
-pidfile="/var/run/consul/consul.pid"
+: ${consul_enable:="NO"}
+: ${consul_user:="{{ consul_user }}"}
+: ${consul_group:="{{ consul_group }}"}
+: ${consul_dir:="{{consul_data_path}}"}
 
-consul_start() {
-    echo "Starting ${name}."
-    for user in ${consul_users}; do
-        install -d /var/run/consul
-        chown -R "${user}:{{ consul_group }}" /var/run/consul/
-        su -m "${user}" -c "{{ consul_bin_path }}/consul agent -config-file={{ consul_config_path }}/config.json -config-dir={{ consul_configd_path }} -pid-file=${pidfile} &"
-    done
-}
+pidfile=/var/run/consul.pid
+procname="/usr/local/bin/consul"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} /usr/bin/env ${consul_env} ${procname} agent -config-file={{ consul_config_path }}/config.json -config-dir={{ consul_configd_path }} ${consul_args}"
 
-consul_stop() {
-    echo "Stopping $name."
-    pids=$(pgrep consul)
-    pkill consul
-    wait_for_pids "${pids}"
-}
+start_precmd=consul_startprecmd
 
-consul_restart() {
-    consul_stop
-    consul_start
+consul_startprecmd()
+{
+        if [ ! -e ${pidfile} ]; then
+                install -o ${consul_user} -g ${consul_group} /dev/null ${pidfile};
+        fi
+
+        if [ ! -d ${consul_dir} ]; then
+                install -d -o ${consul_user} -g ${consul_group} ${consul_dir}
+        fi
 }
 
 run_rc_command "$1"

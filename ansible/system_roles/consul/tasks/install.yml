@@ -36,7 +36,6 @@
     dest: "{{ consul_temp_unarchive }}"
     state: directory
 
-
 - name: Unarchive Consul and install binary
   unarchive:
     src: "{{consul_temp_file}}"

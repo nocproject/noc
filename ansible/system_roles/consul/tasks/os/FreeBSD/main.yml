@@ -6,6 +6,7 @@
     owner: root
     group: wheel
     mode: 0755
+  notify: restart consul
 
 - name: set consul bind_address
   set_fact:
