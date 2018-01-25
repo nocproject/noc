@@ -8,6 +8,11 @@ mongo:
   password: {{mongod_password}}
   rs: {{mongod_rs}}
   user: {{mongod_user}}
+
+clickhouse:
+  rw_user: {{ clickhouse_user }}
+  rw_password: {{ clickhouse_password }}
+
 {% for service in noc_services %}
     {%- if not service.pool %}
         {%- if service.config %}
