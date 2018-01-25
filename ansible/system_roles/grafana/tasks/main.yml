@@ -65,6 +65,5 @@
     dest: "{{consul_configd_path}}/grafana.json"
   notify:
     - reload consul
-    - freebsd reload consul
   tags:
     - consul

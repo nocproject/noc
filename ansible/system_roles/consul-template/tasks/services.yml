@@ -5,8 +5,6 @@
       dest: "{{ consul_template_templates_dir }}/upstream.conf.ctmpl"
     notify:
       - reload consul-template
-      - freebsd reload consul-template
-
 
   - name: install nginx upstream config for template
     template:
@@ -14,7 +12,6 @@
       dest: "{{consul_template_config_dir}}/upstream.conf"
     notify:
       - reload consul-template
-      - freebsd reload consul-template
   when: has_svc_nginx is defined
 
 - name: install nsqd config for template
@@ -23,7 +20,6 @@
     dest: "{{item.dest}}"
   notify:
     - reload consul-template
-    - freebsd reload consul-template
   with_items:
     - src: services/nsqd.conf.j2
       dest: "{{consul_template_config_dir}}/nsqd.conf"
@@ -37,7 +33,6 @@
     dest: "{{item.dest}}"
   notify:
     - reload consul-template
-    - freebsd reload consul-template
   with_items:
     - src: services/nsqadmin.conf.j2
       dest: "{{consul_template_config_dir}}/nsqadmin.conf"

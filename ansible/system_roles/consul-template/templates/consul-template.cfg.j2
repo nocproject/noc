@@ -9,3 +9,9 @@ consul = {
 {% if consul_template_wait is defined %}
 wait = "{{consul_template_wait}}"
 {% endif %}
+
+syslog {
+  # This enables syslog logging. Specifying any other option also enables
+  # syslog logging.
+  enabled = true
+}

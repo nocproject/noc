@@ -108,7 +108,6 @@
     dest: "{{consul_configd_path}}"
   notify:
     - reload consul
-    - freebsd reload consul
   tags:
     - consul
 
@@ -119,7 +118,6 @@
     mode: 0755
   notify:
     - reload consul
-    - freebsd reload consul
   no_log: true
   tags:
     - consul

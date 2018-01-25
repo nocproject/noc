@@ -48,6 +48,19 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
 
+- name: Install mercurial
+  pip:
+    chdir: "{{noc_root}}"
+    name: "mercurial"
+    virtualenv: "{{noc_root}}"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
+  tags:
+    - requirements
+  when: "'FreeBSD' in ansible_system"
+
 - name: Install node python packages(should take a while for a first time)
   pip:
     chdir: "{{noc_root}}"

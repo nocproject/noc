@@ -35,6 +35,7 @@ services:
       <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     level: system
     category: external
+    promote: system
     port: 8123
     depends:
       - consul-template

@@ -33,7 +33,7 @@ nginx_user: www
 
 telegraf_reload_command: "service telegraf restart"
 
-nsqd_reload_command: "service nsqd reload"
+nsqd_reload_command: "service nsqd restart"
 nsqadmin_reload_command: "service nsqadmin restart"
 
 postgres_bin_dir: /usr/local/bin
@@ -51,9 +51,6 @@ consul_template_group: wheel
 
 pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -I/usr/local/include"
 pip_ldflags: "-L/usr/local/lib"
-
-noc_prefix: /usr/local
-noc_root: "{{noc_prefix}}/noc"
 
 pgbouncer_path_pid: /var/run/pgbouncer
 nsd_log_dir: /var/log/nsq

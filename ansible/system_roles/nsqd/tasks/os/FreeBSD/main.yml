@@ -18,7 +18,7 @@
     creates: "{{ nsq_root }}/nsqd"
 
 - name: Install nsqd init script
-  template: src="os/FreeBSD/etc/rc.d/nsqd.j2" dest="/usr/local/etc/rc.d/nsqd" mode="a+rx"
-
-- name: Enable NSQD system service
-  service: name="nsqd" enabled=yes
+  template:
+    src: "os/FreeBSD/etc/rc.d/nsqd.j2"
+    dest: "/usr/local/etc/rc.d/nsqd"
+    mode: "a+rx"

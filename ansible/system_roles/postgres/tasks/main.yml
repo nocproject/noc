@@ -74,7 +74,6 @@
     dest: "{{consul_configd_path}}/postgres.json"
   notify:
     - reload consul
-    - freebsd reload consul
   tags:
     - consul
 
@@ -87,7 +86,6 @@
   no_log: true
   notify:
     - reload consul
-    - freebsd reload consul
   tags:
     - consul
 

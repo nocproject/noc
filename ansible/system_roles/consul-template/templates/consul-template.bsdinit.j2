@@ -1,31 +1,52 @@
 #!/bin/sh
 
+# $FreeBSD$
+#
 # PROVIDE: consul_template
 # REQUIRE: LOGIN
-# KEYWORD: shutdown
-
-# {{ ansible_managed }}
+# KEYWORD: shtudown
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# consul_template_enable (bool):        Set to NO by default.
+#                                          Set it to YES to enable consul-template.
+# consul_template_user (user):          Set user to run consul-template.
+#                                          Default is "root".
+# consul_template_group (group):        Set group to run consul-template.
+#                                          Default is "wheel".
+# consul_template_env (string):         Set environment variables used with consul-template.
+#                                          Default is "".
+# consul_template_args (string):        Set flags used with consul-template.
+#                                          Default is "".
 
 . /etc/rc.subr
 
-name="consul_template"
+name=consul_template
 rcvar=consul_template_enable
 
 load_rc_config $name
-: "${consul_template_enable="NO"}"
-: "${consul_template_users="{{ consul_template_user }}"}"
 
+: ${consul_template_enable:="NO"}
+: ${consul_template_user:="root"}
+: ${consul_template_group:="wheel"}
+: ${consul_template_env:=""}
+: ${consul_template_args:=""}
 
-pidfile="/var/run/consul/consul-template.pid"
-command="{{ consul_template_bin_path }}/consul-template"
-command_args="-config {{consul_template_config_dir}}/ -pid-file=${pidfile} -kill-signal=SIGTERM &"
-start_precmd="${name}_prestart"
+pidfile=/var/run/consul-template.pid
+procname="/usr/local/bin/consul-template"
 extra_commands="reload"
+command="/usr/sbin/daemon"
+command_args="-r -f -p ${pidfile} /usr/bin/env ${consul_template_env} ${procname} -config {{consul_template_config_dir}}/ ${consul_template_args}"
+sig_stop="INT"
 
-consul_template_prestart()
+start_precmd=consul_template_startprecmd
+
+consul_template_startprecmd()
 {
-    install -d /var/run/consul
-    chown -R "{{ consul_template_user }}:{{ consul_template_group }}" /var/run/consul/
+    if [ ! -e ${pidfile} ]; then
+        install -o ${consul_template_user} -g ${consul_template_group} /dev/null ${pidfile}
+    fi
 }
 
 run_rc_command "$1"

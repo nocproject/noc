@@ -23,7 +23,6 @@ load_rc_config $name
 : ${nsqd_config="{{nsqd_config_dir}}/${name}.conf"}
 
 command="{{nsq_root}}/${name}"
-required_files="${nsqd_config}"
 start_precmd=nsqd_prestart
 extra_commands="reload"
 
@@ -31,7 +30,10 @@ command_args="-config ${nsqd_config} > {{ nsd_log_dir }}/nsqd.log 2>&1 &"
 
 nsqd_prestart() {
 # Have to empty rc_flags so they don't get passed to daemon(8)
-        rc_flags=""
+    rc_flags=""
+    if [ ! -f "${nsqd_config}" ]; then
+        sleep 10
+    fi
 }
 
 run_rc_command "$1"

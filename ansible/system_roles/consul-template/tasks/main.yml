@@ -17,7 +17,6 @@
     mode: 0755
   notify:
     - reload consul-template
-    - freebsd reload consul-template
   tags:
     - config
 
@@ -74,11 +73,4 @@
 - name: start consul-template service
   service:
     name: consul-template
-    state: started
     enabled: yes
-
-- name: restart consul-template on freebsd
-  service:
-    name: consul-template
-    state: restarted
-  when: "'FreeBSD' in ansible_system"

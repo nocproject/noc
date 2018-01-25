@@ -67,7 +67,6 @@
     enabled: yes
   notify:
     - reload consul-template
-    - freebsd reload consul-template
     - restart nsqd
 
 - name: copy nsqd consul templates
@@ -76,7 +75,6 @@
     dest: "{{consul_configd_path}}/"
   notify:
     - reload consul
-    - freebsd reload consul
   with_items:
     - nsqd.json
     - nsqdhttp.json

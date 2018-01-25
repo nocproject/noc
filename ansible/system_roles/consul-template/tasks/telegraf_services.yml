@@ -5,7 +5,6 @@
     dest: "{{ consul_template_templates_dir }}/noc_{{service}}.ctmpl"
   notify:
     - reload consul-template
-    - freebsd reload consul-template
 
 - name: install noc_{{service}} config for template
   template:
@@ -13,4 +12,3 @@
     dest: "{{consul_template_config_dir}}/noc_{{service}}.conf"
   notify:
     - reload consul-template
-    - freebsd reload consul-template

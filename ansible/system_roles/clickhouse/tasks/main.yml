@@ -24,7 +24,16 @@
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
-- name: install configs
+- name: install config.xml
+  template:
+    src: "{{item}}"
+    dest: "{{ch_etc_path}}/"
+  no_log: true
+  notify: restart clickhouse-server
+  with_items:
+    - "config.xml"
+
+- name: install users.xml
   template:
     src: "{{item}}"
     dest: "{{ch_etc_path}}/"
@@ -50,7 +59,6 @@
     dest: "{{consul_configd_path}}/clickhouse.json"
   notify:
     - reload consul
-    - freebsd reload consul
   tags:
     - consul
 
@@ -58,4 +66,3 @@
   service:
     name: "{{clickhouse_service_name}}"
     enabled: yes
-    state: started
