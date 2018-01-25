@@ -55,6 +55,18 @@
                  <null_value>Unknown</null_value>
                  <hierarchical>false</hierarchical>
              </attribute>
+             <attribute>
+                 <name>remote_id</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
+             <attribute>
+                 <name>remote_system</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
         </structure>
     </dictionary>
 </dictionaries>
