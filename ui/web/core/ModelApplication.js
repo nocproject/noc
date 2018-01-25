@@ -1234,6 +1234,14 @@ Ext.define("NOC.core.ModelApplication", {
             me.showGroupEditForm(records);
             return;
         }
+        if(Ext.isFunction(item.run)) {
+            item.run(
+                me.grid.getSelectionModel().getSelection()
+                .map(function(o) {
+                    return {object: o.get(me.idField), object__label: o.get('name')}
+                }));
+            return;
+        }
         if(item.form) {
             me.showActionForm(item, records);
         } else {
@@ -1521,6 +1529,7 @@ Ext.define("NOC.core.ModelApplication", {
                     itemId: o.action,
                     form: o.form,
                     glyph: o.glyph,
+                    run: o.run,
                     resultTemplate: o.resultTemplate
                 }
             }));
