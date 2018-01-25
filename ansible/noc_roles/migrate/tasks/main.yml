@@ -1,21 +1,7 @@
 # Migrate database schema
 ---
 
-- name: restart consul on freebsd
-  service:
-    name: consul
-    state: restarted
-    sleep: 10
-  when: "'FreeBSD' in ansible_system"
-
-- name: restart consul-template on freebsd
-  service:
-    name: consul-template
-    state: restarted
-    sleep: 10
-  when: "'FreeBSD' in ansible_system"
-
-- name: Migrate
+- name: Migrate db
   command: ./noc migrate
   args:
     chdir: "{{ noc_root }}"
@@ -23,8 +9,6 @@
   become: yes
   register: migrate_out
   changed_when: "'Nothing to migrate' not in migrate_out.stdout"
-  environment:
-    NOC_CONFIG: "{{config_order}}"
 
 - name: Ensure Mongo indecies
   command: ./noc ensure-indexes
@@ -42,8 +26,6 @@
   become: yes
   register: result
   changed_when: "'CHANGED' in result.stdout"
-  environment:
-    NOC_CONFIG: "{{config_order}}"
 
 - name: Install collections
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
@@ -82,8 +64,6 @@
   become_user: "{{ noc_user }}"
   become: yes
   when: coll_exists.stat.exists
-  environment:
-    NOC_CONFIG: "{{config_order}}"
   tags:
     - coll_sync
 
@@ -93,8 +73,6 @@
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
   become: yes
-  environment:
-    NOC_CONFIG: "{{config_order}}"
   tags:
     - perms
 
@@ -104,7 +82,12 @@
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
   become: yes
-  environment:
-    NOC_CONFIG: "{{config_order}}"
   register: mibs_out
-  changed_when: mibs_out.stdout | length > 5
+  changed_when: mibs_out.stdout | length > 7
+
+- name: migrate ch db
+  command: ./noc migrate-ch --host "{{item}}"
+  args:
+    chdir: "{{ noc_root }}"
+  with_items: "{{groups['svc-clickhouse-exec']}}"
+  changed_when: "'CHANGED' in s.stdout"

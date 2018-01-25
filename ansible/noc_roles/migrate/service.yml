@@ -5,9 +5,14 @@
   tags:
     - node
     - noc
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: migrate
       become: yes
       run_once: true
       tags:
         - migrate
+      environment:
+        NOC_CONFIG: "{{config_order}}"
