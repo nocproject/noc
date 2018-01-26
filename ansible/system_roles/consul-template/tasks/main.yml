@@ -54,7 +54,7 @@
   when:
     - "'svc-telegraf' in groups"
     - "inventory_hostname in groups['svc-telegraf-exec']"
-    - "'influx' in telegraf_outpul_plugin"
+    - "'influx' in telegraf_output_plugin"
   with_items:
      - "{{noc_services}}"
   no_log: yes
