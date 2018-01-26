@@ -333,6 +333,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "ping_policy",
                                             xtype: "combobox",
+                                            labelAlign: "left",
+                                            labelWidth: 220,
                                             fieldLabel: __("Ping Policy"),
                                             allowBlank: true,
                                             uiStyle: "medium",
@@ -353,7 +355,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "ping_size",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Packet size, bytes"),
-                                                    labelWidth: 105,
+                                                    labelWidth: 220,
                                                     uiStyle: "small",
                                                     defautlValue: 64,
                                                     minValue: 64
@@ -371,7 +373,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "ping_count",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Packets count"),
-                                                    labelWidth: 105,
+                                                    labelWidth: 220,
                                                     defautlValue: 3,
                                                     uiStyle: "small"
                                                 }
@@ -389,7 +391,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Timeout, msec"),
                                                     defaultValue: 1000,
-                                                    labelWidth: 105,
+                                                    labelWidth: 220,
                                                     uiStyle: "small",
                                                     listeners: {
                                                         scope: me,
