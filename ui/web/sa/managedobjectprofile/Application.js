@@ -195,6 +195,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "access_preference",
                                     xtype: "combobox",
                                     fieldLabel: __("Access Preference"),
+                                    labelWidth: 150,
                                     allowBlank: false,
                                     uiStyle: "medium",
                                     store: [
@@ -209,6 +210,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "cli_session_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Session Policy"),
+                                    labelWidth: 150,
                                     allowBlank: true,
                                     labelAlign: "left",
                                     uiStyle: "medium",
@@ -222,6 +224,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "cli_privilege_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Privilege Policy"),
+                                    labelWidth: 150,
                                     allowBlank: true,
                                     uiStyle: "medium",
                                     store: [
@@ -239,6 +242,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "card",
                                     xtype: "textfield",
                                     fieldLabel: __("Card"),
+                                    labelWidth: 150,
                                     allowBlank: true,
                                     uiStyle: "extra"
                                 },
@@ -246,6 +250,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "card_title_template",
                                     xtype: "textfield",
                                     fieldLabel: __("Card Title Template"),
+                                    labelWidth: 150,
                                     allowBlank: false,
                                     uiStyle: "extra"
                                 }
