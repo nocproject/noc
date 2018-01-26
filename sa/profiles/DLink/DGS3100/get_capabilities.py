@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,11 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        cmd = self.cli("show lldp")
+        try:
+            cmd = self.cli("show lldp")
+        except self.CLISyntaxError:
+            self.cli("\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08")
+            cmd = ""
         return bool(self.rx_lldp.search(cmd))
 
     @false_on_cli_error
@@ -32,6 +36,10 @@ class Script(BaseScript):
         """
         Check box has STP enabled
         """
+
+        # DGS3100 do not show any information about neighbors
+        return False
+
         # Spanning Tree Enabled/Disabled : Enabled
         cmd = self.cli("show stp")
         return bool(self.rx_stp.search(cmd))
