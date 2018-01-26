@@ -27,7 +27,7 @@
             <password></password>
             <networks incl="networks" replace="replace">
                 <ip>127.0.0.1</ip>
-            {% for n in groups['svc-clickhouse'] %}
+            {% for n in groups['svc-clickhouse-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
             </networks>
@@ -44,7 +44,7 @@
             <!-- <password></password> -->
             <networks incl="networks" replace="replace">
                 <ip>127.0.0.1</ip>
-            {% for n in groups['svc-clickhouse'] %}
+            {% for n in groups['svc-clickhouse-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
             {% for n in groups['noc-svc-scheduler'] %}
@@ -73,21 +73,27 @@
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
                 {% endif %}
+                {% if 'noc-svc-web' in groups %}
             {% for n in groups['noc-svc-web'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
+                {% endif %}
                 {% if 'svc-haproxy' in groups %}
             {% for n in groups['svc-haproxy'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
                 {% endif %}
                 <ip>{{tower_ip}}</ip>
+                {% if 'noc-svc-scheduler' in groups %}
             {% for n in groups['noc-svc-scheduler'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
+                {% endif %}
+                {% if 'noc-svc-discovery' in groups %}
             {% for n in groups['noc-svc-discovery'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
+                {% endif %}
             </networks>
             <profile>readonly</profile>
             <quota>default</quota>
