@@ -8,6 +8,7 @@
   become: yes
   service:
     name: nsqlookupd
+    enabled: yes
     state: restarted
 
 - name: reload telegraf
