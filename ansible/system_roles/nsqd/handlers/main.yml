@@ -10,6 +10,12 @@
     name: consul
     state: reloaded
 
+- name: restart nsqd
+  become: yes
+  service:
+    name: nsqd
+    state: restarted
+
 - name: reload consul-template
   become: yes
   service:
@@ -21,13 +27,6 @@
   service:
     name: telegraf
     state: reloaded
-
-- name: restart nsqd
-  become: yes
-  service:
-    name: nsqd
-    enabled: yes
-    state: restarted
 
 - name: reload nsqd
   become: yes
