@@ -427,6 +427,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "event_processing_policy",
                                     xtype: "combobox",
+                                    labelWidth: 150,
                                     fieldLabel: __("Event Policy"),
                                     store: [
                                         ["E", __("Enable")],
@@ -439,6 +440,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "weight",
                                     xtype: "numberfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Alarm Weight"),
                                     allowBlank: false,
                                     uiStyle: "small"
@@ -473,7 +475,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "box_discovery_interval",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Interval, sec"),
-                                                    labelWidth: 150,
+                                                    labelWidth: 200,
                                                     allowBlank: false,
                                                     uiStyle: "small",
                                                     listeners: {
@@ -501,7 +503,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     name: "box_discovery_failed_interval",
                                                     xtype: "numberfield",
                                                     fieldLabel: __("Failed Interval, sec"),
-                                                    labelWidth: 150,
+                                                    labelWidth: 200,
                                                     allowBlank: false,
                                                     uiStyle: "small",
                                                     listeners: {
@@ -528,13 +530,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_on_system_start",
                                                     xtype: "checkbox",
+                                                    width: 250,
                                                     boxLabel: __("Check on system start after ")
                                                 },
                                                 {
                                                     name: "box_discovery_system_start_delay",
                                                     xtype: "numberfield",
                                                     allowBlank: false,
-                                                    labelWidth: 10,
                                                     uiStyle: "small"
                                                 },
                                                 {
@@ -554,13 +556,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_on_config_changed",
                                                     xtype: "checkbox",
+                                                    width: 250,
                                                     boxLabel: __("Check on config change after ")
                                                 },
                                                 {
                                                     name: "box_discovery_config_changed_delay",
                                                     xtype: "numberfield",
                                                     allowBlank: false,
-                                                    labelWidth: 10,
                                                     uiStyle: "small"
                                                 },
                                                 {
@@ -901,6 +903,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "hk_handler",
                                             xtype: "textfield",
+                                            labelAlign: "left",
                                             fieldLabel: __("Handler"),
                                             allowBlank: true
                                         }
@@ -920,7 +923,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "combobox",
                                             fieldLabel: __("Box Alarm"),
                                             allowBlank: true,
-                                            labelWidth: 60,
+                                            labelWidth: 135,
                                             labelAlign: "left",
                                             uiStyle: "medium",
                                             store: [
@@ -933,7 +936,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "box_discovery_fatal_alarm_weight",
                                             xtype: "numberfield",
                                             fieldLabel: __("Fatal Alarm Weight"),
-                                            labelWidth: 115,
+                                            labelWidth: 150,
                                             labelAlign: "left",
                                             allowBlank: true,
                                             minValue: 0,
@@ -1045,7 +1048,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "combobox",
                                             fieldLabel: __("Periodic Alarm"),
                                             allowBlank: true,
-                                            labelWidth: 90,
+                                            labelWidth: 135,
                                             labelAlign: "left",
                                             uiStyle: "medium",
                                             store: [
@@ -1058,7 +1061,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "periodic_discovery_fatal_alarm_weight",
                                             xtype: "numberfield",
                                             fieldLabel: __("Fatal Alarm Weight"),
-                                            labelWidth: 115,
+                                            labelWidth: 150,
                                             labelAlign: "left",
                                             allowBlank: true,
                                             minValue: 0,
@@ -1280,6 +1283,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "autosegmentation_policy",
                                     xtype: "combobox",
+                                    labelWidth: 150,
                                     fieldLabel: __("Policy"),
                                     allowBlank: false,
                                     store: [
@@ -1293,6 +1297,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "autosegmentation_level_limit",
                                     xtype: "numberfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Level Limit"),
                                     allowBlank: false,
                                     uiStyle: "small"
@@ -1300,6 +1305,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "autosegmentation_segment_name",
                                     xtype: "textfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Segment Name"),
                                     allowBlank: true,
                                     uiStyle: "extra"
@@ -1312,12 +1318,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "remote_system",
                                     xtype: "main.remotesystem.LookupField",
+                                    labelWidth: 150,
                                     fieldLabel: __("Remote System"),
                                     allowBlank: true
                                 },
                                 {
                                     name: "remote_id",
                                     xtype: "textfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Remote ID"),
                                     allowBlank: true,
                                     uiStyle: "medium"
@@ -1325,6 +1333,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "bi_id",
                                     xtype: "displayfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("BI ID"),
                                     allowBlank: true,
                                     uiStyle: "medium"
@@ -1337,6 +1346,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "escalation_policy",
                                     xtype: "combobox",
+                                    labelWidth: 150,
                                     fieldLabel: __("Escalation Policy"),
                                     allowBlank: true,
                                     uiStyle: "medium",
@@ -1355,6 +1365,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "box_discovery_telemetry_sample",
                                     xtype: "numberfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Box Sample"),
                                     allowBlank: false,
                                     uiStyle: "medium"
@@ -1362,6 +1373,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "periodic_discovery_telemetry_sample",
                                     xtype: "numberfield",
+                                    labelWidth: 150,
                                     fieldLabel: __("Periodic Sample"),
                                     allowBlank: false,
                                     uiStyle: "medium"
