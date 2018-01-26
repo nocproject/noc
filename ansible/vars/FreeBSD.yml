@@ -65,3 +65,4 @@ grafana_dashboard_dir: /var/db/grafana/dashboards
 grafana_plugins_dir: /var/db/grafana/plugins
 
 clickhouse_service_name: clickhouse
+pgbouncer_user: pgbouncer
