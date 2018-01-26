@@ -18,6 +18,7 @@
 
 - name: reload consul-template
   become: yes
+  ignore_errors: yes  # race condition
   service:
     name: consul-template
     state: reloaded
