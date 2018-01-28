@@ -90,7 +90,6 @@ logger = logging.getLogger(__name__)
     ("fm.ArchivedAlarm", "managed_object"),
     ("fm.ArchivedEvent", "managed_object"),
     ("fm.FailedEvent", "managed_object"),
-    ("fm.NewEvent", "managed_object"),
     ("inv.Interface", "managed_object"),
     ("inv.SubInterface", "managed_object")
     # ("maintenance.Maintenance", "escalate_managed_object"),
