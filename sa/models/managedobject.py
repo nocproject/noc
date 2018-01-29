@@ -90,7 +90,6 @@ logger = logging.getLogger(__name__)
     ("fm.ArchivedAlarm", "managed_object"),
     ("fm.ArchivedEvent", "managed_object"),
     ("fm.FailedEvent", "managed_object"),
-    ("fm.NewEvent", "managed_object"),
     ("inv.Interface", "managed_object"),
     ("inv.SubInterface", "managed_object")
     # ("maintenance.Maintenance", "escalate_managed_object"),
@@ -490,7 +489,7 @@ class ManagedObject(Model):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
-                  lock=lambda _: id_lock)
+                             lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         mo = ManagedObject.objects.filter(bi_id=id)[:1]
         if mo:
@@ -814,7 +813,7 @@ class ManagedObject(Model):
             return default
         try:
             return int(v)
-        except:
+        except:  # noqa
             return default
 
     def set_attr(self, name, value):
@@ -990,7 +989,7 @@ class ManagedObject(Model):
         engine = Engine(self)
         try:
             engine.check()
-        except:
+        except:  # noqa
             logger.error("Failed to validate config for %s", self.name)
             error_report()
 
