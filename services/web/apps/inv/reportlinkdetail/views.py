@@ -12,7 +12,6 @@ import datetime
 import csv
 import tempfile
 # Third-party modules
-from django.db import connection
 from django.http import HttpResponse
 from pymongo import ReadPreference
 import xlsxwriter
