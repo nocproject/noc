@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Application class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,8 +34,6 @@ from .access import HasPerm, Permit, Deny
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
-from noc.core.fileutils import safe_append
-from .site import site
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -125,7 +123,7 @@ class Application(object):
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
-    config = settings.config # @fixme remove
+    config = settings.config  # @fixme remove
 
     TZ = get_current_timezone()
 
@@ -499,7 +497,7 @@ class Application(object):
         Add custom fields to django form class
         """
         from noc.main.models import CustomField
-        l = []
+        fields = []
         for f in CustomField.table_fields(table):
             if f.is_hidden:
                 continue
@@ -530,8 +528,8 @@ class Application(object):
                 ff = forms.DateTimeField(required=False, label=f.label)
             else:
                 raise ValueError("Invalid field type: '%s'" % f.type)
-            l += [(str(f.name), ff)]
-        form.base_fields.update(SortedDict(l))
+            fields += [(str(f.name), ff)]
+        form.base_fields.update(SortedDict(fields))
         return form
 
     def apply_custom_fields(self, o, v, table):
