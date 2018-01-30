@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Link model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import datetime
 # NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
-                           IntField)
+                           IntField, ObjectIdField)
 from noc.core.model.decorator import on_delete, on_save
 
 
@@ -30,12 +30,31 @@ class Link(Document):
         "collection": "noc.links",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["interfaces", "linked_objects"]
+        "indexes": [
+            "interfaces",
+            "linked_objects",
+            "linked_segments"
+        ]
     }
 
     interfaces = PlainReferenceListField("inv.Interface")
+    # Link type, detected automatically
+    type = StringField(choices=[
+        # 2 managed objects, 2 linked interfaces
+        ("p", "Point-to-Point"),
+        # 2 managed objects, even number of linked interfaces (>2)
+        ("a", "Point-to-Point Aggregated"),
+        # >2 managed objects, one uplink
+        ("m", "Point-to-Multipoint"),
+        # >2 managed objects, no dedicated uplink
+        ("M", "Multipoint-to-Multipoint"),
+        # Unknown
+        ("u", "Unknown")
+    ], default="u")
     # List of linked objects
     linked_objects = ListField(IntField())
+    # List of linked segments
+    linked_segments = ListField(ObjectIdField())
     # Name of discovery method or "manual"
     discovery_method = StringField()
     # Timestamp of first discovery
@@ -48,11 +67,12 @@ class Link(Document):
     l3_cost = IntField(default=1)
 
     def __unicode__(self):
-        return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
+        return u"(%s)" % ", ".join(unicode(i) for i in self.interfaces)
 
     def clean(self):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
-        super(Link, self).clean()
+        self.linked_segments = sorted(set(i.managed_object.segment.id for i in self.interfaces))
+        self.type = self.get_type()
 
     def contains(self, iface):
         """
@@ -175,3 +195,21 @@ class Link(Document):
     def update_topology(self):
         for mo in self.managed_objects:
             mo.update_topology()
+
+    def get_type(self):
+        """
+        Detect link type
+        :return: Link type as value for .type
+        """
+        n_objects = len(self.linked_objects)
+        n_interfaces = len(self.interfaces)
+        if n_objects == 2 and n_interfaces == 2:
+            return "p"  # Point-to-point
+        if n_objects == 2 and n_interfaces > 2 and n_interfaces % 2 == 0:
+            return "a"  # Point-to-point aggregated
+        if n_objects > 2:
+            if self.type == "m":
+                return "m"
+            else:
+                return "M"
+        return "u"
