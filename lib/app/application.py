@@ -182,19 +182,17 @@ class Application(object):
         from noc.main.models.permission import Permission
 
         user = request.user
-        ps = self.get_app_id().replace(".", ":") + ":"
-        lps = len(ps)
         if "PERMISSIONS" in request.session:
             perms = request.session["PERMISSIONS"]
         else:
             perms = Permission.get_effective_permissions(user)
-        perms = [p[lps:] for p in perms if p.startswith(ps)]
+        perms &= self.get_permissions()
         return {
             "class": self.js_app_class,
             "title": unicode(self.title),
             "params": {
                 "url": self.menu_url,
-                "permissions": perms,
+                "permissions": list(perms),
                 "app_id": self.app_id,
                 "link": self.link
             }
