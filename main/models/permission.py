@@ -8,11 +8,16 @@
 
 # Python modules
 from __future__ import print_function
+from threading import Lock
+import operator
 # Third-party modules
 from django.db.models import Model, CharField, ManyToManyField
 from django.contrib.auth.models import User, Group
+import cachetools
 # NOC modules
 from noc.lib.middleware import get_request
+
+perm_lock = Lock()
 
 
 class Permission(Model):
@@ -37,6 +42,8 @@ class Permission(Model):
         User, related_name="noc_user_permissions")
     groups = ManyToManyField(
         Group, related_name="noc_group_permissions")
+
+    _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
 
     def __unicode__(self):
         return self.name
@@ -130,6 +137,8 @@ class Permission(Model):
             Permission.objects.get(name=p).groups.remove(group)
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_effective_perm_cache"),
+                             lock=lambda _: perm_lock)
     def get_effective_permissions(cls, user):
         """
         Returns a set of effective user permissions,
