@@ -1,0 +1,14 @@
+{
+    "name": "Vitesse | VSC | VSC7460v2 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "b31400f4-0754-4bf7-9399-51345669a831",
+    "description": "VSC7460 with OID: .1.3.6.1.4.1.40248.2\n",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.40248.2",
+    "action": "match",
+    "profile__name": "Vitesse.VSC"
+}
+
