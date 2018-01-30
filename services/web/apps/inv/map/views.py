@@ -173,7 +173,7 @@ class MapApplication(ExtApplication):
         return stencil_registry.get_size(shape)
 
     @view(url="^stencils/(?P<shape>.+)/$",
-        method=["GET"], access=True, api=True)
+          method=["GET"], access=True, api=True)
     def api_stencil(self, request, shape):
         svg = stencil_registry.get_svg(shape)
         if not svg:
@@ -228,7 +228,7 @@ class MapApplication(ExtApplication):
                 s = s.encode("utf-8")
             return s
 
-        segment = self.get_object_or_404(NetworkSegment, id=id)
+        self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
             "id": str(link.id),
@@ -279,11 +279,12 @@ class MapApplication(ExtApplication):
             r["utilisation"] = [int(max(mo_in.values() + mo_out.values()))]
         return r
 
-    @view(url="^objects_statuses/$", method=["POST"],
-          access="read", api=True,
-          validate={
-              "objects": ListOfParameter(IntParameter())
-          }
+    @view(
+        url="^objects_statuses/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "objects": ListOfParameter(IntParameter())
+        }
     )
     def api_objects_statuses(self, request, objects):
         def get_alarms(objects):
@@ -469,11 +470,12 @@ class MapApplication(ExtApplication):
             "status": True
         }
 
-    @view(url="^stp/status/$", method=["POST"],
-          access="read", api=True,
-          validate={
-              "objects": ListOfParameter(IntParameter())
-          }
+    @view(
+        url="^stp/status/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "objects": ListOfParameter(IntParameter())
+        }
     )
     def api_objects_stp_status(self, request, objects):
         def get_stp_status(object_id):
