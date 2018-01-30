@@ -9,6 +9,8 @@
 # Python modules
 from collections import defaultdict
 import datetime
+# Third-party modules
+from bson import ObjectId
 # NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
@@ -112,6 +114,19 @@ class Link(Document):
         :return:
         """
         return len(self.linked_objects) == 1
+
+    @property
+    def interface_ids(self):
+        """
+        Returns list of interface ids, avoiding dereference
+        :return:
+        """
+        def q(i):
+            if hasattr(i, "id"):
+                return i.id
+            return i
+
+        return [q(iface) for iface in self._data.get("interfaces", [])]
 
     def other(self, interface):
         """

@@ -10,11 +10,14 @@
 from __future__ import absolute_import
 import operator
 import logging
+import itertools
 # Third-party modules
 import networkx as nx
 import numpy as np
 from cachetools import cachedmethod
+import six
 # NOC modules
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from .base import BaseTopology
@@ -102,19 +105,19 @@ class SegmentTopology(BaseTopology):
             else:
                 return 0
 
-        # Get segment's objects
-        mos = list(self.segment.managed_objects)
-        self.segment_objects = set(o.id for o in mos)
-        for o in mos:
-            self.add_object(o)
-        # Get all interfaces
+        # Get all links, belonging to segment
+        links = list(Link.objects.filter(linked_segments=self.segment.id))
+        # All linked interfaces from map
+        all_ifaces = list(
+            itertools.chain.from_iterable(
+                link.interface_ids for link in links
+            )
+        )
+        # Bulk fetch all interfaces data
         ifs = dict((i["_id"], i) for i in Interface._get_collection().find(
             {
-                "managed_object": {
-                    "$in": [o.id for o in mos]
-                },
-                "type": {
-                    "$in": ["physical", "management"]
+                "_id": {
+                    "$in": all_ifaces
                 }
             },
             {
@@ -126,38 +129,51 @@ class SegmentTopology(BaseTopology):
                 "out_speed": 1
             }
         ))
-        # Get all links
+        # Bulk fetch all managed objects
+        all_mos = list(set(i["managed_object"]
+                           for i in six.itervalues(ifs)
+                           if "managed_object" in i))
+        mos = dict(
+            (mo.id, mo)
+            for mo in ManagedObject.objects.filter(id__in=all_mos)
+        )
+        self.segment_objects = set(
+            mo_id for mo_id in all_mos
+            if mos[mo_id].segment.id == self.segment.id
+        )
+        for mo in six.itervalues(mos):
+            self.add_object(mo)
+
         pn = 0
-        for link in Link.objects.filter(interfaces__in=list(ifs)):
-            mos = set()
-            for i in link.interfaces:
-                mos.add(i.managed_object)
-            if len(mos) != 2:
+        for link in links:
+            if not link.is_ptp:
                 continue
-            # Add objects
-            m0 = mos.pop()
-            m1 = mos.pop()
+            # Avoid dereferencing
+            m0, m1 = None, None
             i0, i1 = [], []
-            for i in link.interfaces:
-                if i.managed_object == m0:
-                    i0 += [i]
+            for if_id in link.interface_ids:
+                iface = ifs[if_id]
+                if_mo = mos[iface["managed_object"]]
+                if m0 is None:
+                    m0 = if_mo
+                elif m0.id != if_mo.id:
+                    m1 = if_mo
+                if if_mo.id == m0:
+                    i0 += [iface]
                 else:
-                    i1 += [i]
-            self.add_object(m0)
+                    i1 += [iface]
             self.G.node[m0.id]["ports"] += [{
                 "id": pn,
-                "ports": [i.name for i in i0]
+                "ports": [i["name"] for i in i0]
             }]
-            self.add_object(m1)
             self.G.node[m1.id]["ports"] += [{
                 "id": pn + 1,
-                "ports": [i.name for i in i1]
+                "ports": [i["name"] for i in i1]
             }]
             # Add link
             t_in_bw = 0
             t_out_bw = 0
-            for i in i0:
-                iface = ifs.get(i.id) or {}
+            for iface in i0:
                 bw = iface.get("bandwidth") or 0
                 in_speed = iface.get("in_speed") or 0
                 out_speed = iface.get("out_speed") or 0
@@ -165,8 +181,7 @@ class SegmentTopology(BaseTopology):
                 t_out_bw += bandwidth(out_speed, bw)
             d_in_bw = 0
             d_out_bw = 0
-            for i in i1:
-                iface = ifs.get(i.id) or {}
+            for iface in i1:
                 bw = iface.get("bandwidth") or 0
                 in_speed = iface.get("in_speed") or 0
                 out_speed = iface.get("out_speed") or 0
