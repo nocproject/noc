@@ -87,7 +87,7 @@ class Link(Document):
         Check link is point-to-point link
         :return:
         """
-        return len(self.linked_objects) == 2
+        return self.type == "p" or self.type == "a"
 
     @property
     def is_lag(self):
@@ -95,15 +95,7 @@ class Link(Document):
         Check link is unresolved LAG
         :return:
         """
-        if self.is_ptp:
-            return True
-        d = defaultdict(int)  # object -> count
-        for i in self.interfaces:
-            d[i.managed_object.id] += 1
-        if len(d) != 2:
-            return False
-        k = d.keys()
-        return d[k[0]] == d[k[1]]
+        return self.type == "p" or self.type == "a"
 
     @property
     def is_broadcast(self):
@@ -119,10 +111,7 @@ class Link(Document):
         Check link is looping to same object
         :return:
         """
-        if not self.is_ptp:
-            return False
-        i1, i2 = self.interfaces
-        return i1.managed_object == i2.managed_object
+        return len(self.linked_objects) == 1
 
     def other(self, interface):
         """
@@ -162,13 +151,11 @@ class Link(Document):
 
     @classmethod
     def object_links(cls, object):
-        from interface import Interface
-        ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
-        return cls.objects.filter(interfaces__in=ifaces)
+        return Link.objects.filter(linked_object=object.id)
 
     @classmethod
     def object_links_count(cls, object):
-        return cls.object_links(object).count()
+        return Link.objects.filter(linked_object=object.id).count()
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:
@@ -182,7 +169,8 @@ class Link(Document):
         """
         List of connected managed objects
         """
-        return list(set(i.managed_object for i in self.interfaces))
+        from noc.sa.models.managedobject import ManagedObject
+        return list(ManagedObject.objects.filter(id__in=self.linked_objects))
 
     @property
     def segments(self):
@@ -190,7 +178,10 @@ class Link(Document):
         List of segments connected by link
         :return:
         """
-        return list(set(i.segment for i in self.managed_objects))
+        from noc.inv.models.networksegment import NetworkSegment
+        return list(NetworkSegment.objects.filter(id__id=self.linked_segments))
+        #
+        # return list(set(i.segment for i in self.managed_objects))
 
     def update_topology(self):
         for mo in self.managed_objects:
@@ -206,7 +197,12 @@ class Link(Document):
         if n_objects == 2 and n_interfaces == 2:
             return "p"  # Point-to-point
         if n_objects == 2 and n_interfaces > 2 and n_interfaces % 2 == 0:
-            return "a"  # Point-to-point aggregated
+            d = defaultdict(int)  # object -> count
+            for i in self.interfaces:
+                d[i.managed_object.id] += 1
+            k = d.keys()
+            if d[k[0]] == d[k[1]]:
+                return "a"  # Point-to-Point aggregated
         if n_objects > 2:
             if self.type == "m":
                 return "m"
