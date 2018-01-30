@@ -9,7 +9,7 @@
 # Third-Party modules
 from networkx import nx
 # NOC modules
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc.lib.text import split_alnum
 
 

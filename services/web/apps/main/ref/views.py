@@ -18,7 +18,7 @@ from mongoengine.base.common import _document_registry
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.site import site
 from noc.core.interface.loader import loader as interface_loader
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry

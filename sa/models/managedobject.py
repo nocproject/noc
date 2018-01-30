@@ -45,7 +45,7 @@ from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
 from noc.lib.db import SQL
 from noc.lib.app.site import site
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc.lib.validators import is_ipv4, is_ipv4_prefix
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter

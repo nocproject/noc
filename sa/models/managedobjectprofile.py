@@ -19,7 +19,7 @@ import cachetools
 from noc.main.models.style import Style
 from .authprofile import AuthProfile
 from noc.lib.validators import is_fqdn
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
 from noc.core.model.decorator import on_save, on_init, on_delete_check
