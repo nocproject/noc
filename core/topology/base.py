@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BaseTopology class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  BaseTopology class
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2016 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
-from collections import defaultdict
-## Third-Party modules
+# Third-Party modules
 from networkx import nx
-## NOC modules
+# NOC modules
 from noc.lib.stencil import stencil_registry
 from noc.lib.text import split_alnum
 
@@ -121,9 +119,8 @@ class BaseTopology(object):
         for p in self.G.node[uplink]["ports"]:
             id_to_name[p["id"]] = sorted(p["ports"], key=split_alnum)[0]
         for dl in downlinks:
-            for p in  self.G.edge[uplink][dl]["ports"]:
+            for p in self.G.edge[uplink][dl]["ports"]:
                 if p in id_to_name:
                     dl_map[dl] = id_to_name[p]
                     break
         return sorted(dl_map, key=lambda x: split_alnum(dl_map[x]))
-
