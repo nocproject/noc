@@ -88,6 +88,11 @@ class MonMapCard(BaseCard):
         # south = float(self.handler.get_argument("s"))
         # ms = int(self.handler.get_argument("maintenance"))
         # active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
+        if self.current_user.is_superuser:
+            moss = ManagedObject.objects.filter(is_managed=True)
+        else:
+            moss = ManagedObject.objects.filter(is_managed=True,
+                                                administrative_domain__in=self.get_user_domains())
         objects = []
         sss = {"error": {},
                "warning": {},
@@ -104,10 +109,9 @@ class MonMapCard(BaseCard):
             object_root = None
         if object_root:
             con = self.get_containers_by_root(object_root.id)
-            moss = ManagedObject.objects.filter(is_managed=True,
-                                                container__in=con).exclude(container=None).order_by("container")
+            moss = moss.filter(container__in=con).exclude(container=None).order_by("container")
         else:
-            moss = ManagedObject.objects.filter(is_managed=True).exclude(container=None).order_by("container")
+            moss = moss.exclude(container=None).order_by("container")
 
         # Getting Alarms severity dict MO: Severity @todo List alarms
         alarms = {aa["managed_object"]: aa["severity"] for aa in ActiveAlarm.objects.filter(
