@@ -50,7 +50,7 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                     image: {
                         'width': 50,
                         'height': 50,
-                        'xlink:href': "/inv/map/stencils/" + name + "/"
+                        'xlink:href': "/ui/pkg/stencils/" + name + ".svg"
                     },
                     text: {
                         text: 'New Object',

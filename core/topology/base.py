@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 #  BaseTopology class
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2016 The NOC Project
+#  Copyright (C) 2007-2018 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -53,8 +53,7 @@ class BaseTopology(object):
             # Only update attributes
             self.G.node[mo.id].update(attrs)
             return
-        shape = self.get_object_shape(mo)
-        sw, sh = self.get_shape_size(shape)
+        stencil = self.get_object_stencil(mo)
         # Get capabilities
         oc = set(mo.get_caps()) & self.CAPS
         self.caps |= oc
@@ -68,9 +67,9 @@ class BaseTopology(object):
             "name": mo.name,
             "address": mo.address,
             "role": self.get_role(mo),
-            "shape": shape,
-            "shape_width": sw,
-            "shape_height": sh,
+            "shape": stencil.path,
+            "shape_width": stencil.width,
+            "shape_height": stencil.height,
             "level": mo.object_profile.level,
             "ports": [],
             "caps": list(oc)
@@ -92,20 +91,17 @@ class BaseTopology(object):
         #
         self.G.add_edge(o1, o2, a)
 
-    def get_object_shape(self, mo):
+    @staticmethod
+    def get_object_stencil(mo):
         if mo.shape:
             # Use mo's shape, if set
-            sn = mo.shape
+            shape_id = mo.shape
         elif mo.object_profile.shape:
             # Use profile's shape
-            sn = mo.object_profile.shape
+            shape_id = mo.object_profile.shape
         else:
-            # Fallback to router shape
-            sn = "Cisco/router"
-        return sn
-
-    def get_shape_size(self, shape):
-        return stencil_registry.get_size(shape)
+            shape_id = None
+        return stencil_registry.get(shape_id)
 
     def order_nodes(self, uplink, downlinks):
         """

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,6 @@ from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.lib.stencil import stencil_registry
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.maintenance.models.maintenance import Maintenance
@@ -156,30 +155,6 @@ class MapApplication(ExtApplication):
         return {
             "status": True
         }
-
-    def get_object_shape(self, object):
-        if object.shape:
-            # Use object's shape, if set
-            sn = object.shape
-        elif object.object_profile.shape:
-            # Use profile's shape
-            sn = object.object_profile.shape
-        else:
-            # Fallback to router shape
-            sn = "Cisco/router"
-        return sn
-
-    def get_shape_size(self, shape):
-        return stencil_registry.get_size(shape)
-
-    @view(url="^stencils/(?P<shape>.+)/$",
-          method=["GET"], access=True, api=True)
-    def api_stencil(self, request, shape):
-        svg = stencil_registry.get_svg(shape)
-        if not svg:
-            return self.response_not_found()
-        else:
-            return self.render_response(svg, content_type="image/svg+xml")
 
     @view(url="^(?P<id>[0-9a-f]{24})/info/segment/$", method=["GET"],
           access="read", api=True)
