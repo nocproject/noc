@@ -171,7 +171,7 @@ class Site(object):
             app_logger = v.__self__.logger
             try:
                 # Validate requests
-                if hasattr(v, "validate") and v.validate:
+                if getattr(v, "validate"):
                     # Additional validation
                     errors = None
                     if isinstance(v.validate, DictParameter):
@@ -279,7 +279,7 @@ class Site(object):
             r["Expires"] = "0"
             return r
 
-        from access import PermissionDenied
+        from .access import PermissionDenied
         from django.forms import Form
         from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
         return inner
