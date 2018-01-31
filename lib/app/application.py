@@ -161,14 +161,14 @@ class Application(object):
                  menu=None, method=None, validate=None, api=False):
         # Decorate function to clear attributes
         f = functools.partial(func)
-        f.im_self = func.im_self
+        f.__self__ = func.__self__
         f.__name__ = func.__name__
         # Add to class
         cls.add_to_class(
             name, view(url=url, access=access, url_name=url_name,
                        menu=menu, method=method, validate=validate,
                        api=api)(f))
-        site.add_contributor(cls, func.im_self)
+        site.add_contributor(cls, func.__self__)
 
     @property
     def js_app_class(self):
