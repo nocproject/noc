@@ -22,7 +22,7 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
         var url = '/inv/map/' + segmentId + '/info/' + name + '/';
 
         if(name === 'managedobject' || name === 'link') {
-            url += objectId + '/';
+            url += objectId.split("-")[0] + '/';
         }
 
         Ext.Ajax.request({

@@ -199,7 +199,7 @@ class MapApplication(ExtApplication):
         }
         return r
 
-    @view(url="^(?P<id>[0-9a-f]{24})/info/link/(?P<link_id>[0-9a-f]{24})(-[^/]+)?/$", method=["GET"],
+    @view(url="^(?P<id>[0-9a-f]{24})/info/link/(?P<link_id>[0-9a-f]{24})/$", method=["GET"],
           access="read", api=True)
     def api_info_link(self, request, id, link_id):
         def q(s):
