@@ -9,8 +9,6 @@
 # Python modules
 from collections import defaultdict
 import datetime
-# Third-party modules
-from bson import ObjectId
 # NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField, ListField,
