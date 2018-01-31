@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # H3C.VRP.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,5 +16,7 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     def execute(self):
-        # r = self.cli("display link-aggregation summary")
+        r = self.cli("display link-aggregation summary")
+        if "No link-aggregation" in r:
+            return []
         raise self.NotSupportedError()
