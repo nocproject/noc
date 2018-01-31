@@ -37,6 +37,13 @@ class Link(Document):
         ]
     }
 
+    # Optional link name
+    name = StringField()
+    # Optional description
+    description = StringField()
+    # Optional shape
+    shape = StringField()
+    # List of interfaces
     interfaces = PlainReferenceListField("inv.Interface")
     # Link type, detected automatically
     type = StringField(choices=[

@@ -90,7 +90,7 @@ class BaseTopology(object):
             # Only update attributes
             self.G.node[link_id].update(attrs)
             return
-        stencil = self.get_cloud_stencil()
+        stencil = self.get_cloud_stencil(link)
         # Apply node hints
         attrs.update(self.node_hints.get(link_id) or {})
         # Apply default attributes
@@ -98,7 +98,7 @@ class BaseTopology(object):
             "link": link,
             "type": "cloud",
             "id": link_id,
-            "name": "Cloud",
+            "name": link.name or "",
             "ports": [],
             "shape": stencil.path,
             "shape_width": stencil.width,
@@ -134,8 +134,8 @@ class BaseTopology(object):
         return stencil_registry.get(shape_id)
 
     @staticmethod
-    def get_cloud_stencil():
-        return stencil_registry.get(stencil_registry.DEFAULT_CLOUD_STENCIL)
+    def get_cloud_stencil(link):
+        return stencil_registry.get(link.shape or stencil_registry.DEFAULT_CLOUD_STENCIL)
 
     def order_nodes(self, uplink, downlinks):
         """
