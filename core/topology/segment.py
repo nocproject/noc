@@ -316,19 +316,38 @@ class SegmentTopology(BaseTopology):
         Returns a dict of <object id> -> [<uplink object id>, ...]
         Shortest path first
         """
-        uplinks = self.get_uplinks()
-        r = {}
-        for o in self.G.node:
-            if o not in self.segment_objects:
-                continue
+        def get_node_uplinks(node):
             ups = {}
             for u in uplinks:
-                for path in nx.all_simple_paths(self.G, o, u):
+                for path in nx.all_simple_paths(self.G, node, u):
                     lp = len(path)
                     p = path[1]
                     ups[p] = min(lp, ups.get(p, lp))
             # Shortest path first
-            r[o] = sorted(ups, key=lambda x: ups[x])
+            return sorted(ups, key=lambda x: ups[x])
+
+        uplinks = self.get_uplinks()
+        # Get all cloud nodes
+        cloud_nodes = [o for o in self.G.node if self.G.node[o]["type"] == "cloud"]
+        # Get uplinks for cloud nodes
+        cloud_uplinks = dict(
+            (o, [int(u) for u in get_node_uplinks(o)])
+            for o in cloud_nodes
+        )
+        # Get all segment objects' nodes
+        segment_objects = set(str(o) for o in self.segment_objects)  # Convert to string
+        # Get objects uplinks
+        r = {}
+        for o in segment_objects:
+            ups = []
+            for u in get_node_uplinks(o):
+                cu = cloud_uplinks.get(u)
+                if cu:
+                    # Uplink is a cloud. Use cloud's uplinks instead
+                    ups += cu
+                else:
+                    ups += [int(u)]
+            r[int(o)] = ups
         return r
 
 
