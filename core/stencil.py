@@ -21,6 +21,7 @@ class StencilRegistry:
     prefix = os.path.join("ui", "pkg", "stencils")
     # Replace missed stencil with Cisco | Router
     DEFAULT_STENCIL = "Cisco/router"
+    DEFAULT_CLOUD_STENCIL = "Cisco/satellite_dish"
 
     def __init__(self):
         self.choices = []

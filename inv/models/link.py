@@ -164,11 +164,11 @@ class Link(Document):
 
     @classmethod
     def object_links(cls, object):
-        return Link.objects.filter(linked_object=object.id)
+        return Link.objects.filter(linked_objects=object.id)
 
     @classmethod
     def object_links_count(cls, object):
-        return Link.objects.filter(linked_object=object.id).count()
+        return Link.objects.filter(linked_objects=object.id).count()
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interfaces" in self._changed_fields:

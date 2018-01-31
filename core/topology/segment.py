@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import operator
 import logging
 import itertools
+from collections import defaultdict
 # Third-party modules
 import networkx as nx
 import numpy as np
@@ -95,13 +96,29 @@ class SegmentTopology(BaseTopology):
         """
         Load all managed objects from segment
         """
-        def bandwidth(speed, bandwidth):
-            if speed and bandwidth:
-                return min(speed, bandwidth)
-            elif speed and not bandwidth:
+        def get_bandwidth(if_list):
+            """
+            Calculate bandwidth for list of interfaces
+            :param if_list:
+            :return: total in bandwidth, total out bandwidth
+            """
+            in_bw = 0
+            out_bw = 0
+            for iface in if_list:
+                bw = iface.get("bandwidth") or 0
+                in_speed = iface.get("in_speed") or 0
+                out_speed = iface.get("out_speed") or 0
+                in_bw += bandwidth(in_speed, bw)
+                out_bw += bandwidth(out_speed, bw)
+            return in_bw, out_bw
+
+        def bandwidth(speed, if_bw):
+            if speed and if_bw:
+                return min(speed, if_bw)
+            elif speed and not if_bw:
                 return speed
-            elif bandwidth:
-                return bandwidth
+            elif if_bw:
+                return if_bw
             else:
                 return 0
 
@@ -143,65 +160,70 @@ class SegmentTopology(BaseTopology):
         )
         for mo in six.itervalues(mos):
             self.add_object(mo)
-
+        # Process all segment's links
         pn = 0
         for link in links:
-            if not link.is_ptp:
-                continue
-            # Avoid dereferencing
-            m0, m1 = None, None
-            i0, i1 = [], []
+            if link.is_loop:
+                continue  # Loops are not shown on map
+            # Group interfaces by objects
+            # avoiding non-bulk dereferencing
+            mo_ifaces = defaultdict(list)
             for if_id in link.interface_ids:
                 iface = ifs[if_id]
-                if_mo = mos[iface["managed_object"]]
-                if m0 is None:
-                    m0 = if_mo
-                elif m0.id != if_mo.id:
-                    m1 = if_mo
-                if if_mo.id == m0:
-                    i0 += [iface]
+                mo_ifaces[mos[iface["managed_object"]]] += [iface]
+            # Pairs of managed objects are pseudo-links
+            if len(mo_ifaces) == 2:
+                # ptp link
+                pseudo_links = [list(mo_ifaces)]
+                is_pmp = False
+            else:
+                # pmp
+                # Create virtual cloud
+                self.add_cloud(link)
+                # Create virtual links to cloud
+                pseudo_links = [(link, mo) for mo in mo_ifaces]
+                # Create virtual cloud interface
+                mo_ifaces[link] = [{
+                    "name": "cloud"
+                }]
+                is_pmp = True
+            # Link all pairs
+            for mo0, mo1 in pseudo_links:
+                mo0_id = str(mo0.id)
+                mo1_id = str(mo1.id)
+                # Create virtual ports for mo0
+                self.G.node[mo0_id]["ports"] += [{
+                    "id": pn,
+                    "ports": [i["name"] for i in mo_ifaces[mo0]]
+                }]
+                # Create virtual ports for mo1
+                self.G.node[mo1_id]["ports"] += [{
+                    "id": pn + 1,
+                    "ports": [i["name"] for i in mo_ifaces[mo1]]
+                }]
+                # Calculate bandwidth
+                t_in_bw, t_out_bw = get_bandwidth(mo_ifaces[mo0])
+                d_in_bw, d_out_bw = get_bandwidth(mo_ifaces[mo1])
+                in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
+                out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
+                # Add link
+                if is_pmp:
+                    link_id = "%s-%s-%s" % (link.id, pn, pn + 1)
                 else:
-                    i1 += [iface]
-            self.G.node[m0.id]["ports"] += [{
-                "id": pn,
-                "ports": [i["name"] for i in i0]
-            }]
-            self.G.node[m1.id]["ports"] += [{
-                "id": pn + 1,
-                "ports": [i["name"] for i in i1]
-            }]
-            # Add link
-            t_in_bw = 0
-            t_out_bw = 0
-            for iface in i0:
-                bw = iface.get("bandwidth") or 0
-                in_speed = iface.get("in_speed") or 0
-                out_speed = iface.get("out_speed") or 0
-                t_in_bw += bandwidth(in_speed, bw)
-                t_out_bw += bandwidth(out_speed, bw)
-            d_in_bw = 0
-            d_out_bw = 0
-            for iface in i1:
-                bw = iface.get("bandwidth") or 0
-                in_speed = iface.get("in_speed") or 0
-                out_speed = iface.get("out_speed") or 0
-                d_in_bw += bandwidth(in_speed, bw)
-                d_out_bw += bandwidth(out_speed, bw)
-            in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
-            out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
-            self.add_link(m0.id, m1.id, {
-                "id": str(link.id),
-                "type": "link",
-                "method": link.discovery_method,
-                "ports": [pn, pn + 1],
-                # Target to source
-                "in_bw": in_bw,
-                # Source to target
-                "out_bw": out_bw,
-                # Max bandwidth
-                "bw": max(in_bw, out_bw)
-            })
-            pn += 2
+                    link_id = str(link.id)
+                self.add_link(mo0_id, mo1_id, {
+                    "id": link_id,
+                    "type": "link",
+                    "method": link.discovery_method,
+                    "ports": [pn, pn + 1],
+                    # Target to source
+                    "in_bw": in_bw,
+                    # Source to target
+                    "out_bw": out_bw,
+                    # Max bandwidth
+                    "bw": max(in_bw, out_bw)
+                })
+                pn += 2
 
     def max_uplink_path_len(self):
         """

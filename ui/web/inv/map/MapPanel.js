@@ -367,7 +367,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
         });
         me.objectNodes[data.id] = node;
-        me.objectsList.push(data.id);
+        if(data.type === "managedobject") {
+            me.objectsList.push(data.id)
+        }
         return node;
     },
     //

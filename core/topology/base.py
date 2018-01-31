@@ -49,21 +49,22 @@ class BaseTopology(object):
         Add managed object to topology
         """
         attrs = attrs or {}
-        if mo.id in self.G.node:
+        mo_id = str(mo.id)
+        if mo_id in self.G.node:
             # Only update attributes
-            self.G.node[mo.id].update(attrs)
+            self.G.node[mo_id].update(attrs)
             return
         stencil = self.get_object_stencil(mo)
         # Get capabilities
         oc = set(mo.get_caps()) & self.CAPS
         self.caps |= oc
         # Apply node hints
-        attrs.update(self.node_hints.get(mo.id) or {})
+        attrs.update(self.node_hints.get(mo_id) or {})
         # Apply default attributes
         attrs.update({
             "mo": mo,
             "type": "managedobject",
-            "id": mo.id,
+            "id": mo_id,
             "name": mo.name,
             "address": mo.address,
             "role": self.get_role(mo),
@@ -74,7 +75,36 @@ class BaseTopology(object):
             "ports": [],
             "caps": list(oc)
         })
-        self.G.add_node(mo.id, attrs)
+        self.G.add_node(mo_id, attrs)
+
+    def add_cloud(self, link, attrs=None):
+        """
+        Add cloud to topology
+        :param link:
+        :param attrs:
+        :return:
+        """
+        attrs = attrs or {}
+        link_id = str(link.id)
+        if link_id in self.G.node:
+            # Only update attributes
+            self.G.node[link_id].update(attrs)
+            return
+        stencil = self.get_cloud_stencil()
+        # Apply node hints
+        attrs.update(self.node_hints.get(link_id) or {})
+        # Apply default attributes
+        attrs.update({
+            "link": link,
+            "type": "cloud",
+            "id": link_id,
+            "name": "Cloud",
+            "ports": [],
+            "shape": stencil.path,
+            "shape_width": stencil.width,
+            "shape_height": stencil.height
+        })
+        self.G.add_node(link_id, attrs)
 
     def add_link(self, o1, o2, attrs=None):
         """
@@ -102,6 +132,10 @@ class BaseTopology(object):
         else:
             shape_id = None
         return stencil_registry.get(shape_id)
+
+    @staticmethod
+    def get_cloud_stencil():
+        return stencil_registry.get(stencil_registry.DEFAULT_CLOUD_STENCIL)
 
     def order_nodes(self, uplink, downlinks):
         """

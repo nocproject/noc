@@ -63,9 +63,13 @@ class MapApplication(ExtApplication):
     def api_data(self, request, id):
         def q_mo(d):
             x = d.copy()
-            del x["mo"]
-            x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
-            x["id"] = str(x["id"])
+            if x["type"] == "managedobject":
+                del x["mo"]
+                x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
+                # x["id"] = str(x["id"])
+            elif d["type"] == "cloud":
+                del x["link"]
+                x["external"] = False
             return x
 
         # Find segment
@@ -88,9 +92,9 @@ class MapApplication(ExtApplication):
         if settings:
             self.logger.info("Using stored positions")
             for n in settings.nodes:
-                node_hints[int(n.id)] = {
+                node_hints[n.id] = {
                     "type": n.type,
-                    "id": int(n.id),
+                    "id": n.id,
                     "x": n.x,
                     "y": n.y
                 }
@@ -195,7 +199,7 @@ class MapApplication(ExtApplication):
         }
         return r
 
-    @view(url="^(?P<id>[0-9a-f]{24})/info/link/(?P<link_id>[0-9a-f]{24})/$", method=["GET"],
+    @view(url="^(?P<id>[0-9a-f]{24})/info/link/(?P<link_id>[0-9a-f]{24})(-[^/]+)?/$", method=["GET"],
           access="read", api=True)
     def api_info_link(self, request, id, link_id):
         def q(s):
@@ -251,7 +255,11 @@ class MapApplication(ExtApplication):
                 int(max(mo_in[mo2], mo_out[mo1])),
             ]
         else:
-            r["utilisation"] = [int(max(mo_in.values() + mo_out.values()))]
+            mv = mo_in.values() + mo_out.values()
+            if mv:
+                r["utilisation"] = [int(max(mv))]
+            else:
+                r["utilisation"] = 0
         return r
 
     @view(
