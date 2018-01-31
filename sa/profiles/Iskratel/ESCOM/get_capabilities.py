@@ -44,5 +44,5 @@ class Script(BaseScript):
             if s:
                 caps["Stack | Members"] = len(s) if len(s) != 1 else 0
                 caps["Stack | Member Ids"] = " | ".join(s)
-        except:
+        except self.CLISyntaxError:
             pass
