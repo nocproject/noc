@@ -31,6 +31,7 @@ import ujson
 import six
 # NOC modules
 from .access import HasPerm, Permit, Deny
+from .site import site
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
