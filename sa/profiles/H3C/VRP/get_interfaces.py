@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # H3C.VRP.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,8 +18,10 @@ class Script(BaseScript):
     name = "H3C.VRP.get_interfaces"
     interface = IGetInterfaces
 
-    rx_iface_sep = re.compile(r"^\s*(\S+) current state\s*:\s*\s+",
-                              re.MULTILINE)
+    rx_iface_sep = re.compile(
+        r"^\s*(\S+) current state\s*:\s*\s*",
+        re.MULTILINE
+    )
     rx_line_proto = re.compile(
         r"Line protocol current state : (?P<o_state>UP|DOWN)",
         re.IGNORECASE
@@ -27,18 +29,20 @@ class Script(BaseScript):
     rx_mac = re.compile(
         "Hardware address is (?P<mac>[0-9af]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
     )
-    rx_ipv4 = re.compile(
-        r"Internet Address is (?P<ip>\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1,2}/\d{1,2})",
-        re.IGNORECASE
-    )
-
     rx_iftype = re.compile(r"^(\S+?)\d+.*$")
 
-    rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s+:\s+(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
-
-    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
-
-    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
+    rx_dis_ip_int = re.compile(
+        r"^(?P<interface>\S+?)\s+current\s+state\s+:\s*"
+        r"(?:administratively\s+)?(?P<admin_status>UP|DOWN)",
+    )
+    rx_ip = re.compile(
+        r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})"
+    )
+    rx_ospf = re.compile(
+        r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+"
+        r"\((?P<name>\S+)\)\s+",
+        re.MULTILINE
+    )
 
     types = {
         "Aux": "physical",
@@ -58,7 +62,8 @@ class Script(BaseScript):
         "Virtual-Ethernet": None,
         "Virtual-Template": None,
         "Vlanif": "SVI",
-        "Vlan-interface": "SVI"
+        "Vlan-interface": "SVI",
+        "NULL": "null"
     }
 
     def get_ospfint(self):
@@ -105,7 +110,6 @@ class Script(BaseScript):
             ip = match.group("ip")
             ipv4_interfaces[c_iface] += [ip]
 
-        #
         interfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
@@ -120,11 +124,11 @@ class Script(BaseScript):
                 quit()
             """
             ifname = self.profile.convert_interface_name(full_ifname)
-            if ifname.startswith("NULL"):
-                continue
             # I do not known, what are these
-            if ifname.startswith("DCN-Serial") \
-            or ifname.startswith("Cpos-Trunk"):
+            if (
+                ifname.startswith("DCN-Serial") or
+                ifname.startswith("Cpos-Trunk")
+            ):
                 continue
             sub = {
                 "name": ifname,
@@ -133,8 +137,10 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "enabled_afi": []
             }
-            if (ifname in switchports and
-                        ifname not in portchannel_members):
+            if (
+                ifname in switchports and
+                ifname not in portchannel_members
+            ):
                 # Bridge
                 sub["enabled_afi"] += ['BRIDGE']
                 u, t = switchports[ifname]
