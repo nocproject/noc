@@ -156,6 +156,6 @@ Monmap.prototype.poll_data = function() {
         $("#summary").html(data.summary);
         setTimeout(function() {
             me.poll_data();
-        }, 60000);
+        }, 900000);
     });
 };
