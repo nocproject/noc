@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Ring layout class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Ring layout class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import math
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 import networkx as nx
 import numpy as np
-## NOC modules
-from base import LayoutBase
+# NOC modules
+from .base import LayoutBase
 
 
 class RingLayout(LayoutBase):
