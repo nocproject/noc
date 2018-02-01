@@ -7,7 +7,7 @@
     "method": "http_get",
     "param": ":8080/api/v2/monitoring.json",
     "match_method": "re",
-    "value": "HikVision",
+    "value": "Hik[vV]ision",
     "action": "match",
     "profile__name": "Hikvision.DS2CD"
 }
