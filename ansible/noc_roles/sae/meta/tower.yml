@@ -1,10 +1,5 @@
-config:
-  sae:
-    db_threads:
-      default: 4
-      label: "DB threads"
-      type: int
-services:
+---
+forms:
   sae:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -13,6 +8,18 @@ services:
       <strong>Scale Recommendations</strong>: At least two per system. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/sae/ target=_blank>Sae</a><br/>
       <strong>Placement constraint</strong>: On node with discovery<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    db_threads:
+      default: 4
+      label: "DB threads"
+      type: int
+services:
+  sae:
     level: global
     category: internal
     supervisord:

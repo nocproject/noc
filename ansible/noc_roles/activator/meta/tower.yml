@@ -1,4 +1,5 @@
-services:
+---
+forms:
   activator:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -7,29 +8,38 @@ services:
       <strong>Scale Recommendations</strong>: At least two per core on node. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/activator/ target=_blank>Activator</a><br/>
       <strong>Placement constraint</strong>: On separate node<br/>
-    level: pool
-    category: internal
-    supervisord:
-      command: "./services/activator/service.py"
-      process_name: "%(program_name)s-%(process_num)02d"
-      priority: 100
-      oom_score_adj: 300
-      startretries: 999
-      stopwaitsecs: 3
-      stdout_logfile_maxbytes: 10MB
-      stdout_logfile_backups: 3
-    depends:
-      - noc
-      - sae
-      - discovery
-
-config:
-  activator:
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+      required: True
     script_threads:
       default: 20
       label: "Script threads"
       type: int
+      required: True
     tos:
       default: 0
       label: "IP ToS mark"
       type: int
+      required: True
+
+services:
+  activator:
+    category: internal
+    depends:
+      - noc
+      - sae
+      - discovery
+    level: pool
+    supervisord:
+      command: ./services/activator/service.py
+      oom_score_adj: 300
+      process_name: "%(program_name)s-%(process_num)02d"
+      startretries: 999
+      stdout_logfile_backups: 3
+      stdout_logfile_maxbytes: 10MB
+      stopwaitsecs: 3
+

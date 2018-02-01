@@ -1,5 +1,20 @@
-config:
+---
+forms:
   postgres:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: PostgresSQL database <br/>
+      <strong>Long description</strong>: Secondary DB. Used to store network equipment info, IPAM and others. <br/>
+      <strong>Scale Recommendations</strong>: At least one per system. <br/>
+      <strong>docs</strong>: https://www.postgresql.org/docs/9.6/static/index.html<br/>
+      <strong>Placement constraint</strong>: Low cpu usage, low memory usage. low io usage. Nothing works without it.<br/>
+    power:
+      default: master
+      label: "Postgres Role"
+      type: list
+      options:
+        - master
+        - secondary
     postgres_max_clients:
       default: 300
       label: "Postgresql max clients"
@@ -33,16 +48,8 @@ config:
       label: Password
 services:
   postgres:
-    description: >
-      <strong>Service type</strong>: External <br/>
-      <strong>Short description</strong>: PostgresSQL database <br/>
-      <strong>Long description</strong>: Secondary DB. Used to store network equipment info, IPAM and others. <br/>
-      <strong>Scale Recommendations</strong>: At least one per system. <br/>
-      <strong>docs</strong>: https://www.postgresql.org/docs/9.6/static/index.html<br/>
-      <strong>Placement constraint</strong>: Low cpu usage, low memory usage. low io usage. Nothing works without it.<br/>
     level: system
     category: external
     port: 5432
-    promote: system
     depends:
       - consul

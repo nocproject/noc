@@ -1,5 +1,19 @@
-config:
+---
+forms:
   classifier:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Classifier service <br/>
+      <strong>Long description</strong>: Responsible for the classification of the incoming message flow from syslog-collector and snmp-collector according to the rules recorded in the NOC. After classification into the database, go to the Event, i.e. event.<br/>
+      <strong>Scale Recommendations</strong>: At least two per pool.<br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/classifier/ target=_blank>Classifier</a><br/>
+      <strong>Placement constraint</strong>: On node with correlator<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
     default_interface_profile:
       default: default
       label: "Default interface profile"
@@ -11,13 +25,6 @@ config:
 
 services:
   classifier:
-    description: >
-      <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: Classifier service <br/>
-      <strong>Long description</strong>: Responsible for the classification of the incoming message flow from syslog-collector and snmp-collector according to the rules recorded in the NOC. After classification into the database, go to the Event, i.e. event.<br/>
-      <strong>Scale Recommendations</strong>: At least two per pool.<br/>
-      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/classifier/ target=_blank>Classifier</a><br/>
-      <strong>Placement constraint</strong>: On node with correlator<br/>
     level: pool
     category: internal
     supervisord:

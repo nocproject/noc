@@ -1,9 +1,5 @@
-config:
-  tgsender:
-    token:
-      label: Token
-      type: str
-services:
+---
+forms:
   tgsender:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -12,6 +8,17 @@ services:
       <strong>Scale Recommendations</strong>: One per system. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/tgsender/ target=_blank>tgsender</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    token:
+      label: Token
+      type: str
+services:
+  tgsender:
     level: global
     category: internal
     supervisord:

@@ -1,10 +1,21 @@
-config:
+---
+forms:
   noc:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: NOC settings <br/>
+      <strong>Long description</strong>: Special settings for noc<br/>
+      <strong>Scale Recommendations</strong>: At one any node <br/>
+      <strong>docs</strong>: <br/>
+      <strong>Placement constraint</strong>: Any <br/>
     python_interpreter:
       default: python
       label: Interpreter
       description: Python interpreter either <strong>python</strong> or <strong>pypy</strong>.
-      type: str
+      type: list
+      options:
+        - python
+        - pypy
     noc_repo:
       default: https://github.com/nocproject/noc.git
       label: Repo
@@ -33,13 +44,6 @@ config:
 
 services:
   noc:
-    description: >
-      <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: NOC settings <br/>
-      <strong>Long description</strong>: Write settings.yml. file will not be overwritten once created<br/>
-      <strong>Scale Recommendations</strong>: At one any node <br/>
-      <strong>docs</strong>: <br/>
-      <strong>Placement constraint</strong>: Any <br/>
     level: system
     category: config
     promote: system

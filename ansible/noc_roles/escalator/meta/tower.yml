@@ -1,11 +1,5 @@
-config:
-  escalator:
-    max_threads:
-      default: 10
-      label: "Escalator threads"
-      type: int
-
-services:
+---
+forms:
   escalator:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -14,6 +8,19 @@ services:
       <strong>Scale Recommendations</strong>: Have to be at least one per system. Can be more than one. Will select active one via consul lock.<br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/escalator/ target=_blank>Escalator</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 1
+      min: 0
+    max_threads:
+      default: 10
+      label: "Escalator threads"
+      type: int
+
+services:
+  escalator:
     level: global
     category: internal
     supervisord:

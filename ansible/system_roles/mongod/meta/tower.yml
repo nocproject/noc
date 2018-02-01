@@ -1,10 +1,21 @@
-config:
+---
+forms:
   mongod:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Primary database <br/>
+      <strong>Long description</strong>: Used for most of operations<br/>
+      <strong>Scale Recommendations</strong>: At least one. Have to be run in replicated mode with 3 or even 5 nodes. <br/>
+      <strong>docs</strong>: https://docs.mongodb.com/manual/ <br/>
+      <strong>Placement constraint</strong>: Long living nodes. Medium cpu usage. Consumes at least 50%+1Gb of memery on node. Better use separate one.<br/>
     mongod_logging_destination:
       default: "file"
       label: "Mongo logging driver"
-      description: "Valid options are: syslog, file. <strong>Use syslog if you can</strong>. File option is for backward compatibility only."
-      type: str
+      description: "<strong>Use syslog if you can</strong>. File option is for backward compatibility only."
+      type: list
+      options:
+        - file
+        - syslog
     mongod_db:
       default: noc
       type: str
@@ -24,8 +35,13 @@ config:
     mongod_engine:
       default: wiredTiger
       type: str
-      label: Replicaset name
-      description: "Valid options are: wiredTiger, mmapv1."
+      label: MongoDB engine
+      description: "Do not use mmapv1 in production"
+      type: list
+      options:
+        - wiredTiger
+        - mmapv1
+
     mongod_version:
       default: 3.4
       type: str
@@ -33,14 +49,6 @@ config:
 
 services:
   mongod:
-    description: >
-      <strong>Service type</strong>: External <br/>
-      <strong>Short description</strong>: Primary database <br/>
-      <strong>Long description</strong>: Used for most of operations<br/>
-      <strong>Scale Recommendations</strong>: At least one. Have to be run in replicated mode with 3 or even 5 nodes. <br/>
-      <strong>docs</strong>: https://docs.mongodb.com/manual/ <br/>
-      <strong>Placement constraint</strong>: Long living nodes. Medium cpu usage. Consumes at least 50%+1Gb of memery on node. Better use separate one.<br/>
     level: system
     category: external
     port: 27017
-    promote: system

@@ -1,16 +1,5 @@
-config:
-  bi:
-    language:
-      default: en
-      label: "Translation language"
-      type: str
-      description: "en-us, ru, pt_BR"
-    query_threads:
-      default: 10
-      label: "Concurrent query limit per process"
-      type: int
-
-services:
+---
+forms:
   bi:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -19,13 +8,36 @@ services:
       <strong>Scale Recommendations</strong>: At least two per installation.<br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/bi/ target=_blank>Bi</a><br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    language:
+      default: "en-us"
+      label: "Translation language"
+      type: list
+      options:
+        - "en-us"
+        - "ru"
+        - "pt_BR"
+    query_threads:
+      default: 10
+      label: "Concurrent query limit per process"
+      type: int
+      max: 100
+      min: 5
+
+
+services:
+  bi:
     level: global
     category: internal
     supervisord:
       command: "./services/bi/service.py"
       process_name: "%(program_name)s-%(process_num)02d"
       oom_score_adj: 50
-      priority: 300
       startretries: 999
       stopwaitsecs: 2
       stdout_logfile_maxbytes: 10MB

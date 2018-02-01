@@ -1,11 +1,5 @@
-config:
-  discovery:
-    max_threads:
-      default: 10
-      label: "Discovery threads"
-      type: int
-
-services:
+---
+forms:
   discovery:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -14,6 +8,19 @@ services:
       <strong>Scale Recommendations</strong>:  At least two per pool. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/discovery/ target=_blank>Discovery</a><br/>
       <strong>Placement constraint</strong>: High cpu/memory usage.<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    max_threads:
+      default: 10
+      label: "Discovery threads"
+      type: int
+
+services:
+  discovery:
     level: pool
     category: internal
     supervisord:

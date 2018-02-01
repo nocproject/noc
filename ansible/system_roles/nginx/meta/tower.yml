@@ -1,5 +1,13 @@
-config:
+---
+forms:
   nginx:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Nginx <br/>
+      <strong>Long description</strong>: Primary web service.<br/>
+      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
+      <strong>docs</strong>: http://nginx.org/en/docs/http/ngx_http_upstream_module.html <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     nginx_cert:
       label: Certificates
       description: Paste you cert+key here
@@ -22,15 +30,9 @@ config:
       label: "Use external certificate management"
       description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
       type: bool
+
 services:
   nginx:
-    description: >
-      <strong>Service type</strong>: External <br/>
-      <strong>Short description</strong>: Nginx <br/>
-      <strong>Long description</strong>: Primary web service.<br/>
-      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
-      <strong>docs</strong>: http://nginx.org/en/docs/http/ngx_http_upstream_module.html <br/>
-      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: system
     category: external
     port: 443

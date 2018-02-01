@@ -1,10 +1,5 @@
-config:
-  syslogcollector:
-    listen_syslog:
-      default: "0.0.0.0:514"
-      label: "Listen SYSLOG"
-      type: str
-services:
+---
+forms:
   syslogcollector:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -13,6 +8,18 @@ services:
       <strong>Scale Recommendations</strong>: One per pool. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/scheduler/ target=_blank>Syslogcollector</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 1
+      min: 0
+    listen_syslog:
+      default: "0.0.0.0:514"
+      label: "Listen SYSLOG"
+      type: str
+services:
+  syslogcollector:
     level: pool
     category: internal
     supervisord:

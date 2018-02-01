@@ -1,19 +1,5 @@
-config:
-  web:
-    language:
-      default: en
-      label: "Translation language"
-      type: str
-      description: "en-us, ru, pt_BR"
-    max_threads:
-      default: 10
-      label: "Web threads"
-      type: int
-    weight:
-      default: 5
-      label: "Http nginx Weight"
-      type: int
-services:
+---
+forms:
   web:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -22,6 +8,26 @@ services:
       <strong>Scale Recommendations</strong>: At least two per system. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/web/ target=_blank>Web</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    language:
+      default: "en-us"
+      label: "Translation language"
+      type: list
+      options:
+        - "en-us"
+        - "ru"
+        - "pt_BR"
+    max_threads:
+      default: 10
+      label: "Web threads"
+      type: int
+services:
+  web:
     level: global
     category: internal
     supervisord:

@@ -1,10 +1,5 @@
-config:
-  trapcollector:
-    listen_traps:
-      default: "0.0.0.0:162"
-      label: "Listen SNNP Traps"
-      type: str
-services:
+---
+forms:
   trapcollector:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -13,6 +8,18 @@ services:
       <strong>Scale Recommendations</strong>: One per pool. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/trapcollector/ target=_blank>Trapcollector</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 1
+      min: 0
+    listen_traps:
+      default: "0.0.0.0:162"
+      label: "Listen SNNP Traps"
+      type: str
+services:
+  trapcollector:
     level: pool
     category: internal
     supervisord:

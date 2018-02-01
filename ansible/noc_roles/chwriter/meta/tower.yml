@@ -1,5 +1,19 @@
-config:
+---
+forms:
   chwriter:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Clickhouse writer <br/>
+      <strong>Long description</strong>: That one is for writing data from nsqd to Clickhouse<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/chwriter/ target=_blank>Chwriter</a><br/>
+      <strong>Placement constraint</strong>: On node with Clickhouse<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
     batch_delay_ms:
       default: 1000
       label: "Delay batch write up to ms"
@@ -18,13 +32,6 @@ config:
       type: int
 services:
   chwriter:
-    description: >
-      <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: Clickhouse writer <br/>
-      <strong>Long description</strong>: That one is for writing data from nsqd to Clickhouse<br/>
-      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
-      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/chwriter/ target=_blank>Chwriter</a><br/>
-      <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     level: global
     category: internal
     supervisord:

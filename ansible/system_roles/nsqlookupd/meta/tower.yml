@@ -1,7 +1,5 @@
-config:
-  nsqlookupd:
-
-services:
+---
+forms:
   nsqlookupd:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -10,6 +8,8 @@ services:
       <strong>Scale Recommendations</strong>: Have to be at least one <br/>
       <strong>docs</strong>: http://nsq.io/components/nsqlookupd.html <br/>
       <strong>Placement constraint</strong>: Long living node. <br/>
+services:
+  nsqlookupd:
     level: system
     category: external
     port: 4161

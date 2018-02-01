@@ -1,7 +1,5 @@
-config:
-  omap:
-
-services:
+---
+forms:
   omap:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -10,6 +8,14 @@ services:
       <strong>Scale Recommendations</strong>: At least two per installation. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/omap/ target=_blank>Omap</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+services:
+  omap:
     level: global
     category: internal
     supervisord:

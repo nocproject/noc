@@ -1,10 +1,5 @@
-config:
-  mrt:
-    max_concurrency:
-      default: 50
-      label: "Amount of concurrent tasks"
-      type: int
-services:
+---
+forms:
   mrt:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -13,6 +8,18 @@ services:
       <strong>Scale Recommendations</strong>: At least two per installation. <br/>
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    max_concurrency:
+      default: 50
+      label: "Amount of concurrent tasks"
+      type: int
+services:
+  mrt:
     level: global
     category: internal
     supervisord:

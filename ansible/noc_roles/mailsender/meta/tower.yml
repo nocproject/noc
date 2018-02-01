@@ -1,31 +1,5 @@
-config:
-  mailsender:
-    from_address:
-      default: "noc@example.com"
-      label: "Email sender address"
-      type: str
-    helo_hostname:
-      default: noc
-      label: "SMTP HELO hostname"
-      type: str
-    smtp_password:
-      label: "SMTP Password"
-      type: str
-    smtp_port:
-      default: 25
-      label: "SMTP server port"
-      type: int
-    smtp_server:
-      label: "SMTP server address"
-      type: str
-    smtp_user:
-      label: "SMTP User"
-      type: str
-    use_tls:
-      default: false
-      label: "Use SMTP TLS"
-      type: bool
-services:
+---
+forms:
   mailsender:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -34,6 +8,39 @@ services:
       <strong>Scale Recommendations</strong>: At least two per installation. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/mailsender/ target=_blank>Mailsender</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    smtp_server:
+      label: "SMTP server address"
+      type: str
+    smtp_port:
+      default: 25
+      label: "SMTP server port"
+      type: int
+    smtp_user:
+      label: "SMTP User"
+      type: str
+    smtp_password:
+      label: "SMTP Password"
+      type: str
+    from_address:
+      default: "noc@example.com"
+      label: "Email sender address"
+      type: str
+    helo_hostname:
+      default: noc
+      label: "SMTP HELO hostname"
+      type: str
+    use_tls:
+      default: false
+      label: "Use SMTP TLS"
+      type: bool
+services:
+  mailsender:
     level: global
     category: internal
     supervisord:

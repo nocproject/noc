@@ -1,11 +1,5 @@
-config:
-  grafana:
-    grafana_pg_password:
-      default: grafana
-      description: "<strong> <a href=http://docs.grafana.org/ target=_blank> http://docs.grafana.org/ </a> </strong>"
-      label: "Grafana postgres password"
-      type: str
-services:
+---
+forms:
   grafana:
     description: >
       <strong>Service type</strong>: External <br/>
@@ -14,6 +8,14 @@ services:
       <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. Stores data in postgres. Uses noc internal auth. <br/>
       <strong>docs</strong>: http://docs.grafana.org/<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
+    grafana_pg_password:
+      default: grafana
+      description: "<strong> <a href=http://docs.grafana.org/ target=_blank> http://docs.grafana.org/ </a> </strong>"
+      label: "Grafana postgres password"
+      type: str
+
+services:
+  grafana:
     level: system
     category: external
     port: 8002

@@ -1,5 +1,19 @@
-config:
+---
+forms:
   ping:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Ping service <br/>
+      <strong>Long description</strong>: Pings network equipment with icmp. Creates events on state changes<br/>
+      <strong>Scale Recommendations</strong>: At least one per pool.  <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
     restore_threshold:
       default: 0
       label: "Amount of down objects (in percents) to leave throttling mode"
@@ -14,13 +28,6 @@ config:
       type: int
 services:
   ping:
-    description: >
-      <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>: Ping service <br/>
-      <strong>Long description</strong>: Pings network equipment with icmp. Creates events on state changes<br/>
-      <strong>Scale Recommendations</strong>: At least one per pool.  <br/>
-      <strong>docs</strong>: "To be done"<br/>
-      <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
     category: internal
     supervisord:

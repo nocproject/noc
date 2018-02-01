@@ -1,7 +1,5 @@
-config:
-  ch_datasource:
-
-services:
+---
+forms:
   ch_datasource:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -10,6 +8,15 @@ services:
       <strong>Scale Recommendations</strong>:  At least one per system <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/datasource/ target=_blank>CH_datasource</a><br/>
       <strong>Placement constraint</strong>: On node with clickhouse<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+
+services:
+  ch_datasource:
     level: global
     category: internal
     supervisord:

@@ -1,11 +1,5 @@
-config:
-  grafanads:
-    db_threads:
-      default: 10
-      label: "Concurrent query limit per process"
-      type: int
-
-services:
+---
+forms:
   grafanads:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -14,6 +8,19 @@ services:
       <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/grafanads/ target=_blank>Grafanads</a><br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    db_threads:
+      default: 10
+      label: "Concurrent query limit per process"
+      type: int
+
+services:
+  grafanads:
     level: global
     category: internal
     supervisord:

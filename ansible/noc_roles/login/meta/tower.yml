@@ -1,15 +1,37 @@
-config:
+---
+forms:
   login:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>:Login service <br/>
+      <strong>Long description</strong>: Internal auth service. Acts as internal api endpoint to auth every web request to NOC web. Can authentificate via LDAP and internal database <br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/login/ target=_blank>Login</a><br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
     language:
-      default: en
+      default: "en-us"
       label: "Translation language"
-      type: str
-      description: "en-us, ru, pt_BR"
+      type: list
+      options:
+        - "en-us"
+        - "ru"
+        - "pt_BR"
     methods:
       default: local
       label: "Authentication methods"
-      type: str
-      description: "local, ldap. can be multiple"
+      description: "can be multiple"
+      type: list
+      options:
+        - "local"
+        - "ldap"
+        - "pam"
+        - "radius"
     pam_service:
       default: noc
       label: "PAM Service"
@@ -24,20 +46,9 @@ config:
       default: 7
       label: "Session TTL (days)"
       type: int
-    weight:
-      default: 5
-      label: "Http nginx Weight"
-      type: int
 
 services:
   login:
-    description: >
-      <strong>Service type</strong>: Internal <br/>
-      <strong>Short description</strong>:Login service <br/>
-      <strong>Long description</strong>: Internal auth service. Acts as internal api endpoint to auth every web request to NOC web. Can authentificate via LDAP and internal database <br/>
-      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
-      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/login/ target=_blank>Login</a><br/>
-      <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
     category: internal
     supervisord:

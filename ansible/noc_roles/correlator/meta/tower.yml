@@ -1,10 +1,5 @@
-config:
-  correlator:
-    max_threads:
-      default: 10
-      label: "Correlator threads"
-      type: int
-services:
+---
+forms:
   correlator:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -13,6 +8,18 @@ services:
       <strong>Scale Recommendations</strong>: Have to be at least one per pool. Can be more than one. Will select active one via consul lock.<br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/correlator/ target=_blank>Correlator</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    max_threads:
+      default: 10
+      label: "Correlator threads"
+      type: int
+services:
+  correlator:
     level: pool
     category: internal
     supervisord:

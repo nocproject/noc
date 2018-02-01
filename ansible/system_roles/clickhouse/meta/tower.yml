@@ -1,5 +1,13 @@
-config:
+---
+forms:
   clickhouse:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: ClickHouse database <br/>
+      <strong>Long description</strong>: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.<br/>
+      <strong>Scale Recommendations</strong>: See docs<br/>
+      <strong>docs</strong>: "https://clickhouse.yandex/docs/en/"<br/>
+      <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     clickhouse_user:
       default: noc
       label: "RW user"
@@ -26,16 +34,8 @@ config:
 
 services:
   clickhouse:
-    description: >
-      <strong>Service type</strong>: External <br/>
-      <strong>Short description</strong>: ClickHouse database <br/>
-      <strong>Long description</strong>: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.<br/>
-      <strong>Scale Recommendations</strong>: See docs<br/>
-      <strong>docs</strong>: "https://clickhouse.yandex/docs/en/"<br/>
-      <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     level: system
     category: external
-    promote: system
     port: 8123
     depends:
       - consul-template

@@ -1,16 +1,5 @@
-config:
-  card:
-    language:
-      default: en
-      label: "Translation language"
-      type: str
-      description: "en-us, ru, pt_BR"
-    weight:
-      default: 5
-      label: "Http nginx Weight"
-      type: int
-
-services:
+---
+forms:
   card:
     description: >
       <strong>Service type</strong>: Internal <br/>
@@ -19,6 +8,23 @@ services:
       <strong>Scale Recommendations</strong>: At least two per installation.<br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/card/ target=_blank>Card</a><br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
+    power:
+      default: 1
+      label: "Instances"
+      type: int
+      max: 999
+      min: 0
+    language:
+      default: "en-us"
+      label: "Translation language"
+      type: list
+      options:
+        - "en-us"
+        - "ru"
+        - "pt_BR"
+
+services:
+  card:
     level: global
     category: internal
     supervisord:
