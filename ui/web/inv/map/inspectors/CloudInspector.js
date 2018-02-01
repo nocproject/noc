@@ -1,15 +1,15 @@
 //---------------------------------------------------------------------
-// Link inspector
+// Cloud inspector
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.inv.map.inspectors.LinkInspector");
+console.debug("Defining NOC.inv.map.inspectors.CloudInspector");
 
-Ext.define("NOC.inv.map.inspectors.LinkInspector", {
+Ext.define("NOC.inv.map.inspectors.CloudInspector", {
     extend: "NOC.inv.map.inspectors.Inspector",
-    title: __("Link Inspector"),
-    inspectorName: "link",
+    title: __("Cloud Inspector"),
+    inspectorName: "cloud",
 
     tpl:[
         '<tpl if="name"><div style="font-weight: bold;text-decoration: underline">{name}</div></tpl>',
@@ -24,7 +24,6 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             '</tpl>',
         '</tpl>',
         '<b>Discovery:&nbsp;</b>{method}<br>',
-        '<b>Util:&nbsp;</b>{[this.utilization(values.utilisation, parent)]}<br/>',
         {
             utilization: function(values) {
                 return values.map(function(v) {
@@ -71,6 +70,6 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
     getDataURL: function(segmentId, objectId) {
         var me = this,
             url = me.callParent([segmentId, objectId]);
-        return url + objectId.split("-")[0] + "/";
+        return url + objectId + "/";
     }
 });

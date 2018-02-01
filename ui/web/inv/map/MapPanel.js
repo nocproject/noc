@@ -484,6 +484,11 @@ Ext.define("NOC.inv.map.MapPanel", {
             case "link":
                 me.app.inspectLink(data.id);
                 break;
+            case "cloud":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectCloud(data.id);
+                break
         }
     },
 

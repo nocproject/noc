@@ -211,6 +211,8 @@ class MapApplication(ExtApplication):
         link = self.get_object_or_404(Link, id=link_id)
         r = {
             "id": str(link.id),
+            "name": link.name or None,
+            "description": link.description or None,
             "objects": [],
             "method": link.discovery_method
         }
@@ -260,6 +262,41 @@ class MapApplication(ExtApplication):
                 r["utilisation"] = [int(max(mv))]
             else:
                 r["utilisation"] = 0
+        return r
+
+    @view(url="^(?P<id>[0-9a-f]{24})/info/cloud/(?P<link_id>[0-9a-f]{24})/$", method=["GET"],
+          access="read", api=True)
+    def api_info_cloud(self, request, id, link_id):
+        def q(s):
+            if isinstance(s, unicode):
+                s = s.encode("utf-8")
+            return s
+
+        self.get_object_or_404(NetworkSegment, id=id)
+        link = self.get_object_or_404(Link, id=link_id)
+        r = {
+            "id": str(link.id),
+            "name": link.name or None,
+            "description": link.description or None,
+            "objects": [],
+            "method": link.discovery_method
+        }
+        o = defaultdict(list)
+        for i in link.interfaces:
+            o[i.managed_object] += [i]
+        for mo in sorted(o, key=lambda x: x.name):
+            r["objects"] += [{
+                "id": mo.id,
+                "name": mo.name,
+                "interfaces": [
+                    {
+                        "name": i.name,
+                        "description": i.description or None,
+                        "status": i.status
+                    }
+                    for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
+                ]
+            }]
         return r
 
     @view(
