@@ -40,5 +40,5 @@ class Script(BaseScript):
         ser = self.rx_ser.search(s)
         # Firmware 1.00.36 do not show serial number
         if ser:
-            r["attributes"].update({"Serial Number": ser.group("serial")})
+            r["attributes"]["Serial Number"] = ser.group("serial")
         return r
