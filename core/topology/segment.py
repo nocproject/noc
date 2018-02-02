@@ -123,7 +123,9 @@ class SegmentTopology(BaseTopology):
                 return 0
 
         # Get all links, belonging to segment
-        links = list(Link.objects.filter(linked_segments=self.segment.id))
+        links = list(Link.objects.filter(
+            linked_segments__in=[s.id for s in self.segment_siblings])
+        )
         # All linked interfaces from map
         all_ifaces = list(
             itertools.chain.from_iterable(
