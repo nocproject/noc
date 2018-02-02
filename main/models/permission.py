@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Premission database model
+# Permission database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.db import models
+# Python modules
+from __future__ import print_function
+from threading import Lock
+import operator
+# Third-party modules
+from django.db.models import Model, CharField, ManyToManyField
 from django.contrib.auth.models import User, Group
+import cachetools
 # NOC modules
 from noc.lib.middleware import get_request
 
+perm_lock = Lock()
 
-class Permission(models.Model):
+
+class Permission(Model):
     """
     Permissions.
 
@@ -27,14 +34,16 @@ class Permission(models.Model):
         app_label = "main"
 
     # module:app:permission
-    name = models.CharField("Name", max_length=128, unique=True)
+    name = CharField("Name", max_length=128, unique=True)
     # comma-separated list of permissions
-    implied = models.CharField(
+    implied = CharField(
         "Implied", max_length=256, null=True, blank=True)
-    users = models.ManyToManyField(
+    users = ManyToManyField(
         User, related_name="noc_user_permissions")
-    groups = models.ManyToManyField(
+    groups = ManyToManyField(
         Group, related_name="noc_group_permissions")
+
+    _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
 
     def __unicode__(self):
         return self.name
@@ -128,6 +137,8 @@ class Permission(models.Model):
             Permission.objects.get(name=p).groups.remove(group)
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_effective_perm_cache"),
+                             lock=lambda _: perm_lock)
     def get_effective_permissions(cls, user):
         """
         Returns a set of effective user permissions,
@@ -189,18 +200,18 @@ class Permission(models.Model):
         for name in new_perms - old_perms:
             # @todo: add implied permissions
             Permission(name=name, implied=get_implied(name)).save()
-            print "+ %s" % name
+            print("+ %s" % name)
         # Check impiled permissions match
         for name in old_perms.intersection(new_perms):
             implied = get_implied(name)
             p = Permission.objects.get(name=name)
             if p.implied != implied:
-                print "~ %s" % name
+                print("~ %s" % name)
                 p.implied = implied
                 p.save()
         # Deleted permissions
         for name in old_perms - new_perms:
-            print "- %s" % name
+            print("- %s" % name)
             Permission.objects.get(name=name).delete()
 
     @classmethod

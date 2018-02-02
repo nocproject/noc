@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Application class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,11 +31,10 @@ import ujson
 import six
 # NOC modules
 from .access import HasPerm, Permit, Deny
+from .site import site
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
-from noc.core.fileutils import safe_append
-from .site import site
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -64,7 +63,7 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.menu = menu
         f.method = method
         f.api = api
-        if type(validate) == dict:
+        if isinstance(validate, dict):
             f.validate = DictParameter(attrs=validate)
         else:
             f.validate = validate
@@ -88,7 +87,7 @@ class FormErrorsContext(object):
             for ve in exc_val:
                 for k in ve:
                     v = ve[k]
-                    if type(v) != list:
+                    if not isinstance(v, list):
                         v = [v]
                     self.form._errors[k] = self.form.error_class(v)
             return True
@@ -125,7 +124,7 @@ class Application(object):
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
-    config = settings.config # @fixme remove
+    config = settings.config  # @fixme remove
 
     TZ = get_current_timezone()
 
@@ -162,14 +161,14 @@ class Application(object):
                  menu=None, method=None, validate=None, api=False):
         # Decorate function to clear attributes
         f = functools.partial(func)
-        f.im_self = func.im_self
+        f.__self__ = func.__self__
         f.__name__ = func.__name__
         # Add to class
         cls.add_to_class(
             name, view(url=url, access=access, url_name=url_name,
                        menu=menu, method=method, validate=validate,
                        api=api)(f))
-        site.add_contributor(cls, func.im_self)
+        site.add_contributor(cls, func.__self__)
 
     @property
     def js_app_class(self):
@@ -182,19 +181,19 @@ class Application(object):
         from noc.main.models.permission import Permission
 
         user = request.user
-        ps = self.get_app_id().replace(".", ":") + ":"
-        lps = len(ps)
-        if "PERMISSIONS" in request.session:
-            perms = request.session["PERMISSIONS"]
-        else:
-            perms = Permission.get_effective_permissions(user)
-        perms = [p[lps:] for p in perms if p.startswith(ps)]
+        # Amount of characters to strip
+        lps = len(self.get_app_id()) + 1
+        # Get effective user permissions
+        user_perms = Permission.get_effective_permissions(user)
+        # Leave only application permissions
+        # and strip <module>:<app>:
+        app_perms = [p[lps:] for p in user_perms & self.get_permissions()]
         return {
             "class": self.js_app_class,
             "title": unicode(self.title),
             "params": {
                 "url": self.menu_url,
-                "permissions": perms,
+                "permissions": app_perms,
                 "app_id": self.app_id,
                 "link": self.link
             }
@@ -499,7 +498,7 @@ class Application(object):
         Add custom fields to django form class
         """
         from noc.main.models import CustomField
-        l = []
+        fields = []
         for f in CustomField.table_fields(table):
             if f.is_hidden:
                 continue
@@ -530,8 +529,8 @@ class Application(object):
                 ff = forms.DateTimeField(required=False, label=f.label)
             else:
                 raise ValueError("Invalid field type: '%s'" % f.type)
-            l += [(str(f.name), ff)]
-        form.base_fields.update(SortedDict(l))
+            fields += [(str(f.name), ff)]
+        form.base_fields.update(SortedDict(fields))
         return form
 
     def apply_custom_fields(self, o, v, table):
@@ -593,7 +592,7 @@ class Application(object):
         if "access" not in mc:
             return True
         access = mc["access"]
-        if type(access) == bool:
+        if isinstance(access, bool):
             access = Permit() if access else Deny()
         elif isinstance(access, six.string_types):
             access = HasPerm(access)

@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # Site implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
-import types
 import glob
 import os
 import urllib
@@ -127,8 +127,7 @@ class Site(object):
                       method=getattr(view, "method", None))
         elif isinstance(view.url, URL):  # Explicit URL object
             yield view.url
-        elif (isinstance(view.url, types.ListType) or
-              isinstance(view.url, types.TupleType)):  # List type
+        elif isinstance(view.url, (list, tuple)):  # List type
             for o in view.url:
                 if isinstance(o, six.string_types):  # Given by string
                     yield URL(o)
@@ -169,10 +168,10 @@ class Site(object):
                 return HttpResponseForbidden()
             to_log_api_call = (self.log_api_calls and
                                hasattr(v, "api") and v.api)
-            app_logger = v.im_self.logger
+            app_logger = v.__self__.logger
             try:
                 # Validate requests
-                if (hasattr(v, "validate") and v.validate):
+                if getattr(v, "validate"):
                     # Additional validation
                     errors = None
                     if isinstance(v.validate, DictParameter):
@@ -280,7 +279,7 @@ class Site(object):
             r["Expires"] = "0"
             return r
 
-        from access import PermissionDenied
+        from .access import PermissionDenied
         from django.forms import Form
         from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
         return inner
