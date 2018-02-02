@@ -54,14 +54,16 @@ class SegmentTopology(BaseTopology):
         self.segment_objects = set()
         if self.segment.parent:
             self.parent_segment = self.segment.parent
+            self.ancestor_segments = set(self.segment.get_path()[:-1])
         else:
             self.parent_segment = None
+            self.ancestor_segments = set()
         super(SegmentTopology, self).__init__(node_hints, link_hints)
 
     def get_role(self, mo):
         if mo.segment in self.segment_siblings:
             return "segment"
-        elif self.parent_segment and mo.segment.id == self.parent_segment.id:
+        elif self.parent_segment and mo.segment.id in self.ancestor_segments:
             return "uplink"
         else:
             return "downlink"
