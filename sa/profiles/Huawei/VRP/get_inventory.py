@@ -279,7 +279,7 @@ class Script(BaseScript):
                 columns = [c.strip() for c in ll.split(" ") if c]
                 header_first_line = False
                 continue
-            if rx_header_start.match(l):
+            if rx_header_start.match(ll):
                 if " #" in l_old:
                     # If Slot # in first column name - strip whitespace
                     l_old = rx_header_repl.sub(r"\g<2>", l_old)
