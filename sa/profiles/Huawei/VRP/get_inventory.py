@@ -266,8 +266,8 @@ class Script(BaseScript):
             # @todo Unit devices
             s.pop(0)
 
-        for l in s:
-            if not l.strip():
+        for ll in s:
+            if not ll.strip():
                 continue
             if header_first_line:
                 """
@@ -275,8 +275,8 @@ class Script(BaseScript):
                 Slot No.   Brd Type        Brd Status   Subslot Num    Sft Ver
                 Merge word
                 """
-                l = rx_header_repl.sub(r"\g<2>", l)
-                columns = [c.strip() for c in l.split(" ") if c]
+                ll = rx_header_repl.sub(r"\g<2>", ll)
+                columns = [c.strip() for c in ll.split(" ") if c]
                 header_first_line = False
                 continue
             if rx_header_start.match(l):
@@ -286,8 +286,8 @@ class Script(BaseScript):
                 columns = l_old.split()
             elif columns:
                 """Fetch cells"""
-                row = l.strip().split()
-                if len(l.strip().split()) != len(columns):
+                row = ll.strip().split()
+                if len(ll.strip().split()) != len(columns):
                     """First column is empty"""
                     row.insert(0, "-")
                 # else:
@@ -301,7 +301,7 @@ class Script(BaseScript):
 
                 r.append(dict(zip(columns, row)))
                 # r.append([l[f:t].strip() for f,t in columns])
-            l_old = l
+            l_old = ll
         return r
 
     @staticmethod
