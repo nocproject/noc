@@ -55,7 +55,7 @@ class Script(BaseScript):
         if "Unnumbered If" in ipaddr_section:
             return result
         for line in ipaddr_section.splitlines():
-            match_obj = re.search(re_ipaddr, line)
+            match_obj = re_ipaddr.search(line)
             if match_obj:
                 afi = match_obj.group(1)
                 ip = match_obj.group(2)
@@ -136,14 +136,14 @@ class Script(BaseScript):
             parent_iface = ''
             my_dict = {}
             if iftypeGroup in iface:
-                match_obj = re.search(re_int_desc_group, iface)
+                match_obj = re_int_desc_group.search(iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
                     my_dict['type'] = 'other'
                     my_dict['subinterfaces'] = []
 
             elif iftypeSubsc in iface:
-                match_obj = re.search(re_int_desc_subs, iface)
+                match_obj = re_int_desc_subs.search(iface)
                 my_dict = match_obj.groupdict()
                 my_dict['subinterfaces'] = [{}]
                 my_dict['type'] = 'loopback'
@@ -165,7 +165,7 @@ class Script(BaseScript):
                 my_dict['subinterfaces'][0].update(my_sub)
 
             elif iftypeRed in iface:
-                match_obj = re.search(re_int_desc_vprn, iface)
+                match_obj = re_int_desc_vprn.search(iface)
                 my_dict = match_obj.groupdict()
                 if 'subinterfaces' in my_dict:
                     my_dict['subinterfaces'] = [
@@ -176,9 +176,11 @@ class Script(BaseScript):
                     ]
                 my_dict['type'] = 'tunnel'
 
-            elif iftypeNetwork in iface or iftypeVPRN in iface \
-            or iftypeIES in iface:
-                match_obj = re.search(re_int_desc_vprn, iface)
+            elif (
+                iftypeNetwork in iface or iftypeVPRN in iface or
+                iftypeIES in iface
+            ):
+                match_obj = re_int_desc_vprn.search(iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
                     if 'subinterfaces' in my_dict:
@@ -223,14 +225,16 @@ class Script(BaseScript):
                 my_dict.update(self.fix_ip_addr(my_dict['ipaddr_section']))
                 my_dict.pop('ipaddr_section')
             if 'subinterfaces' in my_dict:
-                if type(my_dict['subinterfaces']) != list and \
-                                type(my_dict['subinterfaces']) != dict:
+                if (
+                    type(my_dict['subinterfaces']) != list and
+                    type(my_dict['subinterfaces']) != dict
+                ):
                     my_dict['subinterfaces'] = [my_dict['subinterfaces']]
                 if len(my_dict['subinterfaces']) == 1:
                     my_sub = {
                         'oper_status': my_dict['oper_status'],
                         'admin_status': my_dict['admin_status'],
-                        'protocols':my_dict['protocols']
+                        'protocols': my_dict['protocols']
                     }
                     my_dict.pop('protocols')
                     if 'enabled_afi' in my_dict:
@@ -282,7 +286,6 @@ class Script(BaseScript):
         else:
             fitype = "Unsupported"
         return fitype
-
 
     def fix_vpls_saps(self, sap_section):
         result = {'interfaces': []}
@@ -340,7 +343,7 @@ class Script(BaseScript):
                 Identifier.+?-{79}\n(?P<sap_section>.+?)={79}
         """, re.MULTILINE | re.DOTALL | re.VERBOSE)
         vpls = self.cli('show service id %s base' % vpls_id)
-        match_obj = re.search(re_vpls, vpls)
+        match_obj = re_vpls.search(vpls)
         if match_obj:
             result = match_obj.groupdict()
 
@@ -362,7 +365,6 @@ class Script(BaseScript):
 
         return result
 
-
     def get_forwarding_instance(self):
         forwarding_instance = re.compile(
             r'^(?P<forwarding_instance>\d+)\s+(?P<type>\S+)\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)',
@@ -372,7 +374,7 @@ class Script(BaseScript):
         result = []
         o = self.cli("show service service-using")
         for line in o.splitlines():
-            mo1 = re.search(forwarding_instance, line)
+            mo1 = forwarding_instance.search(line)
             if mo1:
                 fi = mo1.groupdict()
                 fi['type'] = self.fix_fi_type(fi['type'])
@@ -382,7 +384,7 @@ class Script(BaseScript):
                 if fi['type'] == 'ip' or fi['type'] == 'VRF':
                     r = self.cli('show service id %s base | match invert-match "sap:"' %
                                  fi["forwarding_instance"])
-                    mo2 = re.search(rd, r)
+                    mo2 = rd.search(r)
                     fi["rd"] = mo2.group('rd')
                     if fi["rd"] == 'None':
                         fi.pop('rd')
@@ -489,10 +491,10 @@ class Script(BaseScript):
         port_info = self.cli('show port')
 
         for line in port_info.splitlines():
-            match = re.search(re_port_info, line)
+            match = re_port_info.search(line)
             if match:
                 port_detail = self.cli('show port %s detail' % match.group('name'))
-                match_detail = re.search(re_port_detail_info, port_detail)
+                match_detail = re_port_detail_info.search(port_detail)
                 my_dict = match.groupdict()
                 my_dict.update(match_detail.groupdict())
                 if 'aggregated_interface' in my_dict:
@@ -506,13 +508,12 @@ class Script(BaseScript):
                 my_dict['description'] = my_dict['description'].replace("\n", "")
                 fi['interfaces'].append(my_dict)
 
-
         lag_info = self.cli('show lag detail')
 
         lags = re.split(re_lag_split, lag_info)
 
         for lag in lags[1:]:
-            match = re.search(re_lag_detail, lag)
+            match = re_lag_detail.search(lag)
             if match:
                 my_dict = match.groupdict()
                 my_dict['type'] = 'aggregated'

@@ -138,7 +138,7 @@ class Script(BaseScript):
         r = []
 
         if i_type == "CHASSIS":
-            f = re.search(self.rx_mainboard, v)
+            f = self.rx_mainboard.search(v)
             sh = self.parse_item_content(f.group("body"), slot_num, "CHASSIS")
             r.append(sh)
         else:
@@ -322,7 +322,7 @@ class Script(BaseScript):
             day = '0' + str(day)
             need_edit = True
         if len(str(year)) < 4:
-            year = "2" + "0" * (3-len(str(year))) + str(year)
+            year = "2" + "0" * (3 - len(str(year))) + str(year)
             need_edit = True
         if need_edit:
             parts = [year, month, day]

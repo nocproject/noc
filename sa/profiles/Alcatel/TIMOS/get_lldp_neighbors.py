@@ -69,7 +69,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         else:
-            match_obj = re.search(remote_info, v)
+            match_obj = remote_info.search(v)
             pri = match_obj.groupdict()
             pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
             pri["remote_port"] = self.fixport(pri["remote_port"],
@@ -80,7 +80,7 @@ class Script(BaseScript):
 
     def execute(self):
         my_dict = []
-        re_local_lldp =re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
+        re_local_lldp = re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
 
         try:
             v = self.cli("show system lldp neighbor")
@@ -92,7 +92,7 @@ class Script(BaseScript):
             if match:
                 port = match.group('port')
                 local_lldp = self.cli('show port %s ethernet detail | match IfIndex' % port)
-                lldp_match = re.search(re_local_lldp, local_lldp)
+                lldp_match = re_local_lldp.search(local_lldp)
                 local_interface_id = str(lldp_match.group('local_interface_id'))
                 pri = self.get_port_info(port)
                 port_info = {

@@ -35,6 +35,7 @@ class Script(BaseScript):
     rx_interface_swport_4626 = re.compile(
         r"(?P<interface>[^\n]+)\n.*?Mode\s+:(?P<mode>\S+).*?Port VID\s+:(?P<pvid>\d+).*?",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
+    rx_member = re.compile(r"Member port of trunk \d+")
 
     def execute(self):
         r = []
@@ -69,7 +70,7 @@ class Script(BaseScript):
                     "tagged": "",
                     "status": interface_status.get(name, False)
                 }
-                if re.search(r"Member port of trunk \d+", block):
+                if self.rx_member.search(block):
                     # skip portchannel members
                     r += [swport]
                     continue
@@ -110,7 +111,7 @@ class Script(BaseScript):
                           "tagged": "",
                           "status": interface_status.get(name, False)}
                 if re.search(r"Type :Aggregation member", block):
-                # skip portchannel members
+                    # skip portchannel members
                     r += [swport]
                     continue
                 if match.group("mode").lower() == "trunk":

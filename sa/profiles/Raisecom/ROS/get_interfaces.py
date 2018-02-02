@@ -60,14 +60,14 @@ class Script(BaseScript):
 
     def parse_vlans(self, section):
         r = {}
-        match = re.search(self.rx_vlans, section)
+        match = self.rx_vlans.search(section)
         if match:
             r = match.groupdict()
         return r
 
     def execute(self):
         lldp_ifaces = []
-        match = re.search(self.rx_lldp, self.cli("show lldp local config"))
+        match = self.rx_lldp.search(self.cli("show lldp local config"))
         if match:
             lldp_ifaces = self.expand_rangelist(match.group("ports"))
         ifaces = []
@@ -173,7 +173,6 @@ class Script(BaseScript):
                                     "untagged_vlan"
                                 ] = vlan_id
 
-
         v = self.profile.get_version(self)
         mac = v["mac"]
         """
@@ -246,4 +245,3 @@ class Script(BaseScript):
                     break
 
         return [{"interfaces": l3}]
-
