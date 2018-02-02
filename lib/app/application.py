@@ -63,7 +63,7 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.menu = menu
         f.method = method
         f.api = api
-        if type(validate) == dict:
+        if isinstance(validate, dict):
             f.validate = DictParameter(attrs=validate)
         else:
             f.validate = validate
@@ -87,7 +87,7 @@ class FormErrorsContext(object):
             for ve in exc_val:
                 for k in ve:
                     v = ve[k]
-                    if type(v) != list:
+                    if not isinstance(v, list):
                         v = [v]
                     self.form._errors[k] = self.form.error_class(v)
             return True
@@ -590,7 +590,7 @@ class Application(object):
         if "access" not in mc:
             return True
         access = mc["access"]
-        if type(access) == bool:
+        if isinstance(access, bool):
             access = Permit() if access else Deny()
         elif isinstance(access, six.string_types):
             access = HasPerm(access)
