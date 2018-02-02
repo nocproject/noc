@@ -457,7 +457,6 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
-        print request
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
