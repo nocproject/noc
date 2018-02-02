@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -8,7 +8,6 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
-
 
 
 class Script(BaseScript):
@@ -19,6 +18,7 @@ class Script(BaseScript):
                         r"(?P<version>\S+).+?Hardware\s+cisco\s+\S+\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(r"^Cisco NX-OS\(tm\) .*?Version (?P<version>[^,]+),", re.IGNORECASE)
     rx_snmp_platform = re.compile(r"^Nexus\s+(?P<platform>\S+).+Chassis$", re.IGNORECASE)
+    rx_snmp_platform1 = re.compile(r"^(?P<platform>N9K-C93\d\d\S+)$")
 
     def execute(self):
         if self.has_snmp():
@@ -31,6 +31,10 @@ class Script(BaseScript):
                 # ENTITY-MIB::entPhysicalName
                 for oid, v in self.snmp.getnext("1.3.6.1.2.1.47.1.1.1.1.7"):
                     match = self.rx_snmp_platform.match(v)
+                    if match:
+                        platform = match.group("platform")
+                        break
+                    match = self.rx_snmp_platform1.match(v)
                     if match:
                         platform = match.group("platform")
                         break
