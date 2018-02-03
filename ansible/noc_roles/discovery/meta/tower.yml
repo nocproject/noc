@@ -14,6 +14,12 @@ forms:
       type: int
       max: 999
       min: 0
+    backup_power:
+      default: 1
+      label: "Additional Instances"
+      type: int
+      max: 999
+      min: 0
     max_threads:
       default: 10
       label: "Discovery threads"

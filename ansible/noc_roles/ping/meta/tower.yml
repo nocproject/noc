@@ -14,6 +14,12 @@ forms:
       type: int
       max: 999
       min: 0
+    backup_power:
+      default: 1
+      label: "Additional Instances"
+      type: int
+      max: 999
+      min: 0
     restore_threshold:
       default: 0
       label: "Amount of down objects (in percents) to leave throttling mode"
