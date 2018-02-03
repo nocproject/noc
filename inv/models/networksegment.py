@@ -339,10 +339,21 @@ class NetworkSegment(Document):
                 count=Count("id")
             ).order_by("count"))
         # Direct services
-        mo_ids = self.managed_objects.values_list("id", flat=True)
-        for ss in ServiceSummary.objects.filter(managed_object__in=mo_ids):
-            update_dict(services, SummaryItem.items_to_dict(ss.service))
-            update_dict(subscribers, SummaryItem.items_to_dict(ss.subscriber))
+        # logger.info("Update direct services")
+        mo_ids = list(self.managed_objects.values_list("id", flat=True))
+        match = {"managed_object": {"$in": mo_ids}}
+        for name, dic in (("service", services), ("subscriber", subscribers)):
+            group = {"_id": {name: "$%s.profile" % name},
+                     "count": {"$sum": "$%s.summary" % name}}
+            pipeline = [{"$match": match},
+                        {"$unwind": "$%s" % name},
+                        {"$group": group},
+                        {"$project": {"profile": "$_id.%s" % name,
+                                      "summary": "$count",
+                                      "_id": 0}}
+                        ]
+            for ss in ServiceSummary._get_collection().aggregate(pipeline):
+                update_dict(dic, {ss["profile"]: ss["summary"]})
         self.direct_services = SummaryItem.dict_to_items(services)
         self.direct_subscribers = SummaryItem.dict_to_items(subscribers)
         self.direct_objects = ObjectSummaryItem.dict_to_items(objects)
