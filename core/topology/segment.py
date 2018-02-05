@@ -151,9 +151,11 @@ class SegmentTopology(BaseTopology):
             }
         ))
         # Bulk fetch all managed objects
-        all_mos = list(set(i["managed_object"]
-                           for i in six.itervalues(ifs)
-                           if "managed_object" in i))
+        segment_mos = set(self.segment.managed_objects.values_list("id", flat=True))
+        all_mos = list(
+            set(i["managed_object"] for i in six.itervalues(ifs) if "managed_object" in i) |
+            segment_mos
+        )
         mos = dict(
             (mo.id, mo)
             for mo in ManagedObject.objects.filter(id__in=all_mos)
