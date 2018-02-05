@@ -61,6 +61,7 @@ Command Reference
     /man/service
     /man/shell
     /man/snmp
+    /man/stencil
     /man/sync-doc
     /man/sync-mibs
     /man/sync-perm
