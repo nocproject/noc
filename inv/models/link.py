@@ -199,9 +199,7 @@ class Link(Document):
         :return:
         """
         from noc.inv.models.networksegment import NetworkSegment
-        return list(NetworkSegment.objects.filter(id__id=self.linked_segments))
-        #
-        # return list(set(i.segment for i in self.managed_objects))
+        return list(NetworkSegment.objects.filter(id__in=self.linked_segments))
 
     def update_topology(self):
         for mo in self.managed_objects:
