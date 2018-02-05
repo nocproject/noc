@@ -13,6 +13,7 @@ from collections import defaultdict
 # Third-party modules
 import cachetools
 from mongoengine import ValidationError
+from pymongo import ReadPreference
 # import geojson
 # import random
 # NOC modules
@@ -79,7 +80,6 @@ class MonMapCard(BaseCard):
                     d[k] += s[k]
                 else:
                     d[k] = s[k]
-
         object_id = self.handler.get_argument("object_id")
         # zoom = int(self.handler.get_argument("z"))
         # west = float(self.handler.get_argument("w"))
@@ -108,23 +108,31 @@ class MonMapCard(BaseCard):
         except ValidationError:
             object_root = None
         if object_root:
-            con = self.get_containers_by_root(object_root.id)
-            moss = moss.filter(container__in=con).exclude(container=None).order_by("container")
+            con = [str(c) for c in self.get_containers_by_root(object_root.id)]
+            moss = moss.filter(container__in=con).order_by("container")
         else:
+            con = None
             moss = moss.exclude(container=None).order_by("container")
-
+        mo_ids = list(moss.values_list("id", flat=True))
         # Getting Alarms severity dict MO: Severity @todo List alarms
         alarms = {aa["managed_object"]: aa["severity"] for aa in ActiveAlarm.objects.filter(
-            managed_object__in=list(moss.values_list("id", flat=True))
+            managed_object__in=mo_ids, read_preference=ReadPreference.SECONDARY_PREFERRED
         ).scalar("managed_object", "severity").as_pymongo()}
         # Getting services
-        s_services = ServiceSummary.get_objects_summary(list(moss.values_list("id", flat=True)))
+        s_services = ServiceSummary.get_objects_summary(mo_ids)
         # Getting containers name and coordinates
-        containers = {str(o["_id"]): (o["name"], o["data"]) for o in Object.objects.filter(
-            data__geopoint__exists=True).fields(id=1, name=1, data__geopoint__x=1,
-                                                data__geopoint__y=1).as_pymongo()}
+        containers = Object.objects.filter(
+            data__geopoint__exists=True,
+            read_preference=ReadPreference.SECONDARY_PREFERRED
+        )
+        if con:
+            containers = containers.filter(id__in=con)
+        containers = {str(o["_id"]): (o["name"], o["data"]) for o in containers.fields(id=1, name=1,
+                                                                                       data__geopoint__x=1,
+                                                                                       data__geopoint__y=1).as_pymongo()}
         # Main Loop. Get ManagedObject group by container
-        for container, mol in itertools.groupby(moss.values_list("id", "name", "container"), key=lambda o: o[2]):
+        for container, mol in itertools.groupby(
+                moss.values_list("id", "name", "container").order_by("container"), key=lambda o: o[2]):
             name, data = containers.get(container, ("", {"geopoint": {}}))
             x = data["geopoint"].get("x")
             y = data["geopoint"].get("y")
@@ -151,7 +159,7 @@ class MonMapCard(BaseCard):
             objects += [{
                 "name": name,
                 "id": str(container),
-                "x": x,
+                "x": x if x > -168 else x + 360,  # For Chukotskiy AO
                 "y": y,
                 "objects": [],
                 "total": 0,
@@ -159,7 +167,6 @@ class MonMapCard(BaseCard):
                 "warning": 0,
                 "good": 0}]
             objects[-1].update(ss)
-
         for r in ["error", "warning", "good"]:
             for p in sss[r]:
                 services[p] += [(self.color_map.get(r, self.color_map["default"]),
@@ -187,7 +194,8 @@ class MonMapCard(BaseCard):
         os = set()
         kk = None
         for r in range(1, 9):
-            work_set = set(Object.objects.filter(container__in=list(work_set)).values_list("id"))
+            work_set = set(Object.objects.filter(container__in=list(work_set),
+                                                 read_preference=ReadPreference.SECONDARY_PREFERRED).values_list("id"))
             # work_set |= work_set.union(os)
             os |= work_set
             if len(work_set) == kk:
