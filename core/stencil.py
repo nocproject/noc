@@ -59,7 +59,7 @@ class StencilRegistry:
             return None
         # Get title from <title> tag
         title_el = svg.find("{http://www.w3.org/2000/svg}title")
-        if title_el is None:
+        if title_el is None or title_el.text is None:
             title = None
         else:
             title = title_el.text.strip()
