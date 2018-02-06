@@ -120,7 +120,6 @@ _MODELS = {
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
     "main.UserProfile": "noc.main.models.userprofile.UserProfile",
     "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
-    "main.UserSession": "noc.main.models.usersession.UserSession",
     "main.UserState": "noc.main.models.userstate.UserState",
     # project models
     "project.Project": "noc.project.models.project.Project",
