@@ -1,35 +1,36 @@
+{% if path %}
+    <div scope="row" class="col-sm-1">{{ _("Container") }}</div>
+    <div>
+        {% for o in path %}
+            <a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a>
+        {% endfor %}
+    </div>
+    <div scope="row" class="col-sm-1">{{ _("Location") }}</div>
+    <div>
+        <td>{{ location }}</td>
+    </div>
+{% endif %}
+
+{% if children %}
 <table class="table table-condensed table-hover">
+<thead>
+            <th class="col-sm-1">{{ _("Name") }} </th>
+            <th class="col-sm-1">{{ _("Platform") }} </th>
+            <th class="col-sm-1">{{ _("Version") }} </th>
+            <th class="col-sm-1">{{ _("Hardware Type") }} </th>
+            <th class="col-sm-1">{{ _("Dashboard") }} </th>
+</thead>
 <tbody>
+{% for c in children %}
     <tr>
-        <th colspan="2">
-            {% for o in path %}
-                {% if o.id == object.id %}
-                    {{ o.name }}
-                {% else %}
-                    <a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a> |
-                {% endif %}
-            {% endfor %}
-        </th>
+            <td><a href="/api/card/view/managedobject/{{ c.id }}/">{{ c.name}}</a></br>
+            {{ c.address }}</td>
+            <td>{{ c.platform }}</td>
+            <td>{{ c.version }}</td>
+            <td>{{ c.description }}</td>
+            <td><a href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ c.id }}">"View metrics"</a></td>
     </tr>
-    <tr>
-        <th scope="row">{{ _("Model") }}</th>
-        <td>{{ object.model.name }}</td>
-    </tr>
-    {% if children %}
-    <tr>
-        <th scope="row">{{ _("Children") }}</th>
-        <td>
-            <table>
-                <tbody>
-                {% for o in children %}
-                <tr>
-                    <td><a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a></td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    {% endif %}
+{% endfor %}
 </tbody>
 </table>
+{% endif %}
