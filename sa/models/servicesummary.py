@@ -73,6 +73,8 @@ class ObjectSummaryItem(EmbeddedDocument):
 class ServiceSummary(Document):
     meta = {
         "collection": "noc.servicesummary",
+        "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "managed_object",
             "interface"
