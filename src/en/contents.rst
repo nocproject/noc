@@ -14,6 +14,7 @@ this Manual and additional editions of this text.
     /profiles
     /discovery
     /admin
+    /dev
     /man
     /caps
     /scripts

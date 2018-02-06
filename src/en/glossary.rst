@@ -44,16 +44,27 @@ Glossary
     discovery
         See :doc:`/reference/discovery`.
 
+    FRU
+        Field Replaceable Unit. Vendor's identification
+
     LACP
+        .. todo::
+            Describe
 
     LLDP
+        .. todo::
+            Describe
 
     NDP (Huawei)
+        .. todo::
+            Describe
 
     NRI
         Network Resource Inventory
 
     Netflow
+        .. todo::
+            Describe
 
     network segment
         See :doc:`/reference/network-segment`.
@@ -71,6 +82,8 @@ Glossary
         See :doc:`/reference/managed-object-profile`.
 
     management VLAN
+        .. todo::
+            Describe
 
     MIB
         Management Information Base. NOC uses MIB to .....
@@ -82,8 +95,12 @@ Glossary
         See :doc:`/reference/mongodb`.
 
     multicast VLAN
+        .. todo::
+            Describe
 
     ethernet OAM
+        .. todo::
+            Describe
 
     pool
         See :doc:`/reference/pool`.
@@ -110,10 +127,16 @@ Glossary
         See :doc:`/reference/subscriber`.
 
     telnet
+        .. todo::
+            Describe
 
     topology
         See :doc:`/reference/topology`.
 
     UDLD
+        .. todo::
+            Describe
 
     VLAN
+        .. todo::
+            Describe
