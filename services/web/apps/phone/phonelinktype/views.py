@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.phone.models.phonelinktype import PhoneLinkType
 from noc.core.translation import ugettext as _
 

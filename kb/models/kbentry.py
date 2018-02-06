@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import difflib
 from core.model.fields import AutoCompleteTagsField
 from django.db import models
 # NOC modules
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers import parser_registry
 
