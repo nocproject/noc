@@ -62,13 +62,13 @@ class BaseDashboard(object):
             path = os.path.join(t_path, f)
             if os.path.isfile(path):
                 if ".json" not in f:
-                    self.logger.info("Extension file %s is not .json" % fl)
+                    self.logger.info("Extension file %s is not .json" % f)
                     continue
                 with open(os.path.join(t_path, f)) as data_file:
                     try:
                         t[f.split(".")[0]] = ujson.load(data_file)
                     except ValueError:
-                        self.logger.error("Dashboard template file %s not contains valid JSON" % fl)
+                        self.logger.error("Dashboard template file %s not contains valid JSON" % f)
                         continue
                 continue
             for fl in os.listdir(path):

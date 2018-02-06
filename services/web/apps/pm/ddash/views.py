@@ -12,6 +12,7 @@ from dashboards.base import BaseDashboard
 from dashboards.mo import MODashboard
 from dashboards.link import LinkDashboard
 from dashboards.ipsla import IPSLADashboard
+from dashboards.container import ContainerDashboard
 from noc.core.translation import ugettext as _
 
 
@@ -24,7 +25,8 @@ class DynamicDashboardApplication(ExtApplication):
     dashboards = {
         "mo": MODashboard,
         "link": LinkDashboard,
-        "ipsla": IPSLADashboard
+        "ipsla": IPSLADashboard,
+        "container": ContainerDashboard
     }
 
     @view(
