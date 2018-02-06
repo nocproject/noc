@@ -66,18 +66,6 @@ class Script(BaseScript):
             for m in pc["members"]:
                 pc_members[m] = (i, t)
 
-        # global GVRP status
-        """
-        try:
-            v = self.cli("show gvrp active port-member")
-            if "GVRP global function is disable" in v:
-                ggvrp = False
-            else:
-                ggvrp = True
-        except self.CLISyntaxError:
-            ggvrp = False
-        """
-
         # Get LLDP port
         lldp = self.get_lldp()
         # process all interfaces and form result
