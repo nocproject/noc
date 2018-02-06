@@ -61,7 +61,7 @@ class Script(BaseScript):
 
     def parse_vlans(self, section):
         r = {}
-        match = re.search(self.rx_vlans, section)
+        match = self.rx_vlans.search(section)
         if match:
             r = match.groupdict()
         return r

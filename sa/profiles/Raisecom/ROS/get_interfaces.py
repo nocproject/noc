@@ -67,7 +67,8 @@ class Script(BaseScript):
 
     def execute(self):
         lldp_ifaces = []
-        match = self.rx_lldp.search(self.cli("show lldp local config"))
+        v = self.cli("show lldp local config")
+        match = self.rx_lldp.search(v)
         if match:
             lldp_ifaces = self.expand_rangelist(match.group("ports"))
         ifaces = []

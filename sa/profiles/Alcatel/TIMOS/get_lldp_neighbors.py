@@ -15,7 +15,22 @@ import re
 class Script(BaseScript):
     name = "Alcatel.TIMOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+
     rx_some = re.compile(r"^(?P<port>\w/\w/\w+)\s+")
+    re_local_lldp = re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
+    remote_info = re.compile(r"""
+        Supported\sCaps\s+:\s(?P<remote_capabilities>.+?)\n
+        .*?
+        Chassis\sId\sSubtype\s+:\s(?P<remote_chassis_id_subtype>\d)\s
+        .*?
+        Chassis\sId\s+:\s(?P<remote_chassis_id>\S+)\n
+        .*?
+        PortId\sSubtype\s+:\s(?P<remote_port_subtype>.)\s
+        .*?
+        Port\sId\s+:\s(?P<remote_port>.+?)("|Port)
+        .*?
+        System\sName\s+:\s(?P<remote_system_name>\S+).+
+        """, re.MULTILINE | re.DOTALL | re.VERBOSE)
 
     def fixcaps(self, caps):
         fixedcaps = 0
@@ -51,25 +66,12 @@ class Script(BaseScript):
         return remote_port
 
     def get_port_info(self, port):
-        remote_info = re.compile(r"""
-            Supported\sCaps\s+:\s(?P<remote_capabilities>.+?)\n
-            .*?
-            Chassis\sId\sSubtype\s+:\s(?P<remote_chassis_id_subtype>\d)\s
-            .*?
-            Chassis\sId\s+:\s(?P<remote_chassis_id>\S+)\n
-            .*?
-            PortId\sSubtype\s+:\s(?P<remote_port_subtype>.)\s
-            .*?
-            Port\sId\s+:\s(?P<remote_port>.+?)("|Port)
-            .*?
-            System\sName\s+:\s(?P<remote_system_name>\S+).+
-            """, re.MULTILINE | re.DOTALL | re.VERBOSE)
         try:
             v = self.cli("show port %s ethernet lldp remote-info" % port)
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         else:
-            match_obj = remote_info.search(v)
+            match_obj = self.remote_info.search(v)
             pri = match_obj.groupdict()
             pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
             pri["remote_port"] = self.fixport(pri["remote_port"],
@@ -80,19 +82,16 @@ class Script(BaseScript):
 
     def execute(self):
         my_dict = []
-        re_local_lldp = re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
-
         try:
             v = self.cli("show system lldp neighbor")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for line in v.splitlines():
             match = self.rx_some.search(line)
-
             if match:
                 port = match.group('port')
                 local_lldp = self.cli('show port %s ethernet detail | match IfIndex' % port)
-                lldp_match = re_local_lldp.search(local_lldp)
+                lldp_match = self.re_local_lldp.search(local_lldp)
                 local_interface_id = str(lldp_match.group('local_interface_id'))
                 pri = self.get_port_info(port)
                 port_info = {
