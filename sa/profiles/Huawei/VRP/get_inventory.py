@@ -67,11 +67,6 @@ class Script(BaseScript):
         r"MAC_ADDRESS\s+:\s+(?P<mac>\S+)\s*\n"
         r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n", re.MULTILINE)
 
-    rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+", re.MULTILINE)
-    rx_header_repl = re.compile(r"((Slot|Brd|Subslot|Sft|Unit|SubCard)\s)")
-    rx_date_check = re.compile("\d+-\d+-\d+")
-    rx_d = re.compile("\d+")
-
     unit = False
 
     def part_parse_s8500(self, item_type, number, part_no, content):
@@ -93,6 +88,7 @@ class Script(BaseScript):
 
     def parse_item_content(self, item, number, item_type):
         """Parse display elabel block"""
+        date_check = re.compile("\d+-\d+-\d+")
         match_body = self.rx_item_content2.search(item)
         if not match_body or match_body is None:
             self.logger.info("Port number %s not having asset" % number)
@@ -105,7 +101,7 @@ class Script(BaseScript):
             vendor = "NONAME"
         if " " in serial:
             serial = serial.split()[0]
-        if manufactured and part_no and self.rx_date_check.match(manufactured):
+        if manufactured and part_no and date_check.match(manufactured):
             manufactured = self.normalize_date(manufactured)
         else:
             manufactured = None
@@ -241,11 +237,14 @@ class Script(BaseScript):
 
         return inv
 
-    def parse_table(self, s):
+    @staticmethod
+    def parse_table(s):
         """List of Dict [{column1: row1, column2: row2}, ...]"""
+        rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+", re.MULTILINE)
+        rx_header_repl = re.compile(r"((Slot|Brd|Subslot|Sft|Unit|SubCard)\s)")
         header_first_line = False
 
-        if not self.rx_header_start.search(s):
+        if not rx_header_start.search(s):
             # if not header splitter in table
             header_first_line = True
 
@@ -267,8 +266,8 @@ class Script(BaseScript):
             # @todo Unit devices
             s.pop(0)
 
-        for l in s:
-            if not l.strip():
+        for ll in s:
+            if not ll.strip():
                 continue
             if header_first_line:
                 """
@@ -276,19 +275,19 @@ class Script(BaseScript):
                 Slot No.   Brd Type        Brd Status   Subslot Num    Sft Ver
                 Merge word
                 """
-                l = self.rx_header_repl.sub(r"\g<2>", l)
-                columns = [c.strip() for c in l.split(" ") if c]
+                ll = rx_header_repl.sub(r"\g<2>", ll)
+                columns = [c.strip() for c in ll.split(" ") if c]
                 header_first_line = False
                 continue
-            if self.rx_header_start.match(l):
+            if rx_header_start.match(ll):
                 if " #" in l_old:
                     # If Slot # in first column name - strip whitespace
-                    l_old = self.rx_header_repl.sub(r"\g<2>", l_old)
+                    l_old = rx_header_repl.sub(r"\g<2>", l_old)
                 columns = l_old.split()
             elif columns:
                 """Fetch cells"""
-                row = l.strip().split()
-                if len(l.strip().split()) != len(columns):
+                row = ll.strip().split()
+                if len(ll.strip().split()) != len(columns):
                     """First column is empty"""
                     row.insert(0, "-")
                 # else:
@@ -302,26 +301,28 @@ class Script(BaseScript):
 
                 r.append(dict(zip(columns, row)))
                 # r.append([l[f:t].strip() for f,t in columns])
-            l_old = l
+            l_old = ll
         return r
 
-    def normalize_date(self, date):
+    @staticmethod
+    def normalize_date(date):
         """Normalize date in input to YYYY-MM-DD"""
         # @todo use datetime.strftime()
+        d = re.compile("\d+")
         result = date
         need_edit = False
         parts = date.split('-')
         year = int(parts[0])
         month = int(parts[1])
-        day = int(self.rx_d.search(parts[2]).group(0))
+        day = int(d.search(parts[2]).group(0))
         if month < 10:
             month = '0' + str(month)
             need_edit = True
         if day < 10:
             day = '0' + str(day)
             need_edit = True
-        if year < 100:
-            year = "2%03d" % year
+        if len(str(year)) < 4:
+            year = "2" + "0" * (3 - len(str(year))) + str(year)
             need_edit = True
         if need_edit:
             parts = [year, month, day]
