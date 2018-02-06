@@ -1,0 +1,93 @@
+{
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "id": 60934,
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "hideEmpty": true,
+    "hideZero": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 1,
+  "nullPointMode": "null",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "seriesOverrides": [],
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "database": "noc",
+      "dateColDataType": "date",
+      "dateLoading": false,
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "intervalFactor": 1,
+      "query": "SELECT \n\tt, \n\tgroupArray((concat('Discars ',path[4]), d)) AS groupArr\nFROM \n\t( SELECT \n\t\t$timeSeries t, \n\t\tpath[4], \n\t\tavg(discards_out) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "table": "interface",
+      "tableLoading": false
+    },
+    {
+      "database": "noc",
+      "dateColDataType": "date",
+      "dateLoading": false,
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "hide": false,
+      "intervalFactor": 1,
+      "query": "SELECT \n\tt, \n\tgroupArray((concat('Errors ',path[4]), d)) AS groupArr\nFROM \n\t( SELECT  \n\t$timeSeries as t, \n\t\tpath[4], \n\t\tavg(errors_in) d \n\t\tfrom noc.interface \n\t\tWHERE \n\t\t\t$timeFilter\n\t\t\tAND  managed_object= $bi_id \n\t\tGROUP BY t, path\n\t\thaving d > 0\n\t\tORDER BY t\n\t) \nGROUP BY t \nORDER BY t",
+      "refId": "B",
+      "resultFormat": "time_series",
+      "table": "interface",
+      "tableLoading": false
+    }
+  ],
+  "thresholds": [],
+  "timeFrom": null,
+  "timeShift": null,
+  "title": "Errors and Discards",
+  "tooltip": {
+    "shared": true,
+    "sort": 0,
+    "value_type": "individual"
+  },
+  "type": "graph",
+  "xaxis": {
+    "mode": "time",
+    "name": null,
+    "show": true,
+    "values": []
+  },
+  "yaxes": [
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    }
+  ]
+}
