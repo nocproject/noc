@@ -1,25 +1,17 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# WEB Middleware Classes
+# TLS Middleware
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import base64
-try:
-    from threading import local
-except ImportError:
-    from django.utils._threading_local import local
-# Django modules
-from django.contrib import auth
+from threading import local
 
-
-#
 # Thread local storage
-#
 _tls = local()
+
 
 class TLSMiddleware(object):
     """
@@ -46,29 +38,6 @@ class TLSMiddleware(object):
         """
         _tls.request = None
         _tls.user = None
-
-
-class WSGISetupMiddleware(object):
-    """
-    Set up WSGI headers
-    """
-    def process_request(self, request):
-        ru = request.META.get("HTTP_REMOTE_USER")
-        if ru:
-            request.META["REMOTE_USER"] = ru
-
-
-class ExtFormatMiddleware(object):
-    """
-    Set request.is_extjs when __format=ext found in request
-    """
-    def process_request(self, request):
-        if request.GET and request.GET.get("__format") == "ext":
-            request.is_extjs = True
-        elif request.POST and request.POST.get("__format") == "ext":
-            request.is_extjs = True
-        else:
-            request.is_extjs = False
 
 
 def set_user(user):

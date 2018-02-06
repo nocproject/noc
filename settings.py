@@ -87,17 +87,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 #
 MIDDLEWARE_CLASSES = [
-    "noc.lib.middleware.WSGISetupMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.RemoteUserMiddleware",
-    "noc.lib.middleware.TLSMiddleware",  # Thread local storage
-    "noc.lib.middleware.ExtFormatMiddleware"
-]
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.RemoteUserBackend'
+    "noc.core.middleware.remoteuser.RemoteUserMiddleware",
+    "noc.core.middleware.tls.TLSMiddleware",  # Thread local storage
+    "noc.core.middleware.extformat.ExtFormatMiddleware"
 ]
 
 ROOT_URLCONF = "noc.urls"

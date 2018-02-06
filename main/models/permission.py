@@ -15,7 +15,7 @@ from django.db.models import Model, CharField, ManyToManyField
 from django.contrib.auth.models import User, Group
 import cachetools
 # NOC modules
-from noc.lib.middleware import get_request
+from noc.core.middleware.tls import get_request
 
 perm_lock = Lock()
 
