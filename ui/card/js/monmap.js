@@ -29,8 +29,11 @@ Monmap.prototype.initialize = function(lon, lat, zoom) {
     // doc: https://github.com/Leaflet/Leaflet.markercluster
     this.markers = L.markerClusterGroup({
         chunkedLoading: true,
+        spiderfyDistanceMultiplier: 2.5,
+        // spiderfyOnMaxZoom: false,
+        // showCoverageOnHover: false,
+        // zoomToBoundsOnClick: false,
         iconCreateFunction: function(cluster) {
-            var childCount = cluster.getChildCount();
             var errors = cluster.getAllChildMarkers().reduce(function(a, b) {
                 return a + b.options.error
             }, 0);
@@ -63,9 +66,6 @@ Monmap.prototype.initialize = function(lon, lat, zoom) {
                 iconSize: new L.Point(40, 40)
             });
         }
-        // spiderfyOnMaxZoom: false,
-        // showCoverageOnHover: false,
-        // zoomToBoundsOnClick: false
     });
     me.poll_data();
 };
