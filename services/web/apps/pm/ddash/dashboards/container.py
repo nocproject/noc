@@ -12,7 +12,6 @@ import demjson
 
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
-from noc.pm.models.metrictype import MetricType
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.object import Object
 
