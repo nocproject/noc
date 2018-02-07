@@ -171,7 +171,7 @@ class Site(object):
             app_logger = v.__self__.logger
             try:
                 # Validate requests
-                if getattr(v, "validate"):
+                if getattr(v, "validate", False):
                     # Additional validation
                     errors = None
                     if isinstance(v.validate, DictParameter):
@@ -197,15 +197,6 @@ class Site(object):
                                 kwargs.update(v.validate.clean(g))
                             except InterfaceTypeError as e:
                                 errors = str(e)
-                    elif issubclass(v.validate, Form):
-                        # Validate via django forms
-                        f = v.validate(request.GET)  # @todo: Post
-                        if f.is_valid():
-                            kwargs.update(f.cleaned_data)
-                        else:
-                            errors = dict(
-                                (cf, "; ".join(e))
-                                for cf, e in f.errors.items())
                     if errors:
                         #
                         if to_log_api_call:
@@ -280,7 +271,6 @@ class Site(object):
             return r
 
         from .access import PermissionDenied
-        from django.forms import Form
         from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
         return inner
 
