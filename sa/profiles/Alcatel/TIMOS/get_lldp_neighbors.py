@@ -17,8 +17,8 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_some = re.compile(r"^(?P<port>\w/\w/\w+)\s+")
-    re_local_lldp = re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
-    remote_info = re.compile(r"""
+    rx_local_lldp = re.compile(r"""\s+?:\s(?P<local_interface_id>.+?)\s""")
+    rx_remote_info = re.compile(r"""
         Supported\sCaps\s+:\s(?P<remote_capabilities>.+?)\n
         .*?
         Chassis\sId\sSubtype\s+:\s(?P<remote_chassis_id_subtype>\d)\s
@@ -71,7 +71,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         else:
-            match_obj = self.remote_info.search(v)
+            match_obj = self.rx_remote_info.search(v)
             pri = match_obj.groupdict()
             pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
             pri["remote_port"] = self.fixport(pri["remote_port"],
@@ -91,7 +91,7 @@ class Script(BaseScript):
             if match:
                 port = match.group('port')
                 local_lldp = self.cli('show port %s ethernet detail | match IfIndex' % port)
-                lldp_match = self.re_local_lldp.search(local_lldp)
+                lldp_match = self.rx_local_lldp.search(local_lldp)
                 local_interface_id = str(lldp_match.group('local_interface_id'))
                 pri = self.get_port_info(port)
                 port_info = {

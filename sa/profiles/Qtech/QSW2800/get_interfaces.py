@@ -55,7 +55,8 @@ class Script(BaseScript):
         swports = {}
         for sp in self.scripts.get_switchport():
             swports[sp["interface"]] = (
-                sp["untagged"] if "untagged" in sp else None, sp["tagged"]
+                sp["untagged"] if "untagged" in sp else None,
+                sp["tagged"]
             )
 
         # get portchannels
@@ -104,9 +105,7 @@ class Script(BaseScript):
                         iface["enabled_protocols"] += ["LACP"]
                 try:
                     if ifname.startswith("Ethernet"):
-                        v = self.cli(
-                            "show ethernet-oam local interface %s" % ifname
-                        )
+                        v = self.cli("show ethernet-oam local interface %s" % ifname)
                         match = self.rx_oam.search(v)
                         if not match:
                             iface["enabled_protocols"] += ["OAM"]

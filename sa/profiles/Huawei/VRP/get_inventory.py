@@ -104,7 +104,7 @@ class Script(BaseScript):
             vendor = "NONAME"
         if " " in serial:
             serial = serial.split()[0]
-        if manufactured and part_no and self.date_check.match(manufactured):
+        if manufactured and part_no and self.rx_date_check.match(manufactured):
             manufactured = self.normalize_date(manufactured)
         else:
             manufactured = None
@@ -312,7 +312,7 @@ class Script(BaseScript):
         parts = date.split('-')
         year = int(parts[0])
         month = int(parts[1])
-        day = int(self.d.search(parts[2]).group(0))
+        day = int(self.rx_d.search(parts[2]).group(0))
         if month < 10:
             month = '0' + str(month)
             need_edit = True
