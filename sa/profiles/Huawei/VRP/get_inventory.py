@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -142,12 +142,11 @@ class Script(BaseScript):
 
         if i_type == "CHASSIS":
             f = self.rx_mainboard.search(v)
-            sh = self.parse_item_content(f.group("body"), slot_num, "CHASSIS")
-            r.append(sh)
+            r += [self.parse_item_content(f.group("body"), slot_num, "CHASSIS")]
         else:
-            r.append(self.parse_item_content(v, subcard_num, i_type))
+            r += [self.parse_item_content(v, subcard_num, i_type)]
 
-        for f in re.finditer(self.rx_port, v):
+        for f in self.rx_port.finditer(v):
             # port block, search XCVR
             num = f.group("port_num")
             if f.group("body") == '':
@@ -159,7 +158,7 @@ class Script(BaseScript):
                 self.logger.debug("Not p_no in SFP slot, %s skipping" % num)
                 continue
             if sfp:
-                r.append(sfp)
+                r += [sfp]
 
         return r
 
@@ -229,14 +228,12 @@ class Script(BaseScript):
                 continue
             else:
                 inv.extend(self.part_parse(i_type, slot_num, i_sub))
-            """
-            inv += [{
-                "type": type,
-                "number": number,
-                "part_no": part_no,
-                "vendor": "HUAWEI"
-            }]
-            """
+            # inv += [{
+            #     "type": type,
+            #     "number": number,
+            #     "part_no": part_no,
+            #     "vendor": "HUAWEI"
+            # }]
 
         return inv
 
@@ -258,10 +255,12 @@ class Script(BaseScript):
             # Chassis: S5328C-EI-24S's Device status:
             ch = s.pop(0)
             chassis = ch.split("'")[0]
-            r.append({"Type": "CHASSIS",
-                      "Slot": 0,
-                      "Sub": "-",
-                      "part_no": ch.split("'")[0]})
+            r += [{
+                "Type": "CHASSIS",
+                "Slot": 0,
+                "Sub": "-",
+                "part_no": ch.split("'")[0]
+            }]
         elif "Unit" in s[0]:
             # @todo Unit devices
             s.pop(0)
@@ -270,11 +269,9 @@ class Script(BaseScript):
             if not ll.strip():
                 continue
             if header_first_line:
-                """
-                If S85XX column with spaces:
-                Slot No.   Brd Type        Brd Status   Subslot Num    Sft Ver
-                Merge word
-                """
+                # If S85XX column with spaces:
+                # Slot No.   Brd Type        Brd Status   Subslot Num    Sft Ver
+                # Merge word
                 ll = self.rx_header_repl.sub(r"\g<2>", ll)
                 columns = [c.strip() for c in ll.split(" ") if c]
                 header_first_line = False
@@ -285,10 +282,10 @@ class Script(BaseScript):
                     l_old = self.rx_header_repl.sub(r"\g<2>", l_old)
                 columns = l_old.split()
             elif columns:
-                """Fetch cells"""
+                # Fetch cells
                 row = ll.strip().split()
                 if len(ll.strip().split()) != len(columns):
-                    """First column is empty"""
+                    # First column is empty
                     row.insert(0, "-")
                 # else:
                 #    chassis = True

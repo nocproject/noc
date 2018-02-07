@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -176,10 +176,8 @@ class Script(BaseScript):
 
         v = self.profile.get_version(self)
         mac = v["mac"]
-        """
-        XXX: This is a dirty hack !!!
-        I do not know, how get ip interface MAC address
-        """
+        # XXX: This is a dirty hack !!!
+        # I do not know, how get ip interface MAC address
         v = self.cli("show interface ip 0")
         for match in self.rx_iface.finditer(v):
             ifname = match.group("iface")

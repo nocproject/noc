@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-__author__ = 'FeNikS'
+# ---------------------------------------------------------------------
+# Tangram.GT21.get_config
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 # Python modules
 import re
 from xml.dom.minidom import parseString

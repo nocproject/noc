@@ -2,6 +2,10 @@
 # ----------------------------------------------------------------------
 #  Alcatel.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
 
 # Python modules
 import re
@@ -264,7 +268,8 @@ class Script(BaseScript):
                 my_dict['type'] = 'tunnel'
 
             elif (
-                iftypeNetwork in iface or iftypeVPRN in iface or
+                iftypeNetwork in iface or
+                iftypeVPRN in iface or
                 iftypeIES in iface
             ):
                 match_obj = self.re_int_desc_vprn.search(iface)
@@ -294,8 +299,6 @@ class Script(BaseScript):
                                 'name': my_dict['name']
                             }
                         ]
-                else:
-                    pass
             else:
                 continue
             if my_dict['description'] == '(Not Specified)':
@@ -312,10 +315,7 @@ class Script(BaseScript):
                 my_dict.update(self.fix_ip_addr(my_dict['ipaddr_section']))
                 my_dict.pop('ipaddr_section')
             if 'subinterfaces' in my_dict:
-                if (
-                    type(my_dict['subinterfaces']) != list and
-                    type(my_dict['subinterfaces']) != dict
-                ):
+                if not isinstance(my_dict["subinterfaces"], (list, dict)):
                     my_dict['subinterfaces'] = [my_dict['subinterfaces']]
                 if len(my_dict['subinterfaces']) == 1:
                     my_sub = {
@@ -361,7 +361,7 @@ class Script(BaseScript):
             if 'type' not in my_dict:
                 my_dict['type'] = 'unknown'
 
-            result.append(my_dict)
+            result += [my_dict]
         return result
 
     @staticmethod
@@ -431,7 +431,6 @@ class Script(BaseScript):
         return result
 
     def get_forwarding_instance(self):
-
         result = []
         o = self.cli("show service service-using")
         for line in o.splitlines():
@@ -558,12 +557,12 @@ class Script(BaseScript):
 
         fi = self.get_forwarding_instance()
         for forw_instance in fi:
-            result.append(forw_instance)
+            result += [forw_instance]
 
         fi = self.get_managment_router()
-        result.append(fi)
+        result += [fi]
 
         fi = self.get_base_router()
-        result.append(fi)
+        result += [fi]
 
         return result
