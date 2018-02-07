@@ -17,7 +17,8 @@ class Profile(BaseProfile):
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
         (r"\[Yes/press any key for no\]", "Y"),
         (r"<return>, Quit: q or <ctrl>", " "),
-        (r"q or <ctrl>+z", " ")
+        (r"q or <ctrl>+z", " "),
+        (r"Overwrite file \[startup-config\].... \(Y\/N\)", "Y"),
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>\S+)>\s*"
     pattern_syntax_error = \
