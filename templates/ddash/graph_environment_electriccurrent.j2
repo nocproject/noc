@@ -4,7 +4,7 @@
   "links": [],
   "nullPointMode": "connected",
   "renderer": "flot",
-  "id": "14dc48c0-5d5e-44df-9fe1-f56973ef2e68",
+  "id": "31fb8cf1-4115-4dd8-945e-0bdeaa4adea7",
   "linewidth": 2,
   "steppedLine": false,
   "targets": [
@@ -12,10 +12,10 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(usage_5s) FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT \n    t, \n    groupArray((concat('Environment | Electric Current ',path[3], ' ', path[4]), d)) AS groupArr\nFROM \n    ( SELECT \n          $timeSeries as t, \n        path[3],\n        path[4], \n        avg(elec_current) d \n        from $table \n        WHERE \n            $timeFilter\n            AND  managed_object=$bi_id\n        GROUP BY t, path[3],path[4]\n        having d != 0\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
       "database": "noc",
       "tableLoading": false,
-      "table": "memory",
+      "table": "environment",
       "dateLoading": false,
       "datetimeLoading": false,
       "dateColDataType": "date",
@@ -24,7 +24,7 @@
   ],
   "fill": 1,
   "span": 6,
-  "title": "Memory | Usage | 5sec",
+  "title": "Environment | Electric Current",
   "tooltip": {
     "sort": 0,
     "shared": true,
@@ -35,7 +35,7 @@
   "yaxes": [
     {
       "logBase": 1,
-      "format": "short",
+      "format": "amp",
       "max": null,
       "show": true,
       "label": null,
@@ -54,7 +54,8 @@
     "show": true,
     "mode": "time",
     "name": null,
-    "values": []
+    "values": [],
+    "buckets": null
   },
   "seriesOverrides": [],
   "percentage": false,
@@ -63,13 +64,14 @@
   "editable": true,
   "grid": {},
   "legend": {
-    "avg": false,
-    "min": false,
-    "max": false,
+    "avg": true,
+    "min": true,
+    "max": true,
     "show": true,
     "current": false,
-    "values": false,
-    "total": false
+    "values": true,
+    "total": false,
+    "alignAsTable": true
   },
   "timeShift": null,
   "aliasColors": {},
@@ -77,5 +79,8 @@
   "points": false,
   "datasource": null,
   "pointradius": 5,
-  "thresholds": []
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
 }

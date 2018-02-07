@@ -4,7 +4,7 @@
   "links": [],
   "nullPointMode": "connected",
   "renderer": "flot",
-  "id": "14dc48c0-5d5e-44df-9fe1-f56973ef2e68",
+  "id": "1bb67ee3-9513-47c7-b848-10cd3886bc42",
   "linewidth": 2,
   "steppedLine": false,
   "targets": [
@@ -12,10 +12,10 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(usage_5s) FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT \n  $timeSeries as t, \n  avg(disk_error_count) as `Disk | Error Count`\nFROM \n  $table \nWHERE managed_object=$bi_id \n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
       "database": "noc",
       "tableLoading": false,
-      "table": "memory",
+      "table": "disk",
       "dateLoading": false,
       "datetimeLoading": false,
       "dateColDataType": "date",
@@ -24,7 +24,7 @@
   ],
   "fill": 1,
   "span": 6,
-  "title": "Memory | Usage | 5sec",
+  "title": "Disk | Error Count",
   "tooltip": {
     "sort": 0,
     "shared": true,
@@ -39,7 +39,7 @@
       "max": null,
       "show": true,
       "label": null,
-      "min": null
+      "min": "0"
     },
     {
       "logBase": 1,
@@ -54,7 +54,8 @@
     "show": true,
     "mode": "time",
     "name": null,
-    "values": []
+    "values": [],
+    "buckets": null
   },
   "seriesOverrides": [],
   "percentage": false,
@@ -63,19 +64,25 @@
   "editable": true,
   "grid": {},
   "legend": {
-    "avg": false,
-    "min": false,
-    "max": false,
+    "avg": true,
+    "min": true,
+    "max": true,
     "show": true,
-    "current": false,
-    "values": false,
-    "total": false
+    "current": true,
+    "values": true,
+    "total": false,
+    "alignAsTable": true
   },
   "timeShift": null,
-  "aliasColors": {},
+  "aliasColors": {
+    "Disk | Error Count": "#d683ce"
+  },
   "lines": true,
   "points": false,
   "datasource": null,
   "pointradius": 5,
-  "thresholds": []
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
 }
