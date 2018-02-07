@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ServiceSumamry Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -390,6 +390,85 @@ class ServiceSummary(Document):
         return AlarmSeverity.severity_for_weight(
             cls.get_weight(summary)
         )
+
+    @classmethod
+    def get_direct_summary(cls, managed_objects):
+        """
+        Calculate direct services and profiles for a list of managed objects
+        :param managed_objects: List of managed object instances or ids
+        :return: tuple of service and subscriber dicts
+        """
+        services = {}
+        subscribers = {}
+        pipeline = [
+            # Filter managed objects
+            {
+                "$match": {
+                    "managed_object": {
+                        "$in": [getattr(mo, "id", mo) for mo in managed_objects]
+                    }
+                }
+            },
+            # Mark service and profile with type field
+            {
+                "$project": {
+                    "_id": 0,
+                    "service": {
+                        "$map": {
+                            "input": "$service",
+                            "as": "svc",
+                            "in": {
+                                "type": "svc",
+                                "profile": "$$svc.profile",
+                                "summary": "$$svc.summary"
+                            }
+                        }
+                    },
+                    "subscriber": {
+                        "$map": {
+                            "input": "$subscriber",
+                            "as": "sub",
+                            "in": {
+                                "type": "sub",
+                                "profile": "$$sub.profile",
+                                "summary": "$$sub.summary"
+                            }
+                        }
+                    }
+                }
+            },
+            # Concatenate services and profiles
+            {
+                "$project": {
+                    "summary": {
+                        "$concatArrays": ["$service", "$subscriber"]
+                    }
+                }
+            },
+            # Unwind *summary* array to independed records
+            {
+                "$unwind": "$summary"
+            },
+            # Group by (type, profile)
+            {
+                "$group": {
+                    "_id": {
+                        "type": "$summary.type",
+                        "profile": "$summary.profile"
+                    },
+                    "summary": {
+                        "$sum": "$summary.summary"
+                    }
+                }
+            }
+        ]
+        for doc in ServiceSummary._get_collection().aggregate(pipeline):
+            profile = doc["_id"]["profile"]
+            if doc["_id"]["type"] == "svc":
+                services[profile] = services.get(profile, 0) + doc["summary"]
+            else:
+                subscribers[profile] = subscribers.get(profile, 0) + doc["summary"]
+        return services, subscribers
 
 
 def refresh_object(managed_object):
