@@ -10,8 +10,10 @@
                 {% endif %}
             {% endfor %}
         </th>
-     </tr>
-    <tr>
+        <tr>
+            <th scope="row">{{ _("Location") }}</th>
+            <td>{{ location }}</td>
+        <tr>
         <th scope="row">{{ _("Модель") }}</th>
         <td>{{ object.model.name }}</td>
     </tr>
@@ -22,9 +24,13 @@
             <table>
                 <tbody>
                 {% for o in children %}
-                <tr>
-                    <td>
-                        <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.name }}</a>
+                <td>
+                    <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.name }}</a>
+                    <tr>
+                        <th scope="row">{{ _("Dashboard") }}</th>
+                    <tr>
+                        <td><a href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ o.id }}">View metrics</a></td>
+
                         {% if o.alarms %}
                         <tr>
                             <th scope="row">{{ _("Alarms") }}</th>
