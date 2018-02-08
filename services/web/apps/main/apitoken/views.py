@@ -28,10 +28,12 @@ class APITokenApplication(ExtApplication):
         else:
             self.response_not_found()
 
-    @view("^(?P<type>[^/]+)/$", method=["POST"], access=PermitLogged(),
-          validate={
-              "token": StringParameter()
-          }, api=True)
+    @view(
+        "^(?P<type>[^/]+)/$", method=["POST"], access=PermitLogged(),
+        validate={
+            "token": StringParameter()
+        }, api=True
+    )
     def api_set_token(self, request, type, token=None):
         APIToken._get_collection().update({
             "type": type,

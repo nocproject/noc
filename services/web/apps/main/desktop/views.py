@@ -63,7 +63,7 @@ class DesktopApplication(ExtApplication):
                 profile = user.get_profile()
                 if profile.preferred_language:
                     language = profile.preferred_language
-            except:
+            except Exception:
                 pass
         return language
 
