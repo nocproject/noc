@@ -22,12 +22,26 @@ from noc.core.perf import metrics
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.clickhouse.connect import connection
+from noc.sa.models.useraccess import UserAccess
 
 class ObjectCard(BaseCard):
     name = "object"
     default_template_name = "object"
     model = Object
+
+    def get_object(self, id):
+        if self.current_user.is_superuser:
+            return Object.objects.get(id=id)
+        else:
+            return Object.objects.get(
+                id=id,
+                administrative_domain__in=self.get_user_domains()
+            )
+
     def get_data(self):
+        if not self.object:
+            return None
+
         # Get path
         path = [{
             "id": self.object.id,
@@ -51,37 +65,28 @@ class ObjectCard(BaseCard):
 
          # Get children
         children = []
+        current_state = None
+        current_start = None
+        duration = None
 
         for o in ManagedObject.objects.filter(container=self.object.id):
-
-
-            if not self.object:
-                return None
-
-            # Metrics
-            metric_map = self.get_metrics([o])
-            metric_map = metric_map[o]
-
             # Alarms
             now = datetime.datetime.now()
             # Get object status and uptime
             alarms = list(ActiveAlarm.objects.filter(managed_object=o.id))
             current_start = None
             duration = None
-            uptime = Uptime.objects.filter(
-                object=o.id,
-                stop=None
-            ).first()
+            uptime = Uptime.objects.filter(object=o.id, stop=None).first()
+
             if uptime:
                 current_start = uptime.start
             else:
                 current_state = "down"
-                outage = Outage.objects.filter(
-                    object=o.id,
-                    stop=None
-                ).first()
+                outage = Outage.objects.filter(object=o.id, stop=None).first()
+
                 if outage:
-                    current_start = outage.start
+                    current_start = outage.state
+
             if current_start:
                 duration = now - current_start
 
@@ -95,6 +100,10 @@ class ObjectCard(BaseCard):
                     "subject": alarm.subject
                 }]
             alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
+
+            # Metrics
+            metric_map = self.get_metrics([o])
+            metric_map = metric_map[o]
 
             children += [{
                 "id": o.id,
@@ -211,3 +220,4 @@ class ObjectCard(BaseCard):
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
 
         return metric_map
+

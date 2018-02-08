@@ -31,6 +31,28 @@
                     <tr>
                         <td><a href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ o.id }}">View metrics</a></td>
 
+                        {% if o.metrics %}
+                        <tr>
+                            <th scope="row">{{ _("Metrics") }}</th>
+                            <td>
+                                <table class="table table-condensed">
+                                    <thead>
+                                       <tr>
+                                           <th>{{ _("Name") }}</th>
+                                           <th>{{ _("Value") }}</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for m in o.metrics %}
+                                        <tr>
+                                            <td>{{ m }}</td>
+                                            <td>{{ o.metrics[m] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                        {% endif %}
+
                         {% if o.alarms %}
                         <tr>
                             <th scope="row">{{ _("Alarms") }}</th>
@@ -54,6 +76,8 @@
                                     </tbody>
                                 </table>
                         {% endif %}
+
+
                      <div class="panel panel-default">
                     </td>
                 </tr>
