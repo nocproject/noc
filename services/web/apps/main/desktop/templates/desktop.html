@@ -68,7 +68,11 @@
                 branding_color: "{{ setup.branding_color }}",
                 branding_background_color: "{{ setup.branding_background_color }}",
                 enable_search: {% if setup.enable_search %}true{% else %}false{% endif %},
-                install_collection: {% if setup.install_collection %}true{% else %}false{% endif %},
+                gitlab_url: "{{ setup.gitlab_url }}",
+                collections: {
+                    allow_sharing: {% if setup.collections_allow_sharing %}true{% else %}false{% endif %},
+                    project_id: {{ setup.collections_project_id }}
+                },
                 gis: {
                     base: {
                         "enable_osm": {% if setup.enable_gis_base_osm %}true{% else %}false{% endif %},

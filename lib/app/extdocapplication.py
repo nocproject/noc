@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,8 @@
 from __future__ import absolute_import
 import uuid
 from functools import reduce
+import os
+import hashlib
 # Django modules
 from django.http import HttpResponse
 # Third-party modules
@@ -18,7 +20,6 @@ from mongoengine.fields import (StringField, BooleanField, ListField,
                                 BinaryField)
 from mongoengine.errors import ValidationError
 # NOC modules
-from noc.config import config
 from .extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
                            PlainReferenceField, Q, DateField)
@@ -94,12 +95,11 @@ class ExtDocApplication(ExtApplication):
                 self._api_to_json,
                 url="^(?P<id>[0-9a-f]{24})/json/$",
                 method=["GET"], access="read", api=True)
-            if self.json_collection and config.web.install_collection:
-                self.add_view(
-                    "api_install_json",
-                    self._api_install_json,
-                    url="^(?P<id>[0-9a-f]{24})/json/$",
-                    method=["POST"], access="create", api=True)
+            self.add_view(
+                "api_share_info",
+                self._api_share_info,
+                url="^(?P<id>[0-9a-f]{24})/share_info/$",
+                method=["GET"], access="read", api=True)
         if self.json_collection:
             self.field_is_builtin = self._field_is_builtin
         # Find field_* and populate custom fields
@@ -421,14 +421,25 @@ class ExtDocApplication(ExtApplication):
         o = self.get_object_or_404(self.model, id=id)
         return o.to_json()
 
-    def _api_install_json(self, request, id):
+    def _api_share_info(self, request, id):
         """
-        Expose JSON collection item when available
+        Additional information for JSON sharing process
+        :param request:
+        :param id:
+        :return:
         """
-        from noc.core.collection.base import Collection
         o = self.get_object_or_404(self.model, id=id)
-        Collection.install(o.to_json())
-        return True
+        content = o.to_json()
+        hash = hashlib.sha256(content).hexdigest()[:8]
+        return {
+            "file_path": os.path.join(
+                "src",
+                self.model._meta["json_collection"],
+                o.get_json_path()
+            ),
+            "content": content,
+            "hash": hash
+        }
 
     def _field_is_builtin(self, o):
         """
