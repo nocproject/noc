@@ -642,6 +642,14 @@ Ext.define('NOC.fm.alarm.Application', {
                 }
             },
             {
+                text: __('Location'),
+                dataIndex: 'location',
+                width: 250,
+                renderer: function(v, _, record) {
+                    return record.get('location_1') + '<br/>' + record.get('location_2');
+                }
+            },
+            {
                 text: __('Address/Platform'),
                 dataIndex: 'address',
                 width: 120,

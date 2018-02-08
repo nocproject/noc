@@ -26,6 +26,7 @@ from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.selectorcache import SelectorCache
+from noc.gis.utils.addr.ru import normalize_division
 from noc.main.models import User
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
@@ -176,6 +177,8 @@ class AlarmApplication(ExtApplication):
             "row_class": s.style.css_class_name,
             "segment__label": o.managed_object.segment.name,
             "segment": str(o.managed_object.segment.id),
+            "location_1": self.location(o.managed_object.container.id)[0] if o.managed_object.container else "",
+            "location_2": self.location(o.managed_object.container.id)[1] if o.managed_object.container else "",
             "escalation_tt": o.escalation_tt,
             "escalation_error": o.escalation_error,
             "platform": o.managed_object.platform.name if o.managed_object.platform else "",
@@ -249,6 +252,7 @@ class AlarmApplication(ExtApplication):
                 except Object.DoesNotExist:
                     break
             d["container_path"] = " | ".join(cp)
+            d["address_path"] = ", ".join(self.location(mo.container.id))
         d["tags"] = mo.tags
         # Log
         if alarm.log:
@@ -493,3 +497,32 @@ class AlarmApplication(ExtApplication):
             return {'status': True}
         else:
             return {'status': False, 'error': 'The alarm is not active at the moment'}
+
+    def location(self, id):
+        """
+        Return geo address for Managed Objects
+        """
+        def chunkIt(seq, num):
+            avg = len(seq) / float(num)
+            out = []
+            last = 0.0
+
+            while last < len(seq):
+                out.append(seq[int(last):int(last + avg)])
+                last += avg
+            return out
+        obj = Object.get_by_id(id)
+        location = []
+        if "address" in obj["data"]:
+            for res in (obj["data"]["address"]["text"]).split(","):
+                a = normalize_division(res.strip().decode("utf-8").lower())
+                if None in a and "" in a:
+                    continue
+                if None in a:
+                    location += [a[1].title().strip()]
+                else:
+                    location += [' '.join(a).title().strip()]
+            res = chunkIt(location, 2)
+            location_1 = ", ".join(res[0])
+            location_2 = ", ".join(res[1])
+            return [location_1, location_2]
