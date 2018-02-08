@@ -34,5 +34,5 @@ class Script(BaseScript):
             "version": match.group("version"),
             "attributes": {
                 "Bootloader": match.group("bootloader"),
-                }
             }
+        }
