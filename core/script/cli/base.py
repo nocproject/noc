@@ -206,6 +206,8 @@ class CLI(object):
         self.send(self.command)
         parser = parser or self.read_until_prompt
         self.result = yield parser()
+        if isinstance(self.result, memoryview):
+            self.result = str(self.result)
         self.logger.debug("Command: %s\n%s",
                           self.command.strip(), self.result)
         if (self.profile.rx_pattern_syntax_error and
