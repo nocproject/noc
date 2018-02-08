@@ -142,9 +142,9 @@ class Script(BaseScript):
 
         if i_type == "CHASSIS":
             f = self.rx_mainboard.search(v)
-            r += [self.parse_item_content(f.group("body"), slot_num, "CHASSIS")]
+            r.append(self.parse_item_content(f.group("body"), slot_num, "CHASSIS"))
         else:
-            r += [self.parse_item_content(v, subcard_num, i_type)]
+            r.append(self.parse_item_content(v, subcard_num, i_type))
 
         for f in self.rx_port.finditer(v):
             # port block, search XCVR
@@ -158,7 +158,7 @@ class Script(BaseScript):
                 self.logger.debug("Not p_no in SFP slot, %s skipping" % num)
                 continue
             if sfp:
-                r += [sfp]
+                r.append(sfp)
 
         return r
 
@@ -255,12 +255,12 @@ class Script(BaseScript):
             # Chassis: S5328C-EI-24S's Device status:
             ch = s.pop(0)
             chassis = ch.split("'")[0]
-            r += [{
+            r.append({
                 "Type": "CHASSIS",
                 "Slot": 0,
                 "Sub": "-",
                 "part_no": ch.split("'")[0]
-            }]
+            })
         elif "Unit" in s[0]:
             # @todo Unit devices
             s.pop(0)
@@ -316,9 +316,11 @@ class Script(BaseScript):
         if day < 10:
             day = '0' + str(day)
             need_edit = True
-        if year < 100:
-            year = "2%03d" % year
-            need_edit = True
+        if len(str(year)) < 4:
+            year = "2" + "0" * (3-len(str(year))) + str(year)
+        # if year < 100:
+        #     year = "2%03d" % year
+        #     need_edit = True
         if need_edit:
             parts = [year, month, day]
             result = '-'.join([str(el) for el in parts])

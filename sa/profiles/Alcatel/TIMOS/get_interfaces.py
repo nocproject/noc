@@ -12,7 +12,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.validators import is_int
+from noc.lib.validators import is_int, is_ipv4, is_ipv6
 
 
 class Script(BaseScript):
@@ -205,7 +205,7 @@ class Script(BaseScript):
                 ip = match_obj.group(2)
                 if afi == 'IP Addr/mask' and 'Not' not in ip:
                     result['ipv4_addresses'] += [ip]
-                elif afi == 'IPv6 Addr':
+                elif afi == 'IPv6 Addr' and is_ipv6(ip):
                     result['ipv6_addresses'] += [ip]
         if result['ipv4_addresses']:
             result['enabled_afi'] += ['IPv4']
@@ -434,7 +434,7 @@ class Script(BaseScript):
         result = []
         o = self.cli("show service service-using")
         for line in o.splitlines():
-            mo1 = self.forwarding_instance.search(line)
+            mo1 = self.re_forwarding_instance.search(line)
             if mo1:
                 fi = mo1.groupdict()
                 fi['type'] = self.fix_fi_type(fi['type'])
