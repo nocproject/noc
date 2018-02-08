@@ -728,4 +728,5 @@ class CLI(object):
                 # Yield coroutine
                 yield seq(self, command, error_text)
             else:
-                seq(self, command, error_text)
+                seq = seq(self, command, error_text)
+                yield self.iostream.write(seq)
