@@ -160,6 +160,27 @@
     <td>N/A</td>
 </tr>
 <tr>
+    <th scope="row">{{ _("Metrics") }}</th>
+    <td>
+        {% if metrics %}
+        <table class="table table-condensed table-hover">
+            <thead>
+                <th>{{ _("Name") }}</th>
+                <th>{{ _("Value") }}</th>
+            </thead>
+            <tbody>
+                {% for m in metrics %}
+                <tr>
+                    <td>{{ m }}</td>
+                    <td>{{ metrics[m] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </td>
+</tr>
+<tr>
     <th scope="row">{{ _("Neighbors") }}</th>
     <td>
         {% if links %}
@@ -262,6 +283,10 @@
         <th class="col-sm-1">{{ _("Port") }}</th>
         <th class="col-sm-1">{{ _("Admin") }}/{{ _("Oper") }}</th>
         <th class="col-sm-1">{{ _("Speed") }}/{{ _("Duplex") }}</th>
+        <th class="col-sm-1">{{ _("Load In") }}</th>
+        <th class="col-sm-1">{{ _("Load Out") }}</th>
+        <th class="col-sm-1">{{ _("Errors In") }}</th>
+        <th class="col-sm-1">{{ _("Errors Out") }}</th>
         <th class="col-sm-1">{{ _("MAC") }}</th>
         <th class="col-sm-1">{{ _("VLAN") }}</th>
         <th class="col-sm-1">{{ _("Errors") }}</th>
@@ -279,6 +304,34 @@
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["oper_status"] %}
                         {{ i["speed"] }}M/{{ {True: "Full", False: "Half"}[i.full_duplex] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
+                    {% if i["load_in"] %}
+                        {{ i["load_in"] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
+                    {% if i["load_out"] %}
+                        {{ i["load_out"] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
+                    {% if i["errors_in"] %}
+                        {{ i["errors_in"] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
+                    {% if i["errors_out"] %}
+                        {{ i["errors_out"] }}
                     {% else %}
                         -
                     {% endif %}
