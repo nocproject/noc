@@ -329,8 +329,6 @@ class NetworkSegment(Document):
                 else:
                     d1[k] = d2[k]
 
-        services = {}
-        subscribers = {}
         objects = dict(
             (d["object_profile"], d["count"])
             for d in self.managed_objects.values(
@@ -340,9 +338,7 @@ class NetworkSegment(Document):
             ).order_by("count"))
         # Direct services
         mo_ids = self.managed_objects.values_list("id", flat=True)
-        for ss in ServiceSummary.objects.filter(managed_object__in=mo_ids):
-            update_dict(services, SummaryItem.items_to_dict(ss.service))
-            update_dict(subscribers, SummaryItem.items_to_dict(ss.subscriber))
+        services, subscribers = ServiceSummary.get_direct_summary(mo_ids)
         self.direct_services = SummaryItem.dict_to_items(services)
         self.direct_subscribers = SummaryItem.dict_to_items(subscribers)
         self.direct_objects = ObjectSummaryItem.dict_to_items(objects)
