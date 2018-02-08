@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -138,6 +138,10 @@ class Config(BaseConfig):
 
     class cm(ConfigSection):
         vcs_type = StringParameter(default="gridvcs", choices=["hg", "CVS", "gridvcs"])
+
+    class collections(ConfigSection):
+        allow_sharing = BooleanParameter(default=True)
+        project_id = IntParameter(default=206)
 
     class consul(ConfigSection):
         token = SecretParameter()
@@ -282,6 +286,7 @@ class Config(BaseConfig):
     )
 
     thread_stack_size = IntParameter(default=0)
+    gitlab_url = StringParameter("https://code.getnoc.com/")
 
     class logging(ConfigSection):
         log_api_calls = BooleanParameter(default=False)
@@ -483,7 +488,6 @@ class Config(BaseConfig):
         api_row_limit = IntParameter(default=0)
         api_arch_alarm_limit = IntParameter(default=4 * 86400)
         language = StringParameter(default="en")
-        install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
         macdb_window = IntParameter(default=4 * 86400)
 
