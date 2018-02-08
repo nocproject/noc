@@ -81,6 +81,7 @@ _MCACHE = {}
 
 _MODELS = {
     # main models
+    "main.APIToken": "noc.main.models.apitoken.APIToken",
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.Checkpoint": "noc.main.models.Checkpoint",
     "main.CollectionCache": "noc.main.models.collectioncache.CollectionCache",
