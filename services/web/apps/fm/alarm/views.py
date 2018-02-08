@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 import inspect
 import datetime
-from __future__ import absolute_import
 # Third-party modules
 import bson
 from pymongo import ReadPreference
@@ -73,7 +73,7 @@ class AlarmApplication(ExtApplication):
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
-        from plugins.base import AlarmPlugin
+        from .plugins.base import AlarmPlugin
         # Load plugins
         self.plugins = {}
         for f in os.listdir("services/web/apps/fm/alarm/plugins/"):
