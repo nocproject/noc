@@ -329,8 +329,6 @@ class NetworkSegment(Document):
                 else:
                     d1[k] = d2[k]
 
-        services = {}
-        subscribers = {}
         objects = dict(
             (d["object_profile"], d["count"])
             for d in self.managed_objects.values(
@@ -339,21 +337,8 @@ class NetworkSegment(Document):
                 count=Count("id")
             ).order_by("count"))
         # Direct services
-        # logger.info("Update direct services")
-        mo_ids = list(self.managed_objects.values_list("id", flat=True))
-        match = {"managed_object": {"$in": mo_ids}}
-        for name, dic in (("service", services), ("subscriber", subscribers)):
-            group = {"_id": {name: "$%s.profile" % name},
-                     "count": {"$sum": "$%s.summary" % name}}
-            pipeline = [{"$match": match},
-                        {"$unwind": "$%s" % name},
-                        {"$group": group},
-                        {"$project": {"profile": "$_id.%s" % name,
-                                      "summary": "$count",
-                                      "_id": 0}}
-                        ]
-            for ss in ServiceSummary._get_collection().aggregate(pipeline):
-                update_dict(dic, {ss["profile"]: ss["summary"]})
+        mo_ids = self.managed_objects.values_list("id", flat=True)
+        services, subscribers = ServiceSummary.get_direct_summary(mo_ids)
         self.direct_services = SummaryItem.dict_to_items(services)
         self.direct_subscribers = SummaryItem.dict_to_items(subscribers)
         self.direct_objects = ObjectSummaryItem.dict_to_items(objects)
