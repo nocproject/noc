@@ -155,6 +155,7 @@ class CLI(object):
             self.close_timeout = None
         self.buffer = ""
         self.command = cmd
+        self.error = None
         self.ignore_errors = ignore_errors
         if not self.ioloop:
             self.logger.debug("Creating IOLoop")
