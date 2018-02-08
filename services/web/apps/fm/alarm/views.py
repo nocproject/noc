@@ -10,6 +10,7 @@
 import os
 import inspect
 import datetime
+from __future__ import absolute_import
 # Third-party modules
 import bson
 from pymongo import ReadPreference
