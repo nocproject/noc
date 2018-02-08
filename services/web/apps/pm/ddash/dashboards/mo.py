@@ -80,11 +80,13 @@ class MODashboard(BaseDashboard):
 
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
+        om = []
         for m in (self.object.object_profile.metrics or []):
             mt = MetricType.get_by_id(m["metric_type"])
             if not mt or not (m.get("enable_periodic", False) or m.get("enable_box", False)):
                 continue
-            object_metrics += [mt.name]
+            om += [mt.name]
+        object_metrics.extend(sorted(om))
 
         return {"port_types": port_types,
                 "object_metrics": object_metrics,

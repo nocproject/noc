@@ -2,60 +2,24 @@
   "bars": false,
   "timeFrom": null,
   "links": [],
+  "thresholds": [],
   "nullPointMode": "connected",
   "renderer": "flot",
-  "id": "b485a632-cd74-429e-8f69-9839e451ee83",
   "linewidth": 2,
   "steppedLine": false,
   "targets": [
     {
-      "dsType": "influxdb",
-      "tags": [
-        {
-          "key": "object",
-          "operator": "=",
-          "value": "$device"
-        }
-      ],
       "refId": "A",
-      "alias": "CPU | Load | 1min on cpu $tag_slot",
       "resultFormat": "time_series",
-      "measurement": "CPU | Load | 1min",
-      "policy": "default",
-      "groupBy": [
-        {
-          "params": [
-            "$discovery_interval"
-          ],
-          "type": "time"
-        },
-        {
-          "type": "tag",
-          "params": [
-            "slot"
-          ]
-        },
-        {
-          "params": [
-            "null"
-          ],
-          "type": "fill"
-        }
-      ],
-      "select": [
-        [
-          {
-            "params": [
-              "value"
-            ],
-            "type": "field"
-          },
-          {
-            "params": [],
-            "type": "mean"
-          }
-        ]
-      ]
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((concat('CPU | Load | 1min ',path[3]), d)) AS groupArr\nFROM \n    ( SELECT \n          $timeSeries as t, \n        path[3], \n        avg(load_1min) d \n        from $table\n        WHERE \n            $timeFilter\n            AND  managed_object= $bi_id\n        GROUP BY t, path[3]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "cpu",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
     }
   ],
   "fill": 1,
@@ -67,53 +31,57 @@
     "value_type": "cumulative",
     "msResolution": false
   },
-  "stack": false,
-  "yaxes": [
-    {
-      "logBase": 1,
-      "format": "short",
-      "max": null,
-      "show": true,
-      "label": null,
-      "min": null
-    },
-    {
-      "logBase": 1,
-      "format": "short",
-      "max": null,
-      "show": true,
-      "label": null,
-      "min": null
-    }
-  ],
+  "id": "b485a632-cd74-429e-8f69-9839e451ee83",
+  "points": false,
   "xaxis": {
-    "show": true,
+    "values": [],
     "mode": "time",
     "name": null,
-    "values": []
+    "show": true,
+    "buckets": null
   },
   "seriesOverrides": [],
   "percentage": false,
   "type": "graph",
-  "error": false,
+  "pointradius": 5,
   "editable": true,
   "grid": {},
-  "legend": {
-    "avg": true,
-    "min": true,
-    "max": true,
-    "show": true,
-    "current": true,
-    "values": true,
-    "total": false,
-    "alignAsTable": true,
-    "rightSide": false
-  },
+  "stack": false,
   "timeShift": null,
   "aliasColors": {},
   "lines": true,
-  "points": false,
+  "legend": {
+    "rightSide": false,
+    "total": false,
+    "show": true,
+    "max": true,
+    "min": true,
+    "current": true,
+    "values": true,
+    "alignAsTable": true,
+    "avg": true
+  },
+  "yaxes": [
+    {
+      "logBase": 1,
+      "min": "0",
+      "max": "100",
+      "format": "percent",
+      "show": true,
+      "label": null
+    },
+    {
+      "logBase": 1,
+      "min": null,
+      "max": null,
+      "format": "short",
+      "show": true,
+      "label": null
+    }
+  ],
   "datasource": null,
-  "pointradius": 5,
-  "thresholds": []
+  "error": false,
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
 }

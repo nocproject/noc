@@ -4,7 +4,7 @@
   "links": [],
   "nullPointMode": "connected",
   "renderer": "flot",
-  "id": "14dc48c0-5d5e-44df-9fe1-f56973ef2e68",
+  "id": "55143917-4453-48d7-aff4-765688a06565",
   "linewidth": 2,
   "steppedLine": false,
   "targets": [
@@ -12,7 +12,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT $timeSeries as t, avg(usage_5s) FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
+      "query": "SELECT $timeSeries as t, avg(load_1min) as `Memory | load | 1min` FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
       "database": "noc",
       "tableLoading": false,
       "table": "memory",
@@ -24,7 +24,7 @@
   ],
   "fill": 1,
   "span": 6,
-  "title": "Memory | Usage | 5sec",
+  "title": "Memory | Load | 1min",
   "tooltip": {
     "sort": 0,
     "shared": true,
@@ -35,11 +35,11 @@
   "yaxes": [
     {
       "logBase": 1,
-      "format": "short",
-      "max": null,
+      "format": "percent",
+      "max": "100",
       "show": true,
       "label": null,
-      "min": null
+      "min": "0"
     },
     {
       "logBase": 1,
@@ -54,7 +54,8 @@
     "show": true,
     "mode": "time",
     "name": null,
-    "values": []
+    "values": [],
+    "buckets": null
   },
   "seriesOverrides": [],
   "percentage": false,
@@ -63,19 +64,25 @@
   "editable": true,
   "grid": {},
   "legend": {
-    "avg": false,
-    "min": false,
-    "max": false,
+    "avg": true,
+    "min": true,
+    "max": true,
     "show": true,
     "current": false,
-    "values": false,
-    "total": false
+    "values": true,
+    "total": false,
+    "alignAsTable": true
   },
   "timeShift": null,
-  "aliasColors": {},
+  "aliasColors": {
+    "Memory | load | 1min": "#f9e2d2"
+  },
   "lines": true,
   "points": false,
   "datasource": null,
   "pointradius": 5,
-  "thresholds": []
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
 }
