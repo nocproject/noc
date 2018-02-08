@@ -317,7 +317,7 @@ class Script(BaseScript):
             day = '0' + str(day)
             need_edit = True
         if len(str(year)) < 4:
-            year = "2" + "0" * (3-len(str(year))) + str(year)
+            year = "2" + "0" * (3 - len(str(year))) + str(year)
         # if year < 100:
         #     year = "2%03d" % year
         #     need_edit = True
