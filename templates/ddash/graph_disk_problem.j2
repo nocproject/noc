@@ -42,7 +42,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n  $timeSeries as t, \n  avg(disk_problem) as `Disk | Problem`\nFROM \n  $table \nWHERE managed_object=9116545604629095591\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "query": "SELECT \n  $timeSeries as t, \n  avg(disk_problem) as `Disk | Problem`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
       "database": "noc",
       "tableLoading": false,
       "table": "disk",
@@ -83,5 +83,6 @@
   ],
   "datasource": null,
   "lineColor": "rgba(128, 128, 128, 1.0)",
-  "display": "timeline"
+  "display": "timeline",
+  "expandFromQueryS": {{ discovery_interval }}
 }
