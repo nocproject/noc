@@ -85,7 +85,7 @@ class ObjectCard(BaseCard):
                 outage = Outage.objects.filter(object=o.id, stop=None).first()
 
                 if outage:
-                    current_start = outage.state
+                    current_start = outage.start
 
             if current_start:
                 duration = now - current_start
