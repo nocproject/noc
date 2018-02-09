@@ -3,7 +3,7 @@
 # Vendor: Cisco
 # OS:     SMB
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -34,8 +34,13 @@ class Profile(BaseProfile):
     pattern_username = "User Name:"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_colon
-    convert_interface_name = BaseProfile.convert_interface_name_cisco
     config_volatile = None
+
+    def convert_interface_name(self, interface):
+        il = interface.lower()
+        if il.startswith("oob"):
+            return "oob"
+        return self.convert_interface_name_cisco(interface)
 
     def setup_session(self, script):
         script.cli("terminal no prompt")
