@@ -124,6 +124,8 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("map")]
             if o.get_data("management", "managed_object"):
                 n["plugins"] += [self.get_plugin_data("managedobject")]
+            if o.get_data("contacts", "has_contacts"):
+                n["plugins"] += [self.get_plugin_data("contacts")]
             # Append model's plugins
             for p in m_plugins:
                 if not p.startswith("-"):
