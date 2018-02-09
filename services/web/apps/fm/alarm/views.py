@@ -514,8 +514,8 @@ class AlarmApplication(ExtApplication):
             return out
         obj = Object.get_by_id(id)
         location = []
-        if "address" in obj["data"]:
-            for res in (obj["data"]["address"]["text"]).split(","):
+        if obj.data and "address" in obj.data:
+            for res in (obj.data["address"]["text"]).split(","):
                 a = normalize_division(res.strip().decode("utf-8").lower())
                 if None in a and "" in a:
                     continue
@@ -527,3 +527,5 @@ class AlarmApplication(ExtApplication):
             location_1 = ", ".join(res[0])
             location_2 = ", ".join(res[1])
             return [location_1, location_2]
+        else:
+            return ["", ""]
