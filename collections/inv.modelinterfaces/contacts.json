@@ -1,0 +1,36 @@
+{
+    "name": "contacts",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "91a24e0e-7d19-49f8-b127-c8a1bfa1c853",
+    "description": "Various contacts",
+    "attrs": [
+        {
+            "name": "has_contacts",
+            "type": "bool",
+            "description": "Has contacts",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "administrative",
+            "type": "str",
+            "description": "Administrative contacts",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "billing",
+            "type": "str",
+            "description": "Billing/accounting contacts",
+            "required": false,
+            "is_const": false
+        },
+        {
+            "name": "technical",
+            "type": "str",
+            "description": "Technical contacts",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

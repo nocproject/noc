@@ -8,6 +8,9 @@
     "data": {
         "container": {
             "container": true
+        },
+        "contacts": {
+            "has_contacts": true
         }
     }
 }
