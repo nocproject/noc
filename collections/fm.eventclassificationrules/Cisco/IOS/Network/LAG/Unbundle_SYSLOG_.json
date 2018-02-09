@@ -16,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%EC-5-UNBUNDLE: Interface (?P<interface>\\S+) left the port-channel (?P<lag_interface>\\S+)\\.$"
+            "value_re": "%EC-5-UNBUNDLE: Interface (?P<interface>\\S+) left the port-channel (?P<lag_interface>\\S+)\\.?$"
         }
     ]
 }
