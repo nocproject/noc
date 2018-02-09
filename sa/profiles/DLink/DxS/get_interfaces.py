@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -355,8 +355,8 @@ class Script(BaseScript):
             }
             desc = p['desc']
             if desc != '' and desc != 'null':
-                i.update({"description": desc})
-                i['subinterfaces'][0].update({"description": desc})
+                i["description"] = desc
+                i['subinterfaces'][0]["description"] = desc
             mac = macs.get(ifname)
             if mac:
                 i['mac'] = mac
@@ -426,7 +426,7 @@ class Script(BaseScript):
         for match in self.rx_ipif1.finditer(ipif):
             admin_status = match.group("admin_state") == "Enabled"
             o_status = match.group("oper_status")
-            oper_status = re.match(self.rx_link_up, o_status) is not None
+            oper_status = self.rx_link_up.match(o_status) is not None
             i = {
                 "name": match.group("ifname"),
                 "type": "SVI",
@@ -442,8 +442,8 @@ class Script(BaseScript):
             desc = match.group("desc")
             if desc is not None and desc != '':
                 desc = desc.strip()
-                i.update({"description": desc})
-                i['subinterfaces'][0].update({"description": desc})
+                i["description"] = desc
+                i['subinterfaces'][0]["description"] = desc
             ip_address = match.group("ip_address")
             ip_subnet = match.group("ip_subnet")
             ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
@@ -456,14 +456,14 @@ class Script(BaseScript):
             for v in vlans:
                 if vlan_name == v['vlan_name']:
                     vlan_id = v['vlan_id']
-                    i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
+                    i['subinterfaces'][0]["vlan_ids"] = [vlan_id]
                     for f in fdb:
                         if (
                             'CPU' in f['interfaces'] and
                             vlan_id == f['vlan_id']
                         ):
-                            i.update({"mac": f['mac']})
-                            i['subinterfaces'][0].update({"mac": f['mac']})
+                            i["mac"] = f['mac']
+                            i['subinterfaces'][0]["mac"] = f['mac']
                             break
                     break
             interfaces += [i]
@@ -475,7 +475,7 @@ class Script(BaseScript):
             admin_status = match.group("admin_state") == "Enabled"
             o_status = match.group("oper_status")
             if o_status is not None:
-                oper_status = re.match(self.rx_link_up, o_status) is not None
+                oper_status = self.rx_link_up.match(o_status) is not None
             else:
                 oper_status = admin_status
             ifname = match.group("ifname")
@@ -526,14 +526,14 @@ class Script(BaseScript):
             for v in vlans:
                 if vlan_name == v['vlan_name']:
                     vlan_id = v['vlan_id']
-                    i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
+                    i['subinterfaces'][0]["vlan_ids"] = [vlan_id]
                     for f in fdb:
                         if (
                             'CPU' in f['interfaces'] and
                             vlan_id == f['vlan_id']
                         ):
-                            i.update({"mac": f['mac']})
-                            i['subinterfaces'][0].update({"mac": f['mac']})
+                            i["mac"] = f['mac']
+                            i['subinterfaces'][0]["mac"] = f['mac']
                             break
                     break
             if not L2_Switch:
@@ -579,14 +579,14 @@ class Script(BaseScript):
             for v in vlans:
                 if vlan_name == v['vlan_name']:
                     vlan_id = v['vlan_id']
-                    i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
+                    i['subinterfaces'][0]["vlan_ids"] = [vlan_id]
                     for f in fdb:
                         if (
                             'CPU' in f['interfaces'] and
                             vlan_id == f['vlan_id']
                         ):
-                            i.update({"mac": f['mac']})
-                            i['subinterfaces'][0].update({"mac": f['mac']})
+                            i["mac"] = f['mac']
+                            i['subinterfaces'][0]["mac"] = f['mac']
                             break
                     break
             interfaces += [i]
@@ -597,7 +597,7 @@ class Script(BaseScript):
             if match:
                 admin_status = match.group("admin_state") == "Enabled"
                 o_status = match.group("oper_status")
-                oper_status = re.match(self.rx_link_up, o_status) is not None
+                oper_status = self.rx_link_up.match(o_status) is not None
                 i = {
                     "name": match.group("ifname"),
                     "type": "management",
@@ -642,12 +642,10 @@ class Script(BaseScript):
                 i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
                 for v in vlans:
                     if vlan_name == v['vlan_name']:
-                        i['subinterfaces'][0].update(
-                            {"vlan_ids": [v['vlan_id']]}
-                        )
+                        i['subinterfaces'][0]["vlan_ids"] = [v['vlan_id']]
                         break
-                i.update({"mac": mac_address})
-                i['subinterfaces'][0].update({"mac": mac_address})
+                i["mac"] = mac_address
+                i['subinterfaces'][0]["mac"] = mac_address
                 interfaces += [i]
 
         return [{"interfaces": interfaces}]

@@ -3,7 +3,7 @@
 # Vendor: D-Link
 # OS:     DxS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -274,7 +274,7 @@ class Profile(BaseProfile):
         r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*?"
         r"((VLAN )?Advertisement\s+:\s+\S+\s*)?\n"
         r"Member Ports\s+:(?P<member_ports>.*?)\n"
-        r"(Static Ports\s+:.*?\n)?"
+        r"\s*(Static Ports\s+:.*?\n)?"
         r"((Current )?Tagged Ports\s+:.*?\n)?"
         r"(VLAN Trunk Ports\s+:.*?\n)?"
         r"(Current )?Untagged Ports\s*:(?P<untagged_ports>.*?)\n",
@@ -470,7 +470,8 @@ def DxS_L2(v):
         v["platform"].startswith("DGS-12") or
         v["platform"].startswith("DGS-15") or
         v["platform"].startswith("DGS-30") or
-        v["platform"].startswith("DGS-32")
+        v["platform"].startswith("DGS-32") or
+        v["platform"].startswith("DGS-37")
     ):
         return True
     else:
