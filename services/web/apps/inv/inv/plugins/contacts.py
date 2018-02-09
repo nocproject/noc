@@ -59,4 +59,3 @@ class ContactsPlugin(InvPlugin):
             o.reset_data("contacts", "technical")
         o.save()
         return True
-
