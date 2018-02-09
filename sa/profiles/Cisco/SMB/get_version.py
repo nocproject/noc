@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,16 +28,17 @@ class Script(BaseScript):
     rx_platform = re.compile(
         r"System Description:\s+(?P<platform>.+)\n", re.IGNORECASE)
     rx_inventory = re.compile(
-        r"^PID:\s*(?P<pid>\S+)\s+VID:\s*\S+\s+SN:\s*(?P<sn>\S+)\s*$", re.MULTILINE)
+        r"^PID:\s*(?P<pid>\S+)\s+VID:\s*\S+\s+SN:\s*(?P<sn>\S+)\s*$",
+        re.MULTILINE)
 
     def execute(self):
         s = self.cli("show system", cached=True)
-        pmatch = self.re_search(self.rx_platform, s)
+        pmatch = self.rx_platform.search(s)
         v = self.cli("show version", cached=True)
-        try:
-            vmatch = self.re_search(self.rx_ver, v)
-        except:
-            vmatch = self.re_search(self.rx_ver2, v)
+        vmatch = self.rx_ver.search(v)
+        if not vmatch:
+            vmatch = self.rx_ver2.search(v)
+        if vmatch:
             return {
                 "vendor": "Cisco",
                 "platform": pmatch.group("platform"),
@@ -48,10 +49,10 @@ class Script(BaseScript):
             }
         try:
             i = self.cli("show inventory", cached=True)
-            imatch = self.re_search(self.rx_inventory, i)
+            imatch = self.rx_inventory.search(i)
             pid = imatch.group("pid")
             sn = imatch.group("sn")
-        except:
+        except self.CLISyntaxError:
             pid = None
             sn = None
         return {
@@ -59,9 +60,9 @@ class Script(BaseScript):
             "platform": pmatch.group("platform"),
             "version": vmatch.group("version"),
             "attributes": {
-                "bootrom": vmatch.group("bootver"),
-                "hwversion": vmatch.group("hwver"),
-                "pid": pid,
-                "sn": sn,
+                "Boot PROM": vmatch.group("bootver"),
+                "HW version": vmatch.group("hwver"),
+                "Serial Number": sn,
+                "pid": pid
             }
         }
