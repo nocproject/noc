@@ -12,7 +12,7 @@
 <hr/>
 <div class="row">
     <div class="col-sm-2">
-        {{ _("Location") }}
+        <b>{{ _("Location") }}</b>
     </div>
     <div class="col-sm-10">
         {{ location }}
@@ -21,7 +21,13 @@
 <hr/>
 <div class="row">
     <div class="col-sm-2">
-        {{ _("Model") }}
+        <b>{{ _("Dashboard") }}:&nbsp;</b><a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ object.id }}&orgId=1&from=now-3h&to=now&refresh=15m&var-bi_id=All%60">Container graph</a>
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <div class="col-sm-2">
+        <b>{{ _("Model") }}</b>
     </div>
     <div class="col-sm-6">
         {{ object.model.name }}
