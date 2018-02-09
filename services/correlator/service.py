@@ -359,7 +359,7 @@ class CorrelatorService(Service):
                         a.id, a.managed_object.name, a.managed_object.address,
                         a.root, h
                     )
-            except:
+            except:  # noqa. Can probable happens anything from handler
                 error_report()
                 self.perf_metrics["error", ("type", "alarm_handler")] += 1
         # Call triggers if necessary
@@ -367,7 +367,7 @@ class CorrelatorService(Service):
             for t in self.triggers[r.alarm_class.id]:
                 try:
                     t.call(a)
-                except:
+                except: # noqa. Can probable happens anything from trigger
                     error_report()
         #
         if not a.severity:
