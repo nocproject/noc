@@ -12,7 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
-from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.base import MACAddressParameter, IPv4Parameter
 
 
 class Script(BaseScript):
@@ -46,11 +46,11 @@ class Script(BaseScript):
         v = self.rx_summary_split.split(v)[1]
         lldp_interfaces = []
         # Get LLDP interfaces with neighbors
-        for l in v.splitlines():
-            l = l.strip()
-            if not l:
+        for line in v.splitlines():
+            line = line.strip()
+            if not line:
                 break
-            match = self.rx_s_line.match(l)
+            match = self.rx_s_line.match(line)
             if not match:
                 continue
             lldp_interfaces += [match.group("local_if")]
@@ -74,7 +74,7 @@ class Script(BaseScript):
             remote_port_subtype = 1
             if is_ipv4(remote_port):
                 # Actually networkAddress(4)
-                remote_port = IPv4Parameter.clean(remote_port)
+                remote_port = IPv4Parameter().clean(remote_port)
                 remote_port_subtype = 4
             elif is_mac(remote_port):
                 # Actually macAddress(3)
@@ -115,8 +115,12 @@ class Script(BaseScript):
             if match:
                 n["remote_system_name"] = match.group("name")
             if is_ipv4(n["remote_chassis_id"]) \
-              or is_ipv6(n["remote_chassis_id"]):
+               or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = 5
+            elif is_mac(n["remote_chassis_id"]):
+                pass
+            else:
+                n["remote_chassis_id_subtype"] = 7
             i["neighbors"] += [n]
             r += [i]
         return r
