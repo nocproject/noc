@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from south.db import db
-from django.db import models
+
 
 class Migration:
 
