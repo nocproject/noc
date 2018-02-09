@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Alstec.24xx.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -19,8 +19,9 @@ class Script(BaseScript):
 
     rx_port = re.compile(
         r"^\s*(?P<port>\d+/\d+)\s+(?P<admin_status>\S+)\s+\S+\s+"
-        r"(?P<oper_status>\S+)",  re.MULTILINE)
-    rx_desc = re.compile(r"^\s*(?P<port>\d+/\d+)\s+(?:Enable|Disable)\s+(?:Up|Down)\s+"
+        r"(?P<oper_status>\S+)", re.MULTILINE)
+    rx_desc = re.compile(
+        r"^\s*(?P<port>\d+/\d+)\s+(?:Enable|Disable)\s+(?:Up|Down)\s+"
         r"(?P<desc>\S+)$", re.MULTILINE)
     rx_vlan = re.compile(
         r"^interface (?P<port>\d+/\d+)\s*\n"
@@ -43,13 +44,15 @@ class Script(BaseScript):
         r"^\s*(MAC Address|Burned In MAC Address)\s*\.+ (?P<mac>\S+)\s*.+"
         r"^\s*Management VLAN ID\s*\.+ (?P<vlan_id>\d+)\s*\n",
         re.MULTILINE | re.DOTALL)
-    rx_ipv6 = re.compile(r"^(IPv6 address|IPv6 Prefix is )\.+ (?P<ipv6_address>\S+)\s*", re.MULTILINE)
+    rx_ipv6 = re.compile(
+        r"^(IPv6 address|IPv6 Prefix is )\.+ (?P<ipv6_address>\S+)\s*",
+        re.MULTILINE)
 
     def execute(self):
         c = self.scripts.get_config()
         d = self.cli("show port description all", ignore_errors=True)
         interfaces = []
-        snmp_ifindex = 1  # Dirty hack. I can anot found another way
+        snmp_ifindex = 1  # Dirty hack. I can not found another way
         for match in self.rx_port.finditer(self.cli("show port all")):
             ifname = match.group("port")
             iface = {
@@ -80,7 +83,7 @@ class Script(BaseScript):
                             self.expand_rangelist(match1.group("tagged"))
             interfaces += [iface]
             snmp_ifindex += 1
-        v = self.cli("show network")
+        v = self.cli("show network", cached=True)
         match = self.rx_ip2.search(v)
         ip_address = match.group("ip_address")
         ip_subnet = match.group("ip_subnet")
@@ -90,11 +93,13 @@ class Script(BaseScript):
             "type": "SVI",
             "admin_status": True,
             "oper_status": True,
+            "mac": match.group("mac"),
             "enabled_protocols": [],
             "subinterfaces": [{
                 "name": "0/0",
                 "admin_status": True,
                 "oper_status": True,
+                "mac": match.group("mac"),
                 "enabled_afi": ['IPv4'],
                 "ipv4_addresses": [ip_address],
                 "vlan_ids": [int(match.group("vlan_id"))]
@@ -103,7 +108,6 @@ class Script(BaseScript):
         match = self.rx_ipv6.search(v)
         if match:
             iface["subinterfaces"][0]["enabled_afi"] += ['IPv6']
-            iface["subinterfaces"][0]["ipv6_addresses"] = \
-              [match.group("ipv6_address")]
+            iface["subinterfaces"][0]["ipv6_addresses"] = [match.group("ipv6_address")]
         interfaces += [iface]
         return [{"interfaces": interfaces}]
