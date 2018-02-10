@@ -1,8 +1,8 @@
 .. _dev-modelinterface-dimensions:
 
-=======================
+==========================
 dimensions Model Interface
-=======================
+==========================
 
 .. contents:: On this page
     :local:
