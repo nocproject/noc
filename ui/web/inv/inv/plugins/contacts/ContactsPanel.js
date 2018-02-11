@@ -12,36 +12,56 @@ Ext.define("NOC.inv.inv.plugins.contacts.ContactsPanel", {
     ],
     title: __("Contacts"),
     closable: false,
-    layout: "fit",
-    autoScroll: true,
+    scrollable: true,
 
     initComponent: function() {
         var me = this;
 
         me.displayAdminField = Ext.create("Ext.container.Container", {
             padding: 4,
-            autoScroll: true
+            maxHeight: 150,
+            width: "100%",
+            scrollable: true,
+            style: {
+                marginLeft: '10px',
+                'font-size': '12px'
+            }
         });
 
         me.editAdminField = Ext.create("Ext.form.field.HtmlEditor", {
+            height: 150,
             hidden: true
         });
 
         me.displayBillField = Ext.create("Ext.container.Container", {
             padding: 4,
-            autoScroll: true
+            maxHeight: 150,
+            width: "100%",
+            scrollable: true,
+            style: {
+                marginLeft: '10px',
+                'font-size': '12px'
+            }
         });
 
         me.editBillField = Ext.create("Ext.form.field.HtmlEditor", {
+            height: 150,
             hidden: true
         });
 
         me.displayTechField = Ext.create("Ext.container.Container", {
             padding: 4,
-            autoScroll: true
+            maxHeight: 150,
+            width: "100%",
+            scrollable: true,
+            style: {
+                marginLeft: '10px',
+                'font-size': '12px'
+            }
         });
 
         me.editTechField = Ext.create("Ext.form.field.HtmlEditor", {
+            height: 150,
             hidden: true
         });
 
@@ -65,19 +85,19 @@ Ext.define("NOC.inv.inv.plugins.contacts.ContactsPanel", {
             items: [
                 {
                     xtype: "container",
-                    html: "Administrative Contacts"
+                    html: "<b>Administrative Contacts:</b>"
                 },
                 me.displayAdminField,
                 me.editAdminField,
                 {
                     xtype: "container",
-                    html: "Billing Contacts"
+                    html: "<b>Billing Contacts:</b>"
                 },
                 me.displayBillField,
                 me.editBillField,
                 {
                     xtype: "container",
-                    html: "Technical Contacts"
+                    html: "<b>Technical Contacts:</b>"
                 },
                 me.displayTechField,
                 me.editTechField
