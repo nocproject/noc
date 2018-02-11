@@ -136,6 +136,14 @@ Ext.define("NOC.inv.map.Application", {
             }
         );
 
+        me.cloudInspector = Ext.create(
+            "NOC.inv.map.inspectors.CloudInspector",
+            {
+                app: me,
+                readOnly: me.readOnly
+            }
+        );
+
         me.legendPanel = Ext.create("NOC.inv.map.Legend", {
             collapsed: true,
             region: 'south',
@@ -373,7 +381,7 @@ Ext.define("NOC.inv.map.Application", {
             me.segmentInspector
         );
         if(me.currentSegmentId) {
-            me.segmentInspector.preview('segment', me.currentSegmentId, null);
+            me.segmentInspector.preview(me.currentSegmentId, null);
         }
     },
 
@@ -382,7 +390,7 @@ Ext.define("NOC.inv.map.Application", {
         me.inspectorPanel.getLayout().setActiveItem(
             me.managedObjectInspector
         );
-        me.managedObjectInspector.preview('managedobject', me.currentSegmentId, objectId);
+        me.managedObjectInspector.preview(me.currentSegmentId, objectId);
     },
 
     inspectLink: function(linkId) {
@@ -390,7 +398,15 @@ Ext.define("NOC.inv.map.Application", {
         me.inspectorPanel.getLayout().setActiveItem(
             me.linkInspector
         );
-        me.linkInspector.preview('link', me.currentSegmentId, linkId);
+        me.linkInspector.preview(me.currentSegmentId, linkId);
+    },
+
+    inspectCloud: function(linkId) {
+        var me = this;
+        me.inspectorPanel.getLayout().setActiveItem(
+            me.cloudInspector
+        );
+        me.cloudInspector.preview(me.currentSegmentId, linkId);
     },
 
     onEdit: function() {
