@@ -238,7 +238,7 @@ class MonMapCard(BaseCard):
     def get_alarms_info(mo_ids, alarms_all=False):
         q = {"severity": {"$exists": True}}
         if not alarms_all:
-           q["managed_object"] = {"$in": mo_ids}
+            q["managed_object"] = {"$in": mo_ids}
         coll = ActiveAlarm._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
 
         r = {o["managed_object"]: o["severity"] for o in coll.find(q,
@@ -303,9 +303,7 @@ class MonMapCard(BaseCard):
         if not info_all:
             pipeline += [{"$match": {"managed_object": {"$in": mos_ids}}}]
 
-        group = {"_id": { # name: "$%s.profile" % name
-                         "mo": "$managed_object"
-                         },
+        group = {"_id": {"mo": "$managed_object"},
                  "count": {"$push": "$%s.profile" % name}}
         pipeline += [{"$unwind": "$%s" % name},
                      {"$group": group}
