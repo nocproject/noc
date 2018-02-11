@@ -28,12 +28,75 @@
     </div>
 </div>
 <hr/>
+{%- if contacts -%}
+<div class="row">
+    <div class="col-sm-12">
+        <b>{{ _("Contacts") }}</b>
+        <table class="table table-condensed table-hover">
+            <tbody>
+            {%- for c in contacts -%}
+            <tr>
+                <td>
+                    {%- if c.administrative -%}
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                        <tr>
+                            <th>{{ _("Administrative contacts") }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{ c.administrative }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {%- endif -%}
+                </td>
+                <td>
+                    {%- if c.billing -%}
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                        <tr>
+                            <th>{{ _("Billing contacts") }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{ c.billing }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {%- endif -%}
+                </td>
+                <td>
+                    {%- if c.technical -%}
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                        <tr>
+                            <th>{{ _("Technical contacts") }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{ c.technical }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {%- endif -%}
+                </td>
+            </tr>
+            {%- endfor -%}
+        </table>
+    </div>
+</div>
+{%- endif -%}
+<hr/>
 <div class="row">
     <div class="col-sm-2">
         <b>{{ _("Dashboard") }}</b>
     </div>
     <div class="col-sm-10">
-        <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ object.id }}&orgId=1&from=now-3h&to=now&refresh=15m&var-bi_id=All%60">Container graph</a>
+        <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ object.id }}&orgId=1&from=now-3h&to=now&refresh=15m&var-bi_id=All">Container graph</a>
     </div>
 </div>
 <hr/>
