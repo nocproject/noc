@@ -68,9 +68,9 @@ class BaseTopology(object):
             "name": mo.name,
             "address": mo.address,
             "role": self.get_role(mo),
-            "shape": stencil.path,
-            "shape_width": stencil.width,
-            "shape_height": stencil.height,
+            "shape": getattr(stencil, "path", ""),
+            "shape_width": getattr(stencil, "width", 0),
+            "shape_height": getattr(stencil, "height", 0),
             "level": mo.object_profile.level,
             "ports": [],
             "caps": list(oc)

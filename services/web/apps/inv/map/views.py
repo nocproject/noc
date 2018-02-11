@@ -31,6 +31,7 @@ from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
 from noc.core.clickhouse.connect import connection
+from noc.core.clickhouse.error import ClickhouseError
 
 tags_lock = threading.RLock()
 
@@ -246,9 +247,12 @@ class MapApplication(ExtApplication):
         ch = connection()
         mo_in = defaultdict(float)
         mo_out = defaultdict(float)
-        for row in ch.execute(" ".join(query)):
-            mo_in[row[0]] += float(row[2])
-            mo_out[row[0]] += float(row[3])
+        try:
+            for row in ch.execute(" ".join(query)):
+                mo_in[row[0]] += float(row[2])
+                mo_out[row[0]] += float(row[3])
+        except ClickhouseError:
+            pass
         mos = [str(ManagedObject.get_by_id(mo["id"]).bi_id) for mo in r["objects"]]
         if len(mos) == 2:
             mo1, mo2 = mos
@@ -471,14 +475,17 @@ class MapApplication(ExtApplication):
         # Apply metrics
         ch = connection()
         # print " ".join(s)
-        for rq in ch.execute(" ".join(s)):
-            pid = tag_id.get((rq[0], rq[1]))
-            if not pid:
-                continue
-            if pid not in r:
-                r[pid] = {}
-            r[pid]["Interface | Load | In"] = rq[2]
-            r[pid]["Interface | Load | Out"] = rq[3]
+        try:
+            for rq in ch.execute(" ".join(s)):
+                pid = tag_id.get((rq[0], rq[1]))
+                if not pid:
+                    continue
+                if pid not in r:
+                    r[pid] = {}
+                r[pid]["Interface | Load | In"] = rq[2]
+                r[pid]["Interface | Load | Out"] = rq[3]
+        except ClickhouseError:
+            pass
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
