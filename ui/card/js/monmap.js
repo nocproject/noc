@@ -6,6 +6,7 @@
 //----------------------------------------------------------------------
 var Monmap = function() {
     this.map = null;
+    this.mapFilter = {statuses: [], isNotInit: true};
 };
 
 Monmap.prototype.initialize = function(lon, lat, zoom) {
@@ -27,7 +28,7 @@ Monmap.prototype.initialize = function(lon, lat, zoom) {
     this.map.setView([lat, lon], scale);
     // Init markerCluster
     // doc: https://github.com/Leaflet/Leaflet.markercluster
-    this.markers = L.markerClusterGroup({
+    this.clusters = L.markerClusterGroup({
         chunkedLoading: true,
         spiderfyDistanceMultiplier: 2.5,
         // spiderfyOnMaxZoom: false,
@@ -96,9 +97,18 @@ Monmap.prototype.poll_data = function() {
         zoom = me.map.getZoom();
 
     $("#summary").html('<i class="fa fa-spinner fa-spin"></i>' + "Loading ...");
-    // $.getJSON( "/ui/card/js/data.json", function( data ) { // test
+    // $.getJSON("/ui/card/js/data.json", function(data) { // test
     $.ajax("/api/card/view/monmap/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s + "&maintenance=" + this.maintenance + "&object_id=" + this.objectId).done(function(data) {
-        me.markers.clearLayers();
+        // Init statuses
+        if(me.mapFilter.isNotInit) {
+            me.mapFilter.isNotInit = false;
+            me.mapFilter.statuses = $(data.summary).find('span')
+            .map(function() {
+                var id = $(this).attr('id');
+                return {id: id, value: "1", group: L.featureGroup.subGroup(me.clusters)}
+            }).get();
+        }
+        me.clusters.clearLayers();
         for(var i = 0; i < data.objects.length; i++) {
             var a = data.objects[i];
             var color, fillColor;
@@ -107,14 +117,14 @@ Monmap.prototype.poll_data = function() {
             if(typeof a !== 'undefined' && a.objects.length) {
                 var listLength = 10;
                 var objects = a.objects.map(function(obj) {
-                var linkColor;
-                if(obj.status === "error") {
-                    linkColor = "#FF0000";
-                } else if (obj.status === "warning") {
-                    linkColor = "#F0C20C";
-                } else {
-                    linkColor = "#6ECC39";
-                }
+                    var linkColor;
+                    if(obj.status === "error") {
+                        linkColor = "#FF0000";
+                    } else if(obj.status === "warning") {
+                        linkColor = "#F0C20C";
+                    } else {
+                        linkColor = "#6ECC39";
+                    }
                     return '<li><a href="/api/card/view/managedobject/' + obj.id + '/" target="_blank" style="color: ' + linkColor + ';">'
                         + obj.name + '</a></li>'
                 }).slice(0, listLength).join("");
@@ -149,13 +159,116 @@ Monmap.prototype.poll_data = function() {
 
             var marker = L.circleMarker(L.latLng(a.y, a.x), markerOptions);
             marker.bindPopup(title);
-            me.markers.addLayer(marker);
+            [].concat.apply([], a.objects
+                .map(function(e) {
+                    return e.services
+                })
+            )
+            .forEach(function(statusId) {
+                var group;
+                var groups = me.mapFilter.statuses.filter(function(e) {
+                    return e.id === statusId;
+                });
+
+                if(groups.length) {
+                    group = groups[0].group;
+                } else {
+                    var status = {id: statusId, value: "1", group: L.featureGroup.subGroup(me.clusters)};
+                    group = status.group;
+                    me.mapFilter.statuses.push(status);
+                }
+                marker.addTo(group);
+            });
         }
-        me.map.addLayer(me.markers);
+        me.mapFilter.statuses.forEach(function(value) {
+            value.group.addTo(me.map);
+        });
+        me.map.addLayer(me.clusters);
+        var summary = $('#summary');
         // Replace summary
-        $("#summary").html(data.summary);
+        summary.html(data.summary);
+        // Attach control
+        summary.find('i,span').click(me, function(e) {
+            e.data.filterBy(this, $(this).attr('id'), $(this).prop('tagName') === "I");
+        });
+        // restore status state
+        if(!me.mapFilter.isNotInit) { // restore control state
+            me.mapFilter.statuses.forEach(function(v) {
+                me.filterByStatus($("#" + v.id), v.id, v.value);
+            });
+        }
         setTimeout(function() {
             me.poll_data();
         }, 900000);
     });
+};
+
+Monmap.prototype.filterByType = function(el, typeId, toggled) {
+    var me = this;
+    $(el).css("opacity", toggled);
+    $(el).parent().siblings().children().css("opacity", toggled);
+
+    $(el).parent().siblings().children().each(function(i, v) {
+        me.filterByStatus(v, $(v).attr("id"), toggled);
+    });
+    // Save control state
+    this.mapFilter.statuses = this.mapFilter.statuses
+    .map(function(v) {
+        if(v.id.indexOf(typeId + "-") === 0) {
+            v.value = toggled;
+        }
+        return v;
+    });
+};
+
+Monmap.prototype.filterByStatus = function(el, statusId, toggled) {
+    var icon = $(el).parent().siblings().children("i");
+    var iconOpacity = icon.css("opacity") || 1;
+    var otherStatuses = $(el).parent().siblings().children("span")
+    .map(function() {
+        return $(this).css("opacity");
+    }).get()
+    .filter(function(e) {
+        return e !== toggled;
+    }).length;
+
+    $(el).css("opacity", toggled);
+    if(!otherStatuses) {
+        icon.css("opacity", toggled);
+    }
+
+    if(toggled === "1" && iconOpacity === "0.5") { // when one of statuses on and icon off
+        icon.css("opacity", "1");
+    }
+    var groups = this.mapFilter.statuses.filter(function(e) {
+        return e.id === statusId;
+    });
+    if(groups.length > 0) {
+        var group = groups[0].group;
+        if(toggled === '1') {
+            group.addTo(this.map);
+        } else {
+            group.removeFrom(this.map);
+        }
+    }
+    // Save control state
+    this.mapFilter.statuses = this.mapFilter.statuses
+    .map(function(v) {
+        if(v.id === statusId) {
+            v.value = toggled;
+        }
+        return v;
+    });
+};
+
+Monmap.prototype.filterBy = function(el, id, isType) {
+    var me = this;
+    var opacity = $(el).css("opacity") || "1";
+    var toggle = opacity === "1" ? "0.5" : "1";
+
+    if(isType) {
+        me.filterByType(el, id, toggle);
+    } else {
+        me.filterByStatus(el, id, toggle);
+    }
 };
