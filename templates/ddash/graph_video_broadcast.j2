@@ -1,6 +1,6 @@
 {
   "id": "fc04d1a6-a6d8-4fb2-835a-e1c220e9b072",
-  "title": "Broadcast status",
+  "title": "Upstream Connected status",
   "span": 6,
   "type": "natel-discrete-panel",
   "datasource": null,
@@ -9,7 +9,7 @@
       "refId": "A",
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n  $timeSeries as t, \n  avg(video_broadcast) as `Video broadcast`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "query": "SELECT \n  $timeSeries as t, \n  avg(video_broadcast) as `Video Upstream Connected`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
       "database": "noc",
       "tableLoading": false,
       "table": "video",
@@ -30,7 +30,7 @@
     {
       "value": "0",
       "op": "=",
-      "text": "Not Broadcasting"
+      "text": "Not Upstream Connected"
     }
   ],
   "mappingTypes": [
@@ -60,7 +60,7 @@
       "color": "#508642"
     },
     {
-      "text": "Not Broadcasting",
+      "text": "Not Upstream Connected",
       "color": "#e24d42"
     }
   ],
