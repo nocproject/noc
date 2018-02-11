@@ -65,17 +65,15 @@ class ObjectCard(BaseCard):
 
          # Get children
         children = []
-        current_state = None
-        current_start = None
-        duration = None
-
         for o in ManagedObject.objects.filter(container=self.object.id):
             # Alarms
             now = datetime.datetime.now()
             # Get object status and uptime
             alarms = list(ActiveAlarm.objects.filter(managed_object=o.id))
+            current_state = None
             current_start = None
             duration = None
+
             uptime = Uptime.objects.filter(object=o.id, stop=None).first()
 
             if uptime:
@@ -125,10 +123,24 @@ class ObjectCard(BaseCard):
                 "metrics": metric_map["object"]
             }]
 
+        contacts_list = []
+
+        contacts_list += [{
+            "administrative": self.object.get_data("contacts", "administrative"),
+            "billing": self.object.get_data("contacts", "billing"),
+            "technical": self.object.get_data("contacts", "technical")
+        }]
+
+        print contacts_list
+
+        print ""
+        print self.object.get_data("contacts", "administrative")
+
         return {
             "object": self.object,
             "path": path,
             "location": self.object.get_data("address", "text"),
+            "contacts": contacts_list,
             "id": self.object.id,
             "children": children
         }
@@ -220,4 +232,3 @@ class ObjectCard(BaseCard):
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
 
         return metric_map
-
