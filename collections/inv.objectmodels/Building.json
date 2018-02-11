@@ -11,6 +11,9 @@
         },
         "geopoint": {
             "layer": "addresses"
+        },
+        "contacts": {
+            "has_contacts": true
         }
     }
 }

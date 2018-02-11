@@ -26,6 +26,9 @@
         },
         "pop": {
             "level": 60
+        },
+        "contacts": {
+            "has_contacts": true
         }
     }
 }
