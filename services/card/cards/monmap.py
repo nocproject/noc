@@ -37,6 +37,7 @@ class MonMapCard(BaseCard):
         "/ui/pkg/leaflet/leaflet.js",
         "/ui/pkg/leaflet.heat/leaflet-heat.js",
         "/ui/pkg/leaflet.markercluster/leaflet.markercluster.js",
+        "/ui/pkg/leaflet.featuregroup.subgroup/leaflet.featuregroup.subgroup.js",
         "/ui/card/js/monmap.js"
     ]
 
@@ -118,12 +119,15 @@ class MonMapCard(BaseCard):
             con = list(moss.values_list("container", flat=True))
         mo_ids = list(moss.values_list("id", flat=True))
         # Getting Alarms severity dict MO: Severity @todo List alarms
-        alarms = {aa["managed_object"]: aa["severity"] for aa in ActiveAlarm.objects.filter(
-            managed_object__in=mo_ids, read_preference=ReadPreference.SECONDARY_PREFERRED
-        ).scalar("managed_object", "severity").as_pymongo()}
+        if not object_root:
+            alarms = self.get_alarms_info(None, alarms_all=True)
+        else:
+            alarms = self.get_alarms_info(mo_ids)
         # Getting services
-        # logger.info("[%s] Getting services", q)
-        # s_services = ServiceSummary.get_objects_summary_sps(None)
+        if not object_root:
+            services_map = self.get_objects_summary_met(mo_ids, info_all=True)
+        else:
+            services_map = self.get_objects_summary_met(mo_ids)
         # Getting containers name and coordinates
         containers = {str(o["_id"]): (o["name"], o["data"]) for o in Object.objects.filter(
             data__geopoint__exists=True,
@@ -158,7 +162,11 @@ class MonMapCard(BaseCard):
                 # update_dict(sss[status], s_service["service"])
                 ss[status] += 1
                 ss["total"] += 1
-                ss["objects"] += [{"id": mo_id, "name": mo_name, "status": status}]
+                services_ss = ["%s-%s" % (sm, status) for sm in services_map.get(mo_id, [])]
+                ss["objects"] += [{"id": mo_id,
+                                   "name": mo_name,
+                                   "status": status,
+                                   "services": services_ss}]
             objects += [{
                 "name": name,
                 "id": str(container),
@@ -171,24 +179,27 @@ class MonMapCard(BaseCard):
                 "good": 0}]
             objects[-1].update(ss)
 
+        profiles = set()
         for r in ["error", "warning", "good"]:
             if not objects_status[r]:
                 continue
             if not object_root and r == "good":
-                m = self.get_objects_summary_sps(None, select=["service"])
+                m_services, m_subscribers = ServiceSummary.get_direct_summary(objects_status[r], summary_all=True)
             else:
-                m = self.get_objects_summary_sps(objects_status[r], select=["service"])
+                m_services, m_subscribers = ServiceSummary.get_direct_summary(objects_status[r])
             # update_dict(s_services["service"], m["serivce"])
             # if not object_root and r == "good":
             #     for s in s_services["service"]:
             #         if s in m["service"]:
             #             s_services["service"][s] -= m["service"][s]
             #     m = s_services
-            sss[r] = m["service"]
+            profiles |= set(m_services)
+            sss[r] = m_services
+
         for r in sorted(sss, key=lambda k: ("error", "warning", "good").index(k)):
-            for p in sss[r]:
-                services[p] += [(self.color_map.get(r, self.color_map["default"]),
-                                 sss[r].get(p, 0))]
+            # for p in sss[r]:
+            for p in profiles:
+                services[p] += [(r, sss[r].get(p, None))]
         return {
             "objects": objects,
             "summary": self.f_glyph_summary({
@@ -223,9 +234,21 @@ class MonMapCard(BaseCard):
             kk = len(work_set)
         return os
 
+    @staticmethod
+    def get_alarms_info(mo_ids, alarms_all=False):
+        q = {"severity": {"$exists": True}}
+        if not alarms_all:
+           q["managed_object"] = {"$in": mo_ids}
+        coll = ActiveAlarm._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+
+        r = {o["managed_object"]: o["severity"] for o in coll.find(q,
+                                                                   {"managed_object": 1, "severity": 1, "_id": 0})}
+        return r
+
     def f_glyph_summary(self, s, collapse=False):
         def get_summary(d, profile):
-            v = []
+            # d - {profile_id1: [(color1, sum1), (color2, sum2), ...], profile_id2: [ ... ]}
+            v = ["<table>", "<tbody style='text-align: right;'>"]
             if hasattr(profile, "show_in_summary"):
                 def show_in_summary(p):
                     return p.show_in_summary
@@ -237,20 +260,24 @@ class MonMapCard(BaseCard):
                 pv = profile.get_by_id(p)
                 if pv and show_in_summary(pv):
                     if isinstance(c, list):
-                        badge = "".join(" <span class=\"badge\" style=\"color: %s\">%s</span>" % cc for cc in c)
-                        badge += "</div>"
+                        badge = []
+                        for (color, count) in c:
+                            if count is None:
+                                badge += ["<td style='padding-right: 15px;'>&nbsp;</td>"]
+                            else:
+                                badge += ["<td style='padding-right: 15px;'><span class='badge' style='color: %s;cursor: pointer;' id='%s-%s'>%s</span></td>" % (
+                                    self.color_map.get(color, self.color_map["default"]), pv.id, color, count)]
+                        badge = "".join(badge)
                     else:
                         if collapse and c < 2:
                             badge = "</div>"
                         else:
                             badge = "<span class=\"badge\">%s</span></div>" % c
-                    v += [
-                        "<div style='float: left;clear: left;'><i style='width: 50px;' class=\"%s\" title=\"%s\"></i>%s" % (
-                            pv.glyph,
-                            pv.name,
-                            badge
-                        )
-                    ]
+                    v += ["<tr>",
+                          "<td style='text-align: center; width: 50px; padding-right: 15px;'><i class='%s' title='%s' style='cursor: pointer;' id='%s'></i></td>" % (pv.glyph, pv.name, pv.id),
+                          badge, "<tr/>"]
+
+            v += ["</tbody>", "</table>"]
             return " ".join(v)
 
         if not isinstance(s, dict):
@@ -269,27 +296,21 @@ class MonMapCard(BaseCard):
         return "&nbsp;".join(r)
 
     @staticmethod
-    def get_objects_summary_sps(mos_ids, select=("service", "subscriber")):
-        kk = {"service": {},
-              "subscriber": {}}
+    def get_objects_summary_met(mos_ids, info_all=False):
+        kk = {}
         pipeline = []
-        if mos_ids:
+        name = "service"
+        if not info_all:
             pipeline += [{"$match": {"managed_object": {"$in": mos_ids}}}]
-        for name, dic in (("service", {}), ("subscriber", {})):
-            if name not in select:
-                continue
-            group = {"_id": {name: "$%s.profile" % name
-                             # "mo": "$managed_object"
-                             },
-                     "count": {"$sum": "$%s.summary" % name}}
-            pipeline += [{"$unwind": "$%s" % name},
-                         {"$group": group},
-                         {"$project": {  # "mo": "$_id.mo",
-                             "profile": "$_id.%s" % name,
-                             "summary": "$count",
-                             "_id": 0}}
-                         ]
-            for ss in ServiceSummary._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED
-                                                                    ).aggregate(pipeline):
-                kk[name][ss["profile"]] = ss["summary"]
+
+        group = {"_id": { # name: "$%s.profile" % name
+                         "mo": "$managed_object"
+                         },
+                 "count": {"$push": "$%s.profile" % name}}
+        pipeline += [{"$unwind": "$%s" % name},
+                     {"$group": group}
+                     ]
+        for ss in ServiceSummary._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED
+                                                                ).aggregate(pipeline):
+            kk[ss["_id"]["mo"]] = ss["count"]
         return kk
