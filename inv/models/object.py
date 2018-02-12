@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # ObjectModel model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import operator
 from threading import Lock
@@ -19,12 +20,7 @@ from mongoengine import signals
 import cachetools
 import six
 # NOC modules
-from connectiontype import ConnectionType
-from objectmodel import ObjectModel
-from modelinterface import ModelInterface
-from objectlog import ObjectLog
 from noc.gis.models.layer import Layer
-from error import ConnectionError, ModelDataError
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
@@ -32,6 +28,11 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
+from .connectiontype import ConnectionType
+from .objectmodel import ObjectModel
+from .modelinterface import ModelInterface
+from .objectlog import ObjectLog
+from .error import ConnectionError, ModelDataError
 
 id_lock = Lock()
 
@@ -271,8 +272,7 @@ class Object(Document):
             if ec is not None:
                 # Connection exists
                 if reconnect:
-                    if (r_object.id == remote_object.id and
-                        r_name == remote_name):
+                    if r_object.id == remote_object.id and r_name == remote_name:
                         # Same connection exists
                         n_data = deep_merge(ec.data, data)
                         if n_data != ec.data:
@@ -641,10 +641,11 @@ class Object(Document):
         if "container" in values and values["container"]:
             document._cache_container = values["container"]
 
+
 signals.pre_delete.connect(Object.detach_children, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
 signals.post_save.connect(Object.change_container, sender=Object)
 signals.pre_init.connect(Object._pre_init, sender=Object)
 
 # Avoid circular references
-from objectconnection import ObjectConnection, ObjectConnectionItem
+from .objectconnection import ObjectConnection, ObjectConnectionItem
