@@ -475,12 +475,12 @@ class BaseScript(object):
             if x == "":
                 continue
             if "-" in x:
-                l, r = [int(y) for y in x.split("-")]
-                if l > r:
-                    x = r
-                    r = l
-                    l = x
-                for i in range(l, r + 1):
+                left, right = [int(y) for y in x.split("-")]
+                if left > right:
+                    x = right
+                    right = left
+                    left = x
+                for i in range(left, right + 1):
                     result[i] = None
             else:
                 result[int(x)] = None
@@ -659,16 +659,16 @@ class BaseScript(object):
     def match_lines(cls, rx, s):
         k = id(rx)
         if k not in cls._match_lines_cache:
-            _rx = [re.compile(l, re.IGNORECASE) for l in rx]
+            _rx = [re.compile(line, re.IGNORECASE) for line in rx]
             cls._match_lines_cache[k] = _rx
         else:
             _rx = cls._match_lines_cache[k]
         ctx = {}
         idx = 0
         r = _rx[0]
-        for l in s.splitlines():
-            l = l.strip()
-            match = r.search(l)
+        for line in s.splitlines():
+            line = line.strip()
+            match = r.search(line)
             if match:
                 ctx.update(match.groupdict())
                 idx += 1
@@ -760,16 +760,13 @@ class BaseScript(object):
         command_submit = command_submit or self.profile.command_submit
         stream = self.get_cli_stream()
         r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
-                           cmd_next=cmd_next, cmd_stop=cmd_stop)
+                           cmd_next=cmd_next, cmd_stop=cmd_stop,
+                           ignore_errors=ignore_errors)
         if isinstance(r, six.string_types):
             if self.beef:
                 self.beef.set_cli(cmd, r)
             # Check for syntax errors
             if not ignore_errors:
-                # Check for syntax error
-                if (self.profile.rx_pattern_syntax_error and
-                        self.profile.rx_pattern_syntax_error.search(r)):
-                    raise CLISyntaxError(r)
                 # Then check for operation error
                 if (self.profile.rx_pattern_operation_error and
                         self.profile.rx_pattern_operation_error.search(r)):

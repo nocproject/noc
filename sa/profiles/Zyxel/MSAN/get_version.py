@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.MSAN.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -47,12 +47,13 @@ class Script(BaseScript):
         r"^\s*Serial Number: (?P<serial>.+)\s*\n"
         r"^\s*F/W Version: (?P<version>\S+)\s*\n",
         re.MULTILINE)
-    rx_chips = re.compile(r"^\s*(?P<platform>\S+)\s+")
+    rx_chips = re.compile(r"^\s*(?P<platform>\S+?)(/\S+)?\s+")
 
     def execute(self):
         slots = self.profile.get_slots_n(self)
         try:
-            match = self.rx_ver1.search(self.cli("sys version"))
+            c = self.cli("sys version")
+            match = self.rx_ver1.search(c)
         except self.CLISyntaxError:
             c = self.cli("sys info show", cached=True)
             match = self.rx_ver2.search(c)

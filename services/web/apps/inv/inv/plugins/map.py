@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # inv.inv map plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# NOC modules
+# Python modules
 from __future__ import absolute_import
-from .base import InvPlugin
+# NOC modules
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
 from noc.gis.models.layerusersettings import LayerUserSettings
@@ -18,6 +18,7 @@ from noc.inv.models.object import Object
 from noc.sa.interfaces.base import (StringParameter, FloatParameter,
                                     BooleanParameter, DocumentParameter,
                                     UnicodeParameter)
+from .base import InvPlugin
 
 
 class MapPlugin(InvPlugin):

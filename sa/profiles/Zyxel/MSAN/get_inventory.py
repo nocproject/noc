@@ -2,16 +2,15 @@
 # ---------------------------------------------------------------------
 # Zyxel.MSAN.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
- 
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 from noc.lib.text import parse_table
 
 
@@ -38,7 +37,7 @@ class Script(BaseScript):
         r"^\s*Hardware Version: (?P<revision>\S+)\s*\n"
         r"^\s*Serial Number: (?P<serial>\S+)\s*\n",
         re.MULTILINE)
-    rx_chips = re.compile(r"^\s*(?P<platform>\S+)\s+")
+    rx_chips = re.compile(r"^\s*(?P<platform>\S+?)(/(?P<module>\S+))?\s+")
 
     M_TYPE = {
         "IES-2000": "MSC1000",
@@ -94,18 +93,27 @@ class Script(BaseScript):
                         "part_no": part_no
                     }]
         else:
+            module = None
             match = self.rx_hw.search(self.cli("sys info show", cached=True))
             if match:
                 c = self.profile.get_platform(self, slots, match.group("part_no"))
             else:
                 match1 = self.rx_chips.search(self.cli("chips info"))
                 c = match1.group("platform")
+                module = match1.group("module")
                 match = self.rx_hw2.search(self.cli("sys info show", cached=True))
-            return [{
+            r = [{
                 "type": "CHASSIS",
                 "vendor": "ZYXEL",
                 "part_no": c,
                 "serial": match.group("serial"),
                 "revision": match.group("revision")
             }]
+            if module:
+                r += [{
+                    "type": "LINECARD",
+                    "number": 1,
+                    "vendor": "ZYXEL",
+                    "part_no": module
+                }]
         return r

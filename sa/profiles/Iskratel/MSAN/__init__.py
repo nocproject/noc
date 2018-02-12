@@ -4,11 +4,10 @@
 # OS:     MSAN
 # Compatible:
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
@@ -32,6 +31,8 @@ class Profile(BaseProfile):
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     command_submit = "\r"
+    # Iskratel SGR Not clearing command line when SyntaxError
+    send_on_syntax_error = "\x1b[B"
     rogue_chars = ["\r", "\x00"]
 
     rx_hw = re.compile(

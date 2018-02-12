@@ -1,0 +1,86 @@
+{
+  "bars": false,
+  "timeFrom": null,
+  "links": [],
+  "nullPointMode": "connected",
+  "renderer": "flot",
+  "id": "31fb8cf1-4115-4dd8-945e-0bdeaa4adea7",
+  "linewidth": 2,
+  "steppedLine": false,
+  "targets": [
+    {
+      "refId": "A",
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((concat('Environment | Electric Current ',path[3], ' ', path[4]), d)) AS groupArr\nFROM \n    ( SELECT \n          $timeSeries as t, \n        path[3],\n        path[4], \n        avg(elec_current) d \n        from $table \n        WHERE \n            $timeFilter\n            AND  managed_object=$bi_id\n        GROUP BY t, path[3],path[4]\n        having d != 0\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "environment",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "fill": 1,
+  "span": 6,
+  "title": "Environment | Electric Current",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
+  "stack": false,
+  "yaxes": [
+    {
+      "logBase": 1,
+      "format": "amp",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    }
+  ],
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "seriesOverrides": [],
+  "percentage": false,
+  "type": "graph",
+  "error": false,
+  "editable": true,
+  "grid": {},
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": false,
+    "values": true,
+    "total": false,
+    "alignAsTable": true
+  },
+  "timeShift": null,
+  "aliasColors": {},
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
+}

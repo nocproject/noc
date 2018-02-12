@@ -1,0 +1,94 @@
+<html>
+<head>
+</head>
+<body>
+<style>
+  html {
+    background: #ecf0f1;
+  }
+
+  h1 {
+    text-decoration: underline;
+    font-weight: bold;
+    font-size: 16pt;
+  }
+  h2 {
+    font-weight: bold;
+    font-size: 14pt;
+    border-bottom: 1px solid #c0c0c0;
+  }
+
+  .container {
+     display: inline-block;
+  }
+
+  .container .stencil {
+    border: 1px solid #c0c0c0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  .container .title {
+    font-size: 10pt;
+    position: relative;
+    text-align: center;
+    bottom: 0px;
+  }
+
+  a:visited {
+    color: black;
+  }
+</style>
+<script type="text/javascript">
+function setFilter(filter) {
+    var items = document.getElementsByClassName("stencil");
+    for(var i = 0; i < items.length; i++) {
+        var stencil = items[i];
+        stencil.style.filter = "url(#" + filter + ")";
+    }
+}
+</script>
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="position:absolute;height:0;">
+  <defs>
+    <filter id="osUnknown">
+      <feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="0.50390625 0    0    0 0.49609375 0    0.453125 0    0 0.546875 0    0    0.44921875 0 0.55078125 0    0    0    1 0    ">
+      </feColorMatrix>
+    </filter>
+    <filter id="osOk">
+      <feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="0.8203125 0    0    0 0.1796875 0    0.203125 0    0 0.796875 0    0    0.55859375 0 0.44140625 0    0    0    1 0    ">
+      </feColorMatrix>
+    </filter>
+    <filter id="osAlarm">
+      <feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="0.05859375 0    0    0 0.94140625 0    0.234375 0    0 0.765625 0    0    0.94140625 0 0.05859375 0    0    0    1 0    ">
+      </feColorMatrix>
+    </filter>
+    <filter id="osUnreach">
+      <feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="0.75 0    0    0 0.25 0    0.75 0    0 0.25 0    0    0.75 0 0.25 0    0    0    1 0    ">
+      </feColorMatrix>
+    </filter>
+    <filter id="osDown">
+      <feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="0.25 0    0    0 0.75 0    0.77734375 0    0 0.22265625 0    0    0.83203125 0 0.16796875 0    0    0    1 0    ">
+      </feColorMatrix>
+    </filter>
+  </defs>
+</svg>
+
+<h1>NOC stencils set</h1>
+<a href="#" onclick="setFilter('osUnknown')">[Unknown]</a>
+<a href="#" onclick="setFilter('osOk')">[OK]</a>
+<a href="#" onclick="setFilter('osAlarm')">[Alarm]</a>
+<a href="#" onclick="setFilter('osUnreach')">[Unreach]</a>
+<a href="#" onclick="setFilter('osDown')">[Down]</a>
+{% for coll in stencils %}
+  <h2>{{ coll }} ({{ stencils[coll] | length }} stencils)</h2>
+  {% for stencil in stencils[coll] %}
+  <div class="container">
+    <img class="stencil" src="/ui/pkg/stencils/{{ stencil.id }}.svg" title="{{ stencil.title }}" />
+    <div class="title">{{ stencil.title }}</div>
+  </div>
+  {% endfor %}
+{% endfor %}
+</body>
+</html>

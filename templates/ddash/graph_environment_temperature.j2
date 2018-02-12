@@ -1,83 +1,86 @@
 {
-  "title": "Environment | Temperature",
-  "error": false,
-  "span": 6,
-  "editable": true,
-  "type": "graph",
-  "isNew": true,
+  "bars": false,
+  "timeFrom": null,
+  "links": [],
+  "nullPointMode": "connected",
+  "renderer": "flot",
   "id": "4d2b3163-b0a8-4859-84d8-409285c32680",
+  "linewidth": 2,
+  "steppedLine": false,
   "targets": [
     {
-      "refId": "A",
-      "resultFormat": "time_series",
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "environment",
       "intervalFactor": 1,
       "query": "SELECT \n    t, \n    groupArray((sensor, Temperature)) AS groupArr \nFROM (\n    SELECT $timeSeries as t, \n        arrayStringConcat(path,'.') as sensor, \n        avg(temperature) as `Temperature` \n    FROM \n        $table \n    WHERE \n        managed_object=$bi_id \n        and $timeFilter \n    GROUP BY arrayStringConcat(path,'.'), t ORDER BY t) \nGROUP BY t \nORDER BY t ASC",
-      "database": "noc",
-      "tableLoading": false,
-      "table": "environment",
-      "dateLoading": false,
-      "datetimeLoading": false,
-      "dateColDataType": "date",
-      "dateTimeColDataType": "ts"
+      "refId": "A",
+      "resultFormat": "time_series"
     }
   ],
-  "datasource": null,
-  "renderer": "flot",
+  "fill": 1,
+  "span": 6,
+  "title": "Environment | Temperature",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
+  "stack": false,
   "yaxes": [
     {
-      "label": null,
-      "show": true,
       "logBase": 1,
-      "min": null,
+      "format": "short",
       "max": null,
-      "format": "short"
+      "show": true,
+      "label": null,
+      "min": null
     },
     {
-      "label": null,
-      "show": true,
       "logBase": 1,
-      "min": null,
+      "format": "short",
       "max": null,
-      "format": "short"
+      "show": true,
+      "label": null,
+      "min": null
     }
   ],
   "xaxis": {
-    "show": true
-  },
-  "grid": {
-    "threshold1": null,
-    "threshold2": null,
-    "threshold1Color": "rgba(216, 200, 27, 0.27)",
-    "threshold2Color": "rgba(234, 112, 112, 0.22)"
-  },
-  "lines": true,
-  "fill": 1,
-  "linewidth": 2,
-  "points": false,
-  "pointradius": 5,
-  "bars": false,
-  "stack": false,
-  "percentage": false,
-  "legend": {
     "show": true,
-    "values": false,
-    "min": false,
-    "max": false,
-    "current": false,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "seriesOverrides": [],
+  "percentage": false,
+  "type": "graph",
+  "error": false,
+  "editable": true,
+  "grid": {},
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": true,
+    "values": true,
     "total": false,
-    "avg": false
+    "alignAsTable": true
   },
-  "nullPointMode": "connected",
-  "steppedLine": false,
-  "tooltip": {
-    "value_type": "cumulative",
-    "shared": true,
-    "sort": 0,
-    "msResolution": false
-  },
-  "timeFrom": null,
   "timeShift": null,
   "aliasColors": {},
-  "seriesOverrides": [],
-  "links": []
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
 }

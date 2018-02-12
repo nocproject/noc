@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,10 +19,5 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        try:
-            cmd = self.cli("show lldp")
-        except self.CLISyntaxError:
-            # Iskratel SGR Not clearing command line when SyntaxError
-            self.cli("\x1b[B")
-            return False
+        cmd = self.cli("show lldp")
         return "disabled on all interfaces" not in cmd

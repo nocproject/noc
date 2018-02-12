@@ -2,14 +2,14 @@
 # ----------------------------------------------------------------------
 # Alarms Extractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 # NOC modules
-from base import BaseExtractor
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.reboot import Reboot
 from noc.fm.models.alarmclass import AlarmClass
@@ -19,6 +19,7 @@ from noc.core.etl.bi.stream import Stream
 from noc.lib.dateutils import total_seconds
 from noc.config import config
 from noc.lib.dateutils import hits_in_range
+from .base import BaseExtractor
 
 
 class AlarmsExtractor(BaseExtractor):
@@ -65,7 +66,7 @@ class AlarmsExtractor(BaseExtractor):
                 "$gt": self.start,
                 "$lte": self.stop
             }
-        }, no_cursor_timeout=True).sort("timestamp"):
+        }, no_cursor_timeout=True).sort("clear_timestamp"):
             mo = ManagedObject.get_by_id(d["managed_object"])
             if not mo:
                 continue
@@ -109,7 +110,7 @@ class AlarmsExtractor(BaseExtractor):
                 reboots=n_reboots
             )
             nr += 1
-            self.last_ts = d["timestamp"]
+            self.last_ts = d["clear_timestamp"]
         self.alarm_stream.finish()
         return nr
 

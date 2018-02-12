@@ -32,6 +32,8 @@ class Script(BaseScript):
         r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
     rx_serial2 = re.compile(
         r"^\s+1\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
+    rx_serial3 = re.compile(
+        r"^\s+1\s+(?P<mac>\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
     rx_platform = re.compile(
         r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
 
@@ -115,8 +117,14 @@ class Script(BaseScript):
         else:
             ser = self.cli("show system id", cached=True)
         match = self.rx_serial1.search(ser)
+        match2 = self.rx_serial3.search(ser)
         if match:
             serial = self.re_search(self.rx_serial1, ser)
+        elif match2:
+            # Unit    MAC address    Hardware version Serial number
+            # ---- ----------------- ---------------- -------------
+            # 1   xx:xx:xx:xx:xx:xx     02.01.02      ESXXXXXXX
+            serial = self.re_search(self.rx_serial3, ser)
         else:
             serial = self.re_search(self.rx_serial2, ser)
 

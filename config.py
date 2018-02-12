@@ -369,7 +369,6 @@ class Config(BaseConfig):
         babel = StringParameter(default="./bin/pybabel")
         pojson = StringParameter(default="./bin/pojson")
         collection_fm_mibs = StringParameter(default="collections/fm.mibs/")
-        shapes_path = StringParameter(default="static/shape/")
         supervisor_cfg = StringParameter(default="etc/noc_services.conf")
         legacy_config = StringParameter(default="etc/noc.yml")
         cythonize = StringParameter(default="./bin/cythonize")

@@ -1,0 +1,74 @@
+{
+  "id": "522c7444-a116-4df6-80bd-e34e831ff695",
+  "title": "Environment | Sensor Status",
+  "span": 6,
+  "type": "natel-discrete-panel",
+  "datasource": null,
+  "targets": [
+    {
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT \n    t, \n    groupArray((concat('Environment | Sensor status ',path[3], ' ', path[4]), d)) AS groupArr\nFROM \n    ( SELECT \n          $timeSeries as t, \n        path[3],\n        path[4], \n        avg(sensor_status) d \n        from $table \n        WHERE \n            $timeFilter\n            AND  managed_object=$bi_id\n        GROUP BY t, path[3],path[4]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+      "refId": "A",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "environment",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "display": "timeline",
+  "rowHeight": 30,
+  "valueMaps": [
+    {
+      "value": "null",
+      "op": "=",
+      "text": "N/A"
+    }
+  ],
+  "mappingTypes": [
+    {
+      "name": "value to text",
+      "value": 1
+    },
+    {
+      "name": "range to text",
+      "value": 2
+    }
+  ],
+  "rangeMaps": [
+    {
+      "from": "null",
+      "to": "null",
+      "text": "N/A"
+    }
+  ],
+  "colorMaps": [
+    {
+      "text": "N/A",
+      "color": "#CCC"
+    }
+  ],
+  "metricNameColor": "#000000",
+  "valueTextColor": "#000000",
+  "backgroundColor": "rgba(128, 128, 128, 0.1)",
+  "lineColor": "rgba(128, 128, 128, 1.0)",
+  "textSize": 14,
+  "extendLastValue": true,
+  "writeLastValue": true,
+  "writeAllValues": false,
+  "writeMetricNames": true,
+  "showLegend": true,
+  "showLegendNames": true,
+  "showLegendValues": true,
+  "showLegendPercent": true,
+  "highlightOnMouseover": true,
+  "legendSortBy": "-ms",
+  "links": [],
+  "showDistinctCount": false,
+  "showLegendTime": false,
+  "showTransitionCount": false,
+  "expandFromQueryS": {{ discovery_interval }}
+}

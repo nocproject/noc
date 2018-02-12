@@ -2,17 +2,18 @@
 # ---------------------------------------------------------------------
 # inv.inv file plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 # NOC modules
-from base import InvPlugin
 from noc.inv.models.object import Object
 from noc.inv.models.objectfile import ObjectFile
 from noc.main.models.mimetype import MIMEType
+from .base import InvPlugin
 
 
 class FilePlugin(InvPlugin):

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -60,14 +60,15 @@ class Script(BaseScript):
 
     def parse_vlans(self, section):
         r = {}
-        match = re.search(self.rx_vlans, section)
+        match = self.rx_vlans.search(section)
         if match:
             r = match.groupdict()
         return r
 
     def execute(self):
         lldp_ifaces = []
-        match = re.search(self.rx_lldp, self.cli("show lldp local config"))
+        v = self.cli("show lldp local config")
+        match = self.rx_lldp.search(v)
         if match:
             lldp_ifaces = self.expand_rangelist(match.group("ports"))
         ifaces = []
@@ -173,13 +174,10 @@ class Script(BaseScript):
                                     "untagged_vlan"
                                 ] = vlan_id
 
-
         v = self.profile.get_version(self)
         mac = v["mac"]
-        """
-        XXX: This is a dirty hack !!!
-        I do not know, how get ip interface MAC address
-        """
+        # XXX: This is a dirty hack !!!
+        # I do not know, how get ip interface MAC address
         v = self.cli("show interface ip 0")
         for match in self.rx_iface.finditer(v):
             ifname = match.group("iface")
@@ -246,4 +244,3 @@ class Script(BaseScript):
                     break
 
         return [{"interfaces": l3}]
-

@@ -189,6 +189,7 @@ _MODELS = {
     "sa.ReduceTask": "noc.sa.models.reducetask.ReduceTask",
     "sa.Service": "noc.sa.models.service.Service",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
+    "sa.ServiceSummary": "noc.sa.models.servicesummary.ServiceSummary",
     "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
     # fm models

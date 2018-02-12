@@ -1,0 +1,88 @@
+{
+  "bars": false,
+  "timeFrom": null,
+  "links": [],
+  "nullPointMode": "connected",
+  "renderer": "flot",
+  "id": "e4c8ff93-406f-4823-bd07-d46a0bbc3d36",
+  "linewidth": 2,
+  "steppedLine": false,
+  "targets": [
+    {
+      "refId": "A",
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT \n  $timeSeries as t, \n  avg(voltage) as `Environment | Voltage`\nFROM \n  $table \nWHERE managed_object=$bi_id \n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "environment",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "fill": 1,
+  "span": 6,
+  "title": "Environment | Voltage",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
+  "stack": false,
+  "yaxes": [
+    {
+      "logBase": 1,
+      "format": "volt",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    }
+  ],
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": [],
+    "buckets": null
+  },
+  "seriesOverrides": [],
+  "percentage": false,
+  "type": "graph",
+  "error": false,
+  "editable": true,
+  "grid": {},
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": true,
+    "values": true,
+    "total": false,
+    "alignAsTable": true
+  },
+  "timeShift": null,
+  "aliasColors": {
+    "Environment | Voltage": "#447ebc"
+  },
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+  "thresholds": [],
+  "dashes": false,
+  "dashLength": 10,
+  "spaceLength": 10
+}

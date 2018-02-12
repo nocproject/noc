@@ -13,7 +13,6 @@
       "resultFormat": "time_series",
       "intervalFactor": 1,
       "query": "SELECT $timeSeries as t, avg(usage_5s) FROM $table WHERE managed_object=$bi_id and $timeFilter GROUP BY t ORDER BY t",
-      "formattedQuery": "<font color=\"darkorange\">SELECT</font> <font color=\"darkcyan\">$timeSeries</font> <font color=\"darkorange\">as</font> t, <font color=\"navajowhite\">avg</font>(usage_5s) <font color=\"darkorange\">FROM</font> <font color=\"darkcyan\">$table</font> <font color=\"darkorange\">WHERE</font> managed_object<font color=\"yellow\">=</font><font color=\"darkcyan\">$bi_id</font> <font color=\"yellow\">and</font> <font color=\"darkcyan\">$timeFilter</font> <font color=\"darkorange\">GROUP BY</font> t <font color=\"darkorange\">ORDER BY</font> t",
       "database": "noc",
       "tableLoading": false,
       "table": "memory",

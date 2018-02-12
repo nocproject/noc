@@ -1,0 +1,88 @@
+{
+  "mappingTypes": [
+    {
+      "name": "value to text",
+      "value": 1
+    },
+    {
+      "name": "range to text",
+      "value": 2
+    }
+  ],
+  "textSize": 24,
+  "links": [],
+  "valueMaps": [
+    {
+      "text": "Disk Alarm",
+      "value": "1",
+      "op": "="
+    },
+    {
+      "text": "Disk Ok",
+      "value": "0",
+      "op": "="
+    }
+  ],
+  "rangeMaps": [
+    {
+      "to": "null",
+      "from": "null",
+      "text": "N/A"
+    }
+  ],
+  "showLegend": true,
+  "legendSortBy": "-ms",
+  "id": "3cba42e1-7be5-4f7c-b565-48231c3ac918",
+  "writeLastValue": true,
+  "span": 6,
+  "title": "Disk status",
+  "showLegendNames": true,
+  "targets": [
+    {
+      "refId": "A",
+      "resultFormat": "time_series",
+      "intervalFactor": 1,
+      "query": "SELECT \n  $timeSeries as t, \n  avg(disk_problem) as `Disk | Problem`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "database": "noc",
+      "tableLoading": false,
+      "table": "disk",
+      "dateLoading": false,
+      "datetimeLoading": false,
+      "dateColDataType": "date",
+      "dateTimeColDataType": "ts"
+    }
+  ],
+  "backgroundColor": "rgba(128, 128, 128, 0.1)",
+  "valueTextColor": "#000000",
+  "highlightOnMouseover": true,
+  "type": "natel-discrete-panel",
+  "writeAllValues": true,
+  "showLegendTime": true,
+  "writeMetricNames": false,
+  "extendLastValue": true,
+  "showDistinctCount": false,
+  "showLegendCounts": false,
+  "metricNameColor": "#000000",
+  "showLegendValues": true,
+  "showTransitionCount": false,
+  "rowHeight": 50,
+  "showLegendPercent": true,
+  "colorMaps": [
+    {
+      "color": "#CCC",
+      "text": "N/A"
+    },
+    {
+      "text": "Disk Ok",
+      "color": "#629e51"
+    },
+    {
+      "text": "Disk Alarm",
+      "color": "#bf1b00"
+    }
+  ],
+  "datasource": null,
+  "lineColor": "rgba(128, 128, 128, 1.0)",
+  "display": "timeline",
+  "expandFromQueryS": {{ discovery_interval }}
+}

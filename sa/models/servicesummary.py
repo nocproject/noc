@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ServiceSumamry Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -73,6 +73,8 @@ class ObjectSummaryItem(EmbeddedDocument):
 class ServiceSummary(Document):
     meta = {
         "collection": "noc.servicesummary",
+        "strict": False,
+        "auto_create_index": False,
         "indexes": [
             "managed_object",
             "interface"
@@ -128,7 +130,7 @@ class ServiceSummary(Document):
             }, {
                 "_id": 1,
                 "service": 1
-            })
+            }, comment="[servicesummary.build_summary_for_object] Getting services for interfaces")
         )
         # Iterate over object's services
         # And walk underlying tree
@@ -140,7 +142,7 @@ class ServiceSummary(Document):
             "_id": 1,
             "subscriber": 1,
             "profile": 1
-        }):
+        }, comment="[servicesummary.build_summary_for_object] Getting object services for object"):
             # All subscribers for underlying tree
             subscribers = set()
             # profile_id -> count
@@ -216,7 +218,7 @@ class ServiceSummary(Document):
                 "interface": 1,
                 "service": 1,
                 "subscriber": 1
-            })
+            }, comment="[servicesummary._refresh_object] Refresh summary of services for managed object")
         )
         # Get actual summary
         new_summary = ServiceSummary.build_summary_for_object(managed_object)
@@ -289,7 +291,7 @@ class ServiceSummary(Document):
             "interface": 1,
             "service": 1,
             "subscriber": 1
-        }):
+        }, comment="[servicesummary.get_object_summary] Getting summary of services for object"):
             ds = to_dict(ss["service"])
             if ss.get("interface"):
                 r["interface"][ss["interface"]] = {
@@ -311,26 +313,24 @@ class ServiceSummary(Document):
         return r
 
     @classmethod
-    def get_objects_summary(cls, mos_ids):
+    def get_objects_summary(cls, managed_objects):
         def to_dict(v):
             return dict(
                 (r["profile"], r["summary"])
                 for r in v
             )
 
-        # if hasattr(managed_object, "id"):
-        #    managed_object = managed_object.id
         kk = {}
         for ss in ServiceSummary._get_collection().find({
             "managed_object": {
-                "$in": mos_ids
+                "$in": [getattr(mo, "id", mo) for mo in managed_objects]
             }
         }, {
             "managed_object": 1,
             "interface": 1,
             "service": 1,
             "subscriber": 1
-        }):
+        }, comment="[servicesummary.get_objects_summary] Getting summary of services for objects list"):
             r = {
                 "service": {},
                 "subscriber": {},
@@ -390,6 +390,86 @@ class ServiceSummary(Document):
         return AlarmSeverity.severity_for_weight(
             cls.get_weight(summary)
         )
+
+    @classmethod
+    def get_direct_summary(cls, managed_objects, summary_all=False):
+        """
+        Calculate direct services and profiles for a list of managed objects
+        :param managed_objects: List of managed object instances or ids
+        :param summary_all: Return summary for all services
+        :return: tuple of service and subscriber dicts
+        """
+        services = {}
+        subscribers = {}
+        pipeline = []
+        if not summary_all:
+            # Filter managed objects
+            pipeline += [{
+                "$match": {
+                    "managed_object": {
+                        "$in": [getattr(mo, "id", mo) for mo in managed_objects]
+                    }
+                }
+            }]
+        # Mark service and profile with type field
+        pipeline += [{
+            "$project": {
+                "_id": 0,
+                "service": {
+                    "$map": {
+                        "input": "$service",
+                        "as": "svc",
+                        "in": {
+                            "type": "svc",
+                            "profile": "$$svc.profile",
+                            "summary": "$$svc.summary"
+                        }
+                    }
+                },
+                "subscriber": {
+                    "$map": {
+                        "input": "$subscriber",
+                        "as": "sub",
+                        "in": {
+                            "type": "sub",
+                            "profile": "$$sub.profile",
+                            "summary": "$$sub.summary"
+                        }
+                    }
+                }
+            }},
+            # Concatenate services and profiles
+            {
+                "$project": {
+                    "summary": {
+                        "$concatArrays": ["$service", "$subscriber"]
+                    }
+                }
+            },
+            # Unwind *summary* array to independed records
+            {
+                "$unwind": "$summary"
+            },
+            # Group by (type, profile)
+            {
+                "$group": {
+                    "_id": {
+                        "type": "$summary.type",
+                        "profile": "$summary.profile"
+                    },
+                    "summary": {
+                        "$sum": "$summary.summary"
+                    }
+                }
+            }
+        ]  # noqa
+        for doc in ServiceSummary._get_collection().aggregate(pipeline):
+            profile = doc["_id"]["profile"]
+            if doc["_id"]["type"] == "svc":
+                services[profile] = services.get(profile, 0) + doc["summary"]
+            else:
+                subscribers[profile] = subscribers.get(profile, 0) + doc["summary"]
+        return services, subscribers
 
 
 def refresh_object(managed_object):

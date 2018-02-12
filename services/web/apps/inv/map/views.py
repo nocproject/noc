@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,7 +22,6 @@ from noc.inv.models.mapsettings import MapSettings
 from noc.inv.models.link import Link
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.lib.stencil import stencil_registry
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.maintenance.models.maintenance import Maintenance
@@ -32,6 +31,7 @@ from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
 from noc.core.clickhouse.connect import connection
+from noc.core.clickhouse.error import ClickhouseError
 
 tags_lock = threading.RLock()
 
@@ -64,9 +64,13 @@ class MapApplication(ExtApplication):
     def api_data(self, request, id):
         def q_mo(d):
             x = d.copy()
-            del x["mo"]
-            x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
-            x["id"] = str(x["id"])
+            if x["type"] == "managedobject":
+                del x["mo"]
+                x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
+                # x["id"] = str(x["id"])
+            elif d["type"] == "cloud":
+                del x["link"]
+                x["external"] = False
             return x
 
         # Find segment
@@ -89,9 +93,9 @@ class MapApplication(ExtApplication):
         if settings:
             self.logger.info("Using stored positions")
             for n in settings.nodes:
-                node_hints[int(n.id)] = {
+                node_hints[n.id] = {
                     "type": n.type,
-                    "id": int(n.id),
+                    "id": n.id,
                     "x": n.x,
                     "y": n.y
                 }
@@ -157,30 +161,6 @@ class MapApplication(ExtApplication):
             "status": True
         }
 
-    def get_object_shape(self, object):
-        if object.shape:
-            # Use object's shape, if set
-            sn = object.shape
-        elif object.object_profile.shape:
-            # Use profile's shape
-            sn = object.object_profile.shape
-        else:
-            # Fallback to router shape
-            sn = "Cisco/router"
-        return sn
-
-    def get_shape_size(self, shape):
-        return stencil_registry.get_size(shape)
-
-    @view(url="^stencils/(?P<shape>.+)/$",
-        method=["GET"], access=True, api=True)
-    def api_stencil(self, request, shape):
-        svg = stencil_registry.get_svg(shape)
-        if not svg:
-            return self.response_not_found()
-        else:
-            return self.render_response(svg, content_type="image/svg+xml")
-
     @view(url="^(?P<id>[0-9a-f]{24})/info/segment/$", method=["GET"],
           access="read", api=True)
     def api_info_segment(self, request, id):
@@ -228,10 +208,12 @@ class MapApplication(ExtApplication):
                 s = s.encode("utf-8")
             return s
 
-        segment = self.get_object_or_404(NetworkSegment, id=id)
+        self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
             "id": str(link.id),
+            "name": link.name or None,
+            "description": link.description or None,
             "objects": [],
             "method": link.discovery_method
         }
@@ -265,9 +247,12 @@ class MapApplication(ExtApplication):
         ch = connection()
         mo_in = defaultdict(float)
         mo_out = defaultdict(float)
-        for row in ch.execute(" ".join(query)):
-            mo_in[row[0]] += float(row[2])
-            mo_out[row[0]] += float(row[3])
+        try:
+            for row in ch.execute(" ".join(query)):
+                mo_in[row[0]] += float(row[2])
+                mo_out[row[0]] += float(row[3])
+        except ClickhouseError:
+            pass
         mos = [str(ManagedObject.get_by_id(mo["id"]).bi_id) for mo in r["objects"]]
         if len(mos) == 2:
             mo1, mo2 = mos
@@ -276,14 +261,54 @@ class MapApplication(ExtApplication):
                 int(max(mo_in[mo2], mo_out[mo1])),
             ]
         else:
-            r["utilisation"] = [int(max(mo_in.values() + mo_out.values()))]
+            mv = mo_in.values() + mo_out.values()
+            if mv:
+                r["utilisation"] = [int(max(mv))]
+            else:
+                r["utilisation"] = 0
         return r
 
-    @view(url="^objects_statuses/$", method=["POST"],
-          access="read", api=True,
-          validate={
-              "objects": ListOfParameter(IntParameter())
-          }
+    @view(url="^(?P<id>[0-9a-f]{24})/info/cloud/(?P<link_id>[0-9a-f]{24})/$", method=["GET"],
+          access="read", api=True)
+    def api_info_cloud(self, request, id, link_id):
+        def q(s):
+            if isinstance(s, unicode):
+                s = s.encode("utf-8")
+            return s
+
+        self.get_object_or_404(NetworkSegment, id=id)
+        link = self.get_object_or_404(Link, id=link_id)
+        r = {
+            "id": str(link.id),
+            "name": link.name or None,
+            "description": link.description or None,
+            "objects": [],
+            "method": link.discovery_method
+        }
+        o = defaultdict(list)
+        for i in link.interfaces:
+            o[i.managed_object] += [i]
+        for mo in sorted(o, key=lambda x: x.name):
+            r["objects"] += [{
+                "id": mo.id,
+                "name": mo.name,
+                "interfaces": [
+                    {
+                        "name": i.name,
+                        "description": i.description or None,
+                        "status": i.status
+                    }
+                    for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
+                ]
+            }]
+        return r
+
+    @view(
+        url="^objects_statuses/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "objects": ListOfParameter(IntParameter())
+        }
     )
     def api_objects_statuses(self, request, objects):
         def get_alarms(objects):
@@ -450,14 +475,17 @@ class MapApplication(ExtApplication):
         # Apply metrics
         ch = connection()
         # print " ".join(s)
-        for rq in ch.execute(" ".join(s)):
-            pid = tag_id.get((rq[0], rq[1]))
-            if not pid:
-                continue
-            if pid not in r:
-                r[pid] = {}
-            r[pid]["Interface | Load | In"] = rq[2]
-            r[pid]["Interface | Load | Out"] = rq[3]
+        try:
+            for rq in ch.execute(" ".join(s)):
+                pid = tag_id.get((rq[0], rq[1]))
+                if not pid:
+                    continue
+                if pid not in r:
+                    r[pid] = {}
+                r[pid]["Interface | Load | In"] = rq[2]
+                r[pid]["Interface | Load | Out"] = rq[3]
+        except ClickhouseError:
+            pass
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
@@ -469,11 +497,12 @@ class MapApplication(ExtApplication):
             "status": True
         }
 
-    @view(url="^stp/status/$", method=["POST"],
-          access="read", api=True,
-          validate={
-              "objects": ListOfParameter(IntParameter())
-          }
+    @view(
+        url="^stp/status/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "objects": ListOfParameter(IntParameter())
+        }
     )
     def api_objects_stp_status(self, request, objects):
         def get_stp_status(object_id):
