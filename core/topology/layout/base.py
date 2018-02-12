@@ -8,6 +8,8 @@
 
 
 class LayoutBase(object):
+    DEFAULT_LEVEL = 10
+
     def __init__(self, topology):
         self.topology = topology
 
