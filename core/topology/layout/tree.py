@@ -37,7 +37,7 @@ class TreeLayout(LayoutBase):
                 top += [
                     sorted(
                         cc,
-                        key=lambda x: G.node[x]["level"],
+                        key=lambda x: G.node[x].get("level", self.DEFAULT_LEVEL),
                         reverse=True
                     )[0]
                 ]
