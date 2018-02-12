@@ -52,6 +52,8 @@ class ModelApplication(Application):
             self.get_template_path("change_list.html") +
             ["admin/change_list.html"]
             )
+        # Override messaging framework
+        self.admin.message_user = self.message_user
         # Set up permissions
         self.granular_access = hasattr(self.model, "user_objects")
         self.admin.has_change_permission = self.has_change_permission
