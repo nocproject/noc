@@ -37,7 +37,6 @@ from .access import HasPerm, Permit, Deny
 from .site import site
 
 
-
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
          api=False):
     """
