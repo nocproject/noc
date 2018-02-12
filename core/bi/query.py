@@ -29,10 +29,9 @@ class OP(object):
         self.function = function
 
     def to_sql(self, seq):
-        l = len(seq)
-        if self.min and l < self.min:
+        if self.min and len(seq) < self.min:
             raise ValueError("Missed argument: %s" % seq)
-        if self.max and l > self.max:
+        if self.max and len(seq) > self.max:
             raise ValueError("Too many arguments: %s" % seq)
         if self.convert:
             return self.convert(seq)
