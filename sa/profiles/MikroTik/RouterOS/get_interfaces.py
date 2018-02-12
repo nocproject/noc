@@ -63,7 +63,7 @@ class Script(BaseScript):
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
                 # in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
-                if "local-address" in r1.keys():
+                if "local-address" in r1:
                     tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
                 return
@@ -241,8 +241,7 @@ class Script(BaseScript):
                     # tunnel interface already has subinterface
                     if i["type"] != "tunnel":
                         self.logger.debug(
-                            '\nError: subinterfaces already exists in '
-                            'interface \n%s\n' % i
+                            '\nError: subinterfaces already exists in interface \"%s\"' % i
                         )
                         continue
                     self.si = i["subinterfaces"][0]
