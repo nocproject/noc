@@ -14,8 +14,6 @@ import operator
 from django.db.models import Model, CharField, ManyToManyField
 from django.contrib.auth.models import User, Group
 import cachetools
-# NOC modules
-from noc.lib.middleware import get_request
 
 perm_lock = Lock()
 
@@ -63,11 +61,7 @@ class Permission(Model):
             return False
         if user.is_superuser:
             return True
-        request = get_request()
-        if request and "PERMISSIONS" in request.session:
-            return perm in request.session["PERMISSIONS"]
-        else:
-            return perm in cls.get_effective_permissions(user)
+        return perm in cls.get_effective_permissions(user)
 
     @classmethod
     def get_user_permissions(cls, user):

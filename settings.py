@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Django settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -82,25 +82,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.contrib.messages.context_processors.messages",
-    "noc.lib.app.setup_processor",
+    "django.core.context_processors.media"
 )
 #
 MIDDLEWARE_CLASSES = [
-    "noc.lib.middleware.WSGISetupMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.RemoteUserMiddleware",
-    "noc.lib.middleware.TLSMiddleware",  # Thread local storage
-    "noc.lib.middleware.ExtFormatMiddleware"
-]
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.RemoteUserBackend'
+    "noc.core.middleware.remoteuser.RemoteUserMiddleware",
+    "noc.core.middleware.tls.TLSMiddleware",  # Thread local storage
+    "noc.core.middleware.extformat.ExtFormatMiddleware"
 ]
 
 ROOT_URLCONF = "noc.urls"
@@ -109,7 +99,6 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don"t forget to use absolute paths, not relative paths.
-    "local",
     ".",
     "templates",
     "django/contrib/admin/templates/"
@@ -118,10 +107,8 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.admin",
-    "django.contrib.messages",
     "south",
     # NOC modules
     "noc.main",
@@ -171,11 +158,6 @@ SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
-# Message application setup
-MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
-# Store sessions in mongodb
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-# Fixed beefs directory
 # Set up by test runner
 TEST_FIXED_BEEF_BASE = None
 

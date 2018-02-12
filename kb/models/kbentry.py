@@ -13,7 +13,7 @@ import difflib
 from core.model.fields import AutoCompleteTagsField
 from django.db import models
 # NOC modules
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers import parser_registry
 
