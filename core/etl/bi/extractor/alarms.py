@@ -65,7 +65,7 @@ class AlarmsExtractor(BaseExtractor):
                 "$gt": self.start,
                 "$lte": self.stop
             }
-        }, no_cursor_timeout=True).sort("timestamp"):
+        }, no_cursor_timeout=True).sort("clear_timestamp"):
             mo = ManagedObject.get_by_id(d["managed_object"])
             if not mo:
                 continue
@@ -109,7 +109,7 @@ class AlarmsExtractor(BaseExtractor):
                 reboots=n_reboots
             )
             nr += 1
-            self.last_ts = d["timestamp"]
+            self.last_ts = d["clear_timestamp"]
         self.alarm_stream.finish()
         return nr
 
