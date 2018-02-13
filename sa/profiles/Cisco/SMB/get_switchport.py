@@ -23,8 +23,21 @@ class Script(BaseScript):
         r"Port Mode: (?P<amode>\S+).+"
         r".+NATIVE[^\d]+(?P<nvlan>\d+).+",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_body2 = re.compile(
+        r"Name: .+\n"
+        r"Switchport: enable\n"
+        r"Administrative Mode: (?P<amode>\S+).*\n"
+        r"Operational Mode: .+\n"
+        r"Access Mode VLAN: (?P<avlan>\d+)\s*\n"
+        r"Access Multicast TV VLAN: .+\n"
+        r"Trunking Native Mode VLAN: (?P<nvlan>\d+)",
+        re.MULTILINE)
     rx_portmembers = re.compile(
         r"^\s*(?P<vid>\d+)\s+\S+\s+(?P<erule>\S+)\s+(?P<mtype>\S+)")
+    rx_trunking = re.compile(
+        r"Trunking VLANs: (?P<vlans>.+?)( \(Inactive\))?\s*\n"
+        r"General PVID:", re.MULTILINE | re.DOTALL)
+
     rx_descr_if = re.compile(r"^(?P<interface>\S+)\s*(?P<description>\S+)?")
 
     def get_description(self):
@@ -73,7 +86,10 @@ class Script(BaseScript):
         r = []  # reply
         # For each interface
         for interface in interfaces.keys():
-            v = self.cli("show interfaces switchport %s" % interface)
+            try:
+                v = self.cli("show interfaces switchport %s" % interface)
+            except self.CLISyntaxError:
+                continue
             is_trunk = None
             is_qnq = None
             untagged = None
@@ -81,6 +97,8 @@ class Script(BaseScript):
 
             # Parse header
             match = self.rx_body.search(v)
+            if not match:
+                match = self.rx_body2.search(v)
             amode = match.group("amode").strip().lower()
             # can native vlan mismatch with untagged?
             untagged = int(match.group("nvlan"))
@@ -88,20 +106,28 @@ class Script(BaseScript):
                 is_trunk = True
                 is_qnq = False
             elif amode in ("access"):
+                if "avlan" in match.groups():
+                    untagged = int(match.group("avlan"))
                 is_trunk = False
                 is_qnq = False
             elif amode in ("customer"):
                 is_qnq = True
                 is_trunk = True
 
-            # Parse list of vlans
-            for ll in v.split("\n"):
-                match = self.rx_portmembers.match(ll.strip())
+            if is_trunk:
+                match = self.rx_trunking.search(v)
                 if match:
-                    vid = int(match.group("vid"))
-                    erule = match.group("erule").lower()
-                    if erule in ("tagged"):
-                        tagged.append(vid)
+                    vlans = match.group("vlans").replace("\n", ",")
+                    tagged = self.expand_rangelist(vlans)
+                else:
+                    # Parse list of vlans
+                    for ll in v.split("\n"):
+                        match = self.rx_portmembers.match(ll.strip())
+                        if match:
+                            vid = int(match.group("vid"))
+                            erule = match.group("erule").lower()
+                            if erule in ("tagged"):
+                                tagged.append(vid)
 
             iface = {
                 "interface": interface,

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.ping
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -33,9 +33,9 @@ class Script(BaseScript):
         pr = self.cli(cmd)
         match = self.rx_result.search(pr)
         return {
-                "success": match.group("success"),
-                "count": match.group("count"),
-                "min": match.group("min"),
-                "avg": match.group("avg"),
-                "max": match.group("max"),
-            }
+            "success": match.group("success"),
+            "count": match.group("count"),
+            "min": match.group("min"),
+            "avg": match.group("avg"),
+            "max": match.group("max"),
+        }

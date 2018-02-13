@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_spanning_tree
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ class Script(BaseScript):
         ports = {}  # instance -> port -> attributes
         for I in cli_stp.split(instance_sep)[1:]:
             instance_id = I.split(" ", 1)[0]
-            if not instance_id: # STP/RSTP
+            if not instance_id:  # STP/RSTP
                 instance_id = 0
             instance_id = int(instance_id)
             ports[instance_id] = {}
@@ -103,7 +103,7 @@ class Script(BaseScript):
             "root_priority": match.group("root_priority"),
             "bridge_id": match.group("bridge_id") if match.group("bridge_id") else match.group("root_id"),
             "bridge_priority": match.group("bridge_priority") if match.group("bridge_priority") else match.group("root_priority"),
-            }]
+        }]
         for match in self.rx_pvst_interfaces.finditer(spanning_tree_detail):
             interface = self.profile.convert_interface_name(match.group("interface"))
             port_attrs = ports[instance_id][interface]
@@ -112,13 +112,13 @@ class Script(BaseScript):
                 "port_id": match.group("port_id"),
                 "state": port_attrs["state"],
                 "role": port_attrs["role"],
-                "priority": match.group("port_id").split(".",1)[0],
+                "priority": match.group("port_id").split(".", 1)[0],
                 "designated_bridge_id": match.group("designated_bridge_id"),
                 "designated_bridge_priority": match.group("designated_bridge_priority"),
                 "designated_port_id": match.group("designated_port_id"),
                 "point_to_point": port_attrs["point_to_point"],
                 "edge": port_attrs["edge"],
-                }]
+            }]
         for INST in reply["instances"]:
             INST["interfaces"] = interfaces[INST["id"]]
         return reply
@@ -155,7 +155,7 @@ class Script(BaseScript):
                 "MSTP": {
                     "region": match.group("region"),
                     "revision": match.group("revision"),
-                    }
+                }
             }
         }
         iv = {}  # instance -> vlans
@@ -168,11 +168,12 @@ class Script(BaseScript):
             if instance_id not in interfaces:
                 interfaces[instance_id] = []
             match = self.rx_mstp_bridge.search(INS)
-            root_id =  match.group("root_id")
+            root_id = match.group("root_id")
             root_priority = match.group("root_priority")
             bridge_id = match.group("bridge_id")
             bridge_priority = match.group("bridge_priority")
-            if not bridge_id and not bridge_priority: # we are the root bridge for instance
+            # we are the root bridge for instance
+            if not bridge_id and not bridge_priority:
                 bridge_id = root_id
                 bridge_priority = root_priority
             reply["instances"] += [{
@@ -182,12 +183,12 @@ class Script(BaseScript):
                 "root_priority": root_priority,
                 "bridge_id": bridge_id,
                 "bridge_priority": bridge_priority,
-                }]
+            }]
             for match in self.rx_mstp_interfaces.finditer(INS):
                 interface = self.profile.convert_interface_name(match.group("interface"))
                 port_attrs = ports[instance_id][interface]
                 port_id = match.group("port_id")
-                priority = port_id.split(".",1)[0]
+                priority = port_id.split(".", 1)[0]
                 interfaces[instance_id] += [{
                     "interface": interface,
                     "port_id": port_id,
@@ -199,7 +200,7 @@ class Script(BaseScript):
                     "designated_port_id": match.group("designated_port_id"),
                     "point_to_point": port_attrs["point_to_point"],
                     "edge": port_attrs["edge"],
-                    }]
+                }]
         for INST in reply["instances"]:
             INST["interfaces"] = interfaces[INST["id"]]
         return reply

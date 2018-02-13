@@ -30,6 +30,7 @@ class Script(BaseScript):
         "Et": "physical",    # Ethernet
         "Fa": "physical",    # FastEthernet
         "Gi": "physical",    # GigabitEthernet
+        "Te": "physical",    # TenGigabitEthernet
         "Lo": "loopback",    # Loopback
         "Po": "aggregated",  # Port-channel/Portgroup
         "Tu": "tunnel",      # Tunnel
@@ -44,8 +45,8 @@ class Script(BaseScript):
             "type": "ip",
             "interfaces": []
         }]
-
         interfaces = []
+
         # IPv4 interfaces:
         show_ip_int = self.cli("show ip int")
         for row in parse_table(show_ip_int):
@@ -90,7 +91,10 @@ class Script(BaseScript):
             except ValueError:
                 # skip header for Port-Channel section
                 continue
-            oper_status = row[6].strip().lower() == 'up'
+            try:
+                oper_status = row[6].strip().lower() == 'up'
+            except IndexError:
+                oper_status = row[5].strip().lower() == 'up'
             interface = {
                 "name": iface,
                 "type": self.INTERFACE_TYPES.get(iface[:2], "unknown"),
@@ -104,7 +108,7 @@ class Script(BaseScript):
             phys_int.append(interface)
 
         # refine admin status:
-        show_int_conf = self.cli("show interfaces configuration", self.rx_list)
+        show_int_conf = self.cli("show interfaces configuration", list_re=self.rx_list)
         for interface in show_int_conf:
             try:
                 iface = self.profile.convert_interface_name(interface["name"])

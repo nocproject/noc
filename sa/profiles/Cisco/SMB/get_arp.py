@@ -17,8 +17,12 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "Cisco.SMB.get_arp"
     interface = IGetARP
-    rx_line_l2 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
-    rx_line_l3 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
+    rx_line_l2 = re.compile(
+        r"^vlan\s(?P<vlanid>\d+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
+    rx_line_l3 = re.compile(
+        r"^(vlan\s(?P<vlanid>\d+)\s+)?(?P<interface>\S+)\s+"
+        r"(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+"
+        r"(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
 
     def execute(self, vrf=None):
         if vrf:
@@ -46,7 +50,8 @@ class Script(BaseScript):
             else:
                 reply.append({"ip": ip, "mac": mac})
         # refine interfaces by mac table
-        for row in parse_table(self.cli("show mac address-table")):
+        s = self.cli("show mac address-table")
+        for row in parse_table(s):
             mac = row[1]
             port = row[2].strip()
             if port == '0':     # self
@@ -54,7 +59,7 @@ class Script(BaseScript):
             interface = self.profile.convert_interface_name(port)
             for l in reply:
                 ind = reply.index(l)
-                if not reply[ind].has_key("interface"):
+                if not reply[ind].get("interface"):
                     reply[ind]["interface"] = interface
 
         return reply

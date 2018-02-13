@@ -2,17 +2,15 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_inventory
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
-from itertools import groupby
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -20,8 +18,8 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_item = re.compile(
-        r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>[\S ]+)?\s*, "
+        r"^NAME: \"(?P<name>[^\"]+)\",?\s+DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
+        r"PID:\s+(?P<pid>\S+)?\s*,?\s+VID:\s+(?P<vid>[\S ]+)?\s*,?\s+"
         r"SN: (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
@@ -30,7 +28,7 @@ class Script(BaseScript):
             "type": "CHASSIS",
             "vendor": "CISCO",
             "part_no": [match.group("pid")],
-            "revision": match.group("vid"),
+            "revision": match.group("vid").strip(),
             "serial": match.group("serial"),
             "description": match.group("descr")
         }]
