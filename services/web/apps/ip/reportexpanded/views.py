@@ -50,8 +50,7 @@ class ExpandedReport(SimpleReport):
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_row(p, level=0):
             s = "--" * level
-            r = [s + p.prefix, p.state.name,
-                unicode(p.vc) if p.vc else ""]
+            r = [s + p.prefix, p.state.name, unicode(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
@@ -59,14 +58,12 @@ class ExpandedReport(SimpleReport):
             return r
 
         def get_info(prefix, level=0):
-            s = "----" * level
             data = [get_row(prefix, level)]
             for c in prefix.children_set.order_by("prefix"):
                 data += get_info(c, level + 1)
             return data
 
         cf = CustomField.table_fields("ip_prefix")
-        cfn = dict((f.name, f) for f in cf)
         # Prepare columns
         columns = [
             "Prefix",

@@ -22,7 +22,7 @@ class ReportForm(forms.Form):
         label=_("VRF"),
         queryset=VRF.objects.filter(
             state__is_provisioned=True).order_by("name")
-        )
+    )
     afi = forms.ChoiceField(label=_("Address Family"),
                             choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = forms.CharField(label=_("Prefix"))
@@ -49,12 +49,19 @@ class FreeBlocksReport(SimpleReport):
 
     def get_data(self, vrf, afi, prefix, **kwargs):
         p = IP.prefix(prefix.prefix)
-        return self.from_dataset(title=_(
-            "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
-                "vrf": vrf.name,
-                "afi": afi,
-                "prefix": prefix.prefix
-            }),
+        return self.from_dataset(
+            title=_(
+                "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
+                    "vrf": vrf.name,
+                    "afi": afi,
+                    "prefix": prefix.prefix
+                }
+            ),
             columns=["Free Blocks"],
-            data=[[unicode(f)] for f in p.iter_free(
-            [IP.prefix(c.prefix) for c in prefix.children_set.all()])])
+            data=[
+                [unicode(f)] for f in p.iter_free([
+                    IP.prefix(c.prefix)
+                    for c in prefix.children_set.all()
+                ])
+            ]
+        )

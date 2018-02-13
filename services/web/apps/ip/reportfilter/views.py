@@ -40,7 +40,7 @@ class ReportFilterApplication(SimpleReport):
             )
             description = forms.CharField(
                 label=_("Description"),
-                required = False
+                required=False
             )
 
         self.customize_form(RForm, "ip_prefix", search=True)
@@ -49,7 +49,7 @@ class ReportFilterApplication(SimpleReport):
     def get_data(self, request, **kwargs):
         def get_row(p):
             r = [p.vrf.name, p.prefix, p.state.name, unicode(p.asn),
-                unicode(p.vc) if p.vc else ""]
+                 unicode(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
@@ -76,11 +76,14 @@ class ReportFilterApplication(SimpleReport):
             TableColumn(_("Tags"), format="tags")
         ]
 
-        data = [get_row(p)
-                for p in Prefix.objects.filter(**q)\
-                    .exclude(prefix="0.0.0.0/0")\
-                    .exclude(prefix="::/0")\
-                    .order_by("vrf__name", "prefix").select_related()]
+        data = [
+            get_row(p)
+            for p in Prefix.objects.filter(**q).exclude(
+                prefix="0.0.0.0/0"
+            ).exclude(prefix="::/0").order_by(
+                "vrf__name", "prefix"
+            ).select_related()
+        ]
         return self.from_dataset(
             title=self.title,
             columns=columns,
