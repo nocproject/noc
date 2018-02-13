@@ -6,8 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 from unittest import TestCase
-from noc.dns.models import *
-from noc.ip.models import VRF, Address
+from noc.dns.models.dnsserver import DNSServer
+from noc.dns.models.dnszoneprofile import DNSZoneProfile
+from noc.dns.models.dnszone import DNSZone
+from noc.dns.models.dnszonerecord import DNSZoneRecord
+from noc.ip.models.vrf import VRF
+from noc.ip.models.address import Address
 
 
 class AccessTestCase(TestCase):
@@ -264,8 +268,8 @@ class AccessTestCase(TestCase):
         ]:
             self.assertTrue(
                 r in zr41_records, "%s not in %s" % (r, zr41_records))
-        zr42_records = self.zr42.records
-        zr61_records = self.zr61.records
+        # self.zr42.records
+        # self.zr61.records
 
     #
     #

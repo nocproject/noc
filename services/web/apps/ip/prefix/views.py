@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication
-from noc.ip.models import Prefix
+from noc.ip.models.prefix import Prefix
 from noc.core.translation import ugettext as _
 
 
