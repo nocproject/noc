@@ -32,7 +32,7 @@ class IPPoolApplication(ExtModelApplication):
         for t in technologies:
             if "|" in t:
                 raise InterfaceTypeError("Invalid technology: '%s'" % t)
-            if not Technology.objects.filter(name = "Packet | %s" % t).count():
+            if not Technology.objects.filter(name="Packet | %s" % t).count():
                 raise InterfaceTypeError("Invalid technology: '%s'" % t)
         data["technologies"] = technologies
         return super(IPPoolApplication, self).clean(data)
