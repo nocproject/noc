@@ -24,8 +24,7 @@ class ReportVPNStatusApplication(SimpleReport):
             if vrf.rd == "0:0":
                 continue  # Skip global
             d = []
-            for fi in ForwardingInstance.objects.filter(type="VRF",
-                name=vrf.name):
+            for fi in ForwardingInstance.objects.filter(type="VRF", name=vrf.name):
                 si = [i.name for i in
                       SubInterface.objects.filter(
                           forwarding_instance=fi.id).only("name")]

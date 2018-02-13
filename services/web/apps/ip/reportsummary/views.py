@@ -86,5 +86,5 @@ class ReportSummary(SimpleReport):
                          TableColumn(_("Size"),
                                      format="numeric", align="right"),
                          TableColumn(_("%"), format="percent", align="right")],
-                data=data)
-
+                data=data
+            )
