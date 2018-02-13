@@ -345,8 +345,8 @@ class IPAMApplication(ExtApplication):
             if p.profile.style and p.profile.style.css_class_name not in styles:
                 styles[p.profile.style.css_class_name] = p.profile.style.css
         for a in addresses:
-            if a.style and a.style.css_class_name not in styles:
-                styles[a.style.css_class_name] = a.style.css
+            if a.profile.style and a.profile.style.css_class_name not in styles:
+                styles[a.profile.style.css_class_name] = a.profile.style.css
         styles = "\n".join(styles.values())
         # Render
         return self.render(request, "vrf_index.html",
