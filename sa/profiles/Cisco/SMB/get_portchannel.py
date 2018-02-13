@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_portchannel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,9 +17,10 @@ class Script(BaseScript):
     name = "Cisco.SMB.get_portchannel"
     interface = IGetPortchannel
 
-    rx_po = re.compile(r"^(?P<pcname>Po\d+)\s*(?P<aports>Active: \S+)?[, ]*(?P<iports>Inactive: \S+)?")
+    rx_po = re.compile(
+        r"^(?P<pcname>Po\d+)\s*(?P<aports>Active: \S+)?[, ]*(?P<iports>Inactive: \S+)?")
 
-    def execute(self):          # TODO: test with real port-channels
+    def execute(self):  # TODO: test with real port-channels
         r = []
         s = self.cli("show interfaces Port-Channel", cached=True)
         for l in s.split("\n"):
@@ -30,12 +31,12 @@ class Script(BaseScript):
                 pc = match.group("pcname")
                 try:
                     aports = match.group("aports")
-                    aports = map(self.profile.convert_interface_name,aports.split(","))
+                    aports = map(self.profile.convert_interface_name, aports.split(","))
                 except:
                     aports = []
             r += [{
                 "interface": pc,
-                "members": aports, # <!> TODO: inactive ports???
-                "type": "S",   # <!> TODO: port-channel type detection (LACP)
+                "members": aports,  # <!> TODO: inactive ports???
+                "type": "S",  # <!> TODO: port-channel type detection (LACP)
             }]
         return r
