@@ -23,6 +23,11 @@ class Script(BaseScript):
         r"cisco\s+(?P<platform>\S+)(?: Series)? \([^)]+\) processor with \d+",
         re.MULTILINE | re.DOTALL
     )
+    rx_ver2 = re.compile(
+        r"^Cisco IOS XR Software, Version\s+(?P<version>\d\S+).+"
+        r"cisco\s+(?P<platform>\S+) \(\) processor",
+        re.MULTILINE | re.DOTALL
+    )
     rx_snmp_ver = re.compile(
         r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+"
         r"Version\s+(?P<version>\S+)\[\S+\]"
@@ -48,6 +53,8 @@ class Script(BaseScript):
                 pass
         v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
+        if not match:
+            match = self.rx_ver2.search(v)
         return {
             "vendor": "Cisco",
             "platform": match.group("platform"),
