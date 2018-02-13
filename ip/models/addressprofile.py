@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-# Prefix Profile
+# Address Profile
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
@@ -21,37 +20,24 @@ from noc.wf.models.workflow import Workflow
 from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
-from .addressprofile import AddressProfile
 
 id_lock = Lock()
 
 
 @bi_sync
 @on_delete_check(check=[
-    ("ip.Prefix", "profile")
+    ("ip.Address", "profile")
 ])
-class PrefixProfile(Document):
+class AddressProfile(Document):
     meta = {
-        "collection": "prefixprofiles",
+        "collection": "addressprofiles",
         "strict": False,
         "auto_create_index": False
     }
 
     name = StringField(unique=True)
     description = StringField()
-    # Enable nested Address discovery
-    # via ARP cache
-    enable_ip_discovery = BooleanField(default=False)
-    # Enable nested Addresses discovery
-    # via active PING probes
-    enable_ip_ping_discovery = BooleanField(default=False)
-    # Enable nested prefix prefix discovery
-    enable_prefix_discovery = BooleanField(default=False)
-    # Default prefix profile for children prefixes
-    autocreated_prefix_profile = PlainReferenceField("self")
-    # Default address profile for children addresses
-    autocreated_address_profile = PlainReferenceField(AddressProfile)
-    # Prefix workflow
+    # Address workflow
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
     tags = ListField(StringField())
@@ -72,9 +58,9 @@ class PrefixProfile(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        return PrefixProfile.objects.filter(id=id).first()
+        return AddressProfile.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
-        return PrefixProfile.objects.filter(bi_id=id).first()
+        return AddressProfile.objects.filter(bi_id=id).first()

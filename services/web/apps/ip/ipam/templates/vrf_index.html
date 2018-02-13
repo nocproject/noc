@@ -79,7 +79,7 @@ function on_mynetworks(n)
             </td>
         </tr>
         <tr>
-            <td style="font-size: 18px" {% if prefix.style %}class="{{prefix.style.css_class_name}}"{%endif%}>{{prefix.short_description}}</td>
+            <td style="font-size: 18px" {% if prefix.profile.style %}class="{{prefix.profile.style.css_class_name}}"{%endif%}>{{prefix.short_description}}</td>
             <td></td>
             <td>
                 {% if has_bookmark %}
@@ -350,7 +350,7 @@ function on_mynetworks(n)
             </thead>
             <tr style="display:none" id="at-start"></tr>
             {% for a in addresses %}
-                <tr class="used-address {% if a.style %}{{a.style.css_class_name}}{% else %}{% cycle 'row1' 'row2' %}{% endif %}">
+                <tr class="used-address {% if a.profile.style %}{{a.profile.style.css_class_name}}{% else %}{% cycle 'row1' 'row2' %}{% endif %}">
                     {% if max_slots %}
                         {% for r in a.slots %}
                             <td class="noc-ri-{% if r %}{{r.id}}{% else %}none{% endif %}"></td>

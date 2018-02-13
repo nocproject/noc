@@ -237,6 +237,7 @@ _MODELS = {
     "cm.ValidationRule": "noc.cm.models.validationrule.ValidationRule",
     # ip models
     "ip.Address": "noc.ip.models.address.Address",
+    "ip.AddressProfile": "noc.ip.models.addressprofile.AddressProfile",
     "ip.AddressRange": "noc.ip.models.addressrange.AddressRange",
     "ip.IPPool": "noc.ip.models.ippool.IPPool",
     "ip.Prefix": "noc.ip.models.prefix.Prefix",
