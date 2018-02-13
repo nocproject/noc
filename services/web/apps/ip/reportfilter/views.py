@@ -2,19 +2,19 @@
 # ---------------------------------------------------------------------
 # ip.reportfilter
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-from django.db.models import Q
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.main.models import CustomField
-from noc.ip.models import VRF, Prefix
-from noc.peer.models import AS
+from noc.main.models.customfield import CustomField
+from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
+from noc.peer.models.asn import AS
 
 
 class ReportFilterApplication(SimpleReport):

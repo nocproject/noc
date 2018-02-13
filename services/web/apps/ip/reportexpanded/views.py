@@ -2,18 +2,19 @@
 # ---------------------------------------------------------------------
 # Expanded Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django Modules
+# Third-party Modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.ip.models import VRF, Prefix
+from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
 from noc.main.models import CustomField
-from noc.lib.validators import *
+from noc.lib.validators import check_ipv6_prefix, check_ipv4_prefix, ValidationError
 
 
 class ReportForm(forms.Form):

@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # ip.reportvpnstatus
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
-from noc.ip.models import VRF
+from noc.ip.models.vrf import VRF
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
 

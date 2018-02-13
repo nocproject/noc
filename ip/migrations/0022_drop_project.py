@@ -2,17 +2,15 @@
 # ---------------------------------------------------------------------
 # VRF, Prefix, Address .project field
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
 from south.db import db
-# NOC modules
-from noc.ip.models import *
 
 
-class Migration:
+class Migration(object):
     def migrate_project(self, table):
         r = db.execute("""
             SELECT COUNT(*)

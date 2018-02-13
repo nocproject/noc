@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Wipe managed object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ from noc.fm.models.uptime import Uptime
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.validationrule import ValidationRule
-from noc.ip.models import Address
+from noc.ip.models.address import Address
 from noc.core.scheduler.job import Job
 
 logger = logging.getLogger(__name__)

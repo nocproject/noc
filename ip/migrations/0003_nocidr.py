@@ -1,37 +1,42 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Third-party modules
 from south.db import db
-from noc.ip.models import *
 from noc.core.model.fields import CIDRField
 
-class Migration:
 
+class Migration(object):
     def forwards(self):
-        db.delete_column("ip_ipv4block","prefix")
-        db.add_column("ip_ipv4block","prefix",CIDRField("prefix",null=True))
+        db.delete_column("ip_ipv4block", "prefix")
+        db.add_column("ip_ipv4block", "prefix",
+                      CIDRField("prefix", null=True))
         db.execute("UPDATE ip_ipv4block SET prefix=prefix_cidr")
-        db.delete_column("ip_ipv4block","prefix_cidr")
+        db.delete_column("ip_ipv4block", "prefix_cidr")
         db.execute("ALTER TABLE ip_ipv4block ALTER prefix SET NOT NULL")
         db.execute("DROP TRIGGER t_ip_ipv4block_modify ON ip_ipv4block")
         db.execute("DROP FUNCTION f_trigger_ip_ipv4block()")
-        db.delete_column("ip_ipv4blockaccess","prefix")
-        db.add_column("ip_ipv4blockaccess","prefix",CIDRField("prefix",null=True))
+        db.delete_column("ip_ipv4blockaccess", "prefix")
+        db.add_column("ip_ipv4blockaccess", "prefix",
+                      CIDRField("prefix", null=True))
         db.execute("UPDATE ip_ipv4blockaccess SET prefix=prefix_cidr")
-        db.delete_column("ip_ipv4blockaccess","prefix_cidr")
-        db.execute("ALTER TABLE ip_ipv4blockaccess ALTER prefix SET NOT NULL")
-        db.execute("DROP TRIGGER t_ip_ipv4blockaccess_modify ON ip_ipv4blockaccess")
+        db.delete_column("ip_ipv4blockaccess", "prefix_cidr")
+        db.execute(
+            "ALTER TABLE ip_ipv4blockaccess ALTER prefix SET NOT NULL")
+        db.execute(
+            "DROP TRIGGER t_ip_ipv4blockaccess_modify ON ip_ipv4blockaccess")
         db.execute("DROP FUNCTION f_trigger_ip_ipv4blockaccess()")
         db.execute(RAW_SQL)
 
     def backwards(self):
-        "Write your backwards migration here"
+        """Write your backwards migration here"""
+        pass
 
-RAW_SQL="""
+
+RAW_SQL = """
 CREATE OR REPLACE
 FUNCTION ip_ipv4_block_depth(INTEGER,CIDR,CIDR)
 RETURNS INTEGER
