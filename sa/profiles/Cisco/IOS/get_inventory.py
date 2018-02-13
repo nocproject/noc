@@ -238,7 +238,7 @@ class Script(BaseScript):
                 ):
                     pid = self.get_transceiver_pid(match.group("t_part_no"))
                 else:
-                    if ("GBIC" in match.group("t_part_no") and "Gi" in int):
+                    if "GBIC" in match.group("t_part_no") and "Gi" in int:
                         pid = self.get_transceiver_pid(
                             "1000BASE" +
                             match.group("t_part_no")[5:].strip()
@@ -352,7 +352,7 @@ class Script(BaseScript):
             if (len(pid) - len(descr) == 2) and pid[len(descr)] == "-":
                 pid = descr
             return "CHASSIS", self.slot_id, pid
-        elif (("SUP" in pid or "S2U" in pid) and "supervisor" in descr):
+        elif ("SUP" in pid or "S2U" in pid) and "supervisor" in descr:
             # Sup2
             return "SUP", self.slot_id, pid
         elif name.startswith("module "):
@@ -366,7 +366,7 @@ class Script(BaseScript):
             ):
                 return "SUP", self.slot_id, pid
             else:
-                if (pid == "N/A" and "Gibraltar,G-20" in descr):
+                if pid == "N/A" and "Gibraltar,G-20" in descr:
                     # 2-port 100BASE-TX Fast Ethernet port adapter
                     pid = "CISCO7100-MB"
                 if pid in ("ASR1001", "ASR1001-X"):
@@ -438,7 +438,7 @@ class Script(BaseScript):
         elif pid.startswith("AIM-"):
             # Network Module
             return "AIM", self.slot_id, pid
-        elif (pid.startswith("PVDM2-") or pid.startswith("PVDM3-")):
+        elif pid.startswith("PVDM2-") or pid.startswith("PVDM3-"):
             # PVDM Type 2 and 3
             return "PVDM", self.slot_id, pid
         elif pid.endswith("-MB"):
