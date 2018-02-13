@@ -125,16 +125,20 @@ class ObjectCard(BaseCard):
 
         contacts_list = []
 
-        contacts_list += [{
-            "administrative": self.object.get_data("contacts", "administrative"),
-            "billing": self.object.get_data("contacts", "billing"),
-            "technical": self.object.get_data("contacts", "technical")
-        }]
+        if self.object.get_data("contacts", "technical") is not None and len(contacts_list) > 0:
+            contacts_list.append({"Technical": self.object.get_data("contacts", "technical")})
+        elif self.object.get_data("contacts", "technical") is not None:
+            contacts_list.append({"Technical": self.object.get_data("contacts", "technical")})
 
-        print contacts_list
+        if self.object.get_data("contacts", "administrative") is not None and len(contacts_list) > 0:
+            contacts_list.insert(0, {"Administrative": self.object.get_data("contacts", "administrative")})
+        elif self.object.get_data("contacts", "administrative") is not None:
+            contacts_list.append({"Administrative": self.object.get_data("contacts", "administrative")})
 
-        print ""
-        print self.object.get_data("contacts", "administrative")
+        if self.object.get_data("contacts", "billing") is not None and len(contacts_list) > 0:
+            contacts_list.insert(1, {"Billing": self.object.get_data("contacts", "billing")})
+        elif self.object.get_data("contacts", "billing") is not None:
+            contacts_list.append({"Billing": self.object.get_data("contacts", "billing")})
 
         return {
             "object": self.object,
