@@ -1,168 +1,129 @@
-<div class="row">
-    {%- for o in path -%}
-    <div class="col-sm-{{ 12 // loop.length }}">
-        {%- if o.id == object.id -%}
-        {{ o.name }}
-        {%- else -%}
-        <a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a>
-        {%- endif -%}
-    </div>
-    {%- endfor -%}
-</div>
-<hr/>
-<div class="row">
-    <div class="col-sm-2">
-        <b>{{ _("Model") }}</b>
-    </div>
-    <div class="col-sm-6">
-        {{ object.model.name }}
-    </div>
-</div>
-<hr/>
-<div class="row">
-    <div class="col-sm-2">
-        <b>{{ _("Location") }}</b>
-    </div>
-    <div class="col-sm-10">
-        {{ location }}
-    </div>
-</div>
-<hr/>
-{%- if contacts -%}
-<div class="row">
-    <div class="col-sm-12">
-        <b>{{ _("Contacts") }}</b>
-        <table class="table table-condensed table-hover">
-            <tbody>
-            {%- for c in contacts -%}
-            <tr>
+{# container path from path list #}
+<table class="table table-hover table-border-bottom: 1px solid #c0c0c0;">
+    <thead>
+        {%- for o in path -%}
+            {%- if o.id == object.id -%}
+                <td>{{ o.name }}</td>
+            {%- else -%}
+                {# Links to managedobject card #}
+                <td><a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a></td>
+            {%- endif -%}
+        {%- endfor -%}
+    </thead>
+</table>
+
+
+{# Display object model name #}
+<table class="table table-hover table-border-bottom: 1px solid #c0c0c0;">
+    <thead>
+        <td><b>{{ _("Model") }}</b></td>
+        <td>{{ object.model.name  }}</td>
+    </thead>
+</table>
+
+
+{# Display object post address #}
+<table class="table table-hover table-border-bottom: 1px solid #c0c0c0;">
+    <thead>
+        <td><b>{{ _("Location") }}</b></td>
+        <td>{{ location  }}</td>
+    </thead>
+</table>
+
+
+{# Display dashboard links for container #}
+<table class="table table-hover table-border-bottom: 1px solid #c0c0c0;">
+    <tbody>
+        <tr>
+            <td>
+                <b>{{ _("Dashboard") }}</b>
+                <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ object.id }}&orgId=1&from=now-3h&to=now&refresh=15m&var-bi_id=All"><i class="fa fa-dashboard"></i></a>
+            </td>
+        </tr>
+    </body>
+</table>
+
+
+{# Display object contacts information #}
+<table class="table table-hover table-border-bottom: 1px solid #c0c0c0;">
+    <thead>
+        <td><b>{{ _("Contacts") }}</b></td>
+    </thead>
+    <tbody>
+        {%- for col in contacts -%}
+            {%- for c in col -%}
                 <td>
-                    {%- if c.administrative -%}
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                        <tr>
-                            <th>{{ _("Administrative contacts") }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>{{ c.administrative }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    {%- endif -%}
+                    <b>{{ c }} {{ "contacts" }}</br></b>
+                    {{ col[c] }}
                 </td>
-                <td>
-                    {%- if c.billing -%}
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                        <tr>
-                            <th>{{ _("Billing contacts") }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>{{ c.billing }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    {%- endif -%}
-                </td>
-                <td>
-                    {%- if c.technical -%}
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                        <tr>
-                            <th>{{ _("Technical contacts") }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>{{ c.technical }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    {%- endif -%}
-                </td>
-            </tr>
             {%- endfor -%}
-        </table>
-    </div>
-</div>
-{%- endif -%}
-<hr/>
-<div class="row">
-    <div class="col-sm-2">
-        <b>{{ _("Dashboard") }}</b>
-    </div>
-    <div class="col-sm-10">
-        <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ object.id }}&orgId=1&from=now-3h&to=now&refresh=15m&var-bi_id=All">Container graph</a>
-    </div>
-</div>
-<hr/>
-{%- if children -%}
-<div class="row">
-    <div class="col-sm-12">
-        <table class="table table-condensed table-hover">
-            <thead>
-            <tr>
-                <th>{{ _("Потомок") }}</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
+        {%- endfor -%}
+    </tbody>
+</table>
+
+
+{# Display children hardware from container #}
+<table class="table table-hover table-border-bottom: 1px solid #c0c0c0;">
+    <thead>
+        <th>{{ _("Children") }}</th>
+    </thead>
+    <tbody>
+        {%- if children -%}
             {%- for o in children -%}
-            <tr>
-                <td>
-                    <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.name }}</a>
-                    <hr/>
-                    <b>{{ _("Dashboard") }}:&nbsp;</b><a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ o.id }}">View metrics</a>
-                </td>
-                <td>
-                    {%- if o.metrics -%}
-                    <b>{{ _("Metrics") }}:</b>
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                        <tr>
-                            <th>{{ _("Name") }}</th>
-                            <th>{{ _("Value") }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {%- for m in o.metrics -%}
-                        <tr>
-                            <td>{{ m }}</td>
-                            <td>{{ o.metrics[m] }}</td>
-                        </tr>
-                        {%- endfor -%}
-                        </tbody>
-                    </table>
-                    <hr/>
-                    {%- endif -%}
-                    {%- if o.alarms -%}
-                    <b>{{ _("Alarms") }}:</b>
-                    <table class="table table-condensed table-hover">
-                        <thead>
-                        <tr>
-                            <th>{{ _("Timestamp") }}</th>
-                            <th>{{ _("Duration") }}</th>
-                            <th>{{ _("Subject") }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {%- for a in o.alarms -%}
-                        <tr>
-                            <td><a href="/api/card/view/alarm/{{ a["id"] }}/">{{ a["timestamp"] | timestamp}}</a></td>
-                            <td>{{ a["duration"] }}</td>
-                            <td>{{ a["subject"] }}</td>
-                            {%- endfor -%}
-                        </tbody>
-                    </table>
-                    {%- endif -%}
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.name }}</a></br>
+                        <b>{{ _("Dashboard") }}:&nbsp;</b><a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ o.id }}"><i class="fa fa-dashboard"></i></a>
+                    </td>
+                    <td>
+                        {# Display metrics information #}
+                            {%- if o.metrics -%}
+                                <b>{{ _("Metrics") }}:</b>
+
+                                <table class="table table-hover table-border-bottom: 1px solid #c0c0c0;">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ _("Name") }}</th>
+                                            <th>{{ _("Value") }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%- for m in o.metrics -%}
+                                            <tr>
+                                                <td>{{ m }}</td>
+                                                <td>{{ o.metrics[m] }}</td>
+                                            </tr>
+                                        {%- endfor -%}
+                                    </tbody>
+                                </table>
+                            {%- endif -%}
+                    </td>
+                    <td>
+                        {# Display alarm data #}
+                            {%- if o.alarms -%}
+                                <b>{{ _("Alarms") }}:</b>
+                                <table class="table table-border-bottom: 1px solid #c0c0c0;">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ _("Timestamp") }}</th>
+                                            <th>{{ _("Duration") }}</th>
+                                            <th>{{ _("Subject") }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {%- for a in o.alarms -%}
+                                            <tr>
+                                                <td><a href="/api/card/view/alarm/{{ a["id"] }}/">{{ a["timestamp"] | timestamp}}</a></td>
+                                                <td>{{ a["duration"] }}</td>
+                                                <td>{{ a["subject"] }}</td>
+                                            </tr>
+                                        {%- endfor -%}
+                                    </tbody>
+                                </table>
+                            {%- endif -%}
+                    </td>
+                </tr>
             {%- endfor -%}
-        </table>
-    </div>
-</div>
-{%- endif -%}
+        {%- endif -%}
+    </tbody>
+</table>
