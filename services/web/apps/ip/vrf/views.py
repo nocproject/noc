@@ -35,17 +35,20 @@ class VRFApplication(ExtModelApplication):
     def field_row_class(self, o):
         return o.style.css_class_name if o.style else ""
 
-    @view(url="^bulk/import/$", method=["POST"], access="import", api=True,
-          validate={
-              "items": ListOfParameter(element=DictParameter(attrs={
-                  "name": StringParameter(),
-                  "rd": RDParameter(),
-                  "vrf_group": ModelParameter(model=VRFGroup),
-                  "afi_ipv4": BooleanParameter(default=False),
-                  "afi_ipv6": BooleanParameter(default=False),
-                  "description": StringParameter(required=False)
-              }))
-          })
+    @view(
+        url="^bulk/import/$", method=["POST"], access="import",
+        api=True,
+        validate={
+            "items": ListOfParameter(element=DictParameter(attrs={
+                "name": StringParameter(),
+                "rd": RDParameter(),
+                "vrf_group": ModelParameter(model=VRFGroup),
+                "afi_ipv4": BooleanParameter(default=False),
+                "afi_ipv6": BooleanParameter(default=False),
+                "description": StringParameter(required=False)
+            }))
+        }
+    )
     def api_bulk_import(self, request, items):
         n = 0
         for i in items:

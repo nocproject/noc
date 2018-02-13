@@ -24,6 +24,8 @@ def allocated_prefixes(obj):
                                                     p.vrf.id, p.afi, p.prefix),
                                        p.prefix)]
     return ", ".join(r)
+
+
 allocated_prefixes.short_description = "Prefixes"
 allocated_prefixes.allow_tags = True
 
