@@ -2,24 +2,26 @@
 # ---------------------------------------------------------------------
 # PrefixAccess model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 from django.contrib.auth.models import User
 # NOC modules
-from vrf import VRF
-from prefix import Prefix
-from afi import AFI_CHOICES
 from noc.core.model.fields import CIDRField
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
+from .afi import AFI_CHOICES
+from .vrf import VRF
+from .prefix import Prefix
 
 
 class PrefixAccess(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Prefix Access")
         verbose_name_plural = _("Prefix Access")
         db_table = "ip_prefixaccess"
@@ -44,8 +46,11 @@ class PrefixAccess(models.Model):
         if self.can_change:
             perms += ["Change"]
         return u"%s: %s(%s): %s: %s" % (
-        self.user.username, self.vrf.name, self.afi, self.prefix,
-        ", ".join(perms))
+            self.user.username,
+            self.vrf.name,
+            self.afi, self.prefix,
+            ", ".join(perms)
+        )
 
     def clean(self):
         """
@@ -77,15 +82,17 @@ class PrefixAccess(models.Model):
             prefix = str(prefix)
         # @todo: PostgreSQL-independed implementation
         c = connection.cursor()
-        c.execute("""SELECT COUNT(*)
-                     FROM %s
-                     WHERE prefix >>= %%s
-                        AND vrf_id=%%s
-                        AND afi=%%s
-                        AND user_id=%%s
-                        AND can_view=TRUE
-                 """ % PrefixAccess._meta.db_table,
-            [str(prefix), vrf.id, afi, user.id])
+        c.execute(
+            """SELECT COUNT(*)
+            FROM %s
+            WHERE prefix >>= %%s
+              AND vrf_id=%%s
+              AND afi=%%s
+              AND user_id=%%s
+              AND can_view=TRUE
+            """ % PrefixAccess._meta.db_table,
+            [str(prefix), vrf.id, afi, user.id]
+        )
         return c.fetchall()[0][0] > 0
 
     @classmethod
@@ -103,13 +110,15 @@ class PrefixAccess(models.Model):
             return True
             # @todo: PostgreSQL-independed implementation
         c = connection.cursor()
-        c.execute("""SELECT COUNT(*)
-                     FROM %s
-                     WHERE prefix >>= %%s
-                        AND vrf_id=%%s
-                        AND afi=%%s
-                        AND user_id=%%s
-                        AND can_change=TRUE
-                 """ % PrefixAccess._meta.db_table,
-            [str(prefix), vrf.id, afi, user.id])
+        c.execute(
+            """SELECT COUNT(*)
+            FROM %s
+            WHERE prefix >>= %%s
+              AND vrf_id=%%s
+              AND afi=%%s
+              AND user_id=%%s
+              AND can_change=TRUE
+            """ % PrefixAccess._meta.db_table,
+            [str(prefix), vrf.id, afi, user.id]
+        )
         return c.fetchall()[0][0] > 0

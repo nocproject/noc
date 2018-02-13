@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # VRF model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import hashlib
 import struct
 import operator
@@ -20,12 +21,12 @@ from noc.main.models.style import Style
 from noc.main.models import ResourceState
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
-from vrfgroup import VRFGroup
-from noc.lib.validators import check_rd, is_rd
+from noc.lib.validators import check_rd
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check
+from .vrfgroup import VRFGroup
 
 id_lock = Lock()
 
