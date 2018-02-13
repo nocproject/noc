@@ -140,6 +140,8 @@ class ObjectCard(BaseCard):
         elif self.object.get_data("contacts", "billing") is not None:
             contacts_list.append({"Billing": self.object.get_data("contacts", "billing")})
 
+        print contacts_list
+
         return {
             "object": self.object,
             "path": path,
