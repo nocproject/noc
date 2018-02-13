@@ -32,7 +32,7 @@ class Script(BaseScript):
                 try:
                     aports = match.group("aports")
                     aports = map(self.profile.convert_interface_name, aports.split(","))
-                except:
+                except TypeError:
                     aports = []
             r += [{
                 "interface": pc,
