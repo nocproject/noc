@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app import ExtDocApplication
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.vc.models.vpn import VPN
 from noc.core.translation import ugettext as _
 from noc.lib.app.decorators.state import state_handler

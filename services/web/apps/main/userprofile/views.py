@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.userprofile application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,21 +56,24 @@ class UserProfileApplication(ExtApplication):
             "groups": [g.name for g in user.groups.all().order_by("name")]
         }
 
-    @view(url="^$", method=["POST"], access=PermitLogged(), api=True,
-          validate={
-              "preferred_language": StringParameter(
-                  choices=[x[0] for x in LANGUAGES]
-              ),
-              "contacts": ListOfParameter(
-                  element=DictParameter(attrs={
-                      "time_pattern": ModelParameter(TimePattern),
-                      "notification_method": StringParameter(
-                          choices=[x[0] for x in USER_NOTIFICATION_METHOD_CHOICES]
-                      ),
-                      "params": StringParameter()
-                  })
-              )
-          })
+    @view(
+        url="^$", method=["POST"], access=PermitLogged(), api=True,
+        validate={
+            "preferred_language": StringParameter(
+                choices=[x[0] for x in LANGUAGES]
+            ),
+            "contacts": ListOfParameter(
+                element=DictParameter(attrs={
+                    "time_pattern": ModelParameter(TimePattern),
+                    "notification_method": StringParameter(
+                        choices=[x[0] for x in
+                                 USER_NOTIFICATION_METHOD_CHOICES]
+                    ),
+                    "params": StringParameter()
+                })
+            )
+        }
+    )
     def api_save(self, request, preferred_language, contacts):
         user = request.user
         try:
@@ -89,6 +92,4 @@ class UserProfileApplication(ExtApplication):
                 notification_method=c["notification_method"],
                 params=c["params"]
             ).save()
-        # Setup language
-        request.session["django_lang"] = preferred_language
         return True
