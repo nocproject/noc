@@ -207,7 +207,7 @@ class BaseLoader(object):
 
         def getnext(g):
             try:
-                return g.next()
+                return next(g)
             except StopIteration:
                 return None
 
