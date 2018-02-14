@@ -6,8 +6,10 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import BaseLoader
+from .base import BaseLoader
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 
