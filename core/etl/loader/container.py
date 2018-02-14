@@ -26,7 +26,10 @@ class ContainerLoader(BaseLoader):
         "addr_id",
         "lon",
         "lat",
-        "addr_text"
+        "addr_text",
+        "adm_contact_text",
+        "tech_contact_text",
+        "billing_contact_text"
     ]
 
     CONTAINER_MODEL = "Group"
@@ -75,6 +78,12 @@ class ContainerLoader(BaseLoader):
         if v.get("addr_id") and v.get("addr_text"):
             o.set_data("address", "id", v["addr_id"])
             o.set_data("address", "text", v["addr_text"])
+        if v.get("adm_contact_text"):
+            o.set_data("contacts", "administrative", v["adm_contact_text"])
+        if v.get("tech_contact_text"):
+            o.set_data("contacts", "technical", v["tech_contact_text"])
+        if v.get("billing_contact_text"):
+            o.set_data("contacts", "billing", v["tech_contact_text"])
         o.save()
         return o
 
@@ -94,4 +103,12 @@ class ContainerLoader(BaseLoader):
             o.set_data("address", "id", v["addr_id"])
         if v.get("addr_text"):
             o.set_data("address", "text", v["addr_text"])
+        if v.get("adm_contact_text"):
+            o.set_data("contacts", "administrative", v["adm_contact_text"])
+        if v.get("tech_contact_text"):
+            o.set_data("contacts", "technical", v["tech_contact_text"])
+        if v.get("adm_contact_text"):
+            o.set_data("contacts", "administrative", v["adm_contact_text"])
+        if v.get("billing_contact_text"):
+            o.set_data("contacts", "billing", v["billing_contact_text"])
         o.save()
