@@ -82,6 +82,15 @@ class Script(BaseScript):
 
         # TODO: ipv6 interfaces
 
+        # Get portchannes
+        portchannel_members = {}  # member -> (portchannel, type)
+        with self.cached():
+            for pc in self.scripts.get_portchannel():
+                i = pc["interface"]
+                t = pc["type"] == "L"
+                for m in pc["members"]:
+                    portchannel_members[m] = (i, t)
+
         # Physical interfaces:
         phys_int = []
         show_int_status = self.cli("show interfaces status")
@@ -105,6 +114,14 @@ class Script(BaseScript):
                     "enabled_afi": ["BRIDGE"]
                 }]
             }
+            # Portchannel member
+            if iface in portchannel_members:
+                ai, is_lacp = portchannel_members[iface]
+                interface["aggregated_interface"] = ai
+                """
+                if is_lacp:
+                    iface["enabled_protocols"] += ["LACP"]
+                """
             phys_int.append(interface)
 
         # refine admin status:
