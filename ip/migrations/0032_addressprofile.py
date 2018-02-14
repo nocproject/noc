@@ -20,7 +20,7 @@ class Migration:
     ]
 
     def forwards(self):
-        coll = get_db()["addressprofile"]
+        coll = get_db()["addressprofiles"]
         default_id = bson.ObjectId()
         wf = bson.ObjectId("5a01d980b6f529000100d37a")
         profiles = [{

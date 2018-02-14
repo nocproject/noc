@@ -41,12 +41,16 @@ Ext.define("NOC.ip.addressprofile.Model", {
         },
         {
             name: "bi_id",
-            type: "int",
-            defaultValue: <function new_bi_id at 0x7fbbdc3f2848>
+            type: "int"
         },
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

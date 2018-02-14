@@ -14,6 +14,8 @@ Ext.define("NOC.ip.addressprofile.Application", {
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.ip.addressprofile.Model",
+    search: true,
+    rowClassField: "row_class",
 
     initComponent: function() {
         var me = this;
