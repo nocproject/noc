@@ -28,6 +28,10 @@
 <!-- custom styles -->
 <style>
     {{styles|safe}}
+
+    .striped TR:nth-child(odd) {
+        background: #edf3fe;
+    }
 </style>
 <!-- end custom styles -->
 {% endif %}
@@ -133,7 +137,7 @@ function on_mynetworks(n)
     }
     </script>
     <div class="module">
-        <table width="100%">
+        <table width="100%" class="striped">
             <caption>Allocated Prefixes <a style="float:right" onclick="toggle_free_prefixes()" href="#" id="toggle-free-prefixes-link">Show free prefixes<a/></caption>
             <thead>
                 <tr>
@@ -150,7 +154,7 @@ function on_mynetworks(n)
             <tr style="display:none" id="at-p-start"></tr>
             {% for f, pp, p  in l_prefixes %}
                 {% if f %}
-                    <tr class="{% if p.style %}{{p.style.css_class_name}}{% else %}{% cycle 'row1' 'row2' %}{% endif %}">
+                    <tr {% if p.style %}class="{{p.style.css_class_name}}"{% endif %}>
                         <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
                         <td>{{ p.state }}</td>
                         <td>{% if p.project %}{{ p.project.code }}{% endif %}</td>
@@ -330,7 +334,7 @@ function on_mynetworks(n)
         </script>
     {% endif %}
     <div class="module">
-        <table width="100%" id="addresses">
+        <table width="100%" id="addresses" class="striped">
             <caption>Assigned Addresses{% if spot %}<a style="float:right" onclick="toggle_free()" href="#" id="toggle-free-link">Show free addresses<a/>{% endif %}</caption>
             <thead>
                 <tr>
@@ -350,7 +354,7 @@ function on_mynetworks(n)
             </thead>
             <tr style="display:none" id="at-start"></tr>
             {% for a in addresses %}
-                <tr class="used-address {% if a.profile.style %}{{a.profile.style.css_class_name}}{% else %}{% cycle 'row1' 'row2' %}{% endif %}">
+                <tr class="used-address {% if a.profile.style %}{{a.profile.style.css_class_name}}{% endif %}">
                     {% if max_slots %}
                         {% for r in a.slots %}
                             <td class="noc-ri-{% if r %}{{r.id}}{% else %}none{% endif %}"></td>
@@ -381,7 +385,7 @@ function on_mynetworks(n)
     <!-- Ranges -->
     {% if  ranges %}
         <div class="module">
-            <table width="100%" id="ranges">
+            <table width="100%" id="ranges" class="striped">
                 <caption>Address Ranges</caption>
                 <thead>
                     <tr>
@@ -393,7 +397,7 @@ function on_mynetworks(n)
                     </tr>
                 </thead>
                 {% for r in ranges %}
-                    <tr class="{% cycle 'row1' 'row2' %}">
+                    <tr>
                         <td class="noc-r-{{r.id}}"></td>
                         <td>{{r.name}}</td>
                         <td>{{r.from_address}}</td>
@@ -410,7 +414,7 @@ function on_mynetworks(n)
 <!-- ip pools -->
 {% if ippools %}
     <div class="module">
-        <table width="100%" id="ippools">
+        <table width="100%" id="ippools" class="striped">
             <caption>IP Pools</caption>
             <thead>
                 <tr>
@@ -423,7 +427,7 @@ function on_mynetworks(n)
                 </tr>
             </thead>
             {% for p in ippools %}
-                <tr class="{% cycle 'row1' 'row2' %}">
+                <tr>
                     <td>{{ p.termination_group.name }}</td>
                     <td>{{ p.name }}</td>
                     <td>{% if p.type == 'D' %}Dynamic{% else %}Static{% endif %}</td>
@@ -438,57 +442,60 @@ function on_mynetworks(n)
 <!-- end ip pools -->
 <!-- block info -->
 <div class="module">
-    <table width="100%">
+    <table width="100%" class="striped">
         <caption>{{prefix.prefix}} Info</caption>
         <!-- State -->
-        <tr class="row1">
+        <tr>
             <td><b>Profile</b></td>
             <td>{{ prefix.profile.name }}</td>
         </tr>
         <!-- State -->
-        <tr class="row2">
+        <tr>
             <td><b>State</b></td>
             <td>{{ prefix.state }}</td>
         </tr>
         {%  if prefix.afi == "4" and prefix.ipv6_transition %}
-            <tr class="row1">
+            <tr>
                 <td><b>Dual-stack allocation</b></td>
                 <td><a href="#" onclick="app.showPrefix({{ prefix.vrf.id }}, '6', '{{ prefix.ipv6_transition.prefix }}')">{{ prefix.ipv6_transition.prefix }}</a></td>
             </tr>
         {%  endif %}
         {%  if prefix.afi == "6" and prefix.ipv4_transition %}
-            <tr class="row1">
+            <tr>
                 <td><b>Dual-stack allocation</b></td>
                 <td><a href="#" onclick="app.showPrefix(prefix.vrf.id, '4', '{{ prefix.ipv4_transition.prefix }}')">{{ prefix.ipv4_transition.prefix }}</a></td>
             </tr>
         {%  endif %}
         {% if prefix.tags %}
-            <tr class="row2"><td><b>Tags</b></td><td>{% tags prefix %}</td></tr>
+            <tr><td><b>Tags</b></td><td>{% tags prefix %}</td></tr>
         {% endif %}
         <!-- ASN -->
         {% if prefix.asn.asn %}
-            <tr class="row1"><td><b>AS</b></td><td>AS{{ prefix.asn.asn }} ({{ prefix.asn.as_name }})</td></tr>
+            <tr><td><b>AS</b></td><td>AS{{ prefix.asn.asn }} ({{ prefix.asn.as_name }})</td></tr>
         {% endif %}
         <!-- VC -->
         {% if prefix.vc %}
-            <tr class="row1">
+            <tr>
                 <td><b>VC</b></td><td>{{prefix.vc}}</td>
             </tr>
         {% endif %}
         <!-- End VC -->
         <! -- Project -->
         {% if prefix.project %}
-            <tr class="row2">
+            <tr>
                 <td><b>Project</b></td><td>{{prefix.project}}</td>
             </tr>
         {% endif %}
         <!-- End Project -->
-        <tr class="row2">
+        <tr>
             <td><b>Maintainers</b></td>
             <td>{{prefix.maintainers|join:", "}} {% comment %}{%if can_change_maintainers %}<a href="{% url ip:prefixaccess:add %}?vrf={{vrf.id}}&afi={{prefix.afi}}&prefix={{prefix.prefix}}" class="changelink">Change...</a>{%endif%}{% endcomment %}</td>
         </tr>
         {% for k,v in prefix_info %}
-            <tr class="{%cycle 'row1' 'row2'%}"><td style="width: 10pt"><b>{{k}}</b></td><td>{{v}}</td></tr>
+            <tr>
+                <td style="width: 10pt"><b>{{k}}</b></td>
+                <td>{{v}}</td>
+            </tr>
         {% endfor %}
     </table>
 </div>
