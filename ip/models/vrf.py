@@ -198,4 +198,4 @@ class VRF(models.Model):
 
 
 # Avoid circular references
-from prefix import Prefix
+from .prefix import Prefix
