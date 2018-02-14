@@ -137,8 +137,6 @@ class Script(BaseScript):
                     if pid in ("", "N/A"):
                         if self.rx_7100.search(descr):
                             pid = "CISCO7100"
-                    if (len(pid) - len(descr) == 2) and pid[len(descr)] == "-":
-                        pid = descr
                     platform = pid
                     serial = match.group("serial")
                     break
