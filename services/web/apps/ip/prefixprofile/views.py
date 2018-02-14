@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app import ExtDocApplication
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.core.translation import ugettext as _
 
