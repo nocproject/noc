@@ -305,9 +305,10 @@ class BaseLoader(object):
         :param v:
         :return:
         """
-        rs = v.get("remove_system")
+        rs = v.get("remote_system")
         rid = v.get("remote_id")
         if not rs or not rid:
+            print("RS or RID not found")
             return None
         try:
             return self.model.objects.get(remote_system=rs, remote_id=rid)
@@ -346,6 +347,7 @@ class BaseLoader(object):
         """
         Change object with attributes
         """
+        print("Changed object")
         # See: https://code.getnoc.com/noc/noc/merge_requests/49
         try:
             o = self.model.objects.get(pk=object_id)
@@ -380,15 +382,22 @@ class BaseLoader(object):
         # @todo: Check record is already exists
         if self.fields[0] in v:
             del v[self.fields[0]]
-        o = self.find_object(v)
+        if hasattr(self.model, "remote_system"):
+            o = self.find_object(v)
+        else:
+            o = None
         if o:
             self.c_change += 1
             # Lost&found object with same remote_id
+            print("Lost and Found object")
             vv = {
                 "remote_system": v["remote_system"],
                 "remote_id": v["remote_id"]
             }
-            for fn, nv in zip(self.fields[1:], row[1:]):
+            # for fn, nv in zip(self.fields[1:], row[1:]):
+            for fn, nv in v.iteritems():
+                if fn in vv:
+                    continue
                 if getattr(o, fn) != nv:
                     vv[fn] = nv
             self.change_object(o.id, vv)
