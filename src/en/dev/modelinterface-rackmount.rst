@@ -10,7 +10,9 @@ rackmount Model Interface
     :depth: 1
     :class: singlecol
 
-Rack mouted equipment
+Rack mounted equipment.
+Used to store position in rack.
+
 
 Variables
 ---------
