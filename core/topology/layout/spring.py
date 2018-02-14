@@ -19,8 +19,6 @@ class SpringLayout(LayoutBase):
     SCALE_FACTOR = 130
     # Average distance between nodes
     L = 150
-    #
-    DEFAULT_LEVEL = 10
 
     def get_layout(self):
         G = self.topology.non_isolated_graph()

@@ -9,7 +9,7 @@
 # Python modules
 from collections import defaultdict
 # NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.vlan import VLAN

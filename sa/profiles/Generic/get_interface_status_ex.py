@@ -56,7 +56,7 @@ class Script(BaseScript):
         # Apply ifOperStatus
         self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
         # Apply dot3StatsDuplexStatus
-        self.apply_table(r, "EtherLike-MIB::dot3StatsDuplexStatus", "full_duplex", lambda x: x == 3)
+        self.apply_table(r, "EtherLike-MIB::dot3StatsDuplexStatus", "full_duplex", lambda x: x != 2)
         # Apply ifSpeed
         highspeed = set()
         for ifindex, s in self.get_iftable("IF-MIB::ifSpeed"):

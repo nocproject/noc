@@ -9,7 +9,7 @@
 # Third-party modules
 from mongoengine.queryset import Q
 # NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.sa.models.service import Service
 from noc.core.translation import ugettext as _
 from noc.lib.validators import is_objectid
@@ -32,4 +32,3 @@ class ServiceApplication(ExtDocApplication):
         else:
             q = super(ServiceApplication, self).get_Q(request, query)
         return q
-

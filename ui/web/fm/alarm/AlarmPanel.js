@@ -552,9 +552,10 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
     onShowObject: function() {
         var me = this;
-        window.open(
-            "/api/card/view/managedobject/" + me.data.managed_object + "/"
-        );
+        NOC.launch("sa.managedobject", "history", {
+            args: [me.data.managed_object]
+        });
+
     },
     onEscalateObject: function() {
         var me = this;

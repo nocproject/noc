@@ -31,6 +31,11 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
+                    if (
+                        n.startswith("stack-port") or
+                        n.startswith("Logical-int")
+                    ):
+                        continue
                     # ifOperStatus up(1)
                     if self.rx_digit.match(n):
                         n = "Vlan" + n

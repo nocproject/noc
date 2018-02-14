@@ -2,17 +2,18 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import difflib
 # Third-party modules
 from core.model.fields import AutoCompleteTagsField
 from django.db import models
 # NOC modules
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.main.models.language import Language
 from noc.services.web.apps.kb.parsers import parser_registry
 
@@ -24,7 +25,7 @@ class KBEntry(models.Model):
     """
     KB Entry
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "KB Entry"
         verbose_name_plural = "KB Entries"
         app_label = "kb"
@@ -89,7 +90,7 @@ class KBEntry(models.Model):
         """
         Write article preview log
         """
-        from kbentrypreviewlog import KBEntryPreviewLog
+        from .kbentrypreviewlog import KBEntryPreviewLog
 
         KBEntryPreviewLog(kb_entry=self, user=user).save()
 
@@ -157,8 +158,8 @@ class KBEntry(models.Model):
         """
         Check has KBEntry any bookmarks
         """
-        from kbuserbookmark import KBUserBookmark
-        from kbglobalbookmark import KBGlobalBookmark
+        from .kbuserbookmark import KBUserBookmark
+        from .kbglobalbookmark import KBGlobalBookmark
         # Check Global bookmarks
         if KBGlobalBookmark.objects.filter(kb_entry=self).count() > 0:
             return True
@@ -170,7 +171,7 @@ class KBEntry(models.Model):
         """
         Set user bookmark
         """
-        from kbuserbookmark import KBUserBookmark
+        from .kbuserbookmark import KBUserBookmark
         if not KBUserBookmark.objects.filter(kb_entry=self,
                                              user=user).exists():
             KBUserBookmark(kb_entry=self, user=user).save()
@@ -179,10 +180,10 @@ class KBEntry(models.Model):
         """
         Uset user bookmark
         """
-        from kbuserbookmark import KBUserBookmark
+        from .kbuserbookmark import KBUserBookmark
         for b in KBUserBookmark.objects.filter(kb_entry=self, user=user):
             b.delete()
 
 
 # Avoid circular references
-from kbentryhistory import KBEntryHistory
+from .kbentryhistory import KBEntryHistory

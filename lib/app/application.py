@@ -19,7 +19,6 @@ from django.http import (HttpResponse, HttpResponseRedirect,
 from django.shortcuts import render_to_response
 from django.db import connection
 from django.shortcuts import get_object_or_404
-from django.contrib import messages
 from django.utils.html import escape
 from django.template import loader
 from django import forms
@@ -30,11 +29,12 @@ from django.http import Http404
 import ujson
 import six
 # NOC modules
-from .access import HasPerm, Permit, Deny
-from .site import site
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
+from noc.core.cache.base import cache
+from .access import HasPerm, Permit, Deny
+from .site import site
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -227,7 +227,15 @@ class Application(object):
         """
         Send a message to user
         """
-        messages.info(request, unicode(message))
+        if "noc_user" in request.COOKIES:
+            session_id = request.COOKIES["noc_user"].rsplit("|", 1)[-1]
+            key = "msg-%s" % session_id
+            cache.set(
+                key,
+                ujson.dumps([message]),
+                ttl=30,
+                version=1
+            )
 
     def get_template_path(self, template):
         """

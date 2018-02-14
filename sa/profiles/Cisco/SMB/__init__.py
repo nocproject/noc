@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_syntax_error = \
         r"% Invalid input detected at|% Ambiguous command:|" \
-        r"% Incomplete command.|% Unrecodnezed command"
+        r"% Incomplete command.|% Unrecognized command"
     pattern_operation_error = r"^%\s*bad"
     command_disable_pager = "terminal datadump"
     command_super = "enable"

@@ -253,7 +253,10 @@ class AlarmApplication(ExtApplication):
                 except Object.DoesNotExist:
                     break
             d["container_path"] = " | ".join(cp)
-            d["address_path"] = ", ".join(self.location(mo.container.id))
+            if not self.location(mo.container.id)[0]:
+                d["address_path"] = None
+            else:
+                d["address_path"] = ", ".join(self.location(mo.container.id))
         d["tags"] = mo.tags
         # Log
         if alarm.log:
