@@ -10,7 +10,7 @@ sector Model Interface
     :depth: 1
     :class: singlecol
 
-Antenna sector, it is usually used in a combination about a geopoint.
+Antenna sector, it is usually used in a combination about a :ref:`dev-modelinterface-geopoint`.
 
 Variables
 ---------
