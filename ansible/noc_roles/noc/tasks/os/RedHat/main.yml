@@ -11,9 +11,9 @@
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgresql_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgresql_version|replace(".","")}}-{{postgresql_version}}-2.noarch.rpm
+    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-2.noarch.rpm
     state: present
-  when: postgresql_version=='9.4'
+  when: postgres_version=='9.4'
   environment:
     http_proxy: "{{http_proxy}}"
   tags:
@@ -21,9 +21,9 @@
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgresql_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgresql_version|replace(".","")}}-{{postgresql_version}}-3.noarch.rpm
+    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-3.noarch.rpm
     state: present
-  when: postgresql_version=='9.6'
+  when: postgres_version=='9.6'
   environment:
     http_proxy: "{{http_proxy}}"
   tags:
@@ -38,8 +38,8 @@
    - git
    - python-virtualenv
    - gcc
-   - postgresql{{postgresql_version|replace(".","")}}
-   - postgresql{{postgresql_version|replace(".","")}}-devel
+   - postgresql{{postgres_version|replace(".","")}}
+   - postgresql{{postgres_version|replace(".","")}}-devel
    - patch
    - libffi
    - libffi-devel

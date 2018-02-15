@@ -4,7 +4,7 @@
     name: "{{item}}"
     state: present
   with_items:
-    - postgresql{{postgresql_version|replace(".","")}}-client
+    - postgresql{{postgres_version|replace(".","")}}-client
     - python2
     - py27-virtualenv
     - curl
