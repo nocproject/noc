@@ -4,13 +4,11 @@
 etc_prefix: /etc
 
 # packages
-postgresql_version: "{{ lookup('env','POSTGRES_VERSION') | default(9.4, True)}}"
-mongo_version: "{{ lookup('env','MONGO_VERSION') | default(3.2, True)}}"
-grafana_version: "4.6.2"
+grafana_version: "4.6.3"
 nsq_version: "0.3.8"
 
 consul_version: "0.9.3"
-consul_template_version: "0.19.3"
+consul_template_version: "0.19.4"
 
 
 tower_ip: 127.0.0.1

@@ -1,11 +1,11 @@
 ---
 - name: Add PostgreSQL repository RHEL
   yum_repository:
-    name: pgdg-{{ postgresql_version|replace(".","") }}-centos
-    description: PostgreSQL {{ postgresql_version }}
-    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
+    name: pgdg-{{ postgres_version|replace(".","") }}-centos
+    description: PostgreSQL {{ postgres_version }}
+    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
     gpgcheck: yes
-    gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgresql_version|replace(".","") }}
+    gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
     enabled: yes
   environment:
     http_proxy: "{{http_proxy}}"
@@ -19,18 +19,18 @@
     state: present
     update_cache: yes
   with_items:
-    - postgresql{{postgresql_version|replace(".","")}}-server
-    - postgresql{{postgresql_version|replace(".","")}}-contrib
-    - postgresql{{postgresql_version|replace(".","")}}-plpython
+    - postgresql{{postgres_version|replace(".","")}}-server
+    - postgresql{{postgres_version|replace(".","")}}-contrib
+    - postgresql{{postgres_version|replace(".","")}}-plpython
     - python-psycopg2
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
 
 - name: PostgreSQL init db
-  command: '{{postgres_bin_dir}}/postgresql{{postgresql_version|replace(".","")}}-setup initdb'
+  command: '{{postgres_bin_dir}}/postgresql{{postgres_version|replace(".","")}}-setup initdb'
   args:
-    creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
+    creates: /var/lib/pgsql/{{ postgres_version }}/initdb.log
 
 - name: Install postgres limits file
   template:

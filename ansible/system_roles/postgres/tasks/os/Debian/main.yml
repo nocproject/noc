@@ -27,8 +27,8 @@
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
     state: present
   with_items:
-    - postgresql-{{ postgresql_version }}
-    - postgresql-contrib-{{ postgresql_version }}
+    - postgresql-{{ postgres_version }}
+    - postgresql-contrib-{{ postgres_version }}
     - python-psycopg2
   environment:
     https_proxy: "{{http_proxy}}"
@@ -39,15 +39,6 @@
   template:
     src: "etc/security/limits.d/postgres_limits.conf.j2"
     dest: "/etc/security/limits.d/postgres_limits.conf"
-  tags:
-    - config
-
-- name: Exclude postgres.conf
-  lineinfile:
-    dest: "{{postgresql_conf_path}}"
-    line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
-    state: absent
-  notify: restart postgres # have to restart postgres because of default listen on 0.0.0.0
   tags:
     - config
 

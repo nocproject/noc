@@ -12,9 +12,9 @@
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgresql_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgresql_version|replace(".","")}}-{{postgresql_version}}-2.noarch.rpm
+    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-2.noarch.rpm
     state: present
-  when: postgresql_version=='9.4'
+  when: postgres_version=='9.4'
   environment:
     http_proxy: "{{http_proxy}}"
   tags:
@@ -22,9 +22,9 @@
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgresql_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgresql_version|replace(".","")}}-{{postgresql_version}}-3.noarch.rpm
+    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-3.noarch.rpm
     state: present
-  when: postgresql_version=='9.6'
+  when: postgres_version=='9.6'
   environment:
     http_proxy: "{{http_proxy}}"
   tags:
@@ -36,18 +36,18 @@
     state: present
     update_cache: yes
   with_items:
-    - postgresql{{postgresql_version|replace(".","")}}-server
-    - postgresql{{postgresql_version|replace(".","")}}-contrib
-    - postgresql{{postgresql_version|replace(".","")}}-plpython
+    - postgresql{{postgres_version|replace(".","")}}-server
+    - postgresql{{postgres_version|replace(".","")}}-contrib
+    - postgresql{{postgres_version|replace(".","")}}-plpython
     - python-psycopg2
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
 
 - name: PostgreSQL init db
-  command: '{{postgres_bin_dir}}/postgresql{{postgresql_version|replace(".","")}}-setup initdb'
+  command: '{{postgres_bin_dir}}/postgresql{{postgres_version|replace(".","")}}-setup initdb'
   args:
-    creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
+    creates: /var/lib/pgsql/{{ postgres_version }}/initdb.log
 
 
 - name: Install postgres limits file

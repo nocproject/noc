@@ -27,8 +27,8 @@
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
     state: present
   with_items:
-    - postgresql-{{ postgresql_version }}
-    - postgresql-contrib-{{ postgresql_version }}
+    - postgresql-{{ postgres_version }}
+    - postgresql-contrib-{{ postgres_version }}
     - python-psycopg2
   environment:
     https_proxy: "{{http_proxy}}"
