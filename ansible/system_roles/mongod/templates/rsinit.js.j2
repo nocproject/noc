@@ -12,24 +12,26 @@
     members = [];
 {% for n in groups["svc-mongod-exec"] %}
     members.push({
+        {% if hostvars[n]["mongod_power"] == 'bootstrap' %}
         _id: {{ hostvars[n]["node_id"] }},
         host: "{{ n }}:27017",
-        {% if n in groups["svc-mongod-master"] %}
         priority: 2
-        {% else %}
+        {% elif hostvars[n]["mongod_power"] == 'server' %}
+        _id: {{ hostvars[n]["node_id"] }},
+        host: "{{ n }}:27017",
         priority: 1
-        {% endif %}
-    });
-{% endfor %}
-{% if "svc-mongod-arbiter" in groups %}
-{% for n in groups["svc-mongod-arbiter"] %}
-    members.push({
+        {% elif hostvars[n]["mongod_power"] == 'arbiter' %}
         _id: 99,
         host: "{{ n }}:27018",
         arbiterOnly: true
+        {% elif hostvars[n]["mongod_power"] == 'hidden' %}
+        _id: {{ hostvars[n]["node_id"] }},
+        host: "{{ n }}:27017",
+        priority: 0,
+        hidden: true
+        {% endif %}
     });
 {% endfor %}
-{% endif %}
 
     status = rs.status();
     if(status.ok) {

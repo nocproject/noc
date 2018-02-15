@@ -4,9 +4,9 @@
   yum_repository:
     name: mongodb
     description: MongoDB Repository
-    baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongo_version }}/x86_64/
+    baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongod_version }}/x86_64/
     gpgcheck: yes
-    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongo_version }}.asc
+    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc
     enabled: yes
   register: mongo_repo_stat
   environment:
@@ -71,7 +71,7 @@
     src: "os/RedHat/etc/sysconfig/mongod.j2"
     dest: "/etc/sysconfig/mongod"
   notify: restart mongod
-  when: mongo_version == 3.2
+  when: mongod_version == 3.2
   tags:
     - config
 

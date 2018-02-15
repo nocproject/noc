@@ -1,0 +1,4 @@
+#- name: No mongodb server set
+#  fail:
+#    msg: "No mongodb server set. Please setup at least one. "
+#  when: "'svc-mongod-exec' not in groups"

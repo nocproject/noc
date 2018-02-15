@@ -1,6 +1,6 @@
 mongo_logging_driver: "syslog"
 mongo_path: /usr/bin/mongo
-mongo_version: "3.4"
+mongod_version: "3.4"
 noc_mongo_admin_password: "noc"
 noc_mongo_admin_user: "root"
 noc_mongo_db: "noc"
