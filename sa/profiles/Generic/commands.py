@@ -9,6 +9,8 @@
 # Python modules
 import re
 from threading import Lock
+# Third-party modules
+import six
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.icommands import ICommands
@@ -58,7 +60,10 @@ class Script(BaseScript):
         with rx_lock:
             patterns = getattr(self.profile, "_pattern_multiline_commands", None)
             if not patterns:
-                patterns = [re.compile(p) for p in self.profile.pattern_multiline_commands]
+                if isinstance(self.profile.pattern_multiline_commands, six.string_types):
+                    patterns = [re.compile(self.profile.pattern_multiline_commands)]
+                else:
+                    patterns = [re.compile(p) for p in self.profile.pattern_multiline_commands]
                 self.profile._pattern_multiline_commands = patterns
         # Reformat text
         r = []
