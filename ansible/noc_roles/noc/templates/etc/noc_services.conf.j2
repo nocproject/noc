@@ -2,9 +2,13 @@
 [program:{{service.name}}]
 command = {{ service.environment.supervisord.command  | mandatory }}
 process_name = {{ service.environment.supervisord.process_name | default("%(program_name)s-%(process_num)02d", True) }}
-numprocs = {{service.n_instances + service.n_backup_instances | default(0, True)}}
+{% if 'backup_power' in service.config %}
+numprocs = {{ service.config.power + service.config.backup_power | default(0, True)}}
+{% else %}
+numprocs = {{ service.config.power | default(0, True)}}
+{% endif %}
 umask = 022
-priority = {{ service.environment.supervisord.priority | default(50, True) }}
+priority = {{ service.environment.supervisord.priority | default(999, True) }}
 autostart = true
 autorestart = unexpected
 startsecs = {{ service.environment.supervisord.startsecs  | default(2, True)}}
@@ -31,7 +35,7 @@ stderr_logfile = {{noc_logs}}/{{ service.environment.supervisord.process_name | 
 stderr_logfile_maxbytes = {{ service.environment.supervisord.stderr_logfile_maxbytes  | default('10MB', True)}}
 stderr_logfile_backups = {{ service.environment.supervisord.stderr_logfile_backups  | default(3, True)}}
 stderr_events_enabled = false
-environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodename }}",NOC_DC="{{ noc_dc }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{service.loglevel }}"
+environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodename }}",NOC_DC="{{ noc_dc }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{service.loglevel | default("info")}}"
 
 {%- if not 'FreeBSD' in ansible_system and jemalloc_path -%}
     ,LD_PRELOAD="{{ jemalloc_path }}"
