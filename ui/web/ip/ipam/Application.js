@@ -24,6 +24,10 @@ Ext.define("NOC.ip.ipam.Application", {
             Ext.create("NOC.ip.ipam.PrefixPanel", {app: me})
         );
 
+        me.ITEM_ADDRESS_FORM = me.registerItem(
+            Ext.create("NOC.ip.ipam.AddressPanel", {app: me})
+        );
+
         Ext.apply(me, {
             items: me.getRegisteredItems(),
             activeItem: me.ITEM_LEGACY
@@ -65,5 +69,47 @@ Ext.define("NOC.ip.ipam.Application", {
                 id: prefixId
             }
         )
+    },
+    //
+    onAddAddress: function(prefixId, addressHint) {
+        var me = this;
+        me.previewItem(
+            me.ITEM_ADDRESS_FORM,
+            {
+                prefixId: prefixId,
+                address: addressHint
+            }
+        )
+    },
+    //
+    onChangeAddress: function(addressId) {
+        var me = this;
+        me.previewItem(
+            me.ITEM_ADDRESS_FORM,
+            {
+                id: addressId
+            }
+        )
+    },
+    getCommonPrefixPart: function(afi, prefix) {
+        var parts = prefix.split("/"),
+            net = parts[0],
+            mask = parseInt(parts[1]);
+
+        if(afi === "4") {
+            // IPv4
+            // Align to 8-bit border
+            var v = net.split(".").slice(0, Math.floor(mask / 8)).join(".");
+            if(v !== "") {
+                v = v + "."
+            }
+            return v
+        } else {
+            // if p.mask < 16:
+            //     return ""
+            // # Align to 16-bit border
+            // p.mask = (p.mask // 16) * 16
+            // p = self.rx_ipv6_prefix_rest.sub("", p.normalized.prefix)
+        }
     }
 });

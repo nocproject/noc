@@ -31,7 +31,8 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     name: "vrf",
                     xtype: "ip.vrf.LookupField",
                     fieldLabel: __("VRF"),
-                    allowBlank: false
+                    allowBlank: true,
+                    disabled: true
                 },
                 {
                     name: "prefix",
@@ -114,7 +115,6 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
 
     preview: function (record, backItem) {
         var me = this;
-        console.log("preview", record);
         if(record.id) {
             me.loadPrefix(record.id)
         } else {
@@ -191,7 +191,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     "vrf": data.vrf,
                     "vrf__label": data.vrf__label,
                     "afi": data.afi,
-                    "prefix": me.getCommonPrefixPart(data.afi, data.prefix)
+                    "prefix": me.app.getCommonPrefixPart(data.afi, data.prefix)
                 })
             },
             failure: function() {
@@ -204,30 +204,6 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
         var me = this;
         me.callParent([data]);
         me.setAFI(data.afi)
-    },
-    //
-    //
-    //
-    getCommonPrefixPart: function(afi, prefix) {
-        var parts = prefix.split("/"),
-            net = parts[0],
-            mask = parseInt(parts[1]);
-
-        if(afi === "4") {
-            // IPv4
-            // Align to 8-bit border
-            var v = net.split(".").slice(0, Math.floor(mask / 8)).join(".");
-            if(v !== "") {
-                v = v + "."
-            }
-            return v
-        } else {
-            // if p.mask < 16:
-            //     return ""
-            // # Align to 16-bit border
-            // p.mask = (p.mask // 16) * 16
-            // p = self.rx_ipv6_prefix_rest.sub("", p.normalized.prefix)
-        }
     },
     //
     setAFI: function(afi) {

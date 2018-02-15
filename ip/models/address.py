@@ -141,15 +141,7 @@ class Address(models.Model):
         :param kwargs:
         :return:
         """
-        # Check VRF group restrictions
-        cv = self.get_collision(self.vrf, self.address)
-        if cv:
-            # Collision detected
-            raise ValidationError("Address already exists in VRF %s" % cv)
-        # Detect AFI
-        self.afi = self.get_afi(self.address)
-        # Set proper prefix
-        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
+        self.clean()
         super(Address, self).save(**kwargs)
 
     def clean(self):
@@ -164,6 +156,11 @@ class Address(models.Model):
             check_ipv4(self.address)
         elif self.afi == "6":
             check_ipv6(self.address)
+        # Check VRF group restrictions
+        cv = self.get_collision(self.vrf, self.address)
+        if cv:
+            # Collision detected
+            raise ValidationError("Address already exists in VRF %s" % cv)
 
     @property
     def short_description(self):

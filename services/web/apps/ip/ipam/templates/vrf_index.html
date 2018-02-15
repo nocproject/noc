@@ -18,7 +18,7 @@
             <li><a href="#" onclick="app.onAddPrefix({{ prefix.id }})" class="addlink">Add Prefix</a></li>
         {% endif %}
         {% if can_add_address %}
-            <li><a href="{% url ip:ipam:add_address prefix.vrf.id prefix.afi prefix.prefix %}" class="addlink">Add Address</a></li>
+            <li><a href="#" onclick="app.onAddAddress({{ prefix.id }})" class="addlink">Add Address</a></li>
         {% endif %}
     </ul>
 {% endif %}
@@ -253,10 +253,23 @@ function on_mynetworks(n)
                         }
                         /* Insert row */
                         var $v;
-                        if(value)
-                            $v=$("<tr class='free-address' style='display:none'>"+s+"<td><img id='s_"+value+"'  class='s_img' src='/static/img/blank_1x1.png'/></td><td><a href='{% url ip:ipam:add_address vrf.id afi prefix.prefix %}?address="+value+"' title='click to add new address'>"+value+"</a></td><td colspan='7'>Free...</td></tr>");
-                        else
-                            $v=$("<tr class='free-address-sep' style='display:none'>"+s+"<td></td><td colspan='8'>...</td></tr>");
+                        if(value) {
+                            $v = $(
+                                "<tr class='free-address' style='display:none'>" +
+                                s +
+                                "<td><img id='s_" + value +
+                                "' class='s_img' src='/static/img/blank_1x1.png'/></td><td><a href='#' onclick='me.addAddress({{ prefix.id }}, \"" +
+                                +value + "\")' title='Click to add new address'>" +
+                                value + "</a>" +
+                                "</td><td colspan='7'>Free...</td></tr>"
+                            )
+                        } else {
+                            $v = $(
+                                "<tr class='free-address-sep' style='display:none'>" +
+                                s +
+                                "<td></td><td colspan='8'>...</td></tr>"
+                            )
+                        }
                         $v.insertAfter($cp);
                         $cp=$v;
                     }
@@ -363,7 +376,7 @@ function on_mynetworks(n)
                     <td><img id="s_{{a.address}}" class="s_img" src="/static/img/blank_1x1.png"/></td>
                     <td class="address">
                         {% if can_change %}
-                            <a href="{% url ip:ipam:change_address vrf.id afi a.address %}">{{a.address}}</a>
+                            <a href="#" onclick="app.onChangeAddress({{ a.id }})">{{a.address}}</a>
                         {%else%}
                             {{a.address}}
                         {%endif%}

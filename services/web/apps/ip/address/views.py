@@ -17,3 +17,4 @@ class AddressApplication(ExtModelApplication):
     """
     title = "Address"
     model = Address
+    ignored_fields = ExtModelApplication.ignored_fields | {"prefix"}
