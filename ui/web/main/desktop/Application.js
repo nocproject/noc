@@ -311,6 +311,25 @@ Ext.define("NOC.main.desktop.Application", {
                 me.setIdleTimeout(settings.idle_timeout);
             }
         });
+        //
+        Ext.Ajax.request({
+            url: "/main/userprofile/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                NOC.email = data.email;
+                //     data.username;
+                //     data.name;
+                //     data.email;
+                //     data.preferred_language;
+                //     data.groups;
+                //     data.contacts;
+            },
+            failure: function() {
+                NOC.msg.failed(__("Failed to load data"))
+            }
+        });
         // Launch welcome application
         if(!Ext.History.getHash()) {
             me.launchTab("NOC.main.welcome.Application", "Welcome", {});
