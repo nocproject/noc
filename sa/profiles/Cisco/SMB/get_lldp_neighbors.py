@@ -65,7 +65,7 @@ class Script(BaseScript):
             # Get capability
             cap = 0
             s = match.group("caps")
-            for c in s.strip().split(" "):
+            for c in s.strip().split(", "):
                 cap |= {
                     "Other": 1, "Repeater": 2, "Bridge": 4,
                     "WLAN": 8, "Router": 16, "Telephone": 32,
