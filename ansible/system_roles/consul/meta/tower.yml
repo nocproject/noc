@@ -16,10 +16,10 @@ forms:
         - agent
         - server
         - bootstrap
-    consul_replication_token:
+    replication_token:
       label: "consul replication token"
       type: str
-    consul_token:
+    master_token:
       description: "<strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>"
       label: "consul token"
       type: str

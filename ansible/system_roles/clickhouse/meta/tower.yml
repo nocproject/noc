@@ -8,26 +8,26 @@ forms:
       <strong>Scale Recommendations</strong>: See docs<br/>
       <strong>docs</strong>: "https://clickhouse.yandex/docs/en/"<br/>
       <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
-    clickhouse_user:
+    user:
       default: noc
       label: "RW user"
       type: str
       description: "RW user"
-    clickhouse_password:
+    password:
       default: noc
       label: "Password for user default"
       type: str
       description: "RW user password"
-    clickhouse_ro_password:
+    ro_password:
       label: "Password for user readonly"
       description: "RO user password"
       default: noc
       type: str
-    clickhouse_db:
+    db:
       default: noc
       label: "db name"
       type: str
-    clickhouse_query_size:
+    query_size:
       default: 262144
       label: "Max query size"
       type: int

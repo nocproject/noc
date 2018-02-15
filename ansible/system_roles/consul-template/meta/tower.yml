@@ -8,7 +8,7 @@ forms:
       <strong>Scale Recommendations</strong>: Will be placed on each node.<br/>
       <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
       <strong>Placement constraint</strong>: Just tick it on any node to configure dedup feature. <br/>
-    consultemplate_use_dedup:
+    use_dedup:
       label: "Use dedup"
       type: bool
       default: false

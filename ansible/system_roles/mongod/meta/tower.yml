@@ -8,7 +8,17 @@ forms:
       <strong>Scale Recommendations</strong>: At least one. Have to be run in replicated mode with 3 or even 5 nodes. <br/>
       <strong>docs</strong>: https://docs.mongodb.com/manual/ <br/>
       <strong>Placement constraint</strong>: Long living nodes. Medium cpu usage. Consumes at least 50%+1Gb of memery on node. Better use separate one.<br/>
-    mongod_logging_destination:
+    power:
+      default: server
+      label: "Mongo server role"
+      description: "Select server role. Use server if you do not aunderstand what it is."
+      type: list
+      options:
+        - bootstrap
+        - server
+        - arbiter
+        - hidden
+    logging_destination:
       default: "file"
       label: "Mongo logging driver"
       description: "<strong>Use syslog if you can</strong>. File option is for backward compatibility only."
@@ -16,23 +26,23 @@ forms:
       options:
         - file
         - syslog
-    mongod_db:
+    db:
       default: noc
       type: str
       label: Db name
-    mongod_user:
+    user:
       default: noc
       type: str
       label: Username
-    mongod_password:
+    password:
       default: noc
       type: str
       label: Password
-    mongod_rs:
+    rs:
       default: noc
       type: str
       label: Replicaset name
-    mongod_engine:
+    engine:
       default: wiredTiger
       type: str
       label: MongoDB engine
@@ -41,8 +51,7 @@ forms:
       options:
         - wiredTiger
         - mmapv1
-
-    mongod_version:
+    version:
       default: 3.4
       type: str
       label: Mongo version

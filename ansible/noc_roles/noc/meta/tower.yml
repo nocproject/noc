@@ -16,27 +16,27 @@ forms:
       options:
         - python
         - pypy
-    noc_repo:
+    repo:
       default: https://github.com/nocproject/noc.git
       label: Repo
       description: Perhaps you do not want to change it
       type: str
-    noc_version:
+    version:
       default: microservices
       label: Noc version
       description: What version of the repository to check out.
       type: str
-    noc_root:
+    root:
       default: /opt/noc
       label: Prefix
       description: Put noc source to
       type: str
-    noc_user:
+    user:
       default: noc
       label: Noc user
       description: System user
       type: str
-    noc_group:
+    group:
       default: noc
       label: Noc group
       description: System group

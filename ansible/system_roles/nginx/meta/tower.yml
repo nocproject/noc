@@ -8,24 +8,28 @@ forms:
       <strong>Scale Recommendations</strong>: At least one per installation. <br/>
       <strong>docs</strong>: http://nginx.org/en/docs/http/ngx_http_upstream_module.html <br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
-    nginx_cert:
+    cert:
       label: Certificates
-      description: Paste you cert+key here
+      description: Paste you cert
       type: text
-    nginx_http_redirect:
+    cert_key:
+      label: Cerificate key
+      description: Paste your certificate key here
+      type: text
+    http_redirect:
       default: true
       label: "Redirect http to https"
       type: bool
-    nginx_json_logging:
+    json_logging:
       default: false
       label: "Use JSON logging"
       type: bool
-    nginx_self_signed_cerificate:
+    self_signed_cerificate:
       default: true
       label: "Self-signed certificate"
       description: "Is provided certificate is trusted by nodes?"
       type: bool
-    nginx_external_cert_management:
+    external_cert_management:
       default: False
       label: "Use external certificate management"
       description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
