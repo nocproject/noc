@@ -8,7 +8,7 @@
 
 - name: Set up SSL key
   copy:
-    content: "{{ noc_ssl_key }}"
+    content: "{{ nginx_cert }}"
     dest: "{{ nginx_ssl_key_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
@@ -18,7 +18,7 @@
 
 - name: Set up SSL certificate
   copy:
-    content: "{{ noc_ssl_cert }}"
+    content: "{{ nginx_cert_key }}"
     dest: "{{ nginx_ssl_cert_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
