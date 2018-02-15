@@ -1,0 +1,34 @@
+- name: Set tower_ip
+  set_fact:
+    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0] | default('127.0.0.1')}}"
+  when:
+    - "'SSH_CLIENT' in hostvars[inventory_hostname]['ansible_env']"
+    - "'smart' in ansible_connection or 'ssh' in ansible_connection"
+  tags:
+    - always
+
+- name: Set tower_ip on local connection
+  set_fact:
+    tower_ip: "{{ansible_default_ipv4.address}}"
+  when: "'smart' not in ansible_connection and 'ssh' not in ansible_connection"
+  tags:
+    - always
+
+- name: set ch_host to clickhouse when we have only one clickhouse
+  set_fact:
+    ch_host: "{{ hostvars[groups['svc-clickhouse-exec'][0]].ansible_host}}"
+    ch_port: 8123
+  when: "'svc-clickhouse-exec' in groups and groups['svc-clickhouse-exec'] | length == 1"
+
+- name: set ch_host to virtual_ip when we have complex clickhouse setup
+  set_fact:
+    ch_host: "{{keepalived_clickhouse_virtual_ip}}"
+    ch_port: "{{haproxy_clickhouse_listen}}"
+  when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1 and keepalived_clickhouse_virtual_ip"
+
+- name: set ch_host to virtual_ip when we have complex clickhouse setup
+  set_fact:
+    ch_host: "{{hostvars[groups['svc-haproxy'][0]].ansible_host}}"
+    ch_port: "{{haproxy_clickhouse_listen}}"
+  when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1 and not keepalived_clickhouse_virtual_ip"
+

@@ -7,39 +7,12 @@
   tags:
     - always
 
-- name: Set tower_ip
-  set_fact:
-    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0] | default('127.0.0.1')}}"
-  when:
-    - "'SSH_CLIENT' in hostvars[inventory_hostname]['ansible_env']"
-    - "'smart' in ansible_connection or 'ssh' in ansible_connection"
+- name: import additional facts
+  import_tasks: "facts.yml"
   tags:
     - always
+    - env_checks
 
-- name: set ch_host to clickhouse when we have only one clickhouse
-  set_fact:
-    ch_host: "{{ hostvars[groups['svc-clickhouse'][0]].ansible_host}}"
-    ch_port: 8123
-  when: "'svc-clickhouse' in groups and groups['svc-clickhouse'] | length == 1"
-
-- name: set ch_host to virtual_ip when we have complex clickhouse setup
-  set_fact:
-    ch_host: "{{keepalived_clickhouse_virtual_ip}}"
-    ch_port: "{{haproxy_clickhouse_listen}}"
-  when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1 and keepalived_clickhouse_virtual_ip"
-
-- name: set ch_host to virtual_ip when we have complex clickhouse setup
-  set_fact:
-    ch_host: "{{hostvars[groups['svc-haproxy'][0]].ansible_host}}"
-    ch_port: "{{haproxy_clickhouse_listen}}"
-  when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1 and not keepalived_clickhouse_virtual_ip"
-
-- name: Set tower_ip on local connection
-  set_fact:
-    tower_ip: "{{ansible_default_ipv4.address}}"
-  when: "'smart' not in ansible_connection and 'ssh' not in ansible_connection"
-  tags:
-    - always
 
 - name: Display all variables/facts known for a host
   debug:
@@ -48,11 +21,11 @@
   tags:
     - always
 
-#- name: Various env checks
-#  import_tasks: "checks.yml"
-#  tags:
-#    - always
-#    - env_checks
+- name: Various env checks
+  import_tasks: "checks.yml"
+  tags:
+    - always
+    - env_checks
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
@@ -79,58 +52,11 @@
   tags:
     - config
 
-- name: mention hosts file location
-  debug:
-    msg: "Please setup cluster wide /etc/hosts via {{tower_path}}/var/tower/data/{{noc_env}}/hosts on Tower server"
-  run_once: true
-
-
-- name: Setup default /etc/hosts
-  local_action:
-    module: template
-    src: "hosts.j2"
-    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
-    force: no
-  become: false
-  run_once: true
-  tags:
-    - config
-    - fill_hosts
-
-- name: Setup /etc/hosts
-  lineinfile:
-    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
-    line: "{{ hostvars[item].ansible_host }} {{ item }}"
-    regexp: ".*{{ item }}$"
-    create: no
-  become: false
-  with_items: "{{groups['all']}}"
-  delegate_to: 127.0.0.1
-  register: hostsc
-  run_once: true
-  tags:
-    - config
-    - fill_hosts
-
-- name: ensure consul ip is in hosts file
-  lineinfile:
-    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
-    line: "127.0.0.1 consul"
-    regexp: "127.0.0.1 consul"
-    create: no
-  become: false
-  delegate_to: 127.0.0.1
-  register: hostsc
-  run_once: true
-  tags:
-    - config
-    - fill_hosts
-
-- name: copy hosts file to nodes
-  copy:
-    src: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
-    dest: /etc/hosts
-  when: "'nodes' in groups"
+- name: update hosts file
+  blockinfile:
+    path: "/etc/hosts"
+    block: "{{ lookup('template', './hosts.j2') }}"
+    marker: "# {mark} NOC Ansible Managed block"
   become: true
   tags:
     - config

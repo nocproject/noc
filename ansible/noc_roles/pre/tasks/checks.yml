@@ -50,123 +50,24 @@
     when: "tower_version|version_compare(tower_minimum_version, '<')"
   when: tower_version != ''
 
-- name: No mongodb server set
+- name: No postgres server set
   fail:
-    msg: "No mongodb server set. Please setup at least one. "
-  when: "'svc-mongod' not in groups"
+    msg: "No postgres server set. Please setup one."
+  when: "'svc-postgres-exec' not in groups and 'svc-patroni-exec' in groups"
 
-- name: Mongo version is too old
-  fail:
-    msg: |
-      To use bi you have to setup at least 3.4 mongo.
-      Check https://kb.nocproject.org/x/TIHJAQ for more details.
-      Current version selected:  {{mongo_version}}
-      Otherwise you can disable bi service on services tab
-  when: "has_svc_bi is defined and mongo_version | version_compare('3.4', operator='lt', strict=True)"
+#- block:
+#  - name: Ensure consul setup
+#    fail:
+#      msg: "No consul bootstrap was set up. Please set on one node two consuls."
+#    when: "'svc-consul-exec' not in groups"
+#
+#  - name: Ensure consul setup
+#    fail:
+#      msg: "consul servers have to be set up on 1,3 or 5 nodes. less is better. current count is {{groups['svc-consul'] | length}}"
+#    when: groups["svc-consul-exec"] | length not in [1,3,5]
+#  when: "'svc-consul-exec' in groups"
 
-- block:
-  - name: No postgres server set
-    fail:
-      msg: "No postgres server set. Please setup one."
-    when: "'svc-postgres' not in groups and 'svc-patroni' in groups"
-
-- name: prepare pgbouncer facts
-  set_fact:
-    host_count: "{{hostvars | count}}"
-    pgbouncer_exists: "{{groups['svc-pgbouncer'] | count >1}}"
-    pgbouncer_count: "{{groups['svc-pgbouncer'] | count}}"
-
-- name: Check pgbouncer
-  fail:
-    msg: "Pgbounser must be either one or one per node."
-  when: "pgbouncer_exists and (pgbouncer_count==1 or pgbouncer_count !=host_count)"
-
-- name: Monitoring output is not choosen
-  fail:
-    msg: "Either PROMETHEUS_ENABLED or INFLUXDB_ENABLED have to be True. otherwise telegraf will not startup"
-  when: not telegraf_influxdb_enabled and not telegraf_prometheus_enabled
-
-- name: Ensure tower url
-  fail:
-    msg: "Please ensure that correct settings has been provided on tower settings page and they was saved."
-  when: noc_repo=="http://example.com/hg/VQ3W6R" or noc_repo=="http://example.com/hg/MHBNEJ"
-
-- block:
-  - name: Ensure consul setup
-    fail:
-      msg: "No consul bootstrap was set up. Please set on one node two consuls."
-    when: "'svc-consul-server' not in groups"
-
-  - name: Ensure consul setup
-    fail:
-      msg: "consul servers have to be set up on 1,3 or 5 nodes. less is better. current count is {{groups['svc-consul'] | length}}"
-    when: groups["svc-consul"] | length not in [1,3,5]
-  when: "'svc-consul' in groups"
-
-- block:
-  - name: prepare nsqd facts
-    set_fact:
-      nsqd_count: "{{groups['svc-nsqd'] | count}}"
-      nsqlookupd_count: "{{groups['svc-nsqlookupd'] | count}}"
-
-  - name: Check nsqd
-    fail:
-      msg: "nsqd must be one per node."
-    when: nsqd_count != host_count
-
-  - name: check if nsqlookupd is set
-    fail:
-      msg: "you have to add at least one nsqlookupd. two recommended"
-    when: nsqlookupd_count  == "0"
-
-- name: fail if patroni not for debian/rhel
-  fail:
-    msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
-  when: has_svc_patroni and ansible_distribution not in ['RedHat', 'Debian']
-
-- name: fail if patroni enabled and postgres not 9.6
-  fail:
-    msg: "Patroni can be installed only with postgres 9.6"
-  when: has_svc_patroni and postgresql_version|version_compare("9.6", '<')
-
-- name: fail if patroni set for one node
-  fail:
-    msg: "Patroni can be installed when node count is more than one."
-  when: groups['all'] | length == 1 and groups['svc-patroni'] | length > 0
-
-- name: fail if haproxy not for debian/rhel
-  fail:
-    msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
-  when: groups['svc-patroni'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
-
-
-- name: fail if keepalived set for one node
-  fail:
-    msg: "keepalived can be installed when node count is more than one."
-  when: groups['all'] | length == 1 and groups['svc-keepalived'] | length > 0
-
-- name: fail if patroni set only for one node
-  fail:
-    msg: "patroni have to be installed on atleast two nodes"
-  when: groups['svc-patroni'] | length == 1
-
-
-- name: fail if keepalived set only for one node
-  fail:
-    msg: "keepalived have to be installed on atleast two nodes"
-  when: groups['svc-keepalived'] | length == 1
-
-- name: Proxy url set correctly
-  fail:
-    msg: "Proxy server have to be in defined with scheme for example http://admin:password@192.168.1.1:3128. currently it is: '{{http_proxy}}'"
-  when: "'http://' not in http_proxy and 'https://' not in http_proxy and proxy is defined"
-
-- name: Pgbouncer connections overprovisioned
-  fail:
-    msg: "Pgbouncer has more connections to postgres that postgres can handle postgres_max_connections={{postgres_max_connections}} is more than pgbouncer_max_cons={{groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int}}"
-  when: groups['svc-pgbouncer'] | length > 1 and groups['svc-pgbouncer'] | length | int * pgbouncer_max_db_connection | int > postgres_max_connections
-
-- name: to many influxdb servers
-  fail:
-    msg: Too many influxdb servers and no collector set
-  when: groups['svc-influxdb'] | length > 1 and not noc_metrics_collector
+#- name: Proxy url set correctly
+#  fail:
+#    msg: "Proxy server have to be in defined with scheme for example http://admin:password@192.168.1.1:3128. currently it is: '{{http_proxy}}'"
+#  when: "'http://' not in http_proxy and 'https://' not in http_proxy and proxy is defined"
