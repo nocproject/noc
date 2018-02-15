@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SA Profile Base
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -220,7 +220,8 @@ class BaseProfile(object):
 
     # Cisco-like translation
     rx_cisco_interface_name = re.compile(
-        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
+        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE
     )
 
@@ -376,8 +377,10 @@ class BaseProfile(object):
         Default implementation compares a versions in format
         N1. .. .NM
         """
-        return cmp([int(x) for x in v1.split(".")],
-                   [int(x) for x in v2.split(".")])
+        p1 = [int(x) for x in v1.split(".")]
+        p2 = [int(x) for x in v2.split(".")]
+        # cmp-like semantic
+        return (p1 > p2) - (p1 < p2)
 
     @classmethod
     def get_parser(cls, vendor, platform, version):
