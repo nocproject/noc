@@ -47,7 +47,7 @@
             {% for n in groups['svc-clickhouse-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
-            {% for n in groups['noc-svc-scheduler'] %}
+            {% for n in groups['svc-scheduler-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
             </networks>
@@ -65,32 +65,32 @@
             <!-- <password></password> -->
             <networks incl="networks" replace="replace">
                 <ip>127.0.0.1</ip>
-            {% for n in groups['svc-grafana'] %}
+            {% for n in groups['svc-grafana-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
-                {% if 'noc-svc-bi' in groups %}
-            {% for n in groups['noc-svc-bi'] %}
-                <ip>{{hostvars[n].ansible_host}}</ip>
-            {% endfor %}
-                {% endif %}
-                {% if 'noc-svc-web' in groups %}
-            {% for n in groups['noc-svc-web'] %}
+                {% if 'svc-bi-exec' in groups %}
+            {% for n in groups['svc-bi-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
                 {% endif %}
-                {% if 'svc-haproxy' in groups %}
-            {% for n in groups['svc-haproxy'] %}
+                {% if 'svc-web-exec' in groups %}
+            {% for n in groups['svc-web-exec'] %}
+                <ip>{{hostvars[n].ansible_host}}</ip>
+            {% endfor %}
+                {% endif %}
+                {% if 'svc-haproxy-exec' in groups %}
+            {% for n in groups['svc-haproxy-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
                 {% endif %}
                 <ip>{{tower_ip}}</ip>
-                {% if 'noc-svc-scheduler' in groups %}
-            {% for n in groups['noc-svc-scheduler'] %}
+                {% if 'svc-scheduler-exec' in groups %}
+            {% for n in groups['svc-scheduler-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
                 {% endif %}
-                {% if 'noc-svc-discovery' in groups %}
-            {% for n in groups['noc-svc-discovery'] %}
+                {% if 'svc-discovery-exec' in groups %}
+            {% for n in groups['svc-discovery-exec'] %}
                 <ip>{{hostvars[n].ansible_host}}</ip>
             {% endfor %}
                 {% endif %}
