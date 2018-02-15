@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -28,7 +29,7 @@ class Script(BaseScript):
         r"Switchport: enable\n"
         r"Administrative Mode: (?P<amode>\S+).*\n"
         r"Operational Mode: .+\n"
-        r"Access Mode VLAN: (?P<avlan>\d+)\s*\n"
+        r"Access Mode VLAN: (?P<avlan>\S+)\s*\n"
         r"Access Multicast TV VLAN: .+\n"
         r"Trunking Native Mode VLAN: (?P<nvlan>\d+)",
         re.MULTILINE)
@@ -101,13 +102,13 @@ class Script(BaseScript):
                 match = self.rx_body2.search(v)
             amode = match.group("amode").strip().lower()
             # can native vlan mismatch with untagged?
-            untagged = int(match.group("nvlan"))
+            untagged = match.group("nvlan")
             if amode in ("trunk", "general"):
                 is_trunk = True
                 is_qnq = False
             elif amode in ("access"):
                 if "avlan" in match.groups():
-                    untagged = int(match.group("avlan"))
+                    untagged = match.group("avlan")
                 is_trunk = False
                 is_qnq = False
             elif amode in ("customer"):
@@ -137,7 +138,7 @@ class Script(BaseScript):
                 "802.1Q Enabled": is_trunk,
                 "802.1ad Tunnel": is_qnq,
             }
-            if untagged:
+            if is_int(untagged):
                 iface["untagged"] = untagged
             if interface in descriptions.keys():
                 if descriptions[interface]:
