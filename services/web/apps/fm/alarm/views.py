@@ -515,17 +515,17 @@ class AlarmApplication(ExtApplication):
                 out.append(seq[int(last):int(last + avg)])
                 last += avg
             return out
-        obj = Object.get_by_id(id)
         location = []
-        if obj.data and "address" in obj.data:
-            for res in (obj.data["address"]["text"]).split(","):
-                a = normalize_division(res.strip().decode("utf-8").lower())
-                if None in a and "" in a:
+        address = Object.get_by_id(id).get_address_text()
+        if address:
+            for res in address.split(","):
+                adr = normalize_division(res.strip().decode("utf-8").lower())
+                if None in adr and "" in adr:
                     continue
-                if None in a:
-                    location += [a[1].title().strip()]
+                if None in adr:
+                    location += [adr[1].title().strip()]
                 else:
-                    location += [' '.join(a).title().strip()]
+                    location += [' '.join(adr).title().strip()]
             res = chunkIt(location, 2)
             location_1 = ", ".join(res[0])
             location_2 = ", ".join(res[1])
