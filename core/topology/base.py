@@ -100,9 +100,9 @@ class BaseTopology(object):
             "id": link_id,
             "name": link.name or "",
             "ports": [],
-            "shape": stencil.path,
-            "shape_width": stencil.width,
-            "shape_height": stencil.height
+            "shape": getattr(stencil, "path", ""),
+            "shape_width": getattr(stencil, "width", 0),
+            "shape_height": getattr(stencil, "height", 0),
         })
         self.G.add_node(link_id, attrs)
 
