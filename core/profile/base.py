@@ -54,7 +54,7 @@ class BaseProfile(object):
     # (Used in command results)
     # If pattern_more is string, send command_more
     # If pattern_more is a list of (pattern,command)
-    # send appropriative command
+    # send appropriate command
     pattern_more = "^---MORE---"
     # Regular expression to catch the syntax errors in cli output.
     # If CLI output matches pattern_syntax_error,
@@ -67,6 +67,14 @@ class BaseProfile(object):
     # Reqular expression to start setup sequence
     # defined in setup_sequence list
     pattern_start_setup = None
+    # String or list of string to recognize continued multi-line commands
+    # Multi-line commands must be sent at whole, as the prompt will be
+    # not available until end of command
+    # NB: Sending logic is implemented in *commands* script
+    # Examples:
+    # "^.+\\" -- treat trailing backspace as continuation
+    # "banner\s+login\s+(\S+)" -- continue until matched group
+    pattern_multiline_commands = None
     # Device can strip long hostname in various modes
     # i.e
     # my.very.long.hostname# converts to
