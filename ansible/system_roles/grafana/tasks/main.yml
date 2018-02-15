@@ -6,9 +6,19 @@
     src: grafana.ini
     dest: "{{ etc_prefix }}/grafana/grafana.ini"
   notify: restart grafana
-  no_log: true
+  #no_log: true
   tags:
     - config
+
+- name: create grafana users
+  import_role:
+    name: postgres
+    tasks_from: users
+  vars:
+      db_name: "{{grafana_pg_db}}"
+      db_password: "{{grafana_pg_password}}"
+      db_user: "{{grafana_pg_user}}"
+  delegate_to: "{{groups['svc-postgres-master'][0]}}"
 
 - name: create Grafana dir
   file:
