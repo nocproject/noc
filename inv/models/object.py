@@ -404,7 +404,7 @@ class Object(Document):
             user = user.username
         if not user:
             user = "NOC"
-        if not isinstance(managed_object, basestring):
+        if not isinstance(managed_object, six.string_types):
             managed_object = unicode(managed_object)
         ObjectLog(
             object=self.id,
@@ -640,6 +640,22 @@ class Object(Document):
         """
         if "container" in values and values["container"]:
             document._cache_container = values["container"]
+
+    def get_address_text(self):
+        """
+        Return first found address.text value upwards the path
+        :return: Address text or None
+        """
+        current = self
+        while current:
+            addr = current.get_data("address", "text")
+            if addr:
+                return addr
+            if current.container:
+                current = Object.get_by_id(current.container)
+            else:
+                break
+        return None
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
