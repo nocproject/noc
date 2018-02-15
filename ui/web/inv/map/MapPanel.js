@@ -973,7 +973,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         var args = {
             direct_objects: objects,
             subject: __('created from map at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
-            contacts: NOC.username,
+            contacts: NOC.email ? NOC.email : NOC.username,
             start_date: Ext.Date.format(new Date(), 'd.m.Y'),
             start_time: Ext.Date.format(new Date(), 'H:i'),
             stop_time: '12:00',
