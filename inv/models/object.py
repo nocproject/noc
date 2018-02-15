@@ -404,7 +404,7 @@ class Object(Document):
             user = user.username
         if not user:
             user = "NOC"
-        if not isinstance(managed_object, basestring):
+        if not isinstance(managed_object, six.string_types):
             managed_object = unicode(managed_object)
         ObjectLog(
             object=self.id,
