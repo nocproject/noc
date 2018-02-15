@@ -120,7 +120,7 @@ server {
         access_log off;
     }
 
-{% if 'noc-svc-login' in groups and groups['noc-svc-login'] | length > 0 %}
+{% if 'svc-login-exec' in groups and groups['svc-login-exec'] | length > 0 %}
     # Login service api
     location /api/auth/ {
         internal;
@@ -153,7 +153,7 @@ server {
     }
 {% endif %}
 
-{% if 'noc-svc-card' in groups and groups['noc-svc-card'] | length > 0 %}
+{% if 'svc-card-exec' in groups and groups['svc-card-exec'] | length > 0 %}
     # Card service api
     location /api/card/ {
         proxy_pass http://card;
@@ -174,7 +174,7 @@ server {
     }
 {% endif %}
 
-{% if 'noc-svc-mrt' in groups and groups['noc-svc-mrt'] | length > 0 %}
+{% if 'svc-mrt-exec' in groups and groups['svc-mrt-exec'] | length > 0 %}
     # mrt service api
     location /api/mrt/ {
         proxy_pass http://mrt;
@@ -196,8 +196,7 @@ server {
     }
 {% endif %}
 
-{% if 'noc-svc-bi' in groups and groups['noc-svc-bi'] | length > 0 %}
-
+{% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
     # bi service api
     location /api/bi/ {
         proxy_pass http://bi;
@@ -225,7 +224,7 @@ server {
     }
 {% endif %}
 
-{% if 'noc-svc-grafanads' in groups and groups['noc-svc-grafanads'] | length > 0 %}
+{% if 'svc-grafanads-exec' in groups and groups['svc-grafanads-exec'] | length > 0 %}
 
     # grafanads service api
     location /api/grafanads/ {
@@ -270,7 +269,7 @@ server {
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
-{% if 'noc-svc-bi' in groups and groups['noc-svc-bi'] | length > 0 %}
+{% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
     location /ui/bi/editor/ {
         alias {{ noc_root }}/ui/bi/;
         try_files $uri /index.html =404;
@@ -280,7 +279,7 @@ server {
     }
 {% endif %}
 
-{% if 'svc-notebook' in groups and groups['svc-notebook'] | length > 0 %}
+{% if 'svc-notebook-exec' in groups and groups['svc-notebook-exec'] | length > 0 %}
     location ~* ^/notebook/(api/kernels/[^/]+/(channels|iopub|shell|stdin)|terminals/websocket)/? {
         proxy_pass http://notebook;
         gzip on;
@@ -311,7 +310,7 @@ server {
     }
 {% endif %}
 
-{% if 'svc-grafana' in groups and groups['svc-grafana'] | length > 0 %}
+{% if 'svc-grafana-exec' in groups and groups['svc-grafana-exec'] | length > 0 %}
     location /ui/grafana {
         proxy_pass http://grafana;
         auth_request /api/auth/auth/;
