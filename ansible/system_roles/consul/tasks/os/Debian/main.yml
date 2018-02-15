@@ -18,14 +18,14 @@
   changed_when: false
   environment:
     LC_ALL: C
-  when: consul_node_role == 'client'
+  when: consul_power == 'agent'
   tags:
     - config
 
 - name: Expose consul_iface as fact
   set_fact:
     consul_iface: "{{consul_route.stdout}}"
-  when: consul_node_role == 'client'
+  when: consul_power == 'agent'
   tags:
     - config
 

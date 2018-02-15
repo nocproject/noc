@@ -32,7 +32,6 @@ consul_syslog_enable: "True"
 consul_iface: "{{ ansible_default_ipv4.interface}}"
 consul_node_name: "{{ inventory_hostname_short }}"
 consul_recursors: ["{{tower_ip}}"]
-consul_node_role: "{% if has_svc_consul_server is defined%}bootstrap{% elif has_svc_consul is defined %}server{% else %}client{%endif%}"
 consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
 
 ### Addresses
@@ -46,17 +45,6 @@ consul_ports:
   http: 8500
   https: -1
   dns: 8600
-
-### Servers
-consul_servers: "\
-  {% set _consul_servers = [] %}\
-  {% for host in groups[has_svc_consul] %}\
-    {% set _consul_node_role = hostvars[host]['consul_node_role']|default('client', true) %}\
-    {% if ( _consul_node_role == 'server' or _consul_node_role == 'bootstrap') %}\
-      {% if _consul_servers.append(host) %}{% endif %}\
-    {% endif %}\
-  {% endfor %}\
-  {{ _consul_servers }}"
 
 ## ACL
 consul_acl_enable: True

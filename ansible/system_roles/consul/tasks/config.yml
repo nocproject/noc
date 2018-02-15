@@ -10,7 +10,7 @@
   no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
-      when: "{{ consul_node_role == 'bootstrap' }}"
+      when: "{{ consul_power == 'bootstrap' }}"
   when:
     - item.when
   notify:
@@ -27,7 +27,7 @@
   no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
-      when: "{{ consul_node_role == 'server' }}"
+      when: "{{ consul_power == 'server' }}"
   when:
     - item.when
   notify:
@@ -44,7 +44,7 @@
   no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
-      when: "{{ consul_node_role == 'client' }}"
+      when: "{{ consul_power == 'agent' }}"
   when:
     - item.when
   notify:

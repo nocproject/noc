@@ -2,7 +2,7 @@
 pid_file = "{{ consul_pid_path }}"
 
 
-{% if consul_node_role == 'bootstrap' %}
+{% if consul_power == 'bootstrap' %}
 [[inputs.consul]]
   address = "consul:8500"
   token = "{{ consul_token }}"

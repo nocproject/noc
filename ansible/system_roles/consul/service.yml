@@ -1,21 +1,4 @@
 - name: Consul tasks
-  hosts: svc-consul-server
-  become: yes
-  any_errors_fatal: true
-  gather_facts: True
-  tags:
-    - consul
-  vars_files:
-    - "../../vars/main.yml"
-    - "../../vars/{{ ansible_distribution }}.yml"
-  roles:
-    - role: consul
-  post_tasks:
-    - name: set consul complete
-      set_fact:
-        consul_complete: True
-
-- name: Consul tasks
   hosts: all
   become: yes
   any_errors_fatal: false

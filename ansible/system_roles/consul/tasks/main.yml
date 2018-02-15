@@ -1,11 +1,12 @@
 ---
 # File: main.yml - Main tasks for Consul
 
-- name: Expose consul_node_role as fact
-  set_fact:
-    consul_node_role: "{{ consul_node_role }}"
-  tags:
-    - config
+- name: make servers group
+  add_host:
+    group: svc-consul-server
+    host: "{{item}}"
+  with_items: "{{groups['svc-consul-exec']}}"
+  when: "'bootstrap' in hostvars[item]['consul_power'] or 'server' in hostvars[item]['consul_power']"
 
 # Add user
 - name: Add Consul user
@@ -23,6 +24,7 @@
   stat:
     path: "{{consul_config_path}}/.consul_bootstrapped"
   register: bootstrap_marker
+  when: consul_power == 'bootstrap'
   ignore_errors: true
   tags: always
 
@@ -45,13 +47,13 @@
   tags:
     - config
 
-- block:
-  - name: Start Consul
-    service:
-      name: consul
-      state: started
-      enabled: yes
+- name: Start Consul
+  service:
+    name: consul
+    state: started
+    enabled: yes
 
+- block:
   - name: Consul HTTP API reachable? wait for port 8500 for 60 seconds
     wait_for:
       delay: 15
@@ -62,7 +64,7 @@
     file:
       dest: "{{consul_config_path}}/.consul_bootstrapped"
       state: touch
-  when: not bootstrap_marker.stat.exists
+  when: consul_power == 'bootstrap' and not bootstrap_marker.stat.exists
 
 - name: Install consul monitoring
   template:
