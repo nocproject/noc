@@ -56,7 +56,7 @@
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
-    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
   tags:
     - requirements
   when: "'FreeBSD' in ansible_system"
@@ -70,7 +70,7 @@
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
-    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
   tags:
