@@ -11,6 +11,9 @@
     ansible_tags: "{{ lookup('get_tags') }}"
   roles:
     - role: pre
+  pre_tasks:
+    - include_tasks: "{{item}}"
+      with_myglob: ["./*_roles/*/tasks/checks.yml"]
   post_tasks:
     - name: set pre complete
       set_fact:
