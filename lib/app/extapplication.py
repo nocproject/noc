@@ -2,21 +2,23 @@
 # ---------------------------------------------------------------------
 # ExtApplication implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
-# Django modules
+# Third-party modules
 from django.http import HttpResponse
 import ujson
+import six
 # NOC modules
-from application import Application, view
-from access import HasPerm, PermitLogged
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
 from noc.config import config
+from .application import Application, view
+from .access import HasPerm, PermitLogged
 
 
 class ExtApplication(Application):
@@ -68,7 +70,7 @@ class ExtApplication(Application):
         return ujson.loads(data)
 
     def response(self, content="", status=200):
-        if not isinstance(content, basestring):
+        if not isinstance(content, six.string_types):
             return HttpResponse(ujson.dumps(content),
                                 mimetype="text/json; charset=utf-8",
                                 status=status)
@@ -258,7 +260,6 @@ class ExtApplication(Application):
         """
         Set/reset favorite items
         """
-        v = action == "set"
         item = self.fav_convert(item)
         if action == "set":
             Favorites.add_item(request.user, self.app_id, item)
