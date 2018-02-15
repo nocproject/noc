@@ -410,7 +410,7 @@ class ExtModelApplication(ExtApplication):
             o = self.model(**attrs)
             # Run models validators
             try:
-                o.clean_fields()
+                o.full_clean(exclude=list(self.ignored_fields))
             except ValidationError as e:
                 e_msg = []
                 for f in e.message_dict:
