@@ -64,7 +64,7 @@
 
 - name: include ch_dictionaries
   import_tasks: "ch_dictionaries.yml"
-  when: ansible_nodename in groups['svc-clickhouse']
+  when: ansible_nodename in groups['svc-clickhouse-exec']
   tags:
     - requirements
     - config
