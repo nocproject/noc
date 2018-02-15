@@ -7,7 +7,7 @@
 var Monmap = function() {
     this.map = null;
     this.mapFilter = {statuses: [], isNotInit: true};
-    this.refreshRange = 10000;
+    this.refreshRange = 0;
     this.timeoutId = null;
 };
 
@@ -98,10 +98,10 @@ Monmap.prototype.poll_data = function() {
         zoom = me.map.getZoom();
 
     $("#summary").html('<i class="fa fa-spinner fa-spin"></i>' + "Loading ...");
-    $.getJSON("/ui/card/js/data.json")
-    .done(function(data) {              // test
-        // $.ajax("/api/card/view/monmap/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s + "&maintenance=" + me.maintenance + "&object_id=" + me.objectId)
-        // .done(function(data) {
+    // $.getJSON("/ui/card/js/data.json")
+    // .done(function(data) {              // test
+    $.ajax("/api/card/view/monmap/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s + "&maintenance=" + me.maintenance + "&object_id=" + me.objectId)
+    .done(function(data) {
         // Init statuses
         if(me.mapFilter.isNotInit) {
             me.mapFilter.isNotInit = false;
@@ -216,11 +216,11 @@ Monmap.prototype.poll_data = function() {
 
         });
         // Add refresh control
-        $('<label style="font-size: 20px" for="refreshRange">Refresh Time:&nbsp;</label><select style="font-size: 20px" id="refreshRange"><option value="900000">15 min</option><option value="120000">2 min</option><option value="20000">20 sec</option><option value="10000">10 sec</option></select>')
+        var options = '<option value="0">Off</option><option value="300000">5 min</option><option value="600000">10 min</option><option value="900000">15 min</option><option value="1800000">30 min</option>';
+        $('<label style="font-size: 20px" for="refreshRange">Refresh Time:&nbsp;</label><select style="font-size: 20px" id="refreshRange">' + options + '</select>')
         .appendTo(summary)
-        // summary.find("#refreshRange")
         .change(me, function(e) {
-            e.data.refreshRange = $(this).val();
+            e.data.refreshRange = parseInt($(this).val(), 10);
             clearTimeout(e.data.timeoutId);
             e.data.poll_data();
         });
@@ -234,9 +234,11 @@ Monmap.prototype.poll_data = function() {
             me.markerClusterGroup.refreshClusters();
         }
         clearTimeout(me.timeoutId);
-        me.timeoutId = setTimeout(function() {
-            me.poll_data();
-        }, me.refreshRange);
+        if(me.refreshRange) {
+            me.timeoutId = setTimeout(function() {
+                me.poll_data();
+            }, me.refreshRange);
+        }
     });
 };
 
