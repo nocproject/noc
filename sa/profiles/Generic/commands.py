@@ -77,6 +77,7 @@ class Script(BaseScript):
                     if delimiter in cmd:
                         # Delimiter found, stop continuation
                         continuation = False
+                        delimiter = None
                     continue
                 # Continuations without delimiters can extend
                 # multiple lines, so pass to next check
@@ -85,7 +86,7 @@ class Script(BaseScript):
                 r += [cmd]
             match = self.find_match(patterns, cmd)
             if match:
-                if len(match.groups()) > 1:
+                if match.groups():
                     delimiter = match.group(1)
                 else:
                     delimiter = None  # No delimiter
@@ -93,6 +94,7 @@ class Script(BaseScript):
                 continuation = True
             else:
                 continuation = False
+                delimiter = None
         # Check for unterminated continuation
         if continuation:
             raise self.CLISyntaxError("Unterminated multiline string")
