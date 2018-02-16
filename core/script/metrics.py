@@ -3,10 +3,11 @@
 # Varios metric converting functions
 # to use in get_metrics scripts
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
+# Python modules
+from functools import reduce
 
 def percent(value, total):
     """
