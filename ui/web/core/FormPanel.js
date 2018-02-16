@@ -14,6 +14,7 @@ Ext.define("NOC.core.FormPanel", {
     restUrl: null,
     enableSaveButton: true,
     enableCloseButton: true,
+    formToolbar: null,
 
     initComponent: function() {
         var me = this;
@@ -70,7 +71,7 @@ Ext.define("NOC.core.FormPanel", {
     // Form hotkeys processing
     onFormSpecialKey: function(field, key) {
         var me = this;
-        if(field.xtype != "textfield")
+        if(field.xtype !== "textfield")
             return;
         switch(key.getKey()) {
             case Ext.EventObject.ENTER:
@@ -141,6 +142,13 @@ Ext.define("NOC.core.FormPanel", {
                     handler: me.onClose
                 })
             )
+        }
+        if(me.formToolbar) {
+            var seen = me.app.applyPermissions(me.formToolbar);
+            if(seen.length > 0) {
+                items.push("-");
+                items = items.concat(seen);
+            }
         }
         return items
     },
