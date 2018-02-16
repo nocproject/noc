@@ -30,13 +30,7 @@ class ObjectCard(BaseCard):
     model = Object
 
     def get_object(self, id):
-        if self.current_user.is_superuser:
-            return Object.objects.get(id=id)
-        else:
-            return Object.objects.get(
-                id=id,
-                administrative_domain__in=self.get_user_domains()
-            )
+        return Object.objects.get(id=id)
 
     def get_data(self):
         if not self.object:
