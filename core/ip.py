@@ -247,10 +247,15 @@ class IP(object):
         else:
             return spot
 
-    #
-    # Rebase to a new base
-    #
     def rebase(self, base, new_base):
+        """
+        Rebase to a new base prefix
+        :param base:
+        :param new_base:
+        :return:
+        """
+        if self == base:
+            return new_base
         pb = list(self.iter_bits())[base.mask:]
         nb = list(new_base.iter_bits()) + [0] * (base.mask - new_base.mask) + pb
         return self.from_bits(nb)
