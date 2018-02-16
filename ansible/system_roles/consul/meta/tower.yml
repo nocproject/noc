@@ -16,6 +16,11 @@ forms:
         - agent
         - server
         - bootstrap
+    address:
+      default: node_ip
+      label: Listen on
+      type: str
+      description: "Consul have to be run on private ip. With multiple avalaible select one there. Node address will be used by default"
     replication_token:
       label: "consul replication token"
       type: str

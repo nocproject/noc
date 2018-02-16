@@ -40,25 +40,9 @@
     - config
     - firewall
 
-- name: search for correct consul iface
-  shell: "/sbin/ip ro get {{hostvars[groups['svc-consul-server'][0]].ansible_host}} | grep dev | awk '{print $(NF-2)}'"
-  register: consul_route
-  changed_when: false
-  environment:
-    LC_ALL: C
-  when: consul_power == 'agent'
-  tags:
-    - config
-
-- name: Expose consul_iface as fact
-  set_fact:
-    consul_iface: "{{consul_route.stdout}}"
-  when: consul_power == 'agent'
-  tags:
-    - config
-
 - name: Expose consul_bind_address as fact
   set_fact:
-    consul_bind_address: "{{ hostvars[ansible_nodename]['ansible_'+ consul_iface ]['ipv4']['address'] }}"
+    consul_bind_address: "{{ansible_host}}"
+  when: consul_address!='node_ip'
   tags:
     - config

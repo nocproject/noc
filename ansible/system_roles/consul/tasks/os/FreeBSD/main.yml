@@ -8,6 +8,9 @@
     mode: 0755
   notify: restart consul
 
-- name: set consul bind_address
+- name: Expose consul_bind_address as fact
   set_fact:
-    consul_bind_address: "{{ lookup('env','CONSUL_BIND_ADDRESS') | default(hostvars[ansible_nodename]['ansible_'+ consul_iface ]['ipv4'][0]['address'], true) }}"
+    consul_bind_address: "{{ansible_host}}"
+  when: consul_address!='node_ip'
+  tags:
+    - config
