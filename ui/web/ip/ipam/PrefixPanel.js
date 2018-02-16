@@ -25,6 +25,15 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
     initComponent: function () {
         var me = this;
 
+        me.rebaseButton = Ext.create("Ext.button.Button", {
+            text: __("Rebase"),
+            glyph: NOC.glyph.truck,
+            tooltip: __("Rebase prefix to a new location"),
+            scope: me,
+            handler: me.onRebase,
+            hasAccess: NOC.hasPermission("rebase")
+        });
+
         Ext.apply(me, {
             fields: [
                 {
@@ -32,7 +41,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     xtype: "ip.vrf.LookupField",
                     fieldLabel: __("VRF"),
                     allowBlank: true,
-                    disabled: true
+                    readOnly: true
                 },
                 {
                     name: "prefix",
@@ -108,6 +117,9 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     fieldLabel: __("Project"),
                     allowBlank: true
                 }
+            ],
+            formToolbar: [
+                me.rebaseButton
             ]
         });
         me.callParent()
@@ -168,6 +180,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                me.rebaseButton.setDisabled(false);
                 me.setValues(data)
             },
             failure: function() {
@@ -187,6 +200,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                me.rebaseButton.setDisabled(true);
                 me.setValues({
                     "vrf": data.vrf,
                     "vrf__label": data.vrf__label,
@@ -208,5 +222,19 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
     //
     setAFI: function(afi) {
         console.log("setAFI", afi)
+    },
+    //
+    onRebase: function() {
+        var me = this,
+            values = me.getFormData();
+        me.app.previewItem(
+            me.app.ITEM_REBASE_FORM,
+            {
+                id: me.currentPrefixId,
+                to_vrf: values.vrf,
+                to_vrf__label: values.vrf__label,
+                to_prefix: values.prefix
+            }
+        )
     }
 });

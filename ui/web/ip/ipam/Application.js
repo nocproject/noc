@@ -28,6 +28,10 @@ Ext.define("NOC.ip.ipam.Application", {
             Ext.create("NOC.ip.ipam.AddressPanel", {app: me})
         );
 
+        me.ITEM_REBASE_FORM = me.registerItem(
+            Ext.create("NOC.ip.ipam.RebasePanel", {app: me})
+        );
+
         Ext.apply(me, {
             items: me.getRegisteredItems(),
             activeItem: me.ITEM_LEGACY

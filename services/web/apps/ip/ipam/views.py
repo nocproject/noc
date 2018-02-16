@@ -34,7 +34,10 @@ from noc.core.colors import get_colors
 
 class IPAMApplication(ExtApplication):
     title = _("Assigned Addresses")
-    extra_permissions = ["bind_vc"]
+    extra_permissions = ["bind_vc", "rebase"]
+    implied_permissions = {
+        "rebase": ["ip:prefix:rebase"]
+    }
 
     ADDRESS_SPOT_DIST = 8  # Area around used address to show in free spot
     MAX_IPv4_NET_SIZE = 256  # Cover whole IPv4 prefix with spot if size below
@@ -169,7 +172,6 @@ class IPAMApplication(ExtApplication):
         user = request.user
         can_view = prefix.can_view(user)
         can_change = prefix.can_change(user)
-        can_rebase = can_change and Permission.has_perm(user, "ip:ipam:rebase")
         can_bind_vc = can_change and Permission.has_perm(
             user, "ip:ipam:bind_vc")
         can_change_maintainers = user.is_superuser
@@ -326,7 +328,6 @@ class IPAMApplication(ExtApplication):
                            prefix_info=prefix_info,
                            display_empty_message=not addresses and not prefixes,
                            can_view=can_view, can_change=can_change,
-                           can_rebase=can_rebase,
                            can_bind_vc=can_bind_vc,
                            can_change_maintainers=can_change_maintainers,
                            can_add_prefix=can_add_prefix,
@@ -536,67 +537,6 @@ class IPAMApplication(ExtApplication):
             for s in result:
                 r[s["ip"]] = s["status"]
         return self.render_json(r)
-
-    class RebaseForm(NOCForm):
-        vrf = forms.ModelChoiceField(
-            label="VRF",
-            queryset=VRF.objects.all()
-        )
-        to_prefix = forms.CharField(label="Rebase to prefix")
-
-        def __init__(self, prefix, data=None):
-            initial = None if data else {"to_prefix": prefix.prefix}
-            super(IPAMApplication.RebaseForm, self).__init__(data, initial=initial)
-            self.prefix = prefix
-
-        def clean_to_prefix(self):
-            if "to_prefix" not in self.cleaned_data:
-                raise forms.ValidationError("Prefix is required")
-            if "vrf" not in self.cleaned_data:
-                raise forms.ValidationError("VRF is required")
-            to_prefix = self.cleaned_data["to_prefix"]
-            check_prefix(to_prefix)
-            p0 = IP.prefix(self.prefix.prefix)
-            p1 = IP.prefix(to_prefix)
-            if p0 == p1 and self.cleaned_data["vrf"] == self.prefix.vrf:
-                raise forms.ValidationError("Cannot rebase prefix to self")
-            if p0.afi != p1.afi:
-                raise forms.ValidationError("Cannot change address family during rebase")
-            if p0.mask < p1.mask:
-                raise forms.ValidationError("Cannot rebase to prefix of lesser size")
-            return to_prefix
-
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/rebase/$",
-          url_name="rebase", access="rebase")
-    def view_rebase(self, request, vrf_id, afi, prefix):
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        prefix = self.get_object_or_404(
-            Prefix, vrf=vrf, afi=afi, prefix=prefix)
-        if request.POST:
-            form = self.RebaseForm(prefix, request.POST)
-            if form.is_valid():
-                # Rebase prefix
-                new_prefix = prefix.rebase(
-                    form.cleaned_data["vrf"],
-                    form.cleaned_data["to_prefix"])
-                self.message_user(
-                    request,
-                    _(u"Prefix %(old_prefix)s is rebased to %(new_prefix)s") % {
-                        "old_prefix": prefix,
-                        "new_prefix": form.cleaned_data["to_prefix"]
-                    })
-                return self.response_redirect(
-                    "ip:ipam:vrf_index",
-                    new_prefix.vrf.id, afi, new_prefix.prefix
-                )
-        else:
-            form = self.RebaseForm(prefix)
-        return self.render(
-            request,
-            "rebase.html",
-            vrf=vrf, afi=afi, prefix=prefix,
-            rebase_form=form
-        )
 
     def user_access_list(self, user):
         """

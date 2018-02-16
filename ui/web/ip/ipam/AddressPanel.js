@@ -30,7 +30,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     xtype: "ip.vrf.LookupField",
                     fieldLabel: __("VRF"),
                     allowBlank: false,
-                    disabled: true
+                    readOnly: true
                 },
                 {
                     name: "address",

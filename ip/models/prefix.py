@@ -531,8 +531,16 @@ class Prefix(models.Model):
         :param new_prefix:
         :return:
         """
+        #
         b = IP.prefix(self.prefix)
         nb = IP.prefix(new_prefix)
+        # Validation
+        if vrf == self.vrf and self.prefix == new_prefix:
+            raise ValueError("Cannot rebase to self")
+        if b.afi != nb.afi:
+            raise ValueError("Cannot change address family during rebase")
+        if b.mask < nb.mask:
+            raise ValueError("Cannot rebase to prefix of lesser size")
         # Rebase prefix and all nested prefixes
         # Parents are left untouched
         for p in Prefix.objects.filter(
