@@ -9,6 +9,7 @@
 # Python modules
 from functools import reduce
 
+
 def percent(value, total):
     """
     Convert absolute and total values to percent
