@@ -537,6 +537,24 @@ class ManagedObjectProfile(models.Model):
                 raise ValueError(e)
         super(ManagedObjectProfile, self).save(force_insert, force_update)
 
+    @classmethod
+    def get_max_metrics_interval(cls, managed_object_profiles=None):
+        Q = models.Q
+        qq = ((Q(enable_box_discovery_metrics=True) & Q(enable_box_discovery=True)) | (
+                Q(enable_periodic_discovery=True) & Q(enable_periodic_discovery_metrics=True)))
+        if managed_object_profiles:
+            qq &= Q(id__in=managed_object_profiles)
+        r = set()
+        for mop in ManagedObjectProfile.objects.filter(qq).exclude(metrics=[]).exclude(metrics=None):
+            if not mop.metrics:
+                continue
+            for m in mop.metrics:
+                if m["enable_box"]:
+                    r.add(mop.box_discovery_interval)
+                if m["enable_periodic"]:
+                    r.add(mop.periodic_discovery_interval)
+        return max(r) if r else 0
+
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
     def iter_objects():
