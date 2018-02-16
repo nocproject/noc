@@ -16,9 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from noc.core.ip import IP
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.lib.forms import NOCForm
-from noc.lib.validators import (is_ipv4, is_ipv4_prefix, is_ipv6,
-                                is_ipv6_prefix, check_prefix)
+from noc.lib.validators import is_ipv4, is_ipv4_prefix, is_ipv6, is_ipv6_prefix
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
 from noc.ip.models.prefix import Prefix
