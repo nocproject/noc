@@ -540,12 +540,12 @@ class ManagedObjectProfile(models.Model):
     @classmethod
     def get_max_metrics_interval(cls, managed_object_profiles=None):
         Q = models.Q
-        qq = ((Q(enable_box_discovery_metrics=True) & Q(enable_box_discovery=True)) | (
-                Q(enable_periodic_discovery=True) & Q(enable_periodic_discovery_metrics=True)))
+        op_query = ((Q(enable_box_discovery_metrics=True) & Q(enable_box_discovery=True)) |
+                    (Q(enable_periodic_discovery=True) & Q(enable_periodic_discovery_metrics=True)))
         if managed_object_profiles:
-            qq &= Q(id__in=managed_object_profiles)
+            op_query &= Q(id__in=managed_object_profiles)
         r = set()
-        for mop in ManagedObjectProfile.objects.filter(qq).exclude(metrics=[]).exclude(metrics=None):
+        for mop in ManagedObjectProfile.objects.filter(op_query).exclude(metrics=[]).exclude(metrics=None):
             if not mop.metrics:
                 continue
             for m in mop.metrics:
