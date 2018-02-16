@@ -29,7 +29,7 @@ class Script(BaseScript):
                 admin_status = True
                 oper_status = True
             iface = {
-                "type": "dry",
+                "type": "physical",
                 "name": ii,
                 "admin_status": admin_status,
                 "oper_status": oper_status,
