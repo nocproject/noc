@@ -20,12 +20,20 @@ class Script(BaseScript):
     rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
 
     @false_on_cli_error
-    def has_lldp(self):
+    def has_lldp_cli(self):
         """
         Check box has lldp enabled
         """
         cmd = self.cli("show lldp")
         return "LLDP has been enabled globally" in cmd
+
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled on Qtech
+        """
+        r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
+        if r > 0:
+            return True
 
     @false_on_cli_error
     def has_stp_cli(self):
