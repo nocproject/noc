@@ -10,7 +10,7 @@ splitter Model Interface
     :depth: 1
     :class: singlecol
 
-Split input power to outputs with given gain
+Split optical/electrical input power to outputs with given gain
 
 Variables
 ---------
@@ -25,14 +25,14 @@ Variables
 Examples
 --------
 
-splitter 1 to 2 with 50/50 share power
+splitter 1 to 2 with 50%/50% attenuate optical/electrical power
 ::
     split: "out1=0.5,out2=0.5"
 
-splitter 1 to 3 with 50%/25%/25% share power
+splitter 1 to 3 with 50%/25%/25% attenuate optical/electrical power
 ::
     split: "out1=0.5,out2=0.25,out3=0.25"
 
-splitter 1 to 2 with signal multiplication 3dB
+splitter 1 to 2 with signal amplification twice up to 3dB
 ::
     split: "out1=2,out2=2"
