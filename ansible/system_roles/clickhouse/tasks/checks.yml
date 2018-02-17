@@ -1,0 +1,6 @@
+- name: fail if consul-template is not selected
+  fail:
+    msg: "Clickhouse role have to be set along with consul-template role to get access to noc ch_datasource service."
+  when:
+    - has_svc_clickhouse is defined
+    - has_svc_consul_template is not defined

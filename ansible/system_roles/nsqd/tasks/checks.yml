@@ -1,6 +1,6 @@
 - name: fail if consul-template is not selected
   fail:
-    msg: "Nginx role have to be set along with consul-template role to get access to nsqlookup service."
+    msg: "Nsqd role have to be set along with consul-template role to get access to nsqlookup service."
   when:
-    - has_svc_nginx is defined
+    - has_svc_nsqd is defined
     - has_svc_consul_template is not defined
