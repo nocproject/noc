@@ -75,12 +75,11 @@ class Script(BaseScript):
         ip_iface = dict((l, ".".join(o.rsplit(".")[-4:])) for o, l in self.get_iftable("1.3.6.1.2.1.4.20.1.2", False))
         ip_mask = dict((".".join(o.rsplit(".")[-4:]), l) for o, l in self.get_iftable("1.3.6.1.2.1.4.20.1.3", False))
         r = {}
-        print ip_iface, ip_mask
         for ip in ip_iface:
             r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
         return r
 
-    def execute_snmp(self, interface=None):
+    def execute_snmp(self, interface=None, last_ifname=None):
         # v = self.scripts.get_interface_status_ex()
         index = self.scripts.get_ifindexes()
         # index = self.get_ifindexes()
@@ -95,7 +94,6 @@ class Script(BaseScript):
         self.apply_table(ifaces, "IF-MIB::ifSpeed", "speed")
         self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")
         self.apply_table(ifaces, "IF-MIB::ifAlias", "description")
-        print ifaces
         ip_ifaces = self.get_ip_ifaces()
         r = []
         subs = defaultdict(list)
@@ -106,6 +104,20 @@ class Script(BaseScript):
         """
         for l in ifaces:
             iface = ifaces[l]
+            """
+            If the bug in the firmware and the number of interfaces in cli is
+            different from the number of interfaces given through snmp,
+            we pass the list of interfaces for reconciliation.
+            def execute_snmp(self, interface=None, last_ifname= None):
+                IFNAME = set(["Gi 1/0/1", "Gi 1/0/2", "Gi 1/0/3", "Gi 1/0/4", "Gi 1/0/5", "Gi 1/0/6", "Gi 1/0/7",
+                              "Gi 1/0/8", "Gi 1/0/9", "Gi 1/0/10", "Gi 1/0/11", "Gi 1/0/12", "Po 1", "Po 2", "Po 3",
+                              "Po 4", "Po 5", "Po 6","Po 7", "Po 8", "Po 9", "Po 10", "Po 11", "Po 12", "Po 13",
+                              "Po 14", "Po 15", "Po 16"])
+                if self.match_version(version__regex="4\.0\.8\.1$") and self.match_version(platform__regex="MES-2308P"):
+                    return super(Script, self).execute_snmp(last_ifname=IFNAME)
+            """
+            if iface["interface"] not in last_ifname:
+                continue
             i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
             if "." in iface["interface"]:
                 s = {
