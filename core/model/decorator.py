@@ -185,7 +185,7 @@ def on_delete_check(check=None, clean=None, delete=None):
                 ro.delete()
 
     def iter_related(object, model, field):
-        for ro in model.objects.filter(**{field: str(object.id)}):
+        for ro in model.objects.filter(**{field: object.id if str(object.id).isdigit() else str(object.id)}):
             yield ro
 
     def iter_models(name):
