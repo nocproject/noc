@@ -25,11 +25,11 @@ Variables
 Examples
 --------
 
-splitter 1 to 2 with 50%/50% attenuate optical/electrical power
+splitter 1 to 2 with 50%/50% attenuation optical/electrical power
 ::
     split: "out1=0.5,out2=0.5"
 
-splitter 1 to 3 with 50%/25%/25% attenuate optical/electrical power
+splitter 1 to 3 with 50%/25%/25% attenuation optical/electrical power
 ::
     split: "out1=0.5,out2=0.25,out3=0.25"
 
