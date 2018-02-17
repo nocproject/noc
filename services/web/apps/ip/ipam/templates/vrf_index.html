@@ -37,6 +37,10 @@ function on_mynetworks(n)
 {
     document.location=n.options[n.selectedIndex].value;
 }
+// Set current context
+document.currentVRF = {{ prefix.vrf.id }};
+document.currentAFI = {{ prefix.afi }};
+document.currentPrefix = "{{ prefix.prefix }}";
 </script>
 <!-- Navigation -->
 <div class="module">

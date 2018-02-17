@@ -39,11 +39,16 @@ Ext.define("NOC.ip.ipam.Application", {
         me.callParent();
     },
     //
-    showPrefix: function(vrf, afi, prefix) {
+    setPrefix: function(vrf, afi, prefix) {
         var me = this;
         me.currentVRF = vrf;
         me.currentAFI = afi;
         me.currentPrefix = prefix;
+    },
+    //
+    showPrefix: function(vrf, afi, prefix) {
+        var me = this;
+        me.setPrefix(vrf, afi, prefix);
         me.previewItem(
             me.ITEM_LEGACY,
             "/ip/ipam/" + vrf + "/" + afi + "/" + prefix + "/"

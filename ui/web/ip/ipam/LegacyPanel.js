@@ -40,8 +40,10 @@ Ext.define("NOC.ip.ipam.LegacyPanel", {
     },
     //
     injectContext: function() {
-        var me = this;
+        var me = this,
+            idoc = me.iframe.contentWindow.document;
         me.iframe.contentWindow.panel = me;
         me.iframe.contentWindow.app = me.app;
+        me.app.setPrefix(idoc.currentVRF, idoc.currentAFI, idoc.currentPrefix);
     }
 });
