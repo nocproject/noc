@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -47,7 +48,6 @@ class Script(BaseScript):
                 for v in self.snmp.get_tables(
                         ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
                          "1.3.6.1.2.1.17.4.3.1.3"], bulk=True):
-                    print v
                     if v[1]:
                         chassis = ":".join(["%02x" % ord(c) for c in v[1]])
                         if mac is not None:
@@ -59,7 +59,6 @@ class Script(BaseScript):
                         continue
                     if int(v[3]) > 3 or int(v[3]) < 1:
                         continue
-                    print iface_name
                     iface = iface_name[str(v[2])]
                     if interface is not None:
                         if iface == interface:
