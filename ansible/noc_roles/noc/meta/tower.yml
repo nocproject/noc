@@ -46,7 +46,6 @@ services:
   noc:
     level: system
     category: config
-    promote: system
     depends:
       - postgres
       - mongod
