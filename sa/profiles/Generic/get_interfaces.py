@@ -116,7 +116,7 @@ class Script(BaseScript):
                 if self.match_version(version__regex="4\.0\.8\.1$") and self.match_version(platform__regex="MES-2308P"):
                     return super(Script, self).execute_snmp(last_ifname=IFNAME)
             """
-            if iface["interface"] not in last_ifname:
+            if last_ifname and iface["interface"] not in last_ifname:
                 continue
             i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
             if "." in iface["interface"]:
