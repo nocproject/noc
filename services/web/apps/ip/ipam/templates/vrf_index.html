@@ -164,7 +164,7 @@ function on_mynetworks(n)
                     <tr class='free-prefix' style='display:none'>
                         <td>
                             {% if can_add_prefix %}
-                                <a href="add_prefix/?prefix={{pp.prefix}}">{{pp}}</a>
+                                <a href="#" onclick="app.onAddPrefix({{ prefix.id }}, '{{ pp.prefix }}')">{{pp}}</a>
                             {% else %}
                                 {{pp}}
                             {% endif %}

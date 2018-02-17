@@ -55,12 +55,13 @@ Ext.define("NOC.ip.ipam.Application", {
         me.showPrefix(me.currentVRF, me.currentAFI, me.currentPrefix)
     },
     //
-    onAddPrefix: function(parentPrefixId) {
+    onAddPrefix: function(parentPrefixId, prefixHint) {
         var me = this;
         me.previewItem(
             me.ITEM_PREFIX_FORM,
             {
-                parentId: parentPrefixId
+                parentId: parentPrefixId,
+                prefix: prefixHint
             }
         );
     },

@@ -130,7 +130,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
         if(record.id) {
             me.loadPrefix(record.id)
         } else {
-            me.newPrefix(record.parentId)
+            me.newPrefix(record.parentId, record.prefix)
         }
     },
 
@@ -191,7 +191,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
     //
     // New prefix form
     //
-    newPrefix: function(parentId) {
+    newPrefix: function(parentId, prefix) {
         var me = this;
         me.currentPrefixId = null;
         Ext.Ajax.request({
@@ -199,14 +199,19 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             method: "GET",
             scope: me,
             success: function(response) {
-                var data = Ext.decode(response.responseText);
+                var data = Ext.decode(response.responseText),
+                    values = {
+                        "vrf": data.vrf,
+                        "vrf__label": data.vrf__label,
+                        "afi": data.afi
+                    };
+                if(prefix) {
+                    values.prefix = prefix
+                } else {
+                    values.prefix = me.app.getCommonPrefixPart(data.afi, data.prefix)
+                }
                 me.rebaseButton.setDisabled(true);
-                me.setValues({
-                    "vrf": data.vrf,
-                    "vrf__label": data.vrf__label,
-                    "afi": data.afi,
-                    "prefix": me.app.getCommonPrefixPart(data.afi, data.prefix)
-                })
+                me.setValues(values)
             },
             failure: function() {
                 NOC.error(__("Failed to load data"))
