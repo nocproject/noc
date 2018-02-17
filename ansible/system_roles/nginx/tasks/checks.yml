@@ -1,0 +1,13 @@
+- name: fail if noc not selected
+  fail:
+    msg: "Nginx role have to be set along with noc role to provide access to static files."
+  when:
+    - has_svc_nginx is defined
+    - has_svc_noc is not defined
+
+- name: fail if consul-template is not selected
+  fail:
+    msg: "Nginx role have to be set along with consul-template role to get access to noc services."
+  when:
+    - has_svc_nginx is defined
+    - has_svc_consul_template is not defined

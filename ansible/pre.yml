@@ -2,7 +2,7 @@
 - name: pre tasks
   hosts: all
   become: no
-  any_errors_fatal: false
+  any_errors_fatal: true
   gather_facts: True
   vars_files:
     - "vars/main.yml"
