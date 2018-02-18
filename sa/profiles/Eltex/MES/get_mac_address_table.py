@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -21,10 +22,9 @@ class Script(BaseScript):
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)",
         re.MULTILINE)
 
-    def execute(self, interface=None, vlan=None, mac=None):
+    def execute_snmp(self, interface=None, vlan=None, mac=None):
         r = []
         # Try SNMP first
-        """
         if self.has_snmp():
             try:
                 vlan_oid = []
@@ -32,7 +32,7 @@ class Script(BaseScript):
                     mac = mac.lower()
                 iface_name = {}
                 for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.31.1.1.1.1"], bulk=True):
+                        ["1.3.6.1.2.1.31.1.1.1.1"], bulk=True):
                     if v[1][:2] == 'fa' or v[1][:2] == 'gi' or v[1][:2] == 'te' or v[1][:2] == 'po':
                         name = v[1]
                         name = name.replace('fa', 'Fa ')
@@ -42,12 +42,12 @@ class Script(BaseScript):
                         iface_name.update({v[0]: name})
 
                 for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"],
-                        bulk=True):
-                        vlan_oid.append(v[0])
+                                              bulk=True):
+                    vlan_oid.append(v[0])
                 # mac iface type
                 for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
-                    "1.3.6.1.2.1.17.4.3.1.3"], bulk=True):
+                        ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
+                         "1.3.6.1.2.1.17.4.3.1.3"], bulk=True):
                     if v[1]:
                         chassis = ":".join(["%02x" % ord(c) for c in v[1]])
                         if mac is not None:
@@ -59,7 +59,7 @@ class Script(BaseScript):
                         continue
                     if int(v[3]) > 3 or int(v[3]) < 1:
                         continue
-                    iface = iface_name[v[2]]
+                    iface = iface_name[str(v[2])]
                     if interface is not None:
                         if iface == interface:
                             pass
@@ -78,13 +78,15 @@ class Script(BaseScript):
                     r.append({
                         "interfaces": [iface],
                         "mac": chassis,
-                        "type": {"3": "D", "2": "S", "1": "S"}[v[3]],
+                        "type": {"3": "D", "2": "S", "1": "S"}[str(v[3])],
                         "vlan_id": vlan_id,
-                        })
+                    })
                 return r
             except self.snmp.TimeOutError:
                 pass
-        """
+
+    def execute_cli(self, interface=None, vlan=None, mac=None):
+        r = []
         # Fallback to CLI
         cmd = "show mac address-table"
         if mac is not None:
@@ -94,19 +96,19 @@ class Script(BaseScript):
         if vlan is not None:
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
-                interfaces = match.group("interfaces")
-                if interfaces == '0':
-                    continue
-                r.append({
-                    "vlan_id": match.group("vlan_id"),
-                    "mac": match.group("mac"),
-                    "interfaces": [interfaces],
-                    "type": {
-                        "dynamic": "D",
-                        "static": "S",
-                        "secure": "S",
-                        "permanent": "S",
-                        "self": "C"
-                        }[match.group("type").lower()],
-                    })
+            interfaces = match.group("interfaces")
+            if interfaces == '0':
+                continue
+            r.append({
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
+                "interfaces": [interfaces],
+                "type": {
+                    "dynamic": "D",
+                    "static": "S",
+                    "secure": "S",
+                    "permanent": "S",
+                    "self": "C"
+                }[match.group("type").lower()],
+            })
         return r
