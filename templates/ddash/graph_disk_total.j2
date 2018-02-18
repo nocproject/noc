@@ -1,6 +1,6 @@
 {
-  "id": "caff7ea9-320a-443d-87a5-610be03710b1",
-  "title": "Disk | Free",
+  "id": 92363,
+  "title": "Disk | Total size",
   "span": 6,
   "type": "graph",
   "datasource": null,
@@ -8,7 +8,7 @@
     {
       "resultFormat": "time_series",
       "intervalFactor": 1,
-      "query": "SELECT \n  $timeSeries as t, \n  avg(disk_free) as `Disk | Free`\n  FROM \n  $table \n  WHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "query": "SELECT \n  $timeSeries as t, \n  avg(tmp13) as `Disk | Total`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
       "refId": "A",
       "database": "noc",
       "tableLoading": false,
@@ -76,7 +76,7 @@
   "timeFrom": null,
   "timeShift": null,
   "aliasColors": {
-    "Disk | Free": "#6ed0e0"
+    "Disk | Total": "#d683ce"
   },
   "seriesOverrides": [],
   "thresholds": [],
