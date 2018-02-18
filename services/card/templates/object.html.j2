@@ -21,6 +21,17 @@
     {%- endfor -%}
 </div>
 
+{# Display object name #}
+<div class="line"></div>
+<div class="row">
+    <div class="col-sm-2">
+        <b>{{ _("Name") }}</b>
+    </div>
+    <div class="col-sm-6">
+        {{ object.name }}
+    </div>
+</div>
+
 {# Display object model name #}
 <div class="line"></div>
 <div class="row">
