@@ -34,18 +34,43 @@ class Script(BaseScript):
         r"\s+Serial No.:(?P<serial>\S+)",
         re.MULTILINE)
 
+    rx_ver_snmp2 = re.compile(
+        r"^(?P<platform>\S+)\sDevice,[\S\s]+"
+        r"\sSoftWare\sVersion\s(?P<version>\S+)\n"
+        r"\sBootRom\sVersion\s(?P<bootprom>\S+)\n"
+        r"\sHardWare\sVersion\s(?P<hardware>\S+)\n"
+        r"\s+Device\sserial\snumber\s(?P<serial>\S+)",
+        re.MULTILINE)
+
     def execute(self):
         # Try SNMP first
         if self.has_snmp():
             try:
                 ver = self.snmp.get("1.3.6.1.2.1.1.1.0")
                 match = self.rx_ver_snmp.search(ver)
+                matc2 = self.rx_ver_snmp2.search(ver)
                 if match:
                     platform = match.group("platform")
                     version = match.group("version")
                     bootprom = match.group("bootprom")
                     hardware = match.group("hardware")
                     serial = match.group("serial")
+                    return {
+                        "vendor": "Qtech",
+                        "platform": platform,
+                        "version": version,
+                        "attributes": {
+                            "Boot PROM": bootprom,
+                            "HW version": hardware,
+                            "Serial Number": serial
+                        }
+                    }
+                elif matc2:
+                    platform = matc2.group("platform")
+                    version = matc2.group("version")
+                    bootprom = matc2.group("bootprom")
+                    hardware = matc2.group("hardware")
+                    serial = matc2.group("serial")
                     return {
                         "vendor": "Qtech",
                         "platform": platform,
