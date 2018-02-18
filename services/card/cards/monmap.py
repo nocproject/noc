@@ -142,8 +142,6 @@ class MonMapCard(BaseCard):
             name, data = containers.get(container, ("", {"geopoint": {}}))
             x = data["geopoint"].get("x")
             y = data["geopoint"].get("y")
-            if not x or not y:
-                continue
             ss = {"objects": [],
                   "total": 0,
                   "error": 0,
@@ -167,6 +165,8 @@ class MonMapCard(BaseCard):
                                    "name": mo_name,
                                    "status": status,
                                    "services": services_ss}]
+            if not x or not y:
+                continue
             objects += [{
                 "name": name,
                 "id": str(container),
@@ -240,9 +240,11 @@ class MonMapCard(BaseCard):
         if not alarms_all:
             q["managed_object"] = {"$in": mo_ids}
         coll = ActiveAlarm._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-
-        r = {o["managed_object"]: o["severity"] for o in coll.find(q,
-                                                                   {"managed_object": 1, "severity": 1, "_id": 0})}
+        r = {}
+        for o in coll.find(q, {"managed_object": 1, "severity": 1, "_id": 0}):
+            if o["managed_object"] in r and r[o["managed_object"]] < o["severity"]:
+                continue
+            r[o["managed_object"]] = o["severity"]
         return r
 
     def f_glyph_summary(self, s, collapse=False):
