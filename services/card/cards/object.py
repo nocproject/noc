@@ -140,6 +140,7 @@ class ObjectCard(BaseCard):
             "location": self.object.get_data("address", "text"),
             "contacts": contacts_list,
             "id": self.object.id,
+            "name": self.object.name,
             "children": children
         }
 
