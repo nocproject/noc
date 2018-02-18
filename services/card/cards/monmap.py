@@ -267,7 +267,11 @@ class MonMapCard(BaseCard):
                             if count is None:
                                 badge += ["<td style='padding-right: 15px;'>&nbsp;</td>"]
                             else:
-                                badge += ["<td style='padding-right: 15px;'><span class='badge' style='color: %s;cursor: pointer;' id='%s-%s'>%s</span></td>" % (  # noqa
+                                html1 = "".join(["<td style='padding-right: ",
+                                                 "15px;'><span class='badge' ",
+                                                 "style='color: %s;cursor: pointer;'",
+                                                 " id='%s-%s'>%s</span></td>"])
+                                badge += [html1 % (  # noqa
                                     self.color_map.get(color, self.color_map["default"]), pv.id, color, count)]
                         badge = "".join(badge)
                     else:
@@ -275,8 +279,11 @@ class MonMapCard(BaseCard):
                             badge = "</div>"
                         else:
                             badge = "<span class=\"badge\">%s</span></div>" % c
+                    html2 = "".join(["<td style='text-align: center; width: ",
+                                     "50px; padding-right: 15px;'><i class='%s'",
+                                     " title='%s' style='cursor: pointer;' id='%s'></i></td>"])
                     v += ["<tr>",
-                          "<td style='text-align: center; width: 50px; padding-right: 15px;'><i class='%s' title='%s' style='cursor: pointer;' id='%s'></i></td>" % (pv.glyph, pv.name, pv.id),  # noqa
+                          html2 % (pv.glyph, pv.name, pv.id),
                           badge, "<tr/>"]
 
             v += ["</tbody>", "</table>"]
