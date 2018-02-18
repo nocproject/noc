@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
 
     rx_ver = re.compile(
-        r"^\s*(?:Device: )?(?P<platform>\S+)(?: Device|, sysLocation\:).+\n"
+        r"^\s*(?:Device: )?(?P<platform>\S+)(?: Device|, sysLocation\:|).+\n"
         r"^\s*SoftWare(?: Package)? Version\s+(?P<version>\S+(?:\(\S+\))?)\n"
         r"^\s*BootRom Version\s+(?P<bootprom>\S+)\n"
         r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
