@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
 
@@ -45,7 +45,7 @@ class Script(BaseScript):
                 r = l.split(":")[1].split()
         return r
 
-    def execute(self):
+    def execute_cli(self):
         # get interfaces' status
         int_status = {}
         for s in self.scripts.get_interface_status():
