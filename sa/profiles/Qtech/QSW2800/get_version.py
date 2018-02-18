@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"^\s*SoftWare(?: Package)? Version\s+(?P<version>\S+(?:\(\S+\))?)\n"
         r"^\s*BootRom Version\s+(?P<bootprom>\S+)\n"
         r"^\s*HardWare Version\s+(?P<hardware>\S+).+"
-        r"^\s*(?:Device serial number |Serial No.:)(?P<serial>\S+)\n",
+        r"^\s*(?:Device serial number |Serial No.:(?:|\s))(?P<serial>\S+)\n",
         re.MULTILINE | re.DOTALL)
 
     rx_ver_snmp = re.compile(
