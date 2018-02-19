@@ -145,7 +145,7 @@ class Prefix(models.Model):
         Check prefix has ipv4/ipv6 transition
         :return:
         """
-        if self.afi == "4":
+        if self.is_ipv4:
             return bool(self.ipv6_transition)
         else:
             try:
@@ -153,15 +153,6 @@ class Prefix(models.Model):
                 return True
             except Prefix.DoesNotExist:
                 return False
-
-    def clear_transition(self):
-        if self.has_transition:
-            if self.afi == "4":
-                self.ipv6_transition = None
-                self.save()
-            else:
-                self.ipv4_transition.ipv6_transition = None
-                self.ipv4_transition.save()
 
     @classmethod
     def get_parent(cls, vrf, afi, prefix):
@@ -185,15 +176,20 @@ class Prefix(models.Model):
         return r[0]
 
     @property
+    def is_ipv4(self):
+        return self.afi == "4"
+
+    @property
+    def is_ipv6(self):
+        return self.afi == "6"
+
+    @property
     def is_root(self):
         """
         Returns true if the prefix is a root of VRF
         """
-        return (
-            self.afi == "4" and self.prefix == "0.0.0.0/0"
-        ) or (
-            self.afi == "6" and self.prefix == "::/0"
-        )
+        return ((self.is_ipv4 and self.prefix == "0.0.0.0/0") or
+                (self.is_ipv6 and self.prefix == "::/0"))
 
     def clean(self):
         """
@@ -201,9 +197,9 @@ class Prefix(models.Model):
         """
         super(Prefix, self).clean()
         # Check prefix is of AFI type
-        if self.afi == "4":
+        if self.is_ipv4:
             check_ipv4_prefix(self.prefix)
-        elif self.afi == "6":
+        elif self.is_ipv6:
             check_ipv6_prefix(self.prefix)
         # Check root prefix have no parent
         if self.is_root and self.parent:
@@ -355,7 +351,7 @@ class Prefix(models.Model):
         returns Netmask for IPv4
         :return:
         """
-        if self.afi == "4":
+        if self.is_ipv4:
             return IPv4(self.prefix).netmask.address
         return None
 
@@ -365,7 +361,7 @@ class Prefix(models.Model):
         Returns Broadcast for IPv4
         :return:
         """
-        if self.afi == "4":
+        if self.is_ipv4:
             return IPv4(self.prefix).last.address
         return None
 
@@ -375,7 +371,7 @@ class Prefix(models.Model):
         Returns Cisco wildcard for IPv4
         :return:
         """
-        if self.afi == "4":
+        if self.is_ipv4:
             return IPv4(self.prefix).wildcard.address
         return ""
 
@@ -385,7 +381,7 @@ class Prefix(models.Model):
         Returns IPv4 prefix size
         :return:
         """
-        if self.afi == "4":
+        if self.is_ipv4:
             return IPv4(self.prefix).size
         return None
 
@@ -635,7 +631,7 @@ class Prefix(models.Model):
 
     @property
     def usage(self):
-        if self.afi == "4":
+        if self.is_ipv4:
             size = IPv4(self.prefix).size
             if not size:
                 return 100.0
