@@ -50,7 +50,9 @@
   run_once: true
   changed_when: ids.status != 409
   failed_when: ids.status == 500
-  when: "has_svc_clickhouse | default(False)"
+  until: ids.status in (200, 302, 401, 409)
+  retries: 5
+  delay: 30
   tags:
     - config
 
@@ -71,11 +73,13 @@
       access: direct
       isDefault: False
   ignore_errors: yes
+  until: gds.status in (200, 302, 401, 409)
+  retries: 5
+  delay: 30
   register: gds
   run_once: true
   changed_when: gds.status != 409
   failed_when: gds.status == 500
-  when: "has_svc_grafanads | default(False)"
   tags:
     - config
 
