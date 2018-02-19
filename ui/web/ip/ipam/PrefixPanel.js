@@ -106,12 +106,6 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     allowBlank: true
                 },
                 {
-                    name: "ipv6_transition",
-                    xtype: "ip.prefix.LookupField",
-                    fieldLabel: __("ipv6 transition"),
-                    allowBlank: true
-                },
-                {
                     name: "project",
                     xtype: "project.project.LookupField",
                     fieldLabel: __("Project"),
