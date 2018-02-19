@@ -12,9 +12,9 @@ ExecStart={{ consul_template_bin_path }}/consul-template -config {{consul_templa
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
-RestartSec=10s
 LimitNOFILE=4096
 KillSignal=SIGINT
+SuccessExitStatus=12
 
 [Install]
 WantedBy=multi-user.target

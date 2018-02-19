@@ -22,3 +22,13 @@
     src: "os/FreeBSD/etc/rc.d/nsqd.j2"
     dest: "/usr/local/etc/rc.d/nsqd"
     mode: "a+rx"
+
+- name: create nsqd log dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  with_items:
+    - "{{nsd_log_dir}}"

@@ -23,43 +23,17 @@
 - name: include nsqd os specific tasks
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
-- name: create nsqd log dir
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: 0770
-    group: nsq
-    owner: nsq
-  when: "'FreeBSD' in ansible_system"
-  with_items:
-    - "{{nsd_log_dir}}"
-
-- name: check if nsq already exists
-  stat:
-    path: "{{nsq_root}}/nsqd"
-  register: nsqd_binary
-
-- name: check if version is ok
-  command: "{{nsq_root}}/nsqd --version"
-  register: nsq_installed_version
-  changed_when: false
-  when: nsqd_binary.stat.exists
-
-- name: check version
-  set_fact: nsq_version_is_ok=True
-  when: "nsq_version in nsq_installed_version and nsq_installed_version is defined"
-
-- name: Install nsqd monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
-    dest: "{{ telegraf_confd_path }}/nsqd.conf"
-  notify: reload telegraf
-  when:
-    - "'svc-telegraf' in groups"
-    - "inventory_hostname in groups['svc-telegraf-exec']"
-  tags:
-    - config
-    - telegraf
+- name: place nsqd ct template
+  import_role:
+    name: consul-template
+    tasks_from: service
+  vars:
+    ct_service_name: nsqd
+    ct_service_source: "nsqd.conf.ctmpl"
+    ct_service_dest: "{{nsqd_config_dir}}/nsqd.conf"
+    ct_service_command: "{{reload_command}}"
+    ct_service_command_timeout: "60s"
+    ct_service_source_template: True
 
 - name: Enable nsq system service
   service:
@@ -69,14 +43,28 @@
     - reload consul-template
     - restart nsqd
 
-- name: copy nsqd consul templates
-  template:
-    src: "{{item}}"
-    dest: "{{consul_configd_path}}/"
-  notify:
-    - reload consul
-  with_items:
-    - nsqd.json
-    - nsqdhttp.json
-  tags:
-    - consul
+- name: place nsqd consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: nsqd
+    consul_service_tags: ""
+    consul_service_port: "4150"
+    consul_service_check_type: "tcp"
+    consul_service_check_value: "127.0.0.1:4150"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: False
+
+- name: place nsqdhttp consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: nsqdhttp
+    consul_service_tags: ""
+    consul_service_port: "4151"
+    consul_service_check_type: "http"
+    consul_service_check_value: "http://127.0.0.1:4151/ping"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: False

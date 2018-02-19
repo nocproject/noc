@@ -24,15 +24,6 @@
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
-- name: install config.xml
-  template:
-    src: "{{item}}"
-    dest: "{{ch_etc_path}}/"
-  no_log: true
-  notify: restart clickhouse-server
-  with_items:
-    - "config.xml"
-
 - name: install users.xml
   template:
     src: "{{item}}"
@@ -42,6 +33,18 @@
   with_items:
     - "config.xml"
     - "users.xml"
+
+- name: place clickhouse ct template
+  include_role:
+    name: consul-template
+    tasks_from: service
+  vars:
+    ct_service_name: "{{item[:-10]| basename}}"
+    ct_service_source: "{{item | basename}}"
+    ct_service_dest: "{{ch_dictionaries_path}}/{{item[:-6] |basename}}"
+    ct_service_source_template: False
+  with_fileglob:
+    - "*.ctmpl"
 
 - name: install config overrides
   template:
@@ -53,16 +56,20 @@
   tags:
     - config
 
-- name: copy clickhouse consul templates
-  template:
-    src: clickhouse.json.j2
-    dest: "{{consul_configd_path}}/clickhouse.json"
-  notify:
-    - reload consul
-  tags:
-    - consul
-
 - name: Start clickhouse service
   service:
     name: "{{clickhouse_service_name}}"
     enabled: yes
+
+- name: place consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: clickhouse
+    consul_service_tags: ""
+    consul_service_port: "{{clickhouse_http_port}}"
+    consul_service_check_type: "http"
+    consul_service_check_value: "http://localhost:{{clickhouse_http_port}}/"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: False

@@ -4,30 +4,11 @@
     name: nsqd
     daemon_reload: yes
 
-- name: reload consul
-  become: yes
-  service:
-    name: consul
-    state: reloaded
-
 - name: restart nsqd
   become: yes
   service:
     name: nsqd
     state: restarted
-
-- name: reload consul-template
-  become: yes
-  ignore_errors: yes  # race condition
-  service:
-    name: consul-template
-    state: reloaded
-
-- name: reload telegraf
-  become: yes
-  service:
-    name: telegraf
-    state: reloaded
 
 - name: reload nsqd
   become: yes

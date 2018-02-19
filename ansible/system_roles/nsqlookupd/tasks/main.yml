@@ -60,14 +60,28 @@
     enabled: yes
     state: started
 
-- name: copy nsqlookupd consul templates
-  template:
-    src: "{{item}}"
-    dest: "{{consul_configd_path}}/"
-  notify:
-    - reload consul
-  with_items:
-    - nsqlookupd.json
-    - nsqlookupdhttp.json
-  tags:
-    - consul
+- name: place nsqlookupd consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: nsqlookupd
+    consul_service_tags: ""
+    consul_service_port: "4160"
+    consul_service_check_type: "tcp"
+    consul_service_check_value: "127.0.0.1:4160"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: False
+
+- name: place nsqlookupdhttp consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: nsqlookupdhttp
+    consul_service_tags: ""
+    consul_service_port: "4161"
+    consul_service_check_type: "http"
+    consul_service_check_value: "http://127.0.0.1:4161/ping"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: False

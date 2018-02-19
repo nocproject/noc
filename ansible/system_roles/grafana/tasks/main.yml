@@ -41,6 +41,7 @@
   template:
     src: "{{item.src}}"
     dest: "{{item.dest}}"
+  no_log: true
   with_items:
     - src: noc.js.j2
       dest: "{{ grafana_home }}/public/dashboards/noc.js"
@@ -69,11 +70,15 @@
   tags:
     - requirements
 
-- name: copy Grafana consul templates
-  template:
-    src: grafana.json.j2
-    dest: "{{consul_configd_path}}/grafana.json"
-  notify:
-    - reload consul
-  tags:
-    - consul
+- name: place consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: grafana
+    consul_service_tags: ""
+    consul_service_port: "{{grafana_http_port}}"
+    consul_service_check_type: "http"
+    consul_service_check_value: "http://localhost:{{grafana_http_port}}/api/health"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: False

@@ -1,0 +1,27 @@
+- name: install {{ct_service_name}} template
+  copy:
+    src: "{{ct_service_source}}"
+    dest: "{{ consul_template_templates_dir }}/{{ct_service_source}}"
+  when: not ct_service_source_template
+  notify:
+    - reload consul-template
+
+- name: install {{ct_service_name}} template
+  template:
+    src: "{{ct_service_source}}"
+    dest: "{{ consul_template_templates_dir }}/{{ct_service_source}}"
+  when: ct_service_source_template
+  notify:
+    - reload consul-template
+
+- name: install service {{ct_service_name}}
+  template:
+    src: service.hcl.j2
+    dest: "{{consul_template_config_dir}}/{{ct_service_name}}.conf"
+  vars:
+    source: "{{ consul_template_templates_dir }}/{{ct_service_source}}"
+    destination: "{{ct_service_dest}}"
+    command: "{{ct_service_command | default('')}}"
+    command_timeout: "{{ct_service_command_timeout | default('60s') }}"
+  notify:
+    - reload consul-template

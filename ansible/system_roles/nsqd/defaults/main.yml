@@ -4,3 +4,5 @@ nsq_url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.{{nsq_
 nsq_temp_file: "{{tower_dist_dir}}/nsq-{{nsq_version}}.{{nsq_dist}}-amd64.go1.6.2.tar.gz"
 nsqd_db_dir: "/var/spool/nsqd"
 nsq_root: /opt/nsq
+reload_command: "systemctl reload nsqd || true"
+nsqd_config_dir: "{{etc_prefix}}/nsq"

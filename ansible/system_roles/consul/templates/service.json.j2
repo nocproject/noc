@@ -1,0 +1,13 @@
+{
+  "service": {
+    "name": "{{ name }}",
+    "tags": [ {{ tags | default("")}} ],
+    "port": {{ port }},
+    "enableTagOverride": false,
+    "check": {
+        "{{ check_type }}": "{{ check_value }}",
+        "interval": "{{ check_interval }}"
+    }{% if check_http_skip_verify %},
+    "TLSSkipVerify": true{% endif %}
+  }
+}

@@ -15,15 +15,3 @@
   service:
     name: "{{ mongod_arbiter_system_service }}"
     state: restarted
-
-- name: reload telegraf
-  become: yes
-  service:
-    name: telegraf
-    state: reloaded
-
-- name: reload consul
-  become: yes
-  service:
-    name: consul
-    state: reloaded

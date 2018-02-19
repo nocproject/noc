@@ -46,17 +46,33 @@
   tags:
     - config
 
+- name: place nginx ct template
+  import_role:
+    name: consul-template
+    tasks_from: service
+  vars:
+    ct_service_name: nginx
+    ct_service_source: "upstream.conf.ctmpl"
+    ct_service_dest: "{{nginx_conf_upstream_path}}"
+    ct_service_command: "{{reload_command}}"
+    ct_service_command_timeout: "60s"
+    ct_service_source_template: False
+
 - name: Enable Nginx system service
   service:
     name: "{{ nginx_system_service }}"
     enabled: yes
     state: started
 
-- name: copy nginx consul templates
-  template:
-    src: nginx.json.j2
-    dest: "{{consul_configd_path}}/nginx.json"
-  notify:
-    - reload consul
-  tags:
-    - consul
+- name: place consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: nginx
+    consul_service_tags: ""
+    consul_service_port: 443
+    consul_service_check_type: "http"
+    consul_service_check_value: "https://{{ noc_web_host }}/ng_stats"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: "{{nginx_self_signed_cerificate}}"

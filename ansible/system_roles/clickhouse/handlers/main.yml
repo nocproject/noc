@@ -1,10 +1,4 @@
 ---
-- name: reload consul
-  become: yes
-  service:
-    name: consul
-    state: reloaded
-
 - name: reload clickhouse-server
   become: yes
   service:

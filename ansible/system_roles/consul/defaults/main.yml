@@ -19,6 +19,8 @@ consul_bin_path: "/bin"
 consul_data_path: "/var/consul"
 consul_log_path: "/var/log/consul"
 consul_pid_path: "/var/run/consul/consul.pid"
+consul_configd_path: "{{etc_prefix}}/consul.d"
+consul_scripts_path: "{{consul_configd_path}}/scripts"
 
 ### System user and group
 consul_user: "consul"

@@ -1,11 +1,4 @@
 ---
-- name: Create ch directories
-  file:
-    path: "{{item}}"
-    state: "directory"
-  with_items:
-    - "{{consul_template_ch_dictionaries_dir}}"
-
 - name: put ch dictionary templates to consul-template dir
   copy:
     src: "{{item}}"

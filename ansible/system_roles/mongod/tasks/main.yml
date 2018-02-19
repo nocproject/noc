@@ -106,22 +106,16 @@
     - config
     - telegraf
 
-- name: copy mongodb consul templates
-  template:
-    src: mongodb.json
-    dest: "{{consul_configd_path}}"
-  notify:
-    - reload consul
-  tags:
-    - consul
-
-- name: copy mongodb check script
-  template:
-    src: mongodb.sh.j2
-    dest: "{{consul_scripts_path}}/mongodb.sh"
-    mode: 0755
-  notify:
-    - reload consul
-  no_log: true
-  tags:
-    - consul
+- name: place mongod consul check
+  import_role:
+    name: consul
+    tasks_from: service
+  vars:
+    consul_service_name: mongo
+    consul_service_tags: ""
+    consul_service_port: 27017
+    consul_service_check_type: "script"
+    consul_service_check_value: "mongodb.sh"
+    consul_service_check_interval: "10s"
+    consul_service_check_http_skip_verify: False
+    consul_service_check_script: mongodb.sh.j2

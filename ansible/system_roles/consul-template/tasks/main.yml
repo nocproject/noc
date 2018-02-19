@@ -41,36 +41,8 @@
   tags:
     - config
 
-- name: include services
-  import_tasks: "services.yml"
-  tags:
-    - requirements
-    - config
-
-- name: include telegraf services
-  include_tasks: "telegraf_services.yml"
-  vars:
-    service: "{{item['name']}}"
-  when:
-    - "'svc-telegraf' in groups"
-    - "inventory_hostname in groups['svc-telegraf-exec']"
-    - "'influx' in telegraf_output_plugin"
-  with_items:
-     - "{{noc_services}}"
-  no_log: yes
-  tags:
-    - requirements
-    - config
-
-- name: include ch_dictionaries
-  import_tasks: "ch_dictionaries.yml"
-  when: ansible_nodename in groups['svc-clickhouse-exec']
-  tags:
-    - requirements
-    - config
-    - clickhouse
-
 - name: start consul-template service
   service:
     name: consul-template
     enabled: yes
+    state: started

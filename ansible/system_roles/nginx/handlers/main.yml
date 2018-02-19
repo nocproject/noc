@@ -10,15 +10,3 @@
   service:
     name: "{{ nginx_system_service }}"
     state: reloaded
-
-- name: reload telegraf
-  become: yes
-  service:
-    name: telegraf
-    state: reloaded
-
-- name: reload consul
-  become: yes
-  service:
-    name: consul
-    state: reloaded
