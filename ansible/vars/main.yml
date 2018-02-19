@@ -21,28 +21,13 @@ noc_system_service: noc
 nsqd_db_dir: "/var/spool/nsqd"
 ch_etc_path: "{{etc_prefix}}/clickhouse-server"
 ch_dictionaries_path: "{{ch_etc_path}}/dictionaries"
-grafana_pg_user: grafana
-grafana_pg_db: grafana
 mongo_dir: "{{etc_prefix}}/mongod"
 
-nginx_conf_upstream_path: "{{etc_prefix}}/nginx/upstream.conf"
 postgres_listen: 5432
 postgres_user: postgres
 
 telegraf_confd_path: "{{etc_prefix}}/telegraf/telegraf.d"
 
-nginx_reload_command: "systemctl reload nginx"
-telegraf_reload_command: "systemctl reload telegraf"
-nsqd_reload_command: "systemctl reload nsqd"
-nsqadmin_reload_command: "systemctl reload nsqadmin"
-zookeeper_reload_command: "systemctl reload zookeeper"
-
-# for scripts
-consul_configd_path: "{{etc_prefix}}/consul.d"
-consul_scripts_path: "{{consul_configd_path}}/scripts"
-consul_user: "consul"
-
-nsqd_config_dir: "{{etc_prefix}}/nsq"
 
 
 
