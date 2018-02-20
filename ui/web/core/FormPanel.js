@@ -66,7 +66,6 @@ Ext.define("NOC.core.FormPanel", {
     //
     preview: function(record, backItem) {
         var me = this;
-        //me.iframe.src = record;
     },
     // Form hotkeys processing
     onFormSpecialKey: function(field, key) {
@@ -88,6 +87,17 @@ Ext.define("NOC.core.FormPanel", {
     getFormFields: function() {
         var me = this;
         return me.fields
+    },
+    //
+    getField: function(name) {
+        var me = this,
+            fields = me.form.getFields().items;
+        for(var i = 0; i < fields.length; i++) {
+            if(fields[i].getName && fields[i].getName() === name) {
+                return fields[i]
+            }
+        }
+        return undefined
     },
     //
     getFormToolbar: function() {

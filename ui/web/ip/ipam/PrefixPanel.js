@@ -45,10 +45,11 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                 },
                 {
                     name: "prefix",
-                    xtype: "textfield",
+                    xtype: "combobox",
                     fieldLabel: __("Prefix"),
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "medium",
+                    store: []
                 },
                 {
                     name: "description",
@@ -175,6 +176,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 me.rebaseButton.setDisabled(false);
+                me.getField("prefix").setReadOnly(true);
                 me.setValues(data)
             },
             failure: function() {
@@ -186,8 +188,10 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
     // New prefix form
     //
     newPrefix: function(parentId, prefix) {
-        var me = this;
+        var me = this,
+            prefixField = me.getField("prefix");
         me.currentPrefixId = null;
+        // Load data
         Ext.Ajax.request({
             url: me.restUrl + parentId + "/",
             method: "GET",
@@ -205,10 +209,21 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     values.prefix = me.app.getCommonPrefixPart(data.afi, data.prefix)
                 }
                 me.rebaseButton.setDisabled(true);
+                prefixField.setReadOnly(false);
                 me.setValues(values)
             },
             failure: function() {
                 NOC.error(__("Failed to load data"))
+            }
+        });
+        // Set suggestions
+        Ext.Ajax.request({
+            url: me.restUrl + parentId + "/suggest_free/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                prefixField.setStore(data.map(function(v) {return v.prefix}))
             }
         })
     },
