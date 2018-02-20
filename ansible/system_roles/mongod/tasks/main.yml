@@ -28,7 +28,7 @@
   template:
     src: "mongo.key.j2"
     dest: "{{ mongo_dir }}/mongo.key"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
 
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
@@ -75,7 +75,7 @@
   template:
     src: shell.js.j2
     dest: "{{ mongo_dir }}/shell.js"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   tags:
     - config
 
@@ -101,7 +101,7 @@
   when:
     - "'svc-telegraf' in groups"
     - "inventory_hostname in groups['svc-telegraf-exec']"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   tags:
     - config
     - telegraf

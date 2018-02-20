@@ -14,7 +14,7 @@
     owner: "{{ nginx_user }}"
     force: "{{nginx_external_cert_management}}"
   notify: reload nginx
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
 
 - name: Set up SSL certificate
   copy:
@@ -24,4 +24,4 @@
     owner: "{{ nginx_user }}"
     force: "{{nginx_external_cert_management}}"
   notify: reload nginx
-  no_log: true
+  no_log: "{{tower_show_secrets}}"

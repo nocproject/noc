@@ -15,12 +15,11 @@ tower_ip: 127.0.0.1
 tower_path: /opt/tower
 tower_dist_dir: "{{tower_path}}/var/tower/data/src_dist"
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
-tower_minimum_version: "0.2.0"
+tower_show_secrets: "{{ not lookup('env','TOWER_SHOW_SECRETS') or False | bool }}"
+tower_minimum_version: "0.4.0"
 
 noc_system_service: noc
 nsqd_db_dir: "/var/spool/nsqd"
-ch_etc_path: "{{etc_prefix}}/clickhouse-server"
-ch_dictionaries_path: "{{ch_etc_path}}/dictionaries"
 mongo_dir: "{{etc_prefix}}/mongod"
 
 postgres_listen: 5432

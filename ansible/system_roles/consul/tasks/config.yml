@@ -7,7 +7,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_power == 'bootstrap' }}"
@@ -24,7 +24,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_power == 'server' }}"
@@ -41,7 +41,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_power == 'agent' }}"

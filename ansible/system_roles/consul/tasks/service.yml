@@ -19,7 +19,7 @@
       src: "{{consul_service_check_script}}"
       dest: "{{consul_scripts_path}}/{{consul_service_check_value}}"
       mode: 0755
-    no_log: true
+    no_log: "{{tower_show_secrets}}"
     notify:
     - reload consul
   when: consul_service_check_type == "script"

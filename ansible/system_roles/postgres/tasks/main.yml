@@ -80,7 +80,7 @@
   when:
     - "'svc-telegraf' in groups"
     - "inventory_hostname in groups['svc-telegraf-exec']"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   tags:
     - config
     - telegraf

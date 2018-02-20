@@ -28,7 +28,7 @@
   template:
     src: "{{item}}"
     dest: "{{ch_etc_path}}/"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
   with_items:
     - "config.xml"
@@ -51,7 +51,7 @@
     src: "noc.xml"
     dest: "{{ ch_etc_path }}/noc.xml"
     force: no
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
   tags:
     - config
