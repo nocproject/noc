@@ -20,6 +20,7 @@ from noc.fm.models.outage import Outage
 from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
@@ -162,6 +163,7 @@ class ManagedObjectCard(BaseCard):
                 "untagged_vlan": None,
                 "tagged_vlan": None,
                 "service": i.service,
+                "profile": i.profile,
                 "service_summary": service_summary.get("interface").get(i.id, {})
             }]
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
