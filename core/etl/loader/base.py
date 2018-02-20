@@ -308,7 +308,7 @@ class BaseLoader(object):
         rs = v.get("remote_system")
         rid = v.get("remote_id")
         if not rs or not rid:
-            print("RS or RID not found")
+            self.logger.warning("RS or RID not found")
             return None
         try:
             return self.model.objects.get(remote_system=rs, remote_id=rid)
@@ -347,7 +347,7 @@ class BaseLoader(object):
         """
         Change object with attributes
         """
-        print("Changed object")
+        self.logger.debug("Changed object")
         # See: https://code.getnoc.com/noc/noc/merge_requests/49
         try:
             o = self.model.objects.get(pk=object_id)
@@ -389,7 +389,7 @@ class BaseLoader(object):
         if o:
             self.c_change += 1
             # Lost&found object with same remote_id
-            print("Lost and Found object")
+            self.logger.debug("Lost and Found object")
             vv = {
                 "remote_system": v["remote_system"],
                 "remote_id": v["remote_id"]
