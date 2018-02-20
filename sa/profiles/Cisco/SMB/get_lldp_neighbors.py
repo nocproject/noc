@@ -25,9 +25,9 @@ class Script(BaseScript):
         r"^Capabilities:\s*(?P<caps>.+?)\s*\n",
         re.MULTILINE)
     rx_system_name = re.compile(
-        r"^System Name:\s*(?P<system_name>.+?)\s*\n", re.MULTILINE)
+        r"^System Name:(?P<system_name>.*)\n", re.MULTILINE)
     rx_port_descr = re.compile(
-        r"^Port description:\s*(?P<port_descr>.+?)\s*\n", re.MULTILINE)
+        r"^Port description:(?P<port_descr>.*)\n", re.MULTILINE)
 
     def execute_cli(self):
         r = []
@@ -79,10 +79,10 @@ class Script(BaseScript):
                 "remote_capabilities": cap,
             }
             match = self.rx_system_name.search(v)
-            if match:
+            if match and match.group("system_name"):
                 n["remote_system_name"] = match.group("system_name")
             match = self.rx_port_descr.search(v)
-            if match:
+            if match and match.group("port_descr"):
                 n["remote_port_description"] = match.group("port_descr")
             i = {
                 "local_interface": local_if,
