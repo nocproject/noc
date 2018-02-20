@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import types
 import cPickle
 # Third-party modules
 from django.db import models
@@ -148,7 +147,7 @@ class InetArrayField(models.Field):
         return "INET[]"
 
     def to_python(self, value):
-        if isinstance(value, types.ListType):
+        if isinstance(value, list):
             return value
         elif value == "{}":
             return []
