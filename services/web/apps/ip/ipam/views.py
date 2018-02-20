@@ -53,51 +53,6 @@ class IPAMApplication(ExtApplication):
         return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
                            dist=dist, sep=sep)
 
-    def ds_afi(self, afi):
-        """
-        Return dual-stack pair AFI
-        :param afi: "4" or "6"
-        :return:
-        """
-        return "6" if afi == "4" else "4"
-
-    def process_dual_stacking(self, prefix, ds_prefix):
-        """
-        Process dual-stacking linking
-        :param prefix:
-        :type prefix: Prefix
-        :param ds_prefix:
-        :type prefix: str
-        """
-        if not ds_prefix:
-            prefix.clear_transition()
-            return
-
-        ds_afi = self.ds_afi(prefix.afi)
-        try:
-            ds_p = Prefix.objects.get(vrf=prefix.vrf,
-                                      afi=ds_afi,
-                                      prefix=ds_prefix)
-        except Prefix.DoesNotExist:
-            # Create paired prefix
-            ds_p = Prefix(
-                vrf=prefix.vrf,
-                afi=ds_afi,
-                prefix=ds_prefix,
-                asn=prefix.asn,
-                description=prefix.description,
-                state=prefix.state,
-                vc=prefix.vc,
-                tags=prefix.tags
-            )
-            ds_p.save()
-        if prefix.afi == "4":
-            prefix.ipv6_transition = ds_p
-            prefix.save()
-        else:
-            ds_p.ipv6_transition = prefix
-            ds_p.save()
-
     @view(url=r"^$", url_name="index", menu="Assigned Addresses",
           access="view")
     def view_index(self, request):
@@ -127,7 +82,7 @@ class IPAMApplication(ExtApplication):
                 description__icontains=query)
         else:
             q = Q()
-        # Display groupped VRFs
+        # Display grouped VRFs
         q_afi = Q(afi_ipv4=True) | Q(afi_ipv6=True)
         groups = []
         for vg in VRFGroup.objects.all().order_by("name"):

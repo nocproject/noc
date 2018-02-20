@@ -367,6 +367,36 @@ class ExtModelApplication(ExtApplication):
             extra["select"] = extra_select
         return extra, new_order
 
+    def can_create(self, user, obj):
+        """
+        Check user can create object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
+    def can_update(self, user, obj):
+        """
+        Check user can update object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
+    def can_delete(self, user, obj):
+        """
+        Check user can delete object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
@@ -420,6 +450,12 @@ class ExtModelApplication(ExtApplication):
                     "status": False,
                     "message": "Validation error: %s" % " | ".join(e_msg)
                 }, status=self.BAD_REQUEST)
+            # Check permissions
+            if not self.can_create(request.user, o):
+                return self.render_json({
+                    "status": False,
+                    "message": "Permission denied"
+                }, status=self.FORBIDDEN)
             # Check for duplicates
             try:
                 o.save()
@@ -503,6 +539,12 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Validation error: %s" % " | ".join(e_msg)
             }, status=self.BAD_REQUEST)
+        # Check permissions
+        if not self.can_create(request.user, o):
+            return self.render_json({
+                "status": False,
+                "message": "Permission denied"
+            }, status=self.FORBIDDEN)
         # Save
         try:
             o.save()
@@ -532,6 +574,12 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
+        # Check permissions
+        if not self.can_delete(request.user, o):
+            return self.render_json({
+                "status": False,
+                "message": "Permission denied"
+            }, status=self.FORBIDDEN)
         try:
             o.delete()
         except ValueError as e:

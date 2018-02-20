@@ -258,8 +258,9 @@ document.currentPrefix = "{{ prefix.prefix }}";
                                 "<tr class='free-address' style='display:none'>" +
                                 s +
                                 "<td><img id='s_" + value +
-                                "' class='s_img' src='/static/img/blank_1x1.png'/></td><td><a href='#' onclick='me.addAddress({{ prefix.id }}, \"" +
-                                +value + "\")' title='Click to add new address'>" +
+                                "' class='s_img' src='/static/img/blank_1x1.png'/></td>" +
+                                "<td><a href='#' onclick='app.onAddAddress({{ prefix.id }}, \"" +
+                                value + "\")' title='Click to add new address'>" +
                                 value + "</a>" +
                                 "</td><td colspan='7'>Free...</td></tr>"
                             )
