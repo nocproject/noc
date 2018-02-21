@@ -76,7 +76,7 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": remote_chassis_id_subtype,
                 "remote_port": remote_port,
                 "remote_port_subtype": remote_port_subtype,
-                "remote_capabilities": cap,
+                "remote_capabilities": cap
             }
             match = self.rx_system_name.search(v)
             if match and match.group("system_name"):
