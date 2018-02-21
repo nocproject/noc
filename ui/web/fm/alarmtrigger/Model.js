@@ -70,13 +70,12 @@ Ext.define("NOC.fm.alarmtrigger.Model", {
             persist: false
         },
         {
-            name: "pyrule",
-            type: "int"
+            name: "handler",
+            type: "string"
         },
         {
-            name: "pyrule__label",
-            type: "string",
-            persist: false
+            name: "description",
+            type: "string"
         }
     ]
 });
