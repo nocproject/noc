@@ -53,6 +53,16 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: __("Set unmanaged"),
             action: "set_unmanaged",
             glyph: NOC.glyph.times
+        },
+        {
+            title: __("New Maintaince"),
+            glyph: NOC.glyph.wrench,
+            run: "newMaintaince"
+        },
+        {
+            title: __("Add to Maintaince"),
+            glyph: NOC.glyph.plus,
+            run: "addToMaintaince"
         }
     ],
     validationModelId: "sa.ManagedObject",
@@ -68,18 +78,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 layout: "form",
                 columnWidth: 0.5
             };
-        me.actions.push(
-            {
-                title: __("New Maintaince"),
-                glyph: NOC.glyph.wrench,
-                run: me.newMaintaince
-            },
-            {
-                title: __("Add to Maintaince"),
-                glyph: NOC.glyph.plus,
-                run: me.addToMaintaince
-            }
-        );
+
         me.configPreviewButton = Ext.create("Ext.button.Button", {
             text: __("Config"),
             glyph: NOC.glyph.file,

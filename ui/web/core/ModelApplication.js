@@ -128,7 +128,7 @@ Ext.define("NOC.core.ModelApplication", {
             name: "search_field",
             hideLabel: true,
             width: 400,
-            typeAhead: false,
+            typeAhead: true,
             typeAheadDelay: 500,
             hasAccess: function(app) {
                 return app.search === true;
