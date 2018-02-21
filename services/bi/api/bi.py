@@ -157,10 +157,12 @@ class BIAPI(API):
                 r["fields"] += [{
                     "name": f.name,
                     "description": _(f.description),
-                    "type": f.db_type,
-                    "is_agg": isinstance(f, AggregatedField),
+                    "type": f.get_db_type(),
+                    "is_agg": f.is_agg,
                     "dict": d
                 }]
+                if hasattr(f, "model"):
+                    r["fields"][-1]["model"] = f.model
             result += [r]
         return result
 
