@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.eventtrigger Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.eventtrigger.Model");
@@ -70,16 +70,11 @@ Ext.define("NOC.fm.eventtrigger.Model", {
             persist: false
         },
         {
-            name: "pyrule",
-            type: "int"
-        },
-        {
-            name: "pyrule__label",
-            type: "string",
-            persist: false
-        },
-        {
             name: "handler",
+            type: "string"
+        },
+        {
+            name: "description",
             type: "string"
         }
     ]
