@@ -30,7 +30,7 @@ class IDCheck(DiscoveryCheck):
         interface_macs = self.get_artefact("interface_macs")
         self.logger.info(
             "Identity found: "
-            "Chassis MACs = %s, hostname = %s, router-id = %s,"
+            "Chassis MACs = %s, hostname = %s, router-id = %s, "
             "additional MACs = %s",
             cm,
             result.get("hostname"),
