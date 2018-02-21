@@ -933,7 +933,6 @@ Ext.define("NOC.core.ModelApplication", {
     // Search
     onSearch: function(query) {
         var me = this;
-        console.log('handler');
         if(query && query.length > 0) {
             me.currentQuery.__query = query;
         } else {
