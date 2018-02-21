@@ -128,7 +128,7 @@ Ext.define("NOC.core.ModelApplication", {
             name: "search_field",
             hideLabel: true,
             width: 400,
-            typeAhead: true,
+            typeAhead: false,
             typeAheadDelay: 500,
             hasAccess: function(app) {
                 return app.search === true;
@@ -1234,7 +1234,10 @@ Ext.define("NOC.core.ModelApplication", {
             me.showGroupEditForm(records);
             return;
         }
-        if(Ext.isFunction(item.run)) {
+        if(Ext.isFunction(item.run) || Ext.isFunction(me[item.run])) {
+            if(typeof item.run === 'string'){
+                item.run = me[item.run];
+            }
             item.run(
                 me.grid.getSelectionModel().getSelection()
                 .map(function(o) {
