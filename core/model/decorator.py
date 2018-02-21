@@ -185,7 +185,11 @@ def on_delete_check(check=None, clean=None, delete=None):
                 ro.delete()
 
     def iter_related(object, model, field):
-        for ro in model.objects.filter(**{field: str(object.id)}):
+        if setup["is_document"]:
+            qs = {field: str(object.id)}
+        else:
+            qs = {field: object.pk}
+        for ro in model.objects.filter(**qs):
             yield ro
 
     def iter_models(name):
@@ -204,6 +208,7 @@ def on_delete_check(check=None, clean=None, delete=None):
                 sender=cls,
                 weak=False
             )
+            setup["is_document"] = True
         else:
             django_signals.pre_delete.connect(
                 on_delete_handler,
@@ -216,5 +221,8 @@ def on_delete_check(check=None, clean=None, delete=None):
         "check": check or [],
         "clean": clean or [],
         "delete": delete or []
+    }
+    setup = {
+        "is_document": False
     }
     return decorator
