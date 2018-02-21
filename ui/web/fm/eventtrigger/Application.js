@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.eventtrigger application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.eventtrigger.Application");
@@ -13,8 +13,7 @@ Ext.define("NOC.fm.eventtrigger.Application", {
         "NOC.main.timepattern.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.notificationgroup.LookupField",
-        "NOC.main.template.LookupField",
-        "NOC.main.pyrule.LookupField"
+        "NOC.main.template.LookupField"
     ],
     model: "NOC.fm.eventtrigger.Model",
     columns: [
@@ -30,11 +29,13 @@ Ext.define("NOC.fm.eventtrigger.Application", {
         },
         {
             text: __("Event Class RE"),
-            dataIndex: "event_class_re"
+            dataIndex: "event_class_re",
+            width: 200
         },
         {
             text: __("Condition"),
-            dataIndex: "condition"
+            dataIndex: "condition",
+            width: 200
         },
         {
             text: __("Time Pattern"),
@@ -57,13 +58,9 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             renderer: NOC.render.Lookup("template")
         },
         {
-            text: __("PyRule"),
-            dataIndex: "pyrule",
-            renderer: NOC.render.Lookup("pyrule")
-        },
-        {
             text: __("Handler"),
-            dataIndex: "handler"
+            dataIndex: "handler",
+            flex: 1
         }
     ],
     fields: [
@@ -78,6 +75,12 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             xtype: "checkboxfield",
             boxLabel: __("Is Enabled"),
             allowBlank: false
+        },
+        {
+            name: "description",
+            xtype: "textarea",
+            fieldLabel: __("Description"),
+            allowBlank: true
         },
         {
             name: "event_class_re",
@@ -113,12 +116,6 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             name: "template",
             xtype: "main.template.LookupField",
             fieldLabel: __("Template"),
-            allowBlank: true
-        },
-        {
-            name: "pyrule",
-            xtype: "main.pyrule.LookupField",
-            fieldLabel: __("pyRule"),
             allowBlank: true
         },
         {

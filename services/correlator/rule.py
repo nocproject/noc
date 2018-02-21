@@ -2,12 +2,11 @@
 # ---------------------------------------------------------------------
 # Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012, The NOC Project
+# Copyright (C) 2007-2018, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.main.models import PyRule
 from noc.lib.datasource import datasource_registry
 
 
@@ -19,12 +18,6 @@ class Rule(object):
         self.condition = compile(dr.condition, "<string>", "eval")
         mo_exp = dr.managed_object or "event.managed_object"
         self.managed_object = compile(mo_exp, "<string>", "eval")
-        try:
-            self.conditional_pyrule = PyRule.objects.get(
-                name=ec.conditional_pyrule_name,
-                interface="IDispositionCondition")
-        except PyRule.DoesNotExist:
-            self.conditional_pyrule = None
         self.action = dr.action
         self.alarm_class = dr.alarm_class
         self.stop_disposition = dr.stop_disposition
@@ -64,7 +57,8 @@ class Rule(object):
                     "lambda vars: datasource_registry['%s'](%s)" % (
                         ds.datasource,
                         ", ".join(["%s=vars['%s']" % (k, v)
-                                   for k, v in ds.search.items()])),
+                                   for k, v in ds.search.items()])
+                    ),
                     {"datasource_registry": datasource_registry}, {})
 
     def get_vars(self, e):
@@ -85,8 +79,10 @@ class Rule(object):
             # Calculate dynamic defaults
             ds_vars = vars.copy()
             ds_vars["managed_object"] = e.managed_object
-            context = dict((k, v(ds_vars))
-                for k, v in self.datasources.items())
+            context = dict(
+                (k, v(ds_vars))
+                for k, v in self.datasources.items()
+            )
             context.update(vars)
             for k, v in self.d_defaults.items():
                 x = eval(v, {}, context)

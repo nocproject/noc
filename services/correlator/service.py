@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # noc-correlator daemon
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2018, The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -510,11 +510,7 @@ class CorrelatorService(Service):
             return
         # Apply disposition rules
         for r in drc:
-            if r.conditional_pyrule:
-                cond = r.conditional_pyrule(rule_name=r.name, event=e)
-            else:
-                cond = self.eval_expression(r.condition, event=e)
-            if cond:
+            if self.eval_expression(r.condition, event=e):
                 # Process action
                 if r.action == "drop":
                     self.logger.info("[%s] Dropped by action", event_id)

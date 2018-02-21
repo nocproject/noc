@@ -114,12 +114,12 @@ class NOCPyruleLoader(NOCLoader):
         try:
             coll = self._get_collection()
             # Try to load module
-            d = coll.find_one({"_id": key}, {"_id": 0, "source": 1})
+            d = coll.find_one({"name": key}, {"_id": 0, "source": 1})
             if d:
                 return d.get("source", "")  # Found
             # Not found, try to resolve as package name
             d = coll.find_one({
-                "_id": {
+                "name": {
                     "$regex": r"^{}\.".format(key.replace(".", "\\."))
                 }
             })

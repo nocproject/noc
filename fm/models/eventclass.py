@@ -304,10 +304,6 @@ class EventClass(Document):
             "A": "Log and Archive"
         }[self.action]
 
-    @property
-    def conditional_pyrule_name(self):
-        return ("fm_dc_" + rulename_quote(self.name)).lower()
-
     def to_json(self):
         c = self
         r = ["{"]
