@@ -22,7 +22,6 @@ import cachetools
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.dictionary import Dictionary
-from noc.core.clickhouse.fields import AggregatedField
 from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms

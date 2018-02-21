@@ -30,7 +30,7 @@ class AggregatedInterface(Model):
     managed_object = ReferenceField(
         ManagedObject,
         description=_("Object Name"),
-        selector=True
+        model="sa.ManagedObject"
     )
     path = ArrayField(StringField())
     load_in = AggregatedField(UInt64Field, ["avg", "max", "quantile(0.95)"],

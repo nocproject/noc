@@ -22,7 +22,6 @@ class BaseField(object):
         self.name = None
         self.default = default or self.default_value
         self.description = description
-        self.selector = False
         self.is_agg = False
 
     def get_create_sql(self):
