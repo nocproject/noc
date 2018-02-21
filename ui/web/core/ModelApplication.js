@@ -93,7 +93,6 @@ Ext.define("NOC.core.ModelApplication", {
             case "history":
                 me.restoreHistory(me.noc.cmd.args);
                 return;
-                break;
             case "new":
                 me.newRecord(me.noc.cmd.args);
                 break;
@@ -128,7 +127,7 @@ Ext.define("NOC.core.ModelApplication", {
             name: "search_field",
             hideLabel: true,
             width: 400,
-            typeAhead: true,
+            typeAhead: false,
             typeAheadDelay: 500,
             hasAccess: function(app) {
                 return app.search === true;
@@ -934,6 +933,7 @@ Ext.define("NOC.core.ModelApplication", {
     // Search
     onSearch: function(query) {
         var me = this;
+        console.log('handler');
         if(query && query.length > 0) {
             me.currentQuery.__query = query;
         } else {
