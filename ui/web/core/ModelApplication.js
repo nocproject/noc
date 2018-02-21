@@ -1234,7 +1234,10 @@ Ext.define("NOC.core.ModelApplication", {
             me.showGroupEditForm(records);
             return;
         }
-        if(Ext.isFunction(item.run)) {
+        if(Ext.isFunction(item.run) || Ext.isFunction(me[item.run])) {
+            if(typeof item.run === 'string'){
+                item.run = me[item.run];
+            }
             item.run(
                 me.grid.getSelectionModel().getSelection()
                 .map(function(o) {
