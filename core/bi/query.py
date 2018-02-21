@@ -149,7 +149,7 @@ def f_selector(seq):
 
 def f_quantile(seq):
 
-    return "qunatile(%f)(%s)" % seq
+    return "quantile(%f)(%s)" % seq
 
 
 OP_MAP = {
