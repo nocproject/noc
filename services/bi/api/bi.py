@@ -27,6 +27,7 @@ from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
 from noc.bi.models.span import Span
 from noc.bi.models.managedobjects import ManagedObject
+from noc.bi.models.aggregatedinterface import AggregatedInterface
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
@@ -61,7 +62,8 @@ class BIAPI(API):
         Reboots,
         Alarms,
         Span,
-        ManagedObject
+        ManagedObject,
+        AggregatedInterface
     ]
 
     _ds_cache = cachetools.TTLCache(maxsize=1000, ttl=300)
@@ -154,9 +156,12 @@ class BIAPI(API):
                 r["fields"] += [{
                     "name": f.name,
                     "description": _(f.description),
-                    "type": f.db_type,
+                    "type": f.get_db_type(),
+                    "is_agg": f.is_agg,
                     "dict": d
                 }]
+                if hasattr(f, "model"):
+                    r["fields"][-1]["model"] = f.model
             result += [r]
         return result
 
