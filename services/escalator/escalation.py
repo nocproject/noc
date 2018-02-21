@@ -286,7 +286,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                                 ca.escalation_tt)
                             metrics["escalation_tt_comment_fail"] += 1
             # Send notification
-            if a.notification_group:
+            if a.notification_group and mo.can_notify():
                 subject = a.template.render_subject(**ctx)
                 body = a.template.render_body(**ctx)
                 logger.debug("[%s] Notification message:\nSubject: %s\n%s",

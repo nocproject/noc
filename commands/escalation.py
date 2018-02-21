@@ -237,45 +237,50 @@ class Command(BaseCommand):
                 }
                 if e.create_tt:
                     self.print("    Creating TT")
-                    if not mo.can_escalate():
-                        self.print("    @ Cannot find TT System")
-                        continue
                     tt_system = mo.tt_system
-                    tts = tt_system.get_system()
-                    self.print("    TT System: %s  Mapped Id: %s" % (
-                        tt_system.name, mo.tt_system_id
-                    ))
-                    subject = e.template.render_subject(**ctx)
-                    body = e.template.render_body(**ctx)
-                    self.print("    @ Create network TT")
-                    self.print("    | Subject: %s" % subject)
-                    self.print("    |")
-                    self.print("    | %s" % body.replace("\n", "\n    | "))
-                    tt_id = "<NETWORK TT>"
-                    ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
-                    # alarm.escalate(ctx["tt"], close_tt=e.close_tt)
-                    if tts.promote_group_tt:
-                        self.print("    Promoting group TT")
-                        self.print("    @ Create Group TT")
-                        # Add objects
-                        for o in alarm.iter_affected():
-                            if o.can_escalate():
-                                if o.tt_system == mo.tt_system:
-                                    self.print("    @ Add to group TT %s. Remote Id: %s" % (
-                                        o.name, o.tt_system_id))
+                    if not tt_system:
+                        self.print("    @ No TT System. Cannot escalate")
+                    elif not mo.can_escalate():
+                        self.print("    @ Escalation disabled by policy")
+                    else:
+                        tts = tt_system.get_system()
+                        self.print("    TT System: %s  Mapped Id: %s" % (
+                            tt_system.name, mo.tt_system_id
+                        ))
+                        subject = e.template.render_subject(**ctx)
+                        body = e.template.render_body(**ctx)
+                        self.print("    @ Create network TT")
+                        self.print("    | Subject: %s" % subject)
+                        self.print("    |")
+                        self.print("    | %s" % body.replace("\n", "\n    | "))
+                        tt_id = "<NETWORK TT>"
+                        ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
+                        # alarm.escalate(ctx["tt"], close_tt=e.close_tt)
+                        if tts.promote_group_tt:
+                            self.print("    Promoting group TT")
+                            self.print("    @ Create Group TT")
+                            # Add objects
+                            for o in alarm.iter_affected():
+                                if o.can_escalate(depended=True):
+                                    if o.tt_system == mo.tt_system:
+                                        self.print("    @ Add to group TT %s. Remote Id: %s" % (
+                                            o.name, o.tt_system_id))
+                                    else:
+                                        self.print("    @ Cannot add to group TT. Belongs to other TT system" % o.name)
                                 else:
-                                    self.print("    @ Cannot add to group TT. Belongs to other TT system" % o.name)
-                            else:
-                                self.print("    @ Cannot add to group TT %s. Escalations are disabled" % (
-                                    o.name
-                                ))
+                                    self.print("    @ Cannot add to group TT %s. Escalations are disabled" % (
+                                        o.name
+                                    ))
                 if e.notification_group:
-                    subject = e.template.render_subject(**ctx)
-                    body = e.template.render_body(**ctx)
-                    self.print("    @ Sending notification to group '%s'" % e.notification_group.name)
-                    self.print("    | Subject: %s" % subject)
-                    self.print("    |")
-                    self.print("    | %s" % body.replace("\n", "\n    | "))
+                    if mo.can_notify():
+                        subject = e.template.render_subject(**ctx)
+                        body = e.template.render_body(**ctx)
+                        self.print("    @ Sending notification to group '%s'" % e.notification_group.name)
+                        self.print("    | Subject: %s" % subject)
+                        self.print("    |")
+                        self.print("    | %s" % body.replace("\n", "\n    | "))
+                    else:
+                        self.print("    @ Notification disabled by policy")
                 if e.stop_processing:
                     self.print("    @ Stop processing")
                     break

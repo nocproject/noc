@@ -1214,6 +1214,14 @@ class ManagedObject(Model):
         """
         if not self.tt_system or not self.tt_system_id:
             return False
+        return self.can_notify(depended)
+
+    def can_notify(self, depended=False):
+        """
+        Check alarm can be notified via escalation
+        :param depended:
+        :return:
+        """
         if self.escalation_policy == "E":
             return True
         elif self.escalation_policy == "P":
