@@ -16,40 +16,40 @@ class Migration:
         db.add_column(
             "fm_alarmtrigger",
             "handler",
-            models.CharField(_("Handler"),
+            models.CharField("Handler",
                              max_length=128, null=True, blank=True)
         )
         db.add_column(
             "fm_alarmtrigger",
             "description",
-            models.CharField(_("Description"),
+            models.CharField("Description",
                              max_length=256, null=True, blank=True)
         )
         db.add_column(
             "fm_eventtrigger",
             "description",
-            models.CharField(_("Description"),
+            models.CharField("Description",
                              max_length=256, null=True, blank=True)
         )
         # Fill description
         rows = db.execute(
-            """SELECT t.id, r.name 
+            """SELECT t.id, r.name
             FROM fm_eventtrigger t JOIN main_pyrule r ON (t.pyrule_id = r.id)
             """)
         for t_id, rule_name in rows:
             db.execute(
-                """UPDATE fm_eventtrigger 
+                """UPDATE fm_eventtrigger
                 SET desciption = 'Removed pyRule ' || %s
                 WHERE id = %s
                 """, [rule_name, t_id]
             )
         rows = db.execute(
-            """SELECT t.id, r.name 
+            """SELECT t.id, r.name
             FROM fm_alarmtrigger t JOIN main_pyrule r ON (t.pyrule_id = r.id)
             """)
         for t_id, rule_name in rows:
             db.execute(
-                """UPDATE fm_alarmtrigger 
+                """UPDATE fm_alarmtrigger
                 SET desciption = 'Removed pyRule ' || %s
                 WHERE id = %s
                 """, [rule_name, t_id]
