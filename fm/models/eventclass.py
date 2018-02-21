@@ -345,7 +345,7 @@ class EventClass(Document):
         # Disposition rules
         if c.disposition:
             r += ["    \"disposition\": ["]
-            l = []
+            disp = []
             for d in c.disposition:
                 ll = ["        {"]
                 lll = ["            \"name\": \"%s\"" % q(d.name)]
@@ -357,15 +357,15 @@ class EventClass(Document):
                     lll += ["            \"managed_object\": \"%s\"" % q(d.managed_object)]
                 ll += [",\n".join(lll)]
                 ll += ["        }"]
-                l += ["\n".join(ll)]
-            r += [",\n".join(l)]
+                disp += ["\n".join(ll)]
+            r += [",\n".join(disp)]
             r += ["    ]"]
         #
             if not r[-1].endswith(","):
                 r[-1] += ","
         r += ["    \"repeat_suppression\": ["]
         if c.repeat_suppression:
-            l = []
+            rep = []
             for rs in c.repeat_suppression:
                 ll = ["        {"]
                 lll = ["            \"name\": \"%s\"," % q(rs.name)]
@@ -380,8 +380,8 @@ class EventClass(Document):
                 lll += ["            \"suppress\": %s" % ("true" if rs.suppress else "false")]
                 ll += ["\n".join(lll)]
                 ll += ["        }"]
-                l += ["\n".join(ll)]
-            r += [",\n".join(l)]
+                rep += ["\n".join(ll)]
+            r += [",\n".join(rep)]
         r += ["    ]"]
         # Plugins
         if self.plugins:
@@ -413,6 +413,7 @@ class EventClass(Document):
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
 
 rx_rule_name_quote = re.compile("[^a-zA-Z0-9]+")
 
