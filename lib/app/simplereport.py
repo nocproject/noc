@@ -397,9 +397,9 @@ class TableColumn(ReportNode):
         Display boolean field
         """
         if f:
-            return SafeString("<img src='/static/pkg/famfamfam-silk/tick.png' />")
+            return SafeString("<i class='fa fa-check' style='color:#2ecc71'></i>")
         else:
-            return SafeString("<img src='/static/pkg/famfamfam-silk/cross.png' />")
+            return SafeString("<i class='fa fa-times' style='color:#c0392b'></i>")
 
     def f_url(self, url):
         """
