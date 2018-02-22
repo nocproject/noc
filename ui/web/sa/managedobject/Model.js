@@ -27,7 +27,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "administrative_domain",
             type: "int",
-            default: 1
+            defaultValue: 1
         },
         {
             name: "administrative_domain__label",
@@ -37,7 +37,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "auth_profile",
             type: "int",
-            default: null
+            defaultValue: null
         },
         {
             name: "auth_profile__label",
@@ -74,7 +74,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "vendor",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "vendor__label",
@@ -84,7 +84,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "platform",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "platform__label",
@@ -94,7 +94,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "version",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "version__label",
@@ -117,7 +117,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "object_profile",
             type: "int",
-            default: 1
+            defaultValue: 1
         },
         {
             name: "object_profile__label",
@@ -127,12 +127,12 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "description",
             type: "string",
-            default: ""
+            defaultValue: ""
         },
         {
             name: "scheme",
             type: "int",
-            defaukt: 1
+            defaultValue: 1
         },
         {
             name: "address",
@@ -141,22 +141,22 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "port",
             type: "int",
-            default: 0
+            defaultValue: 0
         },
         {
             name: "user",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "password",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "super_password",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "remote_path",
@@ -185,12 +185,12 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "snmp_ro",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "snmp_rw",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "vc_domain",
@@ -262,7 +262,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "max_scripts",
             type: "int",
-            default: 0
+            defaultValue: 0
         },
         {
             name: "time_pattern",
@@ -276,7 +276,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "controller",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "controller__label",
@@ -312,7 +312,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "remote_system",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "remote_system__label",
@@ -334,7 +334,7 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "tt_system",
             type: "string",
-            default: null
+            defaultValue: null
         },
         {
             name: "tt_system__label",
@@ -352,57 +352,57 @@ Ext.define("NOC.sa.managedobject.Model", {
         {
             name: "escalation_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "box_discovery_alarm_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "periodic_discovery_alarm_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "cli_session_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "cli_privilege_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "access_preference",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "box_discovery_telemetry_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "box_discovery_telemetry_sample",
             type: "int",
-            default: 0
+            defaultValue: 0
         },
         {
             name: "periodic_discovery_telemetry_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "periodic_discovery_telemetry_sample",
             type: "int",
-            default: 0
+            defaultValue: 0
         },
         {
             name: "event_processing_policy",
             type: "string",
-            default: "P"
+            defaultValue: "P"
         },
         {
             name: "row_class",
