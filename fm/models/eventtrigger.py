@@ -16,7 +16,7 @@ from noc.main.models.template import Template
 
 
 class EventTrigger(models.Model):
-    class Meta:
+    class Meta(object):
         db_table = "fm_eventtrigger"
         app_label = "fm"
         verbose_name = "Event Trigger"
