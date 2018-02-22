@@ -64,7 +64,6 @@ from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
-from noc.core.pm.utils import get_objects_metrics
 
 # Increase whenever new field added
 MANAGEDOBJECT_CACHE_VERSION = 7
@@ -1365,7 +1364,7 @@ class ManagedObject(Model):
     @property
     def metrics(self):
         metric, last = get_objects_metrics([self])
-        return metric[self], last[self]
+        return metric.get(self), last.get(self)
 
 
 @on_save
@@ -1474,3 +1473,4 @@ from .objectnotification import ObjectNotification
 from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
+from noc.core.pm.utils import get_objects_metrics
