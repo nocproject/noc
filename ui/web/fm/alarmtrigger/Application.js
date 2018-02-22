@@ -16,6 +16,7 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
         "NOC.main.template.LookupField"
     ],
     model: "NOC.fm.alarmtrigger.Model",
+    search: true,
     columns: [
         {
             text: __("Name"),
