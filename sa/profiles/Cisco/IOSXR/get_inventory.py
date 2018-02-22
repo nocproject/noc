@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -19,9 +18,9 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_item = re.compile(
-        r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
-        re.MULTILINE | re.DOTALL
+        r"^NAME: \"(?P<name>[^\"]+)\",? DESCR: \"(?P<descr>[^\"]+)\"\n"
+        r"PID:\s+(?P<pid>\S*)\s*,?\s+VID:\s+(?P<vid>\S*)\s*,? SN: (?P<serial>\S+)",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
     rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
@@ -66,11 +65,13 @@ class Script(BaseScript):
         elif "MOD" in pid:
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
-        elif (("LC" in descr or "Line Card" in descr or
-              "Linecard" in descr) and
-              "module mau" not in name):
+        elif (
+            (
+                "LC" in descr or "Line Card" in descr or "Linecard" in descr
+            ) and "module mau" not in name and not name.startswith("chassis")
+        ):
             number = name.split()[1].split("/")[1]
-            return "MOD", number, pid 
+            return "MOD", number, pid
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
@@ -90,6 +91,8 @@ class Script(BaseScript):
             number = name.split()[1].split("/")[1][2:]
             return "PWR", number, pid
         elif name.startswith("chassis"):
+            return "CHASSIS", None, pid
+        elif name.startswith("Rack") and "Slot Single Chassis" in descr:
             return "CHASSIS", None, pid
         # Unknown
         return None, None, None
