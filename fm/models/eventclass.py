@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # EventClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 import os
 from threading import Lock
@@ -17,10 +18,10 @@ from mongoengine.document import EmbeddedDocument, Document
 import cachetools
 # NOC modules
 from noc.lib import nosql
-from alarmclass import AlarmClass
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
 from noc.core.handler import get_handler
+from .alarmclass import AlarmClass
 
 id_lock = Lock()
 handlers_lock = Lock()
