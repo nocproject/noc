@@ -278,20 +278,23 @@
 {% endif %}
 </tbody>
 </table>
+
+
 <table class="table table-condensed table-hover">
     <thead>
-        <th class="col-sm-1">{{ _("Port") }}</th>
-        <th class="col-sm-1">{{ _("Admin") }}/{{ _("Oper") }}</th>
-        <th class="col-sm-1">{{ _("Speed") }}/{{ _("Duplex") }}</th>
-        <th class="col-sm-1">{{ _("Load In") }}</th>
-        <th class="col-sm-1">{{ _("Load Out") }}</th>
-        <th class="col-sm-1">{{ _("Errors In") }}</th>
-        <th class="col-sm-1">{{ _("Errors Out") }}</th>
-        <th class="col-sm-1">{{ _("MAC") }}</th>
-        <th class="col-sm-1">{{ _("VLAN") }}</th>
-        <th class="col-sm-1">{{ _("Errors") }}</th>
-        <th class="col-sm-1">{{ _("Status") }}</th>
-        <th>{{ _("Service") }}</th>
+        <th class="col-sm-2 text-center"> {{ _("Port") }} </th>
+        <th class="col-sm-1/12 text-center"> {{ _("Admin") }}/</br> {{ _("Oper") }}</th>
+        <th class="col-sm-1/8 text-center"> {{ _("Speed") }}/</br> {{ _("Duplex") }}</th>
+        <th class="col-sm-1/6">{{ _("Load In") }}</th>
+        <th class="col-sm-1/6">{{ _("Load Out") }}</th>
+        <th class="col-sm-1/6">{{ _("Errors In") }}</th>
+        <th class="col-sm-1/6">{{ _("Errors Out") }}</th>
+        <th class="col-sm-1/6">{{ _("MAC") }}</th>
+        <th class="col-sm-2">{{ _("VLAN") }}</th>
+        <th class="col-sm-2">{{ _("Profile") }}</th>
+        <th class="col-sm-1/12">{{ _("Errors") }}</th>
+        <th class="col-sm-1/6">{{ _("Status") }}</th>
+        <th class="col-sm-1/6">{{ _("Service") }}</th>
     </thead>
     <tbody>
         {% for i in interfaces %}
@@ -303,57 +306,62 @@
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["oper_status"] %}
-                        {{ i["speed"] }}M/{{ {True: "Full", False: "Half"}[i.full_duplex] }}
+                        <span class="small">{{ i["speed"] }}M/{{ {True: "Full", False: "Half"}[i.full_duplex] }}</span>
                     {% else %}
                         -
                     {% endif %}
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["load_in"] %}
-                        {{ i["load_in"] }}
+                        <span class="small">{{ i["load_in"] }}</span>
                     {% else %}
                         -
                     {% endif %}
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["load_out"] %}
-                        {{ i["load_out"] }}
+                        <span class="small">{{ i["load_out"] }}</span>
                     {% else %}
                         -
                     {% endif %}
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["errors_in"] %}
-                        {{ i["errors_in"] }}
+                        <span class="small">{{ i["errors_in"] }}</span>
                     {% else %}
                         -
                     {% endif %}
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["errors_out"] %}
-                        {{ i["errors_out"] }}
+                        <span class="small">{{ i["errors_out"] }}</span>
                     {% else %}
                         -
                     {% endif %}
                 </td>
                 <td>
-                    {{ i["mac"] }}
+                    <span class="small">{{ i["mac"] }}</span>
                 </td>
                 <td>
-                    {% if i["untagged_vlan"] %}U: {{ i["untagged_vlan"] }}{% endif %}
-                    {% if i["tagged_vlans"] %}T: {{ i["tagged_vlans"] }}{% endif %}
+                    {% if i["untagged_vlan"] %}<span class="small">U: {{ i["untagged_vlan"] }}</span>{% endif %}
+                    {% if i["tagged_vlans"] %}<span class="small">T: {{ i["tagged_vlans"] }}</span>{% endif %}
+                </td>
+                <td>
+                    <span class="small">{{ i["profile"] }}</span>
                 </td>
                 <td></td>
                 {% if i["service"] %}
                 <td>
-                    {{ i["service"].logical_status | logical_status }}<br>
-                    <span class="small">{{ i["service"].stage_name }}</span>
+                    <span class="small">
+                        {{ i["service"].logical_status | logical_status }}<br>
+                        {{ i["service"].stage_name }}
+                    </span>
                 </td>
                 <td>
                     <a href="/api/card/view/service/{{ i["service"].id }}/">{{ i["service"].order_id }}</a>:
                     {{ i["service"].subscriber.name }}
                     {% if i["service_summary"] %}
-                        <span class="pull-right">
+                        <span class="pull-right small">
                             {{ i["service_summary"] | glyph_summary(True) }}
                         </span>
                     {% endif %}
@@ -364,7 +372,7 @@
                 </td>
                 {% else %}
                 <td></td>
-                <td>{{ i["description"] }}</td>
+                <td><span class="small">{{ i["description"] }}</span></td>
                 {% endif %}
             <tr>
         {% endfor %}
