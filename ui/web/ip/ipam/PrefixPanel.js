@@ -9,15 +9,12 @@ console.debug("Defining NOC.ip.ipam.PrefixPanel");
 Ext.define("NOC.ip.ipam.PrefixPanel", {
     extend: "NOC.core.FormPanel",
     requires: [
-        "NOC.ip.prefix.Model",
-        "NOC.ip.prefix.LookupField",
         "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.vrf.LookupField",
         "NOC.peer.as.LookupField",
         "NOC.vc.vc.LookupField",
         "NOC.main.resourcestate.LookupField",
-        "NOC.project.project.LookupField",
-        "NOC.ip.prefix.LookupField"
+        "NOC.project.project.LookupField"
     ],
     currentPrefixId: null,
     restUrl: "/ip/prefix/",
