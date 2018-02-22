@@ -173,6 +173,9 @@ class BaseProfile(object):
     snmp_metrics_get_timeout = 3
     # Allow CLI sessions by default
     enable_cli_session = True
+    # True - Send multiline command at once
+    # False - Send multiline command line by line
+    batch_send_multiline = True
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
