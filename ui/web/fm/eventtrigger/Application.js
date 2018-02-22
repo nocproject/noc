@@ -16,6 +16,7 @@ Ext.define("NOC.fm.eventtrigger.Application", {
         "NOC.main.template.LookupField"
     ],
     model: "NOC.fm.eventtrigger.Model",
+    search: true,
     columns: [
         {
             text: __("Name"),
@@ -68,7 +69,8 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             name: "name",
             xtype: "textfield",
             fieldLabel: __("Name"),
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "is_enabled",
@@ -122,7 +124,8 @@ Ext.define("NOC.fm.eventtrigger.Application", {
             name: "handler",
             xtype: "textfield",
             fieldLabel: __("Handler"),
-            allowBlank: true
+            allowBlank: true,
+            vtype: "handler"
         }
     ],
     filters: [
