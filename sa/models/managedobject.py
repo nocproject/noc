@@ -1364,13 +1364,15 @@ class ManagedObject(Model):
             qs["segment__in"] = [cfg["segment"]]
         if "container" in cfg:
             qs["container__in"] = [cfg["container"]]
+        if "vendor" in cfg:
+            qs["vendor__in"] = [cfg["vendor"]]
         if "platform" in cfg:
             qs["platform__in"] = [cfg["platform"]]
         if "version" in cfg:
             qs["version__in"] = [cfg["version"]]
         return [
-            r.bi_id
-            for r in ManagedObject.objects.filter(**qs).only("id", "bi_id")
+            int(r)
+            for r in ManagedObject.objects.filter(**qs).values_list("bi_id", flat=True)
         ]
 
     @property
