@@ -52,7 +52,8 @@ Ext.define("NOC.ip.vrfgroup.Application", {
             name: "name",
             xtype: "textfield",
             fieldLabel: __("VRF Group"),
-            allowBlank: false
+            allowBlank: false,
+            uiStyle: "medium"
         },
         {
             name: "address_constraint",
