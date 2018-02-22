@@ -120,7 +120,8 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
             name: "handler",
             xtype: "textfield",
             fieldLabel: __("Handler"),
-            allowBlank: true
+            allowBlank: true,
+            vtype: "handler"
         }
     ],
     filters: [
