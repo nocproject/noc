@@ -152,7 +152,7 @@ class TextSection(ReportSection):
         """
         if not self.text:
             return []
-        if isinstance(self.text, basestring):
+        if isinstance(self.text, six.string_types):
             return [self.text]
         else:
             return self.text
@@ -209,16 +209,17 @@ class TableColumn(ReportNode):
 
     def __init__(self, name, title=None, align=None, format=None, total=None,
                  total_label=None):
-        self.name = name
+        super(TableColumn, self).__init__(name=name)
+        # self.name = name
         self.title = title if title else name
         self.align = {"l": self.ALIGN_LEFT, "left": self.ALIGN_LEFT,
                       "r": self.ALIGN_RIGHT, "right": self.ALIGN_RIGHT,
                       "c": self.ALIGN_CENTER, "center": self.ALIGN_CENTER}[
             align.lower()] if align else None
         self.format = getattr(self, "f_%s" % format) if isinstance(format,
-                                                                   basestring) else format
+                                                                   six.string_types) else format
         self.total = getattr(self, "ft_%s" % total) if isinstance(total,
-                                                                  basestring) else total
+                                                                  six.string_types) else total
         self.total_label = total_label
         self.total_data = []
         self.subtotal_data = []
@@ -478,7 +479,7 @@ class TableSection(ReportSection):
         super(ReportSection, self).__init__(name=name)
         self.columns = []
         for c in columns:
-            if isinstance(c, basestring) or hasattr(c, "__unicode__"):
+            if isinstance(c, six.string_types) or hasattr(c, "__unicode__"):
                 self.columns += [TableColumn(unicode(c))]
             else:
                 self.columns += [c]
