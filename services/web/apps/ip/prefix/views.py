@@ -23,7 +23,6 @@ class PrefixApplication(ExtModelApplication):
     Prefix application
     """
     title = _("Prefix")
-    menu = [_("Setup"), _("Prefix")]
     model = Prefix
 
     def field_row_class(self, o):
