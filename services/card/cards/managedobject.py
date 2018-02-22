@@ -402,7 +402,6 @@ class ManagedObjectCard(BaseCard):
                          table,
                          from_date.date().isoformat(), from_date.isoformat(sep=" "),
                          ", ".join(bi_map))
-            print SQL
             for result in ch.execute(post=SQL):
                 mo_bi_id, ts = result[:2]
                 mo = bi_map.get(mo_bi_id)
