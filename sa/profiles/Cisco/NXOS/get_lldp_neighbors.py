@@ -54,11 +54,11 @@ class Script(BaseScript):
         v = self.rx_summary_split.split(v)[1]
         lldp_interfaces = []
         # Get LLDP interfaces with neighbors
-        for l in v.splitlines():
-            l = l.strip()
-            if not l:
+        for ll in v.splitlines():
+            ll = ll.strip()
+            if not ll:
                 break
-            match = self.rx_s_line.match(l)
+            match = self.rx_s_line.match(ll)
             if not match:
                 continue
             lldp_interfaces += [match.group("local_if")]

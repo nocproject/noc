@@ -29,14 +29,14 @@ class Script(BaseScript):
         t = self.cli("show vrf interface")
         vrfif = {}
         firstline = True
-        for l in t.splitlines():
+        for ll in t.splitlines():
             if firstline:
                 firstline = False
                 continue
-            l = l.strip().split()
-            if l[1] not in vrfif.keys():
-                vrfif[l[1]] = []
-            vrfif[l[1]].append(l[0])
+            ll = ll.strip().split()
+            if ll[1] not in vrfif.keys():
+                vrfif[ll[1]] = []
+            vrfif[ll[1]].append(ll[0])
         vpns = []
 
         v = self.cli("show vrf detail")
