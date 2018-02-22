@@ -29,7 +29,7 @@ class BaseExtractor(object):
     name = None
     PREFIX = config.path.etl_import
     REPORT_INTERVAL = 1000
-    PROBLEM_PRINT = "/tmp/extract_problems.tsv"
+    PROBLEM_PATH = config.path.etl_problem
     # List of rows to be used as constant data
     data = []
     # Suppress deduplication message
@@ -110,12 +110,18 @@ class BaseExtractor(object):
         writer.writerows(data)
         f.close()
         if self.problems:
-            f = open(self.PROBLEM_PRINT, "w")
-            writer = csv.writer(f, delimiter=";")
             self.logger.warning("Обнаруженные проблемы")
             self.logger.warning("Строка\tТип\tПроблема")
+            try:
+                f = open(self.PROBLEM_PATH, "w")
+                writer = csv.writer(f, delimiter=";")
+                for p in self.problems:
+                    writer.writerow(
+                        [p.line, p.p_class] + [c.encode("utf-8") for c in p.row] + [p.message.encode("utf-8")])
+            except IOError as e:
+                self.logger.error("Error when saved problem %s", e)
+            finally:
+                f.close()
+
             for p in self.problems:
-                # self.logger.warning("%s\t%s\t%s" % (p.line, p.p_class, p.message))
-                # writer.writerow([p.line, p.p_class] + p.row + [p.message])
-                writer.writerow([p.line, p.p_class] + list(p.row) + [p.message])
-            f.close()
+                self.logger.warning("%s\t%s\t%s" % (p.line, p.p_class, p.message))
