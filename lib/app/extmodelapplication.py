@@ -20,18 +20,18 @@ from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 import six
 # NOC modules
-from .extapplication import ExtApplication, view
 from noc.sa.interfaces.base import (
     BooleanParameter, IntParameter,
     FloatParameter, TagsParameter,
     NoneParameter, StringListParameter,
     DictParameter, ListOfParameter,
     ModelParameter, InterfaceTypeError)
-from .interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.models import is_document
 from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
+from .extapplication import ExtApplication, view
+from .interfaces import DateParameter, DateTimeParameter
 
 
 class ExtModelApplication(ExtApplication):
