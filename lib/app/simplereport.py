@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import csv
 import decimal
 import pprint
@@ -15,10 +16,10 @@ from functools import reduce
 import six
 from django.utils.dateformat import DateFormat
 # NOC modules
-from reportapplication import *
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.lib.widgets import tags_list
+from .reportapplication import ReportApplication
 
 
 INDENT = "    "
@@ -182,10 +183,10 @@ class TextSection(ReportSection):
 # List of (limit, divider, suffix)
 #
 SIZE_DATA = []
-l = decimal.Decimal(1024)
+dec = decimal.Decimal(1024)
 for suffix in ["KB", "MB", "GB", "TB", "PB"]:
-    SIZE_DATA += [(l * 1024, l, suffix)]
-    l *= 1024
+    SIZE_DATA += [(dec * 1024, dec, suffix)]
+    dec *= 1024
 
 
 class SafeString(unicode):
@@ -213,11 +214,11 @@ class TableColumn(ReportNode):
         self.align = {"l": self.ALIGN_LEFT, "left": self.ALIGN_LEFT,
                       "r": self.ALIGN_RIGHT, "right": self.ALIGN_RIGHT,
                       "c": self.ALIGN_CENTER, "center": self.ALIGN_CENTER}[
-        align.lower()] if align else None
+            align.lower()] if align else None
         self.format = getattr(self, "f_%s" % format) if isinstance(format,
-                                                        basestring) else format
+                                                                   basestring) else format
         self.total = getattr(self, "ft_%s" % total) if isinstance(total,
-                                                        basestring) else total
+                                                                  basestring) else total
         self.total_label = total_label
         self.total_data = []
         self.subtotal_data = []
@@ -431,7 +432,7 @@ class TableColumn(ReportNode):
         """
         try:
             return SafeString(tags_list(f))
-        except:
+        except Exception:
             return ""
 
     def ft_sum(self, l):
@@ -439,7 +440,7 @@ class TableColumn(ReportNode):
         Returns a sum of not-null elements
         """
         return reduce(lambda x, y: x + y,
-            [decimal.Decimal(str(z)) for z in l if z], 0)
+                      [decimal.Decimal(str(z)) for z in l if z], 0)
 
     def ft_count(self, l):
         """
@@ -484,7 +485,7 @@ class TableSection(ReportSection):
         self.data = data
         self.enumerate = enumerate
         self.has_total = reduce(lambda x, y: x or y,
-            [c.has_total for c in self.columns],
+                                [c.has_total for c in self.columns],
                                 False)  # Check wrether table has totals
 
     def to_xml(self):
@@ -547,11 +548,15 @@ class TableSection(ReportSection):
                 if type(row) == SectionRow:
                     # Display section row
                     if (current_section and self.has_total and
-                    current_section.subtotal):
+                            current_section.subtotal):
                         # Display totals from previous sections
                         s += render_subtotals()
                     s += [
-                        "<tr><td colspan=%d style='margin: 0;padding: 2px 5px 3px 5px;font-size: 11px;text-align:left;font-weight:bold;background: #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x;color:white;'>" % s_span,
+                        ";".join(["<tr><td colspan=%d style='margin: 0" % s_span,
+                                  "padding: 2px 5px 3px 5px;font-size: 11px;text-align:left",
+                                  "font-weight:bold",
+                                  "background: #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x",
+                                  "color:white;'>"]),
                         self.quote(row.title), "</td></tr>"]
                     current_section = row
                     continue
