@@ -304,7 +304,7 @@ Ext.apply(NOC.msg, {
             bodyStyle: {
                 background: 'green',
                 color: 'white',
-                "font-weight": 'bold',
+                "font-weight": 'bold'
 //                "font-size": 'large'
             },
             style: {
@@ -436,19 +436,11 @@ NOC.listToRanges = function(lst) {
 //validate function def
 //
 NOC.is_vlanid = function(value) {
-    if (value >= 1 && value <= 4095) {
-        return true;
-    } else {
-        return false;
-    }
+    return (value >= 1 && value <= 4095)
 };
 //
 NOC.is_asn = function(value) {
-    if (value > 0) {
-        return true;
-    } else {
-        return false;
-    }
+    return (value > 0)
 };
 //
 NOC.is_ipv4 = function(value) {
@@ -491,7 +483,9 @@ Ext.form.Field.prototype.msgTarget = 'side';
 //
 // Custom VTypes
 //
-Ext.apply(Ext.form.field.VTypes, {
+Ext.define("NOC.form.field.VTypes", {
+    override: "Ext.form.field.VTypes",
+
     // VLAN ID checking
     VlanID: function(val, field) {
         try {
@@ -542,25 +536,25 @@ Ext.apply(Ext.form.field.VTypes, {
     FQDN: function(val, field){
         var me = this;
         try {
-            return me.FQDNMask.test(val);
+            return me.FQDNRe.test(val);
         } catch(e) {
             return false;
         }
     },
+    FQDNRe: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
     FQDNText: "Not valid FQDN",
-    FQDNMask: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
 
     // AS-set check
     ASSET: function(val, field){
         var me = this;
         try {
-            return me.ASSETMask.test(val);
+            return me.ASSETRe.test(val);
         } catch(e) {
             return false;
         }
     },   
+    ASSETRe: /^AS(-\w+)+$/i,
     ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
-    ASSETMask: /^AS(-\w+)+$/i,
 
     // AS/AS-set check
     ASorASSET: function(val, field){
@@ -572,16 +566,16 @@ Ext.apply(Ext.form.field.VTypes, {
     // Color check
     color: function(val, field) {
         var me = this;
-        return me.colorMask.test(val);
+        return me.colorRe.test(val);
     },
-    colorMask: /^[0-9a-f]{6}$/i,
+    colorRe: /^[0-9a-f]{6}$/i,
     colorText: "Invalid color, must be 6 hexadecimals",
 
     password: function(val, field) {
         if(field.peerField) {
             var form = field.up("form"),
                 peer = form.getForm().findField(field.peerField);
-            return (val == peer.getValue());
+            return (val === peer.getValue());
         }
         return true;
     },
@@ -596,87 +590,16 @@ Ext.apply(Ext.form.field.VTypes, {
             return false;
         }
     },
-    jsonText: "Invalid JSON"
-});
+    jsonText: "Invalid JSON",
 
-//
-// Handlebars helpers
-//
-// Handlebars.registerHelper("debug", function(opt) {
-//   console.log("Current context: ", this);
-//
-//   if (arguments.length > 1) {
-//     console.log("Value:", opt);
-//   }
-// });
-//
-// Handlebars.registerHelper("join", function(context, block) {
-//     return context.map(function(v) {
-//         return block.fn(v);
-//     }).join(", ");
-// });
-//
-// Handlebars.registerHelper("formatDuration", NOC.render.Duration);
-//
-// Handlebars.registerHelper("grid", function(val) {
-//     var r = [],
-//         xset = {},
-//         yset = {},
-//         values = {},
-//         i, j, y, v,
-//         xv = [],
-//         yv = [];
-//     // Get all unique x and y
-//     for(i in val) {
-//         v = val[i];
-//         if(!xset[v.x]) {
-//             xset[v.x] = true;
-//             xv.push(v.x);
-//         }
-//         if(!yset[v.y]) {
-//             yset[v.y] = true;
-//             yv.push(v.y);
-//         }
-//         if(!values[v.x]) {
-//             values[v.x] = {};
-//         }
-//         values[v.x][v.y] = v.v;
-//     }
-//     xv = xv.sort();
-//     yv = yv.sort();
-//     //
-//     // Build table
-//     //
-//     r.push("<table border='1'>");
-//     // Push header
-//     r.push("<tr><td></td>");
-//     for(i in xv) {
-//         r.push("<th>");
-//         r.push(Handlebars.Utils.escapeExpression(xv[i]));
-//         r.push("</th>");
-//     }
-//     r.push("</tr>");
-//     // Push rows
-//     for(i in yv) {
-//         y = yv[i];
-//         r.push("<tr>");
-//         r.push("<th>");
-//         r.push(Handlebars.Utils.escapeExpression(y));
-//         r.push("</th>");
-//         for(j in xv) {
-//             v = xv[j];
-//             r.push("<td>");
-//             if(values[v] && values[v][y] !== undefined) {
-//                 r.push(Handlebars.Utils.escapeExpression(values[v][y]));
-//             }
-//             r.push("</td>");
-//         }
-//         r.push("</tr>");
-//     }
-//     r.push("</table>");
-//     // return r.join("");
-//     return new Handlebars.SafeString(r.join(""));
-// });
+    // Color check
+    handler: function(val, field) {
+        var me = this;
+        return me.handlerRe.test(val);
+    },
+    handlerRe: /^noc(\.[a-zA-Z_][a-zA-Z0-9_]*)+$/,
+    handlerText: "Invalid handler format"
+});
 
 //
 // UI Styles
