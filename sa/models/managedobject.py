@@ -98,7 +98,7 @@ class ManagedObject(Model):
     """
     Managed Object
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Managed Object"
         verbose_name_plural = "Managed Objects"
         db_table = "sa_managedobject"
@@ -669,6 +669,10 @@ class ManagedObject(Model):
                 iseg.update_uplinks()
             self.segment.update_access()
             self.update_topology()
+            # Refresh links
+            from noc.inv.models.link import Link
+            for l in Link.object_links(self):
+                l.save()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
@@ -927,7 +931,7 @@ class ManagedObject(Model):
         if isinstance(data, list):
             # Convert list to plain text
             r = []
-            for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
+            for d in sorted(data, key=operator.attrgetter("name")):
                 r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
             data = "\n".join(r)
         # Pass data through config filter, if given
@@ -1364,8 +1368,7 @@ class ManagedObject(Model):
 
 @on_save
 class ManagedObjectAttribute(Model):
-
-    class Meta:
+    class Meta(object):
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"
         db_table = "sa_managedobjectattribute"
