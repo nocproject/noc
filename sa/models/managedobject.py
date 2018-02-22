@@ -1365,6 +1365,11 @@ class ManagedObject(Model):
             for r in ManagedObject.objects.filter(**qs).only("id", "bi_id")
         ]
 
+    @property
+    def metrics(self):
+        metric, last = get_objects_metrics([self])
+        return metric.get(self), last.get(self)
+
 
 @on_save
 class ManagedObjectAttribute(Model):
@@ -1471,3 +1476,4 @@ from .objectnotification import ObjectNotification
 from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
+from noc.core.pm.utils import get_objects_metrics
