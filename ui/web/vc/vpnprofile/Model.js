@@ -67,6 +67,15 @@ Ext.define("NOC.vc.vpnprofile.Model", {
             name: "workflow__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "default_prefix_profile",
+            type: "string"
+        },
+        {
+            name: "default_prefix_profile__label",
+            type: "string",
+            persist: false
         }
     ]
 });

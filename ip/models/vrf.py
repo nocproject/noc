@@ -17,15 +17,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
-from noc.main.models.style import Style
 from noc.main.models import ResourceState
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.lib.validators import check_rd
-from noc.core.model.fields import TagsField
+from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check
+from noc.vc.models.vpnprofile import VPNProfile
 from .vrfgroup import VRFGroup
 
 id_lock = Lock()
@@ -39,7 +39,7 @@ id_lock = Lock()
     ("ip.Prefix", "vrf"),
     # ("ip.DynamicIPPoolUsage", "vrf"),
     ("sa.ManagedObject", "vrf"),
-    ("sa.ManagedObjectSelector", "vrf"),
+    ("sa.ManagedObjectSelector", "filter_vrf"),
     ("vc.VCBindFilter", "vrf"),
 ])
 class VRF(models.Model):
@@ -58,6 +58,7 @@ class VRF(models.Model):
         unique=True,
         max_length=64,
         help_text=_("Unique VRF Name"))
+    profile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
         VRFGroup, verbose_name=_("VRF Group"))
     rd = models.CharField(
@@ -85,11 +86,6 @@ class VRF(models.Model):
         null=True,
         help_text=_("Ticket #"))
     tags = TagsField(_("Tags"), null=True, blank=True)
-    style = models.ForeignKey(
-        Style,
-        verbose_name=_("Style"),
-        blank=True,
-        null=True)
     state = models.ForeignKey(
         ResourceState,
         verbose_name=_("State"),
@@ -159,12 +155,14 @@ class VRF(models.Model):
         # Save VRF
         super(VRF, self).save(**kwargs)
         if self.afi_ipv4:
+            # @todo: Profile
             # Create IPv4 root, if not exists
             Prefix.objects.get_or_create(
                 vrf=self, afi="4", prefix="0.0.0.0/0",
                 defaults={
                     "asn": AS.default_as(),
-                    "description": "IPv4 Root"
+                    "description": "IPv4 Root",
+                    "profile": self.profile.default_prefix_profile
                 })
         if self.afi_ipv6:
             # Create IPv6 root, if not exists
@@ -172,7 +170,9 @@ class VRF(models.Model):
                 vrf=self, afi="6", prefix="::/0",
                 defaults={
                     "asn": AS.default_as(),
-                    "description": "IPv6 Root"})
+                    "description": "IPv6 Root",
+                    "profile": self.profile.default_prefix_profile
+                })
 
     def get_index(self):
         """

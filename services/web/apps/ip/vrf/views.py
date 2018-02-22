@@ -33,7 +33,7 @@ class VRFApplication(ExtModelApplication):
     }
 
     def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""
+        return o.profile.style.css_class_name if o.profile.style else ""
 
     @view(
         url="^bulk/import/$", method=["POST"], access="import",

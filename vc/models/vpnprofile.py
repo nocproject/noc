@@ -12,6 +12,7 @@ import operator
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
+from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
@@ -26,7 +27,8 @@ id_lock = Lock()
 
 @bi_sync
 @on_delete_check(check=[
-    ("vc.VPN", "profile")
+    ("vc.VPN", "profile"),
+    ("ip.VRF", "profile")
 ])
 class VPNProfile(Document):
     meta = {
@@ -49,6 +51,9 @@ class VPNProfile(Document):
     ], default="vrf")
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
+    # For vrf type -- default prefix profile
+    default_prefix_profile = PlainReferenceField("ip.PrefixProfile")
+    #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
@@ -73,3 +78,7 @@ class VPNProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return VPNProfile.objects.filter(bi_id=id).first()
+
+    def clean(self):
+        if self.type == "vrf" and not self.default_prefix_profile:
+            raise ValidationError("default_prefix_profile must be set for vrf type")
