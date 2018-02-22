@@ -16,7 +16,7 @@ from noc.main.models.template import Template
 
 
 class AlarmTrigger(models.Model):
-    class Meta:
+    class Meta(object):
         db_table = "fm_alarmtrigger"
         app_label = "fm"
         verbose_name = "Alarm Trigger"
