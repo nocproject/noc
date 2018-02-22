@@ -258,10 +258,8 @@ class ExtModelApplication(ExtApplication):
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
             elif f.name == "shape":
-                v = getattr(o, f.name)
-                r[f.name] = None
-                if v:
-                    v = stencil_registry.get(v)
+                if o.shape:
+                    v = stencil_registry.get(o.shape)
                     r[f.name] = v
                     r["%s__label" % f.name] = unicode(v.title)
             elif hasattr(f, "document"):
@@ -275,7 +273,7 @@ class ExtModelApplication(ExtApplication):
                     r["%s__label" % f.name] = ""
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
-                if v is not None and type(v) not in (str, unicode, int, long, bool, list):
+                if v is not None and not isinstance(v, (str, unicode, int, long, bool, list)):
                     if type(v) == datetime.datetime:
                         v = v.isoformat()
                     else:
