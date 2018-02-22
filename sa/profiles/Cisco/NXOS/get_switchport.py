@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -28,7 +28,7 @@ class Script(BaseScript):
                          "^  Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
                          "^  Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
                          "^  Trunking VLANs Allowed: (?P<vlans>.+?)$",
-                         #"Pruning VLANs Enabled:",
+                         # "Pruning VLANs Enabled:",
                          re.MULTILINE | re.DOTALL)
 
     rx_body_name = re.compile(r"^(?P<interface>\S+).+", re.MULTILINE)
@@ -45,8 +45,8 @@ class Script(BaseScript):
     def get_description(self):
         r = []
         s = self.cli("show interface description", cached=True)
-        for l in s.split("\n"):
-            match = self.rx_descr_if.match(l.strip())
+        for ll in s.split("\n"):
+            match = self.rx_descr_if.match(ll.strip())
             if not match:
                 continue
             r += [{
@@ -110,10 +110,10 @@ class Script(BaseScript):
             iface = {
                 "interface": interface,
                 "status": match.group("omode").strip() != "down",
-                "tagged": [v for v in tagged if v in known_vlans],
+                "tagged": [vv for vv in tagged if vv in known_vlans],
                 "members": portchannels.get(interface, []),
                 "802.1Q Enabled": is_trunk,
-                "802.1ad Tunnel": False,
+                "802.1ad Tunnel": False
             }
             if untagged:
                 iface["untagged"] = untagged

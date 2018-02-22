@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,18 +19,27 @@ class Script(BaseScript):
     name = "Cisco.NXOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_summary_split = re.compile(r"^Device ID.+?\n",
-                                  re.MULTILINE | re.IGNORECASE)
+    rx_summary_split = re.compile(
+        r"^Device ID.+?\n", re.MULTILINE | re.IGNORECASE
+    )
     rx_s_line = re.compile(
         r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te|Eth)\d+[\d/\.]*)\s+.+$")
-    rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)",
-        re.MULTILINE | re.IGNORECASE)
-    rx_remote_port = re.compile("^Port id:\s*(?P<remote_if>.+?)\s*$",
-        re.MULTILINE | re.IGNORECASE)
-    rx_enabled_caps = re.compile("^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
-        re.MULTILINE | re.IGNORECASE)
-    rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
-                           re.MULTILINE | re.IGNORECASE)
+    rx_chassis_id = re.compile(
+        r"^Chassis id:\s*(?P<id>\S+)",
+        re.MULTILINE | re.IGNORECASE
+    )
+    rx_remote_port = re.compile(
+        "^Port id:\s*(?P<remote_if>.+?)\s*$",
+        re.MULTILINE | re.IGNORECASE
+    )
+    rx_enabled_caps = re.compile(
+        "^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
+        re.MULTILINE | re.IGNORECASE
+    )
+    rx_system = re.compile(
+        r"^System Name:\s*(?P<name>\S+)",
+        re.MULTILINE | re.IGNORECASE
+    )
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
     def execute(self):
@@ -68,7 +77,7 @@ class Script(BaseScript):
                 # Need testing...
                 raise self.NotSupportedError()
             # Get remote port
-            match = self.re_search(self.rx_remote_port, v)
+            match = self.rx_remote_port.search(v)
             remote_port = match.group("remote_if")
             remote_port_subtype = 128
             if self.rx_mac.match(remote_port):
@@ -112,4 +121,3 @@ class Script(BaseScript):
             i["neighbors"] += [n]
             r += [i]
         return r
-

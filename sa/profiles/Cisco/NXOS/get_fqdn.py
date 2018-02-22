@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class Script(BaseScript):
                 # sysName.0
                 v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
                 if v:
-                   return v
+                    return v
             except self.snmp.TimeOutError:
                 pass
         v = self.cli("show running-config | include ^(hostname|ip.domain.name)")
