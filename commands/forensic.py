@@ -21,11 +21,11 @@ SpanData = namedtuple("SpanData", ["ts", "id", "server", "service", "label"])
 
 class Command(BaseCommand):
     rx_open = re.compile(
-        r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) \[forensic\] "
+        r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) \[noc\.core\.forensic\] "
         r"\[>([^\|]+)\|([^\|]+)\|([^\]]+)\]\s*(.*)"
     )
     rx_close = re.compile(
-        r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) \[forensic\] "
+        r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) \[noc\.core\.forensic\] "
         r"\[<([^\]]+)\]"
     )
 
