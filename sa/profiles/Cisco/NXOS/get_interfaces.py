@@ -16,6 +16,7 @@ import xml.etree.ElementTree as ElementTree
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -280,7 +281,9 @@ class Script(BaseScript):
                 if "vlan_ids" in I:
                     sub["vlan_ids"] = I["vlan_ids"]
                 elif ifname.startswith("Vl "):
-                    sub["vlan_ids"] = ifname[3:]
+                    vlan_id = ifname[3:]
+                    if is_int(vlan_id) and int(vlan_id) < 4095:
+                        sub["vlan_ids"] = vlan_id
 
                 # IPv4/Ipv6
                 if "ip_addr" in I:
