@@ -17,6 +17,7 @@ from noc.core.error import NOCError
 from noc.core.debug import error_report
 from noc.core.span import Span
 from noc.core.error import ERR_UNKNOWN
+from noc.config import config
 
 
 Redirect = namedtuple("Redirect", ["location", "method", "params"])
@@ -70,9 +71,15 @@ class APIRequestHandler(tornado.web.RequestHandler):
             "[RPC call from %s] %s.%s(%s)",
             calling_service, api.name, method, params
         )
+        in_label = None
+        if config.features.forensic:
+            lh = getattr(api, "%s_get_label" % method, None)
+            if lh:
+                in_label = lh(*params)
         with Span(server=self.service.name,
                   service="api.%s" % method, sample=sample,
-                  parent=span_id, context=span_ctx) as span:
+                  parent=span_id, context=span_ctx,
+                  in_label=in_label) as span:
             try:
                 if getattr(h, "executor", ""):
                     # Threadpool version

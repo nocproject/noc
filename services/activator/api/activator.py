@@ -24,8 +24,10 @@ class ActivatorAPI(API):
     """
     name = "activator"
 
-    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=config.activator.http_connect_timeout,
-                                request_timeout=config.activator.http_request_timeout)
+    HTTP_CLIENT_DEFAULTS = dict(
+        connect_timeout=config.activator.http_connect_timeout,
+        request_timeout=config.activator.http_request_timeout
+    )
 
     @api
     @executor("script")
@@ -80,6 +82,10 @@ class ActivatorAPI(API):
             raise APIError("Script error: %s" % e.__doc__)
         return result
 
+    @staticmethod
+    def script_get_label(name, credentials, *args, **kwargs):
+        return "%s %s" % (name, credentials.get("address", "-"))
+
     @api
     @tornado.gen.coroutine
     def snmp_v1_get(self, address, community, oid):
@@ -108,6 +114,10 @@ class ActivatorAPI(API):
             self.logger.debug("SNMP GET %s %s returns error %s",
                               address, oid, e)
         raise tornado.gen.Return(result)
+
+    @staticmethod
+    def snmp_v1_get_get_label(address, community, oid):
+        return "%s %s" % (address, oid)
 
     @api
     @tornado.gen.coroutine
@@ -138,6 +148,10 @@ class ActivatorAPI(API):
                               address, oid, e)
         raise tornado.gen.Return(result)
 
+    @staticmethod
+    def snmp_v2_get_get_label(address, community, oid):
+        return "%s %s" % (address, oid)
+
     @api
     @tornado.gen.coroutine
     def http_get(self, url):
@@ -161,7 +175,15 @@ class ActivatorAPI(API):
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             raise tornado.gen.Return(None)
 
+    @staticmethod
+    def http_get_get_label(url):
+        return "%s" % url
+
     @api
     @executor("script")
     def close_session(self, session_id):
         BaseScript.close_session(session_id)
+
+    @staticmethod
+    def close_session_get_label(session_id):
+        return session_id
