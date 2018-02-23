@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+import logging
 import hashlib
 import base64
 import datetime
@@ -20,6 +21,8 @@ from mongoengine.fields import (StringField, FloatField, ListField,
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
 from noc.config import config
 from noc.core.handler import get_handler
+
+logger = logging.getLogger(__name__)
 
 
 class GeocoderCache(Document):
@@ -97,6 +100,7 @@ class GeocoderCache(Document):
         # Clean query
         query = cls.clean_query(query)
         if not query:
+            logger.warning("Query is None")
             return None
         # Calculate hash
         hash = cls.get_hash(query)
@@ -108,7 +112,7 @@ class GeocoderCache(Document):
             # Found
             if r.get("error") and r.get("exact") is None:
                 # If exact result - continue
-                print("Error result is not exact")
+                logger.warning("Error result and exact is NONE on query: %s", query)
                 return None
             return GeoCoderResult(
                 exact=r.get("exact", True),
