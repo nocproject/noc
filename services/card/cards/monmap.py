@@ -152,7 +152,7 @@ class MonMapCard(BaseCard):
                 # Status by alarm severity
                 # s_service = s_services.get(mo_id, s_def)
                 status = "good"
-                if 100 < alarms.get(mo_id) < 2000:
+                if 100 < alarms.get(mo_id) <= 2000:
                     status = "warning"
                 elif alarms.get(mo_id) > 2000:
                     status = "error"
@@ -242,7 +242,7 @@ class MonMapCard(BaseCard):
         coll = ActiveAlarm._get_collection().with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
         r = {}
         for o in coll.find(q, {"managed_object": 1, "severity": 1, "_id": 0}):
-            if o["managed_object"] in r and r[o["managed_object"]] < o["severity"]:
+            if o["managed_object"] in r and r[o["managed_object"]] > o["severity"]:  # Save alarm with max severity
                 continue
             r[o["managed_object"]] = o["severity"]
         return r
