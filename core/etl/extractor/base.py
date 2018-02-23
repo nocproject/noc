@@ -110,16 +110,16 @@ class BaseExtractor(object):
         writer.writerows(data)
         f.close()
         if self.problems:
-            self.logger.warning("Обнаруженные проблемы")
-            self.logger.warning("Строка\tТип\tПроблема")
+            self.logger.warning("Detect problems on extracting")
+            self.logger.warning("Line\tType\tProblem string")
             try:
-                f = open(self.PROBLEM_PATH, "w")
-                writer = csv.writer(f, delimiter=";")
-                for p in self.problems:
-                    writer.writerow(
-                        [p.line, p.p_class] + [c.encode("utf-8") for c in p.row] + [p.message.encode("utf-8")])
+                with open(self.PROBLEM_PATH, "w") as f:
+                    writer = csv.writer(f, delimiter=";")
+                    for p in self.problems:
+                        writer.writerow(
+                            [p.line, p.p_class] + [c.encode("utf-8") for c in p.row] + [p.message.encode("utf-8")])
             except IOError as e:
-                self.logger.error("Error when saved problem %s", e)
+                self.logger.error("Error when saved problems %s", e)
             finally:
                 f.close()
 
