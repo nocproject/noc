@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # forensic
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ class Command(BaseCommand):
         n_closed = 0
         for line in sys.stdin:
             line = line.strip()
-            if "[forensic] [>" in line:
+            if "[noc.core.forensic] [>" in line:
                 # Open span
                 match = self.rx_open.search(line)
                 if match:
@@ -78,7 +78,7 @@ class Command(BaseCommand):
                     )
                     spans[s.id] = s
                     n_open += 1
-            elif "[forensic] [<" in line:
+            elif "[noc.core.forensic] [<" in line:
                 # Close span
                 match = self.rx_close.search(line)
                 if match:
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                     if sid in spans:
                         del spans[sid]
                         n_closed += 1
-            elif "[forensic] [=Process restarted]" in line:
+            elif "[noc.core.forensic] [=Process restarted]" in line:
                 # Process restarted, clear spans
                 if not watch:
                     show()

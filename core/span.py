@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # External call spans
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from noc.core.error import NO_ERROR, ERR_UNKNOWN
 from noc.core.perf import metrics
 from noc.config import config
 
-forensic_logger = logging.getLogger("forensic")
+forensic_logger = logging.getLogger("noc.core.forensic")
 span_lock = threading.Lock()
 
 # Collected spans, protected by lock
