@@ -276,7 +276,7 @@ class Service(object):
         """
         self.logger.warn(symbol * length)
         if config.features.forensic:
-            self.logger.warn("[forensic] [=Process restarted]")
+            self.logger.warn("[noc.core.forensic] [=Process restarted]")
 
     def setup_signal_handlers(self):
         """
