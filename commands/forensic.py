@@ -28,6 +28,9 @@ class Command(BaseCommand):
         r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) \[noc\.core\.forensic\] "
         r"\[<([^\]]+)\]"
     )
+    show_mask = "%-23s %-25s %-15s %-30s %s"
+    show_watch_mask = "%-23s %6s %-25s %-15s %-30s %s"
+    time_format = "%Y-%m-%d %H:%M:%S"
 
     REFRESH_INTERVAL = 1
 
@@ -53,9 +56,20 @@ class Command(BaseCommand):
     def handle_incomplete(self, watch=False, *args, **kwargs):
         def show():
             self.print("\x1b[2J\x1b[1;1H%s Spans: %d/%d" % (time.strftime("%H:%M:%S"), n_closed, n_open))
-            self.print("Timestamp\t\tID\t\t\t\t\tServer\t\tService\t\tLabel")
+            self.print(self.show_mask % ("Timestamp", "ID", "Server", "Service", "Label"))
             for s in sorted(spans.values(), key=operator.attrgetter("ts")):
-                self.print("%s\t%s\t%s\t%s\t%s" % (s.ts, s.id, s.server, s.service, s.label))
+                self.print(self.show_mask % (s.ts, s.id, s.server, s.service, s.label))
+            if not spans:
+                self.print("  No spans")
+
+        def show_watch():
+            now = time.time()
+            self.print("\x1b[2J\x1b[1;1H%s Spans: %d/%d" % (time.strftime("%H:%M:%S"), n_closed, n_open))
+            self.print(self.show_watch_mask % ("Timestamp", "Dur", "ID", "Server", "Service", "Label"))
+            for s in sorted(spans.values(), key=operator.attrgetter("ts")):
+                ts = time.mktime(time.strptime(s.ts.split(",", 1)[0], self.time_format))
+                duration = str(int(now - ts))
+                self.print(self.show_watch_mask % (s.ts, duration, s.id, s.server, s.service, s.label))
             if not spans:
                 self.print("  No spans")
 
@@ -100,8 +114,11 @@ class Command(BaseCommand):
                 t = time.time()
                 if t > next_show:
                     next_show = t + self.REFRESH_INTERVAL
-                    show()
-        show()
+                    show_watch()
+        if watch:
+            show_watch()
+        else:
+            show()
 
 
 if __name__ == "__main__":
