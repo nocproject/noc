@@ -172,7 +172,7 @@ class ActivatorAPI(API):
 
     @staticmethod
     def http_get_get_label(url):
-        return "%s %s" % (url)
+        return "%s" % url
 
     @api
     @executor("script")
