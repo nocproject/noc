@@ -20,7 +20,6 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal datadump"
     pattern_more = [(r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
                     (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n")]
-    command_more = "a"
     command_exit = "exit"
 
     def setup_session(self, script):
