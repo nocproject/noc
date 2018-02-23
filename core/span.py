@@ -109,7 +109,8 @@ class Span(object):
                 return str(s).encode("string_escape")
 
         global spans
-        if config.features.forensic:
+        if config.features.forensic and self.forensic_id:
+            # N.B. config.features.forensic may be changed during span
             forensic_logger.info("[<%s]", self.forensic_id)
         if not self.is_sampled:
             return
