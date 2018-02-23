@@ -24,7 +24,9 @@ class Profile(BaseProfile):
         (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n"),
         (r"\{ \<cr\>\|ont\<K\> \}\:", "\n"),
         (r"Are you sure to modify system time?", "n\n"),
-        (r"Are you sure to log out?", "y\n")
+        (r"Are you sure to log out?", "y\n"),
+        (r"\{ <cr>\|configuration<K>\|data<K> \}", "\n"),
+        (r"\{ <cr>\|mode<K> \}", "\n")
     ]
     pattern_unprivileged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = \
