@@ -361,7 +361,6 @@ class Config(BaseConfig):
         config_mirror_path = StringParameter("")
         backup_dir = StringParameter(default="/var/backup")
         etl_import = StringParameter(default="/var/lib/noc/import")
-        etl_problem = StringParameter(default="/tmp/extract_problems.tsv")
         ssh_key_prefix = StringParameter(default="etc/noc_ssh")
         beef_prefix = StringParameter(default="/var/lib/noc/beef/sa")
         cp_new = StringParameter(default="/var/lib/noc/cp/crashinfo/new")
