@@ -1,5 +1,6 @@
 <html>
 <head>
+    <title>NOC Stencils</title>
 </head>
 <body>
 <style>
@@ -23,7 +24,6 @@
   }
 
   .container .stencil {
-    border: 1px solid #c0c0c0;
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -36,6 +36,14 @@
     bottom: 0px;
   }
 
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    background-color: yellow;
+  }
+
   a:visited {
     color: black;
   }
@@ -46,6 +54,27 @@ function setFilter(filter) {
     for(var i = 0; i < items.length; i++) {
         var stencil = items[i];
         stencil.style.filter = "url(#" + filter + ")";
+    }
+}
+
+var borders_shown = false;
+
+function toggleBorders() {
+    var el = document.getElementById("show_borders");
+    borders_shown = !borders_shown;
+    if(borders_shown) {
+        el.innerHTML = "[Hide Borders]"
+    } else {
+        el.innerHTML = "[Show Borders]"
+    }
+    var items = document.getElementsByClassName("stencil");
+    for(var i = 0; i < items.length; i++) {
+        var stencil = items[i];
+        if(borders_shown) {
+            stencil.style.border = "1px solid #c0c0c0";
+        } else {
+            stencil.style.border = null;
+        }
     }
 }
 </script>
@@ -81,6 +110,7 @@ function setFilter(filter) {
 <a href="#" onclick="setFilter('osAlarm')">[Alarm]</a>
 <a href="#" onclick="setFilter('osUnreach')">[Unreach]</a>
 <a href="#" onclick="setFilter('osDown')">[Down]</a>
+<a href="#" onclick="toggleBorders()" id="show_borders">[Show Borders]</a>
 {% for coll in stencils %}
   <h2>{{ coll }} ({{ stencils[coll] | length }} stencils)</h2>
   {% for stencil in stencils[coll] %}
