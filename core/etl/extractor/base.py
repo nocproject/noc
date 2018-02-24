@@ -42,13 +42,14 @@ class BaseExtractor(object):
             logger, "%s][%s" % (system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
-        self.problems = []
+        self.fatal_problems = []
+        self.quality_problems = []
 
     def register_quality_problem(self, line, p_class, message, row):
-        self.problems += [self.Problem(line=line + 1, is_rej=False, p_class=p_class, message=message, row=row)]
+        self.quality_problems += [self.Problem(line=line + 1, is_rej=False, p_class=p_class, message=message, row=row)]
 
     def register_fatal_problem(self, line, p_class, message, row):
-        self.problems += [self.Problem(line=line + 1, is_rej=True, p_class=p_class, message=message, row=row)]
+        self.fatal_problems += [self.Problem(line=line + 1, is_rej=True, p_class=p_class, message=message, row=row)]
 
     def get_new_state(self):
         if not os.path.isdir(self.import_dir):
@@ -120,13 +121,14 @@ class BaseExtractor(object):
         writer = csv.writer(f)
         writer.writerows(data)
         f.close()
-        if self.problems:
-            self.logger.warning("Detect problems on extracting")
-            self.logger.warning("Line\tType\tProblem string")
-            for p in self.problems:
-                if p.is_rej:
-                    self.logger.warning("Fatal problem, line was rejected: %s\t%s\t%s" % (p.line, p.p_class, p.message))
-                else:
+        if self.fatal_problems or self.quality_problems:
+            self.logger.warning("Detect problems on extracting, fatal: %d, quality: %d",
+                                len(self.fatal_problems),
+                                len(self.quality_problems))
+            self.logger.warning("Line num\tType\tProblem string")
+            for p in self.fatal_problems:
+                self.logger.warning("Fatal problem, line was rejected: %s\t%s\t%s" % (p.line, p.p_class, p.message))
+            for p in self.quality_problems:
                     self.logger.warning("Quality problem in line: %s\t%s\t%s" % (p.line, p.p_class, p.message))
             # Dump problem to file
             try:
@@ -140,3 +142,5 @@ class BaseExtractor(object):
                 self.logger.error("Error when saved problems %s", e)
             finally:
                 f.close()
+        else:
+            self.logger.info("No problems detected")
