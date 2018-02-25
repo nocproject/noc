@@ -14,6 +14,7 @@ Ext.define("NOC.core.FormPanel", {
     restUrl: null,
     enableSaveButton: true,
     enableCloseButton: true,
+    enableDeleteButton: false,
     formToolbar: null,
 
     initComponent: function() {
@@ -113,17 +114,6 @@ Ext.define("NOC.core.FormPanel", {
         //     scope: me,
         //     handler: me.onReset
         // });
-        // //
-        // me.deleteButton = Ext.create("Ext.button.Button", {
-        //     itemId: "delete",
-        //     text: __("Delete"),
-        //     tooltip: __("Delete object"),
-        //     glyph: NOC.glyph.times,
-        //     disabled: true,
-        //     hasAccess: NOC.hasPermission("delete"),
-        //     scope: me,
-        //     handler: me.onDelete
-        // });
         //
         if(me.enableSaveButton) {
             items.push(
@@ -152,6 +142,24 @@ Ext.define("NOC.core.FormPanel", {
                     handler: me.onClose
                 })
             )
+        }
+        //
+        if(me.enableDeleteButton) {
+            if(items.length > 0) {
+                items.push("-")
+            }
+            me.deleteButton = Ext.create("Ext.button.Button", {
+                itemId: "delete",
+                text: __("Delete"),
+                tooltip: __("Delete object"),
+                glyph: NOC.glyph.times,
+                disabled: true,
+                hasAccess: NOC.hasPermission("delete"),
+                scope: me,
+                handler: me.onDelete
+            });
+            items.push(me.deleteButton);
+            items.push("-")
         }
         if(me.formToolbar) {
             var seen = me.app.applyPermissions(me.formToolbar);

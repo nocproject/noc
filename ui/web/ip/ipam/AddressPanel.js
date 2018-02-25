@@ -14,9 +14,10 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
         "NOC.project.project.LookupField",
         "NOC.sa.managedobject.LookupField"
     ],
-    currentPrefixId: null,
+    currentAddressId: null,
     restUrl: "/ip/address/",
     prefixRestUrl: "/ip/prefix/",
+    enableDeleteButton: true,
 
     initComponent: function () {
         var me = this;
@@ -100,7 +101,6 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
 
     preview: function (record, backItem) {
         var me = this;
-        console.log("preview", arguments);
         if(record.id) {
             me.loadAddress(record.id)
         } else {
@@ -117,8 +117,8 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
         var me = this;
         me.mask(__("Saving ..."));
         Ext.Ajax.request({
-            url: me.restUrl + (me.currentPrefixId ? me.currentPrefixId + "/" : ""),
-            method: me.currentPrefixId ? "PUT" : "POST",
+            url: me.restUrl + (me.currentAddressId ? me.currentAddressId + "/" : ""),
+            method: me.currentAddressId ? "PUT" : "POST",
             scope: me,
             jsonData: data,
             success: function(response) {
@@ -150,13 +150,14 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
     //
     loadAddress: function(id) {
         var me = this;
-        me.currentPrefixId = id;
+        me.currentAddressId = id;
         Ext.Ajax.request({
             url: me.restUrl + id + "/",
             method: "GET",
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                me.deleteButton.setDisabled(false);
                 me.setValues(data)
             },
             failure: function() {
@@ -169,7 +170,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
     //
     newAddress: function(prefixId, address) {
         var me = this;
-        me.currentPrefixId = null;
+        me.currentAddressId = null;
         Ext.Ajax.request({
             url: me.prefixRestUrl + prefixId + "/",
             method: "GET",
@@ -186,6 +187,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                 } else {
                     values.address = me.app.getCommonPrefixPart(data.afi, data.prefix)
                 }
+                me.deleteButton.setDisabled(true);
                 me.setValues(values)
             },
             failure: function() {
@@ -202,5 +204,38 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
     //
     setAFI: function(afi) {
         console.log("setAFI", afi)
+    },
+    //
+    onDelete: function() {
+        var me = this;
+
+        Ext.Msg.show({
+            title: __("Delete address?"),
+            msg: __("Do you wish to delete address? This operation cannot be undone!"),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.window.MessageBox.QUESTION,
+            modal: true,
+            fn: function(button) {
+                if(button === "yes")
+                    me.deleteAddress();
+            }
+        });
+
+    },
+    //
+    deleteAddress: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: me.restUrl + me.currentAddressId + "/",
+            method: "DELETE",
+            scope: me,
+            success: function() {
+                NOC.info(__("Deleted"));
+                me.onClose()
+            },
+            failure: function(response) {
+                NOC.error(__("Failed to delete: ") + response.responseText)
+            }
+        })
     }
 });
