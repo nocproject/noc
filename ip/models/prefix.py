@@ -276,7 +276,7 @@ class Prefix(models.Model):
         Delete prefix and all descendancies
         """
         # Unlink dual-stack allocations
-        self.clear_transition()
+        # self.clear_transition()
         # Recursive delete
         # Get nested prefixes
         ids = Prefix.objects.filter(
@@ -296,7 +296,10 @@ class Prefix(models.Model):
         # Delete nested prefixes
         Prefix.objects.filter(id__in=ids).delete()
         # Delete permissions
-        PrefixAccess.objects.filter(vrf=self.vrf, afi=self.afi).extra(
+        PrefixAccess.objects.filter(
+            vrf=self.vrf,
+            afi=self.afi
+        ).extra(
             where=["prefix <<= %s"],
             params=[self.prefix]
         )
