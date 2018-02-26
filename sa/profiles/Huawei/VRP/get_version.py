@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,10 +29,10 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
     rx_ver_snmp2 = re.compile(
-        r"(?P<platform>(?:\S+\s+)?S\d+(?:[A-Z]+-[A-Z]+)?(?:\d+\S+)?)"
+        r"(?P<platform>(?:\S+\s+)?(?:S\d+|AR\d+\S*)(?:[A-Z]+-[A-Z]+)?(?:\d+\S+)?)"
         r"\s+Huawei\sVersatile\sRouting\sPlatform"
         r"\sSoftware.*Version\s(?P<version>\d+\.\d+)\s"
-        r"\(S\d+\s(?P<image>\S+)+\).*",
+        r"\((?:S\d+|AR\d+\S*)\s(?P<image>\S+)+\).*",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
     rx_ver_snmp3 = re.compile(
@@ -40,21 +40,18 @@ class Script(BaseScript):
         r"\((?P<platform>S\S+|CX\d+) (?P<image>[^)]+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
-
     rx_ver_snmp4_ne_me = re.compile(
         r"Huawei Versatile Routing Platform Software.*?"
         r"Version (?P<version>\S+) .*?"
         r"\s*(?P<platform>NetEngine\s+|MultiserviceEngine\s+\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
-
     rx_ver_snmp5 = re.compile(
         r"Huawei Versatile Routing Platform.*?"
         r"Version (?P<version>\S+) .*?"
         r"\s*(?:Quidway|Huawei) (?P<platform>[A-Z0-9]+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
-
     rx_ver_snmp6 = re.compile(
         r"Huawei Versatile Routing Platform .* \((?P<platform>[A-Z0-9]+) (?P<version>\S+)\) .*?",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
@@ -97,6 +94,10 @@ class Script(BaseScript):
         elif platform.lower().startswith("multiserviceengine"):
             n, p = platform.split(" ", 1)
             platform = "ME%s" % p.strip().upper()
+        # Found in AR1220 and AR1220E
+        elif platform.startswith("Huawei "):
+            n, p = platform.split(" ", 1)
+            platform = p.strip()
         r = {
             "vendor": "Huawei",
             "platform": platform,
