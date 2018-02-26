@@ -296,6 +296,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                     xtype: "combobox",
                                     store: [
                                         ["last", "Last Value"],
+                                        ["sum", "Sum"],
                                         ["avg", "Average"],
                                         ["percentile", "Percentile"],
                                         ["q1", "1st quartile"],
@@ -303,6 +304,9 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                         ["q3", "3st quartile"],
                                         ["p95", "95% percentile"],
                                         ["p99", "99% percentile"],
+                                        ["step_inc", "Step Increment"],
+                                        ["step_dec", "Step Decrement"],
+                                        ["step_abs", "Step Absolute"],
                                         ["handler", "Handler"]
                                     ]
                                 }

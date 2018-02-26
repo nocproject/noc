@@ -59,6 +59,8 @@ class InterfaceProfileMetrics(EmbeddedDocument):
             ("handler", "Handler"),
             # Last measure
             ("last", "Last Value"),
+            # Sum of values
+            ("sum", "Sum"),
             # Average, no config
             ("avg", "Average"),
             # Percentile, window_config is in a percent
@@ -72,7 +74,14 @@ class InterfaceProfileMetrics(EmbeddedDocument):
             # 95% percentile
             ("p95", "95% percentile"),
             # 99% percentile
-            ("p99", "99% percentile")
+            ("p99", "99% percentile"),
+            # Increment
+            ("step_inc", "Step Increment"),
+            # Decrement
+            ("step_dec", "Step Decrement"),
+            # Absolute
+            ("step_abs", "Step Absolute")
+
         ],
         default="last"
     )

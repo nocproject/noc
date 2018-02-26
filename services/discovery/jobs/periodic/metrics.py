@@ -744,6 +744,14 @@ class MetricsCheck(DiscoveryCheck):
         """
         return window[-1][1]
 
+    def wf_sum(self, window, *args, **kwargs):
+        """
+        Returns sum of values within window
+        :param window:
+        :return:
+        """
+        return float(sum(w[1] for w in window))
+
     def wf_avg(self, window, *args, **kwargs):
         """
         Returns window average
@@ -829,6 +837,50 @@ class MetricsCheck(DiscoveryCheck):
         :return:
         """
         return self._wf_percentile(window, 99)
+
+    def wf_step_inc(self, window, *args, **kwargs):
+        """
+        Sum of all increments within window
+        :param window:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        values = [x[1] for x in window]
+        return sum(
+            x1 - x0
+            for x0, x1 in zip(values, values[1:])
+            if x1 > x0
+        )
+
+    def wf_step_dec(self, window, *args, **kwargs):
+        """
+        Sum of all decrements within window
+        :param window:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        values = [x[1] for x in window]
+        return sum(
+            x0 - x1
+            for x0, x1 in zip(values, values[1:])
+            if x0 > x1
+        )
+
+    def wf_step_abs(self, window, *args, **kwargs):
+        """
+        Sum of all absolute changes within window
+        :param window:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        values = [x[1] for x in window]
+        return sum(
+            abs(x1 - x0)
+            for x0, x1 in zip(values, values[1:])
+        )
 
     def wf_handler(self, window, config, *args, **kwargs):
         """
