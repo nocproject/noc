@@ -29,6 +29,7 @@ class Script(BaseScript):
                         re.MULTILINE)
 
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
+
     def execute_snmp(self):
         neighb = (
             "remote_chassis_id_subtype", "remote_chassis_id",
