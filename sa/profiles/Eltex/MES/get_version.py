@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -58,7 +58,33 @@ class Script(BaseScript):
         "89": "MES-2308P"
     }
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        try:
+            platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
+            platform = platform.split('.')[8]
+            platform = self.platforms.get(platform.split(')')[0])
+            version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.10.67108992",
+                                    cached=True)
+            bootprom = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.67108992",
+                                     cached=True)
+            hardware = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.67108992",
+                                     cached=True)
+            serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.67108992",
+                                   cached=True)
+            return {
+                "vendor": "Eltex",
+                "platform": platform,
+                "version": version,
+                "attributes": {
+                    "Boot PROM": bootprom,
+                    "HW version": hardware,
+                    "Serial Number": serial
+                }
+            }
+        except self.snmp.TimeOutError:
+            raise self.UnexpectedResultError
+
+    def execute_cli(self, **kwargs):
         # Try SNMP first
         if self.has_snmp():
             try:

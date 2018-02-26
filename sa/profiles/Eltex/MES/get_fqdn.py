@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_fqdn
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 from noc.core.script.base import BaseScript
 # NOC modules
 from noc.sa.interfaces.igetfqdn import IGetFQDN
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -21,7 +22,14 @@ class Script(BaseScript):
     rx_domain_name = re.compile(
         r"^ip domain name (?P<domain>\S+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        try:
+            fqnd = self.snmp.get(mib["SNMPv2-MIB::sysName.0"])
+            return fqnd
+        except self.snmp.TimeOutError:
+            raise self.NotSupportedError
+
+    def execute_cli(self):
         fqdn = ''
         v = self.cli("show running-config")
         match = self.rx_hostname.search(v)
