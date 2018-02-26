@@ -2,7 +2,7 @@
     "name": "Qtech | QSW | QSW-2850-28T-AC sysObjectID 2",
     "$collection": "sa.profilecheckrules",
     "uuid": "5c9442e0-37b5-456f-bfc0-a089d0d2394b",
-    "description": "Device: Switch, sysLocation: Russia, Moscow, Ryabinovaya st, 26 bld 2.\nCopyright (C) 2001-2012 by Vendor",
+    "description": "",
     "preference": 10,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
