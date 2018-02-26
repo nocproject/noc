@@ -2,7 +2,7 @@
   template:
     src: "etc/supervisord.conf.j2"
     dest: "{{ noc_etc }}/supervisord.conf"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
 
 - name: Build services config
   template:
@@ -16,14 +16,14 @@
   template:
     src: "etc/tower.yml.j2"
     dest: "{{ noc_etc }}/tower.yml"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   when: "noc_services is defined and noc_services"
 
 - name: Generate NOC config for pooled services
   template:
     src: "etc/pooled.yml.j2"
     dest: "{{ noc_etc }}/pool-{{item.name}}.yml"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
   when: "noc_services is defined and noc_services"
   vars:
     pool_name: "{{item.name}}"
@@ -43,7 +43,7 @@
     dest: "{{noc_root}}/.env"
     owner: "{{noc_user}}"
     mode: "0644"
-  no_log: true
+  no_log: "{{tower_show_secrets}}"
 
 - name: remove services templates
   file:
