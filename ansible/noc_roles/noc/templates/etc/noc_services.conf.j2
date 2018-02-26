@@ -35,7 +35,7 @@ stderr_logfile = {{noc_logs}}/{{ service.environment.supervisord.process_name | 
 stderr_logfile_maxbytes = {{ service.environment.supervisord.stderr_logfile_maxbytes  | default('10MB', True)}}
 stderr_logfile_backups = {{ service.environment.supervisord.stderr_logfile_backups  | default(3, True)}}
 stderr_events_enabled = false
-environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodename }}",NOC_DC="{{ noc_dc }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{service.loglevel | default("info")}}"
+environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodename }}",NOC_DC="{{ noc_dc }}",NOC_USER="{{ noc_user }}",NOC_ROOT="{{ noc_root }}",NOC_ENV="{{ noc_env }}",NOC_LOGLEVEL="{{service.config.loglevel | default("info")}}"
 
 {%- if not 'FreeBSD' in ansible_system and jemalloc_path -%}
     ,LD_PRELOAD="{{ jemalloc_path }}"
