@@ -14,7 +14,6 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.mac import MAC
 
 
-
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
