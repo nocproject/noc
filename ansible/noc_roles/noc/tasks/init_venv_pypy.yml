@@ -9,7 +9,7 @@
   environment:
     https_proxy: "{{http_proxy}}"
 
-- name: create consul-template tmp dir
+- name: create pypy dir
   file:
     dest: "{{ pypy_path }}"
     state: directory
