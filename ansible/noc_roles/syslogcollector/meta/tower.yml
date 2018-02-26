@@ -14,6 +14,17 @@ forms:
       type: int
       max: 1
       min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     listen_syslog:
       default: "0.0.0.0:514"
       label: "Listen SYSLOG"

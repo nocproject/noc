@@ -9,11 +9,22 @@ forms:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     power:
-      default: 1
+      default: 2
       label: "Instances"
       type: int
-      max: 999
+      max: 8
       min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     max_concurrency:
       default: 50
       label: "Amount of concurrent tasks"

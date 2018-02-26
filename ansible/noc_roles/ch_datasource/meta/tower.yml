@@ -9,12 +9,22 @@ forms:
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/datasource/ target=_blank>CH_datasource</a><br/>
       <strong>Placement constraint</strong>: On node with clickhouse<br/>
     power:
-      default: 1
+      default: 2
       label: "Instances"
       type: int
-      max: 999
+      max: 8
       min: 0
-
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
 services:
   ch_datasource:
     level: global

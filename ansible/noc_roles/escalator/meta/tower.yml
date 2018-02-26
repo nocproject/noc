@@ -14,6 +14,17 @@ forms:
       type: int
       max: 1
       min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     max_threads:
       default: 10
       label: "Escalator threads"

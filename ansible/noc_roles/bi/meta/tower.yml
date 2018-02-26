@@ -9,11 +9,22 @@ forms:
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/bi/ target=_blank>Bi</a><br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     power:
-      default: 1
+      default: 2
       label: "Instances"
       type: int
-      max: 999
+      max: 24
       min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     language:
       default: "en-us"
       label: "Translation language"

@@ -9,11 +9,22 @@ forms:
       <strong>docs</strong>: "To be done"<br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     power:
-      default: 1
+      default: 4
       label: "Instances"
       type: int
-      max: 999
+      max: 16
       min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     backup_power:
       default: 1
       label: "Additional Instances"

@@ -12,8 +12,19 @@ forms:
       default: 1
       label: "Instances"
       type: int
-      max: 999
+      max: 1
       min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     max_threads:
       default: 10
       label: "Correlator threads"

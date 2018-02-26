@@ -12,8 +12,19 @@ forms:
       default: 1
       label: "Instances"
       type: int
-      max: 999
+      max: 4
       min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     smtp_server:
       label: "SMTP server address"
       type: str

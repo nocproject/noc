@@ -9,12 +9,23 @@ forms:
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/activator/ target=_blank>Activator</a><br/>
       <strong>Placement constraint</strong>: On separate node<br/>
     power:
-      default: 1
+      default: 2
       label: "Instances"
       type: int
-      max: 999
+      max: 64
       min: 0
       required: True
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critial
     script_threads:
       default: 20
       label: "Script threads"
