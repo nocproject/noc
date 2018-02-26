@@ -9,7 +9,7 @@ forms:
       <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
       <strong>Placement constraint</strong>: Place server node to the long living node. <br/>
     power:
-      default: agent
+      default: bootstrap
       label: "Consul Role"
       type: list
       options:
