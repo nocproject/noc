@@ -2,7 +2,7 @@
     "name": "Qtech | QSW | QSW-2850-18T-AC sysObjectID",
     "$collection": "sa.profilecheckrules",
     "uuid": "5c3b6fcd-13c1-4834-949e-9406e8b521e8",
-    "description": "Device: QSW-2850-18T-AC, sysLocation: Russia, Moscow, Ryabinovaya st, 26 bld 2.",
+    "description": "",
     "preference": 10,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
