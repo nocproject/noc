@@ -44,9 +44,10 @@ m_valid = DictListParameter(attrs={
     "window": IntParameter(default=1),
     "window_function": StringParameter(
         choices=[
-            "handler", "last", "avg",
+            "handler", "last", "sum", "avg",
             "percentile", "q1", "q2", "q3",
-            "p95", "p99"],
+            "p95", "p99", "step_inc", "step_dec",
+            "step_abs"],
         default="last"),
     "window_config": StringParameter(default=""),
     "window_related": BooleanParameter(default=False),
