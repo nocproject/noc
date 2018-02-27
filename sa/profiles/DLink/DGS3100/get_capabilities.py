@@ -24,11 +24,7 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
-        try:
-            cmd = self.cli("show lldp")
-        except self.CLISyntaxError:
-            self.cli("\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08")
-            cmd = ""
+        cmd = self.cli("show lldp")
         return bool(self.rx_lldp.search(cmd))
 
     @false_on_cli_error
