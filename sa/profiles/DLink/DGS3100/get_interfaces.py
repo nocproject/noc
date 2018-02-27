@@ -66,7 +66,6 @@ class Script(BaseScript):
         try:
             c = self.cli("show lldp")
         except self.CLISyntaxError:
-            self.cli("\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08")
             c = ""
         lldp_enable = self.rx_lldp_gs.search(c) is not None
         if lldp_enable:
