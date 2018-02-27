@@ -130,7 +130,7 @@ class BaseExtractor(object):
             for p in self.fatal_problems:
                 self.logger.warning("Fatal problem, line was rejected: %s\t%s\t%s" % (p.line, p.p_class, p.message))
             for p in self.quality_problems:
-                self.logger.warning("Quality problem in line: %s\t%s\t%s" % (p.line, p.p_class, p.message))
+                self.logger.warning("Data quality problem in line:  %s\t%s\t%s" % (p.line, p.p_class, p.message))
             # Dump problem to file
             try:
                 f = self.get_problem_file()
@@ -138,7 +138,7 @@ class BaseExtractor(object):
                 for p in itertools.chain(self.quality_problems, self.fatal_problems):
                     writer.writerow(
                         [c.encode("utf-8") for c in p.row] + ["Fatal problem, line was rejected" if p.is_rej else
-                                                              "Quality problem"] + [p.message.encode("utf-8")])
+                                                              "Data quality problem"] + [p.message.encode("utf-8")])
             except IOError as e:
                 self.logger.error("Error when saved problems %s", e)
             finally:
