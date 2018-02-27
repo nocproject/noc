@@ -30,24 +30,29 @@ forms:
       default: noc
       type: str
       label: Db name
+      common: environment
     user:
       default: noc
       type: str
       label: Username
+      common: environment
     password:
       default: noc
       type: str
       label: Password
+      common: environment
     rs:
       default: noc
       type: str
       label: Replicaset name
+      common: environment
     engine:
       default: wiredTiger
       type: str
       label: MongoDB engine
       description: "Do not use mmapv1 in production"
       type: list
+      common: environment
       options:
         - wiredTiger
         - mmapv1
@@ -55,6 +60,7 @@ forms:
       default: 3.4
       type: str
       label: Mongo version
+      common: environment
 
 services:
   mongod:

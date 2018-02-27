@@ -20,18 +20,19 @@ forms:
       default: node_ip
       label: Listen on
       type: str
-      description: "Consul have to be run on private ip. With multiple avalaible select one there. Node address will be used by default"
+      description: "Valid values: text 'node_ip' or ip address in case of system with many interfaces. Consul have to be run on private ip"
     replication_token:
       label: "consul replication token"
       type: str
+      common: environment
     master_token:
       description: "<strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>"
       label: "consul token"
       type: str
+      common: environment
 
 services:
   consul:
-
     level: system
     category: external
     port: 8500

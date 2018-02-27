@@ -13,24 +13,29 @@ forms:
       label: "RW user"
       type: str
       description: "RW user"
+      common: environment
     password:
       default: noc
       label: "Password for user default"
       type: str
       description: "RW user password"
+      common: environment
     ro_password:
       label: "Password for user readonly"
       description: "RO user password"
       default: noc
       type: str
+      common: environment
     db:
       default: noc
       label: "db name"
       type: str
+      common: environment
     query_size:
       default: 262144
       label: "Max query size"
       type: int
+      common: environment
 
 services:
   clickhouse:

@@ -24,28 +24,34 @@ forms:
       description: "<strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field."
       label: "Postgresql version"
       type: str
+      common: environment
     replicator_password:
       default: noc
       description: "Password for user \"replicator\""
       label: "Postgresql replicator password"
       type: str
+      common: environment
     superuser_password:
       default: noc
       description: "Password for user \"superuser\""
       label: "Postgresql superuser password"
       type: str
+      common: environment
     noc_db:
       default: noc
       type: str
       label: Db name
+      common: environment
     noc_user:
       default: noc
       type: str
       label: Username
+      common: environment
     noc_password:
       default: noc
       type: str
       label: Password
+      common: environment
 services:
   postgres:
     level: system

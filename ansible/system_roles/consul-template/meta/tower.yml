@@ -13,6 +13,7 @@ forms:
       type: bool
       default: false
       description: "Useful start from 20 nodes"
+      common: environment
 services:
   consul-template:
     level: system

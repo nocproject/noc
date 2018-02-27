@@ -12,10 +12,12 @@ forms:
       label: Certificates
       description: Paste you cert
       type: text
+      common: environment
     cert_key:
       label: Cerificate key
       description: Paste your certificate key here
       type: text
+      common: environment
     http_redirect:
       default: true
       label: "Redirect http to https"
@@ -34,6 +36,7 @@ forms:
       label: "Use external certificate management"
       description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
       type: bool
+      common: environment
 
 services:
   nginx:
