@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MBAN.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"^\s*CPU: IskraTEL (?P<platform>\S+) .+\n"
         r"^\s*VxWorks: \S+\s*\n"
         r"^\s*Kernel: WIND version \S+\s*\n"
-        r"^\s*ADSL(2PLUS)? over POTS GS firmware version:\s+(?P<version>\S+)\s*\n",
+        r"^\s*ADSL(?:2PLUS)? over (?:POTS|ISDN) GS firmware version:\s+(?P<version>\S+)\s*\n",
         re.MULTILINE)
     rx_inv1 = re.compile(
         r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+"
