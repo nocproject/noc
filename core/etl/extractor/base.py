@@ -30,7 +30,6 @@ class BaseExtractor(object):
     name = None
     PREFIX = config.path.etl_import
     REPORT_INTERVAL = 1000
-    PROBLEM_PATH = config.path.etl_import
     # List of rows to be used as constant data
     data = []
     # Suppress deduplication message
