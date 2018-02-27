@@ -4,7 +4,7 @@
 # OS:     MBAN
 # Compatible:
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -19,7 +19,11 @@ class Profile(BaseProfile):
     # pattern_unprivileged_prompt = r"^\S+?>"
     pattern_username = r"^user id :"
     pattern_prompt = r"^\S+?>"
-    pattern_more = r"^Press any key"
+    pattern_more = [
+        (r"^Press any key to continue or Esc to stop scrolling.\r\n", " "),
+        (r"^Press any key to continue", " ")  # Need more examples
+    ]
+    # pattern_more = "^Press any key to continue or Esc to stop scrolling.\r\n"
     pattern_syntax_error = r"Illegal command name"
     command_more = " "
     command_exit = "exit"
