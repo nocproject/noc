@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -19,8 +18,8 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_item = re.compile(
-        r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
-        r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
+        r"^NAME: \"(?P<name>[^\"]+)\",\s+DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
+        r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*,\s+SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL
     )
 
@@ -46,16 +45,18 @@ class Script(BaseScript):
         v = self.cli("show inventory | no-more")
         s = self.cli("sh int transceiver | no-more")
 
-        #get transceivers
+        # Get transceivers
         for match in self.rx_sfp.finditer(s):
             if match.group("number").startswith("Ethernet"):
                 if match.group("type"):
-                    if ("Fabric" in match.group("type") or
-                        "BASE" in match.group("type").upper()):
+                    if (
+                        "Fabric" in match.group("type") or
+                        "BASE" in match.group("type").upper()
+                    ):
                         parts = [match.group("partno")]
                     elif "BASE" in match.group("partno").upper():
                         parts = [match.group("type")]
-                    else:    
+                    else:
                         parts = [match.group("partno"), match.group("type")]
                 else:
                     parts = [match.group("partno")]
@@ -93,7 +94,7 @@ class Script(BaseScript):
                     "builtin": builtin
                 }]
                 # Add transceivers
-                if (objects[-1]["type"] == "SUP" or 
+                if (objects[-1]["type"] == "SUP" or
                     (objects[-1]["type"] == "GEM" and
                      objects[-1]["part_no"][0] not in self.gem_w_o_sfp)):
 
@@ -125,7 +126,7 @@ class Script(BaseScript):
         if "CHASSIS" in name.upper():
             try:
                 number = int(name.split()[1])
-            except:
+            except IndexError:
                 number = None
             return "CHASSIS", number, pid
         elif "GEM" in descr or "Ethernet Module" in descr:

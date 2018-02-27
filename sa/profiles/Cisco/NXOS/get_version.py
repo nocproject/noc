@@ -14,10 +14,15 @@ class Script(BaseScript):
     name = "Cisco.NXOS.get_version"
     cache = True
     interface = IGetVersion
-    rx_ver = re.compile(r"^Cisco Nexus Operating System \(NX-OS\) Software.+?Software.+?system:\s+version\s+"
-                        r"(?P<version>\S+).+?Hardware\s+cisco\s+\S+\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
-    rx_snmp_ver = re.compile(r"^Cisco NX-OS\(tm\) .*?Version (?P<version>[^,]+),", re.IGNORECASE)
-    rx_snmp_platform = re.compile(r"^Nexus\s+(?P<platform>\S+).+Chassis$", re.IGNORECASE)
+    rx_ver = re.compile(
+        r"^Cisco Nexus Operating System \(NX-OS\) Software.+?"
+        r"Software.+?(?:system|NXOS):\s+version\s+"
+        r"(?P<version>\S+).+?Hardware\s+cisco\s+\S+\s+(?P<platform>\S+)",
+        re.MULTILINE | re.DOTALL)
+    rx_snmp_ver = re.compile(
+        r"^Cisco NX-OS\(tm\) .*?Version (?P<version>[^,]+),", re.IGNORECASE)
+    rx_snmp_platform = re.compile(
+        r"^Nexus\s+(?P<platform>\S+).+Chassis$", re.IGNORECASE)
     rx_snmp_platform1 = re.compile(r"^(?P<platform>N9K-C93\d\d\S+)$")
 
     def execute(self):
@@ -41,7 +46,7 @@ class Script(BaseScript):
                 return {
                     "vendor": "Cisco",
                     "platform": platform,
-                    "version": version,
+                    "version": version
                 }
             except self.snmp.TimeOutError:
                 pass
@@ -50,5 +55,5 @@ class Script(BaseScript):
         return {
             "vendor": "Cisco",
             "platform": match.group("platform"),
-            "version": match.group("version"),
+            "version": match.group("version")
         }
