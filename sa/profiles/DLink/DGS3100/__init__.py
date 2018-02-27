@@ -28,6 +28,7 @@ class Profile(BaseProfile):
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
+    send_on_syntax_error = BaseProfile.send_backspaces
     #
     # Version comparison
     # Version format:
