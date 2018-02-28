@@ -224,5 +224,6 @@ class VRF(models.Model):
     def get_search_info(self, user):
         return ("ip.vrf", "history", {"args": [self.id]})
 
+
 # Avoid circular references
 from .prefix import Prefix
