@@ -89,35 +89,7 @@ class Schedule(models.Model):
 from prefixtable import PrefixTable, PrefixTablePrefix
 from template import Template
 from systemtemtemplate import SystemTemplate
-
-
-class Checkpoint(models.Model):
-    """
-    Checkpoint is a marked moment in time
-    """
-    class Meta:
-        verbose_name = _("Checkpoint")
-        verbose_name_plural = _("Checkpoints")
-
-    timestamp = models.DateTimeField(_("Timestamp"))
-    user = models.ForeignKey(User, verbose_name=_("User"), blank=True, null=True)
-    comment = models.CharField(_("Comment"), max_length=256)
-    private = models.BooleanField(_("Private"), default=False)
-
-    def __unicode__(self):
-        if self.user:
-            return u"%s[%s]: %s" % (self.timestamp, self.user.username,
-                                    self.comment)
-
-    @classmethod
-    def set_checkpoint(cls, comment, user=None, timestamp=None, private=True):
-        if not timestamp:
-            timestamp = datetime.datetime.now()
-        cp = Checkpoint(timestamp=timestamp, user=user, comment=comment,
-                        private=private)
-        cp.save()
-        return cp
-
+from checkpoint import Checkpoint
 from favorites import Favorites
 from tag import Tag
 from sync import Sync

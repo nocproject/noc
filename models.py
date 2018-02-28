@@ -82,7 +82,7 @@ _MCACHE = {}
 _MODELS = {
     # main models
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
-    "main.Checkpoint": "noc.main.models.Checkpoint",
+    "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
     "main.CollectionCache": "noc.main.models.collectioncache.CollectionCache",
     "main.CustomField": "noc.main.models.customfield.CustomField",
     "main.CustomFieldEnumGroup": "noc.main.models.customfieldenumgroup.CustomFieldEnumGroup",
@@ -112,7 +112,7 @@ _MODELS = {
     "main.Style": "noc.main.models.style.Style",
     "main.Sync": "noc.main.models.sync.Sync",
     "main.SyncCache": "noc.main.models.synccache.SyncCache",
-    "main.SystemNotification": "noc.main.models.SystemNotification",
+    "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
     "main.SystemTemplate": "noc.main.models.SystemTemplate",
     "main.Tag": "noc.main.models.tag.Tag",
     "main.Template": "noc.main.models.template.Template",
