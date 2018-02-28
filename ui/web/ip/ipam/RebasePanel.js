@@ -40,6 +40,7 @@ Ext.define("NOC.ip.ipam.RebasePanel", {
         var me = this;
         me.currentPrefixId = record.id;
         me.setValues(record);
+        me.setTitle(__("Rebase prefix ") + record.get("to_prefix"))
     },
 
     onClose: function() {
