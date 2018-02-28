@@ -23,10 +23,6 @@ class BaseDataSource(object):
 
     logger = logging.getLogger(__name__)
 
-    @staticmethod
-    def rogue_replace(s):
-        return s.replace("\n", "\\n").replace("\t", "\\t").replace("\\", "\\\\")
-
     def clean(self, row):
         s = "\t".join(str(x) for x in row)
         if "\n" in s or "\\" in s or s.count("\t") >= len(row):
