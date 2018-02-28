@@ -26,33 +26,31 @@
 }
 
 .marker-cluster-good {
-    /*background-color: rgba(181, 226, 140, 0.6);*/
     background-color: rgba(110, 204, 57, 0.6);
 }
 .marker-cluster-good div {
     background-color: rgba(175,238,238, 0.6);
-    /*color: white;*/
-    /*background-color: rgba(110, 204, 57, 0.6);*/
 }
 
 .marker-cluster-warning {
-    /*background-color: rgba(255, 255, 0, 0.6);*/
     background-color: rgba(240, 194, 12, 0.6);
 }
 .marker-cluster-warning div {
     background-color: rgba(175,238,238, 0.6);
-    /*color: white;*/
-    /*background-color: rgba(240, 194, 12, 0.6);*/
 }
 
 .marker-cluster-error {
-    /*background-color: rgba(255, 69, 0, 0.6);*/
     background-color: rgba(255, 0, 0, 0.6);
 }
 .marker-cluster-error div {
-    /*background-color: rgba(255, 0, 0, 0.6);*/
     background-color: rgba(175,238,238, 0.6);
-    /*color: white;*/
+}
+
+.marker-cluster-maintenance {
+    background-color: rgba(32, 50, 160, 0.6);
+}
+.marker-cluster-maintenance div {
+    background-color: rgba(175,238,238, 0.6);
 }
 
 /* IE 6-8 fallback colors */

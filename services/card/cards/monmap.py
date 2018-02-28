@@ -20,6 +20,7 @@ from pymongo import ReadPreference
 from noc.services.card.cards.base import BaseCard
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
+from noc.maintenance.models.maintenance import Maintenance
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.gis.models.layer import Layer
@@ -47,6 +48,7 @@ class MonMapCard(BaseCard):
     color_map = {"error": "#FF0000",
                  "warning": "#F0C20C",
                  "good": "#6ECC39",
+                 "maintenance": "#2032A0",
                  "default": "#6ECC39"}
 
     _layer_cache = {}
@@ -97,10 +99,12 @@ class MonMapCard(BaseCard):
         objects = []
         objects_status = {"error": [],
                           "warning": [],
-                          "good": []}
+                          "good": [],
+                          "maintenance": []}
         sss = {"error": {},
                "warning": {},
-               "good": {}}
+               "good": {},
+               "maintenance": {}}
         # s_def = {
         #     "service": {},
         #     "subscriber": {},
@@ -123,6 +127,8 @@ class MonMapCard(BaseCard):
             alarms = self.get_alarms_info(None, alarms_all=True)
         else:
             alarms = self.get_alarms_info(mo_ids)
+        # Get maintenance
+        maintenance = Maintenance.currently_affected()
         # Getting services
         if not object_root:
             services_map = self.get_objects_summary_met(mo_ids, info_all=True)
@@ -146,13 +152,16 @@ class MonMapCard(BaseCard):
                   "total": 0,
                   "error": 0,
                   "warning": 0,
-                  "good": 0
+                  "good": 0,
+                  "maintenance": 0
                   }
             for mo_id, mo_name, container in mol:
                 # Status by alarm severity
                 # s_service = s_services.get(mo_id, s_def)
                 status = "good"
-                if 100 < alarms.get(mo_id) <= 2000:
+                if mo_id in maintenance:
+                    status = "maintenance"
+                elif 100 < alarms.get(mo_id) <= 2000:
                     status = "warning"
                 elif alarms.get(mo_id) > 2000:
                     status = "error"
@@ -176,11 +185,12 @@ class MonMapCard(BaseCard):
                 "total": 0,
                 "error": 0,
                 "warning": 0,
-                "good": 0}]
+                "good": 0,
+                "maintenance": 0}]
             objects[-1].update(ss)
 
         profiles = set()
-        for r in ["error", "warning", "good"]:
+        for r in ["error", "warning", "good", "maintenance"]:
             if not objects_status[r]:
                 continue
             if not object_root and r == "good":
@@ -196,7 +206,7 @@ class MonMapCard(BaseCard):
             profiles |= set(m_services)
             sss[r] = m_services
 
-        for r in sorted(sss, key=lambda k: ("error", "warning", "good").index(k)):
+        for r in sorted(sss, key=lambda k: ("error", "warning", "good", "maintenance").index(k)):
             # for p in sss[r]:
             for p in profiles:
                 services[p] += [(r, sss[r].get(p, None))]

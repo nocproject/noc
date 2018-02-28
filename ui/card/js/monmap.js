@@ -59,6 +59,17 @@ Monmap.prototype.initialize = function(lon, lat, zoom) {
                 });
             }
 
+            var maintenance = cluster.getAllChildMarkers().reduce(function(a, b) {
+                return a + b.options.maintenance
+            }, 0);
+            if(maintenance > 0) {
+                return new L.DivIcon({
+                    html: '<div><span>' + maintenance + '</span></div>',
+                    className: 'marker-cluster marker-cluster-maintenance',
+                    iconSize: new L.Point(40, 40)
+                });
+            }
+
             var goods = cluster.getAllChildMarkers().reduce(function(a, b) {
                 return a + b.options.good
             }, 0);
@@ -132,6 +143,8 @@ Monmap.prototype.poll_data = function() {
                         linkColor = "#FF0000";
                     } else if(obj.status === "warning") {
                         linkColor = "#F0C20C";
+                    } else if(obj.status === "maintenance") {
+                        linkColor = "#2032A0";
                     } else {
                         linkColor = "#6ECC39";
                     }
@@ -149,6 +162,7 @@ Monmap.prototype.poll_data = function() {
                 error: a.error,
                 warning: a.warning,
                 good: a.good,
+                maintenance: a.maintenance,
                 fillOpacity: 0.6,
                 opacity: 1,
                 weight: 3
@@ -160,6 +174,9 @@ Monmap.prototype.poll_data = function() {
             } else if(a.warning) {
                 color = "#F0C20C";
                 fillColor = "#FFFF00";
+            } else if(a.maintenance) {
+                color = "#2032A0";
+                fillColor = "#87CEFA";
             } else {
                 color = "#6ECC39";
                 fillColor = "#B5E28C";
