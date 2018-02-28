@@ -1,7 +1,4 @@
-
-
-
-
+---
 - name: Tune sysctl.conf for node
   sysctl:
     name: "{{item.name}}"

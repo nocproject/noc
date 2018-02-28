@@ -48,7 +48,7 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
 
-- name: Install mercurial
+- name: Install mercurial for freebsd
   pip:
     chdir: "{{noc_root}}"
     name: "mercurial"
