@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import threading
 import thread
 import logging
@@ -105,9 +104,9 @@ class ThreadPoolExecutor(object):
         with self.mutex:
             if max_workers < self.max_workers:
                 # Reduce pool
-                l = len(self.threads)
-                if l > max_workers:
-                    for i in range(l - max_workers):
+                tl = len(self.threads)
+                if tl > max_workers:
+                    for i in range(tl - max_workers):
                         self.stop_one_worker()
             self.max_workers = max_workers
 
@@ -120,7 +119,13 @@ class ThreadPoolExecutor(object):
                 "Cannot schedule new task after shutdown")
         future = Future()
         span_ctx, span = get_current_span()
-        self._put((future, fn, args, kwargs, span_ctx, span))
+        # Fetch span label
+        if "_in_label" in kwargs:
+            in_label = kwargs.pop("_in_label")
+        else:
+            in_label = None
+        # Put to the working queue
+        self._put((future, fn, args, kwargs, span_ctx, span, in_label))
         return future
 
     def shutdown(self, sync=False):
@@ -149,9 +154,7 @@ class ThreadPoolExecutor(object):
         try:
             while not self.to_shutdown:
                 try:
-                    future, fn, args, kwargs, span_ctx, span = self._get(
-                        self.idle_timeout
-                    )
+                    future, fn, args, kwargs, span_ctx, span, in_label = self._get(self.idle_timeout)
                 except IdleTimeout:
                     logger.debug("Closing idle thread")
                     break
@@ -162,8 +165,15 @@ class ThreadPoolExecutor(object):
                 if not future.set_running_or_notify_cancel():
                     continue
                 sample = 1 if span_ctx else 0
+                if config.features.forensic:
+                    if in_label and callable(in_label):
+                        in_label = in_label(*args, **kwargs)
+                    in_label = in_label or str(fn)
+                else:
+                    in_label = None
                 with Span(service="threadpool", sample=sample,
-                          context=span_ctx, parent=span) as span:
+                          context=span_ctx, parent=span,
+                          in_label=in_label) as span:
                     try:
                         result = fn(*args, **kwargs)
                         future.set_result(result)

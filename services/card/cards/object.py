@@ -30,13 +30,7 @@ class ObjectCard(BaseCard):
     model = Object
 
     def get_object(self, id):
-        if self.current_user.is_superuser:
-            return Object.objects.get(id=id)
-        else:
-            return Object.objects.get(
-                id=id,
-                administrative_domain__in=self.get_user_domains()
-            )
+        return Object.objects.get(id=id)
 
     def get_data(self):
         if not self.object:
@@ -65,17 +59,15 @@ class ObjectCard(BaseCard):
 
          # Get children
         children = []
-        current_state = None
-        current_start = None
-        duration = None
-
         for o in ManagedObject.objects.filter(container=self.object.id):
             # Alarms
             now = datetime.datetime.now()
             # Get object status and uptime
             alarms = list(ActiveAlarm.objects.filter(managed_object=o.id))
+            current_state = None
             current_start = None
             duration = None
+
             uptime = Uptime.objects.filter(object=o.id, stop=None).first()
 
             if uptime:
@@ -125,11 +117,30 @@ class ObjectCard(BaseCard):
                 "metrics": metric_map["object"]
             }]
 
+        contacts_list = []
+
+        if self.object.get_data("contacts", "technical") is not None and len(contacts_list) > 0:
+            contacts_list.append({"Technical": self.object.get_data("contacts", "technical")})
+        elif self.object.get_data("contacts", "technical") is not None:
+            contacts_list.append({"Technical": self.object.get_data("contacts", "technical")})
+
+        if self.object.get_data("contacts", "administrative") is not None and len(contacts_list) > 0:
+            contacts_list.insert(0, {"Administrative": self.object.get_data("contacts", "administrative")})
+        elif self.object.get_data("contacts", "administrative") is not None:
+            contacts_list.append({"Administrative": self.object.get_data("contacts", "administrative")})
+
+        if self.object.get_data("contacts", "billing") is not None and len(contacts_list) > 0:
+            contacts_list.insert(1, {"Billing": self.object.get_data("contacts", "billing")})
+        elif self.object.get_data("contacts", "billing") is not None:
+            contacts_list.append({"Billing": self.object.get_data("contacts", "billing")})
+
         return {
             "object": self.object,
             "path": path,
             "location": self.object.get_data("address", "text"),
+            "contacts": contacts_list,
             "id": self.object.id,
+            "name": self.object.name,
             "children": children
         }
 
@@ -220,4 +231,3 @@ class ObjectCard(BaseCard):
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
 
         return metric_map
-

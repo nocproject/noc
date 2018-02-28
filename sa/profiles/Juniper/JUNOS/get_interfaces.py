@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -91,11 +91,13 @@ class Script(BaseScript):
             # Detect interface type
             if name.startswith("lo"):
                 iftype = "loopback"
-            elif name.startswith("fxp"):
+            elif name.startswith("fxp") or name.startswith("me"):
                 iftype = "management"
             elif name.startswith("ae") or name.startswith("reth"):
                 iftype = "aggregated"
             elif name.startswith("vlan"):
+                iftype = "SVI"
+            elif name.startswith("vme"):
                 iftype = "SVI"
             elif name.startswith("irb"):
                 iftype = "SVI"

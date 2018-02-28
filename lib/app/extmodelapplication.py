@@ -29,6 +29,7 @@ from noc.sa.interfaces.base import (
 from noc.lib.validators import is_int
 from noc.models import is_document
 from noc.main.models.tag import Tag
+from noc.core.stencil import stencil_registry
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter
 
@@ -256,6 +257,11 @@ class ExtModelApplication(ExtApplication):
             if f.name == "tags":
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
+            elif f.name == "shape":
+                if o.shape:
+                    v = stencil_registry.get(o.shape)
+                    r[f.name] = v
+                    r["%s__label" % f.name] = unicode(v.title)
             elif hasattr(f, "document"):
                 # DocumentReferenceField
                 v = getattr(o, f.name)

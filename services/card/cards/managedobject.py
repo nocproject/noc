@@ -23,6 +23,7 @@ from noc.fm.models.outage import Outage
 from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
@@ -160,25 +161,29 @@ class ManagedObjectCard(BaseCard):
         metric_map = metric_map[self.object]
         # Interfaces
         interfaces = []
-        for i in Interface.objects.filter(managed_object=self.object.id,
-                                          type="physical"):
+        load_in = ""
+        for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
+            #load_in = self.humanize_speed(metric_map["interface"][i.name]["load_in"])
+
             interfaces += [{
-                "id": i.id,
-                "name": i.name,
-                "admin_status": i.admin_status,
-                "oper_status": i.oper_status,
-                "mac": i.mac or "",
-                "full_duplex": i.full_duplex,
-                "load_in": self.humanize_speed(metric_map["interface"][i.name].get("load_in")),
-                "load_out": self.humanize_speed(metric_map["interface"][i.name].get("load_out")),
-                "errors_in": metric_map["interface"][i.name].get("errors_in"),
-                "errors_out": metric_map["interface"][i.name].get("errors_out"),
-                "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
-                "untagged_vlan": None,
-                "tagged_vlan": None,
-                "service": i.service,
-                "service_summary": service_summary.get("interface").get(i.id, {})
+                    "id": i.id,
+                    "name": i.name,
+                    "admin_status": i.admin_status,
+                    "oper_status": i.oper_status,
+                    "mac": i.mac or "",
+                    "full_duplex": i.full_duplex,
+                    "load_in": self.humanize_speed(metric_map["interface"][i.name].get("load_in", 0)),
+                    "load_out": self.humanize_speed(metric_map["interface"][i.name].get("load_out", 0)),
+                    "errors_in": metric_map["interface"][i.name].get("errors_in", 0),
+                    "errors_out": metric_map["interface"][i.name].get("errors_out", 0),
+                    "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
+                    "untagged_vlan": None,
+                    "tagged_vlan": None,
+                    "profile": i.profile,
+                    "service": i.service,
+                    "service_summary": service_summary.get("interface").get(i.id, {})
             }]
+
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
                 si = si[0]
@@ -383,6 +388,8 @@ class ManagedObjectCard(BaseCard):
                 op_fields_map[op.id] += [mts[mt["metric_type"]][1]]
 
         for table, fields in itertools.groupby(sorted(mmm, key=lambda x: x[0]), key=lambda x: x[0]):
+            # tb_fields = [f[1] for f in fields]
+            # mt_name = [f[2] for f in fields]
             fields = list(fields)
             SQL = """SELECT managed_object, argMax(ts, ts), %s
                   FROM %s
@@ -405,6 +412,24 @@ class ManagedObjectCard(BaseCard):
                     metric_map[mo]["object"][f_name] = r
                     last_ts[mo] = max(ts, last_ts.get(mo, ts))
                     i += 1
+        return metric_map
+        SQL = """SELECT managed_object, argMax(ts, ts), argMax(temperature, ts) as temperature
+                FROM environment
+                WHERE
+                  date >= toDate('%s')
+                  AND ts >= toDateTime('%s')
+                  AND managed_object IN (%s)
+                GROUP BY managed_object
+                """ % (from_date.date().isoformat(), from_date.isoformat(sep=" "),
+                       ", ".join(bi_map))
+
+        for mo_bi_id, ts, temperature in ch.execute(post=SQL):
+            mo = bi_map.get(mo_bi_id)
+            if mo:
+                mtable += [[mo, ts, temperature]]
+                metric_map[mo]["temperature"] = temperature
+                last_ts[mo] = max(ts, last_ts.get(mo, ts))
+
         return metric_map
 
     @staticmethod

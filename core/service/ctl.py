@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Service control api
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ import logging
 # Third-party modules
 import six
 # NOC modules
+from noc.config import config
 from .api import API, api
 
 
@@ -105,3 +106,27 @@ class CtlAPI(API):
         self.logger.critical("Changing loglevel: %s -> %s", current_level, new_level)
         logging.root.setLevel(new_level)
         return new_level
+
+    @api
+    def forensic_start(self):
+        """
+        Start forensic logging
+        :return:
+        """
+        if not config.features.forensic:
+            config.features.forensic = True
+            return True
+        else:
+            return False
+
+    @api
+    def forensic_stop(self):
+        """
+        Start forensic logging
+        :return:
+        """
+        if config.features.forensic:
+            config.features.forensic = False
+            return True
+        else:
+            return False

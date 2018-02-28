@@ -2,5 +2,6 @@
   "$metric": "Interface | Status | Admin",
   "$type": "ifindex",
   "oid": "1.3.6.1.3.55.1.3.1.4.{{ ifIndex }}",
-  "type": "gauge"
+  "type": "gauge",
+  "scale": "invert0"
 }

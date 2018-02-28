@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
 from noc.core.mib import mib
@@ -23,7 +23,7 @@ class Script(BaseScript):
     rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)$", re.MULTILINE)
     rx_mac2 = re.compile(r"^OOB MAC Address:\s+(?P<mac>\S+)$", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         # Try SNMP first
         if self.has_snmp():
             try:

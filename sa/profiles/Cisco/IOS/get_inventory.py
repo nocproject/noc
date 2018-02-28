@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -47,7 +47,6 @@ class Script(BaseScript):
     rx_7100 = re.compile(
         r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? "
         r"(?:Universal Broadband Router|chassis)")
-
     rx_slot_id = re.compile(
         r"^.*(slot|[tr|b]ay|pem|supply|fan|module)(\s*:?)"
         r"(?P<slot_id>[\d|\w]+).*", re.IGNORECASE)
@@ -80,8 +79,7 @@ class Script(BaseScript):
                 vendor, serial = "", ""
                 if match.group("name") in self.IGNORED_NAMES:
                     self.logger.debug(
-                        "Part %s in ignored name. Skipping" %
-                        match.group("name")
+                        "Part %s in ignored name. Skipping" % match.group("name")
                     )
                     continue
                 self.logger.debug(
@@ -98,13 +96,10 @@ class Script(BaseScript):
                     self.slot_id = number
                     continue
                 if (
-                    not match.group("pid") and
-                    not match.group("vid") and
+                    not match.group("pid") and not match.group("vid") and
                     not match.group("serial")
                 ):
-                    self.logger.debug(
-                        "PID, VID, Serial is not match. Continue..."
-                    )
+                    self.logger.debug("PID, VID, Serial is not match. Continue...")
                     continue
                 serial = match.group("serial")
                 if not part_no:
@@ -213,7 +208,7 @@ class Script(BaseScript):
 
     def get_idprom(self, int, descr):
         try:
-            t = self.cli("show idprom int " + int + " | i Vendor")
+            t = self.cli("show idprom int %s | i Vendor" % int)
             match = self.rx_idprom.search(t)
             if match:
                 v = self.rx_cvend.search(match.group("t_vendor").upper())
@@ -243,12 +238,11 @@ class Script(BaseScript):
                 ):
                     pid = self.get_transceiver_pid(match.group("t_part_no"))
                 else:
-                    if ("GBIC" in match.group("t_part_no") and
-                       "Gi" in int):
-                            pid = self.get_transceiver_pid(
-                                "1000BASE" +
-                                match.group("t_part_no")[5:].strip()
-                            )
+                    if "GBIC" in match.group("t_part_no") and "Gi" in int:
+                        pid = self.get_transceiver_pid(
+                            "1000BASE" +
+                            match.group("t_part_no")[5:].strip()
+                        )
                     else:
                         if (
                             "NONAME" in t_vendor and
@@ -358,7 +352,7 @@ class Script(BaseScript):
             if (len(pid) - len(descr) == 2) and pid[len(descr)] == "-":
                 pid = descr
             return "CHASSIS", self.slot_id, pid
-        elif (("SUP" in pid or "S2U" in pid) and "supervisor" in descr):
+        elif ("SUP" in pid or "S2U" in pid) and "supervisor" in descr:
             # Sup2
             return "SUP", self.slot_id, pid
         elif name.startswith("module "):
@@ -372,7 +366,7 @@ class Script(BaseScript):
             ):
                 return "SUP", self.slot_id, pid
             else:
-                if (pid == "N/A" and "Gibraltar,G-20" in descr):
+                if pid == "N/A" and "Gibraltar,G-20" in descr:
                     # 2-port 100BASE-TX Fast Ethernet port adapter
                     pid = "CISCO7100-MB"
                 if pid in ("ASR1001", "ASR1001-X"):
@@ -381,7 +375,7 @@ class Script(BaseScript):
         elif (
             (
                 pid.startswith("WS-X64") or pid.startswith("WS-X67") or
-                pid.startswith("WS-X65")
+                pid.startswith("WS-X65") or pid.startswith("WS-X68")
             ) and "port" in descr
         ):
             return "LINECARD", self.slot_id, pid
@@ -444,7 +438,7 @@ class Script(BaseScript):
         elif pid.startswith("AIM-"):
             # Network Module
             return "AIM", self.slot_id, pid
-        elif (pid.startswith("PVDM2-") or pid.startswith("PVDM3-")):
+        elif pid.startswith("PVDM2-") or pid.startswith("PVDM3-"):
             # PVDM Type 2 and 3
             return "PVDM", self.slot_id, pid
         elif pid.endswith("-MB"):

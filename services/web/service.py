@@ -89,11 +89,21 @@ class NOCWSGIHandler(tornado.web.RequestHandler):
             data["headers"] = response_headers
             return response.append
 
+        if config.features.forensic:
+            in_label = "%s %s %s %s" % (
+                request.remote_ip,
+                request.headers.get("Remote-User", "-"),
+                request.method,
+                request.uri
+            )
+        else:
+            in_label = None
         wsgi = django.core.handlers.wsgi.WSGIHandler()
         app_response = yield self.executor.submit(
             wsgi,
             tornado.wsgi.WSGIContainer.environ(request),
-            start_response
+            start_response,
+            _in_label=in_label
         )
         try:
             response.extend(app_response)

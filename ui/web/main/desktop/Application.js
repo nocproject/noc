@@ -289,6 +289,7 @@ Ext.define("NOC.main.desktop.Application", {
                     displayName = [];
                 // Save settings
                 NOC.username = settings.username;
+                NOC.email = settings.email;
                 // Build display name
                 if(settings.first_name) {
                     displayName.push(settings.first_name);

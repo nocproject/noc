@@ -444,6 +444,7 @@ class MetricsCheck(DiscoveryCheck):
             else:
                 # Gauge
                 m.abs_value = m.value * m.scale
+
             self.logger.debug(
                 "[%s] Measured value: %s. Scale: %s. Resulting value: %s",
                 m.label, m.value, m.scale, m.abs_value
@@ -477,7 +478,7 @@ class MetricsCheck(DiscoveryCheck):
                     )
                     continue
                 n_metrics += 1
-            if cfg.process_thresholds and m.abs_value:
+            if cfg.process_thresholds and m.abs_value is not None:
                 alarms += self.process_thresholds(m, cfg)
         return n_metrics, data, alarms
 

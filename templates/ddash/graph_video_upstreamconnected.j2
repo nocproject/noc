@@ -1,38 +1,4 @@
 {
-  "id": "fc04d1a6-a6d8-4fb2-835a-e1c220e9b072",
-  "title": "Upstream Connected status",
-  "span": 6,
-  "type": "natel-discrete-panel",
-  "datasource": null,
-  "targets": [
-    {
-      "refId": "A",
-      "resultFormat": "time_series",
-      "intervalFactor": 1,
-      "query": "SELECT \n  $timeSeries as t, \n  avg(video_broadcast) as `Video Upstream Connected`\nFROM \n  $table \nWHERE managed_object=$bi_id\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
-      "database": "noc",
-      "tableLoading": false,
-      "table": "video",
-      "dateLoading": false,
-      "datetimeLoading": false,
-      "dateColDataType": "date",
-      "dateTimeColDataType": "ts"
-    }
-  ],
-  "display": "timeline",
-  "rowHeight": 50,
-  "valueMaps": [
-    {
-      "value": "1",
-      "op": "=",
-      "text": "On Air"
-    },
-    {
-      "value": "0",
-      "op": "=",
-      "text": "Not Upstream Connected"
-    }
-  ],
   "mappingTypes": [
     {
       "name": "value to text",
@@ -43,46 +9,80 @@
       "value": 2
     }
   ],
+  "textSize": 24,
+  "links": [],
+  "valueMaps": [
+    {
+      "value": "0",
+      "op": "=",
+      "text": "Upstream not connected"
+    },
+    {
+      "value": "1",
+      "op": "=",
+      "text": "Upstream online"
+    }
+  ],
   "rangeMaps": [
     {
-      "from": "null",
       "to": "null",
+      "from": "null",
       "text": "N/A"
     }
   ],
-  "colorMaps": [
+  "showLegend": true,
+  "legendSortBy": "-ms",
+  "id": "fc04d1a6-a6d8-4fb2-835a-e1c220e9b072",
+  "writeLastValue": true,
+  "span": 6,
+  "title": "Upstream status",
+  "showLegendNames": true,
+  "targets": [
     {
-      "text": "N/A",
-      "color": "#CCC"
-    },
-    {
-      "text": "On Air",
-      "color": "#508642"
-    },
-    {
-      "text": "Not Upstream Connected",
-      "color": "#e24d42"
+      "dateTimeColDataType": "ts",
+      "datetimeLoading": false,
+      "database": "noc",
+      "dateLoading": false,
+      "tableLoading": false,
+      "dateColDataType": "date",
+      "table": "video",
+      "intervalFactor": 1,
+      "query": "SELECT \n  $timeSeries as t, \n  avg(tmp133) as `Video Upstream Status`\nFROM \n  $table \nWHERE managed_object=$bi_id and path[3]=''\n  and $timeFilter \n  GROUP BY t \n  ORDER BY t",
+      "refId": "A",
+      "resultFormat": "time_series"
     }
   ],
-  "metricNameColor": "#000000",
-  "valueTextColor": "#000000",
   "backgroundColor": "rgba(128, 128, 128, 0.1)",
-  "lineColor": "rgba(128, 128, 128, 1.0)",
-  "textSize": 24,
-  "extendLastValue": true,
-  "writeLastValue": true,
-  "writeAllValues": true,
-  "writeMetricNames": false,
-  "showLegend": true,
-  "showLegendNames": true,
-  "showLegendValues": true,
-  "showLegendPercent": true,
+  "valueTextColor": "#000000",
   "highlightOnMouseover": true,
-  "legendSortBy": "-ms",
-  "links": [],
-  "showTransitionCount": false,
+  "type": "natel-discrete-panel",
+  "writeAllValues": false,
   "showLegendTime": true,
-  "showLegendCounts": false,
+  "writeMetricNames": true,
+  "extendLastValue": true,
   "showDistinctCount": false,
-  "expandFromQueryS": {{ discovery_interval }}
+  "showLegendCounts": false,
+  "metricNameColor": "#000000",
+  "showLegendValues": true,
+  "showTransitionCount": false,
+  "expandFromQueryS": 600,
+  "rowHeight": 50,
+  "showLegendPercent": true,
+  "colorMaps": [
+    {
+      "color": "#CCC",
+      "text": "N/A"
+    },
+    {
+      "text": "Upstream not connected",
+      "color": "#bf1b00"
+    },
+    {
+      "text": "Upstream online",
+      "color": "#508642"
+    }
+  ],
+  "datasource": null,
+  "lineColor": "rgba(128, 128, 128, 1.0)",
+  "display": "timeline"
 }

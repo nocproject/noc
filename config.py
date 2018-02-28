@@ -214,6 +214,7 @@ class Config(BaseConfig):
         consul_healthchecks = BooleanParameter(default=True, help="While registering serive in consul also register health check")
         service_registration = BooleanParameter(default=True, help="Permit consul self registration")
         pypy = BooleanParameter(default=False)
+        forensic = BooleanParameter(default=False)
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")

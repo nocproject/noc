@@ -31,6 +31,7 @@ class ModelBase(type):
             engine=getattr(cls.Meta, "engine", None),
             db_table=getattr(cls.Meta, "db_table", None),
             description=getattr(cls.Meta, "description", None),
+            sample=getattr(cls.Meta, "sample", False),
             tags=getattr(cls.Meta, "tags", None),
         )
         for k in attrs:
@@ -45,10 +46,11 @@ class ModelBase(type):
 
 class ModelMeta(object):
     def __init__(self, engine=None, db_table=None, description=None,
-                 tags=None):
+                 sample=False, tags=None):
         self.engine = engine
         self.db_table = db_table
         self.description = description
+        self.sample = sample
         self.tags = tags
 
 
@@ -57,6 +59,7 @@ class Model(six.with_metaclass(ModelBase)):
         engine = None
         db_table = None
         description = None
+        sample = False
         tags = None
 
     def __init__(self, **kwargs):
@@ -251,6 +254,7 @@ class Model(six.with_metaclass(ModelBase)):
                 *order -- nth field in ORDER BY expression, starting from 0
                 *desc -- sort in descending order, if true
             "filter": expression
+            "having": expression
             "limit": N -- limit to N rows
             "offset": N -- skip first N rows
             "sample": 0.0-1.0 -- randomly select rows
@@ -292,6 +296,7 @@ class Model(six.with_metaclass(ModelBase)):
         else:
             # Get where expressions
             filter_x = to_sql(transformed_query.get("filter", {}))
+            filter_h = to_sql(transformed_query.get("having", {}))
             # Generate SQL
             sql = ["SELECT "]
             sql += [", ".join(fields_x)]
@@ -304,6 +309,9 @@ class Model(six.with_metaclass(ModelBase)):
             # GROUP BY
             if group_by:
                 sql += ["GROUP BY %s" % ", ".join(group_by[v] for v in sorted(group_by))]
+            # HAVING
+            if filter_h:
+                sql += ["HAVING %s" % filter_h]
             # ORDER BY
             if order_by:
                 sql += ["ORDER BY %s" % ", ".join(order_by[v] for v in sorted(order_by))]

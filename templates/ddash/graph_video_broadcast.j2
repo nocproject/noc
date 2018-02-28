@@ -13,12 +13,12 @@
   "links": [],
   "valueMaps": [
     {
-      "text": "Recording",
+      "text": "On Air",
       "value": "1",
       "op": "="
     },
     {
-      "text": "Not Recording",
+      "text": "Not Broadcasting",
       "value": "0",
       "op": "="
     }
@@ -32,10 +32,10 @@
   ],
   "showLegend": true,
   "legendSortBy": "-ms",
-  "id": "9ff96872-0cf1-4758-8f20-ea6443cc7bf8",
+  "id": "9c8319ce-0616-400f-9c13-20e67c6291fc",
   "writeLastValue": true,
   "span": 6,
-  "title": "Video | Record",
+  "title": "Video | Broadcast",
   "showLegendNames": true,
   "targets": [
     {
@@ -47,7 +47,7 @@
       "dateColDataType": "date",
       "table": "video",
       "intervalFactor": 1,
-      "query": "SELECT \n    t, \n    groupArray((concat('Video | Record ',path[3]), d)) AS groupArr\n    FROM \n    ( SELECT \n          $timeSeries as t, \n        path[3], \n        avg(video_record) d \n        from $table \n        WHERE \n            $timeFilter\n            AND managed_object=$bi_id\n            AND path[3] in ('Record.Sub', 'Record')\n        GROUP BY t, path[3]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
+      "query": "SELECT \n    t, \n    groupArray((concat('Video | Broadcast ',path[3]), d)) AS groupArr\n    FROM \n    ( SELECT \n          $timeSeries as t, \n        path[3], \n        avg(video_broadcast) d \n        from $table \n        WHERE \n            $timeFilter\n            AND managed_object=$bi_id\n            AND path[3] in ('Broadcast.Sub', 'Broadcast')\n        GROUP BY t, path[3]\n        ORDER BY t\n    ) \nGROUP BY t \nORDER BY t",
       "refId": "A",
       "resultFormat": "time_series"
     }
@@ -75,11 +75,11 @@
     },
     {
       "color": "#508642",
-      "text": "Recording"
+      "text": "On Air"
     },
     {
       "color": "#e24d42",
-      "text": "Not Recording"
+      "text": "Not Broadcasting"
     }
   ],
   "datasource": null,

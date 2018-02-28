@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,6 +24,11 @@ class Script(BaseScript):
         "(?P=type) count\s+(?P<count>\d+)",
         re.DOTALL | re.IGNORECASE
     )
+    rx_range2 = re.compile(
+        r"^\s+Base address\s+(?P<mac>\S+)\s*\n"
+        r"^\s+Count\s+(?P<count>\d+)",
+        re.MULTILINE
+    )
 
     def execute_cli(self):
         v = self.cli("show chassis mac-addresses")
@@ -36,6 +41,15 @@ class Script(BaseScript):
                 macs[-1][1] = t
             else:
                 macs += [[f, t]]
+        # Found in some oldest switches
+        if macs == []:
+            match = self.rx_range2.search(v)
+            base = match.group("mac")
+            count = int(match.group("count"))
+            return [{
+                "first_chassis_mac": base,
+                "last_chassis_mac": MAC(base).shift(count - 1)
+            }]
         return [
             {
                 "first_chassis_mac": f,

@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 
 
@@ -28,7 +28,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
-    def execute(self):
+    def execute_cli(self):
         result = []
         try:
             lldp = self.cli("show lldp neighbors interface")

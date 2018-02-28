@@ -53,6 +53,16 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: __("Set unmanaged"),
             action: "set_unmanaged",
             glyph: NOC.glyph.times
+        },
+        {
+            title: __("New Maintaince"),
+            glyph: NOC.glyph.wrench,
+            run: "newMaintaince"
+        },
+        {
+            title: __("Add to Maintaince"),
+            glyph: NOC.glyph.plus,
+            run: "addToMaintaince"
         }
     ],
     validationModelId: "sa.ManagedObject",
@@ -68,18 +78,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 layout: "form",
                 columnWidth: 0.5
             };
-        me.actions.push(
-            {
-                title: __("New Maintaince"),
-                glyph: NOC.glyph.wrench,
-                run: me.newMaintaince
-            },
-            {
-                title: __("Add to Maintaince"),
-                glyph: NOC.glyph.plus,
-                run: me.addToMaintaince
-            }
-        );
+
         me.configPreviewButton = Ext.create("Ext.button.Button", {
             text: __("Config"),
             glyph: NOC.glyph.file,
@@ -1337,7 +1336,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         var args = {
             direct_objects: objects,
             subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
-            contacts: NOC.username,
+            contacts: NOC.email ? NOC.email : NOC.username,
             start_date: Ext.Date.format(new Date(), 'd.m.Y'),
             start_time: Ext.Date.format(new Date(), 'H:i'),
             stop_time: '12:00',

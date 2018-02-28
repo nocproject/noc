@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Escalation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017, The NOC Project
+# Copyright (C) 2007-2018, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ from noc.maintenance.models.maintenance import Maintenance
 from noc.config import config
 from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.scheduler.job import Job
-from noc.core.span import Span, PARENT_SAMPLE, get_current_span
+from noc.core.span import Span, PARENT_SAMPLE
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         r = []
         for k in summary:
             p = model.get_by_id(k.profile)
-            if not p or getattr(p, "show_in_summary", True) == False:
+            if not p or getattr(p, "show_in_summary", True) is False:
                 continue
             r += [{
                 "profile": p.name,
@@ -286,7 +286,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                                 ca.escalation_tt)
                             metrics["escalation_tt_comment_fail"] += 1
             # Send notification
-            if a.notification_group:
+            if a.notification_group and mo.can_notify():
                 subject = a.template.render_subject(**ctx)
                 body = a.template.render_body(**ctx)
                 logger.debug("[%s] Notification message:\nSubject: %s\n%s",
