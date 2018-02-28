@@ -210,7 +210,6 @@ class MonMapCard(BaseCard):
             # for p in sss[r]:
             for p in profiles:
                 services[p] += [(r, sss[r].get(p, None))]
-        print services
         return {
             "objects": objects,
             "summary": self.f_glyph_summary({
