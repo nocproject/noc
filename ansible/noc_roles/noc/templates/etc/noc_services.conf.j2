@@ -1,5 +1,9 @@
 {% for service in noc_services %}
+{% if service.pool %}
+[program:{{service.name}}-{{service.pool}}]
+{% else %}
 [program:{{service.name}}]
+{% endif %}
 command = {{ service.environment.supervisord.command  | mandatory }}
 process_name = {{ service.environment.supervisord.process_name | default("%(program_name)s-%(process_num)02d", True) }}
 {% if 'backup_power' in service.config %}
@@ -46,3 +50,4 @@ environment=NOC_CONFIG="{{ service.config_order }}",NOC_NODE="{{ ansible_nodenam
 {%- endif %}
 
 {% endfor %}
+
