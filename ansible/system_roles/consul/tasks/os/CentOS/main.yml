@@ -1,4 +1,17 @@
 ---
+- name: Install CentOS consul depends
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+   - python-virtualenv
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
 - name: systemd script
   template:
     src: consul_systemd.service.j2

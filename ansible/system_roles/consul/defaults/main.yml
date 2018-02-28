@@ -14,6 +14,8 @@ consul_temp_file: "{{tower_dist_dir}}/{{consul_pkg}}"
 consul_temp_unarchive: "/tmp/consul/{{ consul_version }}"
 consul_temp_file_checksum: "{{tower_dist_dir}}/{{ consul_version }}_SHA256SUMS"
 
+python_consul_version: 0.7.2
+
 ### Paths
 consul_bin_path: "/bin"
 consul_data_path: "/var/consul"

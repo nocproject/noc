@@ -36,6 +36,11 @@
   tags:
     - requirements
 
+- name: Install consul python bindings
+  import_tasks: control.yml
+  tags:
+    - requirements
+
 - name: Consul config
   import_tasks: config.yml
   tags:

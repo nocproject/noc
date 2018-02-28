@@ -1,0 +1,8 @@
+- name: Install python-consul
+  pip:
+    name: "python-consul=={{python_consul_version}}"
+    virtualenv: "{{consul_control_venv}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements

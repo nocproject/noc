@@ -1,4 +1,17 @@
 ---
+- name: Install Debian consul depends
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  with_items:
+    - python-virtualenv
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
 - name: systemd script
   template:
     src: consul_systemd.service.j2
