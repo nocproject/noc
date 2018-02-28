@@ -2,22 +2,19 @@
 # ---------------------------------------------------------------------
 # ReportDictionary implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
-import datetime
-from collections import (defaultdict, namedtuple)
+from collections import defaultdict, namedtuple
 # Third-party modules
 from django.db import connection
 from pymongo import ReadPreference
-import bson
 # NOC modules
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
-from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.capability import Capability
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.profile import Profile
@@ -37,11 +34,11 @@ class ReportDictionary(object):
 
     logger = logging.getLogger(__name__)
 
-    def __init__(self, ids=(), **kwargs):
+    def __init__(self, ids=None, **kwargs):
         self.unknown = self.UNKNOWN
         self.attributes = self.ATTRS
         self.logger.info("Starting load %s", self.ATTRS)
-        self.out = self.load(ids, self.attributes)
+        self.out = self.load(ids or [], self.attributes)
         self.logger.info("Stop loading %s", self.ATTRS)
 
     @staticmethod
@@ -63,15 +60,16 @@ class ReportObjectCaps(ReportDictionary):
     ATTRS = dict([("c_%s" % str(key), value) for key, value in
                   Capability.objects.filter().scalar("id", "name")])
     UNKNOWN = [""] * len(ATTRS)
+    CHUNK_SIZE = 10000
 
     def load(self, mo_ids, attributes):
         # Namedtuple caps, for save
         Caps = namedtuple("Caps", attributes.keys())
         Caps.__new__.__defaults__ = ("",) * len(Caps._fields)
 
-        i = 0
         d = {}
-        while mo_ids[0 + i:10000 + i]:
+        while mo_ids:
+            mo_ids, chunk = mo_ids[:self.CHUNK_SIZE], mo_ids[self.CHUNK_SIZE:]
             match = {"_id": {"$in": mo_ids}}
             value = get_db()["noc.sa.objectcapabilities"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
@@ -84,9 +82,8 @@ class ReportObjectCaps(ReportDictionary):
                 ])
 
             for v in value:
-                r = dict(("c_%s" % str(l["item"]), l["val"]) for l in v["cap"] if "c_%s" % str(l["item"]) in attributes)
+                r = dict(("c_%s" % l["item"], l["val"]) for l in v["cap"] if "c_%s" % l["item"] in attributes)
                 d[v["_id"]] = Caps(**r)
-            i += 10000
         return d
 
 
@@ -144,9 +141,9 @@ class ReportDiscoveryResult(object):
         :return:
         :rtype: list
         """
-        discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         pipeline = [
-            {"$match": {"key": {"$in": self.mo_ids}, "jcls": discovery}},
+            {"$match": {"key": {"$in": self.mo_ids},
+                        "jcls": "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"}},
             {"$project": {
                 "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
                 "st": True,
