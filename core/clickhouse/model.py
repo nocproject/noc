@@ -79,7 +79,7 @@ class Model(six.with_metaclass(ModelBase)):
     @classmethod
     def wrap_table(cls, table_name):
         class WrapClass(Model):
-            class Meta:
+            class Meta(object):
                 db_table = table_name
 
         return WrapClass
