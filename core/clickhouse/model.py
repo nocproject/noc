@@ -55,7 +55,7 @@ class ModelMeta(object):
 
 
 class Model(six.with_metaclass(ModelBase)):
-    class Meta:
+    class Meta(object):
         engine = None
         db_table = None
         description = None
