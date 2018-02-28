@@ -243,7 +243,7 @@ class Model(six.with_metaclass(ModelBase)):
         return query
 
     @classmethod
-    def query(cls, query, user=None, test=False):
+    def query(cls, query, user=None, dry_run=False):
         """
         Execute query and return result
         :param query: dict of
@@ -261,7 +261,7 @@ class Model(six.with_metaclass(ModelBase)):
             @todo: group by
             @todo: order by
         :param user: User doing query
-        :param test: Do not query, only return it.
+        :param dry_run: Do not query, only return it.
         :return:
         """
         # Get field expressions
@@ -327,7 +327,7 @@ class Model(six.with_metaclass(ModelBase)):
             # Execute query
             ch = connection()
             t0 = time.time()
-            if test:
+            if dry_run:
                 return sql
             r = ch.execute(sql)
             dt = time.time() - t0
