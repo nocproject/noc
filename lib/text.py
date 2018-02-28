@@ -488,3 +488,15 @@ def safe_shadow(text):
 
 def ch_escape(s):
     return s.replace("\n", "\\n").replace("\t", "\\t").replace("\\", "\\\\")
+
+
+ESC_REPLACEMENTS = {
+    re.escape('\n'): ' ',
+    re.escape('\t'): '        '
+}
+
+rx_escape = re.compile("|".join(ESC_REPLACEMENTS))
+
+
+def tsv_escape(text):
+    return rx_escape.sub(lambda match: ESC_REPLACEMENTS[re.escape(match.group(0))], text)
