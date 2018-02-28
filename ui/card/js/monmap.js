@@ -63,7 +63,6 @@ Monmap.prototype.initialize = function(lon, lat, zoom) {
                 return a + b.options.maintenance
             }, 0);
             if(maintenance > 0) {
-                console.log('maintenance');
                 return new L.DivIcon({
                     html: '<div><span>' + maintenance + '</span></div>',
                     className: 'marker-cluster marker-cluster-maintenance',
