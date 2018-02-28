@@ -160,10 +160,8 @@ class MonMapCard(BaseCard):
                 # s_service = s_services.get(mo_id, s_def)
                 status = "good"
                 if mo_id in maintenance:
-                    print("Is maintenance")
-                    ss["maintenance"] += 1
-                    objects_status["maintenance"] += [mo_id]
-                if 100 < alarms.get(mo_id) <= 2000:
+                    status = "maintenance"
+                elif 100 < alarms.get(mo_id) <= 2000:
                     status = "warning"
                 elif alarms.get(mo_id) > 2000:
                     status = "error"
