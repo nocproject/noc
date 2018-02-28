@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # pyRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,6 @@ from django.db import models
 # NOC modules
 from noc.core.interface.loader import loader as interface_loader
 from noc.core.handler import get_handler
-from noc.core.model.decorator import on_delete_check
 
 
 class NoPyRuleException(Exception):
@@ -24,11 +23,6 @@ class NoPyRuleException(Exception):
 rx_coding = re.compile(r"^#\s*-\*-\s*coding:\s*\S+\s*-\*-\s*$", re.MULTILINE)
 
 
-@on_delete_check(check=[
-    ("sa.ManagedObject", "config_filter_rule"),
-    ("sa.ManagedObject", "config_diff_filter_rule"),
-    ("sa.ManagedObject", "config_validation_rule")
-])
 class PyRule(models.Model):
     class Meta:
         app_label = "main"
