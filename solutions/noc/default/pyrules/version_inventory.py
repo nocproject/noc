@@ -15,7 +15,7 @@
 
 
 def version_inventory(task):
-    from noc.main.models import SystemNotification
+    from noc.main.models.systemnotification import SystemNotification
 
     changes = []
     for mt in task.maptask_set.filter(status="C"):
