@@ -1,0 +1,34 @@
+---
+# Read default value.
+- name: Read key/value pair for key {{consul_service_key}}
+  consul_kv:
+    key: "{{consul_service_key}}"
+    cas: 0
+    #token: "{{consul_service_token}}"
+  register: consul_key_response
+
+# if default value is unset provide default json
+- name: init default if unset
+  consul_kv:
+    key: "{{consul_service_key}}"
+    cas: "{{consul_key_response.index}}"
+    value: "{{ service_tmpl | to_nice_json }}"
+  vars:
+    service_tmpl:
+      Holders: []
+      Limit: "{{consul_service_value}}"
+  when: not consul_key_response.data.Value
+
+# if json is already valid just update needed value
+- name: Update a key/value pair for key {{consul_service_key}}
+  consul_kv:
+    key: "{{consul_service_key}}"
+    value: "{{ consul_key_response.data.Value
+      | from_json
+      | combine({ consul_service_internal_key: consul_service_value })
+      | to_nice_json
+      }}"
+    cas: "{{consul_key_response.index}}"
+    #token: "{{consul_service_token}}"
+  when: consul_key_response.data.Value
+

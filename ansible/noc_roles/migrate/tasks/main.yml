@@ -11,6 +11,8 @@
       db_user: "{{postgres_noc_user}}"
   delegate_to: "{{groups['svc-postgres-master'][0]}}"
 
+- import_tasks: configure_consul.yml
+
 - name: Migrate db
   command: ./noc migrate
   args:
