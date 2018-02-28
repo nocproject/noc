@@ -12,6 +12,7 @@ import six
 from noc.main.models.datasourcecache import DataSourceCache
 from noc.core.perf import metrics
 from noc.config import config
+from noc.lib.text import ch_escape
 
 
 class BaseDataSource(object):
@@ -28,10 +29,10 @@ class BaseDataSource(object):
 
     def clean(self, row):
         s = "\t".join(str(x) for x in row)
-        if "\n" in s or "\\" in s or row.count("\t") >= len(row):
+        if "\n" in s or "\\" in s or s.count("\t") >= len(row):
             metrics["error", ("type", "rogue_chars")] += 1
             self.logger.error("Rogue chars in row %s", row)
-            row = map(lambda x: self.rogue_replace(x) if isinstance(x, six.string_types) else x, list(row))
+            row = map(lambda x: ch_escape(x) if isinstance(x, six.string_types) else x, list(row))
         return row
 
     def get(self):
