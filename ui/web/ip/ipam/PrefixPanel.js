@@ -174,6 +174,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                 var data = Ext.decode(response.responseText);
                 me.rebaseButton.setDisabled(false);
                 me.getField("prefix").setReadOnly(true);
+                me.setTitle(__("Change prefix ") + data.prefix);
                 me.setValues(data)
             },
             failure: function() {
@@ -207,7 +208,8 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                 }
                 me.rebaseButton.setDisabled(true);
                 prefixField.setReadOnly(false);
-                me.setValues(values)
+                me.setValues(values);
+                me.setTitle(__("Create new prefix"))
             },
             failure: function() {
                 NOC.error(__("Failed to load data"))
@@ -237,13 +239,14 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
     //
     onRebase: function() {
         var me = this,
-            values = me.getFormData();
+            values = me.getFormData(),
+            vrfField = me.getField("vrf");
         me.app.previewItem(
             me.app.ITEM_REBASE_FORM,
             {
                 id: me.currentPrefixId,
                 to_vrf: values.vrf,
-                to_vrf__label: values.vrf__label,
+                to_vrf__label: vrfField.getRawValue(),
                 to_prefix: values.prefix
             }
         )

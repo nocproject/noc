@@ -158,6 +158,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 me.deleteButton.setDisabled(false);
+                me.setTitle(__("Change address"));
                 me.setValues(data)
             },
             failure: function() {
@@ -188,6 +189,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     values.address = me.app.getCommonPrefixPart(data.afi, data.prefix)
                 }
                 me.deleteButton.setDisabled(true);
+                me.setTitle(__("Create new address"));
                 me.setValues(values)
             },
             failure: function() {

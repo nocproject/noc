@@ -16,6 +16,7 @@ Ext.define("NOC.core.FormPanel", {
     enableCloseButton: true,
     enableDeleteButton: false,
     formToolbar: null,
+    title: "Title",
 
     initComponent: function() {
         var me = this;
@@ -23,9 +24,13 @@ Ext.define("NOC.core.FormPanel", {
         me.formTitle = Ext.create("Ext.container.Container", {
             minWidth: me.formMinWidth,
             maxWidth: me.formMaxWidth,
-            html: "Title",
+            html: me.title,
             itemId: "form_title",
-            padding: "0 0 4 0"
+            padding: "0 0 4 0",
+            style: {
+                fontSize: "1.2em",
+                fontWeight: "bold"
+            }
         });
         // Build form fields
         var formFields = [me.formTitle];
@@ -263,7 +268,26 @@ Ext.define("NOC.core.FormPanel", {
         return values;
     },
     //
+    getFormField: function(name) {
+        var me = this,
+            fields = me.form.getFields().items,
+            fLen = fields.length,
+            f, field;
+        for(f = 0; f < fLen; f++) {
+            f = fields[f];
+            if(f.name === name) {
+                return f
+            }
+        }
+        return null
+    },
+    //
     cleanData: function(v) {
 
+    },
+    //
+    setTitle: function(title) {
+        var me = this;
+        me.formTitle.setHtml(title)
     }
 });
