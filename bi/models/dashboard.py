@@ -64,7 +64,7 @@ class Dashboard(Document):
 
     def get_user_access(self, user):
         # Direct match as owner
-        if user == self.owner:
+        if user == self.owner or user.is_superuser:
             return DAL_ADMIN
         level = DAL_NONE
         groups = user.groups.all()
