@@ -70,7 +70,7 @@ class ReportObjectCaps(ReportDictionary):
         d = {}
         while mo_ids:
             mo_ids, chunk = mo_ids[:self.CHUNK_SIZE], mo_ids[self.CHUNK_SIZE:]
-            match = {"_id": {"$in": mo_ids}}
+            match = {"_id": {"$in": chunk}}
             value = get_db()["noc.sa.objectcapabilities"].with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate(
                 [
