@@ -41,7 +41,7 @@ class Script(BaseScript):
         r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+"
-        r"\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
+        r"\((?P<admin_status>connected|not connected|admin.shutdown|error-disabled)\)\s*\n"
         r"^\s+Interface index is (?P<ifindex>\d+)\s*\n"
         r"^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n"
         r"(^\s+Description:(?P<descr>.*?)\n)?"
@@ -142,19 +142,24 @@ class Script(BaseScript):
                     ifindex = match.group("ifindex")
                     mac = match.group("mac")
                     mtu = match.group("mtu")
-                    description = match.group("descr")
-                    if not description:
-                        description = ''
-                    a_stat = match.group("admin_status").lower() == "connected"
-                    o_stat = match.group("oper_status").lower() == "up"
+                    if len(res) == 4:
+                        a_stat = res[1].strip().lower() == "up"
+                        o_stat = res[2].strip().lower() == "up"
+                        description = res[3].strip()
+                    else:
+                        a_stat = True
+                        o_stat = match.group("oper_status").lower() == "up"
+                        description = match.group("descr")
+                        if not description:
+                            description = ''
 
             else:
                 if self.profile.convert_interface_name(name) in d:
                     ifindex = d[self.profile.convert_interface_name(name)]["sifindex"]
                     mac = d[self.profile.convert_interface_name(name)]["smac"]
                 if len(res) == 4:
-                    o_stat = res[1].strip().lower() == "up"
-                    a_stat = res[2].strip().lower() == "up"
+                    a_stat = res[1].strip().lower() == "up"
+                    o_stat = res[2].strip().lower() == "up"
                     description = res[3].strip()
                 else:
                     o_stat = True
