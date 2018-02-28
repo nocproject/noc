@@ -1,0 +1,6 @@
+- name: fail if noc is not selected
+  fail:
+    msg: "Omap role have to be set with noc role to get own sources."
+  when:
+    - has_svc_omap is defined
+    - has_svc_noc is not defined
