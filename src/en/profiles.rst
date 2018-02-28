@@ -109,6 +109,7 @@ Profiles
     /profiles/Iskratel.MBAN
     /profiles/Iskratel.MSAN
     /profiles/Iskratel.VOIP
+    /profiles/Juniper.EX2500
     /profiles/Juniper.JUNOS
     /profiles/Juniper.JUNOSe
     /profiles/Juniper.SRCPE
