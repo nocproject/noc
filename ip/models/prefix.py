@@ -258,14 +258,14 @@ class Prefix(models.Model):
         """
         Delete prefix
         """
-        if self.is_root:
+        if self.is_root and not getattr(self, "_disable_delete_protection", False):
             raise ValidationError("Cannot delete root prefix")
         # Reconnect children prefixes
         self.children_set.update(parent=self.parent)
         # Reconnect children addresses
         self.address_set.update(prefix=self.parent)
         # Unlink dual-stack allocations
-        self.clear_transition()
+        # self.clear_transition()
         # Remove bookmarks
         self.prefixbookmark_set.all().delete()
         # Finally delete
@@ -656,6 +656,25 @@ class Prefix(models.Model):
         if u is None:
             return ""
         return "%.2f%%" % u
+
+    def is_empty(self):
+        """
+        Check prefix is empty and does not contain nested prefixes
+        and addresses
+        :return:
+        """
+        if Prefix.objects.filter(parent=self).count() > 0:
+            return False
+        if Address.objects.filter(prefix=self).count() > 0:
+            return False
+        return True
+
+    def disable_delete_protection(self):
+        """
+        Disable root delete protection
+        :return:
+        """
+        self._disable_delete_protection = True
 
 
 # Avoid circular references

@@ -24,7 +24,7 @@ from noc.lib.validators import check_rd
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
 from .vrfgroup import VRFGroup
 
@@ -32,7 +32,9 @@ id_lock = Lock()
 
 
 @full_text_search
+@on_init
 @on_delete_check(check=[
+    ("ip.Address", "vrf"),
     ("ip.AddressRange", "vrf"),
     ("ip.IPPool", "vrf"),
     ("ip.PrefixAccess", "vrf"),
@@ -46,7 +48,7 @@ class VRF(models.Model):
     """
     VRF
     """
-    class Meta:
+    class Meta(object):
         verbose_name = _("VRF")
         verbose_name_plural = _("VRFs")
         db_table = "ip_vrf"
@@ -96,8 +98,12 @@ class VRF(models.Model):
         blank=True,
         help_text=_("VRF temporary allocated till the date"))
 
+    GLOBAL_RD = "0:0"
+    IPv4_ROOT = "0.0.0.0/0"
+    IPv6_ROOT = "::/0"
+
     def __unicode__(self):
-        if self.rd == "0:0":
+        if self.rd == self.GLOBAL_RD:
             return u"global"
         else:
             return self.name
@@ -135,7 +141,7 @@ class VRF(models.Model):
         """
         Returns VRF 0:0
         """
-        return VRF.objects.get(rd="0:0")
+        return VRF.objects.get(rd=cls.GLOBAL_RD)
 
     @classmethod
     def generate_rd(cls, name):
@@ -152,13 +158,35 @@ class VRF(models.Model):
         # Generate unique rd, if empty
         if not self.rd:
             self.rd = self.generate_rd(self.name)
+        if self.initial_data["id"]:
+            # Delete empty ipv4 root if AFI changed
+            if self.initial_data.get("afi_ipv4") != self.afi_ipv4 and not self.afi_ipv4:
+                root = Prefix.objects.filter(vrf=self, afi="4", prefix=self.IPv4_ROOT)[:1]
+                if root:
+                    root = root[0]
+                    if root.is_empty():
+                        root.disable_delete_protection()
+                        root.delete()
+                    else:
+                        # Cannot change until emptied
+                        self.afi_ipv4 = True
+            # Delete empty ipv4 root if AFI changed
+            if self.initial_data.get("afi_ipv6") != self.afi_ipv6 and not self.afi_ipv6:
+                root = Prefix.objects.filter(vrf=self, afi="6", prefix=self.IPv6_ROOT)[:1]
+                if root:
+                    root = root[0]
+                    if root.is_empty():
+                        root.disable_delete_protection()
+                        root.delete()
+                    else:
+                        # Cannot change until emptied
+                        self.afi_ipv6 = True
         # Save VRF
         super(VRF, self).save(**kwargs)
         if self.afi_ipv4:
-            # @todo: Profile
             # Create IPv4 root, if not exists
             Prefix.objects.get_or_create(
-                vrf=self, afi="4", prefix="0.0.0.0/0",
+                vrf=self, afi="4", prefix=self.IPv4_ROOT,
                 defaults={
                     "asn": AS.default_as(),
                     "description": "IPv4 Root",
@@ -167,7 +195,7 @@ class VRF(models.Model):
         if self.afi_ipv6:
             # Create IPv6 root, if not exists
             Prefix.objects.get_or_create(
-                vrf=self, afi="6", prefix="::/0",
+                vrf=self, afi="6", prefix=self.IPv6_ROOT,
                 defaults={
                     "asn": AS.default_as(),
                     "description": "IPv6 Root",
@@ -195,7 +223,6 @@ class VRF(models.Model):
 
     def get_search_info(self, user):
         return ("ip.vrf", "history", {"args": [self.id]})
-
 
 # Avoid circular references
 from .prefix import Prefix
