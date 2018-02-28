@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
-#  ???
+# Checkpoint model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,13 +20,13 @@ class Checkpoint(models.Model):
     class Meta:
         app_label = "main"
         db_table = "main_checkpoint"
-        verbose_name = _("Checkpoint")
-        verbose_name_plural = _("Checkpoints")
+        verbose_name = "Checkpoint"
+        verbose_name_plural = "Checkpoints"
 
-    timestamp = models.DateTimeField(_("Timestamp"))
-    user = models.ForeignKey(User, verbose_name=_("User"), blank=True, null=True)
-    comment = models.CharField(_("Comment"), max_length=256)
-    private = models.BooleanField(_("Private"), default=False)
+    timestamp = models.DateTimeField("Timestamp")
+    user = models.ForeignKey(User, verbose_name="User", blank=True, null=True)
+    comment = models.CharField("Comment", max_length=256)
+    private = models.BooleanField("Private", default=False)
 
     def __unicode__(self):
         if self.user:

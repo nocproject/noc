@@ -2,23 +2,18 @@
 # ---------------------------------------------------------------------
 # Database models for main module
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# flake8: noqa
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python Modules
-import datetime
-
 from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
-from django.db import models
 from django.db.models.signals import pre_save, pre_delete,\
                                      post_save, post_delete
-from django.utils.translation import ugettext_lazy as _
 from noc import settings
 from noc.lib.periodic import periodic_registry
-
-# Register periodics
 periodic_registry.register_all()
 from customfieldenumgroup import CustomFieldEnumGroup
 from customfieldenumvalue import CustomFieldEnumValue

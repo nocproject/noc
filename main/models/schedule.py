@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Schedule model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,20 +18,20 @@ from .timepattern import TimePattern
 
 class Schedule(models.Model):
     class Meta:
-        verbose_name = _("Schedule")
-        verbose_name_plural = _("Schedules")
+        verbose_name = "Schedule"
+        verbose_name_plural = "Schedules"
         ordering = ["periodic_name"]
 
-    periodic_name = models.CharField(_("Periodic Task"), max_length=64)
-    is_enabled = models.BooleanField(_("Enabled?"), default=False)
+    periodic_name = models.CharField("Periodic Task", max_length=64)
+    is_enabled = models.BooleanField("Enabled?", default=False)
     time_pattern = models.ForeignKey(TimePattern,
-                                     verbose_name=_("Time Pattern"))
-    run_every = models.PositiveIntegerField(_("Run Every (secs)"),
-                                     default=86400)
-    timeout = models.PositiveIntegerField(_("Timeout (secs)"),
-                                     null=True, blank=True)
-    last_run = models.DateTimeField(_("Last Run"), blank=True, null=True)
-    last_status = models.BooleanField(_("Last Status"), default=True)
+                                     verbose_name="Time Pattern")
+    run_every = models.PositiveIntegerField("Run Every (secs)",
+                                            default=86400)
+    timeout = models.PositiveIntegerField("Timeout (secs)",
+                                          null=True, blank=True)
+    last_run = models.DateTimeField("Last Run", blank=True, null=True)
+    last_status = models.BooleanField("Last Status", default=True)
 
     def __unicode__(self):
         return u"%s:%s" % (self.periodic_name, self.time_pattern.name)
@@ -52,8 +52,8 @@ class Schedule(models.Model):
         now = datetime.datetime.now()
         return [s for s in Schedule.objects.filter(is_enabled=True)
                 if (s.time_pattern.match(now) and
-                   (s.last_run is None or
-                    s.last_run + datetime.timedelta(seconds=s.run_every) <= now))]
+                    (s.last_run is None or
+                     s.last_run + datetime.timedelta(seconds=s.run_every) <= now))]
 
     @classmethod
     def reschedule(cls, name, days=0, minutes=0, seconds=0):
