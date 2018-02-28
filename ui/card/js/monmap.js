@@ -163,6 +163,7 @@ Monmap.prototype.poll_data = function() {
                 error: a.error,
                 warning: a.warning,
                 good: a.good,
+                maintenance: a.maintenance,
                 fillOpacity: 0.6,
                 opacity: 1,
                 weight: 3
