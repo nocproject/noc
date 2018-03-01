@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
@@ -76,3 +77,7 @@ class TimePattern(models.Model):
         Matches DateTime objects against time pattern
         """
         return self.time_pattern.match(d)
+
+
+# Avoid circular references
+from .timepatternterm import TimePatternTerm  # noqa
