@@ -259,11 +259,11 @@ class InterfaceClassificationRule(Document):
         # Hack to retrieve reference
         handlers = {}
         # Compile code
-        exec code in {
+        exec(code, {
             "re": re,
             "PrefixTable": PrefixTable,
             "VCFilter": VCFilter,
             "ManagedObjectSelector": ManagedObjectSelector,
             "handlers": handlers
-        }
+        })
         return handlers[0]
