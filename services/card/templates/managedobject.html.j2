@@ -1,189 +1,250 @@
-<table class="table table-condensed table-hover">
-<tbody>
-<tr>
-    <th colspan="2" class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
-        {{ object | managed_object_title }}
+<style>
+    .line {
+        color: #c0c0c0;
+        background: #c0c0c0;
+        width: 100%;
+        height: 1px;
+    }
+</style>
+
+<article class="panel panel-default col-sm-12 panel-{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
+    <div class="panel panel-heading">
+        <a target="_blank" href="/#sa.managedobject/{{ id  }}">{{ object | managed_object_title }}</a>
         <span style="float: right">
-        {% if current_state == "down" %}Down{% else %}<i class="fa fa-check"></i>Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start | timestamp }}){% endif %}
+            {% if current_state == "down" %}Down{% else %}<i class="fa fa-check"></i>Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start | timestamp }}){% endif %}
         </span>
-    </th>
-</tr>
-{% if maintenance %}
-<tr>
-    <th scope="row" class="col-sm-1">{{ _("Maintenance") }}</th>
-    <td>
-        <table>
-            <thead>
-                <tr>
-                    <th class="col-sm-6">{{ _("Subject") }}</th>
-                    <th class="col-sm-3">{{ _("Start") }}</th>
-                    <th class="col-sm-3">{{ _("Stop") }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for m in maintenance %}
-                <tr class="{{ {True: "danger", False: "warning"}[m["in_progress"]] }}">
-                    <td><a href="/api/card/view/maintenance/{{ m["id"] }}/">{{ m["subject"] }}</a></td>
-                    <td>{{ m["start"] | timestamp }}</td>
-                    <td>{{ m["stop"] | timestamp }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </td>
-<tr>
-{% endif %}
-{% if container_path %}
-<tr>
-    <th scope="row" class="col-sm-1">{{ _("Container") }}</th>
-    <td>
-        {% for o in container_path %}
-        <a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a>
-        {% if not loop.last %} | {% endif %}
-        {% endfor %}
-    </td>
-</tr>
-{% endif %}
-<tr>
-    <th scope="row" class="col-sm-1">{{ _("Location") }}</th>
-    <td>{{ object | object_location }}</td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Administrative Domain") }}</th>
-    <td>{{ object.administrative_domain.name }}</td>
-</tr>
-{% if object.time_pattern %}
-<tr>
-    <th scope="row" class="col-sm-1">{{ _("Time Pattern") }}</th>
-    <td>
-        <a href="/api/card/view/timepattern/{{ object.time_pattern.id }}/">{{ object.time_pattern.name }}</a>
-    </td>
-<tr>
-{% endif %}
-<tr>
-    <th scope="row">{{ _("Segment") }}</th>
-    <td>
-        {% if segment %}
-        <a href="/api/card/view/segment/{{ segment.id }}/">
-                {% if segment.is_redundant %}
-                    {% if segment.lost_redundancy %}
-                        <i class="fa fa-exclamation-triangle" title="{{ _("Lost redundancy") }}"></i>
-                    {% else %}
-                        <i class="fa fa-check" title="{{ _("Redundant") }}"></i>
-                    {% endif %}
-                {% else %}
-                    <i class="fa fa-times" title="{{ _("No redundancy") }}"></i>
+    </div>
+    <div class="panel-body">
+        <div class="container-fluid">
+                {% if maintenance %}
+                <div class="row">
+                    <div class="col-sm-1">
+                        <b>{{ _("Maintenance") }}</b>
+                    </div>
+
+                    <div class="col-sm-10">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="col-sm-7">{{ _("Subject") }}</th>
+                                    <th class="col-sm-3">{{ _("Start") }}</th>
+                                    <th class="col-sm-3">{{ _("Stop") }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for m in maintenance %}
+                                    <tr class="bg-{{ {True: "danger", False: "warning"}[m["in_progress"]] }}">
+                                        <td><a href="/api/card/view/maintenance/{{ m["id"] }}/">{{ m["subject"] }}</a></td>
+                                        <td>{{ m["start"] | timestamp }}</td>
+                                        <td>{{ m["stop"] | timestamp }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 {% endif %}
-            {{ segment.name }}
-        </a>
-        {% endif %}
-    </td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Redundancy") }}</th>
-    <td>
-        {{ {"R": _("Redundant"), "L": _("Lost redundancy"), "N": _("No redundancy") }[redundancy] }}
-    </td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Model") }}</th>
-    <td>
-        {{ platform }}
-        {% if platform %}
-            {% if object.platform.is_end_of_sale %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
-            {% if object.platform.is_end_of_support %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
-        {% endif %}
-    </td>
-</tr>
-{% if service_summary %}
-<tr>
-    <th scope="row">{{ _("Services") }}</th>
-    <td>
-        {{ service_summary | glyph_summary }}
-    </td>
-</tr>
-{% endif %}
-<tr>
-    <th scope="row">{{ _("IP") }}</th>
-    <td>{{ address }} {{ object | object_console }}</td>
-</tr>
-<tr>
-    <th scope="row">{{ _("MAC") }}</th>
-    <td>{{ macs }}</td>
-</tr>
-<tr {% if firmware_status in ('n', 'd') %}class="warning"{% endif %}>
-    <th scope="row">{{ _("Version") }}</th>
-    <td>{% if version %}{{ version }}
-            {% if firmware_recommended and firmware_recommended.version != version %}
-            ({{ _("Recommended") }}: {{ firmware_recommended.version }})
-            {% endif %}
-        {% endif %}
-    </td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Description") }}</th>
-    <td>{% if description %}{{ description }}{% endif %}</td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Dashboard") }}</th>
-    <td><a href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ object.id }}">View metrics</a></td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Service Range") }}</th>
-    <td>N/A</td>
-</tr>
-<tr>
-    <th scope="row">{{ _("L2 Terminator") }}</th>
-    <td>
-        {% if l2_terminators %}
-        <table class="table table-condensed table-hover">
-            <thead>
-                <th>{{ _("Name") }}</th>
-                <th>{{ _("Address") }}</th>
-                <th>{{ _("Model") }}</th>
-            </thead>
-            <tbody>
-                {% for t in l2_terminators %}
-                <tr>
-                    <td><a href="/api/card/view/managedobject/{{ t.id }}/">{{ t.name }}</a></td>
-                    <td>{{ t.address }}</td>
-                    <td>{{ t.platform }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
-    </td>
-</tr>
-<tr>
-    <th scope="row">{{ _("L3 Terminator") }}</th>
-    <td>N/A</td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Metrics") }}</th>
-    <td>
-        {% if metrics %}
+
+                {% if container_path %}
+                <div class="row">
+                    <div class="col-sm-1">
+                        <b>{{ _("Container") }}</b>
+                    </div>
+                    <div class="col-sm-8">
+                        {% for o in container_path %}
+                            <a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a>
+                            {% if not loop.last %} | {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="line"></div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-sm-1">
+                        <b>{{ _("Location") }}</b>
+                    </div>
+                    <div class="col-sm-10">
+                        {{ object | object_location }}
+                    </div>
+                </div>
+                <div class="line"></div>
+
+
+                <div class="row">
+                    <div class="col-sm-1">
+                        <b>{{ _("Segment") }}</b>
+                    </div>
+                    <div class="col-sm-3">
+                        {% if segment %}
+                        <a href="/api/card/view/segment/{{ segment.id }}/">
+                            {% if segment.is_redundant %}
+                                {% if segment.lost_redundancy %}
+                                    <i class="fa fa-exclamation-triangle" title="{{ _("Lost redundancy") }}"></i>
+                                {% else %}
+                                    <i class="fa fa-check" title="{{ _("Redundant") }}"></i>
+                                {% endif %}
+                            {% else %}
+                                <i class="fa fa-times" title="{{ _("No redundancy") }}"></i>
+                            {% endif %}
+                            {{ segment.name }}
+                       </a>
+                       {% endif %}
+                    </div>
+
+                    <div class="col-sm-2">
+                        <!-- Redundancy-->
+                        {{ {"R": _("Redundant"), "L": _("Lost redundancy"), "N": _("No redundancy") }[redundancy] }}
+                    </div>
+
+                    <div class="col-sm-2">
+                        <b>{{ _("Administrative Domain") }}</b>
+                    </div>
+                    <div class="col-sm-3">
+                        {{ object.administrative_domain.name }}
+                    </div>
+                </div>
+                <div class="line"></div>
+
+                {% if object.time_pattern %}
+                <div class="row">
+                    <div class="col-sm-1">
+                        <small><b>{{ _("Time Pattern") }}</b></small>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="/api/card/view/timepattern/{{ object.time_pattern.id }}/">{{ object.time_pattern.name }}</a>
+                    </div>
+                </div>
+                <div class="line"></div>
+                {% endif %}
+
+               <div class="row">
+                   <div class="col-sm-6">
+                       <div class="row">
+                           <div class="col-sm-6">
+                               <div class="row">
+                                   <div class="col-sm-4">
+                                       <b>{{ _("IP") }}</b>
+                                       </br><b>{{ _("Dashboard") }}</b>
+                                       </br><b>{{ _("Description") }}</b>
+                                   </div>
+                                   <div class="col-sm-8">
+                                       {{ address }} {{ object | object_console }}
+                                       </br><a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ object.id }}"><i class="fa fa-dashboard"></i></a>
+                                       </br>{% if description %}{{ description }}{% endif %}
+                                   </div>
+                                </div>
+
+                           </div>
+                           <div class="col-sm-6">
+                               {% if platform != "Unknown" %}
+                                   {{ platform }}
+                                   {% if platform %}
+                                       {% if object.platform.is_end_of_sale %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
+                                        {% if object.platform.is_end_of_support %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
+                                    {% endif %}
+                                    {% if version %}
+                                        </br>Version: {{ version }}
+                                        {% if firmware_recommended and firmware_recommended.version != version %}
+                                            ({{ _("Recommended") }}: {{ firmware_recommended.version }})
+                                        {% endif %}
+                                    {% endif %}
+                               </br>
+                               {% endif %}
+                               <b>{{ _("Service Range") }}</b>&nbsp;&nbsp;N/A
+                           </div>
+
+                       </div>
+
+                   </div>
+                   <div class="col-sm-6">
+                       <div class="row">
+                           <div class="col-sm-1">
+                               <b>{{ _("Service") }}</b>
+                               </br><b>{{ _("MAC") }}</b>
+                           </div>
+                           <div class="col-sm-5 col-sm-offset-3">
+                               <small>{{ service_summary | glyph_summary }}</small>
+                               </br><small>{{ macs }}</small>
+                           </div>
+                       </div>
+                   </div>
+
+                </div>
+                <div class="line"></div>
+
+                {% if l2_terminators %}
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <small>{{ _("L2 Terminator") }}</small>
+                        </div>
+                        <div class="col-sm-10">
+                            <table class="table table-condensed table-hover">
+                                <thead>
+                                    <th>{{ _("Name") }}</th>
+                                    <th>{{ _("Address") }}</th>
+                                    <th>{{ _("Model") }}</th>
+                                </thead>
+                                <tbody>
+                                {% for t in l2_terminators %}
+                                    <tr>
+                                        <td><a href="/api/card/view/managedobject/{{ t.id }}/">{{ t.name }}</a></td>
+                                        <td>{{ t.address }}</td>
+                                        <td>{{ t.platform }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-sm-1">
+                        <small>{{ _("L3 Terminator") }}</small>
+                    </div>
+                <div class="col-sm-10">
+                    N/A
+                </div>
+            </div>
+            <div class="line"></div>
+
+            {% if metrics %}
+            <div class="row">
+        <div class="col-sm-1">
+            <b>{{ _("Metrics") }}</b>
+        </div>
+        <div class="col-sm-10">
+            {% if metrics %}
         <table class="table table-condensed table-hover">
             <thead>
                 <th>{{ _("Name") }}</th>
                 <th>{{ _("Value") }}</th>
+                <th>{{ _("Sub") }}</th>
             </thead>
-            <tbody>
+            <tbodcy>
                 {% for m in metrics %}
                 <tr>
                     <td>{{ m }}</td>
                     <td>{{ metrics[m] }}</td>
+                    <td>{{ sub_metrics[m] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% endif %}
-    </td>
-</tr>
-<tr>
-    <th scope="row">{{ _("Neighbors") }}</th>
-    <td>
-        {% if links %}
+        </div>
+    </div>
+    {% endif %}
+
+
+{% if links %}
+    <div class="row">
+        <div class="col-sm-1">
+            <b>{{ _("Neighbors") }}</b>
+        </div>
+        <div class="col-sm-10">
             <table class="table table-condensed hable-hover">
                 <thead>
                     <th class="col-sm-1">{{ _("Local port") }}</th>
@@ -217,70 +278,68 @@
                     {% endfor %}
                 </tbody>
             </table>
-        {% endif %}
-    </td>
-</tr>
-<tr>
-    <th scope="row">{{ _("TT") }}</th>
-    <td>N/A</td>
-</td>
+        </div>
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-sm-1">
+        <b>{{ _("TT") }}</b>
+    </div>
+    <div class="col-sm-10">
+        N/A
+    </div>
+</div>
+
+
 {% if alarms %}
-<tr>
-    <th scope="row">{{ _("Alarms") }}</th>
-    <td>
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>{{ _("Timestamp") }}</th>
-                    <th>{{ _("Duration") }}</th>
-                    <th>{{ _("Subject") }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for a in alarms %}
-                <tr>
-                    <td><a href="/api/card/view/alarm/{{ a["id"] }}/">{{ a["timestamp"] | timestamp}}</a></td>
-                    <td>{{ a["duration"] }}</td>
-                    <td>{{ a["subject"] }}</td>
-                </td>
-                {% endfor %}
-            </tbody>
-        </table>
-    </td>
-<td>
+<div class="row">
+    <div class="col-sm-1">
+        <b>{{ _("Alarms") }}</b>
+    </div>
+    <div class="col-sm-10">
+        <table class="table table-condensed" >
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>{{ _("Timestamp") }}</th>
+                        <th>{{ _("Services") }}</th>
+                        <th>{{ _("Duration") }}</th>
+                        <th>{{ _("Object") }}</th>
+                        <th>{{ _("IP") }}</th>
+                        <th>{{ _("Class") }}</th>
+                        <th>{{ _("Subject") }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alarms %}
+                    <tr>
+                        <td>{% if a.id == a.root_id %}<i class="fa fa-arrow-right"></i>{% endif %}</td>
+                        <td> {# {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * }} #}
+                            <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp | timestamp }}</a>
+                        </td>
+                        <td>
+                            {{ service_summary | glyph_summary }}
+                        </td>
+                        <td>{{ a.duration }}</td>
+                        <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object | managed_object_title }}</a></td>
+                        <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.address }}</a></td>
+                        <td>{{ a.alarm_class.name }}</td>
+                        <td>{{ a.subject }}</td>
+                    </th>
+                    {% endfor %}
+                </tbody>
+            </table>
+    </div>
+</div>
 {% endif %}
-{% if inventory %}
-<tr>
-    <th scope="row">{{ _("Inventory") }}</th>
-    <td>
-        <table class="table table-condensed">
-            <thead>
-                <th>{{ _("Name") }}</th>
-                <th>{{ _("Model") }}</th>
-                <th>{{ _("Revision") }}</th>
-                <th>{{ _("Serial") }}</th>
-                <th>{{ _("Description") }}</th>
-            </thead>
-            <tbody>
-                {% for i in inventory %}
-                <tr>
-                    <td>{{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * i["level"]) }}{{ i["name"] }}</td>
-                    <td>{{ i["model"] }}</td>
-                    <td>{{ i["revision"] }}</td>
-                    <td>{{ i["serial"] }}</td>
-                    <td>{{ i["description"] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </td>
-</tr>
-{% endif %}
-</tbody>
-</table>
-
-
-<table class="table table-condensed table-hover">
+        </div>
+    </div> <!-- end panel-body -->
+    <div class="panel-footer">
+        {% if interfaces %}
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-condensed table-hover">
     <thead>
         <th class="col-sm-2 text-center"> {{ _("Port") }} </th>
         <th class="col-sm-1/12 text-center"> {{ _("Admin") }}/</br> {{ _("Oper") }}</th>
@@ -378,3 +437,39 @@
         {% endfor %}
     </tbody>
 </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if inventory %}
+        <div class="row">
+            <div class="col-sm-1">
+                <b>{{ _("Inventory") }}</b>
+            </div>
+            <div class="col-sm-10">
+                <table class="table table-condensed">
+            <thead>
+                <th>{{ _("Name") }}</th>
+                <th>{{ _("Model") }}</th>
+                <th>{{ _("Revision") }}</th>
+                <th>{{ _("Serial") }}</th>
+                <th>{{ _("Description") }}</th>
+            </thead>
+            <tbody>
+                {% for i in inventory %}
+                <tr>
+                    <td>{{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * i["level"]) }}{{ i["name"] }}</td>
+                    <td>{{ i["model"] }}</td>
+                    <td>{{ i["revision"] }}</td>
+                    <td>{{ i["serial"] }}</td>
+                    <td>{{ i["description"] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            </div>
+        </div>
+        {% endif %}
+        </div>
+    </div>
+</article>
