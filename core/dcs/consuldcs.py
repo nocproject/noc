@@ -282,7 +282,6 @@ class ConsulDCS(DCSBase):
                 yield self.destroy_session()
             except ConsulRepeatableErrors:
                 metrics["error", ("type", "cant_destroy_consul_session_soft")] += 1
-                pass
             except Exception as e:
                 metrics["error", ("type", "cant_destroy_consul_session")] += 1
                 self.logger.error("Cannot destroy session: %s", e)
@@ -291,7 +290,6 @@ class ConsulDCS(DCSBase):
                 yield self.consul.agent.service.deregister(self.svc_id)
             except ConsulRepeatableErrors:
                 metrics["error", ("type", "cant_deregister_consul_soft")] += 1
-                pass
             except Exception as e:
                 metrics["error", ("type", "cant_deregister_consul")] += 1
                 self.logger.error("Cannot deregister service: %s", e)
