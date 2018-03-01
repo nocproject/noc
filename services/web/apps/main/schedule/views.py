@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Schedule Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,8 @@ from django.contrib import admin
 from django import forms
 # NOC modules
 from noc.lib.app.modelapplication import ModelApplication
-from noc.main.models import Schedule, PyRule
+from noc.main.models.schedule import Schedule
+from noc.main.models.pyrule import PyRule
 from noc.lib.periodic import periodic_registry
 from noc.core.translation import ugettext as _
 
