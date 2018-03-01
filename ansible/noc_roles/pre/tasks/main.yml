@@ -13,19 +13,12 @@
     - always
     - env_checks
 
-
 - name: Display all variables/facts known for a host
   debug:
     var: hostvars[inventory_hostname]
     verbosity: 8
   tags:
     - always
-
-- name: Various env checks
-  import_tasks: "checks.yml"
-  tags:
-    - always
-    - env_checks
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
