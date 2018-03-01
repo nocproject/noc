@@ -2,16 +2,17 @@
 # ---------------------------------------------------------------------
 # TimePatternTerm database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.db import models
 # NOC modules
-from timepattern import TimePattern
+from .timepattern import TimePattern
 from noc.lib.timepattern import TimePattern as TP
-
 
 
 class TimePatternTerm(models.Model):

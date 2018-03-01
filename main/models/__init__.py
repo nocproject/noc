@@ -11,36 +11,24 @@
 from __future__ import absolute_import
 from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
-from django.db.models.signals import pre_save, pre_delete,\
-                                     post_save, post_delete
 from noc import settings
 from noc.lib.periodic import periodic_registry
 periodic_registry.register_all()
-from .customfieldenumgroup import CustomFieldEnumGroup
-from .customfieldenumvalue import CustomFieldEnumValue
 from .customfield import CustomField
 from .resourcestate import ResourceState
 from .pyrule import PyRule, NoPyRuleException
-from .timepattern import TimePattern
-from .timepatternterm import TimePatternTerm
 from .notificationgroup import NotificationGroup, NotificationGroupUser, NotificationGroupOther
-from .userprofile import UserProfile, UserProfileManager
-from .userprofilecontact import UserProfileContact
+from .userprofile import UserProfile  # Cannot be moved, as referred from settings.py
 from .dbtrigger import DBTrigger, model_choices
 from .systemnotification import SystemNotification
-from .schedule import Schedule
-from .prefixtable import PrefixTable, PrefixTablePrefix
-from .template import Template
 from .systemtemtemplate import SystemTemplate
-from .checkpoint import Checkpoint
-from .favorites import Favorites
 from .tag import Tag
-from .sync import Sync
 
 #
 # Install triggers
 #
 if settings.IS_WEB and not settings.IS_TEST:
+    from django.db.models.signals import pre_save, pre_delete, post_save, post_delete
     DBTrigger.refresh_cache()  # Load existing triggers
     # Trigger cache syncronization
     post_save.connect(DBTrigger.refresh_cache, sender=DBTrigger)

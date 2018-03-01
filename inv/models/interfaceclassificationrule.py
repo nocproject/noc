@@ -2,21 +2,22 @@
 # ---------------------------------------------------------------------
 # Interface Classification Rules models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 # NOC modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
                            ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
                            IntField, PlainReferenceField)
 from noc.core.ip import IP
-from noc.main.models import PrefixTable
-from interfaceprofile import InterfaceProfile
+from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.vc.models.vcfilter import VCFilter
+from .interfaceprofile import InterfaceProfile
 
 
 class InterfaceClassificationMatch(EmbeddedDocument):
@@ -258,11 +259,11 @@ class InterfaceClassificationRule(Document):
         # Hack to retrieve reference
         handlers = {}
         # Compile code
-        exec code in {
+        exec(code, {
             "re": re,
             "PrefixTable": PrefixTable,
             "VCFilter": VCFilter,
             "ManagedObjectSelector": ManagedObjectSelector,
             "handlers": handlers
-        }
+        })
         return handlers[0]

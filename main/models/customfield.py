@@ -2,22 +2,23 @@
 # ---------------------------------------------------------------------
 # CustomField model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
-# Django modules
+from functools import reduce
+# Third-party modules
 from django.db import models, connection
 from django.db.models import signals as django_signals
-# Third-party modules
 from mongoengine.base.common import _document_registry
 from mongoengine import fields
 import mongoengine.signals
 # NOC modules
-from customfieldenumgroup import CustomFieldEnumGroup
 from noc.lib.validators import is_int
+from .customfieldenumgroup import CustomFieldEnumGroup
 
 logger = logging.getLogger(__name__)
 
@@ -106,12 +107,12 @@ class CustomField(models.Model):
         name = str(self.name)
         if self.is_table:
             if self.type == "str":
-                l = self.max_length if self.max_length else 256
+                max_length = self.max_length if self.max_length else 256
                 return models.CharField(
                     name=name,
                     db_column=self.db_column,
                     null=True, blank=True,
-                    max_length=l, choices=self.get_enums())
+                    max_length=max_length, choices=self.get_enums())
             elif self.type == "int":
                 return models.IntegerField(
                     name=name,
@@ -429,16 +430,22 @@ class CustomField(models.Model):
     @classmethod
     def table_search_Q(cls, table, query):
         q = []
-        for f in CustomField.objects.filter(is_active=True,
-            table=table, is_searchable=True):
+        for f in CustomField.objects.filter(
+            is_active=True,
+            table=table,
+            is_searchable=True
+        ):
             if f.type == "str":
                 q += [{"%s__icontains" % f.name: query}]
             elif f.type == "int":
                 if is_int(query):
                     q += [{f.name: int(query)}]
         if q:
-            return reduce(lambda x, y: x | models.Q(**y), q,
-                models.Q(**q[0]))
+            return reduce(
+                lambda x, y: x | models.Q(**y),
+                q,
+                models.Q(**q[0])
+            )
         else:
             return None
 
