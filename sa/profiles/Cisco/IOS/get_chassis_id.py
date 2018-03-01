@@ -29,7 +29,7 @@ class Script(BaseScript):
     # Single chassis mac
     #
     rx_small_cat = re.compile(
-        r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
+        r"^Base [Ee]thernet MAC Address\s*:\s*(?P<id>\S+)",
         re.MULTILINE
     )
 
