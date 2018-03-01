@@ -435,7 +435,7 @@ class ConsulDCS(DCSBase):
                     else:
                         dead_contenders.add(e["Key"])
             if manifest:
-                total_slots = manifest["Limit"]
+                total_slots = int(manifest["Limit"])
                 holders = [
                     h if h in seen_sessions else self.EMPTY_HOLDER
                     for h in manifest["Holders"]
