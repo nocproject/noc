@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+# Third-party modules
 from south.db import db
 from django.db import models
-from noc.main.models import TimePattern
-from noc.main.models import Template as NOCTemplate
+
 
 class Migration:
     depends_on = (
@@ -18,6 +17,10 @@ class Migration:
     def forwards(self):
         Template = db.mock_model(model_name="Template",
             db_table="main_template", db_tablespace="", pk_field_name="id",
+            pk_field_type=models.AutoField)
+
+        TimePattern = db.mock_model(model_name="TimePattern",
+            db_table="main_timepattern", db_tablespace="", pk_field_name="id",
             pk_field_type=models.AutoField)
 
         ManagedObjectSelector = db.mock_model(model_name="ManagedObjectSelector",
@@ -47,7 +50,7 @@ class Migration:
             ("notification_group", models.ForeignKey(NotificationGroup,
                                            verbose_name=_("Notification Group"),
                                            null=True, blank=True)),
-            ("template", models.ForeignKey(NOCTemplate,
+            ("template", models.ForeignKey(Template,
                                  verbose_name=_("Template"),
                                  null=True, blank=True)),
             ("pyrule", models.ForeignKey(PyRule,
@@ -70,7 +73,7 @@ class Migration:
             ("notification_group", models.ForeignKey(NotificationGroup,
                                            verbose_name=_("Notification Group"),
                                            null=True, blank=True)),
-            ("template", models.ForeignKey(NOCTemplate,
+            ("template", models.ForeignKey(Template,
                                  verbose_name=_("Template"),
                                  null=True, blank=True)),
             ("pyrule", models.ForeignKey(PyRule,

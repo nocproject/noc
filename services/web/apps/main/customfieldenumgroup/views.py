@@ -2,14 +2,15 @@
 # ---------------------------------------------------------------------
 # main.customfieldenumgroup application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.lib.app.modelinline import ModelInline
-from noc.main.models import CustomFieldEnumGroup, CustomFieldEnumValue
+from noc.main.models.customfieldenumgroup import CustomFieldEnumGroup
+from noc.main.models.customfieldenumvalue import CustomFieldEnumValue
 from noc.core.translation import ugettext as _
 
 

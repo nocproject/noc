@@ -2,16 +2,18 @@
 # ---------------------------------------------------------------------
 # UserProfileContact model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules modules
 from django.db import models
 # NOC modules
-from userprofile import UserProfile
-from timepattern import TimePattern
-from notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from .userprofile import UserProfile
+from .timepattern import TimePattern
+from .notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 
 
 class UserProfileContact(models.Model):
