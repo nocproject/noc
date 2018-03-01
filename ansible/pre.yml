@@ -12,6 +12,8 @@
   pre_tasks:
     - include_tasks: "{{item}}"
       with_myglob: ["./*_roles/*/tasks/checks.yml"]
+      tags:
+        - checks
 
   roles:
     - role: pre
