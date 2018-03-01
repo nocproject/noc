@@ -33,7 +33,7 @@ class TimePattern(models.Model):
     """
     Time Patterns
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Time Pattern"
         verbose_name_plural = "Time Patterns"
         db_table = "main_timepattern"
