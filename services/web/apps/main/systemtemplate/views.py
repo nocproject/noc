@@ -20,4 +20,3 @@ class SystemTemplateApplication(ExtModelApplication):
     menu = [_("Setup"), _("System Templates")]
     model = SystemTemplate
     query_fields = ["name__icontains"]
-

@@ -25,12 +25,14 @@ class PrefixTableApplication(ExtModelApplication):
 
     prefixes = ModelInline(PrefixTablePrefix)
 
-    @view(url="^actions/test/$", method=["POST"],
+    @view(
+        url="^actions/test/$", method=["POST"],
         access="update", api=True,
         validate={
             "ids": ListOfParameter(element=ModelParameter(PrefixTable)),
             "ip": IPParameter()
-        })
+        }
+    )
     def api_action_test(self, request, ids, ip):
         return {
             "ip": ip,
