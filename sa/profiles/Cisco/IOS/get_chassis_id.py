@@ -29,8 +29,8 @@ class Script(BaseScript):
     # Single chassis mac
     #
     rx_small_cat = re.compile(
-        r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
-        re.MULTILINE | re.IGNORECASE
+        r"^Base [Ee]thernet MAC Address\s*:\s*(?P<id>\S+)",
+        re.MULTILINE
     )
 
     @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY|E|WC")
