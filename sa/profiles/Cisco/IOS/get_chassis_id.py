@@ -30,7 +30,7 @@ class Script(BaseScript):
     #
     rx_small_cat = re.compile(
         r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
-        re.MULTILINE
+        re.MULTILINE | re.IGNORECASE
     )
 
     @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY|E|WC")
