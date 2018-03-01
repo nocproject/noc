@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # main.prefixtable application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
-from noc.main.models import PrefixTable, PrefixTablePrefix
+from noc.main.models.prefixtable import PrefixTable, PrefixTablePrefix
 from noc.sa.interfaces.base import (IPParameter, ListOfParameter,
                                     ModelParameter)
 from noc.core.translation import ugettext as _

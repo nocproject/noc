@@ -18,18 +18,11 @@ from .customfield import CustomField
 from .resourcestate import ResourceState
 from .pyrule import PyRule, NoPyRuleException
 from .notificationgroup import NotificationGroup, NotificationGroupUser, NotificationGroupOther
-from .userprofile import UserProfile, UserProfileManager
-from .userprofilecontact import UserProfileContact
+from .userprofile import UserProfile  # Cannot be moved, as referred from settings.py
 from .dbtrigger import DBTrigger, model_choices
 from .systemnotification import SystemNotification
-from .schedule import Schedule
-from .prefixtable import PrefixTable, PrefixTablePrefix
-from .template import Template
 from .systemtemtemplate import SystemTemplate
-from .checkpoint import Checkpoint
-from .favorites import Favorites
 from .tag import Tag
-from .sync import Sync
 
 #
 # Install triggers
