@@ -2,22 +2,20 @@
 # ---------------------------------------------------------------------
 # CSV Export/Import application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Django modules
 from django import forms
 from django.contrib import admin
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from noc.core.translation import ugettext as _
 # NOC modules
 from noc.lib.app.application import Application, view
-from noc.core.csvutils import csv_export, csv_import, get_model_fields,\
-    IR_FAIL, IR_SKIP, IR_UPDATE
+from noc.core.csvutils import csv_export, csv_import, get_model_fields, IR_FAIL, IR_SKIP, IR_UPDATE
+from noc.models import get_model, get_model_id
 
 
 class CSVApplication(Application):
@@ -25,15 +23,17 @@ class CSVApplication(Application):
 
     @view(url="^$", url_name="index",
           menu=[_("Setup"), _("CSV Export/Import")],
-        access="import")
+          access="import")
     def view_index(self, request):
         class ModelForm(forms.Form):
             model = forms.ChoiceField(
                 choices=[
-                    (m._meta.db_table.replace("_", "."),
-                     m._meta.db_table.replace("_", "."))
-                    for m in sorted(models.get_models(),
-                    key=lambda x: x._meta.db_table)])
+                    (get_model_id(m), get_model_id(m))
+                    for m in sorted(
+                        models.get_models(),
+                        key=lambda x: x._meta.db_table)
+                ]
+            )
             action = forms.CharField(widget=forms.HiddenInput)
 
         if request.POST:
@@ -49,12 +49,13 @@ class CSVApplication(Application):
                         mimetype="text/csv; encoding=utf-8"
                     )
                 else:
-                    return self.response_redirect("main:csv:import",
-                        form.cleaned_data["model"])
+                    return self.response_redirect(
+                        "main:csv:import",
+                        form.cleaned_data["model"]
+                    )
         else:
             form = ModelForm()
-        return self.render(request,
-            "index.html", form=form)
+        return self.render(request, "index.html", form=form)
 
     class ImportForm(forms.Form):
         """
@@ -77,13 +78,16 @@ class CSVApplication(Application):
         :param model:
         :return:
         """
-        a, m = model.split(".")
-        m = get_object_or_404(ContentType, app_label=a, model=m).model_class()
+        m = get_model(model)
+        if not m:
+            return self.response_not_found("Invalid model")
         if request.POST:
             form = self.ImportForm(request.POST, request.FILES)
             if form.is_valid():
-                count, error = csv_import(m, request.FILES["file"],
-                                        resolution=form.cleaned_data["resolve"])
+                count, error = csv_import(
+                    m, request.FILES["file"],
+                    resolution=form.cleaned_data["resolve"]
+                )
                 if count is None:
                     self.message_user(request,
                                       "Error importing data: %s" % error)
@@ -92,8 +96,9 @@ class CSVApplication(Application):
                                       "%d records are imported/updated" % count)
                 return self.response_redirect(form.cleaned_data["referer"])
         else:
-            form = self.ImportForm(
-                    {"referer": request.META.get("HTTP_REFERER", "/")})
+            form = self.ImportForm({
+                "referer": request.META.get("HTTP_REFERER", "/")
+            })
         # Prepare fields description
         fields = []
         for name, required, rel, rname in get_model_fields(m):
@@ -118,6 +123,7 @@ class CSVApplication(Application):
 def admin_csv_export(modeladmin, request, queryset):
     return HttpResponse(csv_export(modeladmin.model, queryset),
                         mimetype="text/csv; encoding=utf-8")
+
 
 admin_csv_export.short_description = "Export selected %(verbose_name_plural)s to CSV"
 admin.site.add_action(admin_csv_export, "export_selected_csv")
