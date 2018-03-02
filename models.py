@@ -114,7 +114,7 @@ _MODELS = {
     "main.Sync": "noc.main.models.sync.Sync",
     "main.SyncCache": "noc.main.models.synccache.SyncCache",
     "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
-    "main.SystemTemplate": "noc.main.models.systemtemplate.SystemTemplate",
+    "main.SystemTemplate": "noc.main.models.systemtemtemplate.SystemTemplate",
     "main.Tag": "noc.main.models.tag.Tag",
     "main.Template": "noc.main.models.template.Template",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
