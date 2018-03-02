@@ -21,7 +21,7 @@ from .notificationgroup import NotificationGroup, NotificationGroupUser, Notific
 from .userprofile import UserProfile  # Cannot be moved, as referred from settings.py
 from .dbtrigger import DBTrigger, model_choices
 from .systemnotification import SystemNotification
-from .systemtemtemplate import SystemTemplate
+from .systemtemplate import SystemTemplate
 from .tag import Tag
 
 #
