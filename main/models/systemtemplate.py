@@ -7,17 +7,17 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import types
+from __future__ import absolute_import
 # Third-party modules
 from django.db import models
 from django.contrib.auth.models import User
 import six
 # NOC modules
-from template import Template
+from .template import Template
 
 
 class SystemTemplate(models.Model):
-    class Meta:
+    class Meta(object):
         app_label = "main"
         db_table = "main_systemtemplate"
         verbose_name = "System template"
