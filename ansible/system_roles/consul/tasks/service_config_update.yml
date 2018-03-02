@@ -17,6 +17,7 @@
   register: consul_key_response
 
 # if default value is unset provide default json
+# waiting for https://github.com/ansible/ansible/pull/32738
 - name: init default if unset
   consul_kv:
     key: "{{consul_service_key}}"
@@ -25,7 +26,7 @@
   vars:
     service_tmpl:
       Holders: []
-      Limit: "{{consul_service_value}}"
+      Limit: "{{consul_service_value | int}}"
   when: not consul_key_response.data.Value
 
 # if json is already valid just update needed value
