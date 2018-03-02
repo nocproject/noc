@@ -107,6 +107,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = [
     "django.contrib.auth",
+    "django.contrib.contenttypes",  # Required by django auth
     "django.contrib.sites",
     "django.contrib.admin",
     "south",
