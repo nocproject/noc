@@ -433,10 +433,10 @@ class ConsulDCS(DCSBase):
                     else:
                         dead_contenders.add(e["Key"])
             if manifest:
-                total_slots = int(manifest["Limit"])
+                total_slots = int(manifest.get("Limit", 0))
                 holders = [
                     h if h in seen_sessions else self.EMPTY_HOLDER
-                    for h in manifest["Holders"]
+                    for h in manifest.get("Holders", [])
                 ]
             else:
                 self.logger.info("Initializing manifest")
