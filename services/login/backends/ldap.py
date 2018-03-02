@@ -6,11 +6,13 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import ldap3
 # NOC modules
-from base import BaseAuthBackend
 from noc.main.models.authldapdomain import AuthLDAPDomain
+from .base import BaseAuthBackend
 
 
 class LdapBackend(BaseAuthBackend):
