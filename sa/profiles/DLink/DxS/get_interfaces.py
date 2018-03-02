@@ -440,7 +440,7 @@ class Script(BaseScript):
         stp = []
         c = ""
         try:
-            if (self.match_version(DES3x2x) or self.match_version(DES30xx)):
+            if self.match_version(DES3x2x) or self.match_version(DES30xx):
                 c = self.cli("show stp\nq")
             else:
                 c = self.cli("show stp")
