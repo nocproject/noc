@@ -236,11 +236,13 @@ _MODELS = {
     "cm.ValidationRule": "noc.cm.models.validationrule.ValidationRule",
     # ip models
     "ip.Address": "noc.ip.models.address.Address",
+    "ip.AddressProfile": "noc.ip.models.addressprofile.AddressProfile",
     "ip.AddressRange": "noc.ip.models.addressrange.AddressRange",
     "ip.IPPool": "noc.ip.models.ippool.IPPool",
     "ip.Prefix": "noc.ip.models.prefix.Prefix",
     "ip.PrefixAccess": "noc.ip.models.prefixaccess.PrefixAccess",
     "ip.PrefixBookmark": "noc.ip.models.prefixbookmark.PrefixBookmark",
+    "ip.PrefixProfile": "noc.ip.models.prefixprofile.PrefixProfile",
     "ip.VRF": "noc.ip.models.vrf.VRF",
     "ip.VRFGroup": "noc.ip.models.vrfgroup.VRFGroup",
     # vc models

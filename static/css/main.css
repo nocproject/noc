@@ -147,18 +147,6 @@ table tbody tr.selected {
     padding: 4px;
 }
 
-#noc-popup-iframe {
-    border: 0px;
-}
-
-/* TreeApplication */
-.noc-tree-category {
-    font-weight: bold;
-}
-
-.noc-tree-item {
-}
-
 @media print {
     #menu {
         display: none;
@@ -183,4 +171,8 @@ table tbody tr.selected {
     ul.messagelist {
         margin-left: 0px;
     }
+}
+
+.striped TR:nth-child(odd) {
+    background: #edf3fe;
 }

@@ -2,24 +2,26 @@
 # ---------------------------------------------------------------------
 # IPPool model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
-from vrf import VRF
-from afi import AFI_CHOICES
 from noc.sa.models.terminationgroup import TerminationGroup
 
 from noc.core.model.fields import CIDRField, TextArrayField
 from noc.lib.validators import check_ipv4, check_ipv6
+from .afi import AFI_CHOICES
+from .vrf import VRF
 
 
 class IPPool(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("IP Pool")
         verbose_name_plural = _("IP Pools")
         db_table = "ip_ippool"
@@ -54,7 +56,6 @@ class IPPool(models.Model):
         """
         Field validation
         """
-        print "@@@ CLEAN"
         super(IPPool, self).clean()
         # Check prefix is of AFI type
         if self.afi == "4":

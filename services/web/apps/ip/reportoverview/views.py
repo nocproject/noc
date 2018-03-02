@@ -2,22 +2,23 @@
 # ---------------------------------------------------------------------
 # ip.reportoverview
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.db import connection
 # NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
-from noc.ip.models import VRFGroup, Prefix
+from noc.ip.models.vrfgroup import VRFGroup
+from noc.ip.models.prefix import Prefix
 from noc.core.ip import IP
 
 prefix_fields = [f for f in CustomField.table_fields("ip_prefix")
                  if not f.is_hidden]
 
-#% fixme rewrite to separate file
+# % fixme rewrite to separate file
 CSS = """
 <style>
 TABLE {

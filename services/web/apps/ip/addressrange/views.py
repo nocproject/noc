@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # ip.addressrange application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import AddressRange
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.ip.models.addressrange import AddressRange
 from noc.core.ip import IP
 from noc.lib.validators import is_ipv4, is_ipv6, is_fqdn
 from noc.core.translation import ugettext as _
@@ -68,7 +68,7 @@ class AddressRangeApplication(ExtModelApplication):
                      data["from_address"],
                      data["to_address"]
                  )
-                 if r.is_locked == True]
+                 if r.is_locked is True]
             if r:
                 raise ValueError("Locked range overlaps with ahother locked range: %s" % unicode(r[0]))
         return data

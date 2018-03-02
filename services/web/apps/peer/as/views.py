@@ -2,18 +2,17 @@
 # ---------------------------------------------------------------------
 # AS Manager
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.contrib import admin
 # NOC modules
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.site import site
-from noc.peer.models import AS
-from noc.ip.models import Prefix
-from noc.core.translation import ugettext as _
+from noc.peer.models.asn import AS
+from noc.ip.models.prefix import Prefix
 
 
 def allocated_prefixes(obj):
@@ -25,6 +24,8 @@ def allocated_prefixes(obj):
                                                     p.vrf.id, p.afi, p.prefix),
                                        p.prefix)]
     return ", ".join(r)
+
+
 allocated_prefixes.short_description = "Prefixes"
 allocated_prefixes.allow_tags = True
 

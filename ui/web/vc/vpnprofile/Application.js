@@ -12,7 +12,8 @@ Ext.define("NOC.vc.vpnprofile.Application", {
         "NOC.vc.vpnprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.wf.workflow.LookupField"
+        "NOC.wf.workflow.LookupField",
+        "NOC.ip.prefixprofile.LookupField"
     ],
     model: "NOC.vc.vpnprofile.Model",
     rowClassField: "row_class",
@@ -81,7 +82,13 @@ Ext.define("NOC.vc.vpnprofile.Application", {
                     name: "style",
                     xtype: "main.style.LookupField",
                     fieldLabel: __("Style"),
-                    allowBlank: false
+                    allowBlank: true
+                },
+                {
+                    name: "default_prefix_profile",
+                    xtype: "ip.prefixprofile.LookupField",
+                    fieldLabel: __("Default Prefix Profile"),
+                    allowBlank: true
                 },
                 {
                     xtype: "fieldset",

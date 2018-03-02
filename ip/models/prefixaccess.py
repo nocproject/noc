@@ -2,24 +2,30 @@
 # ---------------------------------------------------------------------
 # PrefixAccess model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+from functools import reduce
+from collections import defaultdict
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
-from django.db import models, connection
+from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 # NOC modules
-from vrf import VRF
-from prefix import Prefix
-from afi import AFI_CHOICES
 from noc.core.model.fields import CIDRField
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
+from noc.lib.db import SQL
+from .afi import AFI_CHOICES
+from .vrf import VRF
+from .prefix import Prefix
 
 
 class PrefixAccess(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Prefix Access")
         verbose_name_plural = _("Prefix Access")
         db_table = "ip_prefixaccess"
@@ -44,8 +50,11 @@ class PrefixAccess(models.Model):
         if self.can_change:
             perms += ["Change"]
         return u"%s: %s(%s): %s: %s" % (
-        self.user.username, self.vrf.name, self.afi, self.prefix,
-        ", ".join(perms))
+            self.user.username,
+            self.vrf.name,
+            self.afi, self.prefix,
+            ", ".join(perms)
+        )
 
     def clean(self):
         """
@@ -75,18 +84,20 @@ class PrefixAccess(models.Model):
             prefix = prefix.prefix
         else:
             prefix = str(prefix)
-        # @todo: PostgreSQL-independed implementation
-        c = connection.cursor()
-        c.execute("""SELECT COUNT(*)
-                     FROM %s
-                     WHERE prefix >>= %%s
-                        AND vrf_id=%%s
-                        AND afi=%%s
-                        AND user_id=%%s
-                        AND can_view=TRUE
-                 """ % PrefixAccess._meta.db_table,
-            [str(prefix), vrf.id, afi, user.id])
-        return c.fetchall()[0][0] > 0
+        if "/" not in prefix:
+            if afi == "4":
+                prefix += "/32"
+            else:
+                prefix += "/128"
+        return PrefixAccess.objects.filter(
+            vrf=vrf,
+            afi=afi,
+            user=user,
+            can_view=True
+        ).extra(
+            where=["prefix >>= %s"],
+            params=[prefix]
+        ).exists()
 
     @classmethod
     def user_can_change(cls, user, vrf, afi, prefix):
@@ -101,15 +112,46 @@ class PrefixAccess(models.Model):
         """
         if user.is_superuser:
             return True
-            # @todo: PostgreSQL-independed implementation
-        c = connection.cursor()
-        c.execute("""SELECT COUNT(*)
-                     FROM %s
-                     WHERE prefix >>= %%s
-                        AND vrf_id=%%s
-                        AND afi=%%s
-                        AND user_id=%%s
-                        AND can_change=TRUE
-                 """ % PrefixAccess._meta.db_table,
-            [str(prefix), vrf.id, afi, user.id])
-        return c.fetchall()[0][0] > 0
+        if isinstance(prefix, Prefix):
+            prefix = prefix.prefix
+        else:
+            prefix = str(prefix)
+        if "/" not in prefix:
+            if afi == "4":
+                prefix += "/32"
+            else:
+                prefix += "/128"
+        return PrefixAccess.objects.filter(
+            vrf=vrf,
+            afi=afi,
+            user=user,
+            can_change=True
+        ).extra(
+            where=["prefix >>= %s"],
+            params=[prefix]
+        ).exists()
+
+    @classmethod
+    def read_Q(cls, user, field="prefix"):
+        """
+        Returns django Q with read restrictions.
+        Q can be applied to prefix
+        :param user:
+        :param vrf:
+        :param afi:
+        :return:
+        """
+        if user.is_superuser:
+            return Q()  # No restrictions
+        vaccess = defaultdict(set)  # (vrf, afi) -> {prefix}
+        for pa in PrefixAccess.objects.filter(user=user):
+            vaccess[pa.vrf.id, pa.afi].add(pa.prefix)
+        if not vaccess:
+            return SQL("0 = 1")  # False
+        stmt = []
+        for vrf, afi in vaccess:
+            for p in vaccess[vrf, afi]:
+                stmt += ["(vrf_id = %d AND afi = '%s' AND %s <<= '%s'" % (
+                    vrf, afi, field, p
+                )]
+        return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))

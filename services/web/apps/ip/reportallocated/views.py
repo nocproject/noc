@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Allocated Blocks Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,9 +12,10 @@ from django import forms
 from django.db.models import Q
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.lib.validators import *
-from noc.ip.models import VRF, Prefix
-from noc.main.models import CustomField
+from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
+from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
+from noc.main.models.customfield import CustomField
 
 
 class ReportForm(forms.Form):
@@ -54,8 +55,7 @@ class ReportAllocated(SimpleReport):
 
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_row(p):
-            r = [p.prefix, p.state.name,
-                unicode(p.vc) if p.vc else ""]
+            r = [p.prefix, p.state.name, unicode(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
@@ -83,13 +83,15 @@ class ReportAllocated(SimpleReport):
             if k in cfn and v is not None and v != "":
                 q &= Q(**{str(k): v})
         #
-        return self.from_dataset(title=_(
-            "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
-                "vrf": vrf.name,
-                "afi": afi,
-                "prefix": prefix.prefix
-            }),
+        return self.from_dataset(
+            title=_(
+                "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
+                    "vrf": vrf.name,
+                    "afi": afi,
+                    "prefix": prefix.prefix
+                }
+            ),
             columns=columns,
-            data=[get_row(p)
-                  for p in prefix.children_set.filter(q).order_by("prefix")],
-        enumerate=True)
+            data=[get_row(p) for p in prefix.children_set.filter(q).order_by("prefix")],
+            enumerate=True
+        )

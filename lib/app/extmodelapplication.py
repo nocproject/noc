@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ExtModelApplication implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -274,7 +274,7 @@ class ExtModelApplication(ExtApplication):
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
                 if v is not None and not isinstance(v, (str, unicode, int, long, bool, list)):
-                    if type(v) == datetime.datetime:
+                    if isinstance(v, datetime.datetime):
                         v = v.isoformat()
                     else:
                         v = unicode(v)
@@ -373,6 +373,36 @@ class ExtModelApplication(ExtApplication):
             extra["select"] = extra_select
         return extra, new_order
 
+    def can_create(self, user, obj):
+        """
+        Check user can create object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
+    def can_update(self, user, obj):
+        """
+        Check user can update object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
+    def can_delete(self, user, obj):
+        """
+        Check user can delete object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
@@ -417,7 +447,7 @@ class ExtModelApplication(ExtApplication):
             o = self.model(**attrs)
             # Run models validators
             try:
-                o.clean_fields()
+                o.full_clean(exclude=list(self.ignored_fields))
             except ValidationError as e:
                 e_msg = []
                 for f in e.message_dict:
@@ -426,6 +456,12 @@ class ExtModelApplication(ExtApplication):
                     "status": False,
                     "message": "Validation error: %s" % " | ".join(e_msg)
                 }, status=self.BAD_REQUEST)
+            # Check permissions
+            if not self.can_create(request.user, o):
+                return self.render_json({
+                    "status": False,
+                    "message": "Permission denied"
+                }, status=self.FORBIDDEN)
             # Check for duplicates
             try:
                 o.save()
@@ -509,6 +545,12 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Validation error: %s" % " | ".join(e_msg)
             }, status=self.BAD_REQUEST)
+        # Check permissions
+        if not self.can_create(request.user, o):
+            return self.render_json({
+                "status": False,
+                "message": "Permission denied"
+            }, status=self.FORBIDDEN)
         # Save
         try:
             o.save()
@@ -538,6 +580,12 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
+        # Check permissions
+        if not self.can_delete(request.user, o):
+            return self.render_json({
+                "status": False,
+                "message": "Permission denied"
+            }, status=self.FORBIDDEN)
         try:
             o.delete()
         except ValueError as e:

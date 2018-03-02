@@ -2,28 +2,29 @@
 # ---------------------------------------------------------------------
 # AddressRange model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 # NOC modules
-from vrf import VRF
-from address import Address
-from afi import AFI_CHOICES
 from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.core.ip import IP
 from noc.lib.validators import check_ipv4, check_ipv6
+from .afi import AFI_CHOICES
+from .vrf import VRF
+from .address import Address
 
 
 class AddressRange(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Address Range")
-        verbose_name = _("Address Ranges")
         db_table = "ip_addressrange"
         app_label = "ip"
         unique_together = [("vrf", "afi", "from_address", "to_address")]
@@ -73,7 +74,11 @@ class AddressRange(models.Model):
 
     def __unicode__(self):
         return u"%s (IPv%s): %s -- %s" % (
-        self.vrf.name, self.afi, self.from_address, self.to_address)
+            self.vrf.name,
+            self.afi,
+            self.from_address,
+            self.to_address
+        )
 
     def clean(self):
         """
@@ -91,9 +96,6 @@ class AddressRange(models.Model):
     def get_absolute_url(self):
         return site.reverse("ip:addressrange:change", self.id)
 
-    ##
-    ## Save instance
-    ##
     def save(self, **kwargs):
         def generate_fqdns():
             # Prepare FQDN template
@@ -161,9 +163,11 @@ class AddressRange(models.Model):
                 if IP.prefix(old.to_address) > IP.prefix(self.to_address):
                     # Upper boundary is lowered. Clean up addressess falled out of range
                     Address.objects.filter(
-                        vrf=self.vrf, afi=self.afi,
-                                           address__gt=self.to_address,
-                                           address__lte=old.to_address).delete()
+                        vrf=self.vrf,
+                        afi=self.afi,
+                        address__gt=self.to_address,
+                        address__lte=old.to_address
+                    ).delete()
                     # Finally recheck FQDNs
                 generate_fqdns()
 
@@ -185,11 +189,16 @@ class AddressRange(models.Model):
         return IP.prefix(self.from_address).iter_address(
             until=IP.prefix(self.to_address))
 
-    ##
-    ## Returns a list of overlapping ranges
-    ##
     @classmethod
     def get_overlapping_ranges(cls, vrf, afi, from_address, to_address):
+        """
+        Returns a list of overlapping ranges
+        :param vrf:
+        :param afi:
+        :param from_address:
+        :param to_address:
+        :return:
+        """
         return AddressRange.objects.raw("""
             SELECT *
             FROM ip_addressrange
@@ -210,11 +219,12 @@ class AddressRange(models.Model):
             "to_address": to_address
         })
 
-    ##
-    ## Returns a queryset with overlapped ranges
-    ##
     @property
     def overlapping_ranges(self):
+        """
+        Returns a queryset with overlapped ranges
+        :return:
+        """
         return self.get_overlapping_ranges(
             self.vrf, self.afi, self.from_address, self.to_address)
 

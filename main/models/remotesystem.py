@@ -37,7 +37,15 @@ class EnvItem(EmbeddedDocument):
 
 @on_delete_check(check=[
     ("crm.Subscriber", "remote_system"),
+    ("crm.SubscriberProfile", "remote_system"),
+    ("crm.Supplier", "remote_system"),
+    ("crm.SupplierProfile", "remote_system"),
+    ("inv.AllocationGroup", "remote_system"),
     ("inv.InterfaceProfile", "remote_system"),
+    ("inv.NetworkSegment", "remote_system"),
+    ("inv.NetworkSegmentProfile", "remote_system"),
+    ("ip.AddressProfile", "remote_system"),
+    ("ip.PrefixProfile", "remote_system"),
     ("sa.ManagedObject", "remote_system"),
     ("sa.AdministrativeDomain", "remote_system"),
     ("sa.ManagedObjectProfile", "remote_system"),
@@ -45,7 +53,10 @@ class EnvItem(EmbeddedDocument):
     ("sa.ServiceProfile", "remote_system"),
     ("sa.TerminationGroup", "remote_system"),
     ("sa.Service", "remote_system"),
-    ("inv.NetworkSegment", "remote_system"),
+    ("vc.VLAN", "remote_system"),
+    ("vc.VLANProfile", "remote_system"),
+    ("vc.VPN", "remote_system"),
+    ("vc.VPNProfile", "remote_system"),
     ("wf.State", "remote_system"),
     ("wf.Transition", "remote_system"),
     ("wf.Workflow", "remote_system")

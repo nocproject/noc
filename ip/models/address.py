@@ -2,19 +2,17 @@
 # ---------------------------------------------------------------------
 # Address model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.project.models.project import Project
-from vrf import VRF
-from prefix import Prefix
-from afi import AFI_CHOICES
-from noc.main.models.style import Style
 from noc.main.models.resourcestate import ResourceState
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
@@ -22,6 +20,11 @@ from noc.lib.app.site import site
 from noc.lib.validators import (
     ValidationError, check_fqdn, check_ipv4, check_ipv6)
 from noc.main.models.textindex import full_text_search
+from noc.core.model.fields import DocumentReferenceField
+from .afi import AFI_CHOICES
+from .vrf import VRF
+from .prefix import Prefix
+from .addressprofile import AddressProfile
 
 
 @full_text_search
@@ -44,6 +47,10 @@ class Address(models.Model):
         max_length=1,
         choices=AFI_CHOICES)
     address = INETField(_("Address"))
+    profile = DocumentReferenceField(
+        AddressProfile,
+        null=False, blank=False
+    )
     fqdn = models.CharField(
         _("FQDN"),
         max_length=255,
@@ -77,10 +84,6 @@ class Address(models.Model):
         _("TT"),
         blank=True, null=True,
         help_text=_("Ticket #"))
-    style = models.ForeignKey(
-        Style,
-        verbose_name=_("Style"),
-        blank=True, null=True)
     state = models.ForeignKey(
         ResourceState,
         verbose_name=_("State"),
@@ -122,8 +125,11 @@ class Address(models.Model):
             return None
         afi = cls.get_afi(address)
         try:
-            a = Address.objects.get(afi=afi, address=address,
-                vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id))
+            a = Address.objects.get(
+                afi=afi,
+                address=address,
+                vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id)
+            )
             return a.vrf
         except Address.DoesNotExist:
             return None
@@ -135,15 +141,7 @@ class Address(models.Model):
         :param kwargs:
         :return:
         """
-        # Check VRF group restrictions
-        cv = self.get_collision(self.vrf, self.address)
-        if cv:
-            # Collision detected
-            raise ValidationError("Address already exists in VRF %s" % cv)
-        # Detect AFI
-        self.afi = self.get_afi(self.address)
-        # Set proper prefix
-        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
+        self.clean()
         super(Address, self).save(**kwargs)
 
     def clean(self):
@@ -158,6 +156,11 @@ class Address(models.Model):
             check_ipv4(self.address)
         elif self.afi == "6":
             check_ipv6(self.address)
+        # Check VRF group restrictions
+        cv = self.get_collision(self.vrf, self.address)
+        if cv:
+            # Collision detected
+            raise ValidationError("Address already exists in VRF %s" % cv)
 
     @property
     def short_description(self):

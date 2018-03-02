@@ -2,18 +2,19 @@
 # ---------------------------------------------------------------------
 # Expanded Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django Modules
+# Third-party Modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.ip.models import VRF, Prefix
+from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
 from noc.main.models import CustomField
-from noc.lib.validators import *
+from noc.lib.validators import check_ipv6_prefix, check_ipv4_prefix, ValidationError
 
 
 class ReportForm(forms.Form):
@@ -49,8 +50,7 @@ class ExpandedReport(SimpleReport):
     def get_data(self, vrf, afi, prefix, **kwargs):
         def get_row(p, level=0):
             s = "--" * level
-            r = [s + p.prefix, p.state.name,
-                unicode(p.vc) if p.vc else ""]
+            r = [s + p.prefix, p.state.name, unicode(p.vc) if p.vc else ""]
             for f in cf:
                 v = getattr(p, f.name)
                 r += [v if v is not None else ""]
@@ -58,14 +58,12 @@ class ExpandedReport(SimpleReport):
             return r
 
         def get_info(prefix, level=0):
-            s = "----" * level
             data = [get_row(prefix, level)]
             for c in prefix.children_set.order_by("prefix"):
                 data += get_info(c, level + 1)
             return data
 
         cf = CustomField.table_fields("ip_prefix")
-        cfn = dict((f.name, f) for f in cf)
         # Prepare columns
         columns = [
             "Prefix",

@@ -2,13 +2,12 @@
 # ---------------------------------------------------------------------
 # IP Address space management application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
-from operator import attrgetter, itemgetter
+from operator import itemgetter
 # Third-party modules modules
 from django import forms
 from django.db.models import Q
@@ -16,15 +15,8 @@ from django.utils.simplejson.encoder import JSONEncoder
 from django.utils.translation import ugettext_lazy as _
 from noc.core.ip import IP
 # NOC modules
-from noc.lib.app.application import Application, view
-from noc.lib.db import SQL
-from noc.lib.forms import NOCForm
-from noc.lib.validators import (is_ipv4, is_ipv4_prefix, is_ipv6,
-                                is_ipv6_prefix, check_ipv4_prefix,
-                                check_ipv6_prefix, check_fqdn,
-                                check_ipv4, check_ipv6, check_prefix,
-                                ValidationError)
-from noc.lib.widgets import *
+from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.validators import is_ipv4, is_ipv4_prefix, is_ipv6, is_ipv6_prefix
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
 from noc.ip.models.prefix import Prefix
@@ -34,47 +26,25 @@ from noc.ip.models.vrf import VRF
 from noc.ip.models.vrfgroup import VRFGroup
 from noc.main.models.customfield import CustomField
 from noc.main.models.permission import Permission
-from noc.main.models.resourcestate import ResourceState
-from noc.main.models.style import Style
-from noc.peer.models import AS
-from noc.project.models.project import Project
-from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
-from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.reducetask import ReduceTask
-from noc.vc.models.vcbindfilter import VCBindFilter
-from noc.core.colors import *
+from noc.core.colors import get_colors
 
 
-class IPAMApplication(Application):
+class IPAMApplication(ExtApplication):
     title = _("Assigned Addresses")
-    extra_permissions = ["bind_vc"]
+    extra_permissions = ["bind_vc", "rebase"]
+    implied_permissions = {
+        "rebase": ["ip:prefix:rebase"]
+    }
 
-    ADDRESS_SPOT_DIST = 8    # Area around used address to show in free spot
+    ADDRESS_SPOT_DIST = 8  # Area around used address to show in free spot
     MAX_IPv4_NET_SIZE = 256  # Cover whole IPv4 prefix with spot if size below
-    # Helper functions
-    rx_ipv4_prefix_rest = re.compile(r"(\.0)+/\d+$")
-    rx_ipv6_prefix_rest = re.compile(r"(:0+)*/\d+$")
 
-    def get_common_prefix_part(self, afi, p):
-        p = IP.prefix(p.prefix)
-        if afi == "4":
-            if p.mask < 8:
-                return ""
-            # Align to 8-bit border
-            p.mask = (p.mask // 8) * 8
-            p = self.rx_ipv4_prefix_rest.sub("", p.normalized.prefix) + "."
-        else:
-            if p.mask < 16:
-                return ""
-            # Align to 16-bit border
-            p.mask = (p.mask // 16) * 16
-            p = self.rx_ipv6_prefix_rest.sub("", p.normalized.prefix)
-        return p
-
-    def get_prefix_spot(self, prefix, sep=True, extra=[]):
+    def get_prefix_spot(self, prefix, sep=True, extra=None):
         """
         Return addresses around existing ones
         """
+        extra = extra or []
         p = IP.prefix(prefix.prefix)
         if prefix.afi == "4" and len(p) <= self.MAX_IPv4_NET_SIZE:
             dist = self.MAX_IPv4_NET_SIZE
@@ -82,51 +52,6 @@ class IPAMApplication(Application):
             dist = self.ADDRESS_SPOT_DIST
         return p.area_spot([a.address for a in prefix.address_set.all()] + extra,
                            dist=dist, sep=sep)
-
-    def ds_afi(self, afi):
-        """
-        Return dual-stack pair AFI
-        :param afi: "4" or "6"
-        :return:
-        """
-        return "6" if afi == "4" else "4"
-
-    def process_dual_stacking(self, prefix, ds_prefix):
-        """
-        Process dual-stacking linking
-        :param prefix:
-        :type prefix: Prefix
-        :param ds_prefix:
-        :type prefix: str
-        """
-        if not ds_prefix:
-            prefix.clear_transition()
-            return
-
-        ds_afi = self.ds_afi(prefix.afi)
-        try:
-            ds_p = Prefix.objects.get(vrf=prefix.vrf,
-                                      afi=ds_afi,
-                                      prefix=ds_prefix)
-        except Prefix.DoesNotExist:
-            # Create paired prefix
-            ds_p = Prefix(
-                vrf=prefix.vrf,
-                afi=ds_afi,
-                prefix=ds_prefix,
-                asn=prefix.asn,
-                description=prefix.description,
-                state=prefix.state,
-                vc=prefix.vc,
-                tags=prefix.tags
-            )
-            ds_p.save()
-        if prefix.afi == "4":
-            prefix.ipv6_transition = ds_p
-            prefix.save()
-        else:
-            ds_p.ipv6_transition = prefix
-            ds_p.save()
 
     @view(url=r"^$", url_name="index", menu="Assigned Addresses",
           access="view")
@@ -157,7 +82,7 @@ class IPAMApplication(Application):
                 description__icontains=query)
         else:
             q = Q()
-        # Display groupped VRFs
+        # Display grouped VRFs
         q_afi = Q(afi_ipv4=True) | Q(afi_ipv6=True)
         groups = []
         for vg in VRFGroup.objects.all().order_by("name"):
@@ -200,7 +125,6 @@ class IPAMApplication(Application):
         user = request.user
         can_view = prefix.can_view(user)
         can_change = prefix.can_change(user)
-        can_rebase = can_change and Permission.has_perm(user, "ip:ipam:rebase")
         can_bind_vc = can_change and Permission.has_perm(
             user, "ip:ipam:bind_vc")
         can_change_maintainers = user.is_superuser
@@ -338,14 +262,14 @@ class IPAMApplication(Application):
             [a for a in addresses if a.managed_object]) > 0
         # Build custom styles
         styles = {}
-        if prefix.style:
-            styles[prefix.style.css_class_name] = prefix.style.css
+        if prefix.profile.style:
+            styles[prefix.profile.style.css_class_name] = prefix.profile.style.css
         for p in prefixes:
-            if p.style and p.style.css_class_name not in styles:
-                styles[p.style.css_class_name] = p.style.css
+            if p.profile.style and p.profile.style.css_class_name not in styles:
+                styles[p.profile.style.css_class_name] = p.profile.style.css
         for a in addresses:
-            if a.style and a.style.css_class_name not in styles:
-                styles[a.style.css_class_name] = a.style.css
+            if a.profile.style and a.profile.style.css_class_name not in styles:
+                styles[a.profile.style.css_class_name] = a.profile.style.css
         styles = "\n".join(styles.values())
         # Render
         return self.render(request, "vrf_index.html",
@@ -357,7 +281,6 @@ class IPAMApplication(Application):
                            prefix_info=prefix_info,
                            display_empty_message=not addresses and not prefixes,
                            can_view=can_view, can_change=can_change,
-                           can_rebase=can_rebase,
                            can_bind_vc=can_bind_vc,
                            can_change_maintainers=can_change_maintainers,
                            can_add_prefix=can_add_prefix,
@@ -441,345 +364,6 @@ class IPAMApplication(Application):
                 "prefix": prefix.prefix})
         return self.response_redirect_to_referrer(request)
 
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/add_prefix/$",
-          url_name="add_prefix", access="change")
-    def view_add_prefix(self, request, vrf_id, afi, prefix):
-        """
-        Add prefix
-        """
-        def get_form_class():
-            class AddPrefixForm(NOCForm):
-                prefix = forms.CharField(
-                    label=_("Prefix"),
-                    help_text=_("IPv%(afi)s prefix") % {"afi": afi}
-                )
-                state = forms.ModelChoiceField(
-                    label=_("State"),
-                    queryset=ResourceState.objects.filter(
-                        is_starting=True,
-                        is_active=True).order_by("name"),
-                    help_text=_("Prefix state")
-                )
-                project = forms.ModelChoiceField(
-                    label=_("Project"),
-                    queryset=Project.objects.order_by("code"),
-                    help_text=_("Project"),
-                    required=False
-                )
-                asn = forms.ModelChoiceField(
-                    label=_("ASN"),
-                    queryset=AS.objects.order_by("asn"),
-                    help_text=_("AS Number"))
-                description = forms.CharField(
-                    label=_("Description"),
-                    widget=forms.Textarea,
-                    required=False)
-                tags = forms.CharField(
-                    label=_("Tags"),
-                    widget=AutoCompleteTags,
-                    required=False)
-                tt = forms.IntegerField(
-                    label=_("TT #"),
-                    required=False,
-                    help_text=_("Ticket #"))
-                style = forms.ModelChoiceField(
-                    label=_("Style"),
-                    queryset=Style.objects.filter(
-                        is_active=True).order_by("name"),
-                    required=False,
-                    help_text=_("Visual appearance"))
-                dual_stack_prefix = forms.CharField(
-                    label=_("Dual-stack prefix"),
-                    required=False,
-                    help_text=_("Appropriative dual-stack allocation")
-                )
-                enable_ip_discovery = forms.ChoiceField(
-                    label=_("Enable IP Discovery"),
-                    required=True,
-                    choices=[
-                        ("I", "Inherit"),
-                        ("E", "Enable"),
-                        ("D", "Disable")
-                    ]
-                )
-
-                def clean_prefix(self):
-                    prefix = self.cleaned_data["prefix"]
-                    # Validate prefix
-                    if afi == "4":
-                        check_ipv4_prefix(prefix)
-                    else:
-                        check_ipv6_prefix(prefix)
-                    prefix = prefix.lower()
-                    # Check permissions
-                    if not PrefixAccess.user_can_change(request.user, vrf, afi,
-                                                        prefix):
-                        raise ValidationError(_("Permission denied"))
-                    # Check prefix not exists
-                    p = Prefix.objects.filter(
-                        vrf=vrf, afi=afi, prefix=prefix)
-                    if not p and vrf.vrf_group.address_constraint == "G":
-                        # Prefixes are unique per VRF Group
-                        p = Prefix.objects.filter(
-                            vrf__in=vrf.vrf_group.vrf_set.exclude(id=vrf.id),
-                            afi=afi
-                        ).filter(
-                            SQL("prefix >>= '%s'" % prefix) |
-                            SQL("prefix <<= '%s'" % prefix)
-                        ).exclude(parent__isnull=True)
-                    if p:
-                        raise ValidationError(_("Prefix %s is already exists in vrf %s") % (p[0].prefix, p[0].vrf))
-                    return prefix
-
-                def clean_dual_stack_prefix(self):
-                    ds_prefix = self.cleaned_data["dual_stack_prefix"]
-                    ds_afi = "6" if afi == "4" else "4"
-                    if ds_prefix:
-                        if afi == "4":
-                            check_ipv6_prefix(ds_prefix)
-                        else:
-                            check_ipv4_prefix(ds_prefix)
-                        # Check permissions
-                        if not PrefixAccess.user_can_change(request.user, vrf,
-                                                            ds_afi, ds_prefix):
-                            raise ValidationError(
-                                _("Permission denied. "
-                                  "Cannot set dual-stack allocation"))
-                    return ds_prefix
-
-            # Add custom fields
-            self.customize_form(AddPrefixForm, "ip_prefix")
-            return AddPrefixForm
-
-        # Validation
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
-            return self.response_forbidden("Invalid AFI")
-        parent = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
-        # Process input
-        form_class = get_form_class()
-        if request.POST:
-            form = form_class(request.POST)
-            if form.is_valid():
-                # Create prefix
-                pppp = Prefix(
-                    vrf=vrf,
-                    afi=afi,
-                    prefix=form.cleaned_data["prefix"].strip(),
-                    state=form.cleaned_data["state"],
-                    project=form.cleaned_data["project"],
-                    asn=form.cleaned_data["asn"],
-                    description=form.cleaned_data["description"],
-                    tags=form.cleaned_data["tags"],
-                    tt=form.cleaned_data["tt"],
-                    style=form.cleaned_data["style"],
-                    enable_ip_discovery=form.cleaned_data["enable_ip_discovery"]
-                )
-                self.apply_custom_fields(
-                    pppp, form.cleaned_data, "ip_prefix")
-                with self.form_errors(form):
-                    pppp.save()
-                if not form._errors:
-                    self.message_user(
-                        request,
-                        _("Prefix %(prefix)s has been created") % {
-                            "prefix": pppp.prefix})
-                    # Process dual-stack linking
-                    ds_prefix = form.cleaned_data["dual_stack_prefix"]
-                    self.process_dual_stacking(pppp, ds_prefix)
-                    # Redirect depending on submit button pressed
-                    if "_continue" in request.POST:
-                        return self.response_redirect(
-                            "ip:ipam:change_prefix",
-                            vrf.id, afi, pppp.prefix)
-                    if "_addanother" in request.POST:
-                        return self.response_redirect(
-                            "ip:ipam:add_prefix",
-                            vrf.id, afi, pppp.parent.prefix)
-                    return self.response_redirect(
-                        "ip:ipam:vrf_index",
-                        vrf.id, afi, pppp.prefix)
-        else:
-            initial = {
-                "asn": parent.asn.id,
-                "state": ResourceState.get_default()
-            }
-            if request.GET and "prefix" in request.GET:
-                # Prefix set via querystring
-                initial["prefix"] = request.GET["prefix"]
-            else:
-                # Display beginning of prefix
-                initial = {
-                    "prefix": self.get_common_prefix_part(afi, parent),
-                    "state": ResourceState.get_default(),
-                    "asn": parent.asn.id
-                }
-            form = form_class(initial=initial)
-            # Suggest blocks of different sizes
-        suggestions = []
-        if parent:
-            p_mask = int(parent.prefix.split("/")[1])
-            free = sorted(
-                IP.prefix(parent.prefix).iter_free([
-                    pp.prefix for pp in parent.children_set.all()
-                ]), key=attrgetter("mask")
-            )
-            if free:
-                free.reverse()
-                # Find smallest free block possible
-                for mask in range(30 if afi == "4" else 64,
-                                  max(p_mask + 1, free[-1].mask) - 1, -1):
-                    # Find smallest free block possible
-                    for p in free:
-                        if p.mask <= mask:
-                            suggestions += [(
-                                "%s/%d" % (p.address, mask),
-                                2 ** (32 - mask) if afi == "4" else None
-                            )]
-                            break
-        return self.render(request, "add_prefix.html", vrf=vrf, afi=afi,
-                           form=form, suggestions=suggestions)
-
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/change/$",
-          url_name="change_prefix", access="change")
-    def view_change_prefix(self, request, vrf_id, afi, prefix):
-        """
-        Change prefix
-        """
-        def get_form_class():
-            class EditPrefixForm(NOCForm):
-                asn = forms.ModelChoiceField(
-                    label=_("ASN"),
-                    queryset=AS.objects.order_by("asn"),
-                    help_text=_("AS Number"))
-                state = forms.ModelChoiceField(
-                    label=_("State"),
-                    queryset=ResourceState.objects.filter(
-                        is_active=True).order_by("name"),
-                    help_text=_("Prefix state")
-                )
-                project = forms.ModelChoiceField(
-                    label=_("Project"),
-                    queryset=Project.objects.order_by("code"),
-                    help_text=_("Project"),
-                    required=False
-                )
-                if can_bind_vc:
-                    vc = forms.ModelChoiceField(
-                        label=_("VC"),
-                        queryset=VCBindFilter.get_vcs(
-                            vrf, afi, prefix),
-                        required=False,
-                        help_text=_("VC Related with prefix. Adjust VC Bind Filters if you cannot see required VC"))
-                description = forms.CharField(
-                    label=_("Description"),
-                    widget=forms.Textarea,
-                    required=False)
-                tags = forms.CharField(
-                    label=_("Tags"),
-                    widget=AutoCompleteTags,
-                    required=False)
-                tt = forms.IntegerField(
-                    label=_("TT #"),
-                    required=False,
-                    help_text=_("Ticket #"))
-                style = forms.ModelChoiceField(
-                    label=_("Style"),
-                    queryset=Style.objects.filter(is_active=True).order_by("name"),
-                    required=False,
-                    help_text=_("Visual appearance"))
-                dual_stack_prefix = forms.CharField(
-                    label=_("Dual-stack prefix"),
-                    required=False,
-                    help_text=_("Appropriative dual-stack allocation")
-                )
-                enable_ip_discovery = forms.ChoiceField(
-                    label=_("Enable IP Discovery"),
-                    required=True,
-                    choices=[
-                        ("I", "Inherit"),
-                        ("E", "Enable"),
-                        ("D", "Disable")
-                    ]
-                )
-
-                def clean_dual_stack_prefix(self):
-                    ds_prefix = self.cleaned_data["dual_stack_prefix"]
-                    ds_afi = "6" if afi == "4" else "4"
-                    if ds_prefix:
-                        if afi == "4":
-                            check_ipv6_prefix(ds_prefix)
-                        else:
-                            check_ipv4_prefix(ds_prefix)
-                        # Check permissions
-                        if not PrefixAccess.user_can_change(
-                            request.user, vrf, ds_afi, ds_prefix
-                        ):
-                            raise ValidationError(
-                                _("Permission denied. "
-                                  "Cannot set dual-stack allocation")
-                            )
-                    return ds_prefix
-
-            self.customize_form(EditPrefixForm, "ip_prefix")
-            return EditPrefixForm
-
-        # Validate
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
-            return self.response_forbidden("Invalid AFI")
-        if not PrefixAccess.user_can_change(request.user, vrf, afi, prefix):
-            return self.response_forbidden()
-        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
-        can_bind_vc = Permission.has_perm(request.user, "ip:ipam:bind_vc")
-        form_class = get_form_class()
-        if request.POST:
-            # Save prefix
-            form = form_class(request.POST)
-            if form.is_valid():
-                for k, v in form.cleaned_data.items():
-                    if (not can_bind_vc and k == "vc") or k == "dual_stack_prefix":
-                        continue
-                    setattr(prefix, k, v)
-                with self.form_errors(form):
-                    prefix.save()
-                if not form._errors:
-                    self.message_user(
-                        request,
-                        _("Prefix %(prefix)s has been changed") % {
-                            "prefix": prefix})
-                    # Process dual-stack linking
-                    ds_prefix = form.cleaned_data["dual_stack_prefix"]
-                    self.process_dual_stacking(prefix, ds_prefix)
-                    return self.response_redirect(
-                        "ip:ipam:vrf_index",
-                        vrf.id, afi, prefix.prefix)
-        else:
-            ds_prefix = None
-            if prefix.has_transition:
-                if afi == "4":
-                    ds_prefix = prefix.ipv6_transition.prefix
-                elif afi == "6":
-                    ds_prefix = prefix.ipv4_transition.prefix
-            initial = {
-                "asn": prefix.asn.id,
-                "state": prefix.state.id,
-                "project": prefix.project.id if prefix.project else None,
-                "vc": prefix.vc.id if prefix.vc else None,
-                "description": prefix.description,
-                "dual_stack_prefix": ds_prefix,
-                "tags": prefix.tags,
-                "tt": prefix.tt,
-                "style": prefix.style.id if prefix.style else None,
-                "enable_ip_discovery": prefix.enable_ip_discovery
-            }
-            self.apply_custom_initial(prefix, initial, "ip_prefix")
-            form = form_class(initial=initial)
-        return self.render(
-            request, "change_prefix.html",
-            vrf=vrf, afi=afi, prefix=prefix, form=form
-        )
-
     @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/delete/$",
           url_name="delete_prefix", access="change")
     def view_delete_prefix(self, request, vrf_id, afi, prefix):
@@ -827,311 +411,6 @@ class IPAMApplication(Application):
                                               parent.prefix)
             # Display form
         return self.render(request, "delete_prefix.html", prefix=prefix)
-
-    def get_address_form_class(self, vrf, afi, user, create=False):
-        """
-        Return address edit/change form
-        :param vrf:
-        :param afi:
-        :param user:
-        :param create:
-        :return:
-        """
-        class AddressForm(NOCForm):
-            address = forms.CharField(label=_("Address"),
-                                      help_text=_("IPv%(afi)s address") % {
-                                          "afi": afi})
-            if create:
-                state = forms.ModelChoiceField(
-                    label=_("State"),
-                    queryset=ResourceState.objects.filter(is_starting=True, is_active=True).order_by("name"),
-                    help_text=_("Prefix state")
-                )
-            else:
-                state = forms.ModelChoiceField(
-                    label=_("State"),
-                    queryset=ResourceState.objects.filter(is_active=True).order_by("name"),
-                    help_text=_("Prefix state")
-                )
-            project = forms.ModelChoiceField(
-                label=_("Project"),
-                queryset=Project.objects.order_by("code"),
-                help_text=_("Project"),
-                required=False
-            )
-            fqdn = forms.CharField(label=_("FQDN"), validators=[check_fqdn])
-            mac = forms.CharField(label=_("MAC"), required=False)
-            auto_update_mac = forms.BooleanField(
-                label=_("Auto-update MAC"),
-                required=False,
-                help_text=_("Check to automatically fetch MAC from ARP cache"))
-            managed_object = forms.ModelChoiceField(
-                label="Managed Object",
-                queryset=ManagedObject.objects.order_by("name"),
-                required=False,
-                help_text=_("Set if address belong to managed object's interface"))
-            description = forms.CharField(
-                label=_("Description"),
-                widget=forms.Textarea,
-                required=False)
-            tags = forms.CharField(
-                label=_("Tags"),
-                widget=AutoCompleteTags,
-                required=False)
-            tt = forms.IntegerField(
-                label=_("TT #"),
-                required=False,
-                help_text=_("Ticket #"))
-            style = forms.ModelChoiceField(
-                label=_("Style"),
-                queryset=Style.objects.filter(is_active=True).order_by(
-                    "name"),
-                required=False,
-                help_text=_("Visual appearance"))
-
-            def clean_address(self):
-                address = self.cleaned_data["address"].strip()
-                # Validate address
-                if afi == "4":
-                    check_ipv4(address)
-                else:
-                    check_ipv6(address)
-                    # Check premissions
-                if not PrefixAccess.user_can_change(user, vrf, afi, address):
-                    raise ValidationError(_("Permission denied"))
-                if create:
-                    # Check address not exists
-                    if Address.objects.filter(vrf=vrf, afi=afi,
-                                              address=address).exists():
-                        raise ValidationError(_("Address is already exists"))
-                return address
-
-            def clean_mac(self):
-                if not self.cleaned_data["mac"]:
-                    return ""
-                try:
-                    return MACAddressParameter().clean(self.cleaned_data["mac"].strip())
-                except InterfaceTypeError:
-                    raise forms.ValidationError("Invalid MAC address")
-
-            def clean_managed_object(self):
-                mo_name = self.cleaned_data["managed_object"]
-                if mo_name:
-                    try:
-                        return ManagedObject.objects.get(name=mo_name)
-                    except ManagedObject.DoesNotExist:
-                        raise ValidationError(_("Invalid Managed Object"))
-                else:
-                    return ""
-
-        self.customize_form(AddressForm, "ip_address")
-        return AddressForm
-
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/add_address/$",
-          url_name="add_address", access="change")
-    def view_add_address(self, request, vrf_id, afi, prefix):
-        """
-        Add new address
-        :param request:
-        :param vrf_id:
-        :param afi:
-        :param prefix:
-        :return:
-        """
-        # Validate
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
-            return self.response_forbidden("Invalid AFI")
-        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
-        #
-        form_class = self.get_address_form_class(vrf, afi, request.user,
-                                                 create=True)
-        if request.POST:
-            # Create address
-            form = form_class(request.POST)
-            if form.is_valid():
-                # Check not in locked range
-                if AddressRange.address_is_locked(vrf, afi,
-                                                  form.cleaned_data["address"]):
-                    self.message_user(request, _(
-                        "Address %(address)s is in the locked range") % {
-                        "address": form.cleaned_data["address"]})
-                    return self.response_redirect("ip:ipam:vrf_index", vrf.id,
-                                                  afi, prefix.prefix)
-                # Check for collisions
-                cv = Address.get_collision(vrf, form.cleaned_data["address"])
-                if cv:
-                    self.message_user(request, _("Address already present in VRF %(vrf)s") % {
-                        "vrf": cv
-                    })
-                    return self.response_redirect("ip:ipam:vrf_index", vrf.id,
-                                                  afi, prefix.prefix)
-                # Create address
-                a = Address(
-                    vrf=vrf,
-                    afi=afi,
-                    address=form.cleaned_data["address"],
-                    state=form.cleaned_data["state"],
-                    project=form.cleaned_data["project"],
-                    fqdn=form.cleaned_data["fqdn"],
-                    mac=form.cleaned_data["mac"],
-                    auto_update_mac=form.cleaned_data["auto_update_mac"],
-                    managed_object=form.cleaned_data["managed_object"] if form.cleaned_data["managed_object"] else None,
-                    description=form.cleaned_data["description"],
-                    tags=form.cleaned_data["tags"],
-                    tt=form.cleaned_data["tt"],
-                    style=form.cleaned_data["style"])
-                self.apply_custom_fields(
-                    a, form.cleaned_data, "ip_address")
-                with self.form_errors(form):
-                    a.save()
-                if not form._errors:
-                    self.message_user(
-                        request,
-                        _("Address %(address)s has been created") % {
-                            "address": a.address})
-                    # Redirect depending on submit button pressed
-                    if "_continue" in request.POST:
-                        return self.response_redirect(
-                            "ip:ipam:change_address", vrf.id, afi,
-                            form.cleaned_data["address"])
-                    if "_addanother" in request.POST:
-                        return self.response_redirect(
-                            "ip:ipam:add_address", vrf.id, afi,
-                            a.prefix.prefix)
-                    return self.response_redirect(
-                        "ip:ipam:vrf_index",
-                        vrf.id, afi, a.prefix.prefix)
-        else:
-            initial = {
-                "state": ResourceState.get_default()
-            }
-            if "address" in request.GET and (
-                    (afi == "4" and is_ipv4(request.GET["address"])) or
-                    (afi == "6" and is_ipv6(request.GET["address"]))
-            ):
-                # Use address from querystring
-                initial["address"] = request.GET["address"]
-            else:
-                # Find first free address
-                p = IP.prefix(prefix.prefix)
-                p0 = p.first.iter_address()
-                if afi == "4":
-                    p0.next()  # Skip network address
-                addresses = list(prefix.address_set.order_by("address"))
-                if not addresses:
-                    # No addresses in block yet.
-                    # Get first address
-                    initial["address"] = p0.next().address
-                else:
-                    # Repeat while uses addresses are continuous
-                    for a in addresses:
-                        a0 = p0.next()
-                        if a0.address != a.address:
-                            initial["address"] = a0.address
-                            break
-                    if not initial:
-                        # Beyond the last address
-                        a0 = p0.next()
-                        if IP.prefix(prefix.prefix).contains(a0):
-                            a0 = a0.address
-                            if afi == "6" or (afi == "4" and a0 != p.last.address):
-                                initial["address"] = a0
-                    if not initial:
-                        self.message_user(request, _("No free addresses"))
-                        return self.response_redirect("ip:ipam:vrf_index",
-                                                      vrf.id, afi,
-                                                      prefix.prefix)
-            form = form_class(initial=initial)
-        return self.render(request, "change_address.html", vrf=vrf, afi=afi,
-                           prefix=prefix, form=form, addresses=None)
-
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/change_address/$",
-          url_name="change_address", access="change")
-    def view_change_address(self, request, vrf_id, afi, address):
-        """
-        Change address
-        """
-        # Validate
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
-            return self.response_forbidden("Invalid AFI")
-        address = self.get_object_or_404(Address, vrf=vrf, afi=afi,
-                                         address=address)
-        if not PrefixAccess.user_can_change(request.user, vrf, afi,
-                                            address.address):
-            return self.response_forbidden()
-        prefix = address.prefix
-        form_class = self.get_address_form_class(vrf, afi, request.user)
-        if request.POST:
-            form = form_class(request.POST)
-            if form.is_valid():
-                # Check not in locked range
-                if AddressRange.address_is_locked(vrf, afi,
-                                                  form.cleaned_data["address"]):
-                    self.message_user(request, _(
-                        "Address %(address)s is in the locked range") % {
-                        "address": form.cleaned_data["address"]})
-                    return self.response_redirect("ip:ipam:vrf_index", vrf.id,
-                                                  afi, prefix.prefix)
-                # Modify
-                managed_object = None
-                if "managed_object" in form.cleaned_data and form.cleaned_data["managed_object"]:
-                    managed_object = self.get_object_or_404(
-                        ManagedObject,
-                        name=form.cleaned_data["managed_object"]
-                    )
-                address.address = form.cleaned_data["address"]
-                address.state = form.cleaned_data["state"]
-                address.project = form.cleaned_data["project"]
-                address.fqdn = form.cleaned_data["fqdn"]
-                address.mac = form.cleaned_data["mac"]
-                address.auto_update_mac = form.cleaned_data["auto_update_mac"]
-                address.managed_object = managed_object
-                address.description = form.cleaned_data["description"]
-                address.tags = form.cleaned_data["tags"]
-                address.tt = form.cleaned_data["tt"]
-                address.style = form.cleaned_data["style"]
-                self.apply_custom_fields(
-                    address, form.cleaned_data, "ip_address")
-                with self.form_errors(form):
-                    address.save()
-                if not form._errors:
-                    self.message_user(
-                        request,
-                        _("Address %(address)s changed") % {
-                            "address": address.address})
-                    if "_continue" in request.POST:
-                        return self.response_redirect(
-                            "ip:ipam:change_address",
-                            vrf.id, afi, form.cleaned_data["address"])
-                    if "_addanother" in request.POST:
-                        return self.response_redirect(
-                            "ip:ipam:add_address",
-                            vrf.id, afi, prefix.prefix)
-                    return self.response_redirect(
-                        "ip:ipam:vrf_index",
-                        vrf.id, afi, address.prefix.prefix)
-        else:
-            initial = {
-                "address": address.address,
-                "state": address.state,
-                "project": address.project.id if address.project else None,
-                "fqdn": address.fqdn,
-                "mac": address.mac,
-                "auto_update_mac": address.auto_update_mac,
-                "description": address.description,
-                "tags": address.tags,
-                "tt": address.tt,
-                "style": address.style.id if address.style else None
-            }
-            if address.managed_object:
-                initial["managed_object"] = address.managed_object.name
-            self.apply_custom_initial(address, initial, "ip_address")
-            form = form_class(initial=initial)
-        return self.render(
-            request, "change_address.html", vrf=vrf, afi=afi,
-            prefix=prefix, form=form, address=address)
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/delete_address/$",
@@ -1211,67 +490,6 @@ class IPAMApplication(Application):
             for s in result:
                 r[s["ip"]] = s["status"]
         return self.render_json(r)
-
-    class RebaseForm(NOCForm):
-        vrf = forms.ModelChoiceField(
-            label="VRF",
-            queryset=VRF.objects.all()
-        )
-        to_prefix = forms.CharField(label="Rebase to prefix")
-
-        def __init__(self, prefix, data=None):
-            initial = None if data else {"to_prefix": prefix.prefix}
-            super(IPAMApplication.RebaseForm, self).__init__(data, initial=initial)
-            self.prefix = prefix
-
-        def clean_to_prefix(self):
-            if "to_prefix" not in self.cleaned_data:
-                raise forms.ValidationError("Prefix is required")
-            if "vrf" not in self.cleaned_data:
-                raise forms.ValidationError("VRF is required")
-            to_prefix = self.cleaned_data["to_prefix"]
-            check_prefix(to_prefix)
-            p0 = IP.prefix(self.prefix.prefix)
-            p1 = IP.prefix(to_prefix)
-            if p0 == p1 and self.cleaned_data["vrf"] == self.prefix.vrf:
-                raise forms.ValidationError("Cannot rebase prefix to self")
-            if p0.afi != p1.afi:
-                raise forms.ValidationError("Cannot change address family during rebase")
-            if p0.mask < p1.mask:
-                raise forms.ValidationError("Cannot rebase to prefix of lesser size")
-            return to_prefix
-
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/rebase/$",
-          url_name="rebase", access="rebase")
-    def view_rebase(self, request, vrf_id, afi, prefix):
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        prefix = self.get_object_or_404(
-            Prefix, vrf=vrf, afi=afi, prefix=prefix)
-        if request.POST:
-            form = self.RebaseForm(prefix, request.POST)
-            if form.is_valid():
-                # Rebase prefix
-                new_prefix = prefix.rebase(
-                    form.cleaned_data["vrf"],
-                    form.cleaned_data["to_prefix"])
-                self.message_user(
-                    request,
-                    _(u"Prefix %(old_prefix)s is rebased to %(new_prefix)s") % {
-                        "old_prefix": prefix,
-                        "new_prefix": form.cleaned_data["to_prefix"]
-                    })
-                return self.response_redirect(
-                    "ip:ipam:vrf_index",
-                    new_prefix.vrf.id, afi, new_prefix.prefix
-                )
-        else:
-            form = self.RebaseForm(prefix)
-        return self.render(
-            request,
-            "rebase.html",
-            vrf=vrf, afi=afi, prefix=prefix,
-            rebase_form=form
-        )
 
     def user_access_list(self, user):
         """
