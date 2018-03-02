@@ -1,7 +1,13 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+#
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# Third-party modules
 from south.db import db
-from django.contrib.contenttypes.management import update_contenttypes
-import noc.sa.models
 
 
 class Migration:
@@ -11,7 +17,7 @@ class Migration:
 
     def forwards(self):
         # Update content types to last actual state
-        update_contenttypes(noc.sa.models, None)
+        # update_contenttypes(noc.sa.models, None)
         # Convert groups to tags
         rows = db.execute("SELECT id FROM django_content_type WHERE model='managedobject'")
         if rows:
