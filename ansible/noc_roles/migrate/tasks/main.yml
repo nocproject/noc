@@ -101,4 +101,5 @@
     chdir: "{{ noc_root }}"
   register: migrate_ch
   with_items: "{{groups['svc-clickhouse-exec']}}"
+  delegate_to: "{{groups['svc-chwriter-exec'][0]}}"
   changed_when: "'CHANGED' in migrate_ch.stdout"
