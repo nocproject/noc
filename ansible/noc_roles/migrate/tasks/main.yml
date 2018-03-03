@@ -13,6 +13,20 @@
 
 - import_tasks: configure_consul.yml
 
+- name: Install collections
+  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/collections.json"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    NOC_CONFIG: "{{config_order}}"
+  tags:
+    - requirements
+    - coll_sync
+
 - name: Migrate db
   command: ./noc migrate
   args:
@@ -38,22 +52,6 @@
   become: yes
   register: result
   changed_when: "'CHANGED' in result.stdout"
-
-- name: Install collections
-  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
-  args:
-    chdir: "{{ noc_root }}"
-  register: s
-  changed_when: "'CHANGED' in s.stdout"
-  with_items:
-    - collections
-  environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-    NOC_CONFIG: "{{config_order}}"
-  tags:
-    - requirements
-    - coll_sync
 
 - name: test if collections dir is empty
   stat:
