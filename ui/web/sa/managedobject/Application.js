@@ -339,14 +339,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     allowBlank: false,
                                     autoFocus: true,
                                     tabIndex: 10
-                                    // uiStyle: "large"
                                 },
                                 {
                                     name: "description",
                                     xtype: "textarea",
                                     fieldLabel: __("Description"),
                                     allowBlank: true
-                                    // uiStyle: "extra"
                                 },
                                 {
                                     name: "is_managed",
@@ -354,8 +352,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Is Managed?"),
                                     allowBlank: true,
                                     groupEdit: true
-                                    // width: 200,
-                                    // padding: "0px 0px 0px 4px"
                                 }
                             ]
                         }, {
@@ -366,14 +362,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "displayfield",
                                     fieldLabel: __("BI ID"),
                                     allowBlank: true
-                                    // uiStyle: "medium"
                                 },
                                 {
                                     name: "tags",
                                     xtype: "tagsfield",
                                     fieldLabel: __("Tags"),
                                     allowBlank: true
-                                    // uiStyle: "extra"
                                 }
                             ]
                         }
@@ -437,14 +431,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "vendor",
                                     xtype: "inv.vendor.LookupField",
                                     fieldLabel: __("Vendor"),
-                                    allowBlank: true,
-                                    groupEdit: true
+                                    allowBlank: true
                                 }, {
                                     name: "platform",
                                     xtype: "inv.platform.LookupField",
                                     fieldLabel: __("Platform"),
-                                    allowBlank: true,
-                                    groupEdit: true
+                                    allowBlank: true
                                 }
                             ]
                         }, {
@@ -454,8 +446,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "version",
                                     xtype: "inv.firmware.LookupField",
                                     fieldLabel: __("Version"),
-                                    allowBlank: true,
-                                    groupEdit: true
+                                    allowBlank: true
                                 }, {
                                     name: "software_image",
                                     xtype: "displayfield",
@@ -484,7 +475,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Scheme"),
                                     allowBlank: false,
                                     tabIndex: 40,
-                                    // uiStyle: "small",
                                     groupEdit: true
                                 },
                                 {
@@ -492,15 +482,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "textfield",
                                     fieldLabel: __("Address"),
                                     allowBlank: false,
-                                    tabIndex: 50
-                                    // uiStyle: "medium"
+                                    tabIndex: 50,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "access_preference",
                                     xtype: "combobox",
                                     fieldLabel: __("Access Preference"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["S", __("SNMP Only")],
@@ -508,17 +497,18 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["SC", __("SNMP, CLI")],
                                         ["CS", __("CLI, SNMP")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "port",
                                     xtype: "numberfield",
                                     fieldLabel: __("Port"),
                                     allowBlank: true,
-                                    // uiStyle: "small",
                                     minValue: 0,
                                     maxValue: 65535,
-                                    hideTrigger: true
+                                    hideTrigger: true,
+                                    groupEdit: true
 
                                 },
                                 {
@@ -526,33 +516,33 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Session Policy"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "cli_privilege_policy",
                                     xtype: "combobox",
                                     fieldLabel: __("CLI Privilege Policy"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Raise Privileges")],
                                         ["D", __("Don't Raise")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "remote_path",
                                     xtype: "textfield",
                                     fieldLabel: __("Path"),
-                                    allowBlank: true
-                                    // uiStyle: "medium"
+                                    allowBlank: true,
+                                    groupEdit: true
                                 }
                             ]
                         },
@@ -574,7 +564,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     tabIndex: 61,
                                     allowBlank: true,
                                     groupEdit: true
-                                    // uiStyle: "medium"
                                 },
                                 {
                                     name: "password",
@@ -584,7 +573,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     allowBlank: true,
                                     inputType: "password",
                                     groupEdit: true
-                                    // uiStyle: "medium"
                                 },
                                 {
                                     name: "super_password",
@@ -593,7 +581,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     allowBlank: true,
                                     inputType: "password",
                                     groupEdit: true
-                                    // uiStyle: "medium"
                                 },
                                 {
                                     name: "snmp_ro",
@@ -602,7 +589,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     tabIndex: 63,
                                     allowBlank: true,
                                     groupEdit: true
-                                    // uiStyle: "medium"
                                 },
                                 {
                                     name: "snmp_rw",
@@ -611,17 +597,16 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     tabIndex: 64,
                                     allowBlank: true,
                                     groupEdit: true
-                                    // uiStyle: "medium"
                                 },
                                 {
                                     name: "max_scripts",
                                     xtype: "numberfield",
                                     fieldLabel: __("Max. Scripts"),
                                     allowBlank: true,
-                                    // uiStyle: "small",
                                     hideTrigger: true,
                                     minValue: 0,
-                                    maxValue: 99
+                                    maxValue: 99,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "time_pattern",
@@ -629,7 +614,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Time Pattern"),
                                     allowBlank: true,
                                     groupEdit: true
-                                    // uiStyle: "medium"
                                 }
                             ]
                         }
@@ -731,8 +715,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     ],
                                     value: "P",
                                     allowBlank: false,
-                                    tabIndex: 130
-                                    // uiStyle: "medium"
+                                    tabIndex: 130,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "trap_source_type",
@@ -754,14 +738,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         afterrender: function(combo, eOpts) {
                                             combo.nextSibling().setHidden(combo.value !== "s");
                                         }
-                                    }
+                                    },
+                                    groupEdit: true
                                 },
                                 {
                                     name: "trap_source_ip",
                                     xtype: "textfield",
                                     fieldLabel: __("Trap Source IP"),
-                                    allowBlank: true
-                                    // uiStyle: "medium"
+                                    allowBlank: true,
+                                    groupEdit: true
                                 }]
                         }, {
                             xtype: "container",
@@ -786,14 +771,15 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         afterrender: function(combo, eOpts) {
                                             combo.nextSibling().setHidden(combo.value !== "s");
                                         }
-                                    }
+                                    },
+                                    groupEdit: true
                                 },
                                 {
                                     name: "syslog_source_ip",
                                     xtype: "textfield",
                                     fieldLabel: __("Syslog Source IP"),
-                                    allowBlank: true
-                                    // uiStyle: "medium"
+                                    allowBlank: true,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "trap_community",
@@ -801,7 +787,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Trap Community"),
                                     allowBlank: true,
                                     groupEdit: true
-                                    // uiStyle: "medium"
                                 }]
                         }
                     ]
@@ -950,7 +935,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "textfield",
                                     fieldLabel: __("Remote ID"),
                                     allowBlank: true
-                                    // uiStyle: "medium"
                                 }]
                         }, {
                             xtype: "container",
@@ -976,20 +960,21 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "combobox",
                                     fieldLabel: __("Escalation Policy"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")],
                                         ["R", __("As Depended")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "tt_system",
                                     xtype: "fm.ttsystem.LookupField",
                                     fieldLabel: __("TT System"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    groupEdit: true
                                 }]
                         }, {
                             xtype: "container",
@@ -998,14 +983,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     name: "tt_queue",
                                     xtype: "textfield",
                                     fieldLabel: __("TT Queue"),
-                                    allowBlank: true
+                                    allowBlank: true,
+                                    groupEdit: true
                                 },
                                 {
                                     name: "tt_system_id",
                                     xtype: "textfield",
                                     fieldLabel: __("TT System ID"),
                                     allowBlank: true
-                                    // uiStyle: "medium"
                                 }
                             ]
                         }
@@ -1029,13 +1014,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "combobox",
                                     fieldLabel: __("Box Alarm"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 }]
                         }, {
                             xtype: "container",
@@ -1045,13 +1030,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "combobox",
                                     fieldLabel: __("Periodic Alarm"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 }]
                         }
                     ]
@@ -1074,19 +1059,19 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "combobox",
                                     fieldLabel: __("Box Telemetry"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "box_discovery_telemetry_sample",
                                     xtype: "numberfield",
-                                    fieldLabel: __("Box Sample")
-                                    // uiStyle: "medium"
+                                    fieldLabel: __("Box Sample"),
+                                    groupEdit: true
                                 }]
                         }, {
                             xtype: "container",
@@ -1096,19 +1081,19 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "combobox",
                                     fieldLabel: __("Periodic Alarm"),
                                     allowBlank: true,
-                                    // uiStyle: "medium",
                                     store: [
                                         ["P", __("Profile")],
                                         ["E", __("Enable")],
                                         ["D", __("Disable")]
                                     ],
-                                    value: "P"
+                                    value: "P",
+                                    groupEdit: true
                                 },
                                 {
                                     name: "periodic_discovery_telemetry_sample",
                                     xtype: "numberfield",
-                                    fieldLabel: __("Periodic Sample")
-                                    // uiStyle: "medium"
+                                    fieldLabel: __("Periodic Sample"),
+                                    groupEdit: true
                                 }]
                         }
                     ]
