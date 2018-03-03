@@ -456,10 +456,8 @@ class IPAMApplication(ExtApplication):
         r = list(p.address_set.filter(managed_object__isnull=False))
         if not r:
             return self.render_json(None)
-        # Get activator name
-        activator_name = r[0].managed_object.activator.name
         # Get addresses to ping
-        addresses = [a.address for a in self.get_prefix_spot(p, sep=False)]
+        # addresses = [a.address for a in self.get_prefix_spot(p, sep=False)]
         # @todo: Call pinger with addresses
 
     def user_access_list(self, user):

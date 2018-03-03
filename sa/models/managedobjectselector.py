@@ -390,5 +390,6 @@ class ManagedObjectSelectorByAttribute(models.Model):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
 
+
 # Avoid circular references
 from .selectorcache import SelectorCache

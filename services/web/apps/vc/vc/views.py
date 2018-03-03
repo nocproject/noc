@@ -93,11 +93,9 @@ class VCApplication(ExtModelApplication):
             (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
         ).only("enabled_afi", "ipv4_addresses", "ipv6_addresses"):
             if "IPv4" in si.enabled_afi:
-                ipv4.update([IP.prefix(ip).first
-                          for ip in si.ipv4_addresses])
+                ipv4.update([IP.prefix(ip).first for ip in si.ipv4_addresses])
             if "IPv6" in si.enabled_afi:
-                ipv6.update([IP.prefix(ip).first
-                          for ip in si.ipv6_addresses])
+                ipv6.update([IP.prefix(ip).first for ip in si.ipv6_addresses])
         p = [str(x.first) for x in sorted(ipv4)]
         p += [str(x.first) for x in sorted(ipv6)]
         return p
@@ -115,24 +113,28 @@ class VCApplication(ExtModelApplication):
     def field_row_class(self, o):
         return o.style.css_class_name if o.style else ""
 
-    @view(url="^find_free/$", method=["GET"], access="read", api=True,
-          validate={
-              "vc_domain": ModelParameter(VCDomain),
-              "vc_filter": ModelParameter(VCFilter)
-          })
+    @view(
+        url="^find_free/$", method=["GET"], access="read", api=True,
+        validate={
+            "vc_domain": ModelParameter(VCDomain),
+            "vc_filter": ModelParameter(VCFilter)
+        }
+    )
     def api_find_free(self, request, vc_domain, vc_filter, **kwargs):
         return vc_domain.get_free_label(vc_filter)
 
-    @view(url="^bulk/import/", method=["POST"], access="import", api=True,
-          validate={
-              "vc_domain": ModelParameter(VCDomain),
-              "items": ListOfParameter(element=DictParameter(attrs={
-                  "l1": IntParameter(),
-                  "l2": IntParameter(),
-                  "name": StringParameter(),
-                  "description": StringParameter(default="")
-              }))
-          })
+    @view(
+        url="^bulk/import/", method=["POST"], access="import", api=True,
+        validate={
+            "vc_domain": ModelParameter(VCDomain),
+            "items": ListOfParameter(element=DictParameter(attrs={
+                "l1": IntParameter(),
+                "l2": IntParameter(),
+                "name": StringParameter(),
+                "description": StringParameter(default="")
+            }))
+        }
+    )
     def api_bulk_import(self, request, vc_domain, items):
         n = 0
         for i in items:
@@ -166,7 +168,8 @@ class VCApplication(ExtModelApplication):
         for si in SubInterface.objects.filter(
             managed_object__in=objects,
             untagged_vlan=l1,
-            enabled_afi="BRIDGE"):
+            enabled_afi="BRIDGE"
+        ):
             si_objects[si.managed_object] += [{"name": si.name}]
         untagged = [{
             "managed_object_id": o.id,
@@ -178,7 +181,8 @@ class VCApplication(ExtModelApplication):
         for si in SubInterface.objects.filter(
             managed_object__in=objects,
             tagged_vlans=l1,
-            enabled_afi="BRIDGE"):
+            enabled_afi="BRIDGE"
+        ):
             si_objects[si.managed_object] += [{"name": si.name}]
         tagged = [{
             "managed_object_id": o.id,
@@ -189,16 +193,20 @@ class VCApplication(ExtModelApplication):
         si_objects = defaultdict(list)
         for si in SubInterface.objects.filter(
             managed_object__in=objects,
-            vlan_ids=l1):
+            vlan_ids=l1
+        ):
             si_objects[si.managed_object] += [{
                 "name": si.name,
                 "ipv4_addresses": si.ipv4_addresses,
                 "ipv6_addresses": si.ipv6_addresses
             }]
-        l3 = [{"managed_object_id": o.id,
-               "managed_object_name": o.name,
-               "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
-        } for o in si_objects]
+        l3 = [
+            {
+                "managed_object_id": o.id,
+                "managed_object_name": o.name,
+                "interfaces": sorted(si_objects[o], key=lambda x: x["name"])
+            } for o in si_objects
+        ]
         # Update caches
         ic = sum(len(x["interfaces"]) for x in untagged)
         ic += sum(len(x["interfaces"]) for x in tagged)
