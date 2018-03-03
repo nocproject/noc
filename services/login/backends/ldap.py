@@ -127,7 +127,7 @@ class LdapBackend(BaseAuthBackend):
                     "%s: Deny group %s",
                     u.username, group.name
                 )
-                self.deny_group(u, group.group)
+                self.deny_group(u, group)
         # Final check
         if not user_info["is_active"]:
             raise self.LoginError("Access denied")
