@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # vc.vc application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,11 +17,10 @@ from noc.vc.models.vcfilter import VCFilter
 from noc.vc.models.vc import VC
 from noc.inv.models.subinterface import SubInterface
 from noc.core.ip import IP
-from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter,\
-    IntParameter, StringParameter
+from noc.sa.interfaces.base import (DictParameter, ModelParameter, ListOfParameter,
+                                    IntParameter, StringParameter)
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
-from noc.config import config
 
 
 class VCApplication(ExtModelApplication):
@@ -38,19 +37,6 @@ class VCApplication(ExtModelApplication):
 
     implied_permissions = {
         "read": ["vc:vcdomain:lookup", "main:style:lookup"]
-    }
-
-    mrt_config = {
-        "get_vlans": {
-            "map_script": "get_vlans",
-            "timeout": config.script.timeout,
-            "access": "import"
-        },
-        "set_switchport": {
-            "map_script": "set_switchport",
-            "timeout": config.script.timeout,
-            "access": "set_untagged"
-        }
     }
 
     def get_vc_domain_objects(self, vc_domain):

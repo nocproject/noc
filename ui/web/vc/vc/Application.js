@@ -60,7 +60,6 @@ Ext.define("NOC.vc.vc.Application", {
         var me = this;
 
         me.addFirstFreeForm = Ext.create("NOC.vc.vc.AddFirstFreeForm", {app: me});
-        me.MOSelectForm = Ext.create("NOC.vc.vc.MOSelectForm", {app: me});
 
         Ext.apply(me, {
             columns: [
@@ -194,30 +193,6 @@ Ext.define("NOC.vc.vc.Application", {
                     hasAccess: NOC.hasPermission("create"),
                     scope: me,
                     handler: me.onFirstNewRecord
-                },
-                {
-                    itemId: "import",
-                    text: __("Import"),
-                    glyph: NOC.glyph.level_down,
-                    tooltip: __("Import VCs"),
-                    hasAccess: NOC.hasPermission("import"),
-                    menu: {
-                        xtype: "menu",
-                        plain: true,
-                        items: [
-                            {
-                                text: __("VLANs From Switch"),
-                                itemId: "vlans_from_switch",
-                                glyph: NOC.glyph.level_down,
-                            }
-                        ],
-                        listeners: {
-                            click: {
-                                scope: me,
-                                fn: me.onImportVLANSFromSwitch
-                            }
-                        }
-                    }
                 }
             ],
             formToolbar: [
@@ -229,15 +204,6 @@ Ext.define("NOC.vc.vc.Application", {
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onVCInterfaces
-                },
-                {
-                    itemId: "add_interfaces",
-                    text: __("Add Interfaces"),
-                    glyph: NOC.glyph.plus_circle,
-                    tooltip: __("Add interfaces to VC"),
-                    hasAccess: NOC.hasPermission("set_untagged"),
-                    scope: me,
-                    handler: me.onAddVCInterfaces
                 }
             ]
         });
@@ -254,73 +220,6 @@ Ext.define("NOC.vc.vc.Application", {
         var me = this;
 
         me.addFirstFreeForm.show();
-    },
-    //
-    onImportVLANSFromSwitch: function() {
-        var me = this;
-
-        me.MOSelectForm.show();
-    },
-    //
-    runImportFromSwitch: function(vc_domain, managed_object, vc_filter) {
-        var me = this;
-
-        me.vc_domain = vc_domain;
-        me.vc_filter = vc_filter;
-        // Get VC filter expression
-        Ext.Ajax.request({
-            url: "/vc/vcfilter/" + me.vc_filter + "/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                // Run MRT
-                var me = this,
-                    r = Ext.decode(response.responseText);
-                me.vc_filter_expression = r.expression;
-                NOC.mrt({
-                    url: "/vc/vc/mrt/get_vlans/",
-                    selector: managed_object,
-                    loadMask: me,
-                    scope: me,
-                    success: me.processImportFromSwitch,
-                    failure: function() {
-                        NOC.error(__("Failed to import VLANs"))
-                    }
-                });
-            },
-            failure: function() {
-                NOC.error(__("Failed to get VC Filter"));
-            }
-        });
-    },
-    //
-    processImportFromSwitch: function(result) {
-        var me = this,
-            r = result[0];
-        if(!Ext.isDefined(r)) {
-            NOC.error("Failed to import VLANs.<br/>No result returned");
-            return;
-        }
-        if(r.status) {
-            // VLANS Fetched
-            // r.code
-            var w = Ext.create("NOC.vc.vc.VCImportForm", {
-                app: me,
-                vc_domain: me.vc_domain,
-                vc_filter: me.vc_filter,
-                vc_filter_expression: me.vc_filter_expression
-            });
-            w.loadVLANsFromSwitch(r.result);
-        } else {
-            // Failed to fetch
-            NOC.error("Failed to import VLANs from {0}:<br>{1}",
-                      r.object_name, r.result.text);
-        }
-    },
-    // Called when import complete
-    onImportSuccess: function(result) {
-        var me = this;
-        me.reloadStore();
     },
     // Show interfaces window
     showVCInterfaces: function(record) {
@@ -347,15 +246,6 @@ Ext.define("NOC.vc.vc.Application", {
     onVCInterfaces: function() {
         var me = this;
         me.showVCInterfaces(me.currentRecord);
-    },
-    //
-    onAddVCInterfaces: function() {
-        var me = this,
-            vc = me.currentRecord.data;
-        Ext.create("NOC.vc.vc.AddInterfacesForm", {
-            app: me,
-            vc: vc
-        });
     },
     //
     onInterfacesCellClick: function(record) {

@@ -26,7 +26,6 @@ from noc.ip.models.vrf import VRF
 from noc.ip.models.vrfgroup import VRFGroup
 from noc.main.models.customfield import CustomField
 from noc.main.models.permission import Permission
-from noc.sa.models.reducetask import ReduceTask
 from noc.core.colors import get_colors
 
 
@@ -461,35 +460,7 @@ class IPAMApplication(ExtApplication):
         activator_name = r[0].managed_object.activator.name
         # Get addresses to ping
         addresses = [a.address for a in self.get_prefix_spot(p, sep=False)]
-        # Run Map/Reduce task
-        # @todo: Replace with RPC
-        t = ReduceTask.create_task(
-            ["SAE"],
-            "pyrule:get_single_result", {},
-            "ping_check",
-            {"activator_name": activator_name, "addresses": addresses},
-            60
-        )
-        return self.render_json(t.id)
-
-    @view(
-        url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/ping_check/(?P<task_id>\d+)/$",
-        url_name="ping_check_task",
-        access="change")
-    def view_ping_check_task(self, request, vrf_id, afi, prefix, task_id):
-        """
-        Ping check task result
-        """
-        task = self.get_object_or_404(ReduceTask, id=int(task_id))
-        try:
-            result = task.get_result(block=False)
-        except ReduceTask.NotReady:
-            return self.render_json(None)  # Waiting
-        r = {}
-        if result:
-            for s in result:
-                r[s["ip"]] = s["status"]
-        return self.render_json(r)
+        # @todo: Call pinger with addresses
 
     def user_access_list(self, user):
         """

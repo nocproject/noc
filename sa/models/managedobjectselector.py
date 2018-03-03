@@ -51,7 +51,6 @@ id_lock = Lock()
     ("sa.CommandSnippet", "selector"),
     ("sa.GroupAccess", "selector"),
     ("sa.ManagedObjectSelectorByAttribute", "selector"),
-    ("sa.MRTConfig", "selector"),
     ("sa.ObjectNotification", "selector"),
     ("sa.UserAccess", "selector"),
     ("vc.VCDomainProvisioningConfig", "selector"),
