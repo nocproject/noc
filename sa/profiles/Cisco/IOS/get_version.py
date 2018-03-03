@@ -56,6 +56,18 @@ class Script(BaseScript):
         "c7201"
     ])
 
+    def clear_platform(self, platform):
+        """
+        Clear platform string
+        :param platform:
+        :return:
+        """
+        # Clear K9 in platform
+        if platform.endswith("/K9"):
+            platform = platform[:-3]
+
+        return platform
+
     def execute(self):
         if self.has_snmp():
             # Try to find other varians, like this
@@ -68,23 +80,24 @@ class Script(BaseScript):
                     match = self.rx_snmp_ver.search(v)
                     platform = match.group("platform")
                     # inventory
-                    p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
+                    # p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
+                    p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1001"])
                     if p and p.startswith("WS-C"):
                         platform = p
-                        s = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1001")
+                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1001"])
                     else:
                         # Found in WS-C3650-48TD
-                        p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1000")
+                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr.1000"])
                         if p and p.startswith("WS-C"):
                             platform = p
-                            s = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.1000")
+                            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum.1000"])
                         else:
                             # CISCO-ENTITY-MIB::entPhysicalModelName
-                            p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.13.1")
+                            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1"])
                             # WS-C4500X-32 return '  '
                             if p is None or p.strip() == "":
                                 # Found in WS-C4500X-32
-                                p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.13.1000")
+                                p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName.1000"])
                             if p:
                                 if p.startswith("CISCO"):
                                     p = p[5:]
@@ -99,7 +112,7 @@ class Script(BaseScript):
                     if not self.rx_invalid_platforms.search(platform):
                         r = {
                             "vendor": "Cisco",
-                            "platform": platform,
+                            "platform": self.clear_platform(platform),
                             "version": version,
                             "image": match.group("image"),
                         }
@@ -173,7 +186,7 @@ class Script(BaseScript):
             version = version[:n]
         r = {
             "vendor": "Cisco",
-            "platform": platform,
+            "platform": self.clear_platform(platform),
             "version": version,
             "image": match.group("image"),
         }
