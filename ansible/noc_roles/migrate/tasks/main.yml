@@ -13,7 +13,7 @@
 
 - import_tasks: configure_consul.yml
 
-- name: Install collections
+- name: download collections
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/collections.json"
   args:
     chdir: "{{ noc_root }}"
