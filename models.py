@@ -88,7 +88,6 @@ _MODELS = {
     "main.CustomField": "noc.main.models.customfield.CustomField",
     "main.CustomFieldEnumGroup": "noc.main.models.customfieldenumgroup.CustomFieldEnumGroup",
     "main.CustomFieldEnumValue": "noc.main.models.customfieldenumvalue.CustomFieldEnumValue",
-    "main.DBTrigger": "noc.main.models.dbtrigger.DBTrigger",
     "main.DatabaseStorage": "noc.main.models.databasestorage.DatabaseStorage",
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
     "main.Favorites": "noc.main.models.favorites.Favorites",
