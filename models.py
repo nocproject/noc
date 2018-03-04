@@ -108,7 +108,6 @@ _MODELS = {
     "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
-    "main.Schedule": "noc.main.models.schedule.Schedule",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
     "main.Style": "noc.main.models.style.Style",
     "main.Sync": "noc.main.models.sync.Sync",
