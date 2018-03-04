@@ -28,6 +28,7 @@ from noc.core.defer import call_later
 from noc.core.bi.decorator import bi_sync
 from .networksegmentprofile import NetworkSegmentProfile
 from .allocationgroup import AllocationGroup
+from .link import Link
 from noc.core.scheduler.job import Job
 from noc.vc.models.vcfilter import VCFilter
 
@@ -497,6 +498,8 @@ class NetworkSegment(Document):
             from noc.vc.models.vlan import VLAN
             for vlan in VLAN.objects.filter(segment=self.id):
                 vlan.refresh_translation()
+        if hasattr(self, "_changed_fields") and "parent" in self._changed_fields:
+            self.update_links()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_border_cache"), lock=lambda _: id_lock)
@@ -558,3 +561,12 @@ class NetworkSegment(Document):
         return ManagedObject.objects.filter(
             segment__in=[s.id for s in cls.get_vlan_domain_segments(segment)]
         ).values_list("id", flat=True)
+
+    def iter_links(self):
+        for link in Link.objects.filter(linked_segments__in=[self.id]):
+            yield link
+
+    def update_links(self):
+        # @todo intersect link only
+        for link in self.iter_links():
+            link.save()
