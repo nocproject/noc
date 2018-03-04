@@ -51,7 +51,6 @@ id_lock = Lock()
     ("sa.CommandSnippet", "selector"),
     ("sa.GroupAccess", "selector"),
     ("sa.ManagedObjectSelectorByAttribute", "selector"),
-    ("sa.MRTConfig", "selector"),
     ("sa.ObjectNotification", "selector"),
     ("sa.UserAccess", "selector"),
     ("vc.VCDomainProvisioningConfig", "selector"),
@@ -390,6 +389,7 @@ class ManagedObjectSelectorByAttribute(models.Model):
     def __unicode__(self):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
+
 
 # Avoid circular references
 from .selectorcache import SelectorCache
