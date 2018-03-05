@@ -49,13 +49,9 @@ class CPESTATUSCheck(DiscoveryCheck):
                                                 vars__alfid__exists=True)}
         extalarms = {str(a.vars["extmoname"]): a for a in
                      ActiveAlarm.objects.filter(vars__bscid=co_id, vars__alcat="EXT", vars__alfid__exists=True)}
-        print aptalarms.keys()
-        print extalarms.keys()
         # Controller Alarms
         bscaptalarm = {str(cpe["alfid"]): cpe for cpe in result if "AP" in cpe["alcat"]}
         bscextalarm = {str(cpe["extmoname"]): cpe for cpe in result if cpe["alcat"] == "EXT"}
-        print bscaptalarm.keys()
-        print bscextalarm.keys()
         # Check if System Alarm = Controller Alarms
         lockapt = set(aptalarms.keys()).intersection(set(bscaptalarm))
         if lockapt:
@@ -96,7 +92,7 @@ class CPESTATUSCheck(DiscoveryCheck):
                     alarm.save()
                     self.logger.info("Raising alarm %s %s with severity %s",
                                      alarmclass.name, alarm.id, alarm.severity)
-                    print alarm.id
+                    # print alarm.id
                     ealarm = get_alarm(alarm.id)
                     AlarmEscalation.watch_escalations(ealarm)
                     self.logger.info("Start watch escalation for Alarm %s",
@@ -128,7 +124,7 @@ class CPESTATUSCheck(DiscoveryCheck):
                 alarm.save()
                 self.logger.info("Raising alarm %s %s with severity %s",
                                  alarmclass.name, alarm.id, alarm.severity)
-                print alarm.id
+                # print alarm.id
                 ealarm = get_alarm(alarm.id)
                 AlarmEscalation.watch_escalations(ealarm)
                 self.logger.info("Start watch escalation for Alarm %s",
@@ -173,7 +169,7 @@ class CPESTATUSCheck(DiscoveryCheck):
                 # Check bscname, if not bscname. Create alarm fo bs and sector
                 alarm = ActiveAlarm.objects.filter(managed_object=mo.id, alarm_class=alarmclass).first()
                 if alarm:
-                    print "Alarm OK"
+                    self.logger.debug("Alarm OK")
                     continue
                 else:
                     alarm = ActiveAlarm(
@@ -203,7 +199,7 @@ class CPESTATUSCheck(DiscoveryCheck):
                     alarm.save()
                     self.logger.info("Raising alarm %s %s with severity %s",
                                      alarmclass.name, alarm.id, alarm.severity)
-                    print alarm.id
+                    # print alarm.id
                     ealarm = get_alarm(alarm.id)
                     AlarmEscalation.watch_escalations(ealarm)
                     self.logger.info("Start watch escalation for Alarm %s", alarmclass.name)
@@ -226,14 +222,14 @@ class CPESTATUSCheck(DiscoveryCheck):
         # System Alarms
         aptalarms = {str(a.vars["alfid"]): a for a in
                      ActiveAlarm.objects.filter(managed_object=co_id, vars__alfid__exists=True)}
-        print aptalarms.keys()
+        # print aptalarms.keys()
         # Controller Alarms
         bscaptalarm = {str(cpe["alfid"]): cpe for cpe in result}
-        print bscaptalarm.keys()
+        # print bscaptalarm.keys()
         # Check if System Alarm = Controller Alarms
         lockapt = set(aptalarms.keys()).intersection(set(bscaptalarm))
         if lockapt:
-            print "OK"
+            self.logger.debug("OK")
         # Search bscalarm in alarm, if bscalarm not in alarm, create!
         addalarmapt = set(bscaptalarm.keys()) - set(aptalarms.keys())
         for aa in addalarmapt:

@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import datetime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
