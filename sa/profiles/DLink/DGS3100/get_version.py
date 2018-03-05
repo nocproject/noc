@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -28,7 +28,8 @@ class Script(BaseScript):
     def execute(self):
         s = self.cli("show switch", cached=True)
         match = self.re_search(self.rx_ver, s)
-        r = {"vendor": "DLink",
+        r = {
+            "vendor": "DLink",
             "platform": match.group("platform"),
             "version": match.group("version"),
             "attributes": {
@@ -37,5 +38,7 @@ class Script(BaseScript):
             }
         }
         ser = self.rx_ser.search(s)
-        r["attributes"].update({"Serial Number": ser.group("serial")})
+        # Firmware 1.00.36 do not show serial number
+        if ser:
+            r["attributes"]["Serial Number"] = ser.group("serial")
         return r
