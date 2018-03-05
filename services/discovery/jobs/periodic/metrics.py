@@ -26,7 +26,6 @@ from noc.inv.models.subinterface import SubInterface
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
-from noc.core.handler import get_handler
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.core.window import get_window_function
