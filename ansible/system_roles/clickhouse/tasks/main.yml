@@ -60,6 +60,7 @@
   service:
     name: "{{clickhouse_service_name}}"
     enabled: yes
+    state: started
 
 - name: place consul check
   import_role:
