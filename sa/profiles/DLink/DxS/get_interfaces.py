@@ -19,6 +19,9 @@ from noc.sa.profiles.DLink.DxS import DGS3420
 from noc.sa.profiles.DLink.DxS import DGS3620
 from noc.sa.profiles.DLink.DxS import DES3x2x
 from noc.sa.profiles.DLink.DxS import DES30xx
+from noc.core.mib import mib
+from noc.core.mac import MAC
+from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -157,6 +160,132 @@ class Script(BaseScript):
         r"Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)",
         re.MULTILINE | re.DOTALL)
 
+    INTERFACE_TYPES = {
+        1: "other",
+        6: "physical",  # ethernetCsmacd
+        24: "loopback",  # softwareLoopback
+        117: "physical",  # gigabitEthernet
+        142: "SVI",  # ipForwadr
+        161: "aggregated",  # ieee8023adLag
+    }
+
+    def get_ifindexes(self):
+        r = {}
+        ifnames = {}
+        unknown_interfaces = []
+        for oid, name in self.snmp.getnext(mib["IF-MIB::ifName"]):
+            ifindex = int(oid.split(".")[-1])
+            if ifindex < 5121:
+                continue
+            ifnames[ifindex] = name
+        for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
+            ifindex = int(oid.split(".")[-1])
+            if ifindex < 1024:  # physical interfaces
+                try:
+                    v = self.profile.convert_interface_name(name)
+                except InterfaceTypeError as why:
+                    self.logger.debug(
+                        "Ignoring unknown interface %s: %s", name, why
+                    )
+                    unknown_interfaces += [name]
+                    continue
+                r[v] = ifindex
+            elif ifindex >= 1024 and ifindex < 5121:  # 802.1q vlans
+                continue
+            elif ifindex >= 5121:  # L3 interfaces
+                v = ifnames[ifindex]
+                r[v] = ifindex
+        if unknown_interfaces:
+            self.logger.info(
+                "%d unknown interfaces has been ignored",
+                len(unknown_interfaces)
+            )
+        return r
+
+    def get_iftable(self, oid, transform=True):
+        if "::" in oid:
+            oid = mib[oid]
+        for oid, v in self.snmp.getnext(oid, max_repetitions=40):
+            yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
+
+    def apply_table(self, r, mib, name, f=None):
+        if not f:
+            def f(x):
+                return x
+        for ifindex, v in self.get_iftable(mib):
+            s = r.get(ifindex)
+            if s:
+                s[name] = f(v)
+
+    def get_ip_ifaces(self):
+        ipAdEntIfIndex = self.get_iftable(
+            mib["RFC1213-MIB::ipAdEntIfIndex"], False
+        )
+        ipAdEntNetMask = self.get_iftable(
+            mib["RFC1213-MIB::ipAdEntNetMask"], False
+        )
+        ip_iface = dict(
+            (l, ".".join(o.rsplit(".")[-4:])) for o, l in ipAdEntIfIndex
+        )
+        ip_mask = dict(
+            (".".join(o.rsplit(".")[-4:]), l) for o, l in ipAdEntNetMask
+        )
+
+        r = {}
+        for ip in ip_iface:
+            r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
+        return r
+
+    def execute_snmp(self, interface=None, last_ifname=None):
+        #
+        # TODO: vlans, portchannel
+        #
+        index = self.get_ifindexes()
+        ifaces = dict((index[i], {"interface": i}) for i in index)
+        self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
+        self.apply_table(ifaces, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
+        self.apply_table(ifaces, "IF-MIB::ifPhysAddress", "mac_address")
+        self.apply_table(ifaces, "IF-MIB::ifType", "type")
+        self.apply_table(ifaces, "IF-MIB::ifMtu", "mtu")
+        self.apply_table(ifaces, "IF-MIB::ifAlias", "description")
+        ip_ifaces = self.get_ip_ifaces()
+
+        r = []
+        for l in ifaces:
+            iface = ifaces[l]
+            if last_ifname and iface["interface"] not in last_ifname:
+                continue
+            i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
+            i = {
+                "name": iface["interface"],
+                "type": i_type,
+                "admin_status": iface["admin_status"],
+                "oper_status": iface["oper_status"],
+                "snmp_ifindex": l,
+                "subinterfaces": [{
+                    "name": iface["interface"],
+                    "enabled_afi": ["BRIDGE"],
+                    "admin_status": iface["admin_status"],
+                    "oper_status": iface["oper_status"],
+                    "snmp_ifindex": l
+                }]
+            }
+            mtu = iface.get("mtu", 0)
+            if mtu:
+                i["subinterfaces"][0]["mtu"] = mtu
+            description = iface.get("description", "").strip()
+            if description:
+                i["description"] = description
+                i["subinterfaces"][0]["description"] = description
+            if l in ip_ifaces:
+                i["subinterfaces"][0]["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]
+                i["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
+            if iface["mac_address"]:
+                i["mac"] = MAC(iface["mac_address"])
+                i["subinterfaces"][0]["mac"] = MAC(iface["mac_address"])
+            r += [i]
+        return [{"interfaces": r}]
+
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
         if match:
@@ -179,7 +308,7 @@ class Script(BaseScript):
         else:
             return None
 
-    def execute(self):
+    def execute_cli(self):
         ipif_found = False
         if self.match_version(DxS_L2):
             L2_Switch = True
@@ -311,7 +440,7 @@ class Script(BaseScript):
         stp = []
         c = ""
         try:
-            if (self.match_version(DES3x2x) or self.match_version(DES30xx)):
+            if self.match_version(DES3x2x) or self.match_version(DES30xx):
                 c = self.cli("show stp\nq")
             else:
                 c = self.cli("show stp")
