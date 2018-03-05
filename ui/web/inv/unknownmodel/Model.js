@@ -34,6 +34,11 @@ Ext.define("NOC.inv.unknownmodel.Model", {
         {
             name: "platform",
             type: "string"
+        },
+        {
+            name: "type",
+            type: "string",
+            persist: false
         }
     ]
 });
