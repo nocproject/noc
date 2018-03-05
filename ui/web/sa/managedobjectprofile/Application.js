@@ -1031,6 +1031,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("MAC")
                                         },
                                         {
+                                            name: "enable_periodic_discovery_cpe_status",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Cpe status")
+                                        },
+                                        {
                                             name: "enable_periodic_discovery_metrics",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Metrics")

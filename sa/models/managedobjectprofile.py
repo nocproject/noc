@@ -230,6 +230,9 @@ class ManagedObjectProfile(models.Model):
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
     #
+    # Collect cpe status
+    enable_periodic_discovery_cpe_status = models.BooleanField(default=False)
+    #
     clear_links_on_platform_change = models.BooleanField(default=False)
     clear_links_on_serial_change = models.BooleanField(default=False)
     # CPE discovery settings

@@ -36,7 +36,7 @@ class Command(BaseCommand):
         ],
         "periodic": [
             "uptime", "interfacestatus",
-            "mac", "metrics"
+            "mac", "metrics", "cpes"
         ]
     }
 

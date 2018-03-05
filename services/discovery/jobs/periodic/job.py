@@ -15,6 +15,7 @@ from interfacestatus import InterfaceStatusCheck
 from mac import MACCheck
 from metrics import MetricsCheck
 from noc.core.span import Span
+from cpes import CPESTATUSCheck
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -47,6 +48,9 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             MACCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_metrics:
             MetricsCheck(self).run()
+        # Check cpe status info
+        if self.object.object_profile.enable_periodic_discovery_cpe_status:
+            CPESTATUSCheck(self).run()
 
     def init_context(self):
         if "counters" not in self.context:

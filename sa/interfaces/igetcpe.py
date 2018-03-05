@@ -27,6 +27,8 @@ class IGetCPE(BaseInterface):
         * other -- other status
     * type - CPE type
         * ap - WiFi AP
+        * bs - Base Station
+        * st - Sector from Base Station
         * dsl - DSL modem
         * ont - PON ONT
         * docsis - DOCSIS cable modem
@@ -55,6 +57,8 @@ class IGetCPE(BaseInterface):
         ], default="active"),
         "type": StringParameter(choices=[
             "ap",
+            "bs",
+            "st",
             "dsl",
             "ont",
             "docsis",
