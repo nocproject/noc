@@ -25,7 +25,7 @@ fi
 
 if [ -f "./custom/commands/$CMD.py" ]; then
     shift
-    exec ./bin/python ./custom/commands/$CMD.py "$@"
+    PYTHONSTARTUP=core/importer.py exec ./bin/python ./custom/commands/$CMD.py "$@"
 fi
 
 if [ -f "./commands/$CMD.sh" ]; then
@@ -35,7 +35,7 @@ fi
 
 if [ -f "./commands/$CMD.py" ]; then
     shift
-    exec ./bin/python ./commands/$CMD.py "$@"
+    PYTHONSTARTUP=core/importer.py exec ./bin/python ./commands/$CMD.py "$@"
 fi
 
 case "$1" in
