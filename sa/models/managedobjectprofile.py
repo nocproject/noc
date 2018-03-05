@@ -43,7 +43,7 @@ m_valid = DictListParameter(attrs={
         choices=["m", "t"],
         default="m"),
     "window": IntParameter(default=1),
-    "window_function": StringParameter(choices=list(wf_choices), default="last"),
+    "window_function": StringParameter(choices=[x[0] for x in wf_choices], default="last"),
     "window_config": StringParameter(default=""),
     "window_related": BooleanParameter(default=False),
     "low_error": IntParameter(required=False),

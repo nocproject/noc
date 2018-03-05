@@ -24,6 +24,7 @@ from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
+from noc.core.window import wf_choices
 
 
 class RefAppplication(ExtApplication):
@@ -196,6 +197,11 @@ class RefAppplication(ExtApplication):
                 if v.TITLE
             ),
             key=lambda x: x["label"]
+        )
+
+    def build_windowfunction(self):
+        return sorted(
+            ({"id": x[0], "label": x[1]} for x in wf_choices)
         )
 
     def _build_report(self):

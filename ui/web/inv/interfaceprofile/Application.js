@@ -14,7 +14,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.main.ref.windowfunction.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
@@ -293,22 +294,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 dataIndex: "window_function",
                                 width: 70,
                                 editor: {
-                                    xtype: "combobox",
-                                    store: [
-                                        ["last", "Last Value"],
-                                        ["sum", "Sum"],
-                                        ["avg", "Average"],
-                                        ["percentile", "Percentile"],
-                                        ["q1", "1st quartile"],
-                                        ["q2", "2st quartile"],
-                                        ["q3", "3st quartile"],
-                                        ["p95", "95% percentile"],
-                                        ["p99", "99% percentile"],
-                                        ["step_inc", "Step Increment"],
-                                        ["step_dec", "Step Decrement"],
-                                        ["step_abs", "Step Absolute"],
-                                        ["handler", "Handler"]
-                                    ]
+                                    xtype: "main.ref.windowfunction.LookupField"
                                 }
                             },
                             {

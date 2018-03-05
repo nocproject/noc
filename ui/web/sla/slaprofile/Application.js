@@ -11,7 +11,8 @@ Ext.define("NOC.sla.slaprofile.Application", {
     requires: [
         "NOC.sla.slaprofile.Model",
         "NOC.main.style.LookupField",
-        "NOC.pm.metrictype.LookupField"
+        "NOC.pm.metrictype.LookupField",
+        "NOC.main.ref.windowfunction.LookupField"
     ],
     model: "NOC.sla.slaprofile.Model",
     rowClassField: "row_class",
@@ -107,22 +108,7 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             dataIndex: "window_function",
                             width: 70,
                             editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["last", "Last Value"],
-                                    ["sum", "Sum"],
-                                    ["avg", "Average"],
-                                    ["percentile", "Percentile"],
-                                    ["q1", "1st quartile"],
-                                    ["q2", "2st quartile"],
-                                    ["q3", "3st quartile"],
-                                    ["p95", "95% percentile"],
-                                    ["p99", "99% percentile"],
-                                    ["step_inc", "Step Increment"],
-                                    ["step_dec", "Step Decrement"],
-                                    ["step_abs", "Step Absolute"],
-                                    ["handler", "Handler"]
-                                ]
+                                xtype: "main.ref.windowfunction.LookupField"
                             }
                         },
                         {
