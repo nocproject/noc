@@ -35,6 +35,10 @@ class Profile(BaseProfile):
     send_on_syntax_error = "\x1b[B"
     rogue_chars = ["\r", "\x00"]
 
+    def setup_session(self, script):
+        # Found on SI3000
+        script.cli("enable\n", ignore_errors=True)
+
     rx_hw = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
         r"Current CPU (?:Load|Usage)\.+ \d+%\n"
