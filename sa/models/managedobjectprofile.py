@@ -32,6 +32,7 @@ from .objectmap import ObjectMap
 from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
+from noc.core.window import wf_choices
 
 m_valid = DictListParameter(attrs={
     "metric_type": ObjectIdParameter(required=True),
@@ -42,13 +43,7 @@ m_valid = DictListParameter(attrs={
         choices=["m", "t"],
         default="m"),
     "window": IntParameter(default=1),
-    "window_function": StringParameter(
-        choices=[
-            "handler", "last", "sum", "avg",
-            "percentile", "q1", "q2", "q3",
-            "p95", "p99", "step_inc", "step_dec",
-            "step_abs"],
-        default="last"),
+    "window_function": StringParameter(choices=[x[0] for x in wf_choices], default="last"),
     "window_config": StringParameter(default=""),
     "window_related": BooleanParameter(default=False),
     "low_error": IntParameter(required=False),

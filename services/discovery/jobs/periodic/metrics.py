@@ -26,9 +26,9 @@ from noc.inv.models.subinterface import SubInterface
 from noc.pm.models.metrictype import MetricType
 from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
-from noc.core.handler import get_handler
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.core.window import get_window_function
 
 
 MAX31 = 0x7FFFFFFF
@@ -617,7 +617,7 @@ class MetricsCheck(DiscoveryCheck):
             )
             return None
         # Process window function
-        wf = getattr(self, "wf_%s" % cfg.window_function, None)
+        wf = get_window_function(cfg.window_function)
         if not wf:
             self.logger.error(
                 "Cannot calculate thresholds for %s (%s): Invalid window function %s",
@@ -735,163 +735,3 @@ class MetricsCheck(DiscoveryCheck):
         # Spool data
         for f in chains:
             self.service.register_metrics(f, chains[f])
-
-    def wf_last(self, window, *args, **kwargs):
-        """
-        Returns last measured value
-        :param window:
-        :return:
-        """
-        return window[-1][1]
-
-    def wf_sum(self, window, *args, **kwargs):
-        """
-        Returns sum of values within window
-        :param window:
-        :return:
-        """
-        return float(sum(w[1] for w in window))
-
-    def wf_avg(self, window, *args, **kwargs):
-        """
-        Returns window average
-        :param window:
-        :return:
-        """
-        return float(sum(w[1] for w in window)) / len(window)
-
-    def _wf_percentile(self, window, q):
-        """
-        Calculate percentile
-        :param window:
-        :param q:
-        :return:
-        """
-        wl = sorted(w[1] for w in window)
-        i = len(wl) * q // 100
-        return wl[i]
-
-    def wf_percentile(self, window, config, *args, **kwargs):
-        """
-        Calculate percentile
-        :param window:
-        :param config:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        try:
-            q = int(config)
-        except ValueError:
-            raise ValueError("Percentile must be integer")
-        if q < 0 or q > 100:
-            raise ValueError("Percentile must be >0 and <100")
-        return self._wf_percentile(window, q)
-
-    def wf_q1(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 25)
-
-    def wf_q2(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 50)
-
-    def wf_q3(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 75)
-
-    def wf_p95(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 95)
-
-    def wf_p99(self, window, *args, **kwargs):
-        """
-        1st quartile
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        return self._wf_percentile(window, 99)
-
-    def wf_step_inc(self, window, *args, **kwargs):
-        """
-        Sum of all increments within window
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        values = [x[1] for x in window]
-        return sum(
-            x1 - x0
-            for x0, x1 in zip(values, values[1:])
-            if x1 > x0
-        )
-
-    def wf_step_dec(self, window, *args, **kwargs):
-        """
-        Sum of all decrements within window
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        values = [x[1] for x in window]
-        return sum(
-            x0 - x1
-            for x0, x1 in zip(values, values[1:])
-            if x0 > x1
-        )
-
-    def wf_step_abs(self, window, *args, **kwargs):
-        """
-        Sum of all absolute changes within window
-        :param window:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        values = [x[1] for x in window]
-        return sum(
-            abs(x1 - x0)
-            for x0, x1 in zip(values, values[1:])
-        )
-
-    def wf_handler(self, window, config, *args, **kwargs):
-        """
-        Calculate via handler
-        :param window:
-        :param config:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        h = get_handler(config)
-        if not h:
-            raise ValueError("Invalid handler %s" % config)
-        return h(window)

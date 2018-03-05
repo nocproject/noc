@@ -14,6 +14,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.sa.authprofile.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
+        "NOC.main.ref.windowfunction.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField"
@@ -1151,22 +1152,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             dataIndex: "window_function",
                                             width: 70,
                                             editor: {
-                                                xtype: "combobox",
-                                                store: [
-                                                    ["last", "Last Value"],
-                                                    ["sum", "Sum"],
-                                                    ["avg", "Average"],
-                                                    ["percentile", "Percentile"],
-                                                    ["q1", "1st quartile"],
-                                                    ["q2", "2st quartile"],
-                                                    ["q3", "3st quartile"],
-                                                    ["p95", "95% percentile"],
-                                                    ["p99", "99% percentile"],
-                                                    ["step_inc", "Step Increment"],
-                                                    ["step_dec", "Step Decrement"],
-                                                    ["step_abs", "Step Absolute"],
-                                                    ["handler", "Handler"]
-                                                ]
+                                                xtype: "main.ref.windowfunction.LookupField"
                                             }
                                         },
                                         {
