@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.pyrule Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.pyrule.Model");
@@ -21,19 +21,20 @@ Ext.define("NOC.main.pyrule.Model", {
             type: "string"
         },
         {
-            name: "interface",
+            name: "full_name",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "source",
             type: "string"
+        },
+        {
+            name: "last_changed",
+            type: "date"
         },
         {
             name: "description",
-            type: "string"
-        },
-        {
-            name: "text",
-            type: "string"
-        },
-        {
-            name: "handler",
             type: "string"
         }
     ]

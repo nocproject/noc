@@ -2,18 +2,17 @@
 # ---------------------------------------------------------------------
 # main.pyrule application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.main.models.pyrule import PyRule
-from noc.core.handler import get_handler
 from noc.core.translation import ugettext as _
 
 
-class PyRuleApplication(ExtModelApplication):
+class PyRuleApplication(ExtDocApplication):
     """
     PyRule application
     """
@@ -21,18 +20,7 @@ class PyRuleApplication(ExtModelApplication):
     icon = "icon_py"
     menu = [_("Setup"), _("PyRule")]
     model = PyRule
-    query_fields = ["name__icontains"]
+    query_fields = ["name__icontains", "description__icontains", "source__icontains"]
 
-    def clean(self, data):
-        data = super(PyRuleApplication, self).clean(data)
-        if data.get("handler"):
-            try:
-                get_handler(data["handler"])
-            except ImportError, why:
-                raise ValueError("Invalid handler: %s" % why)
-        else:
-            try:
-                PyRule.compile_text(data["text"])
-            except SyntaxError, why:
-                raise ValueError("Syntax error: %s" % why)
-        return data
+    def field_full_name(self, o):
+        return o.full_name

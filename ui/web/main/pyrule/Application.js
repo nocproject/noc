@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.pyrule application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.pyrule.Application");
@@ -9,8 +9,7 @@ console.debug("Defining NOC.main.pyrule.Application");
 Ext.define("NOC.main.pyrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.pyrule.Model",
-        "NOC.main.ref.interface.LookupField"
+        "NOC.main.pyrule.Model"
     ],
     model: "NOC.main.pyrule.Model",
     formLayout: {
@@ -27,15 +26,9 @@ Ext.define("NOC.main.pyrule.Application", {
                     dataIndex: "name",
                     width: 200
                 },
-
                 {
-                    text: __("Interface"),
-                    dataIndex: "interface",
-                    width: 200
-                },
-                {
-                    text: __("handler"),
-                    dataIndex: "handler",
+                    text: __("Full Name"),
+                    dataIndex: "full_name",
                     flex: 1
                 }
             ],
@@ -45,40 +38,17 @@ Ext.define("NOC.main.pyrule.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "medium",
-                },
-                {
-                    name: "interface",
-                    xtype: "main.ref.interface.LookupField",
-                    fieldLabel: __("Interface"),
-                    allowBlank: false
+                    uiStyle: "medium"
                 },
                 {
                     name: "description",
-                    xtype: "textareafield",
-                    fieldLabel: __("Description"),
-                    allowBlank: false,
-                    uiStyle: "extra"
+                    xtype: "textarea",
+                    fieldLabel: __("Description")
                 },
                 {
-                    name: "handler",
-                    xtype: "textfield",
-                    fieldLabel: __("Handler"),
-                    allowBlank: true,
-                    uiStyle: "large",
-                    triggers: {
-                        clear: {
-                            cls: Ext.baseCSSPrefix + "form-clear-trigger",
-                            handler: function(field) {
-                                field.reset();
-                            }
-                        }
-                    }
-                },
-                {
-                    name: "text",
+                    name: "source",
                     xtype: "cmtext",
-                    fieldLabel: __("Text"),
+                    fieldLabel: __("Source"),
                     allowBlank: true,
                     flex: 1,
                     mode: "python"
@@ -86,20 +56,5 @@ Ext.define("NOC.main.pyrule.Application", {
             ]
         });
         me.callParent();
-    },
-    showOpError: function (action, op, status) {
-        var me = this;
-        // Detect Syntax Errors
-        if (status.traceback) {
-            var rx = /^Syntax error: (.+) \(<string>, line (\d+)\)$/i,
-                g = rx.exec(status.traceback);
-            if (g != null) {
-                var error = g[1],
-                    line = g[2];
-                NOC.error("Syntax error at line " + line + "<br/>" + error);
-                return;
-            }
-        }
-        me.callParent([action, op, status]);
     }
 });
