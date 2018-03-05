@@ -13,7 +13,6 @@ from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
 from .customfield import CustomField
 from .resourcestate import ResourceState
-from .pyrule import PyRule, NoPyRuleException
 from .notificationgroup import NotificationGroup, NotificationGroupUser, NotificationGroupOther
 from .userprofile import UserProfile  # Cannot be moved, as referred from settings.py
 from .systemnotification import SystemNotification
