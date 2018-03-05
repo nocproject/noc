@@ -37,10 +37,54 @@ class Command(BaseCommand):
             if model._meta.get('auto_create_index', True):
                 continue
             # Index model
-            self.print("[%s] Checking indexes" % model_id)
-            model.ensure_indexes()
+            self.index_model(model_id, model)
         # @todo: Detect changes
         self.print("OK")
+
+    def index_model(self, model_id, model):
+        """
+        Create necessary indexes for model
+        :param model_id: model id
+        :param model: model class
+        :return:
+        """
+        self.print("[%s] Checking indexes" % model_id)
+        coll = model._get_collection()
+        # Get existing unique indexes
+        idx_info = coll.index_information()
+        x_name = {}  # fields -> name
+        x_unique = {}  # fields -> bool(is_unique)
+        left_unique = set()
+        for xn in idx_info:
+            fields = ",".join(str(k[0]) for k in idx_info[xn]["key"])
+            x_name[fields] = xn
+            is_unique = idx_info[xn].get("unique", False)
+            x_unique[fields] = is_unique
+            if is_unique:
+                left_unique.add(fields)
+        if x_name:
+            # Get declared indexes
+            xspecs = model._meta["index_specs"]
+            for xi in xspecs:
+                fields = ",".join(str(k[0]) for k in xi["fields"])
+                if fields in x_name:
+                    # Check for uniqueness match
+                    du = xi.get("unique", False)
+                    if du != x_unique[fields]:
+                        # Uniqueness mismatch
+                        self.print("[%s] Dropping mismatched index %s" % (
+                            model_id, x_name[fields]))
+                        coll.drop_index(x_name[fields])
+                    elif du and x_unique[fields]:
+                        # Remove unique index from left
+                        left_unique.remove(fields)
+            # Delete state unique indexes
+            for fields in left_unique:
+                self.print("[%s] Dropping stale unique index %s" % (
+                    model_id, x_name[fields]))
+                coll.drop_index(x_name[fields])
+        # Apply indexes
+        model.ensure_indexes()
 
 
 if __name__ == "__main__":

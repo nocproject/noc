@@ -32,7 +32,7 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["object_vendor", __("Vendor"), false],
                 ["object_platform", __("Platform"), false],
                 ["object_version", __("SW Version"), false],
-                ["object_serial", __("SW Serial"), false],
+                ["object_serial", __("Serial Number"), false],
                 ["avail", __("Avail"), false],
                 ["admin_domain", __("Admin. Domain"), true],
                 ["container", __("Container"), false],

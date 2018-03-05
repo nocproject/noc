@@ -707,8 +707,8 @@ Ext.define('NOC.core.RepoPreview', {
     getIds: function() {
         var me = this;
         return {
-            rightId: me.revCombo.getValue(),
-            leftId: me.diffCombo.getValue()
+            leftId: me.revCombo.getValue(),
+            rightId: me.diffCombo.getValue()
             // rightId: me.diffSlider.getRevId(),
             // leftId: me.revSlider.getRevId()
         };

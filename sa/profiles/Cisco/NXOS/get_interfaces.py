@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,6 +16,7 @@ import xml.etree.ElementTree as ElementTree
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -97,10 +98,10 @@ class Script(BaseScript):
             try:
                 c = self.cli("show interface snmp-ifindex")
                 r = {}
-                for l in c.splitlines():
-                    if l == '' or '-' in l or 'Port' in l:
+                for ll in c.splitlines():
+                    if ll == '' or '-' in ll or 'Port' in ll:
                         continue
-                    match = l.strip().split()
+                    match = ll.strip().split()
                     if match:
                         r[match[0]] = int(match[1])
             except self.CLISyntaxError:
@@ -140,17 +141,17 @@ class Script(BaseScript):
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
-        for l in self.cli("show ip interface vrf all").splitlines():
-            match = self.rx_sh_ip_int.search(l)
+        for ll in self.cli("show ip interface vrf all").splitlines():
+            match = self.rx_sh_ip_int.search(ll)
             if match:
                 c_iface = self.profile.convert_interface_name(
                     match.group("interface"))
                 continue
             # Primary ip
-            match = self.rx_ip.search(l)
+            match = self.rx_ip.search(ll)
             if not match:
                 # Secondary ip
-                match = self.rx_sec_ip.search(l)
+                match = self.rx_sec_ip.search(ll)
                 if not match:
                     continue
             ip = match.group("ip") + "/" + match.group("ipsubnet").split("/")[1]
@@ -163,8 +164,8 @@ class Script(BaseScript):
             v = self.cli("show ipv6 interface vrf all")
         except self.CLISyntaxError:
             v = ""
-        for l in v.splitlines():
-            match = self.rx_sh_ip_int.search(l)
+        for ll in v.splitlines():
+            match = self.rx_sh_ip_int.search(ll)
             if match:
                 iface = match.group("interface")
                 try:
@@ -175,7 +176,7 @@ class Script(BaseScript):
             if not c_iface:
                 continue  # Skip wierd interfaces
             # Primary ip
-            match = self.rx_ipv6.search(l)
+            match = self.rx_ipv6.search(ll)
             if not match:
                 # Secondary ip?
                 continue
@@ -279,6 +280,10 @@ class Script(BaseScript):
                 # Static vlans
                 if "vlan_ids" in I:
                     sub["vlan_ids"] = I["vlan_ids"]
+                elif ifname.startswith("Vl "):
+                    vlan_id = ifname[3:]
+                    if is_int(vlan_id) and int(vlan_id) < 4095:
+                        sub["vlan_ids"] = vlan_id
 
                 # IPv4/Ipv6
                 if "ip_addr" in I:
@@ -334,10 +339,7 @@ class Script(BaseScript):
             for I in self.rx_int_split.split(v):
                 if len(I) == 0:
                     continue
-                try:
-                    match = self.re_search(self.rx_int_name, I)
-                except self.UnexpectedResultError:
-                    match = None
+                match = self.rx_int_name.search(I)
                 if not match:
                     continue
                 full_ifname = match.group("interface")
@@ -457,10 +459,7 @@ class Script(BaseScript):
             }
         }
         imap = {}  # interface -> VRF
-        try:
-            r = self.scripts.get_mpls_vpn()
-        except self.CLISyntaxError:
-            r = []
+        r = self.scripts.get_mpls_vpn()
         for v in r:
             if v["type"] == "VRF":
                 vrfs[v["name"]] = {

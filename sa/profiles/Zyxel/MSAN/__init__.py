@@ -3,7 +3,7 @@
 # Vendor: Zyxel
 # OS:     MSAN
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -16,12 +16,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.MSAN"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.`\s/]+)?[#>]\s*"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\'`\s/]+?)(config|chips|bridge|ethernet|adsl|gshdsl|vlan1q)?[#>]\s*"
     # pattern_unprivileged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s/]+)?>\s*"
     pattern_syntax_error = "((Unknown|invalid) (command|input)|Commands are:)"
     pattern_more = [
         (r"Press any key to continue, 'n' to nopause,'e' to exit", "n"),
-        (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n")
+        (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n"),
+        (r"Using command \"stop\" to terminate", "stop"),
     ]
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     command_more = "n"
@@ -76,10 +77,10 @@ class Profile(BaseProfile):
         if slot_no == 17:
             if hw in ["MSC1024GB", "MSC1224GB", "MSC1024G", "MSC1224G"]:
                 return "IES-6000"
-        if (slot_no == 1):
+        if slot_no == 1:
             if (hw in ["IES1248-51", "IES1248-71"]):
                 return "IES-1248"
             # Need more examples
-            if (hw == "IES-612"):
+            if hw == "IES-612":
                 return "IES-612"
         return ""

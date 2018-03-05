@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Managed object inspector
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.map.inspectors.ManagedObjectInspector");
@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.map.inspectors.ManagedObjectInspector");
 Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     extend: "NOC.inv.map.inspectors.Inspector",
     title: __("Object Inspector"),
+    inspectorName: "managedobject",
 
     tpl: [
         '<b>Name:</b>&nbsp;{[Ext.htmlEncode(values.name)]}<br/>',
@@ -128,5 +129,11 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
             this.externalSegmentId = null;
             this.segmentButton.setDisabled(true);
         }
+    },
+
+    getDataURL: function(segmentId, objectId) {
+        var me = this,
+            url = me.callParent([segmentId, objectId]);
+        return url + objectId + "/";
     }
 });

@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # escalation command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -124,7 +124,7 @@ class Command(BaseCommand):
             r = []
             for k in summary:
                 p = model.get_by_id(k.profile)
-                if not p or getattr(p, "show_in_summary", True) == False:
+                if not p or getattr(p, "show_in_summary", True) is False:
                     continue
                 r += [{
                     "profile": p.name,
@@ -194,81 +194,96 @@ class Command(BaseCommand):
                 continue
             for e in esc.escalations:
                 self.print("    [After %ss]" % e.delay)
-            # Check administrative domain
-            if (e.administrative_domain and
-                    e.administrative_domain.id not in alarm.adm_path):
-                self.print("    @ Administrative domain mismatch (%s not in %s)" % (
-                    e.administrative_domain.id, alarm.adm_path
-                ))
-                continue
-            # Check severity
-            if e.min_severity and alarm.severity < e.min_severity:
-                self.print("    @ Severity mismatch: %s < %s" % (
-                    alarm.severity, e.min_severity))
-                continue
-            # Check selector
-            if e.selector and not SelectorCache.is_in_selector(mo, e.selector):
-                self.print("    @ Selector mismatch (%s required)" % (
-                    e.selector.name))
-                continue
-            # Check time pattern
-            if e.time_pattern and not e.time_pattern.match(alarm.timestamp):
-                self.print("    @ Time pattern mismatch (%s required)" % (
-                    e.time_pattern.name))
-                continue
-            # Render escalation message
-            if not e.template:
-                self.print("    @ No escalation template")
-                continue
-            # Check whether consequences has escalations
-            cons_escalated = sorted(iter_escalated(alarm),
-                                    key=operator.attrgetter("timestamp"))
-            affected_objects = sorted(iter_affected(alarm),
-                                      key=operator.attrgetter("name"))
-            #
-            ctx = {
-                "alarm": alarm,
-                "affected_objects": affected_objects,
-                "cons_escalated": cons_escalated,
-                "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
-                "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
-                "total_services": summary_to_list(alarm.total_services, ServiceProfile),
-                "tt": None
-            }
-            if e.create_tt:
-                self.print("    Creating TT")
-                if not mo.can_escalate():
-                    self.print("    @ Cannot find TT System")
+                # Check administrative domain
+                if (e.administrative_domain and
+                        e.administrative_domain.id not in alarm.adm_path):
+                    self.print("    @ Administrative domain mismatch (%s not in %s)" % (
+                        e.administrative_domain.id, alarm.adm_path
+                    ))
                     continue
-                tt_system = mo.tt_system
-                tts = tt_system.get_system()
-                self.print("    TT System: %s  Mapped Id: %s" % (
-                    tt_system.name, mo.tt_system_id
-                ))
-                subject = e.template.render_subject(**ctx)
-                body = e.template.render_body(**ctx)
-                self.print("    @ Create network TT")
-                self.print("    | Subject: %s" % subject)
-                self.print("    |")
-                self.print("    | %s" % body.replace("\n", "\n    | "))
-                tt_id = "<NETWORK TT>"
-                ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
-                # alarm.escalate(ctx["tt"], close_tt=e.close_tt)
-                if tts.promote_group_tt:
-                    self.print("    Promoting group TT")
-                    self.print("    @ Create Group TT")
-                    # Add objects
-                    for o in alarm.iter_affected():
-                        if o.can_escalate():
-                            if o.tt_system == mo.tt_system:
-                                self.print("    @ Add to group TT %s. Remote Id: %s" % (
-                                    o.name, o.tt_system_id))
-                            else:
-                                self.print("    @ Cannot add to group TT. Belongs to other TT system" % o.name)
-                        else:
-                            self.print("    @ Cannot add to group TT %s. Escalations are disabled" % (
-                                o.name
-                            ))
+                # Check severity
+                if e.min_severity and alarm.severity < e.min_severity:
+                    self.print("    @ Severity mismatch: %s < %s" % (
+                        alarm.severity, e.min_severity))
+                    continue
+                # Check selector
+                if e.selector and not SelectorCache.is_in_selector(mo, e.selector):
+                    self.print("    @ Selector mismatch (%s required)" % (
+                        e.selector.name))
+                    continue
+                # Check time pattern
+                if e.time_pattern and not e.time_pattern.match(alarm.timestamp):
+                    self.print("    @ Time pattern mismatch (%s required)" % (
+                        e.time_pattern.name))
+                    continue
+                # Render escalation message
+                if not e.template:
+                    self.print("    @ No escalation template")
+                    continue
+                # Check whether consequences has escalations
+                cons_escalated = sorted(iter_escalated(alarm),
+                                        key=operator.attrgetter("timestamp"))
+                affected_objects = sorted(iter_affected(alarm),
+                                          key=operator.attrgetter("name"))
+                #
+                ctx = {
+                    "alarm": alarm,
+                    "affected_objects": affected_objects,
+                    "cons_escalated": cons_escalated,
+                    "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
+                    "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
+                    "total_services": summary_to_list(alarm.total_services, ServiceProfile),
+                    "tt": None
+                }
+                if e.create_tt:
+                    self.print("    Creating TT")
+                    tt_system = mo.tt_system
+                    if not tt_system:
+                        self.print("    @ No TT System. Cannot escalate")
+                    elif not mo.can_escalate():
+                        self.print("    @ Escalation disabled by policy")
+                    else:
+                        tts = tt_system.get_system()
+                        self.print("    TT System: %s  Mapped Id: %s" % (
+                            tt_system.name, mo.tt_system_id
+                        ))
+                        subject = e.template.render_subject(**ctx)
+                        body = e.template.render_body(**ctx)
+                        self.print("    @ Create network TT")
+                        self.print("    | Subject: %s" % subject)
+                        self.print("    |")
+                        self.print("    | %s" % body.replace("\n", "\n    | "))
+                        tt_id = "<NETWORK TT>"
+                        ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
+                        # alarm.escalate(ctx["tt"], close_tt=e.close_tt)
+                        if tts.promote_group_tt:
+                            self.print("    Promoting group TT")
+                            self.print("    @ Create Group TT")
+                            # Add objects
+                            for o in alarm.iter_affected():
+                                if o.can_escalate(depended=True):
+                                    if o.tt_system == mo.tt_system:
+                                        self.print("    @ Add to group TT %s. Remote Id: %s" % (
+                                            o.name, o.tt_system_id))
+                                    else:
+                                        self.print("    @ Cannot add to group TT. Belongs to other TT system" % o.name)
+                                else:
+                                    self.print("    @ Cannot add to group TT %s. Escalations are disabled" % (
+                                        o.name
+                                    ))
+                if e.notification_group:
+                    if mo.can_notify():
+                        subject = e.template.render_subject(**ctx)
+                        body = e.template.render_body(**ctx)
+                        self.print("    @ Sending notification to group '%s'" % e.notification_group.name)
+                        self.print("    | Subject: %s" % subject)
+                        self.print("    |")
+                        self.print("    | %s" % body.replace("\n", "\n    | "))
+                    else:
+                        self.print("    @ Notification disabled by policy")
+                if e.stop_processing:
+                    self.print("    @ Stop processing")
+                    break
 
     def run_alarm(self, alarm):
         AlarmEscalation.watch_escalations(alarm)

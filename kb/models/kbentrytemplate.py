@@ -2,19 +2,20 @@
 # ---------------------------------------------------------------------
 # KBEntryTemplate model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 # Third-party modules
 from django.db import models
 # NOC modules
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
-from kbentry import parser_registry  # Load
+from .kbentry import parser_registry  # Load
 
 
 class KBEntryTemplate(models.Model):

@@ -8,7 +8,7 @@ console.debug("Defining NOC.wf.solution.Application");
 
 Ext.define("NOC.wf.solution.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.wf.solution.Model"
     ],
     model: "NOC.wf.solution.Model",

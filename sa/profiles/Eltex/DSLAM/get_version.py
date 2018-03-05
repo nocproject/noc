@@ -27,14 +27,21 @@ class Script(BaseScript):
             ver = self.cli("system show software version", cached=True)
         match = self.rx_version.search(ver)
         if match:
+            version = match.group("version")
+            if "mxa32" in version:
+                platform = "MXA32"
+            elif "mxa64" in version:
+                platform = "MXA64"
+            else:
+                platform = "DSLAM"
             return {
                 "vendor": "Eltex",
-                "platform": "DSLAM",
-                "version": match.group("version")
+                "platform": platform,
+                "version": version
             }
         else:
             return {
                 "vendor": "Eltex",
-                "platform": "DSLAM",
+                "platform": "MXA24",
                 "version": "mxa24"
             }

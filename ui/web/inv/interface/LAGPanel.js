@@ -8,7 +8,6 @@ console.debug("Defining NOC.inv.interface.LAGPanel");
 
 Ext.define("NOC.inv.interface.LAGPanel", {
     extend: "Ext.panel.Panel",
-    uses: [],
     title: "LAG",
     closable: false,
     layout: "fit",

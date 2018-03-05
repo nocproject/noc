@@ -3,9 +3,11 @@
 # Varios metric converting functions
 # to use in get_metrics scripts
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+# Python modules
+from functools import reduce
 
 
 def percent(value, total):
@@ -54,3 +56,10 @@ def subtract(*args):
 
 def is1(x):
     return 1 if x == 1 else 0
+
+
+def invert0(x):
+    """
+    Invert 0 -> 1 if OK = 0, FALSE > 1
+    """
+    return 0 if x > 0 else 1

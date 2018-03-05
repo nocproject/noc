@@ -17,6 +17,8 @@ from mongoengine.fields import (StringField, BooleanField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 LongField)
 # NOC modules
+from noc.lib.nosql import ForeignKeyField
+from noc.main.models.style import Style
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.bi.decorator import bi_sync
 from noc.lib.nosql import PlainReferenceField
@@ -38,6 +40,7 @@ class SegmentTopologySettings(EmbeddedDocument):
             ("lacp", "LACP"),
             ("lldp", "LLDP"),
             ("oam", "OAM"),
+            ("rep", "REP"),
             ("stp", "STP"),
             ("udld", "UDLD"),
             ("fdp", "FDP"),
@@ -66,8 +69,10 @@ class NetworkSegmentProfile(Document):
 
     name = StringField(unique=True)
     description = StringField(required=False)
-    #
+    # segment discovery interval
     discovery_interval = IntField(default=86400)
+    # Segment style
+    style = ForeignKeyField(Style, required=False)
     # Restrict MAC discovery to management vlan
     mac_restrict_to_management_vlan = BooleanField(default=False)
     # Management vlan, to restrict MAC search for MAC topology discovery
@@ -91,6 +96,10 @@ class NetworkSegmentProfile(Document):
     # List of enabled topology method
     # in order of preference (most preferable first)
     topology_methods = ListField(EmbeddedDocumentField(SegmentTopologySettings))
+    # Enable VLAN discovery for appropriative management objects
+    enable_vlan = BooleanField(default=False)
+    # Default VLAN profile for discovered VLANs
+    default_vlan_profile = PlainReferenceField("vc.VLANProfile")
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)

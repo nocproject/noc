@@ -9,6 +9,7 @@
 
 # Python modules
 import re
+from collections import defaultdict
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -62,3 +63,23 @@ class Profile(BaseProfile):
             script.cli("terminal length 0")
         except script.CLISyntaxError:
             pass
+
+    @staticmethod
+    def parse_ifaces(e=""):
+        # Parse display interfaces output command for Huawei
+        r = defaultdict(dict)
+        current_iface = ""
+        for line in e.splitlines():
+            print line
+            if not line or "===" in line:
+                continue
+            line = line.strip()
+            if (line.startswith("LoopBack") or line.startswith("MEth") or
+                    line.startswith("Ethernet") or
+                    line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or
+                    line.startswith("Vlanif") or line.startswith("NULL")):
+                current_iface = line
+                continue
+            v, k = line.split(" ", 1)
+            r[current_iface][k.strip()] = v.strip()
+        return r

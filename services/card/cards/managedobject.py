@@ -9,17 +9,22 @@
 # Python modules
 import datetime
 import operator
+import itertools
+from collections import defaultdict
 # Third-party modules
 from django.db.models import Q
 # NOC modules
 from base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.uptime import Uptime
 from noc.fm.models.outage import Outage
 from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
@@ -27,7 +32,8 @@ from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
-
+from noc.core.clickhouse.connect import connection
+from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
 
 class ManagedObjectCard(BaseCard):
     name = "managedobject"
@@ -54,7 +60,12 @@ class ManagedObjectCard(BaseCard):
         # @todo: Open TT
         now = datetime.datetime.now()
         # Get object status and uptime
+
+
         alarms = list(ActiveAlarm.objects.filter(managed_object=self.object.id))
+
+        #alarms = list(ActiveAlarm.objects.filter(managed_object=59805))
+
         current_start = None
         duration = None
         if self.object.get_status():
@@ -93,6 +104,7 @@ class ManagedObjectCard(BaseCard):
                         })
                     c = o.container
                 except Object.DoesNotExist:
+                    metrics["error", ("type", "no_such_object")] += 1
                     break
         # MAC addresses
         macs = []
@@ -149,21 +161,69 @@ class ManagedObjectCard(BaseCard):
             self.object)
         # Interfaces
         interfaces = []
-        for i in Interface.objects.filter(managed_object=self.object.id,
-                                          type="physical"):
+
+        mo = ManagedObject.objects.filter(id=self.object.id)
+
+        iface_metrics, last_ts = get_interface_metrics(mo)
+        iface_metrics = iface_metrics[mo[0]]
+
+        objects_metrics, last_time = get_objects_metrics(mo)
+        objects_metrics = objects_metrics.get(mo[0])
+
+        #op_fields_map = defaultdict(list)
+        #metric_map = {mo[0]: {"interface": defaultdict(dict), "object": defaultdict(dict)}}
+        #metric_map[mo[0]]["object"][""]
+        #metric_map[mo[0]]["object"][""].update({u'Video | Record': '0', u'Disk | Problem': '0', u'Disk | Error Count': '0', u'Video | Recording Drops': '0', u'Video | Broadcast': '0', u'Disk | Free': '63153962550', u'Video | Upstream Connected': '0', u'Disk | Total': '63273762816'})
+        #metric_map[mo[0]]["object"]["Sub"]
+        #metric_map[mo[0]]["object"]["Sub"].update({u'Video | Broadcast': '1', u'Video | Record': '0', u'Video | Recording Drops': '0', u'Video | Upstream Connected': '0'})
+
+        if objects_metrics != None:
+            disk_list_keys = list([u'Disk | Free', u'Disk | Total'])
+            if disk_list_keys in objects_metrics.get("").keys():
+                for disk_key in disk_list_keys:
+                    objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
+                    objects_metrics.get("Sub")[disk_key] = self.humanize_speed(int(objects_metrics.get("Sub").get(disk_key)))
+
+            meta = objects_metrics.get("")
+            sub_meta = objects_metrics.get("Sub")
+        else:
+            meta = ""
+            sub_meta = ""
+
+        for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
+
+
+
+            if iface_metrics.get(str(i.name)) != None:
+                load_in = self.humanize_speed(iface_metrics.get(str(i.name))["load_in"])
+                load_out = self.humanize_speed(iface_metrics.get(str(i.name))["load_out"])
+                errors_in = iface_metrics.get(str(i.name))["errors_in"]
+                errors_out = iface_metrics.get(str(i.name))["errors_out"]
+            else:
+                load_in = "-"
+                load_out = "-"
+                errors_in = "-"
+                errors_out = "-"
+
             interfaces += [{
-                "id": i.id,
-                "name": i.name,
-                "admin_status": i.admin_status,
-                "oper_status": i.oper_status,
-                "mac": i.mac or "",
-                "full_duplex": i.full_duplex,
-                "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
-                "untagged_vlan": None,
-                "tagged_vlan": None,
-                "service": i.service,
-                "service_summary": service_summary.get("interface").get(i.id, {})
+                    "id": i.id,
+                    "name": i.name,
+                    "admin_status": i.admin_status,
+                    "oper_status": i.oper_status,
+                    "mac": i.mac or "",
+                    "full_duplex": i.full_duplex,
+                    "load_in": load_in,
+                    "load_out": load_out,
+                    "errors_in": errors_in,
+                    "errors_out": errors_out,
+                    "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
+                    "untagged_vlan": None,
+                    "tagged_vlan": None,
+                    "profile": i.profile,
+                    "service": i.service,
+                    "service_summary": service_summary.get("interface").get(i.id, {})
             }]
+
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
                 si = si[0]
@@ -180,14 +240,20 @@ class ManagedObjectCard(BaseCard):
         # @todo: Administrative domain path
         # Alarms
         alarm_list = []
+
         for a in alarms:
             alarm_list += [{
                 "id": a.id,
+                "root_id": self.get_root(alarms),
                 "timestamp": a.timestamp,
                 "duration": now - a.timestamp,
-                "subject": a.subject
+                "subject": a.subject,
+                "managed_object": a.managed_object,
+                "service_summary": {"service": SummaryItem.items_to_dict(a.total_services), "subscriber": SummaryItem.items_to_dict(a.total_subscribers)},
+                "alarm_class": a.alarm_class
             }]
         alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
+
         # Maintenance
         maintenance = []
         for m in Maintenance.objects.filter(
@@ -210,6 +276,7 @@ class ManagedObjectCard(BaseCard):
             c["name"] = p.name or self.object.name
             inv += [c]
         # Build result
+        objects_metric, timestamp_last = get_objects_metrics(mo)
         r = {
             "id": self.object.id,
             "object": self.object,
@@ -238,6 +305,8 @@ class ManagedObjectCard(BaseCard):
             "links": links,
             "alarms": alarm_list,
             "interfaces": interfaces,
+            "metrics": meta,
+            "sub_metrics": sub_meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
             "inventory": self.flatten_inventory(inv)
@@ -323,3 +392,21 @@ class ManagedObjectCard(BaseCard):
                     r += self.flatten_inventory(c, level + 1)
                 del o["children"]
         return r
+
+    @staticmethod
+    def humanize_speed(speed):
+        if not speed:
+            return "-"
+        for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
+            if speed >= t:
+                if speed // t * t == speed:
+                    return "%d%s" % (speed // t, n)
+                else:
+                    return "%.2f%s" % (float(speed) / t, n)
+        return str(speed)
+
+    @staticmethod
+    def get_root(_root):
+        for value in _root:
+            if value.root != None:
+                return value.root

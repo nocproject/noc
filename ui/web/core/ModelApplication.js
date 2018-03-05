@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -33,6 +33,8 @@ Ext.define("NOC.core.ModelApplication", {
     preview: null,
     treeFilter: null,
     formLayout: "anchor",
+    formMinWidth: undefined,
+    formMaxWidth: undefined,
     //
     initComponent: function() {
         var me = this;
@@ -91,7 +93,6 @@ Ext.define("NOC.core.ModelApplication", {
             case "history":
                 me.restoreHistory(me.noc.cmd.args);
                 return;
-                break;
             case "new":
                 me.newRecord(me.noc.cmd.args);
                 break;
@@ -126,7 +127,7 @@ Ext.define("NOC.core.ModelApplication", {
             name: "search_field",
             hideLabel: true,
             width: 400,
-            typeAhead: true,
+            typeAhead: false,
             typeAheadDelay: 500,
             hasAccess: function(app) {
                 return app.search === true;
@@ -606,8 +607,11 @@ Ext.define("NOC.core.ModelApplication", {
                     xtype: "fieldset",
                     anchor: "100%",
                     minHeight: 130,
+                    minWidth: me.formMinWidth,
+                    maxWidth: me.formMaxWidth,
                     title: inline.title,
                     collapsible: true,
+                    collapsed: inline.collapsed,
                     items: [gp]
                 });
                 me.inlineStores.push(istore);
@@ -615,6 +619,8 @@ Ext.define("NOC.core.ModelApplication", {
         }
 
         me.formTitle = Ext.create("Ext.container.Container", {
+            minWidth: me.formMinWidth,
+            maxWidth: me.formMaxWidth,
             html: "Title",
             itemId: "form_title",
             padding: "0 0 4 0"
@@ -819,19 +825,15 @@ Ext.define("NOC.core.ModelApplication", {
     editRecord: function(record) {
         var me = this,
             r = {},
-            mv,
             field,
-            data,
-            isLookupValue = function(name) {
-                return name.indexOf("__label", name.length - 7) !== -1;
-            };
+            data;
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle, me.currentRecord.get(me.idField));
         // Process lookup fields
         data = record.getData();
         Ext.iterate(data, function(v) {
-            if(isLookupValue(v)) {
-                return;
+            if(v.indexOf("__") !== -1) {
+                return
             }
             // hack to get instance of .TreeCombo class
             field = me.fields.filter(function(e) {
@@ -844,11 +846,11 @@ Ext.define("NOC.core.ModelApplication", {
                 if(!field) {
                     return;
                 }
-                if(field.isLookupField && data[v]) {
-                    mv = {};
-                    mv[field.valueField] = data[v];
-                    mv[field.displayField] = data[v + "__label"] || data[v];
-                    r[v] = field.store.getModel().create(mv);
+                if(Ext.isFunction(field.cleanValue)) {
+                    r[v] = field.cleanValue(
+                        me.currentRecord,
+                        me.store.rest_url
+                    )
                 } else {
                     r[v] = data[v];
                 }
@@ -986,18 +988,7 @@ Ext.define("NOC.core.ModelApplication", {
                 // WARNING: Will skip other inline editors
                 continue;
             }
-            if(field.xtype === "datefield") {
-                // Convert date to string
-                var dv = field.getValue();
-                data = {};
-                if(dv) {
-                    data[field.getName()] = Ext.Date.format(dv, field.format)
-                } else {
-                    data[field.getName()] = null
-                }
-            } else {
-                data = field.getModelData()
-            }
+            data = field.getModelData();
             if(Ext.isObject(data)) {
                 name = field.getName();
                 if(data.hasOwnProperty(name)) {
@@ -1240,6 +1231,17 @@ Ext.define("NOC.core.ModelApplication", {
             });
         if(me.hasGroupEdit && item.itemId === "group_edit") {
             me.showGroupEditForm(records);
+            return;
+        }
+        if(Ext.isFunction(item.run) || Ext.isFunction(me[item.run])) {
+            if(typeof item.run === 'string'){
+                item.run = me[item.run];
+            }
+            item.run(
+                me.grid.getSelectionModel().getSelection()
+                .map(function(o) {
+                    return {object: o.get(me.idField), object__label: o.get('name')}
+                }));
             return;
         }
         if(item.form) {
@@ -1529,6 +1531,7 @@ Ext.define("NOC.core.ModelApplication", {
                     itemId: o.action,
                     form: o.form,
                     glyph: o.glyph,
+                    run: o.run,
                     resultTemplate: o.resultTemplate
                 }
             }));

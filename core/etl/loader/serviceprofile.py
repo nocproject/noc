@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ServiceProfile loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ServiceProfile loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from base import BaseLoader
 from noc.sa.models.serviceprofile import ServiceProfile
 
@@ -21,5 +21,5 @@ class ServiceProfileLoader(BaseLoader):
         "id",
         "name",
         "description",
-        "label_template"
+        "card_title_template"
     ]

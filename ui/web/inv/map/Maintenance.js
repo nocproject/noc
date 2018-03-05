@@ -46,7 +46,7 @@ Ext.define('NOC.inv.map.Maintenance', {
                     tpl: [
                         '<div style="padding-bottom: 5px">' + __("Add") + '&nbsp;<b>{mode}:</b><br/>' + '</div>',
                         '<tpl for="elements">',
-                            '<div style="padding-left: 20px">{object__label}</div>',
+                        '<div style="padding-left: 20px">{object__label}</div>',
                         '</tpl>',
                         '<div style="padding-top: 5px">' + __("to maintenance") + '</div>'
                     ],
@@ -159,8 +159,15 @@ Ext.define('NOC.inv.map.Maintenance', {
             return;
         }
 
+        selected[0].data.direct_objects = selected[0].data.direct_objects.map(function(o) {
+            return {object: o.object};
+        });
+
+        selected[0].data.affected_objects = selected[0].data.affected_objects.map(function(o) {
+            return {object: o.object};
+        });
         Ext.Ajax.request({
-            url: me.rest_url + selected[0].data.id,
+            url: me.rest_url + selected[0].data.id + "/",
             method: 'PUT',
             jsonData: Ext.JSON.encode(selected[0].data),
             success: function(response) {

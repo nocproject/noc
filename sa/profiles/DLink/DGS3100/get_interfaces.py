@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# DLink.DxS.get_interfaces
+# DLink.DGS3100.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,7 +25,8 @@ class Script(BaseScript):
         r"Member\s*port\s*:\s*(\S*)\s*\nAdmin.\s*State\s*:\s*"
         r"(?P<admin_state>Enabled|Disabled)\s*\nLink\s*Status\s*:\s*"
         r"(?P<oper_status>Link\s*Up|Link\s*Down)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        re.IGNORECASE | re.MULTILINE | re.DOTALL
+    )
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
     rx_lldp_gs = re.compile(r"LLDP Status\s+: Enabled")
     rx_lldp = re.compile(
@@ -40,7 +41,7 @@ class Script(BaseScript):
         r"(?P<flowctrl>None|802.3x|Disabled|Enabled))?\s+"
         r"(?P<addr_learning>Enabled|Disabled)\s*$", re.MULTILINE)
     rx_descrs = re.compile(
-        r"^\s*(?P<port>\d+(/|:)?\d*)\s*(?P<description>[a-zA-Z0-9_ \-]+)?$",
+        r"^(?P<port>\d+:\d+)\s+(?P<description>\S.+)$",
         re.MULTILINE)
     rx_vlan = re.compile(
         r"VID\s*:\s*(?P<vlan_id>\d+)\s+VLAN\s*Name\s+:\s*(?P<vlan_name>\S+)"
@@ -66,100 +67,67 @@ class Script(BaseScript):
             c = self.cli("show lldp")
         except self.CLISyntaxError:
             c = ""
-            pass
         lldp_enable = self.rx_lldp_gs.search(c) is not None
         if lldp_enable:
             try:
                 c = self.cli("show lldp ports")
             except self.CLISyntaxError:
-                c = ""
+                raise self.NotSupportedError()
             for match in self.rx_lldp.finditer(c):
                 lldp += [match.group("ipif")]
 
-        ports = []
-        objects = []
         descriptions = {}
-        try:
-            d = self.cli("show ports descr all")
-        except self.CLISyntaxError:
-            d = ""
-            pass
-        if d:
-            for match in self.rx_descrs.finditer(d):
+        d = self.cli("show ports descr all")
+        for s in d.split("\n"):
+            match = self.rx_descrs.search(s)
+            if match:
                 descriptions[match.group("port")] = match.group("description")
-        try:
-            c = self.cli("show ports all")
-        except self.CLISyntaxError:
-            c = ""
-            pass
-        if c:
-            for match in self.rx_ports.finditer(c):
-                objects += [{
-                    "port": match.group("port"),
-                    "admin_state": match.group("admin_state") == "Enabled",
-                    "admin_speed": match.group("admin_speed"),
-                    "admin_duplex": match.group("admin_duplex"),
-                    "admin_flowctrl": match.group("admin_flowctrl"),
-                    "status": match.group("status") is None,
-                    "speed": match.group("speed"),
-                    "duplex": match.group("duplex"),
-                    "flowctrl": match.group("flowctrl"),
-                    "address_learning": match.group("addr_learning").strip(),
-                    "desc": descriptions[match.group("port")] \
-                        if match.group("port") in descriptions else "None"
-                }]
-        for i in objects:
-            ports += [i]
         vlans = []
-        try:
-            c = self.cli("show vlan")
-        except self.CLISyntaxError:
-            c = ""
-            pass
-        if c:
-            for match in self.rx_vlan.finditer(c):
-                members = self.expand_interface_range(
-                    self.profile.open_brackets(match.group("member_ports")))
-                tagged_ports = []
-                untagged_ports = self.expand_interface_range(
-                    self.profile.open_brackets(match.group("untagged_ports")))
-                for p in members:
-                    if not(p in untagged_ports):
-                        tagged_ports += [p]
-                vlans += [{
-                    "vlan_id": int(match.group("vlan_id")),
-                    "vlan_name": match.group("vlan_name"),
-                    "vlan_type": match.group("vlan_type"),
-                    "tagged_ports": tagged_ports,
-                    "untagged_ports": untagged_ports
-                }]
+        c = self.cli("show vlan")
+        for match in self.rx_vlan.finditer(c):
+            members = self.expand_interface_range(
+                self.profile.open_brackets(match.group("member_ports")))
+            tagged_ports = []
+            untagged_ports = self.expand_interface_range(
+                self.profile.open_brackets(match.group("untagged_ports")))
+            for p in members:
+                if not(p in untagged_ports):
+                    tagged_ports += [p]
+            vlans += [{
+                "vlan_id": int(match.group("vlan_id")),
+                "vlan_name": match.group("vlan_name"),
+                "vlan_type": match.group("vlan_type"),
+                "tagged_ports": tagged_ports,
+                "untagged_ports": untagged_ports
+            }]
 
         interfaces = []
-        for p in ports:
-            ifname = p['port']
+        c = self.cli("show ports all")
+        for match in self.rx_ports.finditer(c):
+            ifname = match.group("port")
             i = {
                 "name": ifname,
                 "type": "physical",
-                "admin_status": p['admin_state'],
-                "oper_status": p['status'],
+                "admin_status": match.group("admin_state") == "Enabled",
+                "oper_status": match.group("status") is None,
                 "enabled_protocols": [],
                 "subinterfaces": [{
                     "name": ifname,
-                    "admin_status": p['admin_state'],
-                    "oper_status": p['status'],
+                    "admin_status": match.group("admin_state") == "Enabled",
+                    "oper_status": match.group("status") is None,
                     # "ifindex": 1,
                     "enabled_afi": ["BRIDGE"]
                 }]
             }
-            desc = p['desc']
+            desc = descriptions.get(ifname, '')
             if desc != '' and desc != 'null':
                 i.update({"description": desc})
                 i['subinterfaces'][0].update({"description": desc})
             tagged_vlans = []
             for v in vlans:
-                if p['port'] in v['tagged_ports']:
+                if ifname in v['tagged_ports']:
                     tagged_vlans += [v['vlan_id']]
-                if p['port'] in v['untagged_ports']:
+                if ifname in v['untagged_ports']:
                     i['subinterfaces'][0]["untagged_vlan"] = v['vlan_id']
             if len(tagged_vlans) != 0:
                 i['subinterfaces'][0]['tagged_vlans'] = tagged_vlans

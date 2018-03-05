@@ -1,16 +1,22 @@
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2018 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
+# Third-party modules
 from south.db import db
-from noc.ip.models import *
 
-class Migration:
 
+class Migration(object):
     def forwards(self):
         db.execute(SQL)
 
     def backwards(self):
         db.execute("DROP FUNCTION free_ip(INTEGER,CIDR)")
 
-SQL="""CREATE OR REPLACE
+
+SQL = """CREATE OR REPLACE
 FUNCTION free_ip(INTEGER,CIDR)
 RETURNS INET
 AS

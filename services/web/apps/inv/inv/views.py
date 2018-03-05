@@ -124,6 +124,8 @@ class InvApplication(ExtApplication):
                 n["plugins"] += [self.get_plugin_data("map")]
             if o.get_data("management", "managed_object"):
                 n["plugins"] += [self.get_plugin_data("managedobject")]
+            if o.get_data("contacts", "has_contacts"):
+                n["plugins"] += [self.get_plugin_data("contacts")]
             # Append model's plugins
             for p in m_plugins:
                 if not p.startswith("-"):
@@ -139,14 +141,16 @@ class InvApplication(ExtApplication):
             r += [n]
         return r
 
-    @view("^add_group/$", method=["POST"], access="create_group",
-          api=True,
-          validate={
-              "container": ObjectIdParameter(required=False),
-              "type": ObjectIdParameter(),
-              "name": UnicodeParameter(),
-              "serial": UnicodeParameter(required=False)
-          })
+    @view(
+        "^add_group/$", method=["POST"], access="create_group",
+        api=True,
+        validate={
+            "container": ObjectIdParameter(required=False),
+            "type": ObjectIdParameter(),
+            "name": UnicodeParameter(),
+            "serial": UnicodeParameter(required=False)
+        }
+    )
     def api_add_group(self, request, type, name, container=None,
                       serial=None):
         if container is None:
@@ -162,22 +166,26 @@ class InvApplication(ExtApplication):
               system="WEB", op="CREATE")
         return str(o.id)
 
-    @view("^remove_group/$", method=["DELETE"], access="remove_group",
-          api=True,
-          validate={
-              "container": ObjectIdParameter(required=True)
-          })
+    @view(
+        "^remove_group/$", method=["DELETE"], access="remove_group",
+        api=True,
+        validate={
+            "container": ObjectIdParameter(required=True)
+        }
+    )
     def api_remove_group(self, request, container=None):
         c = self.get_object_or_404(Object, id=container)
         c.delete()
         return True
 
-    @view("^insert/$", method=["POST"], access="reorder", api=True,
-          validate={
-              "container": ObjectIdParameter(required=False),
-              "objects": ListOfParameter(element=ObjectIdParameter()),
-              "position": StringParameter()
-          })
+    @view(
+        "^insert/$", method=["POST"], access="reorder", api=True,
+        validate={
+            "container": ObjectIdParameter(required=False),
+            "objects": ListOfParameter(element=ObjectIdParameter()),
+            "position": StringParameter()
+        }
+    )
     def api_insert(self, request, container, objects, position):
         c = self.get_object_or_404(Object, id=container)
         o = []

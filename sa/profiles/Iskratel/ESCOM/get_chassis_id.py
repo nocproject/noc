@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.ESCOM.get_chassis_id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -19,10 +19,21 @@ class Script(BaseScript):
 
     rx_mac = re.compile(
         r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
+    rx_mac_oob = re.compile(
+        r"^System MAC Address:\s+(?P<mac>\S+)\s*\n"
+        r"^OOB MAC Address:\s+(?P<oob>\S+)", re.MULTILINE)
 
     def execute(self):
-        match = self.re_search(self.rx_mac, self.cli("show system"))
+        match = self.rx_mac.search(self.cli("show system", cached=True))
+        if match:
+            return {
+                "first_chassis_mac": match.group("mac"),
+                "last_chassis_mac": match.group("mac")
+            }
+        match = self.rx_mac_oob.search(
+            self.cli("show system unit 1", cached=True)
+        )
         return {
             "first_chassis_mac": match.group("mac"),
-            "last_chassis_mac": match.group("mac")
+            "last_chassis_mac": match.group("oob")
         }

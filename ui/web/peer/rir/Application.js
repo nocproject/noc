@@ -8,7 +8,7 @@ console.debug("Defining NOC.peer.rir.Application");
 
 Ext.define("NOC.peer.rir.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.peer.rir.Model"],
+    requires: ["NOC.peer.rir.Model"],
     model: "NOC.peer.rir.Model",
     columns: [
         {

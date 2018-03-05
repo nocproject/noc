@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # TFortis.PSW.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
         Port\sLink:\s+(?P<oper_status>.*)\n
         (?:Port\sPoE:\s+(?P<poe>.*))?
         """,
-        re.MULTILINE| re.VERBOSE
+        re.MULTILINE | re.VERBOSE
     )
     rx_vlans = re.compile(
         r"""
@@ -36,9 +36,8 @@ class Script(BaseScript):
         Tagged\sPorts:\s*(?P<tagged_ports>.*)\n
         Untagged\sPorts:(:?\s*(?P<untagged_ports>.*))?
         """,
-        re.MULTILINE| re.VERBOSE
+        re.MULTILINE | re.VERBOSE
     )
-
 
     def parse_section(self, section):
         """
@@ -49,28 +48,27 @@ class Script(BaseScript):
         Port Link:              Up
         Port PoE:               On
         """
-    	r = {}
-    	name = None
-    	match = re.search(self.rx_ecfg, section)
-    	if match:
+        r = {}
+        name = None
+        match = self.rx_ecfg.search(section)
+        if match:
             name = match.group("name")
             r['admin_status'] = "enable" in match.group('admin_status').lower()
             r['oper_status'] = "up" in match.group('oper_status').lower()
             r['enabled_protocols'] = ""
-                       
+
         return name, r
 
     def parse_vlans(self, section):
-    	r = {}
-    	match = re.search(self.rx_vlans, section)
+        r = {}
+        match = self.rx_vlans.search(section)
         if match:
             r = match.groupdict()
         return r
 
-
     def execute(self):
-        v= self.cli("show vlans")
-        vlans=[]
+        v = self.cli("show vlans")
+        vlans = []
         for section in v.split("\n\n"):
             if not section:
                 continue
@@ -82,11 +80,11 @@ class Script(BaseScript):
             if not section:
                 continue
             name, cfg = self.parse_section(section)
-            untag=""
-            tagged=[]
+            untag = ""
+            tagged = []
             for i in vlans:
                 if name in i["untagged_ports"]:
-                    untag=int(i["vlan_id"])
+                    untag = int(i["vlan_id"])
                 if name in i["untagged_ports"]:
                     tagged.append(int(i["vlan_id"]))
             i = {
@@ -94,14 +92,13 @@ class Script(BaseScript):
                 "type": "physical",
                 "admin_status": cfg["admin_status"],
                 "oper_status": cfg["oper_status"],
-                "subinterfaces": [ {
+                "subinterfaces": [{
                     "name": name,
                     "enabled_afi": ["BRIDGE"],
                     "tagged_vlans": tagged,
                     "untagged_vlan": untag,
-                } ]
+                }]
             }
             ifaces += [i]
         # @todo: show vlan
         return [{"interfaces": ifaces}]
-

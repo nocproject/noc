@@ -29,11 +29,11 @@ class TrapServer(UDPServer):
         self.service.perf_metrics["trap_msg_in"] += 1
         object = self.service.lookup_object(address[0])
         if not object:
-            self.service.perf_metrics["trap_invalid_source"] += 1
             return  # Invalid event source
         try:
             community, varbinds = decode_trap(data)
         except DecodeError, why:
+            self.service.perf_metrics["error", ("type", "decode_failed")] += 1
             logger.error("Failed to decode trap: %s", data.encode("hex"))
             logger.error("Decoder error: %s", why)
             return

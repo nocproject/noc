@@ -2,21 +2,22 @@
 # ---------------------------------------------------------------------
 # Interface Classification Rules models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 # NOC modules
 from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
-    ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
-    IntField, PlainReferenceField)
+                           ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
+                           IntField, PlainReferenceField)
 from noc.core.ip import IP
-from noc.main.models import PrefixTable
-from interfaceprofile import InterfaceProfile
+from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.vc.models.vcfilter import VCFilter
+from .interfaceprofile import InterfaceProfile
 
 
 class InterfaceClassificationMatch(EmbeddedDocument):
@@ -124,7 +125,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         ]
         return "\n".join(r)
 
-    ## Untagged
+    # Untagged
     def compile_untagged_eq(self, f_name):
         vlan = int(self.value)
         if vlan < 1 or vlan > 4096:
@@ -148,7 +149,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         ]
         return "\n".join(r)
 
-    ## Tagged
+    # Tagged
     def compile_tagged_eq(self, f_name):
         vlan = int(self.value)
         if vlan < 1 or vlan > 4096:
@@ -189,7 +190,7 @@ class InterfaceClassificationRule(Document):
         EmbeddedDocumentField(InterfaceClassificationMatch),
         required=False)
     profile = PlainReferenceField(InterfaceProfile,
-        default=InterfaceProfile.get_default_profile)
+                                  default=InterfaceProfile.get_default_profile)
 
     def __unicode__(self):
         r = [unicode(x) for x in self.match]
@@ -245,7 +246,10 @@ class InterfaceClassificationRule(Document):
                     "        return bson.ObjectId('%s')" % rule.profile.id
                 ]
             else:
-                mf += ["    return bson.ObjectId('%s')" % rule.profile.id]
+                mf += [
+                    "    if in_selector(mo, %d):" % rule.selector.id,
+                    "        return bson.ObjectId('%s')" % rule.profile.id
+                ]
         r += mf
         return "\n".join(r)
 
@@ -255,11 +259,11 @@ class InterfaceClassificationRule(Document):
         # Hack to retrieve reference
         handlers = {}
         # Compile code
-        exec code in {
+        exec(code, {
             "re": re,
             "PrefixTable": PrefixTable,
             "VCFilter": VCFilter,
             "ManagedObjectSelector": ManagedObjectSelector,
             "handlers": handlers
-        }
+        })
         return handlers[0]

@@ -15,7 +15,7 @@ from noc.sa.interfaces.igetarp import IGetARP
 
 
 class Script(BaseScript):
-    name = "Raisecom.ROS.MSAN.get_arp"
+    name = "Raisecom.ROS.get_arp"
     interface = IGetARP
 
     rx_line = re.compile(

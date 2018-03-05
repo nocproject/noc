@@ -1,0 +1,50 @@
+{
+  "$metric": "Environment | Temperature",
+  "$type": "match",
+  "$matchers": {
+    "is_MES31": {
+      "platform": {
+        "$regex": "MES-31"
+      }
+    },
+    "is_MES23": {
+      "platform": {
+        "$regex": "MES-23"
+      }
+    }
+  },
+  "$match": [{
+    "$match": "is_MES31",
+    "$type": "oids",
+      "oids": [{
+      "oid": "1.3.6.1.4.1.89.53.15.1.9.1",
+      "path": ["","","", "Sensor1"],
+      "$type": "oid",
+      "type": "gauge",
+      "scale": 1
+      },{
+        "$type": "oid",
+        "oid": "1.3.6.1.4.1.89.53.15.1.12.1",
+        "path": ["","","", "Sensor2"],
+        "type": "gauge",
+        "scale": 1
+      },{
+        "$type": "oid",
+        "oid": "1.3.6.1.4.1.89.53.15.1.14.1",
+        "path": ["","","", "Sensor3"],
+        "type": "gauge",
+        "scale": 1
+      }]
+   },{
+    "$match": "is_MES23",
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.89.53.15.1.10.1",
+    "type": "gauge",
+    "scale": 1
+   },{
+    "$type": "oid",
+    "oid": "1.3.6.1.4.1.89.53.15.1.9.1",
+    "type": "gauge",
+    "scale": 1
+  }]
+}

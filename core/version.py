@@ -76,7 +76,8 @@ class Version(object):
     def version(self):
         if self.has_git:
             v = subprocess.check_output([
-                "git", "describe", "--tags"
+                "git", "describe", "--tags",
+                "--abbrev=%d" % CHANGESET_LEN
             ])
             if "-" not in v:
                 return v

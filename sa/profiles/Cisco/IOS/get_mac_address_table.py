@@ -9,6 +9,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -32,6 +33,9 @@ class Script(BaseScript):
         if i.startswith("VPLS"):
             return True
         if i.startswith("seq_no:"):
+            return True
+        if is_int(i):
+            # 10.27.0.80, 1204773146
             return True
         return False
 
@@ -60,13 +64,13 @@ class Script(BaseScript):
                 # Not supported at all
                 raise self.NotSupportedError()
         r = []
-        for l in macs.splitlines():
-            if l.startswith("Multicast Entries"):
+        for line in macs.splitlines():
+            if line.startswith("Multicast Entries"):
                 break  # Additional section on 4500
-            l = l.strip()
-            match = self.rx_line.match(l)
+            line = line.strip()
+            match = self.rx_line.match(line)
             if not match:
-                match = self.rx_line2.match(l)  # 3500XL variant
+                match = self.rx_line2.match(line)  # 3500XL variant
             if match:
                 mac = match.group("mac")
                 if mac.startswith("3333."):

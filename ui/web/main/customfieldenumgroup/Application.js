@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.customfieldenumgroup.Application");
 
 Ext.define("NOC.main.customfieldenumgroup.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.main.customfieldenumgroup.Model"
     ],
     model: "NOC.main.customfieldenumgroup.Model",

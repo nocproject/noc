@@ -9,6 +9,7 @@
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import open_sync_rpc, RPCError
+from noc.lib.text import safe_shadow
 
 
 class SuggestCLICheck(DiscoveryCheck):
@@ -27,9 +28,9 @@ class SuggestCLICheck(DiscoveryCheck):
         for user, password, super_password in self.object.auth_profile.iter_cli():
             if self.check_login(user, password, super_password):
                 if self.object._suggest_snmp:
-                    ro, rw, version = self.object._suggest_snmp
+                    ro, rw, version = self.object._suggest_snmp  # noqa
                 else:
-                    ro, rw, version = None, None, None
+                    ro, rw, version = None, None, None  # noqa
                 self.set_credentials(
                     user=user,
                     password=password,
@@ -46,7 +47,8 @@ class SuggestCLICheck(DiscoveryCheck):
         )
 
     def check_login(self, user, password, super_password):
-        self.logger.info("Checking %s/%s/%s", user, password, super_password)
+        self.logger.debug("Checking %s/%s/%s", user, password, super_password)
+        self.logger.info("Checking %s/%s/%s", safe_shadow(user), safe_shadow(password), safe_shadow(super_password))
         try:
             r = open_sync_rpc(
                 "activator",

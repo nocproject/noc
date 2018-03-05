@@ -31,7 +31,7 @@ class Script(BaseScript):
                     "vendor": "ZTE",
                     "platform": match.group("platform"),
                     "version": match.group("version")
-                    }
+                }
             except self.snmp.TimeOutError:
                 pass
         v = self.cli("show version software")

@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # ActiveEvent model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
-import struct
+import time
 from threading import Lock
 # Django modules
 from django.template import Template, Context
@@ -17,14 +18,13 @@ from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField, IntField,
                                 ListField, EmbeddedDocumentField,
                                 DictField, ObjectIdField)
-from bson import Binary
 # NOC modules
-from eventlog import EventLog
-from eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.dateutils import total_seconds
 from noc.core.cache.decorator import cachedmethod
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField, RawDictField
+from .eventlog import EventLog
+from .eventclass import EventClass
 
 id_lock = Lock()
 
@@ -76,25 +76,28 @@ class ActiveEvent(Document):
 
     def mark_as_new(self, message=None):
         """
-        Move to new queue
-        @todo: Deprecated
+        Move to new queue for reclassification
+        @todo: Rename method to *reclassify*
         """
-        if message is None:
-            message = "Reclassification requested"
-        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
-                                   from_status="A", to_status="N",
-                                   message=message)]
-        e = NewEvent(
-            id=self.id,
-            timestamp=self.timestamp,
-            managed_object=self.managed_object,
-            raw_vars=self.raw_vars,
-            log=log,
-            seq=Binary(struct.pack("!16sII", str(self.managed_object.pool.name), 0, 0))
-        )
-        e.save()
+        from noc.core.nsq.pub import nsq_pub
+
+        # if message is None:
+        #    message = "Reclassification requested"
+        # log = self.log + [EventLog(timestamp=datetime.datetime.now(),
+        #                            from_status="A", to_status="N",
+        #                            message=message)]
+        data = {
+            "source": self.source
+        }
+        data.update(self.raw_vars)
+        msg = {
+            "id": str(self.id),
+            "ts": time.mktime(self.timestamp.timetuple()),
+            "object": self.managed_object.id,
+            "data": data
+        }
+        nsq_pub("events.%s" % self.managed_object.pool.name, msg)
         self.delete()
-        return e
 
     def mark_as_failed(self, version, traceback):
         """
@@ -104,10 +107,16 @@ class ActiveEvent(Document):
         log = self.log + [EventLog(timestamp=datetime.datetime.now(),
                                    from_status="N", to_status="F",
                                    message=message)]
-        e = FailedEvent(id=self.id, timestamp=self.timestamp,
-                        managed_object=self.managed_object,
-                        raw_vars=self.raw_vars, version=version,
-                        traceback=traceback, log=log)
+        e = FailedEvent(
+            id=self.id,
+            timestamp=self.timestamp,
+            managed_object=self.managed_object,
+            source=self.source,
+            raw_vars=self.raw_vars,
+            version=version,
+            traceback=traceback,
+            log=log
+        )
         e.save()
         self.delete()
         return e
@@ -198,23 +207,23 @@ class ActiveEvent(Document):
         Hack to return managed_object.id without SQL lookup
         """
         o = self._data["managed_object"]
-        if type(o) in (int, long):
-            return o
-        return o.id
+        if hasattr(o, "id"):
+            return o.id
+        return o
 
     def contribute_to_alarm(self, alarm):
         if alarm.id in self.alarms:
             return
         self._get_collection().update_one({
-                "_id": self.id,
-            }, {
-                "$set": {
-                    "expires": None,
-                },
-                "$push": {
-                    "alarms": alarm.id
-                }
-            })
+            "_id": self.id,
+        }, {
+            "$set": {
+                "expires": None,
+            },
+            "$push": {
+                "alarms": alarm.id
+            }
+        })
         self.alarms.append(alarm.id)
         self.expires = None
 
@@ -235,6 +244,5 @@ class ActiveEvent(Document):
 
 
 # Avoid circular references
-from newevent import NewEvent
-from failedevent import FailedEvent
-from archivedevent import ArchivedEvent
+from .failedevent import FailedEvent
+from .archivedevent import ArchivedEvent

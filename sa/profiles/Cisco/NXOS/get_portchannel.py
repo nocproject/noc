@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -45,8 +45,8 @@ class Script(BaseScript):
                         out_if["members"].append(match.group('interface'))
                 r += [out_if]
                 return r
-        for l in s.splitlines():
-            pc, rest = l.split(" ", 1)
+        for ll in s.splitlines():
+            pc, rest = ll.split(" ", 1)
             pc = pc[2:]
             v = self.cli("show interface port-channel %s | i \"Members in this channel\"" % pc).strip()
             if not v:
@@ -65,4 +65,3 @@ class Script(BaseScript):
                     "type": "L",  # <!> TODO: port-channel type detection
                 }]
         return r
-

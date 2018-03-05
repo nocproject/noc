@@ -35,7 +35,8 @@ class Script(BaseScript):
         r"^\s*Port Description\s+:(?P<port_description>.*)"
         r"^\s+System Name\s+:(?P<system_name>.*)"
         r"^\s+System Description\s+:(?P<system_description>.*)"
-        r"^\s+System Capabilities\s+:(?P<system_capabilities>.+?)\s*\n",
+        r"^\s+System Capabilities\s+:(?P<system_capabilities>.+?)\s*\n"
+        r"^\s+Management Address Count",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):
@@ -85,8 +86,11 @@ class Script(BaseScript):
                 }[remote_port_subtype.strip().lower()]
                 n["remote_port"] = m.group("port_id").strip()
                 if n["remote_port_subtype"] == 3:
-                    n["remote_port"] = \
-                        MACAddressParameter().clean(n["remote_port"])
+                    try:
+                        n["remote_port"] = \
+                            MACAddressParameter().clean(n["remote_port"])
+                    except ValueError:
+                        continue
                 if n["remote_port_subtype"] == 4:
                     n["remote_port"] = \
                         IPv4Parameter().clean(n["remote_port"])
@@ -102,6 +106,7 @@ class Script(BaseScript):
                     n["remote_system_description"] = re.sub("\n\s{49}", "", p)
                 caps = 0
                 for c in m.group("system_capabilities").split(","):
+                    c = re.sub("\s{49,50}", "", c)
                     c = c.strip()
                     if not c:
                         break

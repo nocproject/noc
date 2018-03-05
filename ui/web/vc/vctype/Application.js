@@ -8,7 +8,7 @@ console.debug("Defining NOC.vc.vctype.Application");
 
 Ext.define("NOC.vc.vctype.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.vc.vctype.Model"],
+    requires: ["NOC.vc.vctype.Model"],
     model: "NOC.vc.vctype.Model",
     search: true,
     columns: [

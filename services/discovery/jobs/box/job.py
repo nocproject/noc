@@ -34,6 +34,7 @@ from .sla import SLACheck
 from .cpe import CPECheck
 from .bfd import BFDCheck
 from .fdp import FDPCheck
+from .rep import REPCheck
 from .hk import HouseKeepingCheck
 from .segmentation import SegmentationCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
@@ -57,8 +58,11 @@ class BoxDiscoveryJob(MODiscoveryJob):
         CDPCheck,
         FDPCheck,
         HuaweiNDPCheck,
+        REPCheck,
         STPCheck
     ])
+
+    is_box = True
 
     def handler(self, **kwargs):
         with Span(sample=self.object.box_telemetry_sample):
@@ -69,7 +73,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 ProfileCheck(self).run()
             if has_cli and self.object.auth_profile and self.object.auth_profile.enable_suggest:
                 SuggestCLICheck(self).run()
-                if self.object.auth_profile.enable_suggest:
+                if self.object.auth_profile and self.object.auth_profile.enable_suggest:
                     # Still suggest
                     self.logger.info(
                         "Cannot choose valid credentials. Stopping"

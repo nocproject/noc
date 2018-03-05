@@ -19,10 +19,11 @@ import cachetools
 from noc.main.models.style import Style
 from .authprofile import AuthProfile
 from noc.lib.validators import is_fqdn
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
                                    DocumentReferenceField)
 from noc.core.model.decorator import on_save, on_init, on_delete_check
+from noc.core.cache.base import cache
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
@@ -32,26 +33,33 @@ from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, Boolea
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
 
-m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
-                                   "is_active": BooleanParameter(default=False),
-                                   "is_stored": BooleanParameter(default=True),
-                                   "window_type": StringParameter(choices=["m", "t"],
-                                                                  default="m"),
-                                   "window": IntParameter(default=1),
-                                   "window_function": StringParameter(choices=["handler", "last", "avg",
-                                                                               "percentile", "q1", "q2", "q3",
-                                                                               "p95", "p99"],
-                                                                      default="last"),
-                                   "window_config": StringParameter(default=""),
-                                   "window_related": BooleanParameter(default=False),
-                                   "low_error": IntParameter(required=False),
-                                   "high_error": IntParameter(required=False),
-                                   "low_warn": IntParameter(required=False),
-                                   "high_warn": IntParameter(required=False),
-                                   "low_error_weight": IntParameter(default=10),
-                                   "low_warn_weight": IntParameter(default=1),
-                                   "high_warn_weight": IntParameter(default=1),
-                                   "high_error_weight": IntParameter(default=10)})
+m_valid = DictListParameter(attrs={
+    "metric_type": ObjectIdParameter(required=True),
+    "enable_box": BooleanParameter(default=False),
+    "enable_periodic": BooleanParameter(default=True),
+    "is_stored": BooleanParameter(default=True),
+    "window_type": StringParameter(
+        choices=["m", "t"],
+        default="m"),
+    "window": IntParameter(default=1),
+    "window_function": StringParameter(
+        choices=[
+            "handler", "last", "sum", "avg",
+            "percentile", "q1", "q2", "q3",
+            "p95", "p99", "step_inc", "step_dec",
+            "step_abs"],
+        default="last"),
+    "window_config": StringParameter(default=""),
+    "window_related": BooleanParameter(default=False),
+    "low_error": IntParameter(required=False),
+    "high_error": IntParameter(required=False),
+    "low_warn": IntParameter(required=False),
+    "high_warn": IntParameter(required=False),
+    "low_error_weight": IntParameter(default=10),
+    "low_warn_weight": IntParameter(default=1),
+    "high_warn_weight": IntParameter(default=1),
+    "high_error_weight": IntParameter(default=10)
+})
 
 id_lock = Lock()
 
@@ -470,6 +478,10 @@ class ManagedObjectProfile(models.Model):
     def on_save(self):
         box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
         periodic_changed = self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery
+        access_changed = (
+            (self.initial_data["access_preference"] != self.access_preference) or
+            (self.initial_data["cli_privilege_policy"] != self.cli_privilege_policy)
+        )
 
         if box_changed or periodic_changed:
             call_later(
@@ -492,6 +504,11 @@ class ManagedObjectProfile(models.Model):
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
+        if access_changed:
+            cache.delete_many([
+                "cred-%s" % x
+                for x in self.managedobject_set.values_list("id", flat=True)
+            ])
 
     def can_escalate(self, depended=False):
         """
@@ -520,6 +537,24 @@ class ManagedObjectProfile(models.Model):
             except ValueError as e:
                 raise ValueError(e)
         super(ManagedObjectProfile, self).save(force_insert, force_update)
+
+    @classmethod
+    def get_max_metrics_interval(cls, managed_object_profiles=None):
+        Q = models.Q
+        op_query = ((Q(enable_box_discovery_metrics=True) & Q(enable_box_discovery=True)) |
+                    (Q(enable_periodic_discovery=True) & Q(enable_periodic_discovery_metrics=True)))
+        if managed_object_profiles:
+            op_query &= Q(id__in=managed_object_profiles)
+        r = set()
+        for mop in ManagedObjectProfile.objects.filter(op_query).exclude(metrics=[]).exclude(metrics=None):
+            if not mop.metrics:
+                continue
+            for m in mop.metrics:
+                if m["enable_box"]:
+                    r.add(mop.box_discovery_interval)
+                if m["enable_periodic"]:
+                    r.add(mop.periodic_discovery_interval)
+        return max(r) if r else 0
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

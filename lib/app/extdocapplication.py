@@ -363,7 +363,7 @@ class ExtDocApplication(ExtApplication):
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
-        if hasattr(o, "tags") and "tags" in attrs:
+        if hasattr(o, "tags") and attrs.get("tags"):
             for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
                 Tag.unregister_tag(t, repr(self.model))
                 self.logger.info("Unregister Tag: %s" % t)

@@ -143,6 +143,8 @@ class Script(BaseScript):
                     iface["port_id"] = \
                         p.group("port_id1") + "." + p.group("port_id2")
                     match = self.rx_port_rstp_state.search(p1)
+                    if not match:
+                        match = self.rx_port_id_state.search(p1)
                     iface["state"] = self.PORT_STATE[match.group("state")]
                     match = self.rx_port_role_pri.search(p1)
                     iface["role"] = self.PORT_ROLE[

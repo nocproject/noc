@@ -1,7 +1,7 @@
 atomiclong==0.1.1
 csiphash==0.0.5
 http-parser==0.8.3
-psycopg2>=2.5
+psycopg2==2.7.3.2
 pymongo==3.5.1
 geopy==0.97
 geojson==1.0.9
@@ -41,3 +41,4 @@ yappi==0.94
 XlsxWriter==0.9.3
 pylibmc==1.5.1
 demjson==2.2.4
+crontab==0.22.0

@@ -9,10 +9,10 @@
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from dashboards.base import BaseDashboard
-from dashboards.managedobject import ManagedObjectDashboard
 from dashboards.mo import MODashboard
 from dashboards.link import LinkDashboard
 from dashboards.ipsla import IPSLADashboard
+from dashboards.container import ContainerDashboard
 from noc.core.translation import ugettext as _
 
 
@@ -23,10 +23,10 @@ class DynamicDashboardApplication(ExtApplication):
     title = _("Dynamic Dashboard")
 
     dashboards = {
-        "managedobject": ManagedObjectDashboard,
         "mo": MODashboard,
         "link": LinkDashboard,
-        "ipsla": IPSLADashboard
+        "ipsla": IPSLADashboard,
+        "container": ContainerDashboard
     }
 
     @view(

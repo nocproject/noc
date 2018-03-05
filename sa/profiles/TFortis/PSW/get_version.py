@@ -22,10 +22,10 @@ class Script(BaseScript):
     rx_html_platform = re.compile(r"^TFortis (?P<platform>.*)\x00")
 
     def execute(self):
-        v = self.http.get("/header_name.shtml")
+        v = self.http.get("/header_name.shtml", eof_mark="</html>")
         v = strip_html_tags(v)
         platform = self.rx_html_platform.search(v)
-        v = self.http.get("/main.shtml")
+        v = self.http.get("/main.shtml", eof_mark="</html>")
         v = strip_html_tags(v)
         match = self.rx_html_ver.search(v)
         return {
@@ -34,5 +34,5 @@ class Script(BaseScript):
             "version": match.group("version"),
             "attributes": {
                 "Bootloader": match.group("bootloader"),
-                }
             }
+        }

@@ -83,8 +83,8 @@ class Script(BaseScript):
                 "instances": []
             }
 
-        # Sometimes crazy root ids like 0.0.<mac> is shown
-        desg_root = cfg["DESG_ROOT"].replace("0.0.", "0.")
+        # Sometimes crazy root ids like <root_priority>.0.<mac> is shown
+        desg_root = cfg["DESG_ROOT"].replace(".0.", ".")
         root_priority, root_id = desg_root.split(".")
 
         instance = {

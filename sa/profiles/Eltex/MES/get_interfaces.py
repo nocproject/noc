@@ -9,9 +9,8 @@
 # Python modules
 import re
 import time
-from collections import defaultdict
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import parse_table
@@ -42,7 +41,7 @@ class Script(BaseScript):
         r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+"
-        r"\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
+        r"\((?P<admin_status>connected|not connected|admin.shutdown|error-disabled)\)\s*\n"
         r"^\s+Interface index is (?P<ifindex>\d+)\s*\n"
         r"^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n"
         r"(^\s+Description:(?P<descr>.*?)\n)?"
@@ -51,8 +50,8 @@ class Script(BaseScript):
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
-    rx_sh_int_des = rx_in =re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
-                    re.MULTILINE)
+    rx_sh_int_des = rx_in = re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+"
+                                       r"(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?", re.MULTILINE)
     rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(
@@ -72,7 +71,7 @@ class Script(BaseScript):
         r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+",
         re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         d = {}
         if self.has_snmp():
             try:
@@ -133,8 +132,8 @@ class Script(BaseScript):
             ifindex = 0
             name = res[0].strip()
             if (
-                self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
-                self.match_version(version__regex="4\.0\.[4-7]$")
+                    self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
+                    self.match_version(version__regex="4\.0\.[4-7]$")
             ):
                 v = self.cli("show interface %s" % name)
                 time.sleep(1)
@@ -143,19 +142,24 @@ class Script(BaseScript):
                     ifindex = match.group("ifindex")
                     mac = match.group("mac")
                     mtu = match.group("mtu")
-                    description = match.group("descr")
-                    if not description:
-                        description = ''
-                    a_stat = match.group("admin_status").lower() == "connected"
-                    o_stat = match.group("oper_status").lower() == "up"
+                    if len(res) == 4:
+                        a_stat = res[1].strip().lower() == "up"
+                        o_stat = res[2].strip().lower() == "up"
+                        description = res[3].strip()
+                    else:
+                        a_stat = True
+                        o_stat = match.group("oper_status").lower() == "up"
+                        description = match.group("descr")
+                        if not description:
+                            description = ''
 
             else:
                 if self.profile.convert_interface_name(name) in d:
                     ifindex = d[self.profile.convert_interface_name(name)]["sifindex"]
                     mac = d[self.profile.convert_interface_name(name)]["smac"]
                 if len(res) == 4:
-                    o_stat = res[1].strip().lower() == "up"
-                    a_stat = res[2].strip().lower() == "up"
+                    a_stat = res[1].strip().lower() == "up"
+                    o_stat = res[2].strip().lower() == "up"
                     description = res[3].strip()
                 else:
                     o_stat = True
@@ -163,13 +167,13 @@ class Script(BaseScript):
                     description = res[1].strip()
 
             sub = {
-                    "name": self.profile.convert_interface_name(name),
-                    "mtu": mtu,
-                    "admin_status": a_stat,
-                    "oper_status": o_stat,
-                    "description": description.strip(),
-                    "enabled_afi": []
-                }
+                "name": self.profile.convert_interface_name(name),
+                "mtu": mtu,
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+                "description": description.strip(),
+                "enabled_afi": []
+            }
             if ifindex:
                 sub["snmp_ifindex"] = ifindex
             if mac:
@@ -240,7 +244,6 @@ class Script(BaseScript):
                     enabled_afi += ["IPv4"]
                 iface["subinterfaces"][0]["enabled_afi"] = enabled_afi
                 iface["subinterfaces"][0][ip_interfaces] = ip_list
-
 
             interfaces += [iface]
 

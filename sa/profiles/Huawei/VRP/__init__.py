@@ -3,13 +3,15 @@
 # Vendor: Huawei
 # OS:     VRP
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
-from noc.core.profile.base import BaseProfile
+
+# Python modules
 import re
+from collections import defaultdict
+# NOC modules
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
@@ -24,16 +26,16 @@ class Profile(BaseProfile):
     ]
     pattern_prompt = \
         r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)" \
-        r"(?:-[a-zA-Z0-9/]+)*[>#\]\)]"
+        r"(?:-[a-zA-Z0-9/\_]+)*[>#\]\)]"
     pattern_syntax_error = \
         r"(ERROR: |% Wrong parameter found at|" \
         r"% Unrecognized command found at|" \
         r"Error:Too many parameters found|" \
         r"% Too many parameters found at|" \
         r"% Ambiguous command found at|" \
-        r"Error: Unrecognized command found at|" \
+        r"Error:\s*Unrecognized command found at|" \
         r"Error:\s*Wrong parameter found at|" \
-        r"Error:Incomplete command found at)"
+        r"Error:\s*Incomplete command found at)"
 
     command_more = " "
     config_volatile = ["^%.*?$"]
@@ -69,6 +71,7 @@ class Profile(BaseProfile):
         >>> Profile().convert_interface_name("MEth2/0/0")
         'M-Ethernet2/0/0'
         """
+        s = str(s)  # avoid `expected string or buffer` error
         match = self.rx_interface_name.match(s)
         if not match:
             return s
@@ -162,4 +165,40 @@ class Profile(BaseProfile):
                 r[part_name]["table"] = row
             # r[part_name] = dict(k_v_list)
             # r[part_name]["table"] = row
+        return r
+
+    @staticmethod
+    def parse_ifaces(e=""):
+        # Parse display interfaces output command for Huawei
+        r = defaultdict(dict)
+        current_iface = ""
+        for line in e.splitlines():
+            print line
+            if not line:
+                continue
+            if (line.startswith("LoopBack") or line.startswith("MEth") or
+                    line.startswith("Ethernet") or
+                    line.startswith("GigabitEthernet") or line.startswith("XGigabitEthernet") or
+                    line.startswith("Vlanif") or line.startswith("NULL")):
+                current_iface = line.split()[0]
+                continue
+            # k, v count
+            split = line.count(":") + line.count(" is ") + line.count(" rate ")
+            if "Switch Port" in line:
+                line = line[12:]
+            elif "Route Port" in line:
+                line = line[11:]
+            print line
+            # while split:
+            for part in line.split(",", split - 1):
+                if ":" in part:
+                    k, v = part.split(":", 1)
+                elif " is " in part:
+                    k, v = part.split("is", 1)
+                elif " rate " in part:
+                    k, v = part.split("rate", 1)
+                    k = k + "rate"
+                else:
+                    continue
+                r[current_iface][k.strip()] = v.strip()
         return r

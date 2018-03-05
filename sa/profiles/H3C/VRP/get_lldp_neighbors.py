@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # H3C.VRP.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -18,23 +18,26 @@ class Script(BaseScript):
     name = "H3C.VRP.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    ##
-    ## No lldp on 3.02 and older
-    ##
+    #
+    # No lldp on 3.02 and older
+    #
     @BaseScript.match(version__startswith="3.02")
     def execute_old(self):
         raise self.NotSupportedError()
 
-    ##
-    ## Other (3.03 and newer)
-    ##
+    #
+    # Other (3.03 and newer)
+    #
     rx_ifc_line = re.compile(r"\w*LLDP neighbor-information of port \d+\[(?P<local_if>[^\n]+)\]:\n(?P<tail>.*)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     @BaseScript.match()
     def execute_other(self):
         r = []
         i = {}
-        lldp = self.cli("display lldp neighbor")
+        try:
+            lldp = self.cli("display lldp neighbor")
+        except self.CLISyntaxError:
+            return []
         while True:
             match = self.rx_ifc_line.search(lldp)
             if not match:

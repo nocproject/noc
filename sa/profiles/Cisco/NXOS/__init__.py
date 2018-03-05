@@ -3,7 +3,7 @@
 # Vendor: Cisco
 # OS:     NX-OS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -21,6 +21,7 @@ class Profile(BaseProfile):
     command_leave_config = "exit"
     command_save_config = "copy running-config startup-config\n"
     pattern_prompt = r"^\S+?#"
+    pattern_syntax_error = r"% Invalid command at"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
 

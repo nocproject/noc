@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -36,14 +36,14 @@ class Script(BaseScript):
                         if interface:
                             if n == interface:
                                 r.append({
-                                    "interface": self.profile.convert_interface_name(n),
+                                    "interface": n,
                                     "status": int(s) == 1
-                                    })
+                                })
                         else:
                             r.append({
-                                "interface": self.profile.convert_interface_name(n),
+                                "interface": n,
                                 "status": int(s) == 1
-                                })
+                            })
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -59,7 +59,7 @@ class Script(BaseScript):
                 iface = match.group("interface")
                 if iface[:1] == 'e' or iface[:1] == 'g' or iface[:1] == 't':
                     r.append({
-                        "interface": self.profile.convert_interface_name(iface),
+                        "interface": iface,
                         "status": match.group("status") == "up"
                     })
         except self.CLISyntaxError:
@@ -71,7 +71,7 @@ class Script(BaseScript):
             for match in self.rx_interface_status1.finditer(c):
                 iface = match.group("interface")
                 r.append({
-                    "interface": self.profile.convert_interface_name(iface),
+                    "interface": iface,
                     "status": match.group("status") == "UP"
                 })
 

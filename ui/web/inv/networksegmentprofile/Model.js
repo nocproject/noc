@@ -66,6 +66,33 @@ Ext.define("NOC.inv.networksegmentprofile.Model", {
         {
             name: "horizontal_transit_policy",
             type: "string"
+        },
+        {
+            name: "enable_vlan",
+            type: "boolean"
+        },
+        {
+            name: "default_vlan_profile",
+            type: "string"
+        },
+        {
+            name: "default_vlan_profile__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "style",
+            type: "int"
+        },
+        {
+            name: "style__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

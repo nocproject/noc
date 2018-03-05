@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 import demjson
+from django.db.models import Q
 from jinja2 import Environment, FileSystemLoader
 from noc.config import config
 from noc.inv.models.interface import Interface
@@ -23,10 +24,11 @@ class MODashboard(BaseDashboard):
     name = "mo"
 
     def resolve_object(self, object):
-        try:
-            return ManagedObject.objects.get(id=object)
-        except ManagedObject.DoesNotExist:
+        o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
+        if not o:
             raise self.NotFound()
+        else:
+            return o[0]
 
     def resolve_object_data(self, object):
         def interface_profile_has_metrics(profile):
@@ -34,7 +36,7 @@ class MODashboard(BaseDashboard):
             Check interface profile has metrics
             """
             for m in profile.metrics:
-                if m.is_active:
+                if m.enable_box or m.enable_periodic:
                     return True
             return False
 
@@ -55,6 +57,8 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
+                if iface.type == 'SVI' and not iface.profile.allow_subinterface_metrics:
+                    continue
                 if iface.type == u"aggregated" and iface.lag_members:
                     lags += [{
                         "name": iface.name,
@@ -76,11 +80,13 @@ class MODashboard(BaseDashboard):
 
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
+        om = []
         for m in (self.object.object_profile.metrics or []):
             mt = MetricType.get_by_id(m["metric_type"])
-            if not mt or not m.get("is_active", False):
+            if not mt or not (m.get("enable_periodic", False) or m.get("enable_box", False)):
                 continue
-            object_metrics += [mt.name]
+            om += [mt.name]
+        object_metrics.extend(sorted(om))
 
         return {"port_types": port_types,
                 "object_metrics": object_metrics,

@@ -92,8 +92,8 @@ class Script(BaseScript):
                 l_type = "S"
             r += [{
                 "interface": match.group("port").lower(),
-               #"interface": match.group("port"),
+                # "interface": match.group("port"),
                 "type": l_type,
                 "members": memb,
-                }]
+            }]
         return r

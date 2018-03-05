@@ -12,13 +12,14 @@ import operator
 import cachetools
 from threading import Lock
 # Third-party modules
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 ListField, BooleanField, IntField,
                                 EmbeddedDocumentField, LongField)
+from mongoengine.errors import ValidationError
 from django.db.models.aggregates import Count
 # NOC modules
-from noc.lib.nosql import ForeignKeyField
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
@@ -26,9 +27,23 @@ from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.defer import call_later
 from noc.core.bi.decorator import bi_sync
 from .networksegmentprofile import NetworkSegmentProfile
+from .allocationgroup import AllocationGroup
+from .link import Link
 from noc.core.scheduler.job import Job
+from noc.vc.models.vcfilter import VCFilter
 
 id_lock = Lock()
+
+
+class VLANTranslation(EmbeddedDocument):
+    filter = ForeignKeyField(VCFilter)
+    rule = StringField(choices=[
+        # Rewrite tag to parent vlan's
+        ("map", "map"),
+        # Append parent tag as S-VLAN
+        ("push", "push")
+    ], default="push")
+    parent_vlan = PlainReferenceField("vc.VLAN")
 
 
 @bi_sync
@@ -89,6 +104,19 @@ class NetworkSegment(Document):
     # True if segment is redundant and redundancy
     # currently broken
     lost_redundancy = BooleanField(default=False)
+    # VLAN namespace demarcation
+    # * False - share namespace with parent VLAN
+    # * True - split own namespace
+    vlan_border = BooleanField(default=True)
+    # VLAN translation policy when marking border
+    # (vlan_border=True)
+    # Dynamically recalculated and placed to VLAN.translation_rule
+    # and VLAN.parent
+    vlan_translation = ListField(EmbeddedDocumentField(VLANTranslation))
+    # Share allocation resources with another segments
+    allocation_group = PlainReferenceField(AllocationGroup)
+    # Provided L2 MTU
+    l2_mtu = IntField(default=1504)
     # Administrative domains which have access to segment
     # Sum of all administrative domains
     adm_domains = ListField(IntField())
@@ -128,6 +156,9 @@ class NetworkSegment(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _border_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _vlan_domains_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _vlan_domains_mo_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DISCOVERY_JOB = "noc.services.discovery.jobs.segment.job.SegmentDiscoveryJob"
 
@@ -156,6 +187,8 @@ class NetworkSegment(Document):
             return [self.id]
 
     def clean(self):
+        if self.id and "parent" in self._changed_fields and self.has_loop:
+            raise ValidationError("Creating segments loop")
         if self.horizontal_transit_policy == "E":
             self.enable_horizontal_transit = True
         elif self.horizontal_transit_policy == "D":
@@ -297,8 +330,6 @@ class NetworkSegment(Document):
                 else:
                     d1[k] = d2[k]
 
-        services = {}
-        subscribers = {}
         objects = dict(
             (d["object_profile"], d["count"])
             for d in self.managed_objects.values(
@@ -308,9 +339,7 @@ class NetworkSegment(Document):
             ).order_by("count"))
         # Direct services
         mo_ids = self.managed_objects.values_list("id", flat=True)
-        for ss in ServiceSummary.objects.filter(managed_object__in=mo_ids):
-            update_dict(services, SummaryItem.items_to_dict(ss.service))
-            update_dict(subscribers, SummaryItem.items_to_dict(ss.subscriber))
+        services, subscribers = ServiceSummary.get_direct_summary(mo_ids)
         self.direct_services = SummaryItem.dict_to_items(services)
         self.direct_subscribers = SummaryItem.dict_to_items(subscribers)
         self.direct_objects = ObjectSummaryItem.dict_to_items(objects)
@@ -465,3 +494,79 @@ class NetworkSegment(Document):
     def on_save(self):
         if hasattr(self, "_changed_fields") and "profile" in self._changed_fields:
             self.ensure_discovery_jobs()
+        if hasattr(self, "_changed_fields") and self.vlan_border and "vlan_translation" in self._changed_fields:
+            from noc.vc.models.vlan import VLAN
+            for vlan in VLAN.objects.filter(segment=self.id):
+                vlan.refresh_translation()
+        if hasattr(self, "_changed_fields") and "parent" in self._changed_fields:
+            self.update_links()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_border_cache"), lock=lambda _: id_lock)
+    def get_border_segment(cls, segment):
+        """
+        Proceed up until vlan border
+        :return:
+        """
+        current = segment
+        while current:
+            if current.vlan_border or not current.parent:
+                return current
+            current = current.parent
+
+    @classmethod
+    def iter_vlan_domain_segments(cls, segment):
+        """
+        Get all segments related to same VLAN domains
+        :param segment:
+        :return:
+        """
+        def iter_segments(ps):
+            # Return segment
+            yield ps
+            # Iterate and recurse over all non vlan-border children
+            for s in NetworkSegment.objects.filter(parent=ps.id):
+                if s.vlan_border:
+                    continue
+                for cs in iter_segments(s):
+                    yield cs
+
+        # Get domain root
+        root = cls.get_border_segment(segment)
+        # Yield all children segments
+        for rs in iter_segments(root):
+            yield rs
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_cache"), lock=lambda _: id_lock)
+    def get_vlan_domain_segments(cls, segment):
+        """
+        Get list of all segments related to same VLAN domains
+        :param segment:
+        :return:
+        """
+        return list(cls.iter_vlan_domain_segments(segment))
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_vlan_domains_mo_cache"), lock=lambda _: id_lock)
+    def get_vlan_domain_object_ids(cls, segment):
+        """
+        Get list of all managed object ids belonging to
+        same VLAN domain
+        :param segment:
+        :return:
+        """
+        from noc.sa.models.managedobject import ManagedObject
+
+        return ManagedObject.objects.filter(
+            segment__in=[s.id for s in cls.get_vlan_domain_segments(segment)]
+        ).values_list("id", flat=True)
+
+    def iter_links(self):
+        for link in Link.objects.filter(linked_segments__in=[self.id]):
+            yield link
+
+    def update_links(self):
+        # @todo intersect link only
+        for link in self.iter_links():
+            link.save()

@@ -16,6 +16,7 @@ from nsq.reader import Reader as BaseReader, _utf8_params
 import ujson
 # NOC modules
 from noc.core.http.client import fetch
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,7 @@ class Reader(BaseReader):
         )
 
         if not (200 <= code <= 299):
+            metrics["error", ("type", "nsqlookupd_query_error_code %s" % code)] += 1
             logger.warning("[%s] lookupd %s query error: %s %s",
                            self.name, lookupd_url, code, body)
             return
@@ -56,6 +58,7 @@ class Reader(BaseReader):
         try:
             lookup_data = ujson.loads(body)
         except ValueError as e:
+            metrics["error", ("type", "nsqlookupd_invalid_json")] += 1
             logger.warning("[%s] lookupd %s failed to parse JSON: %s",
                            self.name, lookupd_url, e)
             return

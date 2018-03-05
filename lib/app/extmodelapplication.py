@@ -2,11 +2,12 @@
 # ----------------------------------------------------------------------
 # ExtModelApplication implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 from functools import reduce
 # Third-party modules
@@ -19,17 +20,18 @@ from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 import six
 # NOC modules
-from extapplication import ExtApplication, view
 from noc.sa.interfaces.base import (
     BooleanParameter, IntParameter,
     FloatParameter, TagsParameter,
     NoneParameter, StringListParameter,
     DictParameter, ListOfParameter,
     ModelParameter, InterfaceTypeError)
-from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
 from noc.models import is_document
 from noc.main.models.tag import Tag
+from noc.core.stencil import stencil_registry
+from .extapplication import ExtApplication, view
+from .interfaces import DateParameter, DateTimeParameter
 
 
 class ExtModelApplication(ExtApplication):
@@ -255,6 +257,11 @@ class ExtModelApplication(ExtApplication):
             if f.name == "tags":
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
+            elif f.name == "shape":
+                if o.shape:
+                    v = stencil_registry.get(o.shape)
+                    r[f.name] = v
+                    r["%s__label" % f.name] = unicode(v.title)
             elif hasattr(f, "document"):
                 # DocumentReferenceField
                 v = getattr(o, f.name)
@@ -266,8 +273,8 @@ class ExtModelApplication(ExtApplication):
                     r["%s__label" % f.name] = ""
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
-                if (v is not None and type(v) not in (str, unicode, int, long, bool, list)):
-                    if type(v) == datetime.datetime:
+                if v is not None and not isinstance(v, (str, unicode, int, long, bool, list)):
+                    if isinstance(v, datetime.datetime):
                         v = v.isoformat()
                     else:
                         v = unicode(v)
@@ -366,6 +373,36 @@ class ExtModelApplication(ExtApplication):
             extra["select"] = extra_select
         return extra, new_order
 
+    def can_create(self, user, obj):
+        """
+        Check user can create object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
+    def can_update(self, user, obj):
+        """
+        Check user can update object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
+    def can_delete(self, user, obj):
+        """
+        Check user can delete object. Used to additional
+        restrictions after permissions check
+        :param user:
+        :param obj: Object instance
+        :return: True if access granted
+        """
+        return True
+
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
@@ -410,7 +447,7 @@ class ExtModelApplication(ExtApplication):
             o = self.model(**attrs)
             # Run models validators
             try:
-                o.clean_fields()
+                o.full_clean(exclude=list(self.ignored_fields))
             except ValidationError as e:
                 e_msg = []
                 for f in e.message_dict:
@@ -419,6 +456,12 @@ class ExtModelApplication(ExtApplication):
                     "status": False,
                     "message": "Validation error: %s" % " | ".join(e_msg)
                 }, status=self.BAD_REQUEST)
+            # Check permissions
+            if not self.can_create(request.user, o):
+                return self.render_json({
+                    "status": False,
+                    "message": "Permission denied"
+                }, status=self.FORBIDDEN)
             # Check for duplicates
             try:
                 o.save()
@@ -457,7 +500,6 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
-        print request
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
@@ -482,7 +524,7 @@ class ExtModelApplication(ExtApplication):
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         # Tags
-        if hasattr(o, "tags") and "tags" in attrs:
+        if hasattr(o, "tags") and attrs.get("tags"):
             for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
                 Tag.unregister_tag(t, repr(self.model))
                 self.logger.info("Unregister Tag: %s" % t)
@@ -503,6 +545,12 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Validation error: %s" % " | ".join(e_msg)
             }, status=self.BAD_REQUEST)
+        # Check permissions
+        if not self.can_create(request.user, o):
+            return self.render_json({
+                "status": False,
+                "message": "Permission denied"
+            }, status=self.FORBIDDEN)
         # Save
         try:
             o.save()
@@ -532,6 +580,12 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
+        # Check permissions
+        if not self.can_delete(request.user, o):
+            return self.render_json({
+                "status": False,
+                "message": "Permission denied"
+            }, status=self.FORBIDDEN)
         try:
             o.delete()
         except ValueError as e:

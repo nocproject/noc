@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Generic.get_interface_status_ex
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Generic.get_interface_status_ex"
+    name = "Alcatel.TIMOS.get_interface_status_ex"
     interface = IGetInterfaceStatusEx
     requires = []
 
@@ -29,7 +29,9 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
-            f = lambda x: x
+            def f(x):
+                return x
+
         d = self.get_iftable(mib)
         for ifindex in d:
             if ifindex in r:
@@ -42,10 +44,10 @@ class Script(BaseScript):
         for ifindex, name in self.get_iftable("IF-MIB::ifName").iteritems():
             try:
                 v = self.profile.convert_interface_name(name)
-            except InterfaceTypeError, why:
+            except InterfaceTypeError as e:
                 self.logger.debug(
                     "Ignoring unknown interface %s: %s",
-                    name, why
+                    name, e
                 )
                 unknown_interfaces += [name]
                 continue
@@ -55,7 +57,7 @@ class Script(BaseScript):
         # Apply ifAdminStatus
         self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
-        self.apply_table(r, "1.3.6.1.4.1.6527.3.1.2.2.4.2.1.39", "oper_status", lambda x: x in [4,5])
+        self.apply_table(r, "1.3.6.1.4.1.6527.3.1.2.2.4.2.1.39", "oper_status", lambda x: x in [4, 5])
         # Apply ifSpeed
         s_table = self.get_iftable("IF-MIB::ifSpeed")
         highspeed = set()

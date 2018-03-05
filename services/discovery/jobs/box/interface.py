@@ -10,6 +10,7 @@
 import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.core.service.rpc import RPCError
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -319,7 +320,13 @@ class InterfaceCheck(DiscoveryCheck):
         """
         if iface.profile_locked:
             return
-        p_id = self.get_interface_profile(iface)
+        try:
+            p_id = self.get_interface_profile(iface)
+        except NotImplementedError:
+            self.logger.error(
+                "Uses not implemented rule"
+            )
+            return
         if p_id and p_id != iface.profile.id:
             # Change profile
             profile = InterfaceProfile.get_by_id(p_id)
@@ -356,7 +363,10 @@ class InterfaceCheck(DiscoveryCheck):
             "Missed ifindexes for: %s",
             ", ".join(missed_ifindexes)
         )
-        r = self.object.scripts.get_ifindexes()
+        try:
+            r = self.object.scripts.get_ifindexes()
+        except RPCError:
+            r = None
         if not r:
             return
         updates = {}

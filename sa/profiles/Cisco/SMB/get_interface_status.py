@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_interface_status
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,13 +12,14 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
-rx_interface_status = re.compile(r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)
-rx_interface_status = re.compile(r"^(?P<interface>\S+).+\s+(?P<status>up|down)\s+.*$", re.IGNORECASE)
-
 
 class Script(BaseScript):
     name = "Cisco.SMB.get_interface_status"
     interface = IGetInterfaceStatus
+
+    rx_interface_status = re.compile(
+        r"^(?P<interface>\S+).+\s+(?P<status>up|down)\s+.*$", re.IGNORECASE)
+    rx_digit = re.compile(r"^[0-9]+$")
 
     def execute(self, interface=None):
         if self.has_snmp():
@@ -30,8 +31,13 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
+                    if (
+                        n.startswith("stack-port") or
+                        n.startswith("Logical-int")
+                    ):
+                        continue
                     # ifOperStatus up(1)
-                    if re.match("^[0-9]+$",n):
+                    if self.rx_digit.match(n):
                         n = "Vlan" + n
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r
@@ -44,8 +50,8 @@ class Script(BaseScript):
         else:
             cmd = "show interfaces status"
 
-        for l in self.cli(cmd).splitlines():
-            match = rx_interface_status.match(l)
+        for ll in self.cli(cmd).splitlines():
+            match = self.rx_interface_status.match(ll)
             if match:
                 r += [{
                     "interface": match.group("interface"),

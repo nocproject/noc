@@ -8,7 +8,7 @@ console.debug("Defining NOC.fm.alarmtrigger.Application");
 
 Ext.define("NOC.fm.alarmtrigger.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: [
+    requires: [
         "NOC.fm.alarmtrigger.Model",
         "NOC.main.timepattern.LookupField",
         "NOC.sa.managedobjectselector.LookupField",

@@ -10,7 +10,6 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import parse_table
-from noc.core.ip import IPv4
 import re
 
 
@@ -19,7 +18,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_iface = re.compile(
-        r"^(?P<ifname>\S+) is (?P<admin_status>up|down), "
+        r"^(?P<ifname>\S+) is (?P<admin_status>up|down|administratively down), "
         r"line protocol is (?P<oper_status>up|down)\s*\n"
         r"^\s+Ifindex is (?P<snmp_ifindex>\d+).*\n"
         r"(^\s+Description: (?P<description>.+)\n)?"
@@ -89,7 +88,7 @@ class Script(BaseScript):
             if not r[3]:
                 continue
             vlan_id = int(r[0])
-            #ports = r[3].split(", ")
+            # ports = r[3].split(", ")
             for p in r[3].split(", "):
                 p = self.profile.convert_interface_name(p)
                 for i in interfaces:

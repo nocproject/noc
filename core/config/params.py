@@ -61,6 +61,7 @@ class StringParameter(BaseParameter):
                 raise ValueError("Invalid value: %s" % v)
         return v
 
+
 class SecretParameter(BaseParameter):
     def __init__(self, default=None, help=None, choices=None):
         super(SecretParameter, self).__init__(default=default, help=help)
@@ -71,6 +72,7 @@ class SecretParameter(BaseParameter):
 
     def __repr__(self):
         return "****hidden****"
+
 
 class IntParameter(BaseParameter):
     def __init__(self, default=None, help=None, min=None, max=None):
@@ -112,6 +114,14 @@ class MapParameter(BaseParameter):
         except KeyError:
             raise ValueError("Invalid value %s" % v)
 
+    def dump_value(self):
+        if not self.mappings:
+            return super(MapParameter, self).dump_value()
+        for mv in self.mappings:
+            if self.mappings[mv] == self.value:
+                return mv
+        return self.value
+
 
 class HandlerParameter(BaseParameter):
     def clean(self, v):
@@ -123,6 +133,15 @@ class HandlerParameter(BaseParameter):
 
 
 class SecondsParameter(BaseParameter):
+    SHORT_FORM = (
+        (365 * 24 * 3600, "y"),
+        (30 * 24 * 3600, "m"),
+        (7 * 24 * 3600, "w"),
+        (24 * 3600, "d"),
+        (3600, "h"),
+        (60, "m")
+    )
+
     def clean(self, v):
         m = 1
         if isinstance(v, six.integer_types):
@@ -153,6 +172,15 @@ class SecondsParameter(BaseParameter):
         except ValueError:
             raise ValueError("Invalid value: %s" % v)
         return v * m
+
+    def dump_value(self):
+        if not self.value > 0:
+            return 0
+        for d, s in self.SHORT_FORM:
+            n, r = divmod(self.value, d)
+            if not r:
+                return "%d%s" % (n, s)
+        return "%ss" % self.value
 
 
 class ListParameter(BaseParameter):

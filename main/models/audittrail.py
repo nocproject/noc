@@ -18,9 +18,8 @@ from mongoengine.fields import (StringField, DateTimeField,
                                 ListField, EmbeddedDocumentField)
 # NOC modules
 from noc.config import config
-from noc.lib.middleware import get_user
+from noc.core.middleware.tls import get_user
 from noc.lib.utils import get_model_id
-from noc.lib.text import to_seconds
 
 logger = logging.getLogger(__name__)
 
@@ -164,9 +163,7 @@ class AuditTrail(Document):
 
     @classmethod
     def get_model_ttl(cls, model_id):
-        m = model_id.split(".")[0]
-        v = cls.DEFAULT_TTL
-        return datetime.timedelta(seconds=v)
+        return datetime.timedelta(seconds=cls.DEFAULT_TTL)
 
     @classmethod
     def on_new_model(cls, sender, **kwargs):

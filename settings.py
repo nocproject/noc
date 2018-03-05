@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # Django settings
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import sys
-import os
 import logging
 from noc.config import config
+if config.features.pypy:
+    from psycopg2cffi import compat
+    compat.register()
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -81,24 +83,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
-    "django.contrib.messages.context_processors.messages",
-    "noc.lib.app.setup_processor",
+    "noc.core.middleware.context.messages"
 )
 #
 MIDDLEWARE_CLASSES = [
-    "noc.lib.middleware.WSGISetupMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.RemoteUserMiddleware",
-    "noc.lib.middleware.TLSMiddleware",  # Thread local storage
-    "noc.lib.middleware.ExtFormatMiddleware"
-]
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.RemoteUserBackend'
+    "noc.core.middleware.remoteuser.RemoteUserMiddleware",
+    "noc.core.middleware.tls.TLSMiddleware",  # Thread local storage
+    "noc.core.middleware.extformat.ExtFormatMiddleware"
 ]
 
 ROOT_URLCONF = "noc.urls"
@@ -107,7 +100,6 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don"t forget to use absolute paths, not relative paths.
-    "local",
     ".",
     "templates",
     "django/contrib/admin/templates/"
@@ -115,16 +107,14 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = [
     "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
+    "django.contrib.contenttypes",  # Required by django auth
     "django.contrib.sites",
     "django.contrib.admin",
-    "django.contrib.messages",
     "south",
     # NOC modules
     "noc.main",
     "noc.project",
-    # "noc.wf",
+    "noc.wf",
     "noc.gis",
     "noc.crm",
     "noc.inv",
@@ -147,7 +137,7 @@ INSTALLED_APPS = [
 FORCE_SCRIPT_NAME = ""
 
 # Available languages
-_ = lambda s: s
+_ = lambda s: s # noqa. _ should be a lambda not a function
 LANGUAGES = [
     ("en", _("English")),
     ("ru", _("Russian")),
@@ -169,11 +159,6 @@ SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
 # Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
-# Message application setup
-MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
-# Store sessions in mongodb
-SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-# Fixed beefs directory
 # Set up by test runner
 TEST_FIXED_BEEF_BASE = None
 

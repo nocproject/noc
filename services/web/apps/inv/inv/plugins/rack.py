@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # inv.inv data plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC modules
-from base import InvPlugin
 from noc.inv.models.object import Object
 from noc.sa.interfaces.base import ObjectIdParameter, IntParameter
+from .base import InvPlugin
 
 
 class RackPlugin(InvPlugin):
@@ -110,6 +112,8 @@ class RackPlugin(InvPlugin):
         if co.get_data("rackmount", "shift") != shift:
             co.set_data("rackmount", "shift", shift)
             co.save()
-            co.log("Set position shift to %d holes" % shift,
+            co.log(
+                "Set position shift to %d holes" % shift,
                 user=request.user.username, system="WEB",
-                op="CHANGE")
+                op="CHANGE"
+            )

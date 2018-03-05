@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # vc.vcbindfilter application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.vc.models import VCBindFilter
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.vc.models.vcbindfilter import VCBindFilter
 from noc.core.translation import ugettext as _
 
 
@@ -27,4 +27,3 @@ class VCBindFilterApplication(ExtModelApplication):
         :return:
         """
         return obj.vc_filter.expression
-

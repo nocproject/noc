@@ -4,7 +4,7 @@
 # OS:     DGS3100
 # Compatible:
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -17,16 +17,18 @@ class Profile(BaseProfile):
     name = "DLink.DGS3100"
     pattern_more = [
         (r"CTRL\+C.+?a All", "a"),
-        (r"CTRL\+C.+?a ALL", "a"),
+        (r"CTRL\+C.+?a ALL ", "a"),
         (r"\[Yes/press any key for no\]", "Y")
     ]
-    pattern_unprivileged_prompt = r"^\S+:(3|6|user|operator)#"
+    pattern_unprivileged_prompt = r"^(?P<hostname>\S+):(3|6|user|operator)#"
     pattern_syntax_error = r"(Command: .+|Invalid input detected at)"
     pattern_prompt = r"^(?P<hostname>\S+)#"
+    rogue_chars = [re.compile("^\s{45,}"), "\r"]
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
+    send_on_syntax_error = BaseProfile.send_backspaces
     #
     # Version comparison
     # Version format:

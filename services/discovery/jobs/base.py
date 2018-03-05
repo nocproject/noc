@@ -14,8 +14,10 @@ import time
 import zlib
 import datetime
 import types
+import operator
 # Third-party modules
 import bson
+import cachetools
 import six
 from six.moves import StringIO
 from pymongo import UpdateOne
@@ -47,6 +49,9 @@ class MODiscoveryJob(PeriodicJob):
     use_offset = True
     # Name of umbrella class to cover discovery problems
     umbrella_cls = None
+    # Job families
+    is_box = False
+    is_periodic = False
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
@@ -362,6 +367,8 @@ class DiscoveryCheck(object):
         self.if_ip_cache = {}
         self.sub_cache = {}
         self.profile_cache = {}
+        self.is_box = self.job.is_box
+        self.is_periodic = self.job.is_periodic
 
     def is_enabled(self):
         checks = self.job.attrs.get("_checks", set())
@@ -679,6 +686,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
         self.neighbor_id_cache = {}
         self.interface_aliases = {}  # (object, alias) -> port name
+        self._own_mac_check_cache = {}
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
@@ -790,7 +798,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "Cannot clean interface %s:%s. Skipping",
                         self.object, l)
                     continue
-                ri = self.clean_interface(self.object, r)
+                ri = self.clean_interface(remote_object, r)
                 if not ri:
                     self.logger.info(
                         "Cannot clean interface %s:%s. Skipping",
@@ -864,14 +872,24 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return neighbors
         # Cached version
         neighbors = cache.get(key, version=self.NEIGHBOR_CACHE_VERSION)
+        self.logger.debug("Use neighbors cache")
         if neighbors is None:
             neighbors = iter_neighbors(mo)
             if isinstance(neighbors, types.GeneratorType):
                 neighbors = list(iter_neighbors(mo))
             cache.set(key, neighbors, ttl=ttl,
                       version=self.NEIGHBOR_CACHE_VERSION)
+            if self.interface_aliases:
+                alias_cache = {(mo.id, n[0]): self.interface_aliases[(mo.id, n[0])] for n in neighbors
+                               if (mo.id, n[0]) in self.interface_aliases}
+                cache.set("%s-aliases" % key, alias_cache, ttl=ttl,
+                          version=self.NEIGHBOR_CACHE_VERSION)
             metrics["neighbor_cache_misses"] += 1
         else:
+            alias_cache = cache.get("%s-aliases" % key, version=self.NEIGHBOR_CACHE_VERSION)
+            self.logger.debug("Alias cache is %s", alias_cache)
+            if alias_cache:
+                self.interface_aliases.update(alias_cache)
             metrics["neighbor_cache_hits"] += 1
         return neighbors
 
@@ -954,7 +972,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :param interface:
         :return: Interface name or None if interface cannot be cleaned
         """
-        return self.interface_aliases.get((object, interface), interface)
+        return self.interface_aliases.get((object.id, interface), interface)
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
@@ -1307,4 +1325,9 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         :param alias:
         :return:
         """
-        self.interface_aliases[object, alias] = interface_name
+        self.interface_aliases[object.id, alias] = interface_name
+
+    @cachetools.cachedmethod(operator.attrgetter("_own_mac_check_cache"))
+    def is_own_mac(self, mac):
+        mr = DiscoveryID.macs_for_objects(self.object)
+        return mr and any(1 for f, t in mr if f <= mac <= t)

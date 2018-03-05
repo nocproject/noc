@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Application class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,7 +19,6 @@ from django.http import (HttpResponse, HttpResponseRedirect,
 from django.shortcuts import render_to_response
 from django.db import connection
 from django.shortcuts import get_object_or_404
-from django.contrib import messages
 from django.utils.html import escape
 from django.template import loader
 from django import forms
@@ -30,11 +29,11 @@ from django.http import Http404
 import ujson
 import six
 # NOC modules
-from .access import HasPerm, Permit, Deny
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
-from noc.core.fileutils import safe_append
+from noc.core.cache.base import cache
+from .access import HasPerm, Permit, Deny
 from .site import site
 
 
@@ -64,7 +63,7 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.menu = menu
         f.method = method
         f.api = api
-        if type(validate) == dict:
+        if isinstance(validate, dict):
             f.validate = DictParameter(attrs=validate)
         else:
             f.validate = validate
@@ -88,7 +87,7 @@ class FormErrorsContext(object):
             for ve in exc_val:
                 for k in ve:
                     v = ve[k]
-                    if type(v) != list:
+                    if not isinstance(v, list):
                         v = [v]
                     self.form._errors[k] = self.form.error_class(v)
             return True
@@ -100,7 +99,6 @@ class ApplicationBase(type):
     """
 
     def __new__(cls, name, bases, attrs):
-        global site
         m = type.__new__(cls, name, bases, attrs)
         for name in attrs:
             m.add_to_class(name, attrs[name])
@@ -125,7 +123,7 @@ class Application(object):
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
-    config = settings.config # @fixme remove
+    config = settings.config  # @fixme remove
 
     TZ = get_current_timezone()
 
@@ -162,14 +160,14 @@ class Application(object):
                  menu=None, method=None, validate=None, api=False):
         # Decorate function to clear attributes
         f = functools.partial(func)
-        f.im_self = func.im_self
+        f.__self__ = func.__self__
         f.__name__ = func.__name__
         # Add to class
         cls.add_to_class(
             name, view(url=url, access=access, url_name=url_name,
                        menu=menu, method=method, validate=validate,
                        api=api)(f))
-        site.add_contributor(cls, func.im_self)
+        site.add_contributor(cls, func.__self__)
 
     @property
     def js_app_class(self):
@@ -182,19 +180,19 @@ class Application(object):
         from noc.main.models.permission import Permission
 
         user = request.user
-        ps = self.get_app_id().replace(".", ":") + ":"
-        lps = len(ps)
-        if "PERMISSIONS" in request.session:
-            perms = request.session["PERMISSIONS"]
-        else:
-            perms = Permission.get_effective_permissions(user)
-        perms = [p[lps:] for p in perms if p.startswith(ps)]
+        # Amount of characters to strip
+        lps = len(self.get_app_id()) + 1
+        # Get effective user permissions
+        user_perms = Permission.get_effective_permissions(user)
+        # Leave only application permissions
+        # and strip <module>:<app>:
+        app_perms = [p[lps:] for p in user_perms & self.get_permissions()]
         return {
             "class": self.js_app_class,
             "title": unicode(self.title),
             "params": {
                 "url": self.menu_url,
-                "permissions": perms,
+                "permissions": app_perms,
                 "app_id": self.app_id,
                 "link": self.link
             }
@@ -228,7 +226,15 @@ class Application(object):
         """
         Send a message to user
         """
-        messages.info(request, unicode(message))
+        if "noc_user" in request.COOKIES:
+            session_id = request.COOKIES["noc_user"].rsplit("|", 1)[-1]
+            key = "msg-%s" % session_id
+            cache.set(
+                key,
+                ujson.dumps([message]),
+                ttl=30,
+                version=1
+            )
 
     def get_template_path(self, template):
         """
@@ -499,7 +505,7 @@ class Application(object):
         Add custom fields to django form class
         """
         from noc.main.models import CustomField
-        l = []
+        fields = []
         for f in CustomField.table_fields(table):
             if f.is_hidden:
                 continue
@@ -530,8 +536,8 @@ class Application(object):
                 ff = forms.DateTimeField(required=False, label=f.label)
             else:
                 raise ValueError("Invalid field type: '%s'" % f.type)
-            l += [(str(f.name), ff)]
-        form.base_fields.update(SortedDict(l))
+            fields += [(str(f.name), ff)]
+        form.base_fields.update(SortedDict(fields))
         return form
 
     def apply_custom_fields(self, o, v, table):
@@ -587,81 +593,6 @@ class Application(object):
             return self.TZ.localize(v).isoformat()
         else:
             raise Exception("Invalid to_json type")
-
-    def check_mrt_access(self, request, name):
-        mc = self.mrt_config[name]
-        if "access" not in mc:
-            return True
-        access = mc["access"]
-        if type(access) == bool:
-            access = Permit() if access else Deny()
-        elif isinstance(access, six.string_types):
-            access = HasPerm(access)
-        else:
-            access = access
-        return access.check(self, request.user)
-
-    @view(url="^mrt/(?P<name>[^/]+)/$", method=["POST"],
-          access=True, api=True)
-    def api_run_mrt(self, request, name):
-        from noc.sa.models.reducetask import ReduceTask
-        from noc.sa.models.managedobjectselector import ManagedObjectSelector
-
-        # Check MRT configured
-        if name not in self.mrt_config:
-            return self.response_not_found("MRT %s is not found" % name)
-        # Check MRT access
-        if not self.check_mrt_access(request, name):
-            return self.response_forbidden("Forbidden")
-        #
-        data = ujson.loads(request.raw_post_data)
-        if "selector" not in data:
-            return self.response_bad_request("'selector' is missed")
-        # Run MRT
-        mc = self.mrt_config[name]
-        map_params = data.get("map_params", {})
-        map_params = dict((str(k), v) for k, v in map_params.iteritems())
-        objects = ManagedObjectSelector.resolve_expression(data["selector"])
-        task = ReduceTask.create_task(
-            objects,
-            "pyrule:mrt_result", {},
-            mc["map_script"], map_params,
-            mc.get("timeout", 0)
-        )
-        return task.id
-
-    @view(url="^mrt/(?P<name>[^/]+)/(?P<task>\d+)/$", method=["GET"],
-          access=True, api=True)
-    def api_get_mrt_result(self, request, name, task):
-        from noc.sa.models.reducetask import ReduceTask
-
-        # Check MRT configured
-        if name not in self.mrt_config:
-            return self.response_not_found("MRT %s is not found" % name)
-        # Check MRT access
-        if not self.check_mrt_access(request, name):
-            return self.response_forbidden("Forbidden")
-        #
-        t = self.get_object_or_404(ReduceTask, id=int(task))
-        try:
-            r = t.get_result(block=False)
-        except ReduceTask.NotReady:
-            # Not ready
-            completed = t.maptask_set.filter(status__in=("C", "F")).count()
-            total = t.maptask_set.count()
-            return {
-                "ready": False,
-                "progress": int(completed * 100 / total),
-                "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
-                "result": None
-            }
-        # Return result
-        return {
-            "ready": True,
-            "progress": 100,
-            "max_timeout": 0,
-            "result": r
-        }
 
     @view(url="^launch_info/$", method=["GET"],
           access="launch", api=True)

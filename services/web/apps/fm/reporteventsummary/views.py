@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Event Summary Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
-from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.core.translation import ugettext as _
@@ -80,7 +79,6 @@ class EventSummaryReport(SimpleReport):
     @staticmethod
     def get_by_status():
         return [
-            ("New", NewEvent.objects.count()),
             ("Failed", FailedEvent.objects.count()),
             ("Active", ActiveEvent.objects.count()),
             ("Archived", ArchivedEvent.objects.count())

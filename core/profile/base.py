@@ -9,6 +9,8 @@
 # Python modules
 import re
 import functools
+# Third-party modules
+import tornado.gen
 # NOC modules
 from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
@@ -110,6 +112,14 @@ class BaseProfile(object):
     # Sequence to save configuration
     #
     command_save_config = None
+    # String or callable to send on syntax error to perform cleanup
+    # Callable accepts three arguments
+    # * cli instance
+    # * command that caused syntax error
+    # * error response.
+    # Coroutines are also accepted.
+    # SyntaxError exception will be raised after cleanup procedure
+    send_on_syntax_error = None
     # List of chars to be stripped out of input stream
     # before checking any regular expressions
     # (when Action.CLEAN_INPUT==True)
@@ -406,3 +416,13 @@ class BaseProfile(object):
     @classmethod
     def allow_cli_session(cls, platform, version):
         return cls.enable_cli_session
+
+    @classmethod
+    @tornado.gen.coroutine
+    def send_backspaces(cls, cli, command, error_text):
+        # Send backspaces to clean up previous command
+        yield cli.iostream.write("\x08" * len(command))
+        # Send command_submit to force prompt
+        yield cli.iostream.write(cls.command_submit)
+        # Wait until prompt
+        yield cli.read_until_prompt()

@@ -2,18 +2,18 @@
 # ---------------------------------------------------------------------
 # main.userprofile application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view, PermitLogged
-from noc.main.models import UserProfile
 from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
                                     DictParameter, ModelParameter)
 from noc.settings import LANGUAGES
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.models.userprofile import UserProfile
 from noc.main.models.userprofilecontact import UserProfileContact
 from noc.core.translation import ugettext as _
 
@@ -56,21 +56,24 @@ class UserProfileApplication(ExtApplication):
             "groups": [g.name for g in user.groups.all().order_by("name")]
         }
 
-    @view(url="^$", method=["POST"], access=PermitLogged(), api=True,
-          validate={
-              "preferred_language": StringParameter(
-                  choices=[x[0] for x in LANGUAGES]
-              ),
-              "contacts": ListOfParameter(
-                  element=DictParameter(attrs={
-                      "time_pattern": ModelParameter(TimePattern),
-                      "notification_method": StringParameter(
-                          choices=[x[0] for x in USER_NOTIFICATION_METHOD_CHOICES]
-                      ),
-                      "params": StringParameter()
-                  })
-              )
-          })
+    @view(
+        url="^$", method=["POST"], access=PermitLogged(), api=True,
+        validate={
+            "preferred_language": StringParameter(
+                choices=[x[0] for x in LANGUAGES]
+            ),
+            "contacts": ListOfParameter(
+                element=DictParameter(attrs={
+                    "time_pattern": ModelParameter(TimePattern),
+                    "notification_method": StringParameter(
+                        choices=[x[0] for x in
+                                 USER_NOTIFICATION_METHOD_CHOICES]
+                    ),
+                    "params": StringParameter()
+                })
+            )
+        }
+    )
     def api_save(self, request, preferred_language, contacts):
         user = request.user
         try:
@@ -89,6 +92,4 @@ class UserProfileApplication(ExtApplication):
                 notification_method=c["notification_method"],
                 params=c["params"]
             ).save()
-        # Setup language
-        request.session["django_lang"] = preferred_language
         return True

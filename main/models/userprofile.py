@@ -13,7 +13,7 @@ from django.db import models
 from django.contrib.auth.models import User
 # NOC modules
 from noc import settings
-from noc.lib.middleware import get_user
+from noc.core.middleware.tls import get_user
 
 
 class UserProfileManager(models.Manager):

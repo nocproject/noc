@@ -2,12 +2,11 @@
 # ----------------------------------------------------------------------
 # Custom field types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import types
 import cPickle
 # Third-party modules
 from django.db import models
@@ -17,7 +16,6 @@ from bson import ObjectId
 # NOC Modules
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.text import ranges_to_list, list_to_ranges
 
 
 class CIDRField(models.Field):
@@ -110,10 +108,7 @@ class TextArrayField(models.Field):
         if self.has_default():
             r = []
             for v in self.default:
-                r += [
-                    "\"%s\"" % v.replace("\\", "\\\\")
-                        .replace("\"", "\"\"")
-                ]
+                r += ["\"%s\"" % v.replace("\\", "\\\\").replace("\"", "\"\"")]
             return "{%s}" % ",".join(r)
         return ""
 
@@ -129,7 +124,7 @@ class TextArray2Field(models.Field):
 
     def to_python(self, value):
         def to_unicode(s):
-            if type(s) == types.UnicodeType:
+            if isinstance(s, unicode):
                 return s
             else:
                 try:
@@ -152,7 +147,7 @@ class InetArrayField(models.Field):
         return "INET[]"
 
     def to_python(self, value):
-        if isinstance(value, types.ListType):
+        if isinstance(value, list):
             return value
         elif value == "{}":
             return []
@@ -173,7 +168,7 @@ class DateTimeArrayField(models.Field):
         return "TIMESTAMP[]"
 
     def to_python(self, value):
-        if type(value) == types.ListType:
+        if isinstance(value, list):
             return value
         elif value == "{}":
             return []
@@ -185,27 +180,6 @@ class DateTimeArrayField(models.Field):
         if value is None:
             return None
         return "{ " + ", ".join([str(x) for x in value]) + " }"
-
-
-class IntMapField(models.Field):
-    """
-    A set of integer. Compactly encoded with ranges
-    """
-    __metaclass__ = models.SubfieldBase
-
-    def db_type(self, connection):
-        return "TEXT"
-
-    def to_python(self, value):
-        if not value:
-            return set()
-        if isinstance(value, six.string_types):
-            return set(ranges_to_list(value))
-        else:
-            return value
-
-    def get_db_prep_value(self, value, connection, prepared=False):
-        return list_to_ranges(sorted(value))
 
 
 class PickledField(models.Field):
@@ -222,7 +196,7 @@ class PickledField(models.Field):
         #    return None
         try:
             return cPickle.loads(str(value))
-        except:
+        except Exception:
             return value
 
     def get_db_prep_value(self, value, connection, prepared=False):
@@ -254,7 +228,7 @@ class TagsField(models.Field):
 
     def to_python(self, value):
         def to_unicode(s):
-            if type(s) == types.UnicodeType:
+            if isinstance(s, unicode):
                 return s
             else:
                 return unicode(s, "utf-8")
@@ -347,7 +321,7 @@ class DocumentReferenceDescriptor(object):
                 "%s must be accessed via instance" % self.field.name)
         # If null=True, we can assign null here, but otherwise the value needs
         # to be an instance of the related class.
-        if value is None and self.field.null == False:
+        if value is None and self.field.null is False:
             raise ValueError(
                 "Cannot assign None: \"%s.%s\" does not allow null values." % (
                     instance._meta.object_name, self.field.name)
@@ -420,6 +394,6 @@ class CachedForeignKey(models.ForeignKey):
         setattr(cls, self.get_cache_name(),
                 CachedForeignKeyDescriptor(self))
 
-#
+
 add_introspection_rules([], ["^noc\.core\.model\.fields\."])
 from django.contrib.admin.widgets import AdminTextInputWidget

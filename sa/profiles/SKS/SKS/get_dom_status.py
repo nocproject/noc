@@ -2,11 +2,11 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
+
 # Python modules
 import re
 # NOC modules
@@ -40,7 +40,7 @@ class Script(BaseScript):
         try:
             v = self.cli(cmd)
         except self.CLISyntaxError:
-            raise self.NotSupportedError()
+            return []
         for match in self.rx_port.finditer(v):
             i = {
                 "interface": match.group("port"),
@@ -50,9 +50,11 @@ class Script(BaseScript):
                 "optical_rx_dbm": self.parse_value(match, "rxpw"),
                 "optical_tx_dbm": self.parse_value(match, "txpw")
             }
-            if (i["temp_c"] is None) and (i["voltage_v"] is None) \
-            and (i["current_ma"] is None) and (i["optical_rx_dbm"] is None) \
-            and (i["optical_tx_dbm"] is None):
+            if (
+                i["temp_c"] is None and i["voltage_v"] is None and
+                i["current_ma"] is None and i["optical_rx_dbm"] is None and
+                i["optical_tx_dbm"] is None
+            ):
                 continue
             r += [i]
         return r

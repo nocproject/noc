@@ -27,6 +27,13 @@
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
         onmousemove="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();"
         onkeydown="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();">
+{% if messages %}
+    <script>
+        {% for message in messages %}
+            window.top.NOC.info("{{ message }}");
+        {% endfor %}
+    </script>
+{% endif %}
 <!-- Container -->
 <div id="container">
     {% if not is_popup %}
@@ -34,14 +41,6 @@
     <div class="breadcrumbs"><ul>{% block breadcrumbs %}<li>{% trans 'Home' %}</li>{% endblock %}</ul></div>
     <!-- END Breadcrumbs -->
     {% endif %}
-    {% if messages %}
-    <ul class="messagelist">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-        
     <!-- Content -->
     <div id="content" class="{% block coltype %}colM{% endblock %}">
         {% block pretitle %}{% endblock %}

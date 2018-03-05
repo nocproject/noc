@@ -1,0 +1,12 @@
+{
+  "span": 12,
+  "links": [],
+  "title": "Объект",
+  "editable": true,
+  "height": "50x",
+  "content": 'Карточки контейнеров: {% set comma = joiner("|") -%}{% for o in container_path %}{{ comma() }}<a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a> {% endfor %}<br/>Графики контейнеров: {% set comma = joiner("|") -%}{% for o in container_path %}{{ comma() }}<a href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ o.id }}" target="_blank">{{ o.name }}</a>{% endfor %}<br/>Графики объектов: {% set comma = joiner("|") -%}{% for o in bi_ids %}{{ comma() }}<a href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ o.id }}" target="_blank">{{ o.name }}</a>{% endfor %}',
+  "mode": "html",
+  "error": false,
+  "type": "text",
+  "id": 30
+}

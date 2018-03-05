@@ -14,6 +14,7 @@ from noc.core.http.client import fetch_sync
 
 from noc.config import config
 
+
 class HTTP(object):
     CONNECT_TIMEOUT = config.http_client.connect_timeout
     REQUEST_TIMEOUT = config.http_client.request_timeout
@@ -33,21 +34,23 @@ class HTTP(object):
         proto = self.script.credentials.get("http_protocol", "http")
         return "%s://%s%s" % (proto, address, path)
 
-    def get(self, path, headers=None, json=False):
+    def get(self, path, headers=None, json=False, eof_mark=None):
         """
         Perform HTTP GET request
         :param path: URI
         :param headers: Dict of additional headers
         :param json: Decode json if set to True
+        :param eof_mark: Waiting eof_mark in stream for end session (perhaps device return length 0)
         """
         self.logger.debug("GET %s", path)
         code, headers, result = fetch_sync(
             self.get_url(path),
             headers=headers,
             follow_redirects=True,
-            validate_cert=False
+            validate_cert=False,
+            eof_mark=eof_mark
         )
-        if not (200 <= result <= 299):
+        if not (200 <= code <= 299):
             raise self.HTTPError("HTTP Error %d" % code)
         if json:
             try:
@@ -72,7 +75,7 @@ class HTTP(object):
             follow_redirects=True,
             validate_cert=False
         )
-        if not (200 <= result <= 299):
+        if not (200 <= code <= 299):
             raise self.HTTPError("HTTP Error %d" % code)
         if json:
             try:

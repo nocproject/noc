@@ -8,7 +8,6 @@ console.debug("Defining NOC.inv.interface.L1Panel");
 
 Ext.define("NOC.inv.interface.L1Panel", {
     extend: "Ext.panel.Panel",
-    uses: [],
     title: __("Physical"),
     closable: false,
     layout: "fit",

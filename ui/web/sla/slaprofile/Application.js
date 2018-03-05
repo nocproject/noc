@@ -60,8 +60,15 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             renderer: NOC.render.Lookup("metric_type")
                         },
                         {
-                            text: __("Active"),
-                            dataIndex: "is_active",
+                            text: __("Box"),
+                            dataIndex: "enable_box",
+                            width: 50,
+                            renderer: NOC.render.Bool,
+                            editor: "checkbox"
+                        },
+                        {
+                            text: __("Periodic"),
+                            dataIndex: "enable_periodic",
                             width: 50,
                             renderer: NOC.render.Bool,
                             editor: "checkbox"
@@ -103,6 +110,7 @@ Ext.define("NOC.sla.slaprofile.Application", {
                                 xtype: "combobox",
                                 store: [
                                     ["last", "Last Value"],
+                                    ["sum", "Sum"],
                                     ["avg", "Average"],
                                     ["percentile", "Percentile"],
                                     ["q1", "1st quartile"],
@@ -110,6 +118,9 @@ Ext.define("NOC.sla.slaprofile.Application", {
                                     ["q3", "3st quartile"],
                                     ["p95", "95% percentile"],
                                     ["p99", "99% percentile"],
+                                    ["step_inc", "Step Increment"],
+                                    ["step_dec", "Step Decrement"],
+                                    ["step_abs", "Step Absolute"],
                                     ["handler", "Handler"]
                                 ]
                             }

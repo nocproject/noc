@@ -131,7 +131,7 @@ class Script(BaseScript):
         elif "MR2228N" in platform:
             vendor = "MRV"
         elif platform.lower() == "8 sfp ports + 4 gigabit combo ports " \
-            "l2/l3/l4 managed standalone switch":
+                                 "l2/l3/l4 managed standalone switch":
             platform = "ES4612"
         elif platform == "Managed 8G+4GSFP Switch":
             platform = "ECS4210-12T"

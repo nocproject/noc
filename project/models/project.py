@@ -30,7 +30,8 @@ id_lock = Lock()
     ("peer.Peer", "project"),
     ("phone.PhoneNumber", "project"),
     ("phone.PhoneRange", "project"),
-    ("vc.VC", "project")
+    ("vc.VC", "project"),
+    ("vc.VPN", "project")
 ])
 class Project(models.Model):
     """

@@ -17,6 +17,7 @@ import six
 from .params import BaseParameter
 
 DEFAULT_CONFIG = "legacy:///,yaml:///opt/noc/etc/settings.yml,env:///NOC"
+DEFAULT_DUMP_URL = "yaml://"
 
 
 class ConfigSectionBase(type):
@@ -55,10 +56,10 @@ class ConfigBase(type):
 
 class BaseConfig(six.with_metaclass(ConfigBase)):
     PROTOCOLS = {
-        "consul": "noc.core.config.proto.consul_proto.ConsulProtocol",
-        "env": "noc.core.config.proto.env_proto.EnvProtocol",
-        "yaml": "noc.core.config.proto.yaml_proto.YAMLProtocol",
-        "legacy": "noc.core.config.proto.legacy_proto.LegacyProtocol"
+        "consul": "noc.core.config.proto.consul.ConsulProtocol",
+        "env": "noc.core.config.proto.env.EnvProtocol",
+        "yaml": "noc.core.config.proto.yaml.YAMLProtocol",
+        "legacy": "noc.core.config.proto.legacy.LegacyProtocol"
     }
 
     _rx_env_sh = re.compile(r"\${([^:}]+)(:-[^}]+)?}")
@@ -98,6 +99,8 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
             return cls._rx_env_sh.sub(env_repl, value)
 
     def set_parameter(self, path, value):
+        if value is None:
+            return
         if isinstance(value, six.string_types):
             value = self.expand(value)
         self._params[path].set_value(value)
@@ -126,7 +129,7 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
             proto = pcls(self, p)
             proto.load()
 
-    def dump(self, url=DEFAULT_CONFIG):
+    def dump(self, url=DEFAULT_DUMP_URL):
         pcls = self.get_protocol(url)
         proto = pcls(self, url)
         proto.dump()

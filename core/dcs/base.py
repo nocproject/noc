@@ -8,23 +8,27 @@
 
 # Python modules
 from __future__ import absolute_import
+
 import logging
-import signal
-import os
-from threading import Lock, Event
 import random
-import datetime
+import signal
 import sys
+from threading import Lock, Event
+
+import datetime
+import os
+import six
+from six.moves.urllib.parse import urlparse
 # Third-party modules
 import tornado.gen
-import tornado.locks
 import tornado.ioloop
-from six.moves.urllib.parse import urlparse
-import six
+import tornado.locks
+
+from noc.config import config
+from noc.core.perf import metrics
+
 # Python modules
 from .error import ResolutionError
-from noc.core.perf import metrics
-from noc.config import config
 
 
 class DCSBase(object):
@@ -141,6 +145,7 @@ class DCSBase(object):
         :param full_result:
         :return:
         """
+
         @tornado.gen.coroutine
         def _resolve():
             try:
@@ -213,7 +218,7 @@ class ResolverBase(object):
 
     def stop(self):
         self.to_shutdown = True
-        metrics["dcs.resolver.%s.activeservices" % self.name] = 0
+        metrics["dcs_resolver_activeservices", ("name", self.name)] = 0
 
     @tornado.gen.coroutine
     def start(self):
@@ -246,12 +251,12 @@ class ResolverBase(object):
             else:
                 self.logger.info("[%s] No active services", self.name)
                 self.ready_event.clear()
-            metrics["dcs.resolver.%s.activeservices" % self.name] = len(self.services)
+            metrics["dcs_resolver_activeservices", ("name", self.name)] = len(self.services)
 
     @tornado.gen.coroutine
     def resolve(self, hint=None, wait=True, timeout=None,
                 full_result=False):
-        metrics["dcs.resolver.requests"] += 1
+        metrics["dcs_resolver_requests"] += 1
         if wait:
             # Wait until service catalog populated
             if timeout:
@@ -261,7 +266,7 @@ class ResolverBase(object):
             try:
                 yield self.ready_event.wait(timeout=t)
             except tornado.gen.TimeoutError:
-                metrics["dcs.resolver.errors"] += 1
+                metrics["errors", ("type", "dcs_resolver_timeout")] += 1
                 if self.critical:
                     self.dcs.set_faulty_status("Failed to resolve %s: Timeout" % self.name)
                 raise ResolutionError()
@@ -272,12 +277,12 @@ class ResolverBase(object):
         with self.lock:
             if hint and hint in self.service_addresses:
                 location = hint
-                metrics["dcs.resolver.hints"] += 1
+                metrics["dcs_resolver_hints"] += 1
             elif full_result:
                 location = list(self.services.values())
             else:
                 location = self.services[self.policy()]
-        metrics["dcs.resolver.success"] += 1
+        metrics["dcs_resolver_success"] += 1
         if self.critical:
             self.dcs.clear_faulty_status()
         raise tornado.gen.Return(location)

@@ -275,6 +275,8 @@ class Service(object):
         Log a separator string to visually split log
         """
         self.logger.warn(symbol * length)
+        if config.features.forensic:
+            self.logger.warn("[noc.core.forensic] [=Process restarted]")
 
     def setup_signal_handlers(self):
         """
@@ -918,9 +920,8 @@ class Service(object):
                 method, uri, remote_ip,
                 1000.0 * handler.request.request_time()
             )
-            self.perf_metrics["http_requests"] += 1
-            self.perf_metrics["http_requests_%s" % method.lower()] += 1
-            self.perf_metrics["http_response_%s" % status] += 1
+            self.perf_metrics["http_requests", ("method", method.lower())] += 1
+            self.perf_metrics["http_response", ("status", status)] += 1
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:

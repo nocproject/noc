@@ -28,11 +28,12 @@ logger = logging.getLogger(__name__)
 RETRIES = config.mongo.retries
 TIMEOUT = config.mongo.timeout
 
+ca = config.mongo_connection_args.copy()
+if ca.get("password"):
+    ca["host"] = ca["host"].replace(":%s@" % ca["password"], ":********@")
+    ca["password"] = "********"
 for i in range(RETRIES):
     try:
-        ca = config.mongo_connection_args
-        if ca.get("password"):
-            ca["password"] = "********"
         logger.info("Connecting to MongoDB %s", ca)
         connect(**config.mongo_connection_args)
         break

@@ -36,6 +36,16 @@ class EnvItem(EmbeddedDocument):
 
 
 @on_delete_check(check=[
+    ("crm.Subscriber", "remote_system"),
+    ("crm.SubscriberProfile", "remote_system"),
+    ("crm.Supplier", "remote_system"),
+    ("crm.SupplierProfile", "remote_system"),
+    ("inv.AllocationGroup", "remote_system"),
+    ("inv.InterfaceProfile", "remote_system"),
+    ("inv.NetworkSegment", "remote_system"),
+    ("inv.NetworkSegmentProfile", "remote_system"),
+    ("ip.AddressProfile", "remote_system"),
+    ("ip.PrefixProfile", "remote_system"),
     ("sa.ManagedObject", "remote_system"),
     ("sa.AdministrativeDomain", "remote_system"),
     ("sa.ManagedObjectProfile", "remote_system"),
@@ -43,7 +53,13 @@ class EnvItem(EmbeddedDocument):
     ("sa.ServiceProfile", "remote_system"),
     ("sa.TerminationGroup", "remote_system"),
     ("sa.Service", "remote_system"),
-    ("inv.NetworkSegment", "remote_system"),
+    ("vc.VLAN", "remote_system"),
+    ("vc.VLANProfile", "remote_system"),
+    ("vc.VPN", "remote_system"),
+    ("vc.VPNProfile", "remote_system"),
+    ("wf.State", "remote_system"),
+    ("wf.Transition", "remote_system"),
+    ("wf.Workflow", "remote_system")
 ])
 class RemoteSystem(Document):
     meta = {
@@ -68,6 +84,7 @@ class RemoteSystem(Document):
     enable_networksegment = BooleanField()
     enable_networksegmentprofile = BooleanField()
     enable_service = BooleanField()
+    enable_serviceprofile = BooleanField()
     enable_subscriber = BooleanField()
     enable_terminationgroup = BooleanField()
     enable_ttsystem = BooleanField()
@@ -153,7 +170,7 @@ class RemoteSystem(Document):
         extractors = extractors or self.get_extractors()
         try:
             return self.get_handler().check(extractors)
-        except Exception as e:
+        except Exception:
             error_report()
 
     def get_loader_chain(self):

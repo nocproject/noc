@@ -55,32 +55,35 @@ class Command(BaseCommand):
             uts = 0
         # Build list
         fl = []
-        for fn in os.listdir(self.PREFIX):
-            if not fn.endswith(".json"):
-                continue
-            path = os.path.join(self.PREFIX, fn)
-            ts = os.stat(path)[stat.ST_MTIME]
-            t = datetime.datetime.fromtimestamp(ts)
-            with open(path) as f:
-                data = ujson.load(f)
-            service = data["process"]
-            if service.startswith("services/") and service.endswith("/service.py"):
-                service = service[9:-11]
-            x = "Unknown exception"
-            for xline in data["traceback"].splitlines()[:7]:
-                sl = str(xline)
-                if sl.startswith("EXCEPTION: "):
-                    x = sl[11:]
-                    break
-            x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
-            x = unicode(x)[:100].encode("utf-8")
-            fl += [{
-                "uuid": fn[:-5],
-                "time": t,
-                "status": "*" if uts and ts > uts else " ",
-                "service": service,
-                "exception": x
-            }]
+        if os.path.exists(self.PREFIX):
+            for fn in os.listdir(self.PREFIX):
+                if not fn.endswith(".json"):
+                    continue
+                path = os.path.join(self.PREFIX, fn)
+                ts = os.stat(path)[stat.ST_MTIME]
+                t = datetime.datetime.fromtimestamp(ts)
+                with open(path) as f:
+                    data = ujson.load(f)
+                service = data["process"]
+                if service.startswith("services/") and service.endswith("/service.py"):
+                    service = service[9:-11]
+                elif service.startswith("commands/"):
+                    service = "noc %s" % service[9:-3]
+                x = "Unknown exception"
+                for xline in data["traceback"].splitlines()[:7]:
+                    sl = str(xline)
+                    if sl.startswith("EXCEPTION: "):
+                        x = sl[11:]
+                        break
+                x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
+                x = unicode(x)[:100].encode("utf-8")
+                fl += [{
+                    "uuid": fn[:-5],
+                    "time": t,
+                    "status": "*" if uts and ts > uts else " ",
+                    "service": service,
+                    "exception": x
+                }]
         fs = "%s %36s  %19s  %-29s %-s\n"
         self.stdout.write(fs % ("N", "UUID", "Time", "Service", "Exception"))
         for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):

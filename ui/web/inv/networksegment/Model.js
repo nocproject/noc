@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.networksegment Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.networksegment.Model");
@@ -102,6 +102,32 @@ Ext.define("NOC.inv.networksegment.Model", {
         {
             name: "enable_horizontal_transit",
             type: "boolean"
+        },
+        {
+            name: "vlan_border",
+            type: "boolean"
+        },
+        {
+            name: "vlan_translation",
+            type: "auto"
+        },
+        {
+            name: "allocation_group",
+            type: "string"
+        },
+        {
+            name: "allocation_group__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "l2_mtu",
+            type: "int"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

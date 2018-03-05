@@ -14,7 +14,6 @@ import tornado.gen
 from noc.core.service.base import Service
 from noc.core.http.client import fetch
 from channel import Channel
-from noc.core.perf import metrics
 from noc.config import config
 
 
@@ -69,7 +68,7 @@ class CHWriterService(Service):
                 self.ch_address,
                 config.clickhouse.db
             )
-            metrics["channels_active"] += 1
+            self.perf_metrics["channels_active"] += 1
         return self.channels[fields]
 
     def on_data(self, message, records, *args, **kwargs):
@@ -84,33 +83,33 @@ class CHWriterService(Service):
         if self.restore_timeout:
             self.logger.info("ClickHouse is not available, requeueing message")
             return False
-        if metrics["records_buffered"].value > config.chwriter.records_buffer:
+        if self.perf_metrics["records_buffered"].value > config.chwriter.records_buffer:
             self.logger.info(
                 "Input buffer is full (%s/%s). Deferring message",
-                metrics["records_buffered"].value,
+                self.perf_metrics["records_buffered"].value,
                 config.chwriter.records_buffer
             )
-            metrics["deferred_messages"] += 1
+            self.perf_metrics["deferred_messages"] += 1
             return False
         fields, data = records.split("\n", 1)
         self.logger.debug("Receiving %s", fields)
         channel = self.get_channel(fields)
         n = channel.feed(data)
-        metrics["records_received"] += n
-        metrics["records_buffered"] += n
+        self.perf_metrics["records_received"] += n
+        self.perf_metrics["records_buffered"] += n
         return True
 
     @tornado.gen.coroutine
     def report(self):
-        nm = metrics["records_written"].value
+        nm = self.perf_metrics["records_written"].value
         t = self.ioloop.time()
         if self.last_ts:
             speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
                 "Feeding speed: %.2frecords/sec, active channels: %s, buffered records: %d",
                 speed,
-                metrics["channels_active"],
-                metrics["records_buffered"].value
+                self.perf_metrics["channels_active"],
+                self.perf_metrics["records_buffered"].value
             )
         self.last_metrics = nm
         self.last_ts = t
@@ -121,14 +120,17 @@ class CHWriterService(Service):
         for x in expired:
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
-        metrics["channels_active"] = len(self.channels)
+            self.perf_metrics["channels_active"] = len(self.channels)
         self.logger.debug("Active channels: %s", ", ".join(self.channels[c].name for c in self.channels))
         for c in list(self.channels):
             if self.restore_timeout:
                 break
             channel = self.channels.get(c)
             if channel:
-                self.logger.debug("Channel %s: ready=%s flushing=%s", channel.name, channel.is_ready(), channel.flushing)
+                self.logger.debug("Channel %s: ready=%s flushing=%s",
+                                  channel.name,
+                                  channel.is_ready(),
+                                  channel.flushing)
             if channel and channel.is_ready():
                 yield self.flush_channel(channel)
 
@@ -156,15 +158,15 @@ class CHWriterService(Service):
                     channel.name,
                     n, (self.ioloop.time() - t0) * 1000
                 )
-                metrics["records_written"] += n
-                metrics["records_buffered"] -= n
+                self.perf_metrics["records_written"] += n
+                self.perf_metrics["records_buffered"] -= n
                 written = True
             elif code in self.CH_SUSPEND_ERRORS:
                 self.logger.info(
                     "[%s] Timed out: %s",
                     channel.name, body
                 )
-                metrics["records_spool_timeouts"] += 1
+                self.perf_metrics["error", ("type", "records_spool_timeouts")] += 1
                 suspended = True
             else:
                 self.logger.info(
@@ -172,7 +174,7 @@ class CHWriterService(Service):
                     channel.name,
                     code, body
                 )
-                metrics["records_spool_failed"] += 1
+                self.perf_metrics["error", ("type", "records_spool_failed")] += 1
         except Exception as e:
             self.logger.error(
                 "[%s] Failed to spool %d records due to unknown error: %s",
@@ -206,8 +208,8 @@ class CHWriterService(Service):
                 ),
                 raw=True
             )
-            metrics["records_requeued"] += cl
-            metrics["records_buffered"] -= cl
+            self.perf_metrics["records_requeued"] += cl
+            self.perf_metrics["records_buffered"] -= cl
         channel.stop_flushing()
 
     def suspend(self):
@@ -218,7 +220,7 @@ class CHWriterService(Service):
             self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
             self.check_restore
         )
-        metrics["suspends"] += 1
+        self.perf_metrics["suspends"] += 1
         self.suspend_subscription(self.on_data)
         # Return data to channels
         for c in list(self.channels):
@@ -229,7 +231,7 @@ class CHWriterService(Service):
         self.logger.info("Resuming")
         self.ioloop.remove_timeout(self.restore_timeout)
         self.restore_timeout = None
-        metrics["resumes"] += 1
+        self.perf_metrics["resumes"] += 1
         self.resume_subscription(self.on_data)
 
     @tornado.gen.coroutine

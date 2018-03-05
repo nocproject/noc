@@ -516,15 +516,17 @@ class ReportObjectDetailApplication(ExtApplication):
     @view("^download/$", method=["GET"], access="launch", api=True,
           validate={
               "administrative_domain": StringParameter(required=False),
+              "pool": StringParameter(required=False),
               "segment": StringParameter(required=False),
               "selector": StringParameter(required=False),
+              "ids": StringParameter(required=False),
               "is_managed": BooleanParameter(required=False),
               "avail_status": BooleanParameter(required=False),
               "columns": StringParameter(required=False),
               "o_format": StringParameter(choices=["csv", "xlsx"])})
     def api_report(self, request, o_format, is_managed=None,
-                   administrative_domain=None, selector=None,
-                   segment=None, avail_status=False, columns=None):
+                   administrative_domain=None, selector=None, pool=None,
+                   segment=None, avail_status=False, columns=None, ids=None):
         def row(row):
             def qe(v):
                 if v is None:
@@ -611,12 +613,16 @@ class ReportObjectDetailApplication(ExtApplication):
         # self.logger.info("---------------------------------")
         # print("-----------%s------------%s" % (administrative_domain, columns))
 
-        p = Pool.get_by_name("default")
+        p = Pool.get_by_name(pool or "default")
         mos = ManagedObject.objects.filter()
-        if request.user.is_superuser and not administrative_domain and not selector:
+        if request.user.is_superuser and not administrative_domain and not selector and not segment:
             mos = ManagedObject.objects.filter(pool=p)
+        if ids:
+            mos = ManagedObject.objects.filter(id__in=[ids])
         if is_managed is not None:
             mos = ManagedObject.objects.filter(is_managed=is_managed)
+        if pool:
+            mos = mos.filter(pool=p)
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if administrative_domain:
@@ -625,6 +631,10 @@ class ReportObjectDetailApplication(ExtApplication):
         if selector:
             selector = ManagedObjectSelector.get_by_id(int(selector))
             mos = mos.filter(selector.Q)
+        if segment:
+            segment = NetworkSegment.objects.filter(id=segment).first()
+            if segment:
+                mos = mos.filter(segment__in=segment.get_nested_ids())
         mos_id = list(mos.values_list("id", flat=True))
         avail = {}
         segment_lookup = {}
@@ -682,9 +692,9 @@ class ReportObjectDetailApplication(ExtApplication):
                 attr_resolv[mo][0],
                 # Profile
                 moss[4],
-                attr_resolv[mo][1] if attr else "",
-                attr_resolv[mo][2] if attr else "",
-                attr_resolv[mo][3] if attr else "",
+                attr_resolv[mo][1] if attr_resolv else "",
+                attr_resolv[mo][2] if attr_resolv else "",
+                attr_resolv[mo][3] if attr_resolv else "",
                 # Serial
                 attr[mo][0] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
                 _("Yes") if avail.get(mo, None) else _("No"),

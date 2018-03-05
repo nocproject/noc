@@ -54,7 +54,7 @@ class Script(BaseScript):
         Check box has BFD enabled
         """
         r = self.cli("display bfd configuration all")
-        return not "Please enable BFD in global mode first" in r
+        return r and not ("Please enable BFD in global mode first" in r)
 
     @false_on_cli_error
     def has_udld_cli(self):

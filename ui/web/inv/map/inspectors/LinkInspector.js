@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Link inspector
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2015 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.map.inspectors.LinkInspector");
@@ -9,8 +9,11 @@ console.debug("Defining NOC.inv.map.inspectors.LinkInspector");
 Ext.define("NOC.inv.map.inspectors.LinkInspector", {
     extend: "NOC.inv.map.inspectors.Inspector",
     title: __("Link Inspector"),
+    inspectorName: "link",
 
     tpl:[
+        '<tpl if="name"><div style="font-weight: bold;text-decoration: underline">{name}</div></tpl>',
+        '<tpl if="description"><div style="font-style: italic">{description}</div></tpl>',
         '<tpl for="objects">',
             '<div class="noc-offset-0"><b>{name}:&nbsp;</b></div>',
             '<tpl for="interfaces">',
@@ -63,5 +66,11 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
     enableButtons: function(values) {
         this.currentLinkId = values.id;
         this.dashboardButton.setDisabled(false);
+    },
+
+    getDataURL: function(segmentId, objectId) {
+        var me = this,
+            url = me.callParent([segmentId, objectId]);
+        return url + objectId.split("-")[0] + "/";
     }
 });

@@ -1,5 +1,3 @@
-##
-##
 syntax: glob
 *.pyc
 *.pyo
@@ -21,6 +19,8 @@ contrib/share/*
 .*
 !/.gitlab-ci.yml
 !/.gitignore
+!/.flake8
+!/.pylintrc
 ext_*
 etc/requirements/local.txt
 static/pkg/
@@ -37,3 +37,11 @@ speedup/*.so
 ui/bi/**
 ui/bi2/**
 collections/
+include
+lib/*.so.*
+lib/*.so
+lib-python/
+lib_pypy/
+site-packages/
+lib/tcl/
+lib/tk/

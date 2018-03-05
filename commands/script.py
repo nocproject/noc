@@ -95,13 +95,11 @@ class Command(BaseCommand):
         if access_preference:
             credentials["access_preference"] = access_preference
         # Get version info
-        v = obj.version
-        p = obj.platform
-        if v:
+        if obj.version:
             version = {
-                "vendor": v.vendor.name,
-                "platform": p.name,
-                "version": v.version if v else None
+                "vendor": obj.vendor.name if obj.vendor else None,
+                "platform": obj.platform.name if obj.platform else None,
+                "version": obj.version.version if obj.version else None
             }
         else:
             version = None
@@ -279,7 +277,7 @@ class JSONObject(object):
         self.caps = data.get("caps")
         self.remote_path = None
         self.to_raise_privileges = data.get("raise_privileges", True)
-        self.access_preference = data.get("access_preference", "SC")
+        self.access_preference = data.get("access_preference", "CS")
         self.pool = PoolStub("default")
         self.vendor = VendorStub(data["vendor"]) if "vendor" in data else None
         self.platform = PlatformStub(data["platform"]) if "platform" in data else None
@@ -295,6 +293,9 @@ class JSONObject(object):
 
     def get_caps(self):
         return self.caps
+
+    def get_access_preference(self):
+        return self.access_preference
 
 
 if __name__ == "__main__":

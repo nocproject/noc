@@ -25,8 +25,11 @@ id_lock = Lock()
 
 class SLAProfileMetrics(EmbeddedDocument):
     metric_type = ReferenceField(MetricType, required=True)
-    # Collect metric
-    is_active = BooleanField()
+    # Metric collection settings
+    # Enable during box discovery
+    enable_box = BooleanField(default=False)
+    # Enable during periodic discovery
+    enable_periodic = BooleanField(default=True)
     # Send metrics to persistent store
     is_stored = BooleanField(default=True)
     # Window depth
@@ -52,20 +55,29 @@ class SLAProfileMetrics(EmbeddedDocument):
             ("handler", "Handler"),
             # Last measure
             ("last", "Last Value"),
+            # Sum of values
+            ("sum", "Sum"),
             # Average, no config
             ("avg", "Average"),
             # Percentile, window_config is in a percent
             ("percentile", "Percentile"),
             # 25% percentile
-            ("q1", "1st Quartile"),
+            ("q1", "1st quartile"),
             # 50% percentile, median
-            ("q2", "2st Quartile"),
+            ("q2", "2st quartile"),
             # 75% percentile
-            ("q3", "3st Quartile"),
+            ("q3", "3st quartile"),
             # 95% percentile
             ("p95", "95% percentile"),
             # 99% percentile
-            ("p99", "99% percentile")
+            ("p99", "99% percentile"),
+            # Increment
+            ("step_inc", "Step Increment"),
+            # Decrement
+            ("step_dec", "Step Decrement"),
+            # Absolute
+            ("step_abs", "Step Absolute")
+
         ],
         default="last"
     )

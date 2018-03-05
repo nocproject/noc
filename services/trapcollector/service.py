@@ -54,6 +54,7 @@ class TrapCollectorService(Service):
             try:
                 server.listen(port, addr)
             except socket.error as e:
+                self.perf_metrics["error", ("type", "socket_listen_error")] += 1
                 self.logger.error(
                     "Failed to start SNMP Trap server at %s:%s: %s",
                     addr, port, e
@@ -95,6 +96,7 @@ class TrapCollectorService(Service):
             # Register invalid event source
             if self.source_map:
                 self.invalid_sources[address] += 1
+                self.perf_metrics["error", ("type", "object_not_found")] += 1
             return None
         return obj_id
 
@@ -148,6 +150,7 @@ class TrapCollectorService(Service):
     def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
         self.ioloop.add_callback(self.get_object_mappings)
+
 
 if __name__ == "__main__":
     TrapCollectorService().start()

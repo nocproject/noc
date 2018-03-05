@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.ping
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -17,13 +17,15 @@ class Script(BaseScript):
     name = "SKS.SKS.ping"
     interface = IPing
     rx_result1 = re.compile(
-        r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\n"
-        r"round-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE | re.DOTALL)
+        r"(?P<count>\d+) packets transmitted, "
+        r"(?P<success>\d+) packets received, \d+% packet loss\n"
+        r"round-trip( \(ms\))? min/avg/max = "
+        r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE)
     rx_result2 = re.compile(
-        r"(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss")
+        r"(?P<count>\d+) packets transmitted, "
+        r"(?P<success>\d+) packets received, \d+% packet loss")
 
-    def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+    def execute(self, address, count=None, source_address=None, size=None):
         if is_ipv4(address):
             cmd = "ping ip %s" % address
         elif is_ipv6(address):
@@ -32,7 +34,19 @@ class Script(BaseScript):
             cmd += " count %d" % int(count)
         if size:
             cmd += " size %d" % int(size)
-        s = self.cli(cmd)
+        try:
+            s = self.cli(cmd)
+        except self.CLISyntaxError:
+            if is_ipv4(address):
+                cmd = "ping"
+            elif is_ipv6(address):
+                cmd = "ping6 %s"
+            if count:
+                cmd += " -n %d" % int(count)
+            if size:
+                cmd += " -l %d" % int(size)
+            cmd = "%s %s" % (cmd, address)
+            s = self.cli(cmd)
         match = self.rx_result1.search(s)
         if match:
             return {

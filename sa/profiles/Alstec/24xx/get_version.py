@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Alstec.24xx.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -38,30 +38,31 @@ class Script(BaseScript):
     )
 
     def execute(self):
-
         v = self.cli("show sysinfo", cached=True)
         match = self.rx_ver.search(v)
         if match:
+            r = {
+                "vendor": "Alstec",
+                "platform": match.group("platform"),
+                "version": match.group("version"),
+                "attributes": {
+                    "Boot PROM": match.group("bootprom"),
+                    "Firmware Type": match.group("fwt")
+                }
+            }
             v = self.cli("show hardware", cached=True)
-            match1 = self.rx_serial.search(v)
-            s = {"Boot PROM": match.group("bootprom"),
-                 "Firmware Type": match.group("fwt"),
-                 "Serial Number": match1.group("serial")}
+            match = self.rx_serial.search(v)
+            if match:
+                r["attributes"]["Serial Number"] = match.group("serial")
         else:
             v = self.cli("show hardware", cached=True)
-            # match = self.rx_ver2.search(v)
-            s = {"Serial Number": self.rx_serial.search(v).group("serial")}
-            return {
+            r = {
                 "vendor": "Alstec",
                 "platform": self.rx_platform.search(v).group("platform"),
-                "version": self.rx_version.search(v).group("version"),
-                "attributes": s
-
+                "version": self.rx_version.search(v).group("version")
             }
-
-        return {
-            "vendor": "Alstec",
-            "platform": match.group("platform"),
-            "version": match.group("version"),
-            "attributes": s
-        }
+            match = self.rx_serial.search(v)
+            if match:
+                r["attributes"] = {}
+                r["attributes"]["Serial Number"] = match.group("serial")
+        return r

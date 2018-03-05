@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Dynamic IPPool Usage
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2014 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ class DynamicIPPoolUsage(Document):
 
     @classmethod
     def unregister_usage(cls, termination_group, vrf=None,
-                       pool_name="default", technology="IPoE"):
+                         pool_name="default", technology="IPoE"):
         """
         Decrease usage counter
         """
@@ -78,7 +78,7 @@ class DynamicIPPoolUsage(Document):
 
     @classmethod
     def get_usage(cls, termination_group, vrf=None,
-                       pool_name="default", technology="IPoE"):
+                  pool_name="default", technology="IPoE"):
         if not vrf:
             vrf = VRF.get_global()
         r = cls._get_collection().find_one(

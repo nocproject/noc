@@ -29,10 +29,9 @@ class OP(object):
         self.function = function
 
     def to_sql(self, seq):
-        l = len(seq)
-        if self.min and l < self.min:
+        if self.min and len(seq) < self.min:
             raise ValueError("Missed argument: %s" % seq)
-        if self.max and l > self.max:
+        if self.max and len(seq) > self.max:
             raise ValueError("Too many arguments: %s" % seq)
         if self.convert:
             return self.convert(seq)
@@ -148,6 +147,11 @@ def f_selector(seq):
         return "(0 = 1)"
 
 
+def f_quantile(seq):
+
+    return "quantile(%f)(%s)" % seq
+
+
 OP_MAP = {
     # Comparison
     "$eq": OP(min=2, max=2, join=" = "),
@@ -195,6 +199,10 @@ OP_MAP = {
     "$notEmpty": OP(min=1, function="notEmpty"),
     "$position": OP(min=2, max=2, function="positionCaseInsensitiveUTF8"),
     "$median": OP(min=1, max=1, function="MEDIAN"),
+    "$avgMerge": OP(min=1, max=1, function="avgMerge"),
+    "$minMerge": OP(min=1, max=1, function="minMerge"),
+    "$maxMerge": OP(min=1, max=1, function="maxMerge"),
+    "$quantile": OP(min=2, max=2, function=f_quantile),
     # Dictionary lookup
     "$lookup": OP(min=2, max=3, convert=f_lookup),
     # List

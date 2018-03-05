@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Ring layout class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Ring layout class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import math
-from collections import defaultdict
-## Third-party modules
+# Third-party modules
 import networkx as nx
 import numpy as np
-## NOC modules
-from base import LayoutBase
+# NOC modules
+from .tree import TreeLayout
 
 
-class RingLayout(LayoutBase):
+class RingLayout(TreeLayout):
     # Ring edge length
     L = 150
     # Chain edge step
@@ -28,7 +28,7 @@ class RingLayout(LayoutBase):
 
     def get_layout(self):
         T = self.topology
-        # unconnected = set(T.get_unconnected())
+        G = T.G
         uplinks = T.get_uplinks()
         ring = T.get_rings()[0]
         # Try to start ring with uplink
@@ -43,6 +43,9 @@ class RingLayout(LayoutBase):
             if o[0] != ring[1]:
                 # Reverse ring
                 ring = [ring[0]] + list(reversed(ring[1:]))
+        # Split to subtrees
+        # and calculate relative positions
+        subtree_pos = self.get_subtrees_relative_pos(G, ring)
         #
         pos = {}
         # Ring length
@@ -50,80 +53,73 @@ class RingLayout(LayoutBase):
         # Ring radius
         R = float(N) * self.L / (2.0 * math.pi)
         # @todo: get first node
-        # Angle beetween ring nodes
+        # Angle between ring nodes
         alpha = 2.0 * math.pi / N
         # Offset angle from X-axis
         a0 = self.A0
         # Initial position considers (0, 0) is the center of ring
         # All nodes will be transformed later when we will know
         # final size of graph
-
-        chains = self.get_chains()
         # Position nodes counterclockwise
         for i, o in enumerate(ring):
             # Node angle
             a = a0 + alpha * i
+            # Ring member coordinates
             xi = R * math.cos(a)
             yi = R * math.sin(a)
+            # Set ring member position
             pos[o] = np.array([xi, yi])
-            # Place related chains
-            # Calculate in relative coordinates
-            # Where (0, 0) is a center of appropriative ring node
+            # Apply affine transformation to related subtree
+            st_pos = subtree_pos.get(o)
+            if not st_pos or len(st_pos) == 1:
+                continue  # No subtree
+            # Convert calculated related coordinates
+            # to absolute ones.
+            # Tree is growing downwards, so subtract pi/2 from angle
+            ea = a - math.pi / 2.0
             # Rotation matrix
             AA = np.array([
-                [math.cos(a), -math.sin(a)],
-                [math.sin(a), math.cos(a)]
+                [math.cos(ea), -math.sin(ea)],
+                [math.sin(ea), math.cos(ea)]
             ])
-            n = len(chains[o])
-            for j, chain in enumerate(chains[o]):
-                for k, oo in enumerate(chain):
-                    xx = np.array([
-                        (k + 1) * self.LL,
-                        self.S * (float(n - 1) / 2 - j)
-                    ])
-                    # Affine transformation.
-                    # Shift to center of main node and rotate to *a*
-                    pos[oo] = np.dot(AA, xx) + pos[o]
+            for oo in st_pos:
+                if o == oo:
+                    continue  # Already placed
+                # Affine transformation
+                # Rotate using rotation matrix
+                # and shift to center of root node
+                pos[oo] = np.dot(AA, st_pos[oo]) + pos[o]
         return pos
 
-    def get_chains(self):
+    @classmethod
+    def get_subtrees_relative_pos(cls, G, ring):
         """
-        Returns all direct chains
-        main -> [[chain1, ...], ..., [chainN, ...]]
+        Split subgraph with tree, starting from ring node
+        :param G: Graph instance
+        :param ring: all ring nodes
+        :return: dict or ring node -> dict of positions
         """
-        r = defaultdict(list)
-        ring = self.topology.get_rings()[0]
-        sring = set(ring)
-        G = self.topology.G
+        r = {}
+        # Ring members set
+        ring_set = set(ring)
         # Partition by ring
+        # Remove all ring edges, splitting graph to series
+        # of trees
         GG = G.subgraph(G)
         for u, v in zip(ring, ring[1:] + [ring[0]]):
             GG.remove_edge(u, v)
         # Get all remaining connected components
-        for chains in nx.connected_components(GG):
-            main = chains & sring
-            if not main:
-                continue
-            main = main.pop()
-            # Split to particular chains
-            GGG = GG.subgraph([o for o in chains if o != main])
-            seen = set()
-            for chain in nx.connected_components(GGG):
-                ch = "-".join(str(hh) for hh in sorted(chain))
-                if ch in seen:
-                    continue
-                else:
-                    seen.add(ch)
-                # Order chain
-                cdata = []
-                p = main
-                while chain:
-                    neighbors = set(nx.all_neighbors(GG, p))
-                    try:
-                        p = (neighbors & chain).pop()
-                    except KeyError:
-                        break  # Do not crash on splitting chain
-                    cdata += [p]
-                    chain.remove(p)
-                r[main] += [cdata]
+        for subtree in nx.connected_components(GG):
+            root = subtree & ring_set
+            if not root:
+                continue  # Not connected to ring
+            root = root.pop()
+            # Get subgraph containing subtree with root
+            ST = GG.subgraph(subtree)
+            # Apply tree widths and arrange to levels
+            w = cls.get_tree_width(ST, root)
+            # Calculate relative offset
+            offset = -(w // 2) * cls.TREE_DX
+            # Calculate relative positions for subtree
+            r[root] = cls.get_tree_pos(ST, root, offset=offset)
         return r

@@ -301,6 +301,10 @@ Ext.define('NOC.sa.runcommands.Controller', {
             });
         };
 
+        // Reset state
+        this.lookupReference('sa-run-commands-selected-grid-3').getSelectionModel().deselectAll();
+        this.getViewModel().set('resultOutput', '');
+
         switch(mode) {
             case 'commands': {
                 this.sendCommands('commands', {
@@ -330,7 +334,12 @@ Ext.define('NOC.sa.runcommands.Controller', {
     },
     //
     onShowResult: function(grid, record) {
-        this.getViewModel().set('resultOutput', record.get('result'))
+        var acc = [];
+
+        if(record.get('result')) {
+            this.makeReportRow(record, acc);
+        }
+        this.getViewModel().set('resultOutput', acc.join('\n'));
     },
     //
     toNext: function() {
@@ -498,9 +507,23 @@ Ext.define('NOC.sa.runcommands.Controller', {
         var r = [];
 
         this.getStore('selectedStore').each(function(record) {
-            r.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
-            r.push('<div class=\'noc-mrt-result\'>' + record.get('result') + '</div>');
-        });
+            if(record.get('result')) {
+                this.makeReportRow(record, r);
+            }
+        }, this);
         return r.join('\n');
+    },
+    //
+    makeReportRow: function(record, ac) {
+        var result = record.get('result');
+        var text = '<b>#</b> ' + result + '<br/>';
+
+        if(Ext.isFunction(result.map)) {
+            text = result.map(function(e) {
+                return '<b>#</b> ' + e;
+            }).join('<br/>');
+        }
+        ac.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
+        ac.push('<div class=\'noc-mrt-result\'>' + text + '</div>');
     }
 });

@@ -42,6 +42,17 @@ class Profile(BaseProfile):
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
+    @classmethod
+    def cmp_version(cls, v1, v2):
+        """
+        Compare two versions.
+        Default implementation compares a versions in format
+        N1. .. .NM
+        On Qtech.QSW2800
+        """
+        return cmp([int(x) for x in v1.split("(")[0].split(".")],
+                   [int(x) for x in v2.split("(")[0].split(".")])
+
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("Ethernet1/1")
@@ -120,7 +131,7 @@ class Profile(BaseProfile):
         print sfp_type, distance, bit_rate, wavelength
         if " m" in distance:
             # convert to km
-            distance = str(int(distance.split(" ")[0])/1000)
+            distance = str(int(distance.split(" ")[0]) / 1000)
         if " nm" in wavelength:
             wavelength = wavelength.split(" ")[0]
         if sfp_type and sfp_type != "unknown":

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.networksegment application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,6 +22,9 @@ class NetworkSegmentApplication(ExtDocApplication):
     menu = [_("Setup"), _("Network Segments")]
     model = NetworkSegment
     query_fields = ["name__icontains", "description__icontains"]
+
+    def field_row_class(self, o):
+        return o.profile.style.css_class_name if o.profile.style else ""
 
     def queryset(self, request, query=None):
         qs = super(NetworkSegmentApplication, self).queryset(request, query)

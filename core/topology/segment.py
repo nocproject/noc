@@ -1,25 +1,30 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SegmentTopology class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  SegmentTopology class
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2018 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import operator
 import logging
-## Third-party modules
+import itertools
+from collections import defaultdict
+# Third-party modules
 import networkx as nx
 import numpy as np
 from cachetools import cachedmethod
-## NOC modules
-from base import BaseTopology
+import six
+# NOC modules
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from layout.ring import RingLayout
-from layout.spring import SpringLayout
-from layout.tree import TreeLayout
+from .base import BaseTopology
+from .layout.ring import RingLayout
+from .layout.spring import SpringLayout
+from .layout.tree import TreeLayout
 
 logger = logging.getLogger(__name__)
 
@@ -49,14 +54,16 @@ class SegmentTopology(BaseTopology):
         self.segment_objects = set()
         if self.segment.parent:
             self.parent_segment = self.segment.parent
+            self.ancestor_segments = set(self.segment.get_path()[:-1])
         else:
             self.parent_segment = None
+            self.ancestor_segments = set()
         super(SegmentTopology, self).__init__(node_hints, link_hints)
 
     def get_role(self, mo):
         if mo.segment in self.segment_siblings:
             return "segment"
-        elif self.parent_segment and mo.segment.id == self.parent_segment.id:
+        elif self.parent_segment and mo.segment.id in self.ancestor_segments:
             return "uplink"
         else:
             return "downlink"
@@ -91,29 +98,47 @@ class SegmentTopology(BaseTopology):
         """
         Load all managed objects from segment
         """
-        def bandwidth(speed, bandwidth):
-            if speed and bandwidth:
-                return min(speed, bandwidth)
-            elif speed and not bandwidth:
+        def get_bandwidth(if_list):
+            """
+            Calculate bandwidth for list of interfaces
+            :param if_list:
+            :return: total in bandwidth, total out bandwidth
+            """
+            in_bw = 0
+            out_bw = 0
+            for iface in if_list:
+                bw = iface.get("bandwidth") or 0
+                in_speed = iface.get("in_speed") or 0
+                out_speed = iface.get("out_speed") or 0
+                in_bw += bandwidth(in_speed, bw)
+                out_bw += bandwidth(out_speed, bw)
+            return in_bw, out_bw
+
+        def bandwidth(speed, if_bw):
+            if speed and if_bw:
+                return min(speed, if_bw)
+            elif speed and not if_bw:
                 return speed
-            elif bandwidth:
-                return bandwidth
+            elif if_bw:
+                return if_bw
             else:
                 return 0
 
-        # Get segment's objects
-        mos = list(self.segment.managed_objects)
-        self.segment_objects = set(o.id for o in mos)
-        for o in mos:
-            self.add_object(o)
-        # Get all interfaces
+        # Get all links, belonging to segment
+        links = list(Link.objects.filter(
+            linked_segments__in=[s.id for s in self.segment_siblings])
+        )
+        # All linked interfaces from map
+        all_ifaces = list(
+            itertools.chain.from_iterable(
+                link.interface_ids for link in links
+            )
+        )
+        # Bulk fetch all interfaces data
         ifs = dict((i["_id"], i) for i in Interface._get_collection().find(
             {
-                "managed_object": {
-                    "$in": [o.id for o in mos]
-                },
-                "type": {
-                    "$in": ["physical", "management"]
+                "_id": {
+                    "$in": all_ifaces
                 }
             },
             {
@@ -125,67 +150,86 @@ class SegmentTopology(BaseTopology):
                 "out_speed": 1
             }
         ))
-        # Get all links
+        # Bulk fetch all managed objects
+        segment_mos = set(self.segment.managed_objects.values_list("id", flat=True))
+        all_mos = list(
+            set(i["managed_object"] for i in six.itervalues(ifs) if "managed_object" in i) |
+            segment_mos
+        )
+        mos = dict(
+            (mo.id, mo)
+            for mo in ManagedObject.objects.filter(id__in=all_mos)
+        )
+        self.segment_objects = set(
+            mo_id for mo_id in all_mos
+            if mos[mo_id].segment.id == self.segment.id
+        )
+        for mo in six.itervalues(mos):
+            self.add_object(mo)
+        # Process all segment's links
         pn = 0
-        for link in Link.objects.filter(interfaces__in=list(ifs)):
-            mos = set()
-            for i in link.interfaces:
-                mos.add(i.managed_object)
-            if len(mos) != 2:
-                continue
-            # Add objects
-            m0 = mos.pop()
-            m1 = mos.pop()
-            i0, i1 = [], []
-            for i in link.interfaces:
-                if i.managed_object == m0:
-                    i0 += [i]
+        for link in links:
+            if link.is_loop:
+                continue  # Loops are not shown on map
+            # Group interfaces by objects
+            # avoiding non-bulk dereferencing
+            mo_ifaces = defaultdict(list)
+            for if_id in link.interface_ids:
+                iface = ifs[if_id]
+                mo_ifaces[mos[iface["managed_object"]]] += [iface]
+            # Pairs of managed objects are pseudo-links
+            if len(mo_ifaces) == 2:
+                # ptp link
+                pseudo_links = [list(mo_ifaces)]
+                is_pmp = False
+            else:
+                # pmp
+                # Create virtual cloud
+                self.add_cloud(link)
+                # Create virtual links to cloud
+                pseudo_links = [(link, mo) for mo in mo_ifaces]
+                # Create virtual cloud interface
+                mo_ifaces[link] = [{
+                    "name": "cloud"
+                }]
+                is_pmp = True
+            # Link all pairs
+            for mo0, mo1 in pseudo_links:
+                mo0_id = str(mo0.id)
+                mo1_id = str(mo1.id)
+                # Create virtual ports for mo0
+                self.G.node[mo0_id]["ports"] += [{
+                    "id": pn,
+                    "ports": [i["name"] for i in mo_ifaces[mo0]]
+                }]
+                # Create virtual ports for mo1
+                self.G.node[mo1_id]["ports"] += [{
+                    "id": pn + 1,
+                    "ports": [i["name"] for i in mo_ifaces[mo1]]
+                }]
+                # Calculate bandwidth
+                t_in_bw, t_out_bw = get_bandwidth(mo_ifaces[mo0])
+                d_in_bw, d_out_bw = get_bandwidth(mo_ifaces[mo1])
+                in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
+                out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
+                # Add link
+                if is_pmp:
+                    link_id = "%s-%s-%s" % (link.id, pn, pn + 1)
                 else:
-                    i1 += [i]
-            self.add_object(m0)
-            self.G.node[m0.id]["ports"] += [{
-                "id": pn,
-                "ports": [i.name for i in i0]
-            }]
-            self.add_object(m1)
-            self.G.node[m1.id]["ports"] += [{
-                "id": pn + 1,
-                "ports": [i.name for i in i1]
-            }]
-            # Add link
-            t_in_bw = 0
-            t_out_bw = 0
-            for i in i0:
-                iface = ifs.get(i.id) or {}
-                bw = iface.get("bandwidth") or 0
-                in_speed = iface.get("in_speed") or 0
-                out_speed = iface.get("out_speed") or 0
-                t_in_bw += bandwidth(in_speed, bw)
-                t_out_bw += bandwidth(out_speed, bw)
-            d_in_bw = 0
-            d_out_bw = 0
-            for i in i1:
-                iface = ifs.get(i.id) or {}
-                bw = iface.get("bandwidth") or 0
-                in_speed = iface.get("in_speed") or 0
-                out_speed = iface.get("out_speed") or 0
-                d_in_bw += bandwidth(in_speed, bw)
-                d_out_bw += bandwidth(out_speed, bw)
-            in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
-            out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
-            self.add_link(m0.id, m1.id, {
-                "id": str(link.id),
-                "type": "link",
-                "method": link.discovery_method,
-                "ports": [pn, pn + 1],
-                # Target to source
-                "in_bw": in_bw,
-                # Source to target
-                "out_bw": out_bw,
-                # Max bandwidth
-                "bw": max(in_bw, out_bw)
-            })
-            pn += 2
+                    link_id = str(link.id)
+                self.add_link(mo0_id, mo1_id, {
+                    "id": link_id,
+                    "type": "link",
+                    "method": link.discovery_method,
+                    "ports": [pn, pn + 1],
+                    # Target to source
+                    "in_bw": in_bw,
+                    # Source to target
+                    "out_bw": out_bw,
+                    # Max bandwidth
+                    "bw": max(in_bw, out_bw)
+                })
+                pn += 2
 
     def max_uplink_path_len(self):
         """
@@ -278,19 +322,38 @@ class SegmentTopology(BaseTopology):
         Returns a dict of <object id> -> [<uplink object id>, ...]
         Shortest path first
         """
-        uplinks = self.get_uplinks()
-        r = {}
-        for o in self.G.node:
-            if o not in self.segment_objects:
-                continue
+        def get_node_uplinks(node):
             ups = {}
             for u in uplinks:
-                for path in nx.all_simple_paths(self.G, o, u):
+                for path in nx.all_simple_paths(self.G, node, u):
                     lp = len(path)
                     p = path[1]
                     ups[p] = min(lp, ups.get(p, lp))
             # Shortest path first
-            r[o] = sorted(ups, key=lambda x: ups[x])
+            return sorted(ups, key=lambda x: ups[x])
+
+        uplinks = self.get_uplinks()
+        # Get all cloud nodes
+        cloud_nodes = [o for o in self.G.node if self.G.node[o]["type"] == "cloud"]
+        # Get uplinks for cloud nodes
+        cloud_uplinks = dict(
+            (o, [int(u) for u in get_node_uplinks(o)])
+            for o in cloud_nodes
+        )
+        # Get all segment objects' nodes
+        segment_objects = set(str(o) for o in self.segment_objects)  # Convert to string
+        # Get objects uplinks
+        r = {}
+        for o in segment_objects:
+            ups = []
+            for u in get_node_uplinks(o):
+                cu = cloud_uplinks.get(u)
+                if cu:
+                    # Uplink is a cloud. Use cloud's uplinks instead
+                    ups += cu
+                else:
+                    ups += [int(u)]
+            r[int(o)] = ups
         return r
 
 

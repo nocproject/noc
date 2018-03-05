@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_chassis_id import Script as BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
@@ -25,7 +25,7 @@ class Script(BaseScript):
         r"^\d+\s+(?P<mac>\S+)\s+\S+\s+\S+\s+CPU$",
         re.MULTILINE | re.IGNORECASE)
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         v = self.scripts.get_version()
         if v["version"].startswith("7") or self.match_version(version__gte="6.3.100.12"):

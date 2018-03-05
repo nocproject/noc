@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 # Third-party modules
 from django.template import Template as DjangoTemplate
@@ -14,19 +15,19 @@ from django.template import Context
 from mongoengine.errors import SaveConditionError
 # NOC modules
 import noc.lib.nosql as nosql
-from alarmlog import AlarmLog
-from alarmclass import AlarmClass
 from noc.main.models import User
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
-from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
 from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
+from .alarmseverity import AlarmSeverity
+from .alarmclass import AlarmClass
+from .alarmlog import AlarmLog
 
 ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
 
@@ -35,7 +36,6 @@ class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
         "strict": False,
-        "auto_create_index": False,
         "auto_create_index": False,
         "indexes": [
             "timestamp", "root", "-severity",
@@ -199,7 +199,7 @@ class ActiveAlarm(nosql.Document):
             for h in self.alarm_class.get_clear_handlers():
                 try:
                     h(self)
-                except:
+                except Exception:
                     error_report()
         log = self.log + [AlarmLog(timestamp=ts, from_status="A",
                                    to_status="C", message=message)]
@@ -534,7 +534,8 @@ class ActiveAlarm(nosql.Document):
             if a.escalation_tt:
                 yield a
 
+
 # Avoid circular references
-from archivedalarm import ArchivedAlarm
-from utils import get_alarm
-from alarmdiagnosticconfig import AlarmDiagnosticConfig
+from .archivedalarm import ArchivedAlarm
+from .utils import get_alarm
+from .alarmdiagnosticconfig import AlarmDiagnosticConfig

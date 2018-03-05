@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 self.print("[%s] Not enabled, skipping" % ecls.name)
                 continue
             start = self.get_last_extract(ecls.name)
-            if not start:
+            if not start or ecls.is_snapshot:
                 start = ecls.get_start()
                 if not start:
                     self.print("[%s] No data, skipping" % ecls.name)

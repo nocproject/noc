@@ -82,12 +82,12 @@ _MCACHE = {}
 _MODELS = {
     # main models
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
-    "main.Checkpoint": "noc.main.models.Checkpoint",
+    "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
     "main.CollectionCache": "noc.main.models.collectioncache.CollectionCache",
+    "main.CronTab": "noc.main.models.crontab.CronTab",
     "main.CustomField": "noc.main.models.customfield.CustomField",
     "main.CustomFieldEnumGroup": "noc.main.models.customfieldenumgroup.CustomFieldEnumGroup",
     "main.CustomFieldEnumValue": "noc.main.models.customfieldenumvalue.CustomFieldEnumValue",
-    "main.DBTrigger": "noc.main.models.dbtrigger.DBTrigger",
     "main.DatabaseStorage": "noc.main.models.databasestorage.DatabaseStorage",
     "main.DocCategory": "noc.main.models.doccategory.DocCategory",
     "main.Favorites": "noc.main.models.favorites.Favorites",
@@ -107,20 +107,18 @@ _MODELS = {
     "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
     "main.ReportSubscription": "noc.main.models.reportsubscription.ReportSubscription",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
-    "main.Schedule": "noc.main.models.Schedule",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
     "main.Style": "noc.main.models.style.Style",
     "main.Sync": "noc.main.models.sync.Sync",
     "main.SyncCache": "noc.main.models.synccache.SyncCache",
-    "main.SystemNotification": "noc.main.models.SystemNotification",
-    "main.SystemTemplate": "noc.main.models.SystemTemplate",
+    "main.SystemNotification": "noc.main.models.systemnotification.SystemNotification",
+    "main.SystemTemplate": "noc.main.models.systemtemplate.SystemTemplate",
     "main.Tag": "noc.main.models.tag.Tag",
     "main.Template": "noc.main.models.template.Template",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
     "main.UserProfile": "noc.main.models.userprofile.UserProfile",
     "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
-    "main.UserSession": "noc.main.models.usersession.UserSession",
     "main.UserState": "noc.main.models.userstate.UserState",
     # project models
     "project.Project": "noc.project.models.project.Project",
@@ -135,6 +133,7 @@ _MODELS = {
     "gis.Overlay": "noc.gis.models.Overlay",
     "gis.Street": "noc.gis.models.street.Street",
     # inv models
+    "inv.AllocationGroup": "noc.inv.models.allocationgroup.AllocationGroup",
     "inv.Capability": "noc.inv.models.capability.Capability",
     "inv.ConnectionRule": "noc.inv.models.connectionrule.ConnectionRule",
     "inv.ConnectionType": "noc.inv.models.connectiontype.ConnectionType",
@@ -176,19 +175,17 @@ _MODELS = {
     "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
-    "sa.MRTConfig": "noc.sa.models.mrtconfig.MRTConfig",
     "sa.ManagedObject": "noc.sa.models.managedobject.ManagedObject",
     "sa.ManagedObjectAttribute": "noc.sa.models.managedobject.ManagedObjectAttribute",
     "sa.ManagedObjectProfile": "noc.sa.models.managedobjectprofile.ManagedObjectProfile",
     "sa.ManagedObjectSelector": "noc.sa.models.managedobjectselector.ManagedObjectSelector",
     "sa.ManagedObjectSelectorByAttribute": "noc.sa.models.managedobjectselector.ManagedObjectSelectorByAttribute",
-    "sa.MapTask": "noc.sa.models.maptask.MapTask",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
     "sa.Profile": "noc.sa.models.profile.Profile",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
-    "sa.ReduceTask": "noc.sa.models.reducetask.ReduceTask",
     "sa.Service": "noc.sa.models.service.Service",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
+    "sa.ServiceSummary": "noc.sa.models.servicesummary.ServiceSummary",
     "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
     # fm models
@@ -216,7 +213,6 @@ _MODELS = {
     "fm.MIBAlias": "noc.fm.models.mibalias.MIBAlias",
     "fm.MIBData": "noc.fm.models.mibdata.MIBData",
     "fm.MIBPreference": "noc.fm.models.mibpreference.MIBPreference",
-    "fm.NewEvent": "noc.fm.models.newevent.NewEvent",
     "fm.OIDAlias": "noc.fm.models.oidalias.OIDAlias",
     "fm.Outage": "noc.fm.models.outage.Outage",
     "fm.Reboot": "noc.fm.models.reboot.Reboot",
@@ -236,11 +232,13 @@ _MODELS = {
     "cm.ValidationRule": "noc.cm.models.validationrule.ValidationRule",
     # ip models
     "ip.Address": "noc.ip.models.address.Address",
+    "ip.AddressProfile": "noc.ip.models.addressprofile.AddressProfile",
     "ip.AddressRange": "noc.ip.models.addressrange.AddressRange",
     "ip.IPPool": "noc.ip.models.ippool.IPPool",
     "ip.Prefix": "noc.ip.models.prefix.Prefix",
     "ip.PrefixAccess": "noc.ip.models.prefixaccess.PrefixAccess",
     "ip.PrefixBookmark": "noc.ip.models.prefixbookmark.PrefixBookmark",
+    "ip.PrefixProfile": "noc.ip.models.prefixprofile.PrefixProfile",
     "ip.VRF": "noc.ip.models.vrf.VRF",
     "ip.VRFGroup": "noc.ip.models.vrfgroup.VRFGroup",
     # vc models
@@ -250,6 +248,10 @@ _MODELS = {
     "vc.VCDomainProvisioningConfig": "noc.vc.models.vcdomainprovisioningconfig.VCDomainProvisioningConfig",
     "vc.VCFilter": "noc.vc.models.vcfilter.VCFilter",
     "vc.VCType": "noc.vc.models.vctype.VCType",
+    "vc.VLANProfile": "noc.vc.models.vlanprofile.VLANProfile",
+    "vc.VLAN": "noc.vc.models.vlan.VLAN",
+    "vc.VPNProfile": "noc.vc.models.vpnprofile.VPNProfile",
+    "vc.VPN": "noc.vc.models.vpn.VPN",
     # dns models
     "dns.DNSServer": "noc.dns.models.dnsserver.DNSServer",
     "dns.DNSZone": "noc.dns.models.dnszone.DNSZone",
@@ -286,6 +288,8 @@ _MODELS = {
     # crm models
     "crm.SubscriberProfile": "noc.crm.models.subscriberprofile.SubscriberProfile",
     "crm.SupplierProfile": "noc.crm.models.supplierprofile.SupplierProfile",
+    "crm.Subscriber": "noc.crm.models.subscriber.Subscriber",
+    "crm.Supplier": "noc.crm.models.supplier.Supplier",
     # sla models
     "sla.SLAProfile": "noc.sla.models.slaprofile.SLAProfile",
     "sla.SLAProbe": "noc.sla.models.slaprobe.SLAProbe",
@@ -297,6 +301,10 @@ _MODELS = {
     "phone.PhoneNumberProfile": "noc.phone.models.phonenumberprofile.PhoneNumberProfile",
     "phone.PhoneRange": "noc.phone.models.phonerange.PhoneRange",
     "phone.PhoneRangeProfile": "noc.phone.models.phonerangeprofile.PhoneRangeProfile",
+    # wf models
+    "wf.Workflow": "noc.wf.models.workflow.Workflow",
+    "wf.State": "noc.wf.models.state.State",
+    "wf.Transition": "noc.wf.models.transition.Transition"
 }
 
 FTS_MODELS = [

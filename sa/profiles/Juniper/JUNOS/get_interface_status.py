@@ -23,8 +23,6 @@ class Script(BaseScript):
     )
 
     def execute(self, interface=None):
-        version = self.scripts.get_version()
-        platform = version["platform"]
         if self.has_snmp():
             try:
                 # Get interface status
@@ -34,10 +32,12 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
-                    if interface \
-                      and interface == self.profile.convert_interface_name(n):
+                    if (
+                        interface and
+                        interface == self.profile.convert_interface_name(n)
+                    ):
                         return [{"interface": n, "status": int(s) == 1}]
-                    if not self.profile.valid_interface_name(n, platform):
+                    if not self.profile.valid_interface_name(self, n):
                         continue
                     r += [{"interface": n, "status": int(s) == 1}]
                 # XXX: Sometime snmpwalk return only loX interfaces
@@ -56,7 +56,7 @@ class Script(BaseScript):
             match = self.rx_interface_status.search(l)
             if match:
                 iface = match.group("interface")
-                if not self.profile.valid_interface_name(iface, platform):
+                if not self.profile.valid_interface_name(self, iface):
                     continue
                 if not interface or iface == interface:
                     r += [{

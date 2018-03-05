@@ -45,7 +45,7 @@ from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
 from noc.lib.db import SQL
 from noc.lib.app.site import site
-from noc.lib.stencil import stencil_registry
+from noc.core.stencil import stencil_registry
 from noc.lib.validators import is_ipv4, is_ipv4_prefix
 from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
@@ -90,7 +90,6 @@ logger = logging.getLogger(__name__)
     ("fm.ArchivedAlarm", "managed_object"),
     ("fm.ArchivedEvent", "managed_object"),
     ("fm.FailedEvent", "managed_object"),
-    ("fm.NewEvent", "managed_object"),
     ("inv.Interface", "managed_object"),
     ("inv.SubInterface", "managed_object")
     # ("maintenance.Maintenance", "escalate_managed_object"),
@@ -99,7 +98,7 @@ class ManagedObject(Model):
     """
     Managed Object
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Managed Object"
         verbose_name_plural = "Managed Objects"
         db_table = "sa_managedobject"
@@ -490,7 +489,7 @@ class ManagedObject(Model):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"),
-                  lock=lambda _: id_lock)
+                             lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         mo = ManagedObject.objects.filter(bi_id=id)[:1]
         if mo:
@@ -670,6 +669,10 @@ class ManagedObject(Model):
                 iseg.update_uplinks()
             self.segment.update_access()
             self.update_topology()
+            # Refresh links
+            from noc.inv.models.link import Link
+            for l in Link.object_links(self):
+                l.save()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
@@ -814,7 +817,7 @@ class ManagedObject(Model):
             return default
         try:
             return int(v)
-        except:
+        except:  # noqa
             return default
 
     def set_attr(self, name, value):
@@ -928,7 +931,7 @@ class ManagedObject(Model):
         if isinstance(data, list):
             # Convert list to plain text
             r = []
-            for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
+            for d in sorted(data, key=operator.attrgetter("name")):
                 r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
             data = "\n".join(r)
         # Pass data through config filter, if given
@@ -990,7 +993,7 @@ class ManagedObject(Model):
         engine = Engine(self)
         try:
             engine.check()
-        except:
+        except:  # noqa
             logger.error("Failed to validate config for %s", self.name)
             error_report()
 
@@ -1215,6 +1218,14 @@ class ManagedObject(Model):
         """
         if not self.tt_system or not self.tt_system_id:
             return False
+        return self.can_notify(depended)
+
+    def can_notify(self, depended=False):
+        """
+        Check alarm can be notified via escalation
+        :param depended:
+        :return:
+        """
         if self.escalation_policy == "E":
             return True
         elif self.escalation_policy == "P":
@@ -1353,20 +1364,26 @@ class ManagedObject(Model):
             qs["segment__in"] = [cfg["segment"]]
         if "container" in cfg:
             qs["container__in"] = [cfg["container"]]
+        if "vendor" in cfg:
+            qs["vendor__in"] = [cfg["vendor"]]
         if "platform" in cfg:
             qs["platform__in"] = [cfg["platform"]]
         if "version" in cfg:
             qs["version__in"] = [cfg["version"]]
         return [
-            r.bi_id
-            for r in ManagedObject.objects.filter(**qs).only("id", "bi_id")
+            int(r)
+            for r in ManagedObject.objects.filter(**qs).values_list("bi_id", flat=True)
         ]
+
+    @property
+    def metrics(self):
+        metric, last = get_objects_metrics([self])
+        return metric.get(self), last.get(self)
 
 
 @on_save
 class ManagedObjectAttribute(Model):
-
-    class Meta:
+    class Meta(object):
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"
         db_table = "sa_managedobjectattribute"
@@ -1469,3 +1486,4 @@ from .objectnotification import ObjectNotification
 from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
+from noc.core.pm.utils import get_objects_metrics

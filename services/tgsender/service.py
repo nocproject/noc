@@ -19,16 +19,17 @@ from noc.core.http.client import fetch_sync
 from noc.core.perf import metrics
 from noc.config import config
 
-RETRY_TIME = config.tgsender.retry_timeout
-TOKEN = config.tgsender.token
 API = 'https://api.telegram.org/bot'
-URL = API + TOKEN
 
 
 class TgSenderService(Service):
     name = "tgsender"
 
     def on_activate(self):
+        if not config.tgsender.token:
+            self.die("no token defined")
+        else:
+            self.url = API + config.tgsender.token
         self.subscribe(
             topic=self.name,
             channel="sender",
@@ -53,16 +54,16 @@ class TgSenderService(Service):
         return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
     def send_tb(self, messages, address, subject, body):
-        proxy_addres = config.proxy.https_proxy
+        # proxy_addres = config.proxy.https_proxy  # not used.
         sendMessage = {
             'chat_id': address,
             'text': '*' + self.escape_markdown(subject.encode('utf8')) +
                     '*\n' + self.escape_markdown(body.encode('utf8')),
             'parse_mode': 'Markdown'
         }
-        time.sleep(RETRY_TIME)
+        time.sleep(config.tgsender.retry_timeout)
 
-        get = URL + '/sendMessage?' + urllib.urlencode(sendMessage)
+        get = self.url + '/sendMessage?' + urllib.urlencode(sendMessage)
         self.logger.info("HTTP GET %s", get)
         code, header, body = fetch_sync(
             get,
@@ -80,6 +81,7 @@ class TgSenderService(Service):
             self.logger.error("HTTP GET %s failed: %s %s", get, code, body)
             metrics["telegram_proxy_failed_httperror"] += 1
             return False
+
 
 if __name__ == "__main__":
     TgSenderService().start()

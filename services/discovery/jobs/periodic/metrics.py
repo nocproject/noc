@@ -53,6 +53,7 @@ metrics_lock = Lock()
 
 MetricConfig = namedtuple("MetricConfig", [
     "metric_type",
+    "enable_box", "enable_periodic",
     "is_stored",
     "window_type", "window", "window_function", "window_config",
     "window_related",
@@ -155,9 +156,6 @@ class MetricsCheck(DiscoveryCheck):
             mt = MetricType.get_by_id(mt_id)
             if not mt:
                 continue
-            # @todo: Filter by scope
-            if not m.get("is_active"):
-                continue
             le = m.get("low_error")
             lw = m.get("low_warn")
             he = m.get("high_error")
@@ -168,6 +166,8 @@ class MetricsCheck(DiscoveryCheck):
             hww = AlarmSeverity.severity_for_weight(int(m.get("high_warn_weight", 10)))
             r[mt.name] = MetricConfig(
                 mt,
+                m.get("enable_box", True),
+                m.get("enable_periodic", True),
                 m.get("is_stored", True),
                 m.get("window_type", "m"),
                 int(m.get("window", 1)),
@@ -201,6 +201,7 @@ class MetricsCheck(DiscoveryCheck):
         """
         return MetricConfig(
             m.metric_type,
+            m.enable_box, m.enable_periodic,
             m.is_stored,
             m.window_type, m.window, m.window_function,
             m.window_config, m.window_related,
@@ -223,9 +224,6 @@ class MetricsCheck(DiscoveryCheck):
         if not ipr:
             return r
         for m in ipr.metrics:
-            # @todo: Filter by scope
-            if not m.is_active:
-                continue
             r[m.metric_type.name] = cls.config_from_settings(m)
         return r
 
@@ -239,9 +237,6 @@ class MetricsCheck(DiscoveryCheck):
         if not spr:
             return r
         for m in spr.metrics:
-            # @todo: Filter by scope
-            if not m.is_active:
-                continue
             r[m.metric_type.name] = cls.config_from_settings(m)
         return r
 
@@ -254,6 +249,9 @@ class MetricsCheck(DiscoveryCheck):
         o_metrics = self.get_object_profile_metrics(self.object.object_profile.id)
         self.logger.debug("Object metrics: %s", o_metrics)
         for metric in o_metrics:
+            if ((self.is_box and not o_metrics[metric].enable_box) or
+                    (self.is_periodic and not o_metrics[metric].enable_periodic)):
+                continue
             m_id = next(self.id_count)
             metrics += [{
                 "id": m_id,
@@ -309,6 +307,9 @@ class MetricsCheck(DiscoveryCheck):
                 subs = self.get_subinterfaces()
             ifindex = i.get("ifindex")
             for metric in ipr:
+                if ((self.is_box and not ipr[metric].enable_box) or
+                        (self.is_periodic and not ipr[metric].enable_periodic)):
+                    continue
                 m_id = next(self.id_count)
                 m = {
                     "id": m_id,
@@ -360,6 +361,9 @@ class MetricsCheck(DiscoveryCheck):
                 )
                 continue
             for metric in pm:
+                if ((self.is_box and not pm[metric].enable_box) or
+                        (self.is_periodic and not pm[metric].enable_periodic)):
+                    continue
                 m_id = next(self.id_count)
                 metrics += [{
                     "id": m_id,
@@ -440,6 +444,7 @@ class MetricsCheck(DiscoveryCheck):
             else:
                 # Gauge
                 m.abs_value = m.value * m.scale
+
             self.logger.debug(
                 "[%s] Measured value: %s. Scale: %s. Resulting value: %s",
                 m.label, m.value, m.scale, m.abs_value
@@ -455,8 +460,10 @@ class MetricsCheck(DiscoveryCheck):
                     )
                     ts_cache[m.ts] = tsc
                 if path:
-                    pk = "%s\t%s\t%d\t%s" % (tsc[0], tsc[1], mo_id,
-                                          self.quote_path(path))
+                    pk = "%s\t%s\t%d\t%s" % (
+                        tsc[0], tsc[1], mo_id,
+                        self.quote_path(path)
+                    )
                     table = "%s.date.ts.managed_object.path" % cfg.metric_type.scope.table_name
                 else:
                     pk = "%s\t%s\t%d" % (tsc[0], tsc[1], mo_id)
@@ -471,7 +478,7 @@ class MetricsCheck(DiscoveryCheck):
                     )
                     continue
                 n_metrics += 1
-            if cfg.process_thresholds and m.abs_value:
+            if cfg.process_thresholds and m.abs_value is not None:
                 alarms += self.process_thresholds(m, cfg)
         return n_metrics, data, alarms
 
@@ -737,6 +744,14 @@ class MetricsCheck(DiscoveryCheck):
         """
         return window[-1][1]
 
+    def wf_sum(self, window, *args, **kwargs):
+        """
+        Returns sum of values within window
+        :param window:
+        :return:
+        """
+        return float(sum(w[1] for w in window))
+
     def wf_avg(self, window, *args, **kwargs):
         """
         Returns window average
@@ -752,9 +767,9 @@ class MetricsCheck(DiscoveryCheck):
         :param q:
         :return:
         """
-        l = sorted(w[1] for w in window)
-        i = len(l) * q // 100
-        return l[i]
+        wl = sorted(w[1] for w in window)
+        i = len(wl) * q // 100
+        return wl[i]
 
     def wf_percentile(self, window, config, *args, **kwargs):
         """
@@ -822,6 +837,50 @@ class MetricsCheck(DiscoveryCheck):
         :return:
         """
         return self._wf_percentile(window, 99)
+
+    def wf_step_inc(self, window, *args, **kwargs):
+        """
+        Sum of all increments within window
+        :param window:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        values = [x[1] for x in window]
+        return sum(
+            x1 - x0
+            for x0, x1 in zip(values, values[1:])
+            if x1 > x0
+        )
+
+    def wf_step_dec(self, window, *args, **kwargs):
+        """
+        Sum of all decrements within window
+        :param window:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        values = [x[1] for x in window]
+        return sum(
+            x0 - x1
+            for x0, x1 in zip(values, values[1:])
+            if x0 > x1
+        )
+
+    def wf_step_abs(self, window, *args, **kwargs):
+        """
+        Sum of all absolute changes within window
+        :param window:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        values = [x[1] for x in window]
+        return sum(
+            abs(x1 - x0)
+            for x0, x1 in zip(values, values[1:])
+        )
 
     def wf_handler(self, window, config, *args, **kwargs):
         """

@@ -19,5 +19,7 @@ class Script(BaseScript):
         try:
             config = self.cli("show running-config")
         except self.CLISyntaxError:
+            # Iskratel SGR Not clearing command line when SyntaxError
+            self.cli("\x1b[B")
             raise self.NotSupportedError()
         return self.cleaned_config(config)

@@ -2,11 +2,12 @@
 # ---------------------------------------------------------------------
 # AlarmDiagnosticConfig model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 from threading import Lock
 from collections import defaultdict
@@ -16,9 +17,6 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
 import cachetools
 # NOC modules
-from alarmclass import AlarmClass
-from alarmdiagnostic import AlarmDiagnostic
-from utils import get_alarm
 from noc.sa.models.action import Action
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.nosql import ForeignKeyField
@@ -26,6 +24,9 @@ from noc.sa.models.selectorcache import SelectorCache
 from noc.core.defer import call_later
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
+from .alarmclass import AlarmClass
+from .alarmdiagnostic import AlarmDiagnostic
+from .utils import get_alarm
 
 
 ac_lock = Lock()
@@ -244,5 +245,3 @@ def on_clear(alarm, cfg, *args, **kwargs):
     if not a:
         logger.info("[%s] Alarm is not found, skipping", alarm)
     AlarmDiagnosticConfig.get_diag(a, cfg, "C")
-
-#

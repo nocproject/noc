@@ -2,7 +2,11 @@
 # ---------------------------------------------------------------------
 # Settings for "wf" module
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-MODULE_NAME = "Workflow"
+
+# NOC modules
+from noc.core.translation import ugettext as _
+
+MODULE_NAME = _("Workflow")

@@ -40,7 +40,7 @@ class Script(BaseScript):
                 for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
                     i = v[1]
                     name = self.snmp.get("1.3.6.1.2.1.2.2.1.2." + str(i))
-                    if name.lower.startswith("line"):
+                    if name.lower().startswith("line"):
                         continue
                     iftype = self.get_interface_type(name)
                     if not name:

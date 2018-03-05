@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 
 class Script(BaseScript):
-    name = "Eltex.MES.get_interface_status"
+    name = "Planet.WGSD.get_interface_status"
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
@@ -27,19 +27,19 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
+                                                  "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
                     if n[:2] == 'fa' or n[:2] == 'gi' or n[:2] == 'te':
                         if interface:
                             if n == interface:
                                 r.append({
                                     "interface": n,
                                     "status": int(s) == 1
-                                    })
+                                })
                         else:
                             r.append({
                                 "interface": n,
                                 "status": int(s) == 1
-                                })
+                            })
                 return r
             except self.snmp.TimeOutError:
                 pass
@@ -53,7 +53,7 @@ class Script(BaseScript):
             iface = match.group("interface")
             if iface[:2] == 'fa' or iface[:2] == 'gi' or iface[:2] == 'te':
                 r.append({
-                        "interface": match.group("interface"),
-                        "status": match.group("status") == "Up"
-                        })
+                    "interface": match.group("interface"),
+                    "status": match.group("status") == "Up"
+                })
         return r

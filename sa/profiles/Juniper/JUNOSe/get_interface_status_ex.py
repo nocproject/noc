@@ -14,7 +14,7 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Generic.get_interface_status_ex"
+    name = "Juniper.JUNOSe.get_interface_status_ex"
     interface = IGetInterfaceStatusEx
     requires = []
 
@@ -29,7 +29,8 @@ class Script(BaseScript):
 
     def apply_table(self, r, mib, name, f=None):
         if not f:
-            f = lambda x: x
+            def f(x):
+                return x
         d = self.get_iftable(mib)
         for ifindex in d:
             if ifindex in r:
@@ -87,7 +88,7 @@ class Script(BaseScript):
         r = []
         if self.has_snmp():
             try:
-                r= self.get_data()
+                r = self.get_data()
             except self.snmp.TimeOutError:
                 pass
         return r

@@ -8,7 +8,6 @@ console.debug("Defining NOC.sa.managedobject.L2Panel");
 
 Ext.define("NOC.sa.managedobject.L2Panel", {
     extend: "Ext.panel.Panel",
-    uses: [],
     title: __("Switchports"),
     closable: false,
     layout: "fit",

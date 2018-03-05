@@ -1,0 +1,6 @@
+{
+  "$metric": "Interface | Errors | Frame",
+  "$type": "ifindex",
+  "oid": "1.3.6.1.4.1.2011.5.25.41.1.6.1.1.28.{{ ifIndex }}",
+  "type": "counter"
+}

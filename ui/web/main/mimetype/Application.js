@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.mimetype.Application");
 
 Ext.define("NOC.main.mimetype.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.main.mimetype.Model"],
+    requires: ["NOC.main.mimetype.Model"],
     
     model: "NOC.main.mimetype.Model",
     

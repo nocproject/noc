@@ -367,7 +367,9 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
         });
         me.objectNodes[data.id] = node;
-        me.objectsList.push(data.id);
+        if(data.type === "managedobject") {
+            me.objectsList.push(data.id)
+        }
         return node;
     },
     //
@@ -482,6 +484,11 @@ Ext.define("NOC.inv.map.MapPanel", {
             case "link":
                 me.app.inspectLink(data.id);
                 break;
+            case "cloud":
+                view.highlight();
+                me.currentHighlight = view;
+                me.app.inspectCloud(data.id);
+                break
         }
     },
 
@@ -966,7 +973,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         var args = {
             direct_objects: objects,
             subject: __('created from map at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
-            contacts: NOC.username,
+            contacts: NOC.email ? NOC.email : NOC.username,
             start_date: Ext.Date.format(new Date(), 'd.m.Y'),
             start_time: Ext.Date.format(new Date(), 'H:i'),
             stop_time: '12:00',

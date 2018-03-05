@@ -7,11 +7,13 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extdocapplication import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication
 from noc.crm.models.subscriber import Subscriber
+from noc.lib.app.decorators.state import state_handler
 from noc.core.translation import ugettext as _
 
 
+@state_handler
 class SubscriberApplication(ExtDocApplication):
     """
     Subscriber application

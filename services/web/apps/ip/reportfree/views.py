@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # Free Blocks Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2010 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-# Django modules
+
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.ip.models import VRF, Prefix
+from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
 from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix, ValidationError
 from noc.core.ip import IP
 
@@ -20,7 +22,7 @@ class ReportForm(forms.Form):
         label=_("VRF"),
         queryset=VRF.objects.filter(
             state__is_provisioned=True).order_by("name")
-        )
+    )
     afi = forms.ChoiceField(label=_("Address Family"),
                             choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = forms.CharField(label=_("Prefix"))
@@ -47,12 +49,19 @@ class FreeBlocksReport(SimpleReport):
 
     def get_data(self, vrf, afi, prefix, **kwargs):
         p = IP.prefix(prefix.prefix)
-        return self.from_dataset(title=_(
-            "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
-                "vrf": vrf.name,
-                "afi": afi,
-                "prefix": prefix.prefix
-            }),
+        return self.from_dataset(
+            title=_(
+                "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s" % {
+                    "vrf": vrf.name,
+                    "afi": afi,
+                    "prefix": prefix.prefix
+                }
+            ),
             columns=["Free Blocks"],
-            data=[[unicode(f)] for f in p.iter_free(
-            [IP.prefix(c.prefix) for c in prefix.children_set.all()])])
+            data=[
+                [unicode(f)] for f in p.iter_free([
+                    IP.prefix(c.prefix)
+                    for c in prefix.children_set.all()
+                ])
+            ]
+        )

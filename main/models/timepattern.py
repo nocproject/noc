@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 from threading import Lock
 import operator
 # Third-party modules
@@ -32,7 +33,7 @@ class TimePattern(models.Model):
     """
     Time Patterns
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Time Pattern"
         verbose_name_plural = "Time Patterns"
         db_table = "main_timepattern"
@@ -76,3 +77,8 @@ class TimePattern(models.Model):
         Matches DateTime objects against time pattern
         """
         return self.time_pattern.match(d)
+
+
+# Avoid circular references
+# No delete, fixed 'TimePattern' object has no attribute 'timepatternterm_set'
+from .timepatternterm import TimePatternTerm  # noqa

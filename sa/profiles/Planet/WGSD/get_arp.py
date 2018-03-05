@@ -53,11 +53,11 @@ class Script(BaseScript):
                     "ip": match.group("ip"),
                     "mac": None,
                     "interface": None
-                    })
+                })
             else:
                 r.append({
                     "ip": match.group("ip"),
                     "mac": match.group("mac"),
                     "interface": match.group("interface")
-                    })
+                })
         return r

@@ -57,6 +57,7 @@ class SyslogCollectorService(Service):
             try:
                 server.listen(port, addr)
             except socket.error as e:
+                self.perf_metrics["error", ("type", "socket_listen_error")] += 1
                 self.logger.error(
                     "Failed to start syslog server at %s:%s: %s",
                     addr, port, e
@@ -98,6 +99,7 @@ class SyslogCollectorService(Service):
             # Register invalid event source
             if self.source_map:
                 self.invalid_sources[address] += 1
+            self.perf_metrics["error", ("type", "object_not_found")] += 1
             return None
         return obj_id
 

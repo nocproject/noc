@@ -9,7 +9,7 @@
 # Python modules
 import re
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_lldp_neighbors import Script as BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
@@ -37,7 +37,7 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
-    def execute(self):
+    def execute_cli(self):
         r = []
         """
         # Try SNMP first
@@ -169,7 +169,7 @@ class Script(BaseScript):
                     if match.group("port_descr").strip():
                         port_descr = match.group("port_descr").strip()
                         n["remote_port_description"] = port_descr
-            except:
+            except Exception:
                 pass
             i["neighbors"] += [n]
             r += [i]

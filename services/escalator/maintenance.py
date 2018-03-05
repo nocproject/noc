@@ -51,7 +51,7 @@ def start_maintenance(maintenance_id):
             obj=tts_id,
             reason=0,
             subject=m.subject,
-            body=m.body,
+            body=m.description or m.subject,
             login="correlator",
             timestamp=m.start
         )

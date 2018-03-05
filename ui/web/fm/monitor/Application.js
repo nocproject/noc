@@ -8,7 +8,6 @@ console.debug("Defining NOC.fm.monitor.Application");
 
 Ext.define("NOC.fm.monitor.Application", {
     extend: "NOC.core.Application",
-    //requires: [],
     initComponent: function() {
         var me = this;
 

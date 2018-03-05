@@ -6,8 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python module
-import socket
 # Third-party modules
 import tornado.gen
 # NOC modules
@@ -26,8 +24,10 @@ class ActivatorAPI(API):
     """
     name = "activator"
 
-    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=config.activator.http_connect_timeout,
-                                request_timeout=config.activator.http_request_timeout)
+    HTTP_CLIENT_DEFAULTS = dict(
+        connect_timeout=config.activator.http_connect_timeout,
+        request_timeout=config.activator.http_request_timeout
+    )
 
     @api
     @executor("script")
@@ -62,6 +62,7 @@ class ActivatorAPI(API):
         """
         script_class = loader.get_script(name)
         if not script_class:
+            self.service.perf_metrics["error", ("type", "invalid_script")] += 1
             raise APIError("Invalid script: %s" % name)
         script = script_class(
             service=self.service,
@@ -77,8 +78,13 @@ class ActivatorAPI(API):
         try:
             result = script.run()
         except script.ScriptError as e:
+            self.service.perf_metrics["error", ("type", "script_error")] += 1
             raise APIError("Script error: %s" % e.__doc__)
         return result
+
+    @staticmethod
+    def script_get_label(name, credentials, *args, **kwargs):
+        return "%s %s" % (name, credentials.get("address", "-"))
 
     @api
     @tornado.gen.coroutine
@@ -103,10 +109,15 @@ class ActivatorAPI(API):
             self.logger.debug("SNMP GET %s %s returns %s",
                               address, oid, result)
         except SNMPError as e:
+            self.service.perf_metrics["error", ("type", "snmp_v1_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s",
                               address, oid, e)
         raise tornado.gen.Return(result)
+
+    @staticmethod
+    def snmp_v1_get_get_label(address, community, oid):
+        return "%s %s" % (address, oid)
 
     @api
     @tornado.gen.coroutine
@@ -131,10 +142,15 @@ class ActivatorAPI(API):
             self.logger.debug("SNMP GET %s %s returns %s",
                               address, oid, result)
         except SNMPError as e:
+            self.service.perf_metrics["error", ("type", "snmp_v2_error")] += 1
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s",
                               address, oid, e)
         raise tornado.gen.Return(result)
+
+    @staticmethod
+    def snmp_v2_get_get_label(address, community, oid):
+        return "%s %s" % (address, oid)
 
     @api
     @tornado.gen.coroutine
@@ -155,10 +171,19 @@ class ActivatorAPI(API):
         if 200 <= code <= 299:
             raise tornado.gen.Return(body)
         else:
+            self.service.perf_metrics["error", ("type", "http_error_%s" % code)] += 1
             self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
             raise tornado.gen.Return(None)
+
+    @staticmethod
+    def http_get_get_label(url):
+        return "%s" % url
 
     @api
     @executor("script")
     def close_session(self, session_id):
         BaseScript.close_session(session_id)
+
+    @staticmethod
+    def close_session_get_label(session_id):
+        return session_id
