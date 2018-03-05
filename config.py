@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # NOC config
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -376,7 +376,7 @@ class Config(BaseConfig):
         npkg_root = StringParameter(default="/var/lib/noc/var/pkg")
         card_template_path = StringParameter(default="services/card/templates/card.html.j2")
         pm_templates = StringParameter(default="templates/ddash/")
-        custom_path = StringParameter("../noc_custom")
+        custom_path = StringParameter()
 
     class pg(ConfigSection):
         addresses = ServiceParameter(
@@ -600,6 +600,27 @@ class Config(BaseConfig):
                 return CH_REPLICATED
         else:
             return CH_SHARDED
+
+    def get_customized_paths(self, prefer_custom=False, *args):
+        """
+        Check for customized path for given repo path.
+        Repo path may be given in os.path.join-style components.
+        Returns list of possible paths. One of elements is always repo path,
+        while other may be custom counterpart, if exists.
+        :param prefer_custom: True - customized path first, False - repo path first
+        :param args: Path or path components in os.path.join-style
+        :return: List of possible paths
+        """
+        rpath = os.path.join(*args)
+        if not self.path.custom_path:
+            return [rpath]
+        cpath = os.path.join(self.path.custom_path, *args)
+        if os.path.exists(cpath):
+            if prefer_custom:
+                return [cpath, rpath]
+            else:
+                return [rpath, cpath]
+        return [rpath]
 
 
 CHClusterShard = namedtuple("CHClusterShard", ["replicas", "weight"])
