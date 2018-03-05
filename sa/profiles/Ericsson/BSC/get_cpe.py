@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------
 # Ericsson.BSC.get_cpe
 # ----------------------------------------------------------------------
@@ -18,7 +18,8 @@ class Script(BaseScript):
     name = "Ericsson.BSC.get_cpe"
     interface = IGetCPE
 
-    rx_cell = re.compile(r"(?P<cell>\d+)\s+ACTIVE", re.MULTILINE)
+    rx_cell = re.compile(r"(?P<cell>\d+)\s+ACTIVE",
+                         re.MULTILINE)
 
     def execute(self):
         cpes = []
