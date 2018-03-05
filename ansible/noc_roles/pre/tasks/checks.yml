@@ -31,7 +31,7 @@
 - name: Fail for a old release of Ubuntu
   fail:
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
-  when: ansible_distribution == "Ubuntu" and ansible_distribution_version|version_compare("16.04.2", '<')
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version|version_compare("16.04", '<')
 
 - block:
   - name: tower version is too old
