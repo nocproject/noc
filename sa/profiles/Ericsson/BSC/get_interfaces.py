@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import print_function
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -24,7 +26,6 @@ class Script(BaseScript):
                 description = i["RSITE"]
                 mo = i["MO"]
                 ifname = mo.split("-")[1]
-                print ifname
                 interfaces += [{
                     "type": "physical",
                     "name": ifname,

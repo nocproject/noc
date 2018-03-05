@@ -7,8 +7,8 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import random
 from __future__ import absolute_import
+import random
 # NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from .uptime import UptimeCheck
