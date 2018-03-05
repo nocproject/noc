@@ -58,8 +58,12 @@ class Script(BaseScript):
             platform = match.group("platform")
             # RMON2-MIB::probeSoftwareRev
             version = self.snmp.get("1.3.6.1.2.1.16.19.2", cached=True)
+            if not version:
+                version = self.snmp.get("1.3.6.1.2.1.16.19.2.0", cached=True)
             # RMON2-MIB::probeHardwareRev
             hardware = self.snmp.get("1.3.6.1.2.1.16.19.3", cached=True)
+            if not hardware:
+                hardware = self.snmp.get("1.3.6.1.2.1.16.19.3.0", cached=True)
         if not version:
             # AGENT-MIB::swMultiImageInfoEntry
             info_entry = "1.3.6.1.4.1.171.12.1.2.7.1"
