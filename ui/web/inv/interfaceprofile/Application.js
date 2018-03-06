@@ -15,7 +15,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "NOC.main.ref.windowfunction.LookupField"
+        "NOC.main.ref.windowfunction.LookupField",
+        "NOC.pm.thresholdprofile.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
@@ -334,6 +335,15 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 editor: "textfield",
                                 align: "right",
                                 renderer: NOC.render.Size
+                            },
+                            {
+                                text: __("Profile"),
+                                dataIndex: "threshold_profile",
+                                width: 150,
+                                editor: {
+                                    xtype: "pm.thresholdprofile.LookupField"
+                                },
+                                renderer: NOC.render.Lookup("threshold_profile")
                             }
                         ]
 

@@ -18,6 +18,7 @@ import cachetools
 # NOC modules
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
+from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.lib.nosql import ForeignKeyField
 from noc.core.window import wf_choices
 
@@ -68,6 +69,8 @@ class SLAProfileMetrics(EmbeddedDocument):
     low_warn_weight = IntField(default=1)
     high_warn_weight = IntField(default=1)
     high_error_weight = IntField(default=10)
+    # Threshold processing
+    threshold_profile = ReferenceField(ThresholdProfile)
 
 
 class SLAProfile(Document):

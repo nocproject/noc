@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ManagedObjectProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -53,7 +53,8 @@ m_valid = DictListParameter(attrs={
     "low_error_weight": IntParameter(default=10),
     "low_warn_weight": IntParameter(default=1),
     "high_warn_weight": IntParameter(default=1),
-    "high_error_weight": IntParameter(default=10)
+    "high_error_weight": IntParameter(default=10),
+    "threshold_profile": ObjectIdParameter(required=False)
 })
 
 id_lock = Lock()

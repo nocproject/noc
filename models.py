@@ -221,6 +221,7 @@ _MODELS = {
     # pm models
     "pm.MetricScope": "noc.pm.models.metricscope.MetricScope",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
+    "pm.ThresholdProfile": "noc.pm.models.thresholdprofile.ThresholdProfile",
     # cm models
     "cm.ErrorType": "noc.cm.models.errortype.ErrorType",
     "cm.ObjectFact": "noc.cm.models.objectfact.ObjectFact",
