@@ -85,7 +85,7 @@ class ManagedObjectCard(BaseCard):
                 object=self.object.id,
                 stop=None
             ).first()
-            if outage != None:
+            if is not outage:
                 current_start = outage.start
             else:
                 current_start = now
