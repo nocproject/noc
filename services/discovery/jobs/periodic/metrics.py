@@ -719,13 +719,16 @@ class MetricsCheck(DiscoveryCheck):
             }
         if alarm_cfg is not None:
             alarms += [alarm_cfg]
-        # Apply umbrella filter handler
-        if cfg.threshold_policy and cfg.threshold_policy.umbrella_filter_handler:
-            handler = get_handler(cfg.threshold_policy.umbrella_filter_handler)
-            if handler:
-                alarms = [handler(self, a) for a in alarms]
-                # Remove filtered alarms
-                alarms = [a for a in alarms if a]
+            # Apply umbrella filter handler
+            if cfg.threshold_profile and cfg.threshold_profile.umbrella_filter_handler:
+                try:
+                    handler = get_handler(cfg.threshold_profile.umbrella_filter_handler)
+                    if handler:
+                        alarms = [handler(self, a) for a in alarms]
+                        # Remove filtered alarms
+                        alarms = [a for a in alarms if a]
+                except Exception as e:
+                    self.logger.error("Exception when loading handler")
         return alarms
 
     def send_metrics(self, data):
