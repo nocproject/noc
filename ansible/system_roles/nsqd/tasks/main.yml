@@ -74,7 +74,7 @@
     name: monitoring
     tasks_from: monitor
   vars:
-    monitoring_service_name: nsqd
+    monitoring_service_name: nsq
     monitoring_service_tags: ""
     monitoring_service_port: 4151
     monitoring_service_address: "{{ ansible_host }}"

@@ -66,7 +66,7 @@
     name: monitoring
     tasks_from: monitor
   vars:
-    monitoring_service_name: postgres
+    monitoring_service_name: postgresql
     monitoring_service_tags: ""
     monitoring_service_port: 5432
     monitoring_service_address: "{{ ansible_host }}"
