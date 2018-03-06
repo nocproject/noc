@@ -525,7 +525,7 @@ class TableSection(ReportSection):
             "<input class='button' disabled type='submit' value='CSV' onclick='getData(\".report-table\", \",\");'>",
             "<input class='button' disabled type='button' value='" + _("Print") + "'onclick='window.print()'>",
             "<input class='button' disabled type='button' value='PDF' onclick='getPDFReport(\".report-table\")'>",
-            "<input class='button' disabled type='submit' value='SSV' onclick='getData(\".report-table\", \";\");'>",
+            "<input class='button' disabled type='button' value='SSV' onclick='getData(\".report-table\", \";\");'>",
             "</form>",
             "<script>",
             "function getData(t, delimiter) {",
