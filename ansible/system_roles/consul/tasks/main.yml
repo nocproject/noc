@@ -108,7 +108,7 @@
     monitoring_service_procstat_type: pid_file
     monitoring_service_procstat_value: "{{ consul_pid_path }}"
   when:
-    - consul_power == 'bootstrap'
+    - consul_power != 'bootstrap'
     - has_svc_monitoring is defined
   tags:
     - monitoring
