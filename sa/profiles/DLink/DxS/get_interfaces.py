@@ -21,7 +21,6 @@ from noc.sa.profiles.DLink.DxS import DES3x2x
 from noc.sa.profiles.DLink.DxS import DES30xx
 from noc.core.mib import mib
 from noc.core.mac import MAC
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
