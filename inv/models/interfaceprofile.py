@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 from noc.pm.models.metrictype import MetricType
+from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 from noc.core.window import wf_choices
@@ -72,6 +73,8 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     low_warn_weight = IntField(default=1)
     high_warn_weight = IntField(default=1)
     high_error_weight = IntField(default=10)
+    # Threshold processing
+    threshold_profile = ReferenceField(ThresholdProfile)
 
 
 @bi_sync

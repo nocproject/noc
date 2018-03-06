@@ -28,7 +28,9 @@ from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.pm.models.thresholdprofile import ThresholdProfile
 from noc.core.window import get_window_function
+from noc.core.handler import get_handler
 
 
 MAX31 = 0x7FFFFFFF
@@ -59,6 +61,7 @@ MetricConfig = namedtuple("MetricConfig", [
     "window_related",
     "low_error", "low_warn", "high_warn", "high_error",
     "low_error_severity", "low_warn_severity", "high_warn_severity", "high_error_severity",
+    "threshold_profile",
     "process_thresholds"
 ])
 
@@ -164,6 +167,9 @@ class MetricsCheck(DiscoveryCheck):
             lww = AlarmSeverity.severity_for_weight(int(m.get("low_warn_weight", 1)))
             hew = AlarmSeverity.severity_for_weight(int(m.get("high_error_weight", 1)))
             hww = AlarmSeverity.severity_for_weight(int(m.get("high_warn_weight", 10)))
+            threshold_profile = None
+            if m.get("threshold_profile"):
+                threshold_profile = ThresholdProfile.get_by_id(m.get("threshold_profile"))
             r[mt.name] = MetricConfig(
                 mt,
                 m.get("enable_box", True),
@@ -179,6 +185,7 @@ class MetricsCheck(DiscoveryCheck):
                 int(hw) if hw is not None else None,
                 int(he) if he is not None else None,
                 lew, lww, hww, hew,
+                threshold_profile,
                 le is not None or lw is not None or he is not None or hw is not None
             )
         return r
@@ -210,6 +217,7 @@ class MetricsCheck(DiscoveryCheck):
             AlarmSeverity.severity_for_weight(m.low_warn_weight),
             AlarmSeverity.severity_for_weight(m.high_warn_weight),
             AlarmSeverity.severity_for_weight(m.high_error_weight),
+            m.threshold_profile,
             m.low_error is not None or m.low_warn is not None or m.high_warn is not None or m.high_error is not None
         )
 
@@ -648,8 +656,9 @@ class MetricsCheck(DiscoveryCheck):
         path = m.metric
         if m.path:
             path += " | ".join(m.path)
+        alarm_cfg = None
         if cfg.low_error is not None and w_value <= cfg.low_error:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_LOW_ERROR,
                 "path": path,
                 "severity": cfg.low_error_severity,
@@ -662,9 +671,9 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
         elif cfg.low_warn is not None and w_value <= cfg.low_warn:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_LOW_WARN,
                 "path": path,
                 "severity": cfg.low_warn_severity,
@@ -677,9 +686,9 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
         elif cfg.high_error is not None and w_value >= cfg.high_error:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_HIGH_ERROR,
                 "path": path,
                 "severity": cfg.high_error_severity,
@@ -692,9 +701,9 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
         elif cfg.high_warn is not None and w_value >= cfg.high_warn:
-            alarms += [{
+            alarm_cfg = {
                 "alarm_class": self.AC_PM_HIGH_WARN,
                 "path": path,
                 "severity": cfg.high_warn_severity,
@@ -707,7 +716,16 @@ class MetricsCheck(DiscoveryCheck):
                     "window": cfg.window,
                     "window_function": cfg.window_function
                 }
-            }]
+            }
+        if alarm_cfg is not None:
+            alarms += [alarm_cfg]
+        # Apply umbrella filter handler
+        if cfg.threshold_policy and cfg.threshold_policy.umbrella_filter_handler:
+            handler = get_handler(cfg.threshold_policy.umbrella_filter_handler)
+            if handler:
+                alarms = [handler(self, alarm_cfg) for alarm_cfg in alarms]
+                # Remove filtered alarms
+                alarms = [alarm_cfg for alarm_cfg in alarms if alarm_cfg]
         return alarms
 
     def send_metrics(self, data):

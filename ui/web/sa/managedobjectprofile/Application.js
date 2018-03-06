@@ -17,6 +17,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.ref.windowfunction.LookupField",
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
+        "NOC.pm.thresholdprofile.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
@@ -1193,42 +1194,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             editor: "textfield",
                                             align: "right",
                                             renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("Profile"),
+                                            dataIndex: "threshold_profile",
+                                            width: 150,
+                                            editor: {
+                                                xtype: "pm.thresholdprofile.LookupField"
+                                            },
+                                            renderer: NOC.render.Lookup("threshold_profile")
                                         }
-                                        /*
-                                        {
-                                            text: __("Low Error Weight"),
-                                            dataIndex: "low_error_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        },
-                                        {
-                                            text: __("Low Warn Wight"),
-                                            dataIndex: "low_warn_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        },
-                                        {
-                                            text: __("High Warn Wight"),
-                                            dataIndex: "high_warn_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        },
-                                        {
-                                            text: __("High Error Wight"),
-                                            dataIndex: "high_error_weight",
-                                            width: 60,
-                                            editor: "textfield",
-                                            align: "right",
-                                            renderer: NOC.render.Size
-                                        }
-                                        */
-
                                     ]
 
                                 }
