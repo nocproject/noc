@@ -85,8 +85,10 @@ class ManagedObjectCard(BaseCard):
                 object=self.object.id,
                 stop=None
             ).first()
-            if outage:
+            if outage is not None:
                 current_start = outage.start
+            else:
+                current_start = now
         if current_start:
             duration = now - current_start
         # Get container path
@@ -170,14 +172,7 @@ class ManagedObjectCard(BaseCard):
         objects_metrics, last_time = get_objects_metrics(mo)
         objects_metrics = objects_metrics.get(mo[0])
 
-        #op_fields_map = defaultdict(list)
-        #metric_map = {mo[0]: {"interface": defaultdict(dict), "object": defaultdict(dict)}}
-        #metric_map[mo[0]]["object"][""]
-        #metric_map[mo[0]]["object"][""].update({u'Video | Record': '0', u'Disk | Problem': '0', u'Disk | Error Count': '0', u'Video | Recording Drops': '0', u'Video | Broadcast': '0', u'Disk | Free': '63153962550', u'Video | Upstream Connected': '0', u'Disk | Total': '63273762816'})
-        #metric_map[mo[0]]["object"]["Sub"]
-        #metric_map[mo[0]]["object"]["Sub"].update({u'Video | Broadcast': '1', u'Video | Record': '0', u'Video | Recording Drops': '0', u'Video | Upstream Connected': '0'})
-
-        if objects_metrics != None:
+        if objects_metrics is not None and objects_metrics.get(""):
             disk_list_keys = list([u'Disk | Free', u'Disk | Total'])
             if disk_list_keys in objects_metrics.get("").keys():
                 for disk_key in disk_list_keys:
@@ -192,9 +187,7 @@ class ManagedObjectCard(BaseCard):
 
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
 
-
-
-            if iface_metrics.get(str(i.name)) != None:
+            if iface_metrics.get(str(i.name)) is not None:
                 load_in = self.humanize_speed(iface_metrics.get(str(i.name))["load_in"])
                 load_out = self.humanize_speed(iface_metrics.get(str(i.name))["load_out"])
                 errors_in = iface_metrics.get(str(i.name))["errors_in"]
