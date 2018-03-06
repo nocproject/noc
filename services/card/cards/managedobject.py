@@ -34,6 +34,7 @@ from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
 from noc.core.clickhouse.connect import connection
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
+from tornado.concurrent import TracebackFutur
 
 class ManagedObjectCard(BaseCard):
     name = "managedobject"
@@ -172,7 +173,7 @@ class ManagedObjectCard(BaseCard):
         objects_metrics, last_time = get_objects_metrics(mo)
         objects_metrics = objects_metrics.get(mo[0])
 
-        if objects_metrics != None:
+        if objects_metrics is not None and objects_metrics.get(""):
             disk_list_keys = list([u'Disk | Free', u'Disk | Total'])
             if disk_list_keys in objects_metrics.get("").keys():
                 for disk_key in disk_list_keys:
@@ -187,7 +188,7 @@ class ManagedObjectCard(BaseCard):
 
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
 
-            if iface_metrics.get(str(i.name)) != None:
+            if iface_metrics.get(str(i.name)) is not None:
                 load_in = self.humanize_speed(iface_metrics.get(str(i.name))["load_in"])
                 load_out = self.humanize_speed(iface_metrics.get(str(i.name))["load_out"])
                 errors_in = iface_metrics.get(str(i.name))["errors_in"]
