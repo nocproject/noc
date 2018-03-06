@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SA Profile Base
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ class BaseProfile(object):
     # (Used in command results)
     # If pattern_more is string, send command_more
     # If pattern_more is a list of (pattern,command)
-    # send appropriative command
+    # send appropriate command
     pattern_more = "^---MORE---"
     # Regular expression to catch the syntax errors in cli output.
     # If CLI output matches pattern_syntax_error,
@@ -67,6 +67,14 @@ class BaseProfile(object):
     # Reqular expression to start setup sequence
     # defined in setup_sequence list
     pattern_start_setup = None
+    # String or list of string to recognize continued multi-line commands
+    # Multi-line commands must be sent at whole, as the prompt will be
+    # not available until end of command
+    # NB: Sending logic is implemented in *commands* script
+    # Examples:
+    # "^.+\\" -- treat trailing backspace as continuation
+    # "banner\s+login\s+(\S+)" -- continue until matched group
+    pattern_multiline_commands = None
     # Device can strip long hostname in various modes
     # i.e
     # my.very.long.hostname# converts to
@@ -165,6 +173,9 @@ class BaseProfile(object):
     snmp_metrics_get_timeout = 3
     # Allow CLI sessions by default
     enable_cli_session = True
+    # True - Send multiline command at once
+    # False - Send multiline command line by line
+    batch_send_multiline = True
     # Matchers are helper expressions to calculate and fill
     # script's is_XXX properties
     matchers = {}
@@ -220,7 +231,8 @@ class BaseProfile(object):
 
     # Cisco-like translation
     rx_cisco_interface_name = re.compile(
-        r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
+        r"^(?P<type>[a-z]{2})[a-z\-]*\s*"
+        r"(?P<number>\d+(/\d+(/\d+)?)?(\.\d+(/\d+)*(\.\d+)?)?(:\d+(\.\d+)*)?(/[a-z]+\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE
     )
 
@@ -376,8 +388,10 @@ class BaseProfile(object):
         Default implementation compares a versions in format
         N1. .. .NM
         """
-        return cmp([int(x) for x in v1.split(".")],
-                   [int(x) for x in v2.split(".")])
+        p1 = [int(x) for x in v1.split(".")]
+        p2 = [int(x) for x in v2.split(".")]
+        # cmp-like semantic
+        return (p1 > p2) - (p1 < p2)
 
     @classmethod
     def get_parser(cls, vendor, platform, version):

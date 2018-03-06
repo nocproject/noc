@@ -45,6 +45,7 @@ class CLI(object):
     HAS_TCP_KEEPIDLE = hasattr(socket, "TCP_KEEPIDLE")
     HAS_TCP_KEEPINTVL = hasattr(socket, "TCP_KEEPINTVL")
     HAS_TCP_KEEPCNT = hasattr(socket, "TCP_KEEPCNT")
+    HAS_TCP_NODELAY = hasattr(socket, "TCP_NODELAY")
     # Time until sending first keepalive probe
     KEEP_IDLE = 10
     # Keepalive packets interval
@@ -123,6 +124,8 @@ class CLI(object):
             s.setsockopt(
                 socket.IPPROTO_IP, socket.IP_TOS, self.tos
             )
+        if self.HAS_TCP_NODELAY:
+            s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         if self.HAS_TCP_KEEPALIVE:
             s.setsockopt(
                 socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1
@@ -203,7 +206,14 @@ class CLI(object):
             self.is_started = True
         # Send command
         # @todo: encode to object's encoding
-        self.send(self.command)
+        if self.profile.batch_send_multiline or self.profile.command_submit not in self.command:
+            yield self.send(self.command)
+        else:
+            # Send multiline commands line-by-line
+            for cmd in self.command.split(self.profile.command_submit):
+                # Send line
+                yield self.send(cmd + self.profile.command_submit)
+                # @todo: Await response
         parser = parser or self.read_until_prompt
         self.result = yield parser()
         self.logger.debug("Command: %s\n%s",
