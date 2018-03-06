@@ -93,19 +93,6 @@
   tags:
     - rs_init
 
-- name: Install mongodb monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
-    dest: "{{ telegraf_confd_path }}/mongodb.conf"
-  notify: reload telegraf
-  when:
-    - "'svc-telegraf' in groups"
-    - "inventory_hostname in groups['svc-telegraf-exec']"
-  no_log: "{{tower_show_secrets}}"
-  tags:
-    - config
-    - telegraf
-
 - name: place mongod consul check
   import_role:
     name: consul
@@ -119,3 +106,23 @@
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: False
     consul_service_check_script: mongodb.sh.j2
+
+- name: Install mongo monitoring
+  import_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: mongo
+    monitoring_service_tags: ""
+    monitoring_service_port: 27017
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: True
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: mongod
+    monitoring_config:
+        gather_perdb_stats: true
+        servers: ["mongodb://{{ noc_mongo_admin_user }}:{{ noc_mongo_admin_password }}@127.0.0.1:27017/admin"]
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

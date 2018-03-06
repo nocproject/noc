@@ -68,3 +68,23 @@
     consul_service_check_value: "http://127.0.0.1:4151/ping"
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: False
+
+- name: Install postgres monitoring
+  import_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: nsqd
+    monitoring_service_tags: ""
+    monitoring_service_port: 4151
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: True
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: nsqd
+    monitoring_service_tagexclude: ["client_deflate","client_address","client_hostname","client_name","client_snappy","client_tls","client_user_agent","client_version","server_version"]
+    monitoring_config:
+      endpoints: ["http://{{ansible_nodename}}:4151"]
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

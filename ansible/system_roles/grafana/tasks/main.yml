@@ -82,3 +82,20 @@
     consul_service_check_value: "http://localhost:{{grafana_http_port}}/api/health"
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: False
+
+- name: Install grafana monitoring
+  import_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: grafana
+    monitoring_service_tags: ""
+    monitoring_service_port: "{{grafana_http_port}}"
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: True
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: grafana-server
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

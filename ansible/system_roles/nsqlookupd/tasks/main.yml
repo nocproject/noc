@@ -23,18 +23,6 @@
 - name: include nsqlookupd os specific tasks
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Install nsqlookupd monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/nsqlookupd.conf.j2"
-    dest: "{{ telegraf_confd_path }}/nsqlookupd.conf"
-  notify: reload telegraf
-  when:
-    - "'svc-telegraf' in groups"
-    - "inventory_hostname in groups['svc-telegraf-exec']"
-  tags:
-    - config
-    - telegraf
-
 - name: install nsqlookupd config
   template:
     src: config/nsqlookupd.conf.j2
@@ -85,3 +73,20 @@
     consul_service_check_value: "http://127.0.0.1:4161/ping"
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: False
+
+- name: Install nsqlookupd monitoring
+  import_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: nsqlookupd
+    monitoring_service_tags: ""
+    monitoring_service_port: 4161
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: True
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: nsqlookupd
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

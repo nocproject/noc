@@ -2,33 +2,6 @@
 ---
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Install nginx monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/nginx.conf.j2"
-    dest: "{{ telegraf_confd_path }}/nginx.conf"
-  notify: reload telegraf
-  when:
-    - "'svc-telegraf' in groups"
-    - "inventory_hostname in groups['svc-telegraf-exec']"
-  tags:
-    - config
-    - telegraf
-
-- name: Install service monitoring
-  template:
-    src: "{{item}}"
-    dest: "{{ telegraf_confd_path }}/{{item[25:]}}"
-    force: no
-  with_items:
-    - "etc/telegraf/telegraf.d/discovery.conf.j2"
-    - "etc/telegraf/telegraf.d/fm-monitor.conf.j2"
-  notify: reload telegraf
-  when:
-    - "'svc-telegraf' in groups"
-    - "inventory_hostname in groups['svc-telegraf-exec']"
-  tags:
-    - config
-
 - name: include certs
   import_tasks: certs.yml
   static: true
@@ -76,3 +49,50 @@
     consul_service_check_value: "https://{{ noc_web_host }}/ng_stats"
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: "{{nginx_self_signed_cerificate}}"
+
+- name: Install nginx monitoring
+  import_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: nginx
+    monitoring_service_tags: ""
+    monitoring_service_port: 443
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: True
+    monitoring_service_procstat_type: pid_file
+    monitoring_service_procstat_value: "/var/run/nginx.pid"
+    monitoring_config:
+        urls: ["https://{{ noc_web_host }}/ng_stats"]
+        insecure_skip_verify: "{% if nginx_self_signed_cerificate %}true{% else %}false{% endif %}"
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring
+
+#- name: Install nginx monitoring
+#  template:
+#    src: "etc/telegraf/telegraf.d/nginx.conf.j2"
+#    dest: "{{ telegraf_confd_path }}/nginx.conf"
+#  notify: reload telegraf
+#  when:
+#    - "'svc-telegraf' in groups"
+#    - "inventory_hostname in groups['svc-telegraf-exec']"
+#  tags:
+#    - config
+#    - telegraf
+#
+#- name: Install service monitoring
+#  template:
+#    src: "{{item}}"
+#    dest: "{{ telegraf_confd_path }}/{{item[25:]}}"
+#    force: no
+#  with_items:
+#    - "etc/telegraf/telegraf.d/discovery.conf.j2"
+#    - "etc/telegraf/telegraf.d/fm-monitor.conf.j2"
+#  notify: reload telegraf
+#  when:
+#    - "'svc-telegraf' in groups"
+#    - "inventory_hostname in groups['svc-telegraf-exec']"
+#  tags:
+#    - config

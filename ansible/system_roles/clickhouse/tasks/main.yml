@@ -78,3 +78,20 @@
     consul_service_check_value: "http://localhost:{{clickhouse_http_port}}/"
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: False
+
+- name: Install clickhouse monitoring
+  import_role:
+    name: monitoring
+    tasks_from: monitor
+  vars:
+    monitoring_service_name: clickhouse
+    monitoring_service_tags: ""
+    monitoring_service_port: 8123
+    monitoring_service_address: "{{ ansible_host }}"
+    monitoring_service_check_interval: "10s"
+    monitoring_service_procstat_check: True
+    monitoring_service_procstat_type: pattern
+    monitoring_service_procstat_value: clickhouse-server
+  when: has_svc_monitoring is defined
+  tags:
+    - monitoring

@@ -89,7 +89,7 @@ server {
         auth_request /api/auth/auth/;
         proxy_read_timeout 900;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/html text/json;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
@@ -107,7 +107,7 @@ server {
         auth_request /api/auth/auth/;
         proxy_read_timeout 900;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/html text/json;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
@@ -160,7 +160,7 @@ server {
         auth_request /api/auth/auth/;
         # internal;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/css text/x-js text/json;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
@@ -182,7 +182,7 @@ server {
         auth_request /api/auth/auth/;
         # internal;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/css text/x-js text/json;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
@@ -203,7 +203,7 @@ server {
         auth_request /api/auth/auth/;
         # internal;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/css text/x-js text/json;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
@@ -249,7 +249,7 @@ server {
     location ^~ /media/ {
         alias {{ noc_root }}/django/contrib/admin/static/;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/css text/javascript application/x-javascript application/json text/x-js application/javascript;
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
@@ -257,7 +257,7 @@ server {
     location ^~ /static/ {
         alias {{ noc_root }}/static/;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/css text/javascript application/x-javascript application/json text/x-js application/javascript;
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
@@ -265,7 +265,7 @@ server {
     location ^~ /ui/ {
         alias {{ noc_root }}/ui/;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/css text/javascript application/x-javascript application/json text/x-js application/javascript;
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
@@ -335,7 +335,7 @@ server {
         auth_request /api/auth/auth/;
         proxy_read_timeout 900;
         gzip on;
-        gzip_types text/css text/x-js;
+        gzip_types text/css text/x-js text/json;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
