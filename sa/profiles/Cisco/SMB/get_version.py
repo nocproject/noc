@@ -38,15 +38,15 @@ class Script(BaseScript):
         vmatch = self.rx_ver.search(v)
         if not vmatch:
             vmatch = self.rx_ver2.search(v)
-        if vmatch:
-            return {
-                "vendor": "Cisco",
-                "platform": pmatch.group("platform"),
-                "version": vmatch.group("version"),
-                "attributes": {
-                    "image": vmatch.group("image"),
+            if vmatch:
+                return {
+                    "vendor": "Cisco",
+                    "platform": pmatch.group("platform"),
+                    "version": vmatch.group("version"),
+                    "attributes": {
+                        "image": vmatch.group("image"),
+                    }
                 }
-            }
         try:
             i = self.cli("show inventory", cached=True)
             imatch = self.rx_inventory.search(i)
