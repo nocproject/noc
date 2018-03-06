@@ -51,7 +51,7 @@
     consul_service_check_http_skip_verify: "{{nginx_self_signed_cerificate}}"
 
 - name: Install nginx monitoring
-  import_role:
+  include_role:
     name: monitoring
     tasks_from: monitor
   vars:

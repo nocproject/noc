@@ -70,7 +70,7 @@
     consul_service_check_http_skip_verify: False
 
 - name: Install postgres monitoring
-  import_role:
+  include_role:
     name: monitoring
     tasks_from: monitor
   vars:

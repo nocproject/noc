@@ -72,7 +72,7 @@
   when: consul_power == 'bootstrap' and not bootstrap_marker.stat.exists
 
 - name: Install consul monitoring
-  import_role:
+  include_role:
     name: monitoring
     tasks_from: monitor
   vars:
@@ -95,7 +95,7 @@
     - monitoring
 
 - name: Install postgres monitoring
-  import_role:
+  include_role:
     name: monitoring
     tasks_from: monitor
   vars:

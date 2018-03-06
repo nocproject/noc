@@ -108,7 +108,7 @@
     consul_service_check_script: mongodb.sh.j2
 
 - name: Install mongo monitoring
-  import_role:
+  include_role:
     name: monitoring
     tasks_from: monitor
   vars:

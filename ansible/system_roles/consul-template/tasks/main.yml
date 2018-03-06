@@ -48,7 +48,7 @@
     state: started
 
 - name: Install consul-template monitoring
-  import_role:
+  include_role:
     name: monitoring
     tasks_from: monitor
   vars:
