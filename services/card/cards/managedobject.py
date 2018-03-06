@@ -34,7 +34,6 @@ from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
 from noc.core.clickhouse.connect import connection
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
-from tornado.concurrent import TracebackFutur
 
 class ManagedObjectCard(BaseCard):
     name = "managedobject"
