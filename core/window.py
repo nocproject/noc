@@ -48,7 +48,7 @@ def last(window, *args, **kwargs):
 
 
 @window_function("sum", "Sum")
-def sum(window, *args, **kwargs):
+def wf_sum(window, *args, **kwargs):
     """
     Returns sum of values within window
     :param window:
