@@ -728,7 +728,7 @@ class MetricsCheck(DiscoveryCheck):
                         # Remove filtered alarms
                         alarms = [a for a in alarms if a]
                 except Exception as e:
-                    self.logger.error("Exception when loading handler")
+                    self.logger.error("Exception when loading handler %s", e)
         return alarms
 
     def send_metrics(self, data):
