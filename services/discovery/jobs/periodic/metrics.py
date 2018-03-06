@@ -723,9 +723,9 @@ class MetricsCheck(DiscoveryCheck):
         if cfg.threshold_policy and cfg.threshold_policy.umbrella_filter_handler:
             handler = get_handler(cfg.threshold_policy.umbrella_filter_handler)
             if handler:
-                alarms = [handler(self, alarm_cfg) for alarm_cfg in alarms]
+                alarms = [handler(self, a) for a in alarms]
                 # Remove filtered alarms
-                alarms = [alarm_cfg for alarm_cfg in alarms if alarm_cfg]
+                alarms = [a for a in alarms if a]
         return alarms
 
     def send_metrics(self, data):
