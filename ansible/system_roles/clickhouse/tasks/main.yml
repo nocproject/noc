@@ -26,13 +26,17 @@
 
 - name: install users.xml
   template:
-    src: "{{item}}"
+    src: "users.xml"
     dest: "{{ch_etc_path}}/"
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
-  with_items:
-    - "config.xml"
-    - "users.xml"
+
+- name: install config.xml
+  template:
+    src: "config.xml"
+    dest: "{{ch_etc_path}}/"
+  no_log: "{{tower_show_secrets}}"
+  notify: restart clickhouse-server
 
 - name: place clickhouse ct template
   include_role:
