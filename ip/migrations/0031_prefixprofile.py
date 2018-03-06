@@ -8,10 +8,13 @@
 
 # Third-party modules
 import bson
+import bson.int64
 # Third-party modules
 from south.db import db
 from noc.lib.nosql import get_db
 from noc.core.model.fields import DocumentReferenceField
+# NOC modules
+from noc.core.bi.decorator import bi_hash
 
 
 class Migration:
@@ -27,7 +30,8 @@ class Migration:
             "_id": default_id,
             "name": "default",
             "description": "Default prefix profile",
-            "workflow": wf
+            "workflow": wf,
+            "bi_id": bson.int64.Int64(bi_hash(default_id))
         }]
         # Convert styles
         style_profiles = {}
@@ -41,7 +45,8 @@ class Migration:
                 "name": "Style %s" % style_id,
                 "description": "Auto-converted for style %s" % style_id,
                 "workflow": wf,
-                "style": style_id
+                "style": style_id,
+                "bi_id": bson.int64.Int64(bi_hash(p_id))
             }
             style_profiles[style_id] = p_id
             profiles += [p]

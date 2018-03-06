@@ -2,16 +2,19 @@
 # ----------------------------------------------------------------------
 #  ???
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Third-party modules
 import bson
+import bson.int64
 # Third-party modules
 from south.db import db
 from noc.lib.nosql import get_db
 from noc.core.model.fields import DocumentReferenceField
+# NOC modules
+from noc.core.bi.decorator import bi_hash
 
 
 class Migration:
@@ -35,7 +38,8 @@ class Migration:
             "type": "vrf",
             "description": "Default VRF profile",
             "workflow": wf,
-            "default_prefix_profile": default_prefix_profile
+            "default_prefix_profile": default_prefix_profile,
+            "bi_id": bson.int64.Int64(bi_hash(default_id))
         }]
         # Convert styles
         style_profiles = {
@@ -52,7 +56,8 @@ class Migration:
                 "description": "Auto-converted for VRF style %s" % style_id,
                 "workflow": wf,
                 "style": style_id,
-                "default_prefix_profile": default_prefix_profile
+                "default_prefix_profile": default_prefix_profile,
+                "bi_id": bson.int64.Int64(bi_hash(p_id))
             }
             style_profiles[style_id] = p_id
             profiles += [p]
