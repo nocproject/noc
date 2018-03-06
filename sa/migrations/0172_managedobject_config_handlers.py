@@ -87,7 +87,7 @@ class Migration(object):
         new_name = "config.filter%d" % pyrule_id
         handler = "noc.pyrules.%s.%s" % (new_name, fn)
         coll.insert({
-            "name": "new_name",
+            "name": new_name,
             "source": new_text
         })
         return handler
