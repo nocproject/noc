@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from __future__ import print_function
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -41,7 +42,6 @@ class Script(BaseScript):
                 }]
             }
             interfaces += [iface]
-        print self.credentials.get("address", "")
         ip = self.credentials.get("address", "")
         ip = ip + '/' + str(32)
         ip_list = [ip]
