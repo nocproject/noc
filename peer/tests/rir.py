@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.lib.test import ModelTestCase
-from noc.peer.models import RIR
+from noc.peer.models.rir import RIR
 
 
 class LanguageModelTestCase(ModelTestCase):

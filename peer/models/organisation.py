@@ -2,14 +2,16 @@
 # ---------------------------------------------------------------------
 # Organisation model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.db import models
 # NOC modules
-from maintainer import Maintainer
+from .maintainer import Maintainer
 
 
 ORG_TYPE_CHOICES = [
@@ -18,7 +20,7 @@ ORG_TYPE_CHOICES = [
 
 
 class Organisation(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Organisation"
         verbose_name_plural = "Organisations"
         db_table = "peer_organisation"

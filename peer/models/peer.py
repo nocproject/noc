@@ -2,28 +2,28 @@
 # ---------------------------------------------------------------------
 # Peer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.db import models
 # Peer modules
 from noc.project.models.project import Project
-from asn import AS
-from peergroup import PeerGroup
-from peeringpoint import PeeringPoint
 from noc.core.model.fields import INETField, TagsField
 from noc.lib.tt import tt_url
 from noc.settings import config
 from noc.lib.app.site import site
+from .asn import AS
+from .peergroup import PeerGroup
+from .peeringpoint import PeeringPoint
 
 
 class Peer(models.Model):
     """
     BGP Peering session
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Peer"
         verbose_name_plural = "Peers"
         db_table = "peer_peer"
@@ -66,7 +66,7 @@ class Peer(models.Model):
                                    null=True, blank=True)
     tt = models.IntegerField("TT", blank=True, null=True)
     # In addition to PeerGroup.communities
-    #and PeeringPoint.communities
+    # and PeeringPoint.communities
     communities = models.CharField("Import Communities", max_length=128,
                                    blank=True, null=True)
     max_prefixes = models.IntegerField("Max. Prefixes", default=100)
@@ -133,8 +133,10 @@ class Peer(models.Model):
         export_med = self.effective_export_med
         if export_med:
             actions += ["med=%d;" % export_med]
-        s += "export: to AS%s at %s" % (self.remote_asn,
-                                       self.peering_point.hostname)
+        s += "export: to AS%s at %s" % (
+            self.remote_asn,
+            self.peering_point.hostname
+        )
         if actions:
             s += " action " + " ".join(actions)
         s += " announce %s" % self.export_filter

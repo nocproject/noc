@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # ./noc prefix-list
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 from __future__ import print_function
 # NOC modules
 from noc.core.management.base import BaseCommand, CommandError
-from noc.peer.models import WhoisCache
+from noc.peer.models.whoiscache import WhoisCache
 from noc.sa.models.profile import Profile
 
 

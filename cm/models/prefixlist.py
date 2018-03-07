@@ -2,22 +2,23 @@
 # ---------------------------------------------------------------------
 # Prefix-List Object
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import datetime
 import os
 # NOC modules
-from object import Object
+from .object import Object
 
 logger = logging.getLogger(__name__)
 
 
 class PrefixList(Object):
-    class Meta:
+    class Meta(object):
         app_label = "cm"
         db_table = "cm_prefixlist"
         verbose_name = "Prefix List"
@@ -27,7 +28,8 @@ class PrefixList(Object):
 
     @classmethod
     def build_prefix_lists(cls):
-        from noc.peer.models import PeeringPoint, WhoisCache
+        from noc.peer.models.peeringpoint import PeeringPoint
+        from noc.peer.models.whoiscache import WhoisCache
 
         for pp in PeeringPoint.objects.all():
             profile = pp.profile
@@ -38,7 +40,7 @@ class PrefixList(Object):
 
     @classmethod
     def global_pull(cls):
-        from noc.peer.models import PrefixListCache, PrefixListCachePrefix
+        from noc.peer.models.prefixlistcache import PrefixListCache, PrefixListCachePrefix
 
         objects = {}
         for o in PrefixList.objects.all():
@@ -48,7 +50,9 @@ class PrefixList(Object):
         for peering_point, pl_name, pl, prefixes in cls.build_prefix_lists():
             logger.debug(
                 "PrefixList.global_pull(): writing %s/%s (%d lines)" % (
-                peering_point.hostname, pl_name, len(pl.split("\n"))))
+                    peering_point.hostname, pl_name, len(pl.split("\n"))
+                )
+            )
             path = os.path.join(peering_point.hostname, pl_name)
             if path in objects:
                 o = objects[path]

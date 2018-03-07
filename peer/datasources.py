@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # Peer module datasources
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.datasource import DataSource
-from noc.peer.models import *
+from noc.peer.models.peer import Peer
 
 
 class PeerDS(DataSource):
@@ -36,5 +36,3 @@ class PeerDS(DataSource):
     @property
     def export_filter(self):
         return self._data.export_filter if self._data else None
-
-

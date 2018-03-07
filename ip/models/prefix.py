@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 import cachetools
 # NOC modules
 from noc.project.models.project import Project
-from noc.peer.models import AS
+from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
 from noc.main.models import ResourceState
 from noc.core.model.fields import TagsField, CIDRField
