@@ -25,6 +25,8 @@ class Script(BaseScript):
         if self.has_snmp():
             for o in oids:
                 s = self.snmp.get(o + ".0")
+                if s is None:
+                    continue
                 r += [{"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}]
             return r
         else:
