@@ -19,5 +19,4 @@ class PeerGroupApplication(ExtModelApplication):
     title = _("Peer Groups")
     menu = [_("Setup"), _("Peer Groups")]
     model = PeerGroup
-    query_fields = ["name__icontains","description__icontains"]
-
+    query_fields = ["name__icontains", "description__icontains"]

@@ -20,6 +20,6 @@ class PersonApplication(ExtModelApplication):
     title = _("Persons/Roles")
     menu = [_("Setup"), _("Persons")]
     model = Person
-    query_fields = ["nic_hdl__icontains","person__icontains"]
+    query_fields = ["nic_hdl__icontains", "person__icontains"]
 
     rpsl = RepoInline("rpsl")

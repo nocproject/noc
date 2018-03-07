@@ -66,7 +66,7 @@ class Peer(models.Model):
                                    null=True, blank=True)
     tt = models.IntegerField("TT", blank=True, null=True)
     # In addition to PeerGroup.communities
-    #and PeeringPoint.communities
+    # and PeeringPoint.communities
     communities = models.CharField("Import Communities", max_length=128,
                                    blank=True, null=True)
     max_prefixes = models.IntegerField("Max. Prefixes", default=100)
@@ -133,8 +133,10 @@ class Peer(models.Model):
         export_med = self.effective_export_med
         if export_med:
             actions += ["med=%d;" % export_med]
-        s += "export: to AS%s at %s" % (self.remote_asn,
-                                       self.peering_point.hostname)
+        s += "export: to AS%s at %s" % (
+            self.remote_asn,
+            self.peering_point.hostname
+        )
         if actions:
             s += " action " + " ".join(actions)
         s += " announce %s" % self.export_filter

@@ -68,7 +68,8 @@ class Migration(object):
             ("RIPE NCC", "whois.ripe.net"),
             ("APNIC", "whois.apnic.net"),
             ("LACNIC", "whois.lacnic.net"),
-            ("AfriNIC", "whois.afrinic.net")]:
+            ("AfriNIC", "whois.afrinic.net")
+        ]:
             db.execute("INSERT INTO peer_rir(name,whois) VALUES(%s,%s)", [rir, whois])
 
     def backwards(self):

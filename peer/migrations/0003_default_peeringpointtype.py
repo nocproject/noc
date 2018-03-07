@@ -21,8 +21,7 @@ class Migration(object):
         for f, t in LEGACY:
             db.execute("UPDATE peer_peeringpointtype SET name=%s WHERE name=%s", [t, f])
         for t in TYPES:
-            if db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [t])[0][
-                0] == 0:
+            if db.execute("SELECT COUNT(*) FROM peer_peeringpointtype WHERE name=%s", [t])[0][0] == 0:
                 db.execute("INSERT INTO peer_peeringpointtype(name) VALUES(%s)", [t])
 
     def backwards(self):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # peer.prefix_list_provisioning
+# flake8: noqa
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details

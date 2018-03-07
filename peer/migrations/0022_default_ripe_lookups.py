@@ -11,7 +11,8 @@ class Migration(object):
         ripe_id = db.execute("SELECT id FROM peer_whoisdatabase WHERE name=%s", ["RIPE"])[0][0]
         for url, direction, key, value in [
             ("ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.as-set.gz", "F", "as-set", "members"),
-            ("ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz", "R", "origin", "route")]:
+            ("ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz", "R", "origin", "route")
+        ]:
             db.execute(
                 "INSERT INTO peer_whoislookup(whois_database_id,url,direction,key,value) values(%s,%s,%s,%s,%s)",
                 [ripe_id, url, direction, key, value])
