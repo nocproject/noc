@@ -5,7 +5,7 @@ forms:
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Clickhouse writer <br/>
       <strong>Long description</strong>: That one is for writing data from nsqd to Clickhouse<br/>
-      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
+      <strong>Scale Recommendations</strong>: At least one per installation.<br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/chwriter/ target=_blank>Chwriter</a><br/>
       <strong>Placement constraint</strong>: On node with Clickhouse<br/>
     power:
