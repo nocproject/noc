@@ -5,9 +5,9 @@ forms:
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Escalator service <br/>
       <strong>Long description</strong>: Send notifications to external TT systems.<br/>
-      <strong>Scale Recommendations</strong>: Have to be at least one per system. Can be more than one. Will select active one via consul lock.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per pool and not more than one on each node.<br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/escalator/ target=_blank>Escalator</a><br/>
-      <strong>Placement constraint</strong>: No special recommendations.<br/>
+      <strong>Placement constraint</strong>: Place more correlators to different nodes.<br/>
     power:
       default: 1
       label: "Instances"
