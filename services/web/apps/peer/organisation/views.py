@@ -19,5 +19,4 @@ class OrganisationApplication(ExtModelApplication):
     title = _("Organisations")
     menu = [_("Setup"), _("Organisations")]
     model = Organisation
-    query_fields = ["organisation__icontains","org_name__icontains"]
-
+    query_fields = ["organisation__icontains", "org_name__icontains"]

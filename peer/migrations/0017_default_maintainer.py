@@ -15,7 +15,7 @@ class Migration(object):
             db.execute(
                 "INSERT INTO peer_maintainer(maintainer,description,auth,rir_id) VALUES(%s,%s,%s,%s)",
                 ["Default maintainer", "Please change to your maintainer", "NO AUTH", rir_id]
-                )
+            )
 
     def backwards(self):
         pass
