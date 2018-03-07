@@ -260,7 +260,7 @@ class ExtModelApplication(ExtApplication):
             elif f.name == "shape":
                 if o.shape:
                     v = stencil_registry.get(o.shape)
-                    r[f.name] = v
+                    r[f.name] = v.id
                     r["%s__label" % f.name] = unicode(v.title)
             elif hasattr(f, "document"):
                 # DocumentReferenceField
