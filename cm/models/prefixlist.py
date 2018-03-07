@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class PrefixList(Object):
-    class Meta:
+    class Meta(object):
         app_label = "cm"
         db_table = "cm_prefixlist"
         verbose_name = "Prefix List"
@@ -50,7 +50,9 @@ class PrefixList(Object):
         for peering_point, pl_name, pl, prefixes in cls.build_prefix_lists():
             logger.debug(
                 "PrefixList.global_pull(): writing %s/%s (%d lines)" % (
-                peering_point.hostname, pl_name, len(pl.split("\n"))))
+                    peering_point.hostname, pl_name, len(pl.split("\n"))
+                )
+            )
             path = os.path.join(peering_point.hostname, pl_name)
             if path in objects:
                 o = objects[path]
