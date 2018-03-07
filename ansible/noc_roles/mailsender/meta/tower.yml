@@ -5,7 +5,7 @@ forms:
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Sends emails. <br/>
       <strong>Long description</strong>: Reads mail queue from nsqd and sends via gateway<br/>
-      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/mailsender/ target=_blank>Mailsender</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     power:
