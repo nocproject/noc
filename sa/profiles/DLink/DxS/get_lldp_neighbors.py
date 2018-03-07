@@ -74,8 +74,6 @@ class Script(BaseScript):
                     MAC(neigh["remote_chassis_id"])
             if neigh["remote_port_subtype"] == 3:
                 neigh["remote_port"] = MAC(neigh["remote_port"])
-            for element in neigh:
-                print "\n\n%s\n" % element
             for i in neigh:
                 if isinstance(neigh[i], basestring):
                     neigh[i] = neigh[i].rstrip("\x00")
