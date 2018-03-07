@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
+from __future__ import print_function
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -18,7 +19,7 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", cached=True):
+        for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_repetitions=3, cached=True):
             name = v[1]
             status = self.snmp.get("1.3.6.1.3.55.1.3.1.4.%s" % name)
             if status == 0:
@@ -41,7 +42,6 @@ class Script(BaseScript):
                 }]
             }
             interfaces += [iface]
-        print self.credentials.get("address", "")
         ip = self.credentials.get("address", "")
         ip = ip + '/' + str(32)
         ip_list = [ip]
