@@ -137,6 +137,7 @@
 
                            </div>
                            <div class="col-sm-6">
+                               <b>{{ _("Profile SA") }}</b>    {{ object.profile }}</br>
                                {% if platform != "Unknown" %}
                                    {{ platform }}
                                    {% if platform %}
@@ -220,7 +221,7 @@
         <table class="table table-condensed table-hover">
             <thead>
                 <th>{{ _("Name") }}</th>
-                <th>{{ _("Value") }}</th>
+                <th>{{ _("Main") }}</th>
                 <th>{{ _("Sub") }}</th>
             </thead>
             <tbodcy>
@@ -472,4 +473,4 @@
         {% endif %}
         </div>
     </div>
-</article>
+</article>				
