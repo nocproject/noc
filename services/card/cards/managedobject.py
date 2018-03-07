@@ -64,8 +64,6 @@ class ManagedObjectCard(BaseCard):
 
         alarms = list(ActiveAlarm.objects.filter(managed_object=self.object.id))
 
-        #alarms = list(ActiveAlarm.objects.filter(managed_object=59805))
-
         current_start = None
         duration = None
         if self.object.get_status():
@@ -87,8 +85,6 @@ class ManagedObjectCard(BaseCard):
             ).first()
             if outage is not None:
                 current_start = outage.start
-            else:
-                current_start = now
         if current_start:
             duration = now - current_start
         # Get container path
@@ -117,6 +113,7 @@ class ManagedObjectCard(BaseCard):
                     macs += [f]
                 else:
                     macs += ["%s - %s" % (f, l)]
+
         # Links
         uplinks = set(self.object.data.uplinks)
         if len(uplinks) > 1:
@@ -161,29 +158,40 @@ class ManagedObjectCard(BaseCard):
         # Build global services summary
         service_summary = ServiceSummary.get_object_summary(
             self.object)
+
         # Interfaces
         interfaces = []
 
         mo = ManagedObject.objects.filter(id=self.object.id)
 
-        iface_metrics, last_ts = get_interface_metrics(mo)
+        iface_metrics, last_ts = get_interface_metrics(mo[0])
         iface_metrics = iface_metrics[mo[0]]
 
-        objects_metrics, last_time = get_objects_metrics(mo)
+        objects_metrics, last_time = get_objects_metrics(mo[0])
         objects_metrics = objects_metrics.get(mo[0])
 
-        if objects_metrics is not None and objects_metrics.get(""):
-            disk_list_keys = list([u'Disk | Free', u'Disk | Total'])
-            if disk_list_keys in objects_metrics.get("").keys():
-                for disk_key in disk_list_keys:
+        if objects_metrics is not None:
+            disk_list_keys = list(['Disk | Free', 'Disk | Total'])
+
+            for disk_key in disk_list_keys:
+                if objects_metrics.get("").get(disk_key) is not None:
                     objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
+                if objects_metrics.get("Sub").get(disk_key) is not None:
                     objects_metrics.get("Sub")[disk_key] = self.humanize_speed(int(objects_metrics.get("Sub").get(disk_key)))
+                if objects_metrics.get("Pri").get(disk_key) is not None:
+                    objects_metrics.get("Pri")[disk_key] = self.humanize_speed(int(objects_metrics.get("Pri").get(disk_key)))
+
+            for keys in objects_metrics.get("").keys():
+                if objects_metrics.get("").get(keys) is not objects_metrics.get("Pri").get(keys) and objects_metrics.get("Pri").get(keys) is not None:
+                    objects_metrics.get("")[keys] = objects_metrics.get("Pri").get(keys)
 
             meta = objects_metrics.get("")
             sub_meta = objects_metrics.get("Sub")
+            pri_meta = objects_metrics.get("Pri")
         else:
             meta = ""
             sub_meta = ""
+            pri_meta = ""
 
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
 
@@ -269,14 +277,23 @@ class ManagedObjectCard(BaseCard):
             c["name"] = p.name or self.object.name
             inv += [c]
         # Build result
-        objects_metric, timestamp_last = get_objects_metrics(mo)
+
+        if self.object.platform is not None:
+            platform = self.object.platform.name
+        else:
+            platform = "Unknown"
+        if self.object.version is not None:
+            version  = self.object.version.version
+        else:
+            version = ""
+
         r = {
             "id": self.object.id,
             "object": self.object,
             "name": self.object.name,
             "address": self.object.address,
-            "platform": self.object.platform.name if self.object.platform else "Unknown",
-            "version": self.object.version.version if self.object.version else "",
+            "platform": platform,    #self.object.platform.name if self.object.platform else "Unknown",
+            "version": version,      #self.object.version.version if self.object.version else "",
             "description": self.object.description,
             "object_profile": self.object.object_profile.id,
             "object_profile_name": self.object.object_profile.name,
@@ -300,10 +317,12 @@ class ManagedObjectCard(BaseCard):
             "interfaces": interfaces,
             "metrics": meta,
             "sub_metrics": sub_meta,
+            "pri_metrics": pri_meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
             "inventory": self.flatten_inventory(inv)
         }
+
         return r
 
     def get_service_glyphs(self, service):
