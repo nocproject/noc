@@ -18,6 +18,8 @@ class Community(models.Model):
     class Meta(object):
         verbose_name = "Community"
         verbose_name_plural = "Communities"
+        db_table = "peer_community"
+        app_label = "peer"
 
     community = models.CharField("Community", max_length=20, unique=True)
     type = models.ForeignKey(CommunityType, verbose_name="Type")
