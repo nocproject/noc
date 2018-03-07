@@ -303,8 +303,11 @@ class ActiveAlarm(nosql.Document):
 
     @property
     def subject(self):
-        ctx = Context(self.get_template_vars())
-        s = DjangoTemplate(self.alarm_class.subject_template).render(ctx)
+        if self.custom_subject:
+            s = self.custom_subject
+        else:
+            ctx = Context(self.get_template_vars())
+            s = DjangoTemplate(self.alarm_class.subject_template).render(ctx)
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
