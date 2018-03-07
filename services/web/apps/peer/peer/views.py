@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # peer.peer application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.peer.models import Peer
+from noc.peer.models.peer import Peer
 from noc.lib.validators import is_prefix
 from noc.core.ip import IP
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter

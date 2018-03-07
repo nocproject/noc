@@ -7,16 +7,17 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import os
 import logging
 # NOC modules
-from object import Object
+from .object import Object
 
 logger = logging.getLogger(__name__)
 
 
 class RPSL(Object):
-    class Meta:
+    class Meta(object):
         app_label = "cm"
         db_table = "cm_rpsl"
         verbose_name = "RPSL Object"
@@ -45,8 +46,10 @@ class RPSL(Object):
             for o in objects.values():
                 o.delete()
 
-        from noc.peer.models import AS, ASSet, PeeringPoint
-        from noc.dns.models import DNSZone
+        from noc.peer.models.asn import AS
+        from noc.peer.models.asset import ASSet
+        from noc.peer.models.peeringpoint import PeeringPoint
+        from noc.dns.models.dnszone import DNSZone
 
         logger.debug("RPSL.global_pull(): building RPSL")
         global_pull_class("inet-rtr", PeeringPoint,

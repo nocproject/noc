@@ -2,28 +2,28 @@
 # ---------------------------------------------------------------------
 # Peer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Third-party modules
 from django.db import models
 # Peer modules
 from noc.project.models.project import Project
-from asn import AS
-from peergroup import PeerGroup
-from peeringpoint import PeeringPoint
 from noc.core.model.fields import INETField, TagsField
 from noc.lib.tt import tt_url
 from noc.settings import config
 from noc.lib.app.site import site
+from .asn import AS
+from .peergroup import PeerGroup
+from .peeringpoint import PeeringPoint
 
 
 class Peer(models.Model):
     """
     BGP Peering session
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "Peer"
         verbose_name_plural = "Peers"
         db_table = "peer_peer"

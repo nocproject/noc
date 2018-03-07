@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # peer.peergroup application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.peer.models import PeerGroup
+from noc.lib.app.extmodelapplication import ExtModelApplication
+from noc.peer.models.peergroup import PeerGroup
 from noc.core.translation import ugettext as _
 
 

@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Peer cone analysys
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
-from noc.peer.models import Peer, WhoisCache
+from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.peer.models.peer import Peer
+from noc.peer.models.whoiscache import WhoisCache
 from noc.core.ip import IP
 from noc.core.translation import ugettext as _
 

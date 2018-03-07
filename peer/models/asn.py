@@ -191,7 +191,7 @@ class AS(models.Model):
 
     @property
     def dot(self):
-        from noc.peer.models import Peer
+        from .peer import Peer
 
         s = ["graph {"]
         all_peers = Peer.objects.filter(local_asn__exact=self)

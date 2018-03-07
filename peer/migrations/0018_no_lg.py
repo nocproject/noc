@@ -6,7 +6,6 @@
 """
 """
 from south.db import db
-from noc.peer.models import *
 
 class Migration:
 

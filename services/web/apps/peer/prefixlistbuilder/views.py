@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interactive prefix list builder
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,8 @@ from django import forms
 from django.core.validators import RegexValidator
 # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
-from noc.peer.models import PeeringPoint, WhoisCache
+from noc.peer.models.peeringpoint import PeeringPoint
+from noc.peer.models.whoiscache import WhoisCache
 from noc.sa.interfaces.base import UnicodeParameter, ModelParameter
 from noc.core.translation import ugettext as _
 
@@ -39,9 +40,6 @@ class PrefixListBuilderApplication(ExtApplication):
     """
     title = _("Prefix List Builder")
     menu = _("Prefix List Builder")
-    # implied_permissions = {
-    #    "read": ["peer:peeringpoint:lookup"]
-    #}
 
     @view(method=["GET"], url=r"^$", access="read", api=True,
           validate={
