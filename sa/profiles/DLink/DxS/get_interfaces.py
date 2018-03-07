@@ -21,7 +21,6 @@ from noc.sa.profiles.DLink.DxS import DES3x2x
 from noc.sa.profiles.DLink.DxS import DES30xx
 from noc.core.mib import mib
 from noc.core.mac import MAC
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -169,39 +168,6 @@ class Script(BaseScript):
         161: "aggregated",  # ieee8023adLag
     }
 
-    def get_ifindexes(self):
-        r = {}
-        ifnames = {}
-        unknown_interfaces = []
-        for oid, name in self.snmp.getnext(mib["IF-MIB::ifName"]):
-            ifindex = int(oid.split(".")[-1])
-            if ifindex < 5121:
-                continue
-            ifnames[ifindex] = name
-        for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
-            ifindex = int(oid.split(".")[-1])
-            if ifindex < 1024:  # physical interfaces
-                try:
-                    v = self.profile.convert_interface_name(name)
-                except InterfaceTypeError as why:
-                    self.logger.debug(
-                        "Ignoring unknown interface %s: %s", name, why
-                    )
-                    unknown_interfaces += [name]
-                    continue
-                r[v] = ifindex
-            elif ifindex >= 1024 and ifindex < 5121:  # 802.1q vlans
-                continue
-            elif ifindex >= 5121:  # L3 interfaces
-                v = ifnames[ifindex]
-                r[v] = ifindex
-        if unknown_interfaces:
-            self.logger.info(
-                "%d unknown interfaces has been ignored",
-                len(unknown_interfaces)
-            )
-        return r
-
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
             oid = mib[oid]
@@ -240,7 +206,7 @@ class Script(BaseScript):
         #
         # TODO: vlans, portchannel
         #
-        index = self.get_ifindexes()
+        index = self.scripts.get_ifindexes()
         ifaces = dict((index[i], {"interface": i}) for i in index)
         self.apply_table(ifaces, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         self.apply_table(ifaces, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
