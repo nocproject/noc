@@ -6,7 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from rir import RIR
 from person import Person
 from maintainer import Maintainer
 from organisation import Organisation

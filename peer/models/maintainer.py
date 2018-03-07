@@ -2,21 +2,23 @@
 # ---------------------------------------------------------------------
 # Peer module models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.db import models
 # NOC modules
-from rir import RIR
 from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
-from person import Person
+from .rir import RIR
+from .person import Person
 
 
 class Maintainer(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = "Maintainer"
         verbose_name_plural = "Maintainers"
         db_table = "peer_maintainer"
