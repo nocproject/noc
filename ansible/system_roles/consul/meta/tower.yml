@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Consul KV <br/>
       <strong>Long description</strong>: Key/Value and Service discovery service. Have to be installed in quorum with 1,3,5 nodes. One node have to be "bootstrap" node other nodes with  instance will be run in server mode. Other nodes will get agent only service. They will not participate in quorum. For production type installation fast timimgs mode will be enabled.<br/>
       <strong>Scale Recommendations</strong>: See docs<br/>
-      <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
+      <strong>docs</strong>: <a href=https://www.consul.io/intro/index.html target=_blank>Consul</a> <br/>
       <strong>Placement constraint</strong>: Place server node to the long living node. <br/>
     power:
       default: bootstrap

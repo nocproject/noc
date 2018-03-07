@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: NSQd daemon <br/>
       <strong>Long description</strong>: nsqd is the daemon that receives, queues, and delivers messages to clients. <br/>
       <strong>Scale Recommendations</strong>: Have to be on each node. <br/>
-      <strong>docs</strong>: http://nsq.io/components/nsqd.html <br/>
+      <strong>docs</strong>: <a href=http://nsq.io/components/nsqd.html target=_blank>NSQd</a> <br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     max_messages_in_memory:
       default: 10000

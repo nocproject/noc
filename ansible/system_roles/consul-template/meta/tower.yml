@@ -6,8 +6,8 @@ forms:
       <strong>Short description</strong>: Config Manager based on consul kv <br/>
       <strong>Long description</strong>: Gets data from consul and renders nginx and some other service configs and reload them if needed
       <strong>Scale Recommendations</strong>: Will be placed on each node.<br/>
-      <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
-      <strong>Placement constraint</strong>: On nodes with nginx, clickhouse <br/>
+      <strong>docs</strong>: <a href=https://github.com/hashicorp/consul-template target=_blank>Consul</a> <br/>
+      <strong>Placement constraint</strong>: On nodes with nginx, clickhouse, nsqd <br/>
     use_dedup:
       label: "Use dedup"
       type: bool

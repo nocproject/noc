@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: PostgresSQL database <br/>
       <strong>Long description</strong>: Secondary DB. Used to store network equipment info, IPAM and others. <br/>
       <strong>Scale Recommendations</strong>: At least one per system. <br/>
-      <strong>docs</strong>: https://www.postgresql.org/docs/9.6/static/index.html<br/>
+      <strong>docs</strong>: <a href=https://www.postgresql.org/docs/9.6/static/index.html target=_blank>PostgresSQL</a> <br/>
       <strong>Placement constraint</strong>: Low cpu usage, low memory usage. low io usage. Nothing works without it.<br/>
     power:
       default: master

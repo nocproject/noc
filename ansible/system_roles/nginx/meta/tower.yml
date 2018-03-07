@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Nginx <br/>
       <strong>Long description</strong>: Primary web service.<br/>
       <strong>Scale Recommendations</strong>: At least one per installation. <br/>
-      <strong>docs</strong>: http://nginx.org/en/docs/http/ngx_http_upstream_module.html <br/>
+      <strong>docs</strong>: <a href=http://nginx.org/en/docs/http/ngx_http_upstream_module.html target=_blank>Nginx</a> <br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     cert:
       label: Certificates

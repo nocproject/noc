@@ -6,13 +6,12 @@ forms:
       <strong>Short description</strong>: ClickHouse database <br/>
       <strong>Long description</strong>: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.<br/>
       <strong>Scale Recommendations</strong>: See docs<br/>
-      <strong>docs</strong>: "https://clickhouse.yandex/docs/en/"<br/>
+      <strong>docs</strong>: <a href=https://clickhouse.yandex/docs/en/single/ target=_blank>ClickHouse</a> <br/>
       <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     user:
       default: noc
       label: "RW user"
       type: str
-      description: "RW user"
       common: environment
     password:
       default: noc
@@ -28,7 +27,8 @@ forms:
       common: environment
     db:
       default: noc
-      label: "db name"
+      label: "DB name"
+      description: "Have to be 'noc' for now"
       type: str
       common: environment
     query_size:
