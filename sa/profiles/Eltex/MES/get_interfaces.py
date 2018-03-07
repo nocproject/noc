@@ -75,7 +75,7 @@ class Script(BaseScript):
         d = {}
         if self.has_snmp():
             try:
-                for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2"):
+                for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2", max_repetitions=10):
                     n = s[1]
                     sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1:]
                     if int(sifindex) < 3000:
