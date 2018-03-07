@@ -22,6 +22,8 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
+    MAX_REPETITIONS = 40
+
     INTERFACE_TYPES = {
         1: "other",
         6: "physical",  # ethernetCsmacd
@@ -32,12 +34,15 @@ class Script(BaseScript):
         53: "SVI"  # propVirtual
     }
 
+    def get_max_repetitions(self):
+        return self.MAX_REPETITIONS
+
     def get_ifindexes(self):
         r = {}
         unknown_interfaces = []
         if self.has_snmp():
             try:
-                for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"]):
+                for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"], max_repetitions=self.get_max_repetitions()):
                     try:
                         v = self.profile.convert_interface_name(name)
                     except InterfaceTypeError as why:
@@ -59,7 +64,7 @@ class Script(BaseScript):
     def get_iftable(self, oid, transform=True):
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid, max_repetitions=40):
+        for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions()):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):
@@ -79,9 +84,10 @@ class Script(BaseScript):
             r[ip] = (ip_iface[ip], ip_mask[ip_iface[ip]])
         return r
 
-    def execute_snmp(self, interface=None, last_ifname=None):
+    def execute_snmp(self, interface=None, last_ifname=None, max_rep=None):
+        self.MAX_REPETITIONS = max_rep or self.MAX_REPETITIONS
         # v = self.scripts.get_interface_status_ex()
-        index = self.scripts.get_ifindexes()
+        index = self.scripts.get_ifindexes(max_rep=self.MAX_REPETITIONS)
         # index = self.get_ifindexes()
         ifaces = dict((index[i], {"interface": i}) for i in index)
         # Apply ifAdminStatus

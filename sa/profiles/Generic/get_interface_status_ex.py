@@ -18,11 +18,15 @@ class Script(BaseScript):
     interface = IGetInterfaceStatusEx
     requires = []
     HIGH_SPEED = 4294967295
+    MAX_REPETITIONS = 40
+
+    def get_max_repetitions(self):
+        return self.MAX_REPETITIONS
 
     def get_iftable(self, oid):
         if "::" in oid:
             oid = mib[oid]
-        for oid, v in self.snmp.getnext(oid, max_repetitions=40):
+        for oid, v in self.snmp.getnext(oid, max_repetitions=self.get_max_repetitions()):
             yield int(oid.rsplit(".", 1)[-1]), v
 
     def apply_table(self, r, mib, name, f=None):
