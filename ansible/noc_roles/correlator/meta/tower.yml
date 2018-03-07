@@ -5,9 +5,9 @@ forms:
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Correlator <br/>
       <strong>Long description</strong>: Correlate events to alarms. <br/>
-      <strong>Scale Recommendations</strong>: Have to be at least one per pool. Can be more than one. Will select active one via consul lock.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per pool and not more than one on each node.  <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/correlator/ target=_blank>Correlator</a><br/>
-      <strong>Placement constraint</strong>: No special recommendations.<br/>
+      <strong>Placement constraint</strong>: Place more correlators to different nodes. <br/>
     power:
       default: 1
       label: "Instances"
