@@ -41,12 +41,14 @@ class PrefixListBuilderApplication(ExtApplication):
     title = _("Prefix List Builder")
     menu = _("Prefix List Builder")
 
-    @view(method=["GET"], url=r"^$", access="read", api=True,
-          validate={
-              "peering_point": ModelParameter(PeeringPoint),
-              "name": UnicodeParameter(required=False),
-              "as_set": UnicodeParameter()
-          })
+    @view(
+        method=["GET"], url=r"^$", access="read", api=True,
+        validate={
+            "peering_point": ModelParameter(PeeringPoint),
+            "name": UnicodeParameter(required=False),
+            "as_set": UnicodeParameter()
+        }
+    )
     def api_list(self, request, peering_point, name, as_set):
         prefixes = WhoisCache.resolve_as_set_prefixes_maxlen(as_set)
         pl = peering_point.get_profile().generate_prefix_list(name, prefixes)

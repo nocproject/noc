@@ -20,4 +20,3 @@ class PeeringPointApplication(ExtModelApplication):
     menu = [_("Setup"), _("Peering Points")]
     model = PeeringPoint
     query_fields = ["hostname__icontains", "router_id__icontains"]
-
