@@ -261,8 +261,8 @@ _MODELS = {
     # peer models
     "peer.AS": "noc.peer.models.asn.AS",
     "peer.ASSet": "noc.peer.models.asset.ASSet",
-    "peer.Community": "noc.peer.models.Community",
-    "peer.CommunityType": "noc.peer.models.CommunityType",
+    "peer.Community": "noc.peer.models.community.Community",
+    "peer.CommunityType": "noc.peer.models.communitytype.CommunityType",
     "peer.Maintainer": "noc.peer.models.maintainer.Maintainer",
     "peer.Organisation": "noc.peer.models.organisation.Organisation",
     "peer.Peer": "noc.peer.models.peer.Peer",
