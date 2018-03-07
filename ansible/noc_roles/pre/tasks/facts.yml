@@ -31,4 +31,3 @@
     ch_host: "{{hostvars[groups['svc-haproxy'][0]].ansible_host}}"
     ch_port: "{{haproxy_clickhouse_listen}}"
   when: "'svc-haproxy' in groups and groups['svc-haproxy'] | length >= 1 and not keepalived_clickhouse_virtual_ip"
-
