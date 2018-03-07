@@ -6,9 +6,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-from person import Person
-from maintainer import Maintainer
-from organisation import Organisation
 from asn import AS
 from asset import ASSet
 from peeringpoint import PeeringPoint
