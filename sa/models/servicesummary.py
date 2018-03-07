@@ -11,7 +11,7 @@ from __future__ import absolute_import
 from collections import defaultdict
 import logging
 # Third-party modules
-from pymongo.errors import BulkWriteError
+from pymongo.errors import BulkWriteError, OperationFailure
 from pymongo import UpdateOne, DeleteOne, InsertOne
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (IntField, ObjectIdField,
@@ -394,6 +394,7 @@ class ServiceSummary(Document):
     @classmethod
     def get_direct_summary(cls, managed_objects, summary_all=False):
         """
+        ! Method works on mongodb version 3.4 and greater
         Calculate direct services and profiles for a list of managed objects
         :param managed_objects: List of managed object instances or ids
         :param summary_all: Return summary for all services
@@ -463,12 +464,16 @@ class ServiceSummary(Document):
                 }
             }
         ]  # noqa
-        for doc in ServiceSummary._get_collection().aggregate(pipeline):
-            profile = doc["_id"]["profile"]
-            if doc["_id"]["type"] == "svc":
-                services[profile] = services.get(profile, 0) + doc["summary"]
-            else:
-                subscribers[profile] = subscribers.get(profile, 0) + doc["summary"]
+        try:
+            for doc in ServiceSummary._get_collection().aggregate(pipeline):
+                profile = doc["_id"]["profile"]
+                if doc["_id"]["type"] == "svc":
+                    services[profile] = services.get(profile, 0) + doc["summary"]
+                else:
+                    subscribers[profile] = subscribers.get(profile, 0) + doc["summary"]
+        except OperationFailure:
+            # for Mongo less 3.4
+            pass
         return services, subscribers
 
 

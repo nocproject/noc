@@ -51,6 +51,8 @@ class MonMapCard(BaseCard):
                  "maintenance": "#2032A0",
                  "default": "#6ECC39"}
 
+    fake_service = "5a9f7309c165cf528d9d8f95"
+
     _layer_cache = {}
     TOOLTIP_LIMIT = config.card.alarmheat_tooltip_limit
 
@@ -169,7 +171,7 @@ class MonMapCard(BaseCard):
                 # update_dict(sss[status], s_service["service"])
                 ss[status] += 1
                 ss["total"] += 1
-                services_ss = ["%s-%s" % (sm, status) for sm in services_map.get(mo_id, [])]
+                services_ss = ["%s-%s" % (sm, status) for sm in services_map.get(mo_id, [self.fake_service])]
                 ss["objects"] += [{"id": mo_id,
                                    "name": mo_name,
                                    "status": status,
