@@ -27,6 +27,14 @@
     - config
     - always
 
+- name: notify deploy started
+  include_role:
+    name: deploy_notification
+    tasks_from: start
+  vars:
+    ansible_tags: "tag list is broken https://code.getnoc.com/noc/tower/issues/18"
+  when: has_deploy_notificator is defined
+
 - name: Stop NOC node
   service:
     name: "{{ noc_system_service }}"

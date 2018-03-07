@@ -25,6 +25,14 @@
     - soft_restart
     - restart
 
+- name: notify deploy started
+  include_role:
+    name: deploy_notification
+    tasks_from: stop
+  vars:
+    ansible_tags: "tag list is broken https://code.getnoc.com/noc/tower/issues/18"
+  when: has_deploy_notificator is defined
+
 - name: Add default CH datasource
   uri:
     url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
