@@ -6,7 +6,7 @@
     src: grafana.ini
     dest: "{{ etc_prefix }}/grafana/grafana.ini"
   notify: restart grafana
-  #no_log: true
+  no_log: "{{tower_show_secrets}}"
   tags:
     - config
 
