@@ -16,7 +16,6 @@
     group: nsq
     owner: nsq
   with_items:
-    - "{{nsqd_db_dir}}"
     - "{{nsqd_config_dir}}"
     - "{{nsq_root}}"
 
