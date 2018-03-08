@@ -181,10 +181,6 @@ class ManagedObjectCard(BaseCard):
                 if objects_metrics.get("Pri").get(disk_key) is not None:
                     objects_metrics.get("Pri")[disk_key] = self.humanize_speed(int(objects_metrics.get("Pri").get(disk_key)))
 
-            for keys in objects_metrics.get("").keys():
-                if objects_metrics.get("").get(keys) is not objects_metrics.get("Pri").get(keys) and objects_metrics.get("Pri").get(keys) is not None:
-                    objects_metrics.get("")[keys] = objects_metrics.get("Pri").get(keys)
-
             meta = objects_metrics.get("")
             sub_meta = objects_metrics.get("Sub")
             pri_meta = objects_metrics.get("Pri")
