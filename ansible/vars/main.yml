@@ -19,13 +19,11 @@ tower_show_secrets: "{{ not lookup('env','TOWER_SHOW_SECRETS') or False | bool }
 tower_minimum_version: "0.4.0"
 
 noc_system_service: noc
-nsqd_db_dir: "/var/spool/nsqd"
 mongo_dir: "{{etc_prefix}}/mongod"
 
 postgres_listen: 5432
 postgres_user: postgres
 
-telegraf_confd_path: "{{etc_prefix}}/telegraf/telegraf.d"
 
 
 
