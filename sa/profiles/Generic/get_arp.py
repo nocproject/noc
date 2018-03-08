@@ -17,16 +17,12 @@ class Script(BaseScript):
     name = "Generic.get_arp"
     cache = True
     interface = IGetARP
-    MAX_REPETITIONS = 40
-
-    def get_max_repetitions(self):
-        return self.MAX_REPETITIONS
 
     def execute_snmp(self, **kwargs):
         r = []
-        ifindexes = self.scripts.get_ifindexes(max_rep=self.get_max_repetitions())
+        ifindexes = self.scripts.get_ifindexes()
         ifmap = dict((ifindex, ifindexes[ifindex]) for ifindex in ifindexes)
-        for oid, mac in self.snmp.getnext(mib["RFC1213-MIB::ipNetToMediaPhysAddress"], max_repetitions=self.get_max_repetitions()):
+        for oid, mac in self.snmp.getnext(mib["RFC1213-MIB::ipNetToMediaPhysAddress"]):
             ifindex, ip = oid[21:].split(".", 1)
             ifname = ifmap.get(int(ifindex))
             if ifname:
