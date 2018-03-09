@@ -18,6 +18,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatusEx
     requires = []
     HIGH_SPEED = 4294967295
+    MAX_REPETITIONS = 40
 
     def get_iftable(self, oid):
         if "::" in oid:
@@ -91,11 +92,6 @@ class Script(BaseScript):
         """
         return speed == self.HIGH_SPEED
 
-    def execute(self):
-        r = []
-        if self.has_snmp():
-            try:
-                r = self.get_data()
-            except self.snmp.TimeOutError:
-                pass
+    def execute_snmp(self):
+        r = self.get_data()
         return r
