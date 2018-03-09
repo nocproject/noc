@@ -57,7 +57,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark
         )
-        if not (200 <= code <= 299):
+        if not 200 <= code <= 299:
             raise self.HTTPError("HTTP Error %d (%s)" % (code, result))
         if json:
             try:
@@ -93,7 +93,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark
         )
-        if not (200 <= code <= 299):
+        if not 200 <= code <= 299:
             raise self.HTTPError("HTTP Error %d (%s)" % (code, result))
         if json:
             try:
