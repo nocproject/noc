@@ -18,3 +18,6 @@ noc_services_file: "{{noc_etc}}/noc_services.conf"
 supervisorctl_key: "{{ lookup('supervisorctl_key', tower_data + '/noc/supervisorctl.key') }}"
 django_key: "{{ lookup('django_key', tower_data + '/noc/secret.key') }}"
 supervisor_sock_path: /var/run/supervisor_noc.sock
+noc_repo: https://github.com/nocproject/noc.git
+noc_version: microservices
+noc_root: /opt/noc
