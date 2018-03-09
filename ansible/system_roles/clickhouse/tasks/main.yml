@@ -66,6 +66,10 @@
     enabled: yes
     state: started
 
+- name: create grafana ds
+  include_tasks: ds.yml
+  when: "'svc-grafana-exec' in groups"
+
 - name: place consul check
   import_role:
     name: consul

@@ -1,5 +1,6 @@
 grafana_dashboard_dir: /var/lib/grafana/dashboards
 grafana_plugins_dir: /var/lib/grafana/plugins
+grafana_provisioning_dir: /var/lib/grafana/provisioning
 grafana_http_port: 8002
 grafana_group: grafana
 grafana_home: /usr/share/grafana

@@ -1,0 +1,16 @@
+- name: call grafana for ChDS
+  include_role:
+    name: grafana
+    tasks_from: datasources
+  vars:
+    grafana_datasource:
+      name: nocchdb
+      type: vertamedia-clickhouse-datasource
+      url: "http://{{ ch_host }}:{{ch_port}}"
+      access: proxy
+      isDefault: True
+      database: "{{ clickhouse_db }}"
+      user: "readonly"
+      password: "{{ clickhouse_ro_password }}"
+  delegate_to: "{{item}}"
+  with_items: '{{groups["svc-grafana-exec"]}}'

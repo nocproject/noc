@@ -45,3 +45,4 @@ services:
     depends:
       - consul
       - consul-template
+      - grafana

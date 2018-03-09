@@ -7,3 +7,6 @@ clickhouse_service_name: clickhouse-server
 
 ch_etc_path: "{{etc_prefix}}/clickhouse-server"
 ch_dictionaries_path: "{{ch_etc_path}}/dictionaries"
+
+ch_host: "{{ hostvars[groups['svc-clickhouse-exec'][0]].ansible_host}}"
+ch_port: 8123

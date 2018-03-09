@@ -25,69 +25,10 @@
     - soft_restart
     - restart
 
-- name: notify deploy started
+- name: notify deploy finished
   include_role:
     name: deploy_notification
     tasks_from: stop
   vars:
     ansible_tags: "tag list is broken https://code.getnoc.com/noc/tower/issues/18"
   when: has_deploy_notificator is defined
-
-- name: Add default CH datasource
-  uri:
-    url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
-    method: POST
-    timeout: 60
-    user: admin
-    password: admin
-    force_basic_auth: yes
-    status_code: 200, 302, 401, 409
-    body_format: json
-    validate_certs: no
-    body:
-      name: nocchdb
-      type: vertamedia-clickhouse-datasource
-      url: "http://{{ ch_host }}:{{ch_port}}"
-      access: proxy
-      isDefault: True
-      database: "{{ clickhouse_db }}"
-      user: "readonly"
-      password: "{{ clickhouse_ro_password }}"
-  ignore_errors: yes
-  register: ids
-  run_once: true
-  changed_when: ids.status != 409
-  failed_when: ids.status == 500
-  until: ids.status in (200, 302, 401, 409)
-  retries: 5
-  delay: 30
-  tags:
-    - config
-
-- name: Add grafanads datasource
-  uri:
-    url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
-    method: POST
-    user: admin
-    password: admin
-    force_basic_auth: yes
-    status_code: 200, 302, 401, 409
-    body_format: json
-    validate_certs: no
-    body:
-      name: NocDS
-      type: grafana-simple-json-datasource
-      url: "https://{{ noc_web_host }}/api/grafanads"
-      access: direct
-      isDefault: False
-  ignore_errors: yes
-  until: gds.status in (200, 302, 401, 409)
-  retries: 5
-  delay: 30
-  register: gds
-  run_once: true
-  changed_when: gds.status != 409
-  failed_when: gds.status == 500
-  tags:
-    - config
-

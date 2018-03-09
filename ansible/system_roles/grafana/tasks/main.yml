@@ -30,45 +30,20 @@
   with_items:
     - "{{grafana_dashboard_dir}}"
     - "{{grafana_plugins_dir}}"
+    - "{{grafana_provisioning_dir}}"
+    - "{{grafana_provisioning_dir}}/datasources"
+
+- name: add plugins
+  import_tasks: plugins.yml
+
+- name: add dashboards
+  import_tasks: dashboards.yml
 
 - name: Start Grafana service
   service:
     name: "{{ grafana_system_service }}"
     enabled: yes
     state: started
-
-- name: Set up dynamic dashboards
-  template:
-    src: "{{item.src}}"
-    dest: "{{item.dest}}"
-  no_log: "{{tower_show_secrets}}"
-  with_items:
-    - src: noc.js.j2
-      dest: "{{ grafana_home }}/public/dashboards/noc.js"
-    - src: report.js.j2
-      dest: "{{ grafana_home }}/public/dashboards/report.js"
-
-- name: Install Grafana simple datasource plugin
-  command: "grafana-cli plugins install grafana-simple-json-datasource"
-  args:
-    creates: "{{grafana_plugins_dir}}/grafana-simple-json-datasource/src/datasource.js"
-  notify: restart grafana
-  environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-  tags:
-    - requirements
-
-- name: Install Grafana clickhouse datasource plugin
-  command: "grafana-cli plugins install vertamedia-clickhouse-datasource"
-  args:
-    creates: "{{grafana_plugins_dir}}/vertamedia-clickhouse-datasource/datasource.js"
-  notify: restart grafana
-  environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-  tags:
-    - requirements
 
 - name: place consul check
   import_role:
