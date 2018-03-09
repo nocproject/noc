@@ -1,0 +1,20 @@
+---
+- name: look for installed postgres version
+  shell: yum list installed postgresql\*|grep -Po 'postgresql\K9.(?=-server)'
+  ignore_errors: true
+  no_log: True
+  register: pkg_postgres_version
+
+- name: expose postgres used version as a fact
+  set_fact:
+    postgres_version_used: "{{pkg_postgres_version.stdout | join('.')}}"
+  when:
+    - not pkg_postgres_version | failed
+    - pkg_postgres_version.stdout_lines | length == 1
+
+- name: expose too may postgres installed fact
+  set_fact:
+    too_many_postgres_installed: "{{pkg_postgres_version.stdout_lines | join(', ')}}"
+  when:
+    - not pkg_postgres_version | failed
+    - pkg_postgres_version.stdout_lines | length > 1

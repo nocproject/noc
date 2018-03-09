@@ -9,3 +9,29 @@
   when:
     - has_svc_postgres is defined
     - has_svc_consul is not defined
+
+- include_tasks: "os/{{ ansible_distribution }}/checks.yml"
+  when:
+    - has_svc_postgres is defined
+
+- name: fail if postgres version requested not same as used
+  fail:
+    msg: |
+      Database upgrade is too complicated job to be done on unknown system with perfectly unknown environment.
+      To make continue deploy make sure that only one version of Postgres database is installed and it same as used in tower.
+      Currently requested is "{{postgres_version}}"
+      Currently used is "{{postgres_version_used}}"
+  when:
+    - has_svc_postgres is defined
+    - postgres_version_used is defined
+    - postgres_version != postgres_version_used
+
+- name: fail if too many postgres servers installed
+  fail:
+    msg: |
+      There are too many postgres servers installed on {{ansible_hostname}}. Remove some.
+      Currently requested in tower: "{{postgres_version}}"
+      Currently installed are: "{{too_many_postgres_installed}}"
+  when:
+    - has_svc_postgres is defined
+    - too_many_postgres_installed is defined
