@@ -1,0 +1,21 @@
+---
+- name: fail if noc repo is not set
+  fail:
+    msg: "Noc repo is empty. What an awful pity fatal fail. Set noc repo on noc service it tower."
+  when:
+    - has_svc_noc is defined
+    - noc_repo == '' or noc_repo is not defined
+
+- name: fail if noc version is not set
+  fail:
+    msg: "Noc version is empty. What an awful pity fatal fail. Set noc version on noc service it tower."
+  when:
+    - has_svc_noc is defined
+    - noc_version == '' or noc_version is not defined
+
+- name: fail if noc root is not set
+  fail:
+    msg: "Noc root is empty. What an awful pity fatal fail. Set noc root on noc service it tower."
+  when:
+    - has_svc_noc is defined
+    - noc_root == '' or noc_root is not defined
