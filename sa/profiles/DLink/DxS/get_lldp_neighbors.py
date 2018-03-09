@@ -9,6 +9,7 @@
 """
 # Python modules
 import re
+import six
 # NOC modiles
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -75,7 +76,7 @@ class Script(BaseScript):
             if neigh["remote_port_subtype"] == 3:
                 neigh["remote_port"] = MAC(neigh["remote_port"])
             for i in neigh:
-                if isinstance(neigh[i], basestring):
+                if isinstance(neigh[i], six.string_types):
                     neigh[i] = neigh[i].rstrip("\x00")
             neigh["remote_capabilities"] = int(
                 "".join(x for x in reversed("{0:016b}".format(
