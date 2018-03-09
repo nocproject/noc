@@ -6,8 +6,10 @@
       datasources:
       - {{ grafana_datasource | to_nice_yaml| indent(2, False) }}
     backup: no
+  register: ds_result
 
 - name: restart grafana
   service:
     name: "{{ grafana_system_service }}"
     state: restarted
+  when: ds_result|changed
