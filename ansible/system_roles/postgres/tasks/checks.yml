@@ -24,7 +24,7 @@
   when:
     - has_svc_postgres is defined
     - postgres_version_used is defined
-    - postgres_version != postgres_version_used
+    - postgres_version | string != postgres_version_used | string
 
 - name: fail if too many postgres servers installed
   fail:
