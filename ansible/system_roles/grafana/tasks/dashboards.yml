@@ -3,7 +3,7 @@
     src: "{{item.src}}"
     dest: "{{item.dest}}"
   no_log: "{{tower_show_secrets}}"
-  no_diff: true
+  diff: False
   with_items:
     - src: noc.js.j2
       dest: "{{ grafana_home }}/public/dashboards/noc.js"
