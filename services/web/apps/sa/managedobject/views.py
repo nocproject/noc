@@ -23,10 +23,13 @@ from noc.sa.models.managedobject import (ManagedObject,
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.profile import Profile
 from noc.inv.models.link import Link
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
 from noc.main.models.resourcestate import ResourceState
@@ -65,9 +68,20 @@ class ManagedObjectApplication(ExtModelApplication):
         ]
     }
     order_map = {
-        "profile": "SELECT name FROM main_ordermap WHERE model = 'sa.Profile' AND ref_id = sa_managedobject.profile",
-        "platform": "SELECT name FROM main_ordermap WHERE model = 'inv.Platform' AND ref_id = sa_managedobject.platform",
-        "version": "SELECT name FROM main_ordermap WHERE model = 'inv.Firmware' AND ref_id = sa_managedobject.version"
+        "address": " cast_test_to_inet(address) ",
+        "-address": " cast_test_to_inet(address) ",
+        "profile": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("profile", pk, i) for i, pk in enumerate(
+            Profile.objects.filter().order_by("name").values_list("id"))]),
+        "-profile": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("profile", pk, i) for i, pk in enumerate(
+            Profile.objects.filter().order_by("-name").values_list("id"))]),
+        "platform": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("platform", pk, i) for i, pk in enumerate(
+            Profile.objects.filter().order_by("name").values_list("id"))]),
+        "-platform": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("platform", pk, i) for i, pk in enumerate(
+            Profile.objects.filter().order_by("-name").values_list("id"))]),
+        "version": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("version", pk, i) for i, pk in enumerate(
+            Profile.objects.filter().order_by("name").values_list("id"))]),
+        "-version": 'CASE %s END' % ' '.join(['WHEN %s=\'%s\' THEN %s' % ("version", pk, i) for i, pk in enumerate(
+            Profile.objects.filter().order_by("-name").values_list("id"))])
     }
 
     DISCOVERY_JOBS = [
