@@ -176,22 +176,10 @@ class ManagedObjectCard(BaseCard):
             for disk_key in disk_list_keys:
                 if objects_metrics.get("").get(disk_key) is not None:
                     objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
-                if objects_metrics.get("Sub").get(disk_key) is not None:
-                    objects_metrics.get("Sub")[disk_key] = self.humanize_speed(int(objects_metrics.get("Sub").get(disk_key)))
-                if objects_metrics.get("Pri").get(disk_key) is not None:
-                    objects_metrics.get("Pri")[disk_key] = self.humanize_speed(int(objects_metrics.get("Pri").get(disk_key)))
-
-            for keys in objects_metrics.get("").keys():
-                if objects_metrics.get("").get(keys) is not objects_metrics.get("Pri").get(keys) and objects_metrics.get("Pri").get(keys) is not None:
-                    objects_metrics.get("")[keys] = objects_metrics.get("Pri").get(keys)
-
+                
             meta = objects_metrics.get("")
-            sub_meta = objects_metrics.get("Sub")
-            pri_meta = objects_metrics.get("Pri")
         else:
             meta = ""
-            sub_meta = ""
-            pri_meta = ""
 
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
 
@@ -316,8 +304,6 @@ class ManagedObjectCard(BaseCard):
             "alarms": alarm_list,
             "interfaces": interfaces,
             "metrics": meta,
-            "sub_metrics": sub_meta,
-            "pri_metrics": pri_meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
             "inventory": self.flatten_inventory(inv)
