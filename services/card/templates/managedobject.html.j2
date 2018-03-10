@@ -222,15 +222,13 @@
         <table class="table table-condensed table-hover">
             <thead>
                 <th>{{ _("Name") }}</th>
-                <th>{{ _("Main") }}</th>
-                <th>{{ _("Sub") }}</th>
+                <th>{{ _("Value") }}</th>
             </thead>
             <tbodcy>
                 {% for m in metrics %}
                 <tr>
                     <td>{{ m }}</td>
                     <td>{{ metrics[m] }}</td>
-                    <td>{{ sub_metrics[m] }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
