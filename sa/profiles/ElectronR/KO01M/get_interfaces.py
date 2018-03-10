@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
     cache = True
 
-    def execute(self):
+    def execute_snmp(self):
         i = [1, 2, 3, 4, 5]
         interfaces = []
         for ii in i:
