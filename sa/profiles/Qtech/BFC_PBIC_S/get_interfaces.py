@@ -17,7 +17,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
     cache = True
 
-    def execute(self):
+    def execute_snmp(self):
         interfaces = []
         for v in self.snmp.getnext("1.3.6.1.3.55.1.3.1.1", max_repetitions=3, cached=True):
             name = v[1]
