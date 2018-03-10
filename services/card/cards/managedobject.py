@@ -170,17 +170,15 @@ class ManagedObjectCard(BaseCard):
         objects_metrics, last_time = get_objects_metrics(mo[0])
         objects_metrics = objects_metrics.get(mo[0])
 
+        meta = ""
+        
         if objects_metrics is not None:
             disk_list_keys = list(['Disk | Free', 'Disk | Total'])
-
             for disk_key in disk_list_keys:
                 if objects_metrics.get("").get(disk_key) is not None:
                     objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
-                
             meta = objects_metrics.get("")
-        else:
-            meta = ""
-
+        
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
 
             if iface_metrics.get(str(i.name)) is not None:
@@ -306,7 +304,8 @@ class ManagedObjectCard(BaseCard):
             "metrics": meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
-            "inventory": self.flatten_inventory(inv)
+            "inventory": self.flatten_inventory(inv),
+            "serial_number": self.object.get_attr("Serial Number")
         }
 
         return r
