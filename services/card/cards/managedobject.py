@@ -173,21 +173,27 @@ class ManagedObjectCard(BaseCard):
         if objects_metrics is not None:
             disk_list_keys = list(['Disk | Free', 'Disk | Total'])
 
-            for disk_key in disk_list_keys:
-                if objects_metrics.get("").get(disk_key) is not None:
-                    objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
-                if objects_metrics.get("Sub").get(disk_key) is not None:
-                    objects_metrics.get("Sub")[disk_key] = self.humanize_speed(int(objects_metrics.get("Sub").get(disk_key)))
-                if objects_metrics.get("Pri").get(disk_key) is not None:
-                    objects_metrics.get("Pri")[disk_key] = self.humanize_speed(int(objects_metrics.get("Pri").get(disk_key)))
-
-            meta = objects_metrics.get("")
-            sub_meta = objects_metrics.get("Sub")
-            pri_meta = objects_metrics.get("Pri")
-        else:
-            meta = ""
-            sub_meta = ""
-            pri_meta = ""
+            if objects_metrics.get("") is not None:
+                for disk_key in disk_list_keys:
+                    if objects_metrics.get("").get(disk_key) is not None:
+                        objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
+                meta = objects_metrics.get("")
+            else:
+                meta = ""
+            if objects_metrics.get("Pri") is not None:
+                for disk_key in disk_list_keys:
+                    if objects_metrics.get("Pri").get(disk_key) is not None:
+                        objects_metrics.get("Pri")[disk_key] = self.humanize_speed(int(objects_metrics.get("Pri").get(disk_key)))
+                pri_meta = objects_metrics.get("Pri")
+            else:
+                pri_meta = ""
+            if objects_metrics.get("Sub") is not None:
+                for disk_key in disk_list_keys:
+                    if objects_metrics.get("Sub").get(disk_key) is not None:
+                        objects_metrics.get("Sub")[disk_key] = self.humanize_speed(int(objects_metrics.get("Sub").get(disk_key)))
+                sub_meta = objects_metrics.get("Sub")
+            else:
+                sub_meta = ""
 
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
 
