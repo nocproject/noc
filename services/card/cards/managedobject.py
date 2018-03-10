@@ -173,10 +173,6 @@ class ManagedObjectCard(BaseCard):
         meta = ""
         
         if objects_metrics is not None:
-            disk_list_keys = list(['Disk | Free', 'Disk | Total'])
-            for disk_key in disk_list_keys:
-                if objects_metrics.get("").get(disk_key) is not None:
-                    objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
             meta = objects_metrics.get("")
         
         for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
