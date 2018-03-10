@@ -254,10 +254,10 @@ class SNMP(object):
         :return:
         """
         def gen_table(oid):
-            l = len(oid) + 1
+            line = len(oid) + 1
             for o, v in self.getnext(oid, community_suffix=community_suffix,
                                      cached=cached, bulk=bulk):
-                yield tuple([int(x) for x in o[l:].split(".")]), v
+                yield tuple([int(x) for x in o[line:].split(".")]), v
 
         # Retrieve tables
         tables = [dict(gen_table(oid)) for oid in oids]

@@ -335,7 +335,7 @@ def snmp_set(address, varbinds, port=161,
     logger.debug("[%s] SNMP SET %s", address, varbinds)
     if udp_socket:
         sock = udp_socket
-        prev_timeout = sock.get_timeout()
+        prev_timeout = sock.get_timeout()  # noqa
     else:
         sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
