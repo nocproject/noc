@@ -16,17 +16,10 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    def execute(self):
-        # Try SNMP first
-        if self.has_snmp():
-            try:
-                base = self.snmp.get("1.3.6.1.3.55.1.2.2.0")
-                if base:
-                    return [{
-                        "first_chassis_mac": base,
-                        "last_chassis_mac": base
-                    }]
-            except self.snmp.TimeOutError:
-                pass
-            except self.snmp.SNMPError:
-                pass
+    def execute_snmp(self):
+        base = self.snmp.get("1.3.6.1.3.55.1.2.2.0")
+        if base:
+            return [{
+                "first_chassis_mac": base,
+                "last_chassis_mac": base
+            }]
