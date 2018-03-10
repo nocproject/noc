@@ -141,8 +141,8 @@
                                {% if platform != "Unknown" %}
                                    {{ platform }}
                                    {% if platform %}
-                                       {% if object.platform.is_end_of_sale %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
-                                        {% if object.platform.is_end_of_support %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
+                                       {% if object.platform.is_end_of_sale %}</br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
+                                       {% if object.platform.is_end_of_support %}</br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
                                     {% endif %}
                                     {% if version %}
                                         </br>Version: {{ version }}
@@ -150,13 +150,14 @@
                                             ({{ _("Recommended") }}: {{ firmware_recommended.version }})
                                         {% endif %}
                                     {% endif %}
-                               </br>
                                {% endif %}
-                               <b>{{ _("Service Range") }}</b>&nbsp;&nbsp;N/A
+                                    {% if serial_number %}
+                                        </br><b>Serial number:</b> {{ serial_number }}
+                                    {% endif %}
+                               </br><b>{{ _("Service Range") }}</b>&nbsp;&nbsp;N/A
                            </div>
 
                        </div>
-
                    </div>
                    <div class="col-sm-6">
                        <div class="row">
