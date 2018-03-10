@@ -184,7 +184,8 @@ class SNMP(object):
     def getnext(self, oid, community_suffix=None,
                 filter=None, cached=False,
                 only_first=False, bulk=None,
-                max_repetitions=None, version=None):
+                max_repetitions=None, version=None,
+                enum_req=False, requery=0):
         @tornado.gen.coroutine
         def run():
             try:
@@ -199,7 +200,9 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
-                    version=version
+                    version=version,
+                    enum_req=enum_req,
+                    requery=requery
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
