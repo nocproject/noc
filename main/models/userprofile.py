@@ -40,7 +40,7 @@ class UserProfile(models.Model):
     """
     User profile
     """
-    class Meta:
+    class Meta(object):
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"
         app_label = "main"
