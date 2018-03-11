@@ -137,12 +137,12 @@
 
                            </div>
                            <div class="col-sm-6">
-                               <b>{{ _("Profile SA") }}</b>    {{ object.profile }}</br>
+                               <b>{{ _("Profile SA") }}</b>    {{ object.profile }}<br>
                                {% if platform != "Unknown" %}
                                    {{ platform }}
                                    {% if platform %}
-                                       {% if object.platform.is_end_of_sale %}</br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
-                                       {% if object.platform.is_end_of_support %}</br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
+                                       {% if object.platform.is_end_of_sale %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
+                                       {% if object.platform.is_end_of_support %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
                                     {% endif %}
                                     {% if version %}
                                         </br>Version: {{ version }}
@@ -224,15 +224,14 @@
                             <th>{{ _("Name") }}</th>
                             <th>{{ _("Value") }}</th>
                         </thead>
-                        <tbodcy>
+                        <tbody>
                             {% for m in metrics %}
                                 <tr>
                                     <td>{{ m }}</td>
                                     {% if  metrics[m]["type"] != "bool" %}
                                         <td>{{ metrics[m]["value"] }}{{ metrics[m]["type"] }} </td>
                                     {% else %}
-                                        <td> {% if (metrics[m]["value"]) == "1" %}True{% else %}False{% endif %} </td>
-                                        {# <td> {{ metrics[m]["value"] }} </td> #}
+                                        <td> {% if (metrics[m]["value"]) == "1" %}True{% else %}False{% endif %}
                                     {% endif %}
                                 </tr>
                             {% endfor %}
@@ -241,7 +240,6 @@
                 </div>
             </div>
             {% endif %}
-
 
 {% if links %}
     <div class="row">
@@ -304,7 +302,7 @@
     <div class="col-sm-10">
         <table class="table table-condensed" >
                 <thead>
-                    <tr>
+                    <th>
                         <th></th>
                         <th>{{ _("Timestamp") }}</th>
                         <th>{{ _("Services") }}</th>
@@ -313,7 +311,7 @@
                         <th>{{ _("IP") }}</th>
                         <th>{{ _("Class") }}</th>
                         <th>{{ _("Subject") }}</th>
-                    </tr>
+                    </th>
                 </thead>
                 <tbody>
                     {% for a in alarms %}
@@ -330,7 +328,7 @@
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.address }}</a></td>
                         <td>{{ a.alarm_class.name }}</td>
                         <td>{{ a.subject }}</td>
-                    </th>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
