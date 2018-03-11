@@ -166,6 +166,7 @@ class BaseScript(object):
         # Cached results of self.cli calls
         self.cli_cache = {}
         #
+        self.http_cache = {}
         self.partial_result = None
         #
         if not parent and version and not name.endswith(".get_version"):

@@ -45,7 +45,7 @@ class HTTP(object):
         """
         self.logger.debug("GET %s", path)
         if cached:
-            r = self.script.root.cli_cache.get(path)
+            r = self.script.root.http_cache.get("get_%s" % path)
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
@@ -66,7 +66,7 @@ class HTTP(object):
                 raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         if cached:
-            self.script.root.cli_cache[path] = result
+            self.script.root.http_cache["get_%s" % path] = result
         return result
 
     def post(self, path, data, headers=None, cached=False, json=False, eof_mark=None):
@@ -80,7 +80,7 @@ class HTTP(object):
         """
         self.logger.debug("POST %s %s", path, data)
         if cached:
-            r = self.script.root.cli_cache.get(path)
+            r = self.script.root.http_cache.get("post_%s" % path)
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
@@ -102,7 +102,7 @@ class HTTP(object):
                 raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         if cached:
-            self.script.root.cli_cache[path] = result
+            self.script.root.http_cache["post_%s" % path] = result
         return result
 
     def close(self):
