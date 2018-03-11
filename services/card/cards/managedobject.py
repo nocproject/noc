@@ -174,36 +174,29 @@ class ManagedObjectCard(BaseCard):
 
         iface_metric_type = dict(MetricType.objects.filter().scalar("field_name", "measure"))
         obj_metric_type = dict(MetricType.objects.filter().scalar("name", "measure"))
-
-        if objects_metrics is not None:
+		
+		if objects_metrics is not None:
             if objects_metrics.get("") is not None:
                 for key in objects_metrics.get("").keys():
                     if obj_metric_type[key] == "bytes" or obj_metric_type[key] == "bit/s" or obj_metric_type[key] == "bool":
                         objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
                     else:
                         objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
-
-            #for keys in objects_metrics.get("").keys():
-            #    if objects_metrics.get("")[keys][type] == "bytes" or objects_metrics.get("")[keys][type] == "bit/s" or objects_metrics.get("")[keys][type] == "bool":
-            #        objects_metrics.get("")[keys][value] = self.humanize_speed(objects_metrics.get("")[keys][value])
-
                 meta = objects_metrics.get("")
-
-        load_in = "-"
-        load_out = "-"
-        errors_in = "-"
-        errors_out = "-"
-
+        
         if iface_metrics is not None:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
                 for key in iface_metrics.get(str(i.name)).keys():
-                    iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
+                    if iface_metric_type[key] == "bytes" or iface_metric_type[key] == "bit/s" or iface_metric_type[key] == "bool":
+                        iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], iface_metric_type[key])}
+                    else:
+                        iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
 
                 if iface_metrics.get(str(i.name)) is not None:
                     if str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
-                        load_in = str(iface_metrics.get(str(i.name))["load_in"]["value"]) +  " " + iface_metrics.get(str(i.name))["load_in"]["type"]
+                        load_in = str(iface_metrics.get(str(i.name))["load_in"]["value"]) + iface_metrics.get(str(i.name))["load_in"]["type"]
                     if str(iface_metrics.get(str(i.name))["load_out"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
-                        load_out = str(iface_metrics.get(str(i.name))["load_out"]["value"]) + " " + iface_metrics.get(str(i.name))["load_out"]["type"]
+                        load_out = str(iface_metrics.get(str(i.name))["load_out"]["value"]) + iface_metrics.get(str(i.name))["load_out"]["type"]
                     errors_in = iface_metrics.get(str(i.name))["errors_in"]["value"]
                     errors_out = iface_metrics.get(str(i.name))["errors_out"]["value"]
 
@@ -408,34 +401,38 @@ class ManagedObjectCard(BaseCard):
 
     @staticmethod
     def humanize_speed(speed, type_speed):
-        if not speed:
-            return "-"
-
         try:
-            speed = float(speed)
+            speed = int(speed)
         except:
             pass
-
-        print speed
-
+        if not speed:
+            return "-"
         if type_speed == u"bit/s":
-            speed = int(speed)
-            #if speed == 0:
-            #    return "-"
-            for t, n in [(1000000000, " G"), (1000000, " M"), (1000, " k")]:
-                if speed >= t:
-                    if speed // t * t == speed:
-                        return "%d%s" % (speed // t, n)
-                    else:
-                        return "%.2f%s" % (float(speed) / t, n)
+           speed = int(speed)
+           if speed < 1000 and speed > 0:
+               return str(speed) + "\x20"
+           for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
+               if speed >= t:
+                   if speed // t * t == speed:
+                       return "%d&nbsp;%s" % (speed // t, n)
+                   else:
+                       return "%.2f&nbsp;%s" % (float(speed) / t, n)
         if type_speed == u"bytes":
-            speed = speed / 8.0
-            for t, n in [(pow(2, 30), " G"), (pow(2, 20), " M"), (pow(2, 10), " k")]:
+            try:
+                speed = float(speed)
+            except:
+                pass
+            #speed = speed / 8.0 # for translate bit to byte
+
+            if speed < 1024:
+                return speed
+
+            for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
                 if speed >= t:
                     if speed // t * t == speed:
-                        return "%d%s" % (speed // t, n)
+                        return "%d% s" % (speed // t, n)
                     else:
-                        return "%.2f%s" % (float(speed) / t, n)
+                        return "%.2f %s" % (float(speed) / t, n)
             return str(speed)
         if type_speed == u"bool":
             return bool(speed)
