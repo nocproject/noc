@@ -45,7 +45,8 @@ class HTTP(object):
         """
         self.logger.debug("GET %s", path)
         if cached:
-            r = self.script.root.http_cache.get("get_%s" % path)
+            cache_key = "get_%s" % path
+            r = self.script.root.http_cache.get(cache_key)
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
@@ -57,7 +58,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark
         )
-        if not 200 <= code <= 299:
+        if not (200 <= code <= 299):  # noqa
             raise self.HTTPError("HTTP Error %d (%s)" % (code, result))
         if json:
             try:
@@ -66,7 +67,7 @@ class HTTP(object):
                 raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         if cached:
-            self.script.root.http_cache["get_%s" % path] = result
+            self.script.root.http_cache[cache_key] = result
         return result
 
     def post(self, path, data, headers=None, cached=False, json=False, eof_mark=None):
@@ -80,7 +81,8 @@ class HTTP(object):
         """
         self.logger.debug("POST %s %s", path, data)
         if cached:
-            r = self.script.root.http_cache.get("post_%s" % path)
+            cache_key = "post_%s" % path
+            r = self.script.root.http_cache.get(cache_key)
             if r is not None:
                 self.logger.debug("Use cached result")
                 return r
@@ -93,7 +95,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark
         )
-        if not 200 <= code <= 299:
+        if not (200 <= code <= 299):  # noqa
             raise self.HTTPError("HTTP Error %d (%s)" % (code, result))
         if json:
             try:
@@ -102,7 +104,7 @@ class HTTP(object):
                 raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         if cached:
-            self.script.root.http_cache["post_%s" % path] = result
+            self.script.root.http_cache[cache_key] = result
         return result
 
     def close(self):
