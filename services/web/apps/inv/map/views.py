@@ -124,7 +124,7 @@ class MapApplication(ExtApplication):
         if segment.parent:
             r["parent"] = {
                 "id": str(segment.parent.id),
-                "name": str(segment.parent.name)
+                "name": segment.parent.name
             }
         # Save settings
         if not settings:
