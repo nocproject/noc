@@ -22,9 +22,11 @@ from noc.core.error import NOCError, ERR_SNMP_TIMEOUT, ERR_SNMP_FATAL_TIMEOUT
 class SNMP(object):
     class TimeOutError(NOCError):
         default_code = ERR_SNMP_TIMEOUT
+        default_msg = "SNMP Timeout"
 
     class FatalTimeoutError(NOCError):
         default_code = ERR_SNMP_FATAL_TIMEOUT
+        default_msg = "Fatal SNMP Timeout"
 
     SNMPError = SNMPError
 

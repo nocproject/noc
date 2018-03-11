@@ -432,7 +432,7 @@ class BaseScript(object):
                 self.logger.info("SNMP timeout. Passing to next method")
                 if access_preference == "S*":
                     self.logger.info("Last S method break by timeout.")
-                    raise self.snmp.TimeOutError("SNMP Timeout")
+                    raise self.snmp.TimeOutError
             except NotImplementedError:
                 self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
         raise self.NotSupportedError("Access preference '%s' is not supported" % access_preference[:-1])
