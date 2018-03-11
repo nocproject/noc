@@ -16,14 +16,17 @@ from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ioloop.udp import UDPSocket
+from noc.core.error import NOCError, ERR_SNMP_TIMEOUT, ERR_SNMP_FATAL_TIMEOUT
 
 
 class SNMP(object):
-    class TimeOutError(Exception):
-        pass
+    class TimeOutError(NOCError):
+        default_code = ERR_SNMP_TIMEOUT
+        default_msg = "SNMP Timeout"
 
-    class FatalTimeoutError(Exception):
-        pass
+    class FatalTimeoutError(NOCError):
+        default_code = ERR_SNMP_FATAL_TIMEOUT
+        default_msg = "Fatal SNMP Timeout"
 
     SNMPError = SNMPError
 

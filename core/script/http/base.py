@@ -11,7 +11,7 @@ import ujson
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.http.client import fetch_sync
-
+from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
 from noc.config import config
 
 
@@ -19,8 +19,8 @@ class HTTP(object):
     CONNECT_TIMEOUT = config.http_client.connect_timeout
     REQUEST_TIMEOUT = config.http_client.request_timeout
 
-    class HTTPError(Exception):
-        pass
+    class HTTPError(NOCError):
+        default_code = ERR_HTTP_UNKNOWN
 
     def __init__(self, script):
         self.script = script
@@ -59,7 +59,7 @@ class HTTP(object):
             eof_mark=eof_mark
         )
         if not (200 <= code <= 299):  # noqa
-            raise self.HTTPError("HTTP Error %d (%s)" % (code, result[:256]))
+            raise self.HTTPError(msg="HTTP Error %d (%s)" % result[:256], code=code)
         if json:
             try:
                 result = ujson.loads(result)
@@ -96,12 +96,12 @@ class HTTP(object):
             eof_mark=eof_mark
         )
         if not (200 <= code <= 299):  # noqa
-            raise self.HTTPError("HTTP Error %d (%s)" % (code, result[:256]))
+            raise self.HTTPError(msg="HTTP Error %d (%s)" % result[:256], code=code)
         if json:
             try:
                 return ujson.loads(result)
             except ValueError as e:
-                raise self.HTTPError("Failed to decode JSON: %s", e)
+                raise self.HTTPError(msg="Failed to decode JSON: %s" % e)
         self.logger.debug("Result: %r", result)
         if cached:
             self.script.root.http_cache[cache_key] = result
