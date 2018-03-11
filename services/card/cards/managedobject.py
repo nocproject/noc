@@ -170,16 +170,17 @@ class ManagedObjectCard(BaseCard):
         iface_metric_type = dict(MetricType.objects.filter().scalar("field_name", "measure"))
         obj_metric_type = dict(MetricType.objects.filter().scalar("name", "measure"))
 
-        if objects_metrics is not None and objects_metrics.get("") is not None:
-            for key in objects_metrics.get("").keys():
-                if obj_metric_type[key] in ["bytes", "bit/s", "bool"]:
-                    objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
-                else:
-                    objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
-            meta = objects_metrics.get("")
-        else:
-            meta = objects_metrics.get("", {})
-
+        if objects_metrics is not None:
+            if objects_metrics.get("") is not None:
+                for key in objects_metrics.get("").keys():
+                    if obj_metric_type[key] in ["bytes", "bit/s", "bool"]:
+                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
+                    else:
+                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
+                meta = objects_metrics.get("")
+            else:
+                meta = {}
+                
         load_in = "-"
         load_out = "-"
         errors_in = "-"
