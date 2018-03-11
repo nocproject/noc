@@ -10,7 +10,6 @@
 import logging
 import socket
 import errno
-import random
 # Third-party modules
 from tornado.gen import coroutine, Return
 import six
@@ -235,8 +234,7 @@ def snmp_getnext(address, oid, port=161,
                  tos=None,
                  ioloop=None,
                  udp_socket=None,
-                 enum_req=False,
-                 requery=0):
+                 max_retries=0):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
     inside @tornado.gen.coroutine
@@ -262,31 +260,25 @@ def snmp_getnext(address, oid, port=161,
         sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     request_id = None
-    requery = abs(requery)
-    if enum_req:
-        request_id = random.randint(0, 0x7FFFF000)
     while True:
         # Get PDU
         if bulk:
             pdu = getbulk_pdu(
                 community, oid,
                 max_repetitions=max_repetitions or BULK_MAX_REPETITIONS,
-                version=version,
-                request_id=request_id
+                version=version
             )
         else:
             pdu = getnext_pdu(community, oid, version=version, request_id=request_id)
-        if enum_req:
-            request_id += 1
         # Send request and wait for response
         try:
             yield sock.sendto(pdu, (address, port))
             data, addr = yield sock.recvfrom(4096)
         except socket.timeout:
-            if not requery:
+            if not max_retries:
                 close_socket()
                 raise SNMPError(code=TIMED_OUT, oid=oid)
-            requery -= 1
+            max_retries -= 1
             continue
         except socket.gaierror as e:
             logger.debug("[%s] Cannot resolve address: %s", address, e)
