@@ -184,7 +184,8 @@ class SNMP(object):
     def getnext(self, oid, community_suffix=None,
                 filter=None, cached=False,
                 only_first=False, bulk=None,
-                max_repetitions=None, version=None):
+                max_repetitions=None, version=None,
+                max_retries=0):
         @tornado.gen.coroutine
         def run():
             try:
@@ -199,7 +200,8 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
-                    version=version
+                    version=version,
+                    max_retries=max_retries
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -251,10 +253,10 @@ class SNMP(object):
         :return:
         """
         def gen_table(oid):
-            l = len(oid) + 1
+            line = len(oid) + 1
             for o, v in self.getnext(oid, community_suffix=community_suffix,
                                      cached=cached, bulk=bulk):
-                yield tuple([int(x) for x in o[l:].split(".")]), v
+                yield tuple([int(x) for x in o[line:].split(".")]), v
 
         # Retrieve tables
         tables = [dict(gen_table(oid)) for oid in oids]
