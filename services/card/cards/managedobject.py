@@ -417,7 +417,7 @@ class ManagedObjectCard(BaseCard):
            speed = int(speed)
 
            if speed < 1000 and speed > 0:
-               return str(speed) + "\x20"
+               return "%s " % speed
 
            for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
                if speed >= t:
