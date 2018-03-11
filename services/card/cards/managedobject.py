@@ -174,20 +174,24 @@ class ManagedObjectCard(BaseCard):
 
         iface_metric_type = dict(MetricType.objects.filter().scalar("field_name", "measure"))
         obj_metric_type = dict(MetricType.objects.filter().scalar("name", "measure"))
-		
-		if objects_metrics is not None:
-            if objects_metrics.get("") is not None:
-                for key in objects_metrics.get("").keys():
-                    if obj_metric_type[key] == "bytes" or obj_metric_type[key] == "bit/s" or obj_metric_type[key] == "bool":
-                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
-                    else:
-                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
-                meta = objects_metrics.get("")
-        
+
+        if objects_metrics is not None and objects_metrics.get("") is not None:
+            for key in objects_metrics.get("").keys():
+                if obj_metric_type[key] in ["bytes", "bit/s", "bool"]:
+                    objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
+                else:
+                    objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
+            meta = objects_metrics.get("")
+
+        load_in = "-"
+        load_out = "-"
+        errors_in = "-"
+        errors_out = "-"
+
         if iface_metrics is not None:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
                 for key in iface_metrics.get(str(i.name)).keys():
-                    if iface_metric_type[key] == "bytes" or iface_metric_type[key] == "bit/s" or iface_metric_type[key] == "bool":
+                    if iface_metric_type[key] in ["bytes", "bit/s", "bool"]:
                         iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], iface_metric_type[key])}
                     else:
                         iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
@@ -406,23 +410,28 @@ class ManagedObjectCard(BaseCard):
         except:
             pass
         if not speed:
-            return "-"
-        if type_speed == u"bit/s":
+            if type_speed is not "bool":
+                return "-"
+
+        if type_speed == "bit/s":
            speed = int(speed)
+
            if speed < 1000 and speed > 0:
                return str(speed) + "\x20"
+
            for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
                if speed >= t:
                    if speed // t * t == speed:
                        return "%d&nbsp;%s" % (speed // t, n)
                    else:
                        return "%.2f&nbsp;%s" % (float(speed) / t, n)
-        if type_speed == u"bytes":
+
+        if type_speed == "bytes":
             try:
                 speed = float(speed)
             except:
                 pass
-            #speed = speed / 8.0 # for translate bit to byte
+            #speed = speed / 8.0
 
             if speed < 1024:
                 return speed
@@ -434,8 +443,6 @@ class ManagedObjectCard(BaseCard):
                     else:
                         return "%.2f %s" % (float(speed) / t, n)
             return str(speed)
-        if type_speed == u"bool":
-            return bool(speed)
 
     @staticmethod
     def get_root(_root):
