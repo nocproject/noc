@@ -362,9 +362,9 @@ class ExtModelApplication(ExtApplication):
                 fname = o[1:]
             else:
                 fname = o
-            if fname in self.order_map:
+            if o in self.order_map:
                 no = "%s_order_%d" % (fname, n)
-                extra_select[no] = self.order_map[fname]
+                extra_select[no] = self.order_map[o]
                 new_order += [no]
             else:
                 new_order += [o]
