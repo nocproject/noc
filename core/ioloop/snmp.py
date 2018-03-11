@@ -259,7 +259,6 @@ def snmp_getnext(address, oid, port=161,
     else:
         sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
-    request_id = None
     while True:
         # Get PDU
         if bulk:
@@ -269,7 +268,7 @@ def snmp_getnext(address, oid, port=161,
                 version=version
             )
         else:
-            pdu = getnext_pdu(community, oid, version=version, request_id=request_id)
+            pdu = getnext_pdu(community, oid, version=version)
         # Send request and wait for response
         try:
             yield sock.sendto(pdu, (address, port))
