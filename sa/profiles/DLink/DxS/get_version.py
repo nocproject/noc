@@ -32,7 +32,7 @@ class Script(BaseScript):
     rx_ser = re.compile(
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
-    rx_platform = re.compile("^(?:D-Link )?(?P<platform>\S+)\s+")
+    rx_platform = re.compile("^(?:D-Link )?(?P<platform>\S+).?")
 
     def execute_snmp(self):
         """
