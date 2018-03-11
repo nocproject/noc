@@ -277,7 +277,7 @@ class BaseLoader(object):
                 try:
                     self.on_add(row)
                 except self.Deferred:
-                    deferred_add += [row]
+                    nd += [row]
             if len(nd) == len(deferred_add):
                 raise Exception("Unable to defer references")
             deferred_add = nd
@@ -291,7 +291,7 @@ class BaseLoader(object):
                 try:
                     self.on_change(o, n)
                 except self.Deferred:
-                    deferred_change += [(o, n)]
+                    nd += [(o, n)]
             if len(nd) == len(deferred_change):
                 raise Exception("Unable to defer references")
             deferred_change = nd
