@@ -229,7 +229,11 @@
                                 <tr>
                                     <td>{{ m }}</td>
                                     {% if  metrics[m]["type"] != "bool" %}
-                                        <td>{{ metrics[m]["value"] }}{{ metrics[m]["type"] }} </td>
+                                        {% if metrics[m]["type"] == "C" %}
+                                            <td>{{ metrics[m]["value"] }}<sup>o</sup>{{ metrics[m]["type"] }} </td>
+                                        {% else %}
+                                            <td>{{ metrics[m]["value"] }}{{ metrics[m]["type"] }} </td>
+                                        {% endif %}
                                     {% else %}
                                         <td> {% if (metrics[m]["value"]) == "1" %}True{% else %}False{% endif %}
                                     {% endif %}
