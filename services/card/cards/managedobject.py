@@ -9,14 +9,11 @@
 # Python modules
 import datetime
 import operator
-import itertools
-from collections import defaultdict
 # Third-party modules
 from django.db.models import Q
 # NOC modules
 from base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.uptime import Uptime
@@ -24,7 +21,6 @@ from noc.fm.models.outage import Outage
 from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
@@ -32,7 +28,6 @@ from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
-from noc.core.clickhouse.connect import connection
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
 from noc.pm.models.metrictype import MetricType
 
@@ -182,6 +177,8 @@ class ManagedObjectCard(BaseCard):
                 else:
                     objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
             meta = objects_metrics.get("")
+        else:
+            meta = objects_metrics.get("", {})
 
         load_in = "-"
         load_out = "-"
