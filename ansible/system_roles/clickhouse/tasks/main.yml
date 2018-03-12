@@ -68,7 +68,10 @@
 
 - name: create grafana ds
   include_tasks: ds.yml
-  when: "'svc-grafana-exec' in groups"
+  when:
+    - "'svc-grafana-exec' in groups"
+#ha setup will take care of datasource by itself
+    - has_svc_ha_clickhouse is not defined
 
 - name: place consul check
   import_role:
