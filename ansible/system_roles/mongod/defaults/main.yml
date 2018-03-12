@@ -23,3 +23,7 @@ mongod_system_service: mongod
 mongo_dir: "{{etc_prefix}}/mongod"
 mongo_conf: "{{ etc_prefix }}/mongod.conf"
 mongo_key: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"
+
+# for master_unused
+#mongo_control_venv: /opt/pymongo
+#pymongo_version: ">3.2"
