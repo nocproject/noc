@@ -59,7 +59,7 @@ class HTTP(object):
             eof_mark=eof_mark
         )
         if not (200 <= code <= 299):  # noqa
-            raise self.HTTPError(msg="HTTP Error %d (%s)" % result[:256], code=code)
+            raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         if json:
             try:
                 result = ujson.loads(result)
@@ -96,7 +96,7 @@ class HTTP(object):
             eof_mark=eof_mark
         )
         if not (200 <= code <= 299):  # noqa
-            raise self.HTTPError(msg="HTTP Error %d (%s)" % result[:256], code=code)
+            raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         if json:
             try:
                 return ujson.loads(result)
