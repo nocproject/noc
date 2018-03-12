@@ -188,19 +188,21 @@ class ManagedObjectCard(BaseCard):
 
         if iface_metrics is not None:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
-                for key in iface_metrics.get(str(i.name)).keys():
-                    if iface_metric_type[key] in ["bytes", "bit/s", "bool"]:
-                        iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], iface_metric_type[key])}
-                    else:
-                        iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
-
                 if iface_metrics.get(str(i.name)) is not None:
+                    for key in iface_metrics.get(str(i.name)).keys():
+                        if iface_metric_type[key] in ["bytes", "bit/s", "bool"]:
+                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], iface_metric_type[key])}
+                        else:
+                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
+
                     if str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
                         load_in = str(iface_metrics.get(str(i.name))["load_in"]["value"]) + iface_metrics.get(str(i.name))["load_in"]["type"]
                     if str(iface_metrics.get(str(i.name))["load_out"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
                         load_out = str(iface_metrics.get(str(i.name))["load_out"]["value"]) + iface_metrics.get(str(i.name))["load_out"]["type"]
                     errors_in = iface_metrics.get(str(i.name))["errors_in"]["value"]
                     errors_out = iface_metrics.get(str(i.name))["errors_out"]["value"]
+                else:
+                    iface_metrics.get(str(i.name), {}).keys()
 
                 interfaces += [{
                         "id": i.id,
