@@ -1,4 +1,12 @@
 ---
+- name: set postgres master
+  add_host:
+    name: "{{ inventory_hostname }}"
+    groups: svc-postgres-master
+  when:
+    - '"master" in postgres_power'
+    - "'svc-postgres-master' not in groups"
+
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Setting pg_hba.conf
