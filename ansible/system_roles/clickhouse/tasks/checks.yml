@@ -11,3 +11,11 @@
   when:
     - has_svc_clickhouse is defined
     - has_svc_consul is not defined
+
+- name: fail if too many clickhouses selected
+  fail:
+    msg: "Too many clickhouse servers selected and HA setup is not selected. Remove some servers or setup HA"
+  when:
+    - has_svc_clickhouse is defined
+    - groups['svc-clickhouse-exec'] | length > 1
+    - "'svc-ha-clickhouse-exec' not in groups"
