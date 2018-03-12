@@ -137,12 +137,12 @@
 
                            </div>
                            <div class="col-sm-6">
-                               <b>{{ _("Profile SA") }}</b>    {{ object.profile }}</br>
+                               <b>{{ _("Profile SA") }}</b>    {{ object.profile }}<br>
                                {% if platform != "Unknown" %}
                                    {{ platform }}
                                    {% if platform %}
-                                       {% if object.platform.is_end_of_sale %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
-                                        {% if object.platform.is_end_of_support %}<i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
+                                       {% if object.platform.is_end_of_sale %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Sale") }}{% endif %}
+                                       {% if object.platform.is_end_of_support %}<br><i class="fa fa-exclamation-triangle"></i> {{ _("End of Support") }}{% endif %}
                                     {% endif %}
                                     {% if version %}
                                         </br>Version: {{ version }}
@@ -150,9 +150,11 @@
                                             ({{ _("Recommended") }}: {{ firmware_recommended.version }})
                                         {% endif %}
                                     {% endif %}
-                               </br>
                                {% endif %}
-                               <b>{{ _("Service Range") }}</b>&nbsp;&nbsp;N/A
+                                    {% if serial_number %}
+                                        </br><b>Serial number:</b> {{ serial_number }}
+                                    {% endif %}
+                               </br><b>{{ _("Service Range") }}</b>&nbsp;&nbsp;N/A
                            </div>
 
                        </div>
@@ -213,32 +215,35 @@
 
             {% if metrics %}
             <div class="row">
-        <div class="col-sm-1">
-            <b>{{ _("Metrics") }}</b>
-        </div>
-        <div class="col-sm-10">
-            {% if metrics %}
-        <table class="table table-condensed table-hover">
-            <thead>
-                <th>{{ _("Name") }}</th>
-                <th>{{ _("Main") }}</th>
-                <th>{{ _("Sub") }}</th>
-            </thead>
-            <tbodcy>
-                {% for m in metrics %}
-                <tr>
-                    <td>{{ m }}</td>
-                    <td>{{ metrics[m] }}</td>
-                    <td>{{ sub_metrics[m] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
+                <div class="col-sm-1">
+                    <b>{{ _("Metrics") }}</b>
+                </div>
+                <div class="col-sm-10">
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                            <th>{{ _("Name") }}</th>
+                            <th>{{ _("Value") }}</th>
+                        </thead>
+                        <tbody>
+                            {% for m in metrics %}
+                                <tr>
+                                    <td>{{ m }}</td>
+                                    {% if  metrics[m]["type"] != "bool" %}
+                                        {% if metrics[m]["type"] == "C" %}
+                                            <td>{{ metrics[m]["value"] }}<sup>o</sup>{{ metrics[m]["type"] }} </td>
+                                        {% else %}
+                                            <td>{{ metrics[m]["value"] }}{{ metrics[m]["type"] }} </td>
+                                        {% endif %}
+                                    {% else %}
+                                        <td> {{ metrics[m]["value"] }} </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
 
 {% if links %}
     <div class="row">
@@ -301,7 +306,7 @@
     <div class="col-sm-10">
         <table class="table table-condensed" >
                 <thead>
-                    <tr>
+                    <th>
                         <th></th>
                         <th>{{ _("Timestamp") }}</th>
                         <th>{{ _("Services") }}</th>
@@ -310,7 +315,7 @@
                         <th>{{ _("IP") }}</th>
                         <th>{{ _("Class") }}</th>
                         <th>{{ _("Subject") }}</th>
-                    </tr>
+                    </th>
                 </thead>
                 <tbody>
                     {% for a in alarms %}
@@ -327,7 +332,7 @@
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.address }}</a></td>
                         <td>{{ a.alarm_class.name }}</td>
                         <td>{{ a.subject }}</td>
-                    </th>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -473,4 +478,4 @@
         {% endif %}
         </div>
     </div>
-</article>				
+</article>

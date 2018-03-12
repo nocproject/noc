@@ -9,14 +9,11 @@
 # Python modules
 import datetime
 import operator
-import itertools
-from collections import defaultdict
 # Third-party modules
 from django.db.models import Q
 # NOC modules
 from base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.uptime import Uptime
@@ -24,7 +21,6 @@ from noc.fm.models.outage import Outage
 from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
@@ -32,8 +28,9 @@ from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
-from noc.core.clickhouse.connect import connection
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
+from noc.pm.models.metrictype import MetricType
+from noc.core.perf import metrics
 
 class ManagedObjectCard(BaseCard):
     name = "managedobject"
@@ -60,7 +57,6 @@ class ManagedObjectCard(BaseCard):
         # @todo: Open TT
         now = datetime.datetime.now()
         # Get object status and uptime
-
 
         alarms = list(ActiveAlarm.objects.filter(managed_object=self.object.id))
 
@@ -170,67 +166,71 @@ class ManagedObjectCard(BaseCard):
         objects_metrics, last_time = get_objects_metrics(mo[0])
         objects_metrics = objects_metrics.get(mo[0])
 
+        meta = ""
+
+        iface_metric_type = dict(MetricType.objects.filter().scalar("field_name", "measure"))
+        obj_metric_type = dict(MetricType.objects.filter().scalar("name", "measure"))
+
         if objects_metrics is not None:
-            disk_list_keys = list(['Disk | Free', 'Disk | Total'])
-
-            for disk_key in disk_list_keys:
-                if objects_metrics.get("").get(disk_key) is not None:
-                    objects_metrics.get("")[disk_key] = self.humanize_speed(int(objects_metrics.get("").get(disk_key)))
-                if objects_metrics.get("Sub").get(disk_key) is not None:
-                    objects_metrics.get("Sub")[disk_key] = self.humanize_speed(int(objects_metrics.get("Sub").get(disk_key)))
-                if objects_metrics.get("Pri").get(disk_key) is not None:
-                    objects_metrics.get("Pri")[disk_key] = self.humanize_speed(int(objects_metrics.get("Pri").get(disk_key)))
-
-            for keys in objects_metrics.get("").keys():
-                if objects_metrics.get("").get(keys) is not objects_metrics.get("Pri").get(keys) and objects_metrics.get("Pri").get(keys) is not None:
-                    objects_metrics.get("")[keys] = objects_metrics.get("Pri").get(keys)
-
-            meta = objects_metrics.get("")
-            sub_meta = objects_metrics.get("Sub")
-            pri_meta = objects_metrics.get("Pri")
-        else:
-            meta = ""
-            sub_meta = ""
-            pri_meta = ""
-
-        for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
-
-            if iface_metrics.get(str(i.name)) is not None:
-                load_in = self.humanize_speed(iface_metrics.get(str(i.name))["load_in"])
-                load_out = self.humanize_speed(iface_metrics.get(str(i.name))["load_out"])
-                errors_in = iface_metrics.get(str(i.name))["errors_in"]
-                errors_out = iface_metrics.get(str(i.name))["errors_out"]
+            if objects_metrics.get("") is not None:
+                for key in objects_metrics.get("").keys():
+                    if obj_metric_type[key] in ["bytes", "bit/s", "bool"]:
+                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
+                    else:
+                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
+                meta = objects_metrics.get("")
             else:
-                load_in = "-"
-                load_out = "-"
-                errors_in = "-"
-                errors_out = "-"
+                meta = {}
+                
+        load_in = "-"
+        load_out = "-"
+        errors_in = "-"
+        errors_out = "-"
 
-            interfaces += [{
-                    "id": i.id,
-                    "name": i.name,
-                    "admin_status": i.admin_status,
-                    "oper_status": i.oper_status,
-                    "mac": i.mac or "",
-                    "full_duplex": i.full_duplex,
-                    "load_in": load_in,
-                    "load_out": load_out,
-                    "errors_in": errors_in,
-                    "errors_out": errors_out,
-                    "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
-                    "untagged_vlan": None,
-                    "tagged_vlan": None,
-                    "profile": i.profile,
-                    "service": i.service,
-                    "service_summary": service_summary.get("interface").get(i.id, {})
-            }]
+        if iface_metrics is not None:
+            for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
+                if iface_metrics.get(str(i.name)) is not None:
+                    for key in iface_metrics.get(str(i.name)).keys():
+                        if iface_metric_type[key] in ["bytes", "bit/s", "bool"]:
+                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], iface_metric_type[key])}
+                        else:
+                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
 
-            si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
-            if len(si) == 1:
-                si = si[0]
-                interfaces[-1]["untagged_vlan"] = si.untagged_vlan
-                interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
-        interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
+                    if str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
+                        load_in = str(iface_metrics.get(str(i.name))["load_in"]["value"]) + iface_metrics.get(str(i.name))["load_in"]["type"]
+                    if str(iface_metrics.get(str(i.name))["load_out"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
+                        load_out = str(iface_metrics.get(str(i.name))["load_out"]["value"]) + iface_metrics.get(str(i.name))["load_out"]["type"]
+                    errors_in = iface_metrics.get(str(i.name))["errors_in"]["value"]
+                    errors_out = iface_metrics.get(str(i.name))["errors_out"]["value"]
+                else:
+                    iface_metrics.get(str(i.name), {}).keys()
+
+                interfaces += [{
+                        "id": i.id,
+                        "name": i.name,
+                        "admin_status": i.admin_status,
+                        "oper_status": i.oper_status,
+                        "mac": i.mac or "",
+                        "full_duplex": i.full_duplex,
+                        "load_in": load_in,
+                        "load_out": load_out,
+                        "errors_in": errors_in,
+                        "errors_out": errors_out,
+                        "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
+                        "untagged_vlan": None,
+                        "tagged_vlan": None,
+                        "profile": i.profile,
+                        "service": i.service,
+                        "service_summary": service_summary.get("interface").get(i.id, {})
+                }]
+
+                si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
+                if len(si) == 1:
+                    si = si[0]
+                    interfaces[-1]["untagged_vlan"] = si.untagged_vlan
+                    interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
+            interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
+
         # Termination group
         l2_terminators = []
         if self.object.termination_group:
@@ -316,11 +316,10 @@ class ManagedObjectCard(BaseCard):
             "alarms": alarm_list,
             "interfaces": interfaces,
             "metrics": meta,
-            "sub_metrics": sub_meta,
-            "pri_metrics": pri_meta,
             "maintenance": maintenance,
             "redundancy": redundancy,
-            "inventory": self.flatten_inventory(inv)
+            "inventory": self.flatten_inventory(inv),
+            "serial_number": self.object.get_attr("Serial Number")
         }
 
         return r
@@ -406,16 +405,45 @@ class ManagedObjectCard(BaseCard):
         return r
 
     @staticmethod
-    def humanize_speed(speed):
+    def humanize_speed(speed, type_speed):
         if not speed:
             return "-"
-        for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
-            if speed >= t:
-                if speed // t * t == speed:
-                    return "%d%s" % (speed // t, n)
-                else:
-                    return "%.2f%s" % (float(speed) / t, n)
-        return str(speed)
+            
+        try:
+            speed = int(speed)
+        except:
+            pass
+
+        if type_speed == "bit/s":
+           speed = int(speed)
+
+           if speed < 1000 and speed > 0:
+               return "%s " % speed
+
+           for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
+               if speed >= t:
+                   if speed // t * t == speed:
+                       return "%d&nbsp;%s" % (speed // t, n)
+                   else:
+                       return "%.2f&nbsp;%s" % (float(speed) / t, n)
+
+        if type_speed == "bytes":
+            try:
+                speed = float(speed)
+            except:
+                pass
+            #speed = speed / 8.0
+
+            if speed < 1024:
+                return speed
+
+            for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
+                if speed >= t:
+                    if speed // t * t == speed:
+                        return "%d% s" % (speed // t, n)
+                    else:
+                        return "%.2f %s" % (float(speed) / t, n)
+            return str(speed)
 
     @staticmethod
     def get_root(_root):
