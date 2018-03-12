@@ -30,6 +30,7 @@ from noc.maintenance.models.maintenance import Maintenance
 from noc.sa.models.useraccess import UserAccess
 from noc.core.pm.utils import get_interface_metrics, get_objects_metrics
 from noc.pm.models.metrictype import MetricType
+from noc.core.perf import metrics
 
 class ManagedObjectCard(BaseCard):
     name = "managedobject"
