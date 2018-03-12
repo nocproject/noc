@@ -1,4 +1,18 @@
 ---
+# http://www.ibm.com/support/knowledgecenter/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/t0008238.html?lang=ru
+- name: tune systcl for PostgesSQL
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+    reload: yes
+  with_items:
+    - { name: kernel.shmmax, value: "{{ kernel_shmmax }}" }
+    - { name: kernel.shmall, value: "{{ kernel_shmall }}" }
+    - { name: kernel.sem, value: '250 256000 400 4096' }
+  tags:
+    - config
+
 - name: Add Debian PostgreSQL key
   apt_key:
     url: https://www.postgresql.org/media/keys/ACCC4CF8.asc

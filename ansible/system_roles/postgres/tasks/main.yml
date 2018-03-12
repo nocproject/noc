@@ -1,19 +1,4 @@
 ---
-# http://www.ibm.com/support/knowledgecenter/SSEPGG_10.5.0/com.ibm.db2.luw.qb.server.doc/doc/t0008238.html?lang=ru
-- name: tune systcl for PostgesSQL
-  sysctl:
-    name: "{{item.name}}"
-    value: "{{item.value}}"
-    state: present
-    reload: yes
-  with_items:
-    - { name: kernel.shmmax, value: "{{ kernel_shmmax }}" }
-    - { name: kernel.shmall, value: "{{ kernel_shmall }}" }
-    - { name: kernel.sem, value: '250 256000 400 4096' }
-  tags:
-    - config
-  when: "'Linux' in ansible_system"
-
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Setting pg_hba.conf
@@ -59,7 +44,6 @@
     consul_service_check_interval: "10s"
     consul_service_check_http_skip_verify: False
     consul_service_check_script: postgres_check.sh.j2
-
 
 - name: Install postgres monitoring
   include_role:
