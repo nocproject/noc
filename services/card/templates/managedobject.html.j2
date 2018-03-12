@@ -235,7 +235,7 @@
                                             <td>{{ metrics[m]["value"] }}{{ metrics[m]["type"] }} </td>
                                         {% endif %}
                                     {% else %}
-                                        <td> {% if (metrics[m]["value"]) == "1" %}True{% else %}False{% endif %}
+                                        <td> {{ metrics[m]["value"] }} </td>
                                     {% endif %}
                                 </tr>
                             {% endfor %}
