@@ -242,7 +242,7 @@ class SNMP(object):
                 pass
 
     def get_tables(self, oids, community_suffix=None, bulk=False,
-                   min_index=None, max_index=None, cached=False):
+                   min_index=None, max_index=None, cached=False, max_retries=0):
         """
         Query list of SNMP tables referenced by oids and yields
         tuples of (key, value1, ..., valueN)
@@ -253,12 +253,13 @@ class SNMP(object):
         :param min_index:
         :param max_index:
         :param cached:
+        :param max_retries:
         :return:
         """
         def gen_table(oid):
             line = len(oid) + 1
             for o, v in self.getnext(oid, community_suffix=community_suffix,
-                                     cached=cached, bulk=bulk):
+                                     cached=cached, bulk=bulk, max_retries=max_retries):
                 yield tuple([int(x) for x in o[line:].split(".")]), v
 
         # Retrieve tables
