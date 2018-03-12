@@ -36,6 +36,8 @@ class Script(BaseScript):
     rx_mtu = re.compile(r"^\s+MTU(?: is)? (?P<mtu>\d+) bytes")
     rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
     rx_vid = re.compile(r"(?P<vid>\d+)")
+    MAX_REPETITIONS = 10
+    MAX_GETNEXT_RETIRES = 1
 
     def get_lldp(self):
         v = self.cli("show lldp")
