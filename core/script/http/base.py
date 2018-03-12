@@ -59,6 +59,7 @@ class HTTP(object):
             eof_mark=eof_mark
         )
         if not (200 <= code <= 299):  # noqa
+            # noqa
             raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         if json:
             try:
@@ -96,6 +97,7 @@ class HTTP(object):
             eof_mark=eof_mark
         )
         if not (200 <= code <= 299):  # noqa
+            # noqa
             raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         if json:
             try:
