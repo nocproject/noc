@@ -58,6 +58,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark
         )
+        # pylint: disable=superfluous-parens
         if not (200 <= code <= 299):  # noqa
             raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         if json:
@@ -95,6 +96,7 @@ class HTTP(object):
             validate_cert=False,
             eof_mark=eof_mark
         )
+        # pylint: disable=superfluous-parens
         if not (200 <= code <= 299):  # noqa
             raise self.HTTPError(msg="HTTP Error (%s)" % result[:256], code=code)
         if json:
