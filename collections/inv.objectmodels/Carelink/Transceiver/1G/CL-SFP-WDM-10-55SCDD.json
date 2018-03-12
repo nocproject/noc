@@ -1,9 +1,9 @@
 {
-    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-3-55SC",
+    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-10-55SCDD",
     "$collection": "inv.objectmodels",
-    "uuid": "f0fe0264-e082-409c-8fb1-f3e8f05cba43",
+    "uuid": "8e94060f-d27d-40a3-80d5-aea5d6ff4d29",
     "vendor__code": "CARELINK",
-    "description": "CareLink SFP WDM transceiver (1550 tx, 1310 rx) without ddm",
+    "description": "CareLink SFP WDM transceiver (1550 tx, 1310 rx) with ddm",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["CL-SFP-WDM-3-55S", "CLSFP-WDM-3-55SC"]
+            "part_no": ["CLSFPWDM1055SCDD"]
         }
     }
 }

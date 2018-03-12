@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["GLC-T"]
+            "part_no": ["GLC-T", "GLC-TE"]
         }
     }
 }

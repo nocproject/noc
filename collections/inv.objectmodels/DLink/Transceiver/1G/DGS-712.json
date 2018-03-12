@@ -1,9 +1,9 @@
 {
-    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-3-31LC",
+    "name": "Dlink | Transceiver | 1G | DGS-712",
     "$collection": "inv.objectmodels",
-    "uuid": "36f38458-cbec-49cf-8262-274fe603173b",
-    "vendor__code": "CARELINK",
-    "description": "CareLink SFP WDM transceiver (1310 tx, 1550 rx)",
+    "uuid": "6c81cf72-470d-4989-ac43-2b13ea1c8956",
+    "vendor__code": "DLINK",
+    "description": "Dlink SFP TX transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,17 +15,17 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RxTx SC Port",
+            "description": "TX Port",
             "direction": "s",
             "gender": "f",
-            "name": "rxtx",
-            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
-            "type__name": "Optical | LC"
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["CL-SFP-WDM-3-31-", "CLSFP3-31"]
+            "part_no": ["DGS-712"]
         }
     }
 }

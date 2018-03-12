@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTLF1318P2xCL",
+    "name": "Qtech | Transceiver | 1G | QSC-SFP10GE-1310",
     "$collection": "inv.objectmodels",
-    "uuid": "a36d670d-b902-4a5c-bbcb-7f0db27025bd",
-    "vendor__code": "FINISAR",
-    "description": "1000BASE-LX and 1G Fibre Channel (1GFC) 10km SFP Optical Transceiver\n",
+    "uuid": "3c1a1ba3-52c9-451d-8630-2901396d3a13",
+    "vendor__code": "QTECH",
+    "description": "Qtech SFP, 1310nm, LC, 10km, LX transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -12,14 +12,14 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1GBASELX-1310"],
+            "protocols": [">1000BASELX-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,13 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1GBASELX-1310"],
+            "protocols": ["<1000BASELX-1310"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLF1318P2BCL-CS", "FTLF1318P2BCL-C9"]
+            "part_no": ["QSC-SFP10GE-1310"]
         }
     }
 }
