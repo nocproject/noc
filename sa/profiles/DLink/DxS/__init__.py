@@ -479,9 +479,7 @@ def DxS_L2(v):
 
 
 def get_platform(platform, hw_revision):
-    if platform.endswith(hw_revision):
-        return platform
-    elif (
+    if (
         platform.startswith("DES-1210-") or
         platform.startswith("DES-1228") or
         platform.startswith("DES-2108") or
@@ -491,6 +489,8 @@ def get_platform(platform, hw_revision):
         platform.startswith("DGS-3420-") or
         platform.startswith("DGS-3620-")
     ):
+        if platform.endswith("/%s" % hw_revision):
+            return platform
         return "%s/%s" % (platform, hw_revision)
     else:
         return platform
