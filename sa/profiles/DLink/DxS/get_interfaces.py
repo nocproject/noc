@@ -221,18 +221,28 @@ class Script(BaseScript):
             iface = ifaces[l]
             if last_ifname and iface["interface"] not in last_ifname:
                 continue
-            i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
+            if iface.get("type"):
+                i_type = self.INTERFACE_TYPES.get(iface["type"], "other")
+            else:
+                # Some old switches don't return snmp index
+                # for non-physical interfaces
+                if iface["interface"].startswith("po"):
+                    i_type = "aggregated"
+                elif iface["interface"] == "System":
+                    i_type = "SVI"
+                else:
+                    raise self.NotSupportedError()
             i = {
                 "name": iface["interface"],
                 "type": i_type,
-                "admin_status": iface["admin_status"],
-                "oper_status": iface["oper_status"],
+                "admin_status": iface.get("admin_status"),
+                "oper_status": iface.get("oper_status"),
                 "snmp_ifindex": l,
                 "subinterfaces": [{
                     "name": iface["interface"],
                     "enabled_afi": ["BRIDGE"],
-                    "admin_status": iface["admin_status"],
-                    "oper_status": iface["oper_status"],
+                    "admin_status": iface.get("admin_status"),
+                    "oper_status": iface.get("oper_status"),
                     "snmp_ifindex": l
                 }]
             }
@@ -246,7 +256,7 @@ class Script(BaseScript):
             if l in ip_ifaces:
                 i["subinterfaces"][0]["ipv4_addresses"] = [IPv4(*ip_ifaces[l])]
                 i["subinterfaces"][0]["enabled_afi"] = ["IPv4"]
-            if iface["mac_address"]:
+            if iface.get("mac_address"):
                 i["mac"] = MAC(iface["mac_address"])
                 i["subinterfaces"][0]["mac"] = MAC(iface["mac_address"])
             r += [i]
