@@ -33,7 +33,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["GLC-SX-MMD"]
+            "part_no": ["GLC-SX-MMD", "GLC-SX"]
         }
     }
 }

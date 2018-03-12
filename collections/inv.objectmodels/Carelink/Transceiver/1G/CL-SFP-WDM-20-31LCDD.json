@@ -1,9 +1,9 @@
 {
-    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-3-55SC",
+    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-20-31LCDD",
     "$collection": "inv.objectmodels",
-    "uuid": "f0fe0264-e082-409c-8fb1-f3e8f05cba43",
+    "uuid": "05b0ac77-7c61-4600-b736-7e437eeb5c42",
     "vendor__code": "CARELINK",
-    "description": "CareLink SFP WDM transceiver (1550 tx, 1310 rx) without ddm",
+    "description": "CareLink SFP WDM transceiver (1310 tx, 1550 rx) with ddm",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,13 +19,13 @@
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
-            "type__name": "Optical | SC"
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["CL-SFP-WDM-3-55S", "CLSFP-WDM-3-55SC"]
+            "part_no": ["CLSFPWDM2031DD"]
         }
     }
 }

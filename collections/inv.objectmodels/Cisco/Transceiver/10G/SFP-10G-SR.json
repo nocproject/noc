@@ -1,25 +1,25 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTLF1318P2xCL",
+    "name": "Cisco | Transceiver | 10G | SFP-10G-SR",
     "$collection": "inv.objectmodels",
-    "uuid": "a36d670d-b902-4a5c-bbcb-7f0db27025bd",
-    "vendor__code": "FINISAR",
-    "description": "1000BASE-LX and 1G Fibre Channel (1GFC) 10km SFP Optical Transceiver\n",
+    "uuid": "c16001b6-fe7d-4396-834c-c520a6332b31",
+    "vendor__code": "CISCO",
+    "description": "Cisco SFP+ SR transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
-            "description": "SFP Connector",
+            "description": "SFP+ Connector",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1GBASELX-1310"],
+            "protocols": [">10GBASESR"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,13 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1GBASELX-1310"],
+            "protocols": ["<10GBASESR"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLF1318P2BCL-CS", "FTLF1318P2BCL-C9"]
+            "part_no": ["SFP-10G-SR", "SFP-10G-SR-S"]
         }
     }
 }

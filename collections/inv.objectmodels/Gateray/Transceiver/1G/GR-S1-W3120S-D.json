@@ -1,9 +1,9 @@
 {
-    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-3-55SC",
+    "name": "Gateray | Transceiver | 1G | GR-S1-W3120S-D",
     "$collection": "inv.objectmodels",
-    "uuid": "f0fe0264-e082-409c-8fb1-f3e8f05cba43",
-    "vendor__code": "CARELINK",
-    "description": "CareLink SFP WDM transceiver (1550 tx, 1310 rx) without ddm",
+    "uuid": "2e33126d-9f7a-4b05-b400-738e07fe5d85",
+    "vendor__code": "GATERAY",
+    "description": "GateRay SFP WDM transceiver 20km (1310 tx, 1550 rx) with ddm",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,13 +19,13 @@
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
             "type__name": "Optical | SC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["CL-SFP-WDM-3-55S", "CLSFP-WDM-3-55SC"]
+            "part_no": ["GR-S1-W3120S-D"]
         }
     }
 }
