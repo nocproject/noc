@@ -37,10 +37,9 @@ class Profile(BaseProfile):
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)]
-        )
+        a = [int(z) for z in self.rx_ver.findall(x)]
+        b = [int(z) for z in self.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     """
     IF-MIB:IfDescr
@@ -479,9 +478,7 @@ def DxS_L2(v):
 
 
 def get_platform(platform, hw_revision):
-    if platform.endswith(hw_revision):
-        return platform
-    elif (
+    if (
         platform.startswith("DES-1210-") or
         platform.startswith("DES-1228") or
         platform.startswith("DES-2108") or
@@ -491,6 +488,8 @@ def get_platform(platform, hw_revision):
         platform.startswith("DGS-3420-") or
         platform.startswith("DGS-3620-")
     ):
+        if platform.endswith("/%s" % hw_revision):
+            return platform
         return "%s/%s" % (platform, hw_revision)
     else:
         return platform
