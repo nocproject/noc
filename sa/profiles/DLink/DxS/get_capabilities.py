@@ -35,9 +35,12 @@ class Script(BaseScript):
         """
         # swL2DevCtrlLLDPState can only get from l2mgmt-mib
         # LLDP-MIB::lldpStatsRemTablesInserts.0
-        r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
-        if r > 0:
-            return True
+        try:
+            r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
+            if r > 0:
+                return True
+        except self.snmp.TimeOutError:
+            return False
 
     @false_on_cli_error
     def has_stp_cli(self):
