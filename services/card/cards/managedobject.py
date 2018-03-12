@@ -403,13 +403,13 @@ class ManagedObjectCard(BaseCard):
 
     @staticmethod
     def humanize_speed(speed, type_speed):
+        if not speed:
+            return "-"
+            
         try:
             speed = int(speed)
         except:
             pass
-        if not speed:
-            if type_speed is not "bool":
-                return "-"
 
         if type_speed == "bit/s":
            speed = int(speed)
