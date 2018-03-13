@@ -317,4 +317,4 @@ class ReportAlarmDetailApplication(ExtApplication):
                     "Content-Disposition"] = "attachment; filename=\"alarms.xlsx\""
                 with open(f.name) as ff:
                     response.write(ff.read())
-                return response
+            return response
