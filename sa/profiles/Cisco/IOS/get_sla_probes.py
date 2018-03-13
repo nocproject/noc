@@ -8,7 +8,6 @@
 
 # Python modules
 import re
-from itertools import izip
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
@@ -63,7 +62,8 @@ class Script(BaseScript):
         "udp-jitter": "path-jitter",
         "icmp-jitter": "icmp-echo",
         "echo": "icmp-echo",
-        "udp-echo": "udp-echo"
+        "udp-echo": "udp-echo",
+        "tcp-connect": "tcp-connect"
     }
 
     def execute(self, **kwargs):
