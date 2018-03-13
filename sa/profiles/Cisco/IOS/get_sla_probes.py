@@ -63,7 +63,8 @@ class Script(BaseScript):
         "udp-jitter": "path-jitter",
         "icmp-jitter": "icmp-echo",
         "echo": "icmp-echo",
-        "udp-echo": "udp-echo"
+        "udp-echo": "udp-echo",
+        "tcp-connect": "tcp-connect"
     }
 
     def execute(self, **kwargs):

@@ -31,6 +31,7 @@ class IGetSLAProbes(BaseInterface):
             "icmp-echo",
             "path-jitter",
             "udp-echo",
+            "tcp-connect",
             "http-get",
             "dns",
             "ftp",
