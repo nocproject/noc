@@ -149,6 +149,7 @@ class Prefix(models.Model):
             return bool(self.ipv6_transition)
         else:
             try:
+                # pylint: disable=pointless-statement
                 self.ipv4_transition  # noqa
                 return True
             except Prefix.DoesNotExist:
