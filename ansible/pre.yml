@@ -17,6 +17,8 @@
 
   roles:
     - role: pre
+      tags:
+        - pre
 
   post_tasks:
     - name: set pre complete
