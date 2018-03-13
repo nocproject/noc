@@ -102,34 +102,31 @@ class Script(BaseScript):
             }
             for m in self.rx_entity.finditer(match.group("entities")):
                 n = {}
+                remote_chassis_id_subtype = \
+                    m.group("chassis_id_subtype").replace("_", " ")
                 n["remote_chassis_id_subtype"] = {
                     "chassis component": 1,
                     "interface alias": 2,
                     "port component": 3,
-                    "port_component": 3,
                     "mac address": 4,
                     "macaddress": 4,
                     "network address": 5,
-                    "network_address": 5,
                     "interface name": 6,
                     "local": 7
-                }[m.group("chassis_id_subtype").strip().lower()]
+                }[remote_chassis_id_subtype.strip().lower()]
                 n["remote_chassis_id"] = m.group("chassis_id").strip()
-                remote_port_subtype = m.group("port_id_subtype")
-                remote_port_subtype.replace("_", " ")
+                remote_port_subtype = \
+                    m.group("port_id_subtype").replace("_", " ")
                 n["remote_port_subtype"] = {
                     "interface alias": 1,
-                    # DES-3526 6.00 B48 and DES-3526 6.00 B49
-                    "nterface alias": 1,
+                    # DES-3526 6.00 B48, DES-3526 6.00 B49,
                     # DES-3200-28 1.85.B008
-                    "nterface_alias": 1,
+                    "nterface alias": 1,
                     "port component": 2,
-                    "port_component": 2,
                     "mac address": 3,
                     "macaddress": 3,
                     "network address": 4,
                     "interface name": 5,
-                    "interface_name": 5,
                     "agent circuit id": 6,
                     "locally assigned": 7,
                     "local": 7
