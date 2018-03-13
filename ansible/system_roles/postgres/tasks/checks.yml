@@ -1,7 +1,37 @@
+- name: init check vars
+  set_fact:
+    postgres_masters_count: 0
+
 - name: No postgres server set
   fail:
-    msg: "No postgres server set. Please setup one."
+    msg: "No postgres server set. Please setup exactly one."
   when: "'svc-postgres-exec' not in groups"
+
+- name: fail if postrgres in role secondary and no ha setup
+  fail:
+    msg: |
+      Postgres secondary config require role postgres-ha. Leave only one postres or setup HA
+  when:
+    - has_svc_postgres is defined
+    - postgres_power == 'secondary'
+    - "'svc-ha-postgres-exec' not in groups"
+
+- name: count postgres masters set
+  set_fact:
+    postgres_masters_count: "{{postgres_masters_count | int+ 1}}"
+  with_items: "{{groups['svc-postgres-exec']}}"
+  when: "'master' in hostvars[srv]['postgres_power']"
+  loop_control:
+    loop_var: srv
+
+- name: Fail if too many postgres masters set
+  fail:
+    msg: |
+      Postgres in multimaster mode is not supported.
+      Setup excactly one master
+  when:
+    - has_svc_postgres is defined
+    - postgres_masters_count | int  != 1
 
 - name: fail if consul is not selected
   fail:
