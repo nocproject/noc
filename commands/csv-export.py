@@ -13,6 +13,7 @@ import argparse
 # Django modules
 from django.db import models
 # NOC modules
+from noc.sa.models.managedobject import ManagedObject  # noqa
 from noc.core.management.base import BaseCommand
 from noc.core.csvutils import csv_export
 
