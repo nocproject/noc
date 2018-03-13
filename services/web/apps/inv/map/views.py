@@ -26,12 +26,11 @@ from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.maintenance.models.maintenance import Maintenance
 from noc.lib.text import split_alnum
+from noc.core.pm.utils import get_interface_metrics
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
-from noc.core.clickhouse.connect import connection
-from noc.core.clickhouse.error import ClickhouseError
 
 tags_lock = threading.RLock()
 
@@ -234,26 +233,18 @@ class MapApplication(ExtApplication):
                 ]
             }]
         # Get link bandwidth
-        where = []
-        for mo in o:
-            for i in o[mo]:
-                where += [(mo, i)]
-        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(mo.bi_id), q(i.name))
-                             for mo, i in where])
-        query = ["select  managed_object, path[4], anyLast(load_in), anyLast(load_out) ",
-                 "from interface",
-                 "where %s" % where,
-                 "group by managed_object, path[4]"]
-        ch = connection()
         mo_in = defaultdict(float)
         mo_out = defaultdict(float)
-        try:
-            for row in ch.execute(" ".join(query)):
-                mo_in[row[0]] += float(row[2])
-                mo_out[row[0]] += float(row[3])
-        except ClickhouseError:
-            pass
-        mos = [str(ManagedObject.get_by_id(mo["id"]).bi_id) for mo in r["objects"]]
+        mos = [ManagedObject.get_by_id(mo["id"]) for mo in r["objects"]]
+        metric_map, last_ts = get_interface_metrics(o.keys())
+        for mo in o:
+            if mo not in metric_map:
+                continue
+            for i in o[mo]:
+                if i.name not in metric_map[mo]:
+                    continue
+                mo_in[mo] += metric_map[mo][i.name]["Interface | Load | In"]
+                mo_out[mo] += metric_map[mo][i.name]["Interface | Load | Out"]
         if len(mos) == 2:
             mo1, mo2 = mos
             r["utilisation"] = [
@@ -433,6 +424,8 @@ class MapApplication(ExtApplication):
         mlst = []  # (metric, object, interface)
         for m in metrics:
             if "object" in m["tags"] and "interface" in m["tags"]:
+                if not m["tags"]["object"]:
+                    continue
                 try:
                     if_ids[
                         self.interface_tags_to_id(
@@ -440,19 +433,14 @@ class MapApplication(ExtApplication):
                             m["tags"]["interface"]
                         )
                     ] = m["id"]
-                    object_bi = str(ManagedObject.objects.get(name=m["tags"]["object"]).bi_id)
-                    tag_id[object_bi, m["tags"]["interface"]] = m["id"]
-                    mlst += [(m["metric"], object_bi, m["tags"]["interface"])]
+                    object = ManagedObject.objects.get(name=m["tags"]["object"])
+                    tag_id[object, m["tags"]["interface"]] = m["id"]
+                    mlst += [(m["metric"], object, m["tags"]["interface"])]
                 except KeyError:
                     pass
         # @todo: Get last values from cache
         if not mlst:
             return {}
-        where = " or ".join(["(managed_object=%s and path[4]=\'%s\')" % (q(o), q(i)) for m, o, i in mlst])
-        s = ["select  managed_object, path[4], anyLast(load_in), anyLast(load_out) ",
-             "from interface",
-             "where %s" % where,
-             "group by managed_object, path[4]"]
 
         r = {}
         # Apply interface statuses
@@ -472,20 +460,21 @@ class MapApplication(ExtApplication):
                 "admin_status": d.get("admin_status", True),
                 "oper_status": d.get("oper_status", True)
             }
+        metric_map, last_ts = get_interface_metrics([m[1] for m in mlst])
         # Apply metrics
-        ch = connection()
-        # print " ".join(s)
-        try:
-            for rq in ch.execute(" ".join(s)):
-                pid = tag_id.get((rq[0], rq[1]))
-                if not pid:
-                    continue
-                if pid not in r:
-                    r[pid] = {}
-                r[pid]["Interface | Load | In"] = rq[2]
-                r[pid]["Interface | Load | Out"] = rq[3]
-        except ClickhouseError:
-            pass
+        for rq_mo, rq_iface in tag_id:
+            pid = tag_id.get((rq_mo, rq_iface))
+            if not pid:
+                continue
+            if pid not in r:
+                r[pid] = {}
+            if rq_mo not in metric_map:
+                continue
+            if rq_iface not in metric_map[rq_mo]:
+                continue
+            r[pid]["Interface | Load | In"] = metric_map[rq_mo][rq_iface]["Interface | Load | In"]
+            r[pid]["Interface | Load | Out"] = metric_map[rq_mo][rq_iface]["Interface | Load | Out"]
+
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
