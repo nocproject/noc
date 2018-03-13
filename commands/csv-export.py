@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import sys
 import argparse
 # Django modules
