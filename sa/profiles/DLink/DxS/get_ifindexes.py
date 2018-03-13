@@ -21,12 +21,20 @@ class Script(BaseScript):
     def execute_snmp(self):
         r = {}
         ifnames = {}
+        old_dlink = False
         unknown_interfaces = []
         for oid, name in self.snmp.getnext(mib["IF-MIB::ifName"], cached=True):
             ifindex = int(oid.split(".")[-1])
+            if ifindex == 1 and name.startswith("Slot0/"):
+                old_dlink = True
+            if old_dlink:
+                v = self.profile.convert_interface_name(name)
+                r[v] = ifindex
             if ifindex < 5121:
                 continue
             ifnames[ifindex] = name
+        if old_dlink:
+            return r
         for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"], cached=True):
             ifindex = int(oid.split(".")[-1])
             if ifindex < 1024:  # physical interfaces
