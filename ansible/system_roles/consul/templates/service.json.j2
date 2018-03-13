@@ -6,6 +6,7 @@
     "enableTagOverride": false,
     "check": {
         "{{ check_type }}": "{{ check_value }}",
+        "timeout": "{{ check_timeout }}",
         "interval": "{{ check_interval }}"
     }{% if check_http_skip_verify %},
     "TLSSkipVerify": true{% endif %}

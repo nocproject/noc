@@ -10,6 +10,7 @@
       port: "{{consul_service_port}}"
       check_type: "{{consul_service_check_type}}"
       check_value: "{{consul_scripts_path}}/{{consul_service_check_value}}"
+      check_timeout: "{{consul_service_timeout | default('2s')}}"
       check_interval: "{{consul_service_check_interval}}"
       check_http_skip_verify: "{{consul_service_check_http_skip_verify}}"
     notify:
@@ -34,6 +35,7 @@
     port: "{{consul_service_port}}"
     check_type: "{{consul_service_check_type}}"
     check_value: "{{consul_service_check_value}}"
+    check_timeout: "{{consul_service_timeout | default('2s')}}"
     check_interval: "{{consul_service_check_interval}}"
     check_http_skip_verify: "{{consul_service_check_http_skip_verify}}"
   notify:
