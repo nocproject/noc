@@ -149,7 +149,7 @@ class Prefix(models.Model):
             return bool(self.ipv6_transition)
         else:
             try:
-                self.ipv4_transition
+                self.ipv4_transition  # noqa
                 return True
             except Prefix.DoesNotExist:
                 return False
