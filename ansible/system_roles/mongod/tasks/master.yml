@@ -1,17 +1,19 @@
 ---
+- name: Check replica set is initialized
+  command: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ ansible_hostname }} --eval 1"
+  register: rs_status
+  changed_when:
+    - "'No primary detected for set' in rs_status.stdout"
+    - "'connect failed to replica set' in rs_status.stdout"
+  failed_when: False
+  tags:
+    - config
+
 - name: Create replica set configuration script
   template:
     src: rsinit.js.j2
     dest: "{{ mongo_dir }}/rsinit.js"
   register: rs_conf_status
-  tags:
-    - config
-
-- name: Check replica set is initialized
-  command: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ ansible_hostname }} --eval 1"
-  register: rs_status
-  changed_when: rs_status.rc != 0
-  failed_when: False
   tags:
     - config
 
@@ -33,7 +35,7 @@
 
   - name: Create admin user
     command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
-  when: rs_status.rc != 0
+  when: rs_status | changed
 
 - name: Create database user configuration script
   template:
@@ -52,4 +54,8 @@
   command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ mongo_dir }}/rsinit.js"
   when:
     - rs_conf_status | changed
-    - rs_status.rc == 0
+    - rs_status | changed
+
+- name: set master_init done
+  set_fact:
+    mongo_master_init_done: True

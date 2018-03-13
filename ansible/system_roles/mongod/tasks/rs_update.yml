@@ -1,0 +1,2 @@
+- name: Update replica set configuration
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ mongo_dir }}/rsinit.js"

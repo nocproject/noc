@@ -1,4 +1,11 @@
 ---
+- name: make servers group
+  add_host:
+    group: svc-mongo-primary
+    host: "{{item}}"
+  with_items: "{{groups['svc-mongod-exec']}}"
+  when: "'bootstrap' in hostvars[item]['mongod_power']"
+
 - name: Creating mongodb directories
   file:
     path: "{{ item }}"
@@ -90,6 +97,15 @@
 - name: include master settings
   include_tasks: "master.yml"
   when: "mongod_power == 'bootstrap'"
+  tags:
+    - rs_init
+
+- name: rs_reinit
+  include_tasks: "rs_update.yml"
+  when:
+    - "mongod_power != 'bootstrap'"
+    - mongo_master_init_done is defined
+  delegate_to: "{{groups['svc-mongo-primary'][0]}}"
   tags:
     - rs_init
 

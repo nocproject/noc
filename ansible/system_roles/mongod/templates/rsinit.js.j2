@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: True
 //
 // Replica set initialization
 //
@@ -65,7 +66,11 @@
         rs.initiate({
             _id: "{{noc_mongo_replicaset}}",
             version: 1,
-            members: members
+            members: [{
+                _id: {{ hostvars[groups['svc-mongo-primary'][0]]["node_id"]}},
+                host: "{{groups['svc-mongo-primary'][0]}}:27017",
+                priority: 2
+            }]
         });
     }
     // Wait for replicaset is initiated
