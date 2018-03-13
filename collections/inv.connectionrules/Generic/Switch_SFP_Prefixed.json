@@ -1,5 +1,6 @@
 {
     "name": "Generic | Switch SFP Prefixed",
+    "$collection": "inv.connectionrules",
     "uuid": "ae6edc55-6d07-46e6-b1e8-ab2b583a5fc9",
     "description": "Generic switch following convenction.\n\nFixed TX ports: {Fa|Gi}N\nTransceiver slots: giN_sfp\nPower Supply: psuN",
     "context": [

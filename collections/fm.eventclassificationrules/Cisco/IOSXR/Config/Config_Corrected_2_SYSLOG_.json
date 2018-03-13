@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Config | Config Corrected #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f2e8fb19-db0d-40f7-9f19-b2708f1850cc",
     "description": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is no longer incompatible with the bundle operational state",
     "event_class__name": "Config | Config Corrected",

@@ -1,9 +1,0 @@
-{
-    "name": "Memory | Load | 1min",
-    "$collection": "pm.metrictypes",
-    "uuid": "3b4d27bc-5e19-461e-9341-86df5bb2e745",
-    "description": "",
-    "scope": "o",
-    "measure": "%",
-    "vector_tag": ""
-}

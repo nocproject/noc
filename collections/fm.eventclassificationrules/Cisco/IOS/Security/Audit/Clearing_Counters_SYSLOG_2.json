@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Audit | Clearing Counters (SYSLOG) #2",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ba190644-2a7d-4c2b-a970-33ea1bfafa8f",
     "description": "%CLEAR-5-COUNTERS: Clear counter on all interfaces by cisco on vty3 (1.2.3.4)",
     "event_class__name": "Security | Audit | Clearing Counters",

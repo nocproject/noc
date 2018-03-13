@@ -3,7 +3,7 @@
     "uuid": "5cbc49be-9bde-440a-a909-95c92411101d",
     "action__name": "ping",
     "description": "",
-    "profile": "Cisco.IOS",
+    "profile__name": "Cisco.IOS",
     "config_mode": false,
     "preference": 1000,
     "match": [],

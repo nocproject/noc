@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | MAC | MAC Flap #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a0bab3cd-bb25-4519-9c22-cf83dc6d84aa",
     "description": "%SW_MATM-4-MACFLAP_NOTIF: Host 0017.0e82.0850 in vlan 254 is flapping between port and port Gi0/25",
     "event_class__name": "Network | MAC | MAC Flap",

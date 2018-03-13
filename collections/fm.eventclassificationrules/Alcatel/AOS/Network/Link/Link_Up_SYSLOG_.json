@@ -1,5 +1,6 @@
 {
     "name": "Alcatel | AOS | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5a59104a-eccd-458c-a86b-60315956b575",
     "description": "Jul 20 15:58:47 Alcatel6850 INTERFACE(6) Data: 1/3: link UP",
     "event_class__name": "Network | Link | Link Up",

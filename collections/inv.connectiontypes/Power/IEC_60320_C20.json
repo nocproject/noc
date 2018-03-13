@@ -1,5 +1,6 @@
 {
     "name": "Power | IEC 60320 C20",
+    "$collection": "inv.connectiontypes",
     "uuid": "94917498-9556-4fc3-bf55-b1492f7f9539",
     "description": "Square, high current inlet",
     "c_group": ["power_c20"],

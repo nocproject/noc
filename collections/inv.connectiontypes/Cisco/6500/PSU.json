@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500 | PSU",
+    "$collection": "inv.connectiontypes",
     "uuid": "ff568a7e-b4e6-40fc-820d-f3737263f055",
     "description": "Cisco 6500 PSU connection",
     "c_group": [],

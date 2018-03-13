@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d76f13f0-f153-4aa4-b68d-3460f5013bcf",
     "description": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to down",
     "event_class__name": "Network | Link | Link Down",

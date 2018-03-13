@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Audit | Command (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "e13adb65-077d-4308-9622-88702fc6011a",
     "description": "SNMPv2-MIB::snmpTraps",
     "event_class__name": "Security | Audit | Command",

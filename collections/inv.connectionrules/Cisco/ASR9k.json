@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9k",
+    "$collection": "inv.connectionrules",
     "uuid": "b1cea7b6-08f6-4bfd-a1b5-ce73cc8f3c56",
     "description": "ASR9k connection rules",
     "context": [

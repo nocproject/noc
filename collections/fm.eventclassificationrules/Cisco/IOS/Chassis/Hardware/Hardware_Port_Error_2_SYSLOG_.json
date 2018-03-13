@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Hardware | Hardware Port Error #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a3eeae49-dffe-482c-9985-b571d26b3e46",
     "description": "%HARDWARE-3-ASICNUM_ERROR: Port-ASIC number 1 is invalid.",
     "event_class__name": "Chassis | Hardware | Hardware Port Error",

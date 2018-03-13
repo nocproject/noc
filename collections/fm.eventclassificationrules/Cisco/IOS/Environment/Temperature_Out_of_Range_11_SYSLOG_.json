@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #11 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "77ead723-0c1c-4e84-a08a-f25c569a711d",
     "description": "%HARDWARE-2-THERMAL_WARNING: Temperature has reached warning threshold",
     "event_class__name": "Environment | Temperature Out of Range",

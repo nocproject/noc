@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASA | Security | Audit | Command (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3a171eb6-2075-4340-8154-09c6e57a8f4d",
     "description": "%ASA-5-111008: User 'username' executed the 'enable' command.",
     "event_class__name": "Security | Audit | Command",

@@ -1,0 +1,31 @@
+{
+    "name": "Qtech | Transceiver | 1G | QSC-SFPGEA",
+    "$collection": "inv.objectmodels",
+    "uuid": "c52bd295-9e12-451b-b2eb-08e7a3b13dd8",
+    "vendor__code": "QTECH",
+    "description": "Qtech SFP TX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["QSC-SFPGEA"]
+        }
+    }
+}

@@ -1,0 +1,31 @@
+{
+    "name": "Nateks | Transceiver | 1G | SFP-GE-RJ45-100",
+    "$collection": "inv.objectmodels",
+    "uuid": "c7990ffc-658e-4ee7-9c58-cad51c2f8040",
+    "vendor__code": "NATEKS",
+    "description": "Nateks SFP TX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP-GE-RJ45-100"]
+        }
+    }
+}

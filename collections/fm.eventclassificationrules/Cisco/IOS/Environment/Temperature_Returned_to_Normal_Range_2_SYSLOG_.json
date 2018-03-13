@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "72983933-ef88-466e-ab6f-a98de5390039",
     "description": "%SYS-0-SUP_TEMPMAJORRECOVER: Supervisor in slot 5 EARL major temperature threshold recovered",
     "event_class__name": "Environment | Temperature Returned to Normal Range",

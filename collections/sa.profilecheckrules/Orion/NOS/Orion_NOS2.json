@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.41970.6.155",
     "action": "match",
-    "profile": "Orion.NOS"
+    "profile__name": "Orion.NOS"
 }

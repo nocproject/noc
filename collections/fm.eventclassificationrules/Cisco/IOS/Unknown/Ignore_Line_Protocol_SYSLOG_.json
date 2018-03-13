@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Unknown | Ignore Line Protocol (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "126b387c-a299-40cc-831d-e7f721de2299",
     "description": "%LINEPROTO-5-UPDOWN",
     "event_class__name": "Unknown | Ignore",

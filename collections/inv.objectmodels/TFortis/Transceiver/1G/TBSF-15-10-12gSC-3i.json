@@ -1,0 +1,31 @@
+{
+    "name": "TFortis | Transceiver | 1G | TBSF-15-10-12gSC-3i",
+    "$collection": "inv.objectmodels",
+    "uuid": "dc3d5c7e-02a4-4274-81b1-62397887e892",
+    "vendor__code": "TFORTIS",
+    "description": "TFortis SFP WDM 10km transceiver 1550 without ddm",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx LC SFP",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["TBSF151012gSC3c"]
+        }
+    }
+}

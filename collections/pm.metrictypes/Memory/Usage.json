@@ -2,8 +2,9 @@
     "name": "Memory | Usage",
     "$collection": "pm.metrictypes",
     "uuid": "d446b645-3b67-489e-a8e3-89f554dc0eda",
+    "scope__name": "Memory",
+    "field_name": "usage",
+    "field_type": "UInt8",
     "description": "Memory Usage in percents",
-    "scope": "o",
-    "measure": "%",
-    "vector_tag": ""
+    "measure": "%"
 }

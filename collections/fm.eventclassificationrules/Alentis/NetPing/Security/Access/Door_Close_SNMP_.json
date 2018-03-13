@@ -1,5 +1,6 @@
 {
     "name": "Alentis | NetPing | Security | Access | Door Close (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cd9861ff-b21d-459d-8ed2-39a26113bc8a",
     "description": "Sensor Closed Door",
     "event_class__name": "Security | Access | Door Close",

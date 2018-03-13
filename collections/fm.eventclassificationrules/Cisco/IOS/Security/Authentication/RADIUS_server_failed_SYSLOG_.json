@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Authentication | RADIUS server failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4539f790-2c83-47be-a6d9-8c986657f9f1",
     "description": "%RADIUS-4-RADIUS_DEAD: RADIUS server 10.50.245.20:1812,1813 is not responding.",
     "event_class__name": "Security | Authentication | RADIUS server failed",

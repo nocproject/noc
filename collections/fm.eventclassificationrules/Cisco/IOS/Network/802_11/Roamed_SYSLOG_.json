@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | 802.11 | Roamed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fd86ddf6-5d45-405b-b58b-8c25b953606f",
     "description": "24462: Aug 11 11:52:16.452 UTC: %DOT11-6-ROAMED: Station 001f.5b51.ff62 Roamed to 0022.55d1.cd70",
     "event_class__name": "Network | 802.11 | Roamed",

@@ -1,0 +1,31 @@
+{
+    "name": "Finisar | Transceiver | 1G | FCLF852xP2BTL",
+    "$collection": "inv.objectmodels",
+    "uuid": "c34873ee-58dc-48ab-9090-d871047cb0c6",
+    "vendor__code": "FINISAR",
+    "description": "Finisar SFP TX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FCLF8520P2BTL", "FCLF8520P2BTL-J1", "FCLF8521P2BTL", "FCLF8521P2BTL-A5", "FCLF-8521-3"]
+        }
+    }
+}

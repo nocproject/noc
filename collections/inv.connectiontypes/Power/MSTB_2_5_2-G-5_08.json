@@ -1,5 +1,6 @@
 {
     "name": "Power | MSTB 2.5/2-G-5.08",
+    "$collection": "inv.connectiontypes",
     "uuid": "d8434224-6f44-4cd3-b6dd-87830b331f59",
     "description": "Terminal block outlet, 2 pins",
     "c_group": ["mstb_2.5_2_5.08"],

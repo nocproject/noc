@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Nexus 6k | 6001 PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "560d9a3a-62f6-4679-821b-4d0efa49397c",
+    "description": "Cisco Nexus C6001-64P power supply unit connection",
+    "c_group": [],
+    "genders": "mf"
+}

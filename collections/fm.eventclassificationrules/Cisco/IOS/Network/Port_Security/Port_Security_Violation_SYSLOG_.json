@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Port Security | Port Security Violation (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "87c58684-b526-4010-b252-6b0c54b7042e",
     "description": "%PORT_SECURITY-2-PSECURE_VIOLATION:Security violation occurred caused by MAC 0017.0e82.0850 on port Gi2/1.",
     "event_class__name": "Network | Port Security | Port Security Violation",

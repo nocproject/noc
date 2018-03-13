@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Storm Control | Broadcast Storm Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "dad21e46-3a95-4d82-a6b3-6f36b70f107c",
     "description": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on Fa0/1. A packet filter action has been applied on the interface",
     "event_class__name": "Network | Storm Control | Broadcast Storm Detected",

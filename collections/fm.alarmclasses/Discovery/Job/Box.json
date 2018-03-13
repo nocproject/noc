@@ -1,0 +1,17 @@
+{
+    "name": "Discovery | Job | Box",
+    "$collection": "fm.alarmclasses",
+    "uuid": "bcb92084-18ed-4229-9a1f-f85fc80c6a96",
+    "desciption": "Umbrella alarm class for Box discovery alarms",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+
+    ],
+    "subject_template": "Box discovery umbrella alarms",
+    "body_template": "Box discovery raise umbrella alarms",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

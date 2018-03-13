@@ -1,0 +1,31 @@
+{
+    "name": "Gateray | Transceiver | 1G | GR-S1-W313S-D",
+    "$collection": "inv.objectmodels",
+    "uuid": "5c69d071-fee3-46af-8bc9-0e4afda02501",
+    "vendor__code": "GATERAY",
+    "description": "GateRay SFP WDM transceiver 3km (1310 tx, 1550 rx) with ddm",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RxTx SC Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rxtx",
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GR-S1-W313S-D"]
+        }
+    }
+}

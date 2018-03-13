@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX | Uplink",
+    "$collection": "inv.connectiontypes",
     "uuid": "fda42f39-b3dc-4444-864d-441526f4c462",
     "description": "Juniper EX Uplink module slot",
     "c_group": ["juniper_ex_pic"],

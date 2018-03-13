@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Config | Config Synced #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f914a6d6-9ab5-4304-bd72-66ed2f66c13b",
     "description": "%C4K_REDUNDANCY-5-CONFIGSYNC: The startup-config has been successfully synchronized to the standby supervisor",
     "event_class__name": "Config | Config Synced",

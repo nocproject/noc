@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | MPLS | LDP Neighbor Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bd8fd649-6bda-408c-b4c4-3f37bbac2f2d",
     "description": "%LDP-5-NBRCHG: LDP Neighbor 10.10.66.129:0 (4) is DOWN (Received error notification from peer: Holddown time expired)",
     "event_class__name": "Network | MPLS | LDP Neighbor Down",

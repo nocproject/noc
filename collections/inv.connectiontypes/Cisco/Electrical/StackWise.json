@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Electrical | StackWise",
+    "$collection": "inv.connectiontypes",
     "uuid": "1bf4cdf7-0063-4a58-b33b-4369ef5f6916",
     "description": null,
     "c_group": [],

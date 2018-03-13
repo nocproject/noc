@@ -2,14 +2,12 @@
     "name": "NOC | PM | Out of Thresholds",
     "$collection": "fm.alarmclasses",
     "uuid": "9baba4bf-2163-49b6-b193-30baf59c56cf",
+    "desciption": "Ubrella alarm for PM out of threshold class",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
     "vars": [
-        {
-            "name": "thresholds",
-            "description": "Thresholds"
-        }
+
     ],
     "subject_template": "Measured values are out of normal range",
     "body_template": "Measured values are out of normal range",
@@ -17,8 +15,7 @@
     "probable_causes": "",
     "recommended_actions": "",
     "plugins": [
-        {
-            "name": "thresholds"
-        }
-    ]
+
+    ],
+    "recover_time": 300
 }

@@ -1,5 +1,6 @@
 {
     "name": "Juniper | SRX | Mini-PIM",
+    "$collection": "inv.connectiontypes",
     "uuid": "8d7d5975-bb25-41bb-bb43-60bc81bdba81",
     "description": "Juniper SRX Mini-PIM slot",
     "c_group": [],

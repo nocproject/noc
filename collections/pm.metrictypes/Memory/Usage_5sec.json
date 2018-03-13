@@ -1,9 +1,0 @@
-{
-    "name": "Memory | Usage | 5sec",
-    "$collection": "pm.metrictypes",
-    "uuid": "03bd64c3-21db-4525-a266-aca0e899d2e5",
-    "description": "Memory Usage in percents",
-    "scope": "o",
-    "measure": "%",
-    "vector_tag": ""
-}

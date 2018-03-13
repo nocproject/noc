@@ -1,0 +1,10 @@
+{
+    "name": "Memory | Usage | 5sec",
+    "$collection": "pm.metrictypes",
+    "uuid": "03bd64c3-21db-4525-a266-aca0e899d2e5",
+    "scope__name": "Memory",
+    "field_name": "usage_5s",
+    "field_type": "UInt8",
+    "description": "Memory Usage in percents",
+    "measure": "%"
+}

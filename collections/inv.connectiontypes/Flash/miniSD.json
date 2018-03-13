@@ -1,5 +1,6 @@
 {
     "name": "Flash | miniSD",
+    "$collection": "inv.connectiontypes",
     "uuid": "60dcf9c8-4e38-445e-a251-35342602fbba",
     "description": null,
     "c_group": [],

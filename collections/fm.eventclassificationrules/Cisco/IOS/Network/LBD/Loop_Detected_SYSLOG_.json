@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | LBD | Loop Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2025caa3-ecc7-45d9-95fd-199afa7cbbbd",
     "description": "%PM-4-ERR_DISABLE: loopback error detected on Gi4/1, putting Gi4/1 in err-disable state",
     "event_class__name": "Network | LBD | Loop Detected",

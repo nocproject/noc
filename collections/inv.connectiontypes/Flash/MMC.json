@@ -1,5 +1,6 @@
 {
     "name": "Flash | MMC",
+    "$collection": "inv.connectiontypes",
     "uuid": "c5f7eab1-1dcd-4b83-a3ea-20762d9c899b",
     "description": null,
     "c_group": [],

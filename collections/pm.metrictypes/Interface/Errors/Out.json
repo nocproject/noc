@@ -2,8 +2,9 @@
     "name": "Interface | Errors | Out",
     "$collection": "pm.metrictypes",
     "uuid": "c04a97d2-3bfc-4164-ad46-b35aba0cacad",
-    "description": "",
-    "scope": "i",
-    "measure": "packet/s",
-    "vector_tag": ""
+    "scope__name": "Interface",
+    "field_name": "errors_out",
+    "field_type": "UInt32",
+    "description": "Errors when transmit packet",
+    "measure": "packet/s"
 }

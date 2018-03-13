@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | System | Process Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "c11025a4-1e91-41a2-8672-3fef0fae0f77",
     "description": "%SNMP-5-COLDSTART: SNMP agent on host cat-q is undergoing a cold start",
     "event_class__name": "System | Process Started",

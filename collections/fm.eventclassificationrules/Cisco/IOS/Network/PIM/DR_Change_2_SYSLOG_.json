@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | PIM | DR Change #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "b5a4088d-99ed-4f93-99a8-e347766112bc",
     "description": "%PIM-5-DRCHG: VRF blue: DR change from neighbor 0.0.0.0 to 172.16.1.1 on interface Tunnel0",
     "event_class__name": "Network | PIM | DR Change",

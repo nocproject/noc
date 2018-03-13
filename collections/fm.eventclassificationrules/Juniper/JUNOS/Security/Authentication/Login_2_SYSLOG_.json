@@ -1,13 +1,14 @@
 {
     "name": "Juniper | JUNOS | Security | Authentication | Login #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "05e6c5ed-2dc4-4346-8293-e269666aaf02",
     "description": "telnet from 10.33.0.150 exceeded counts/min (limit 150/min)",
     "event_class__name": "Security | Authentication | Login",
     "preference": 100,
     "vars": [
         {
-            "name": "user",
-            "value": "exceed"
+            "name": "ip",
+            "value": "ip_address"
         }
     ],
     "patterns": [
@@ -21,7 +22,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "telnet from (?P<ip>\\S+) exceeded counts/min \\(limit \\d+/min\\)"
+            "value_re": "telnet from (?P<ip>\\S+) exceeded counts\\/min \\(limit \\d+/min\\)"
         }
     ]
 }

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Environment | Temperature Returned to Normal Range #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4296e7f4-0598-43d3-b20c-f5fbabf57c10",
     "description": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP_CLEAR : Chassis ambient temperature 52.1C returned below falling T3 threshold 54.0C",
     "event_class__name": "Environment | Temperature Returned to Normal Range",

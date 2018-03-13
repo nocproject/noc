@@ -1,0 +1,24 @@
+{
+    "name": "Discovery | Error | No Super",
+    "$collection": "fm.alarmclasses",
+    "uuid": "a3c63315-09ab-42a5-82bd-7f59db4fca36",
+    "desciption": "Authentication failed when raise privilege level on managed object",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarms"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message"
+        }
+    ],
+    "subject_template": "No Super",
+    "body_template": "Cannot switch to enable mode on managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
+    "symptoms": "Cannot switch to enable mode managed object",
+    "probable_causes": "Password for enable mode is wrong or ACS Server is unavailable",
+    "recommended_actions": "Check username and password on system and device for enable mode"
+}

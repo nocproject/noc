@@ -9,6 +9,6 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.30544",
     "action": "match",
-    "profile": "Nateks.FlexGainACE24"
+    "profile__name": "Nateks.FlexGainACE24"
 }
 

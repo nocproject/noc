@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | DOCSIS | Upstream Frequency Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f63182d2-31aa-471d-9b5d-66ebd0ba1ab8",
     "description": "%UBR7100-5-USFREQCHG: Interface Cable1/0 U3, changed to Freq 26.992 MHz",
     "event_class__name": "Network | DOCSIS | Upstream Frequency Changed",

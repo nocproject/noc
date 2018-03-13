@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 6500 | WS-C6506-E-FAN",
+    "$collection": "inv.objectmodels",
+    "uuid": "1579cde6-a610-48d8-8656-c816470f3392",
+    "vendor__code": "CISCO",
+    "description": "WS-C6506-E FAN tray",
+    "cr_context": "FAN-E",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 6500 | FAN-E"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["WS-C6506-E-FAN"]
+        }
+    }
+}

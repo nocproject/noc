@@ -1,0 +1,39 @@
+{
+    "name": "Qtech | Transceiver | 1G | QSC-SFP10GE-1310",
+    "$collection": "inv.objectmodels",
+    "uuid": "3c1a1ba3-52c9-451d-8630-2901396d3a13",
+    "vendor__code": "QTECH",
+    "description": "Qtech SFP, 1310nm, LC, 10km, LX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["QSC-SFP10GE-1310"]
+        }
+    }
+}

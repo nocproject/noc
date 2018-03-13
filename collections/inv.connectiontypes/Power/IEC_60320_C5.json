@@ -1,5 +1,6 @@
 {
     "name": "Power | IEC 60320 C5",
+    "$collection": "inv.connectiontypes",
     "uuid": "5872c75f-5cff-424e-b6ab-dfdf510a7c3e",
     "description": "Cloveleaf connector",
     "c_group": ["power_c5"],

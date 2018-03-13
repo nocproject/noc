@@ -1,0 +1,39 @@
+{
+    "name": "Raisecom | Transceiver | 100M | USFP-03/SS135",
+    "$collection": "inv.objectmodels",
+    "uuid": "9b57f934-b756-4e3e-812d-1ae7ffc4c9e7",
+    "vendor__code": "RAISECOM",
+    "description": "Wavelength: 1310TX nm FP; RX sensitivity:<-34dBm; TX power: -15 ~ -8 dBm; Distance:15 km ; DDMI; RoHS;Bitrate: 155M, LC",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth100M"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">100BASEFX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<100BASEFX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["USFP-03/SS135"]
+        }
+    }
+}

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | STP | STP Vlan Loop Cleared (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "ca672a39-d718-4a2e-9c65-39fac4b4429c",
     "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
     "event_class__name": "Network | STP | STP Vlan Loop Cleared",

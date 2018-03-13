@@ -1,9 +1,0 @@
-{
-    "name": "CPU | Usage | 5sec",
-    "$collection": "pm.metrictypes",
-    "uuid": "3f87c1f9-e36e-458b-9d73-5fb15f6ba6d1",
-    "description": "CPU Usage in percents",
-    "scope": "o",
-    "measure": "%",
-    "vector_tag": ""
-}

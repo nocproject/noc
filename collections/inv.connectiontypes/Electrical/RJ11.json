@@ -1,5 +1,6 @@
 {
     "name": "Electrical | RJ11",
+    "$collection": "inv.connectiontypes",
     "uuid": "eb9f70d9-48b5-4d63-b5e5-97001bcf0285",
     "description": null,
     "c_group": [],

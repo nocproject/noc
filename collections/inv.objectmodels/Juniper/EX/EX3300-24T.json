@@ -4,7 +4,7 @@
     "uuid": "b1df44e7-bfa5-4920-a899-52557e35cb59",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T with 4 SFP uplink ports",
-    "connection_rule__name": "Juniper | EX2200",
+    "connection_rule__name": "Juniper | EX3300",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -307,7 +307,9 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["EX3300-24T"]
+            "description": ["EX3300-24T"],
+            "order_part_no": ["EX3300-24T"],
+            "part_no": ["750-034247", "EX3300-24T"]
         },
         "dimensions": {
             "depth": 331,

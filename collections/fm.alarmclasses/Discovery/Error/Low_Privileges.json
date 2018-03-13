@@ -1,0 +1,24 @@
+{
+    "name": "Discovery | Error | Low Privileges",
+    "$collection": "fm.alarmclasses",
+    "uuid": "1783626e-130f-4a5c-80ff-fbf7165f1fd3",
+    "desciption": "Low privilege for executing command on managed object",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarms"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message"
+        }
+    ],
+    "subject_template": "Low Privileges",
+    "body_template": "Low privileges for execute command on managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
+    "symptoms": "CLI command is not supported in current CLI mode and nothing password for raise permission level",
+    "probable_causes": "Low permission level and not credential to raise it for execute command",
+    "recommended_actions": "Add enable password to managed object settings or grant permission for execute commands"
+}

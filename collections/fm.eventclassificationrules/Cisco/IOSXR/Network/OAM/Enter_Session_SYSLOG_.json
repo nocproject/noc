@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | OAM | Enter Session (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "6c59f9d2-f4f7-4abf-858c-cdadbd196283",
     "description": "%L2-ELO-6-INTF_SESSION_UP : TenGigE0/0/1/0: OAM session has come up",
     "event_class__name": "Network | OAM | Enter Session",

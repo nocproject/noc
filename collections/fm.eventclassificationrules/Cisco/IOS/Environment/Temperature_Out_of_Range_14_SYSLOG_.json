@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #14 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "968a5968-1655-432c-846d-dcf27702b5b3",
     "description": "%SPA-DFC4-4-TEMP_WARNING: 7600-ES20-2X10G[4/0] temperature too high. (65C)",
     "event_class__name": "Environment | Temperature Out of Range",

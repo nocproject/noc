@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Nexus 6k | 6001 FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "865a34e5-1102-444c-bebd-839ebb6c5d48",
+    "description": "Cisco Nexus C6001-64P fan tray connection",
+    "c_group": [],
+    "genders": "mf"
+}

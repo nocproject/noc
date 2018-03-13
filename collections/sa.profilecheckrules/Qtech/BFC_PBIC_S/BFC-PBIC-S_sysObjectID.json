@@ -1,0 +1,13 @@
+{
+    "name": "Qtech | BFC-PBIC-S sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "d5dc9785-69d5-4a76-a464-e843acf4eff4",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.3.55.1",
+    "action": "match",
+    "profile__name": "Qtech.BFC_PBIC_S"
+}

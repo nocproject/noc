@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX",
+    "$collection": "inv.connectionrules",
     "uuid": "d45eb997-536a-48d7-9b7d-5a94cc4996e5",
     "description": "Juniper MX 240/480/960 connection rules",
     "context": [

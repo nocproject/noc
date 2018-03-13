@@ -8,12 +8,12 @@
         {
             "name": "number",
             "description": "Slot number",
-            "type": "int",
+            "type": "str",
             "required": true
         }
     ],
-    "subject_template": "Linecard {{number}} Up",
-    "body_template": "Linecard {{number}} Up",
+    "subject_template": "Linecard in slot {{number}} Up",
+    "body_template": "Linecard in slot {{number}} Up",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": "",

@@ -1,5 +1,6 @@
 {
     "name": "Alentis | NetPing | Environment | Temperature Out of Range (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0491100e-061a-4a17-82c9-7354fbd5b916",
     "description": "Alentis  NetPing Bad Temperature (SNMP)",
     "event_class__name": "Environment | Temperature Out of Range",

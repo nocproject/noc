@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Phone | SCCP | Register (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d54be467-5a90-43fe-83d5-282f6095d503",
     "description": "4232: 004228: Aug 16 02:05:55.331: %IPPHONE-6-REGISTER: ephone-47:SEPC89C12D55AD8 IP:192.168.71.69 Socket:25 DeviceType:Phone has registered.",
     "event_class__name": "Phone | SCCP | Register",

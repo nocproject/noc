@@ -1,0 +1,13 @@
+{
+    "name": "Rotek | BT | BT6037 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "670af7fc-aeba-445c-9576-d6c2ff2a59ec",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.41752.5.15",
+    "action": "match",
+    "profile__name": "Rotek.BT"
+}

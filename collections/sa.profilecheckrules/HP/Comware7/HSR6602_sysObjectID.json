@@ -1,0 +1,14 @@
+{
+    "name": "HP | Comware7 | HSR6602 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "6db010d9-8a00-437c-8019-6642c54ee130",
+    "description": null,
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.25506.11.2.66",
+    "action": "match",
+    "profile__name": "HP.Comware"
+}
+

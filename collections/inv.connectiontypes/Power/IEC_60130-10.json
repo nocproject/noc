@@ -1,5 +1,6 @@
 {
     "name": "Power | IEC 60130-10",
+    "$collection": "inv.connectiontypes",
     "uuid": "c1aa1a6e-8c29-4259-a7d6-da292b90d5d6",
     "description": "DC coaxial power connector",
     "c_group": [""],

@@ -4,7 +4,7 @@
     "uuid": "ae566f15-6402-42dc-8ebc-50840e4476d1",
     "vendor__code": "JUNIPER",
     "description": "EX 3300, 48-port 10/100/1000BaseT with 4 SFP uplink ports\n",
-    "connection_rule__name": "Juniper | EX2200",
+    "connection_rule__name": "Juniper | EX3300",
     "cr_context": "CHASSIS",
     "connections": [
         {
@@ -532,7 +532,9 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["EX3300-48T"]
+            "description": ["EX3300-48T"],
+            "order_part_no": ["EX3300-48T"],
+            "part_no": ["EX3300-48T"]
         },
         "dimensions": {
             "depth": 331,

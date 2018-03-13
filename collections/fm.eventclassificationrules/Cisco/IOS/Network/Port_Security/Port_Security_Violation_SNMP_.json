@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Port Security | Port Security Violation (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f339bc93-abfe-437e-9578-9f12d61d47d5",
     "description": "CISCO-PORT-SECURITY-MIB::cpsSecureMacAddrViolation",
     "event_class__name": "Network | Port Security | Port Security Violation",

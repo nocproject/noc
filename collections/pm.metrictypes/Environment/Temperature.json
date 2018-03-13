@@ -2,8 +2,9 @@
     "name": "Environment | Temperature",
     "$collection": "pm.metrictypes",
     "uuid": "4337cbc5-2055-4f5c-bf2c-9cb9a39d9073",
+    "scope__name": "Environment",
+    "field_name": "temperature",
+    "field_type": "Int16",
     "description": "Temparature, in Celsium",
-    "scope": "o",
-    "measure": "C",
-    "vector_tag": ""
+    "measure": "C"
 }

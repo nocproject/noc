@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | UPS | Self-Test Passed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fe154a46-b29c-453d-9799-e0e19cbecb0f",
     "description": "UPS: Passed a self-test. 0x0105",
     "event_class__name": "Environment | UPS | Self-Test Passed",

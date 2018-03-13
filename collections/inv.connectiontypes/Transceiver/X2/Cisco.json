@@ -1,5 +1,6 @@
 {
     "name": "Transceiver | X2 | Cisco",
+    "$collection": "inv.connectiontypes",
     "uuid": "b540fb7a-3021-442a-a976-ff33e736c3e5",
     "description": "Cisco-compatible X2 transceiver slot",
     "c_group": [],

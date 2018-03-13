@@ -1,0 +1,7 @@
+{
+    "name": "Qtech",
+    "uuid": "a82004f3-a566-4578-bafb-a2d59a1485a1",
+    "code": "QTECH",
+    "site": "http://www.qtech.ru",
+    "$collection": "inv.vendors"
+}

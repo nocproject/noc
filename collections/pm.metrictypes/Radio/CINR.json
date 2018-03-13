@@ -2,8 +2,9 @@
     "name": "Radio | CINR",
     "$collection": "pm.metrictypes",
     "uuid": "f0eec8df-0cec-44d6-b40a-9cdf8892272e",
+    "scope__name": "Interface",
+    "field_name": "cinr",
+    "field_type": "UInt16",
     "description": "Carrier to Interference + Noise Ratio",
-    "scope": "o",
-    "measure": "dB",
-    "vector_tag": ""
+    "measure": "dB"
 }

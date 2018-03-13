@@ -1,5 +1,6 @@
 {
     "name": "Transceiver | SFP | Cisco",
+    "$collection": "inv.connectiontypes",
     "uuid": "6403c26d-82f0-4c3e-bc79-2a57422b1375",
     "description": "Cisco-compatible SFP transceiver slot",
     "c_group": [],

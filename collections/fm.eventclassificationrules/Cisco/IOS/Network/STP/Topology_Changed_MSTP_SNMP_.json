@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | STP | Topology Changed MSTP (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "04e291ce-12f0-4fa8-8174-bff500aa1d94",
     "description": "BRIDGE-MIB::topologyChange",
     "event_class__name": "Network | STP | Topology Changed",

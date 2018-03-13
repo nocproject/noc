@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1bf0c80d-0e14-4244-b951-b2ec0923c9fb",
     "description": "Aug 09 2011 00:31:57: %ASA-6-302013: Built inbound TCP connection 1919992 for inside:10.10.112.11/17493 (10.10.112.11/17493) to outside:10.10.170.5/22 (10.10.170.35/22)",
     "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow",

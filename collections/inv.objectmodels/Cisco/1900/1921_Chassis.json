@@ -1,0 +1,36 @@
+{
+    "name": "Cisco | 1900 | 1921 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "60be7a86-03c1-47a8-a512-a3e2f90f45d3",
+    "vendor__code": "CISCO",
+    "description": "Cisco 1900 Series Integrated Services Routers with K9 Encryption",
+    "connection_rule__name": "Cisco | 2900",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "1921 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 1921 | MOTHERBOARD"
+        },
+        {
+            "description": "Internal Power Supply slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu",
+            "type__name": "Cisco | 1941-2901 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO1921/K9"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

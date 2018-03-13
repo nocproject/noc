@@ -1,0 +1,41 @@
+{
+    "name": "Juniper | Transceiver | 40G | QSFP+-40G-CU50CM",
+    "$collection": "inv.objectmodels",
+    "uuid": "e2aa4457-ef94-45f7-9028-23e635f5fbb4",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper QSFP+ 40 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 50cm",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["QSFP+-40G-CU50CM"],
+            "order_part_no": ["QSFP+-40G-CU50CM"],
+            "part_no": ["740-044512"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

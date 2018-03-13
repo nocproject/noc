@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Nexus",
+    "$collection": "inv.connectionrules",
     "uuid": "fd4110ad-1ca1-436f-8384-13371645f58a",
     "description": "Cisco Nexus connection rules",
     "context": [
@@ -64,7 +65,7 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "gem",
-            "target_connection": "Eth1/{N}",
+            "target_connection": "Eth2/{N}",
             "target_number": "",
             "target_type": "GEM"
         }

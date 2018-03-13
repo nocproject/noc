@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | Authentication | Logout (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "01557db6-cc14-46ac-8a50-2f58a512f173",
     "description": "CISCO-SMI::cisco",
     "event_class__name": "Security | Authentication | Logout",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5fe65174-b777-4e21-9985-04455ee22368",
     "description": "%SLB-6-REAL: Real 10.117.0.9 (VPNFARM) has changed state to MAXCONNS",
     "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm Degraded",

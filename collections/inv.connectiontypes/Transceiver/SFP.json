@@ -1,5 +1,6 @@
 {
     "name": "Transceiver | SFP",
+    "$collection": "inv.connectiontypes",
     "uuid": "5571ccae-fb7f-4733-961b-cefc75de3285",
     "description": "SFP transceiver slot",
     "c_group": [],

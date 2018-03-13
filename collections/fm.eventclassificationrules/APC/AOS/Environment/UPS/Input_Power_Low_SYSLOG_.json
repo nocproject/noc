@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | UPS | Input Power Low (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bd4c999b-4f36-4907-81c1-25a075a82224",
     "description": "UPS: Compensating for a low input voltage. 0x010B",
     "event_class__name": "Environment | UPS | Input Power Low",

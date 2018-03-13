@@ -1,0 +1,31 @@
+{
+    "name": "Opticin | Transceiver | 1G | SFP-RJ45",
+    "$collection": "inv.objectmodels",
+    "uuid": "0787cd8a-1a36-4b17-96bc-bc44ceb9597b",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin SFP TX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP-RJ45"]
+        }
+    }
+}

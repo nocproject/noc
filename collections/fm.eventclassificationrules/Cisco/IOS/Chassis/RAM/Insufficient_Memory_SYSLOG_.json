@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | RAM | Insufficient Memory (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0cfcd4a9-9927-4292-bc99-a7bb7d3fcac1",
     "description": "%SYS-2-MALLOCFAIL: Memory allocation of 65536 bytes failed from 0x4183958C, alignment 0",
     "event_class__name": "Chassis | RAM | Insufficient Memory",

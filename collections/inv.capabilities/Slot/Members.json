@@ -1,0 +1,8 @@
+{
+    "name": "Slot | Members",
+    "$collection": "inv.capabilities",
+    "uuid": "3994f39f-b8f5-44a7-943f-e574cc541bfa",
+    "description": "Maximum count used slots",
+    "type": "int",
+    "card_template": null
+}

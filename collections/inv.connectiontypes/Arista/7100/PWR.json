@@ -1,5 +1,6 @@
 {
     "name": "Arista | 7100 | PWR",
+    "$collection": "inv.connectiontypes",
     "uuid": "ae8148bf-5799-4a03-a667-618f87fa8980",
     "description": "Arista 7100 PSU slot",
     "c_group": [],

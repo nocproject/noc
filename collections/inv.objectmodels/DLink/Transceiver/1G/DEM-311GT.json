@@ -1,0 +1,39 @@
+{
+    "name": "DLink | Transceiver | 1G | DEM-311GT",
+    "$collection": "inv.objectmodels",
+    "uuid": "39dda6cf-37e6-4f15-92c1-d8a3ffde4634",
+    "vendor__code": "DLINK",
+    "description": "DLink SFP SX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASESX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASESX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DEM-311GT"]
+        }
+    }
+}

@@ -9,5 +9,5 @@
   "match_method": "contains",
   "value": "ALS24100LVT",
   "action": "match",
-  "profile": "Alstec.24xx"
+  "profile__name": "Alstec.24xx"
 }

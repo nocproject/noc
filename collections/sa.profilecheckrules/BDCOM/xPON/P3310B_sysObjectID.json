@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.3320.1.228.0",
     "action": "match",
-    "profile": "BDCOM.xPON"
+    "profile__name": "BDCOM.xPON"
 }

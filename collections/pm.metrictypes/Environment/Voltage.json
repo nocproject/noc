@@ -2,8 +2,9 @@
     "name": "Environment | Voltage",
     "$collection": "pm.metrictypes",
     "uuid": "292b6e06-6d91-4391-b80c-a5a55333b9e1",
-    "description": "",
-    "scope": "o",
-    "measure": "",
-    "vector_tag": ""
+    "scope__name": "Environment",
+    "field_name": "voltage",
+    "field_type": "Float32",
+    "description": null,
+    "measure": "V"
 }

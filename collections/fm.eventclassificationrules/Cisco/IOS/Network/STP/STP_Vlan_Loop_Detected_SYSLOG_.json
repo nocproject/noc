@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | STP | STP Vlan Loop Detected (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3c5e6112-9ab8-4fbd-8535-ef2b044df491",
     "description": "%SPANTREE-2-LOOPGUARD_BLOCK: Loop guard blocking port GigabitEthernet0/39 on VLAN0252.",
     "event_class__name": "Network | STP | STP Vlan Loop Detected",

@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.43.1.8.41",
     "action": "match",
-    "profile": "3Com.SuperStack3"
+    "profile__name": "3Com.SuperStack3"
 }

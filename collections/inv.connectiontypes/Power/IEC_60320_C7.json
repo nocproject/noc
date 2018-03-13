@@ -1,5 +1,6 @@
 {
     "name": "Power | IEC 60320 C7",
+    "$collection": "inv.connectiontypes",
     "uuid": "9b1e454e-00b3-4091-b83d-6b4201abc92f",
     "description": "Dual-insulated power supplies (8-shape connector)",
     "c_group": ["power_c7"],

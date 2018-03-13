@@ -1,5 +1,6 @@
 {
     "name": "Brocade | IronWare | Security | Authentication | Login #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "baf08eaf-2499-4e4e-875d-fbeb89bd9319",
     "description": "Aug 8 23:10:19 AkrasRoot Security: Web access by user USER from src IP 10.200.202.202 accepted",
     "event_class__name": "Security | Authentication | Login",

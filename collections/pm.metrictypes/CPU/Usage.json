@@ -2,8 +2,9 @@
     "name": "CPU | Usage",
     "$collection": "pm.metrictypes",
     "uuid": "d43538e6-d6f7-44c5-b8eb-049c5e8af6f0",
+    "scope__name": "CPU",
+    "field_name": "usage",
+    "field_type": "UInt8",
     "description": "CPU Usage in percents",
-    "scope": "o",
-    "measure": "%",
-    "vector_tag": ""
+    "measure": "%"
 }

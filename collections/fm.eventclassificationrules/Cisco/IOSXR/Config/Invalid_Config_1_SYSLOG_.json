@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Config | Invalid Config #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1327a49e-0084-43d6-86c7-a4d836fb0944",
     "description": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Node id misconfiguration detected, disabling IG 1.",
     "event_class__name": "Config | Invalid Config",

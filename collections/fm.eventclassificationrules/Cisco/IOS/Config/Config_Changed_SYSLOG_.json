@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "299ee483-f632-41f1-9f3d-cb1c583f635f",
     "description": "%SYS-5-CONFIG_I: Configured from 192.168.167.124 by snmp",
     "event_class__name": "Config | Config Changed",

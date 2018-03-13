@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Security | Authentication | Login Failed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3f3a2532-3ada-4990-b0d4-6051b91c5a66",
     "description": "PowerNet-MIB::apc",
     "event_class__name": "Security | Authentication | Login Failed",

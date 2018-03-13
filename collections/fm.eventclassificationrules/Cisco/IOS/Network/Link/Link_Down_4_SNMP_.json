@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | Link Down #4 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "1c690ede-ee9c-4184-a2e3-b32a54a843f6",
     "description": "SNMPv2-MIB::snmpTraps",
     "event_class__name": "Network | Link | Link Down",

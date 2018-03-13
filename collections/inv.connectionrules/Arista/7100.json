@@ -1,5 +1,6 @@
 {
     "name": "Arista | 7100",
+    "$collection": "inv.connectionrules",
     "uuid": "ca7c714b-2949-49a0-b3bd-ef1c2d2f671e",
     "description": "Arista 7100 connection rules",
     "context": [

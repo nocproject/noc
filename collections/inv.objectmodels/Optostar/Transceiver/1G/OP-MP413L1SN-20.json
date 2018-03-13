@@ -1,0 +1,39 @@
+{
+    "name": "Optostar | Transceiver | 1G | OP-MP413L1SN-20",
+    "$collection": "inv.objectmodels",
+    "uuid": "3ddb01e4-fc20-470f-849f-dc53ae1984e9",
+    "vendor__code": "OPTOSTAR",
+    "description": "Optostar SFP LH transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["OP-MP413L1SN-20C"]
+        }
+    }
+}

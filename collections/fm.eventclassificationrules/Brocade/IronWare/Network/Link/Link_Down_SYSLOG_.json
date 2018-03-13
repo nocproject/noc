@@ -1,5 +1,6 @@
 {
     "name": "Brocade | IronWare | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "cf7567a2-d196-43e9-82dc-c9f58d85853b",
     "description": "Aug 9 09:22:59 FI800-16mkr System: Interface ethernet 3/3, state down",
     "event_class__name": "Network | Link | Link Down",

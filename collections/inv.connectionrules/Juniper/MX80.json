@@ -1,5 +1,6 @@
 {
     "name": "Juniper | MX80",
+    "$collection": "inv.connectionrules",
     "uuid": "a0d2e5de-661b-4546-bec8-21e4ef388402",
     "description": "Juniper MX80 connection rules",
     "context": [

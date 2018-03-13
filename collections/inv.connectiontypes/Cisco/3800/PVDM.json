@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3800 | PVDM",
+    "$collection": "inv.connectiontypes",
     "uuid": "6d329046-7649-47d3-b125-430946bb2678",
     "description": "Cisco 3800 DSP modile slot",
     "c_group": [],

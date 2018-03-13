@@ -1,0 +1,54 @@
+{
+    "name": "Cisco | NEXUS | N6K-C6001-M4Q",
+    "$collection": "inv.objectmodels",
+    "uuid": "393f4bdc-3a23-409a-9353-fa6ed95ae7a9",
+    "vendor__code": "CISCO",
+    "description": "Cisco Nexus 4xQSFP Ethernet Module",
+    "cr_context": "GEM",
+    "connections": [
+        {
+            "description": "GEM connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | GEM | GEM2"
+        },
+        {
+            "description": "Eth2/1 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth2/1",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "Eth2/2 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth2/2",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "Eth2/3 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth2/3",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "Eth2/4 sfp+ port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Eth2/4",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["N6K-C6001-M4Q"]
+        }
+    }
+}

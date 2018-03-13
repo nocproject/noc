@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | System | Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7e136f0a-b171-4b92-a796-21a301a15c07",
     "description": "System: Coldstart. 0x0001",
     "event_class__name": "System | Started",

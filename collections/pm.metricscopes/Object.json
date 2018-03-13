@@ -1,0 +1,12 @@
+{
+    "name": "Object",
+    "$collection": "pm.metricscopes",
+    "uuid": "76d4d6de-a981-4d30-820c-466cd80d792a",
+    "table_name": "object",
+    "description": "Object-related metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": []
+}

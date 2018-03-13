@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASA",
+    "$collection": "inv.connectionrules",
     "uuid": "dbd6557e-a3cd-496a-8f9d-1e6dfe1df492",
     "description": "Cisco ASA connection rules",
     "context": [

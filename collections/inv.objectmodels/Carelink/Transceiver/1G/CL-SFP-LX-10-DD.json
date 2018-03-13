@@ -1,0 +1,39 @@
+{
+    "name": "Carelink | Transceiver | 1G | CL-SFP-LX-10-DD",
+    "$collection": "inv.objectmodels",
+    "uuid": "9c4d165b-0da7-421c-ba9b-e57b0db1e4b7",
+    "vendor__code": "CARELINK",
+    "description": "Carelink SFP LH/LX transceiver with DOM support",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASELX-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CL-SFP-LX-10-DD"]
+        }
+    }
+}

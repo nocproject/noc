@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3800",
+    "$collection": "inv.connectionrules",
     "uuid": "c78b19bd-cf99-4a42-ad68-7319d23dfbec",
     "description": "Cisco 3800 series connection rules",
     "context": [

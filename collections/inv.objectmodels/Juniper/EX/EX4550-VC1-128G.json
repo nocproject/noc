@@ -1,0 +1,39 @@
+{
+    "name": "Juniper | EX | EX4550-VC1-128G",
+    "$collection": "inv.objectmodels",
+    "uuid": "79d31eff-323c-43d9-b3a4-504a5ed7068a",
+    "vendor__code": "JUNIPER",
+    "description": "128G Uplink module for EX4550",
+    "cr_context": "PIC",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | Uplink"
+        },
+        {
+            "description": "Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "2/0",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "2/1",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["EX4550-VC1-128G"],
+            "part_no": ["711-039072"]
+        }
+    }
+}

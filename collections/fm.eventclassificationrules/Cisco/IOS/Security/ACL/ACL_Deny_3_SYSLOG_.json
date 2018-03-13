@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Security | ACL | ACL Deny #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "31dc7f8b-f47b-46e4-bb9d-e49b8e24a1af",
     "description": "%SEC-6-IPACCESSLOGS: list 50 denied 118.61.236.12 1 packet",
     "event_class__name": "Security | ACL | ACL Deny",

@@ -1,0 +1,25 @@
+{
+    "name": "Memory",
+    "$collection": "pm.metricscopes",
+    "uuid": "201c3a1e-f92d-4c80-b7c3-bf193c678cf1",
+    "table_name": "memory",
+    "description": "Memory-related metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "chassis"
+        },
+        {
+            "is_required": false,
+            "name": "slot"
+        },
+        {
+            "is_required": false,
+            "name": "module"
+        }
+    ]
+}

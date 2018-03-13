@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "bd34a1ea-4722-493a-be69-20b95f2c2bfb",
     "description": "%FAN-3-FAN_OK: Fan 1 had earlier reported a rotation error. It is ok now",
     "event_class__name": "Chassis | Fan | Fan Recovered",

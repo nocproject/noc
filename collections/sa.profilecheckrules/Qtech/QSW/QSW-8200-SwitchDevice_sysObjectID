@@ -1,0 +1,13 @@
+{
+    "name": "Qtech | QSW | QSW-8200-SwitchDevice sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "608fb52a-a3f3-4766-9f74-4d0ef7c68353",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.6339.1.1.2.59",
+    "action": "match",
+    "profile__name": "Qtech.QSW2800"
+}

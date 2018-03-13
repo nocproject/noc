@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #7 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "347dde04-e438-4b56-a2ed-dc5ed126ee23",
     "description": "%SYS-0-TEMP_CRITFAIL: Temp critical failure",
     "event_class__name": "Environment | Temperature Out of Range",

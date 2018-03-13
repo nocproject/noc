@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Chassis | PSU | PSU Recovered #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "26cd8ce7-1e91-4e41-b2f3-9f7265bd0210",
     "description": "UPS: A logic power supply fault no longer exists. 0x016A",
     "event_class__name": "Chassis | PSU | PSU Recovered",

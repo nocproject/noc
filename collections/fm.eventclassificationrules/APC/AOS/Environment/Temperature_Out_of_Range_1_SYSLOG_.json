@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | Temperature Out of Range #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "4cbaff86-fa93-49d7-b46a-ca8812b79042",
     "description": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C",
     "event_class__name": "Environment | Temperature Out of Range",

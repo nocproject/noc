@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | System | Process Started (SYSLOG) #2",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "adacf242-d225-4c28-8f09-98df378aa4e8",
     "description": "%SSH-5-ENABLED: SSH 2.0 has been enabled",
     "event_class__name": "System | Process Started",

@@ -1,5 +1,6 @@
 {
     "name": "Alcatel | 7324RU | Environment | Chassis Voltage Out of Range (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "14ef5a07-f7a5-45ba-95ac-5e3afceccd7e",
     "description": "CRITICAL,+VOL_ERR:Voltage 2 input 1.947, low 1.656, high 1.944",
     "event_class__name": "Environment | Chassis Voltage Out of Range",

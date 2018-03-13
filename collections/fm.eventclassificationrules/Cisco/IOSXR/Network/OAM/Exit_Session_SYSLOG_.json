@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | OAM | Exit Session (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "7d5c32b8-514d-4b1a-a17a-922bcf81fee6",
     "description": "%L2-ELO-6-INTF_SESSION_DOWN : TenGigE0/0/1/0: OAM session has gone down",
     "event_class__name": "Network | OAM | Exit Session",

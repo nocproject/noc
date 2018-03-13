@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | MAC | MAC Moved (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a8f913f0-57a8-4345-8e5c-a2e4fe456352",
     "description": "CISCO-MAC-NOTIFICATION-MIB::cmnMacMoveNotification",
     "event_class__name": "Network | MAC | MAC Moved",

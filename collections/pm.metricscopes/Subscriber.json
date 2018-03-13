@@ -1,0 +1,25 @@
+{
+    "name": "Subscriber",
+    "$collection": "pm.metricscopes",
+    "uuid": "7e8c2273-5c24-4692-ae07-0b996d709eec",
+    "table_name": "subscriber",
+    "description": "Subscriber-related metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "chassis"
+        },
+        {
+            "is_required": false,
+            "name": "slot"
+        },
+        {
+            "is_required": false,
+            "name": "module"
+        }
+    ]
+}

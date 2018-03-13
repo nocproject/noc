@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Config | Config Changed #3 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "340cc31f-ece6-48af-bc0a-45142432c0cf",
     "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManEvent",
     "event_class__name": "Config | Config Changed",

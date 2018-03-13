@@ -1,5 +1,6 @@
 {
     "name": "Cisco | SCE",
+    "$collection": "inv.connectionrules",
     "uuid": "8794af60-8d77-4c9d-97d5-1215abbd2602",
     "description": "Cisco SCE connection rules",
     "context": [

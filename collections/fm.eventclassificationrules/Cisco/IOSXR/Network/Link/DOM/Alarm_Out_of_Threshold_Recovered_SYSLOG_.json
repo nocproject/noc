@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | Link | DOM | Alarm: Out of Threshold Recovered (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "31adeb6c-cbad-4a09-bd81-c4cdd78756e8",
     "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_ALARM : Clear|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
     "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",

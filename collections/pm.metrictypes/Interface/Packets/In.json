@@ -2,8 +2,9 @@
     "name": "Interface | Packets | In",
     "$collection": "pm.metrictypes",
     "uuid": "8edc53be-0b58-4ebe-9840-727816288c3c",
-    "description": "",
-    "scope": "i",
-    "measure": "packet/s",
-    "vector_tag": ""
+    "scope__name": "Interface",
+    "field_name": "packets_in",
+    "field_type": "UInt64",
+    "description": "Packets on input interface",
+    "measure": "packet/s"
 }

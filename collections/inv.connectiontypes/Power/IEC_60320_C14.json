@@ -1,5 +1,6 @@
 {
     "name": "Power | IEC 60320 C14",
+    "$collection": "inv.connectiontypes",
     "uuid": "ed5774d9-edf8-46f8-a0a7-a2285884eeda",
     "description": "Common computer/peripherials inlet",
     "c_group": ["power_c13"],

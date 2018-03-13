@@ -1,0 +1,33 @@
+{
+    "name": "Interface",
+    "$collection": "pm.metricscopes",
+    "uuid": "a02a3a86-ee0e-4acc-b55f-026295d4db8e",
+    "table_name": "interface",
+    "description": "Interface-related metrics",
+    "key_fields": [{
+        "field_name": "managed_object",
+        "model": "sa.ManagedObject"
+    }],
+    "path": [
+        {
+            "is_required": false,
+            "name": "chassis"
+        },
+        {
+            "is_required": false,
+            "name": "slot"
+        },
+        {
+            "is_required": false,
+            "name": "module"
+        },
+        {
+            "is_required": false,
+            "name": "port"
+        },
+        {
+            "is_required": false,
+            "name": "unit"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #8 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "661f5ab8-eee7-45bf-aee3-8c73a6615a1c",
     "description": "%C6KENV-SP-4-PSFANOK: the fan in power supply 1 is OK",
     "event_class__name": "Chassis | Fan | Fan Recovered",

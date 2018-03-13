@@ -1,9 +1,0 @@
-{
-    "name": "CPU | Load | 1min",
-    "$collection": "pm.metrictypes",
-    "uuid": "aff29f17-ee6d-4ede-9a50-95545173ce4e",
-    "description": "",
-    "scope": "o",
-    "measure": "%",
-    "vector_tag": ""
-}

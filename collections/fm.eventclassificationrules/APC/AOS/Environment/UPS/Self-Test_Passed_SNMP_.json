@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | UPS | Self-Test Passed (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3c13bda8-90ac-49ec-8e24-5af3770e75cf",
     "description": "PowerNet-MIB::apc",
     "event_class__name": "Environment | UPS | Self-Test Passed",

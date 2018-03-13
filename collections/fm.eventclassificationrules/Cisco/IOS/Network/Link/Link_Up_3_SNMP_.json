@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | Link Up #3 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "75bb9a4d-2817-42a6-a14d-c8a990cbf04b",
     "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
     "event_class__name": "Network | Link | Link Up",

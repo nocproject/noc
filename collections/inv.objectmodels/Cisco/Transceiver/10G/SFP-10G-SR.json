@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 10G | SFP-10G-SR",
+    "$collection": "inv.objectmodels",
+    "uuid": "c16001b6-fe7d-4396-834c-c520a6332b31",
+    "vendor__code": "CISCO",
+    "description": "Cisco SFP+ SR transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP+ Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["SFP-10G-SR", "SFP-10G-SR-S"]
+        }
+    }
+}

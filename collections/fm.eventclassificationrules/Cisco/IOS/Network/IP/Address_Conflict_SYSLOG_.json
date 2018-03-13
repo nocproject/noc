@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | IP | Address Conflict (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "686e6e16-ab18-4b61-8fd1-0de312a4f9e9",
     "description": "%IP-4-DUPADDR: Duplicate address 10.21.91.1 on Vlan1197, sourced by 0024.8ca2.ba6d",
     "event_class__name": "Network | IP | Address Conflict",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #5 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "2384b349-cac9-4f71-ba64-8c2d61e78fd6",
     "description": "%GBIC_SECURITY_UNIQUE-4-DUPLICATE_SN: GBIC interface 0/1 has the same serial number as another GBIC interface.",
     "event_class__name": "Chassis | Hardware | Module | Module Error",

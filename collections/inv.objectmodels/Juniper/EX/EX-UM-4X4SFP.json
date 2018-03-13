@@ -1,0 +1,56 @@
+{
+    "name": "Juniper | EX | EX-UM-4X4SFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "9dd8dff8-cbdf-42eb-b138-d987748c7b30",
+    "vendor__code": "JUNIPER",
+    "description": "4x1/10G Uplink module for EX4300",
+    "cr_context": "PIC",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | Uplink"
+        },
+        {
+            "description": "Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/1",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/2",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/3",
+            "protocols": ["TransEth1G", "TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["4x 1G/10G SFP/SFP+"],
+            "order_part_no": ["EX-UM-4X4SFP"],
+            "part_no": ["611-044925"]
+        }
+    }
+}

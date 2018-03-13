@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Supervisor | Supervisor Down #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0fa0ea19-731c-4fb5-976e-d39f54a0388b",
     "description": "%PFREDUN-SP-6-ACTIVE: Standby processor removed or reloaded, changing to Simplex mode",
     "event_class__name": "Chassis | Supervisor | Supervisor Down",

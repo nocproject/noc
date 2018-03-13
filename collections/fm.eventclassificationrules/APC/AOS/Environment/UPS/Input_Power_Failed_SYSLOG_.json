@@ -1,5 +1,6 @@
 {
     "name": "APC | AOS | Environment | UPS | Input Power Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "63386044-c254-4902-9b8f-c99b8c4d6740",
     "description": "UPS: On battery power in response to an input power problem. 0x0109",
     "event_class__name": "Environment | UPS | Input Power Failed",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7100",
+    "$collection": "inv.connectionrules",
     "uuid": "42e3d91f-5ed1-4824-aeb5-f066bc3c3aa3",
     "description": "Cisco 7100 series connection rules",
     "context": [

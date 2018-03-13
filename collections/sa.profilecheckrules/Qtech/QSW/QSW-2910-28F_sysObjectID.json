@@ -9,5 +9,5 @@
     "match_method": "eq",
     "value": "1.3.6.1.4.1.27514.1.3.26.7",
     "action": "match",
-    "profile": "Qtech.QSW"
+    "profile__name": "Qtech.QSW"
 }

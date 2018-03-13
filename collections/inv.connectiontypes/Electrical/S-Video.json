@@ -1,5 +1,6 @@
 {
     "name": "Electrical | S-Video",
+    "$collection": "inv.connectiontypes",
     "uuid": "dffb5f01-cbad-4106-94ec-ee81d85ffab6",
     "description": null,
     "c_group": [],

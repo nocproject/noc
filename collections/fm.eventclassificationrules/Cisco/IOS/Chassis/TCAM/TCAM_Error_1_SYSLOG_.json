@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | TCAM | TCAM Error #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "65513d42-0e0a-4f45-b766-66c359b27c02",
     "description": "%CFIB-SP-7-CFIB_EXCEPTION: FIB TCAM exception, Some entries will be software switched",
     "event_class__name": "Chassis | TCAM | TCAM Error",

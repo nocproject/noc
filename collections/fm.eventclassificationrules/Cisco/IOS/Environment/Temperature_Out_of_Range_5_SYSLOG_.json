@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #5 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "a3af927f-c2ba-4316-b3e0-3e53c825fba4",
     "description": "%SYS-1-OVERTEMP: System detected OVERTEMPERATURE condition. Please resolve cooling problem immediately!",
     "event_class__name": "Environment | Temperature Out of Range",

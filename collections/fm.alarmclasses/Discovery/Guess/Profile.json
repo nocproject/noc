@@ -1,0 +1,24 @@
+{
+    "name": "Discovery | Guess | Profile",
+    "$collection": "fm.alarmclasses",
+    "uuid": "b6ce6dea-6dbc-47a3-a6fe-b01da10bb7d5",
+    "desciption": "Not find profile in Profile Check Rules",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarms"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message "
+        }
+    ],
+    "subject_template": "Profile",
+    "body_template": "Not find profile in Profile Check Rules for managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}).",
+    "symptoms": "Error in response device SA profile",
+    "probable_causes": "Not find profile for OID or HTTP response or wrong SNMP community in device settings",
+    "recommended_actions": "View having prfoile check rules for device"
+}

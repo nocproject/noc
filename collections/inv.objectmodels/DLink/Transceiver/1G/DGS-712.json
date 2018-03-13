@@ -1,0 +1,31 @@
+{
+    "name": "Dlink | Transceiver | 1G | DGS-712",
+    "$collection": "inv.objectmodels",
+    "uuid": "6c81cf72-470d-4989-ac43-2b13ea1c8956",
+    "vendor__code": "DLINK",
+    "description": "Dlink SFP TX transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "port",
+            "protocols": ["1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DGS-712"]
+        }
+    }
+}

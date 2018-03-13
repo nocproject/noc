@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | DOCSIS | Maximum SIDs (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "d67c1cc6-2f9d-4ff0-89eb-a85ec06d852b",
     "description": "%UBR7200-3-NOMORESIDS: Maximum number of SIDS have been allocated for interface Cable1/0",
     "event_class__name": "Network | DOCSIS | Maximum SIDs",

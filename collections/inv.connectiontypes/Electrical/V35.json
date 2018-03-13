@@ -1,5 +1,6 @@
 {
     "name": "Electrical | V35",
+    "$collection": "inv.connectiontypes",
     "uuid": "b4bed690-60fe-403b-b358-0c8e09c5daa1",
     "description": null,
     "c_group": [],

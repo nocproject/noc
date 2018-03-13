@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | Clock | Clock Failed #4 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "edbce2de-8e18-4c9d-a373-e1e039c9fed9",
     "description": "%UBR7200-4-HWFAULT: Hardware Fault ",
     "event_class__name": "Chassis | Clock | Clock Failed",

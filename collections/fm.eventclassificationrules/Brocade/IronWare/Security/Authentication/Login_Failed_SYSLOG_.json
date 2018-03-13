@@ -1,5 +1,6 @@
 {
     "name": "Brocade | IronWare | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "3972f4e5-6ef5-4f72-a205-5f195f267ab4",
     "description": "Aug 9 04:36:32 Foudry-Core Security: SSH access by user backuper from src IP 10.200.202.193, src MAC 001b.2127.12f0 rejected, 2 attempt(s)",
     "event_class__name": "Security | Authentication | Login Failed",

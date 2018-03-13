@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "21fea78f-1c6e-4b6d-8d6f-e026558f9eca",
     "description": "Aug 08 2011 19:22:59: %ASA-6-302016: Teardown UDP connection 1912942 for outside:85.26.184.191/52955 to identity:194.228.191.3/4500 duration 0:03:01 bytes 370",
     "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Teardown Flow",

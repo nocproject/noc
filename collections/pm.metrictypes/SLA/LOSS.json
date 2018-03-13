@@ -1,0 +1,10 @@
+{
+    "name": "SLA | LOSS",
+    "$collection": "pm.metrictypes",
+    "uuid": "e4ea472f-99ae-4850-a677-42f49e48a720",
+    "scope__name": "SLA",
+    "field_name": "loss",
+    "field_type": "UInt32",
+    "description": "Actual number of lost packets",
+    "measure": "int"
+}

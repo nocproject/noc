@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "fdd43d13-9a2e-4234-ae00-f09683ad56c9",
     "description": "%CSM_SLB-6-RSERVERSTATE: Module 5 server state changed: SLB-NETMGT: ICMP health probe failed for server 10.20.220.10:80 in serverfarm 'WEBFARM'",
     "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",

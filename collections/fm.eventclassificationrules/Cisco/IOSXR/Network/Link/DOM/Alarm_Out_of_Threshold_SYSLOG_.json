@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f4ad86c2-b3a8-426b-992d-e65d86297cf6",
     "description": "%PLATFORM-SFP-3-HIGH_VOLTAGE_ALARM : Set|envmon_lc[168024]|SFP(0x1029011)|Port_0/17",
     "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",

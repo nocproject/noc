@@ -1,5 +1,6 @@
 {
     "name": "Alcatel | 7324RU | System | Reboot (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5289a949-5ef8-4633-a4f9-150add393935",
     "description": "INFO,+REBOOT:System reboots",
     "event_class__name": "System | Reboot",

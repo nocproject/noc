@@ -1,0 +1,10 @@
+{
+    "name": "Radio | Level | Signal",
+    "$collection": "pm.metrictypes",
+    "uuid": "4e736df3-5893-4bff-a8e7-14d4dbb61eaa",
+    "scope__name": "Interface",
+    "field_name": "signal_level",
+    "field_type": "Int32",
+    "description": "Signal Level",
+    "measure": "dBm"
+}

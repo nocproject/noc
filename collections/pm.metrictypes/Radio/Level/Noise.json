@@ -1,0 +1,10 @@
+{
+    "name": "Radio | Level | Noise",
+    "$collection": "pm.metrictypes",
+    "uuid": "a604235f-52dc-4147-becf-a4beb38097ee",
+    "scope__name": "Interface",
+    "field_name": "noise_level",
+    "field_type": "Int32",
+    "description": "Noise Level",
+    "measure": "dBm"
+}

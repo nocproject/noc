@@ -78,17 +78,17 @@
         },
         "dimensions": {
             "depth": 461,
-            "height": 267,
-            "width": 438
+            "height": 43,
+            "width": 439
         },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 4.0
+            "units": 1.0
         },
         "weight": {
-            "weight": 31.16
+            "weight": 11.35
         }
     }
 }

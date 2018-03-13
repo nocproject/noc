@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "f61c2e46-13e3-4517-839b-e87cadd8c395",
     "description": "%SFF8472-5-THRESHOLD_VIOLATION: Te1/29: Rx power low alarm; Operating value: -40.0 dBm, Threshold value: -18.4 dBm.",
     "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",

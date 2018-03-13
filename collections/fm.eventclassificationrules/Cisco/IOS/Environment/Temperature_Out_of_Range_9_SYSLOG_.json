@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Environment | Temperature Out of Range #9 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "0d0608cb-889f-4d21-8c26-4ad113070c5a",
     "description": "%THERMAL-3-PS: System detected Power System 1 THERMAL FAIL condition.",
     "event_class__name": "Environment | Temperature Out of Range",

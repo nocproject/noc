@@ -1,0 +1,10 @@
+{
+    "name": "Subscribers | PPPoE",
+    "$collection": "pm.metrictypes",
+    "uuid": "5b1329bb-189b-4eaa-8f4b-e46337cb50ff",
+    "scope__name": "Subscriber",
+    "field_name": "pppoe",
+    "field_type": "UInt32",
+    "description": "Total active PPPoE sessions on the box",
+    "measure": "sessions"
+}

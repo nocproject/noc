@@ -2,8 +2,9 @@
     "name": "Interface | Discards | Out",
     "$collection": "pm.metrictypes",
     "uuid": "30495e96-1c94-4a2f-812e-ceb0b237e146",
-    "description": "",
-    "scope": "i",
-    "measure": "packet/s",
-    "vector_tag": ""
+    "scope__name": "Interface",
+    "field_name": "discards_out",
+    "field_type": "UInt32",
+    "description": "Discard packet on output interface",
+    "measure": "packet/s"
 }

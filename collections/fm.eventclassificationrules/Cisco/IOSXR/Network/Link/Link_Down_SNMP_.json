@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOSXR | Network | Link | Link Down (SNMP)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "49e0013c-ce64-4b68-9ad1-3412215233ef",
     "description": "CISCO-PRODUCTS-MIB::ciscoASR9001",
     "event_class__name": "Network | Link | Link Down",

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #5 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
     "uuid": "5efbf7b8-cb8e-4371-bf01-016ebfa9a321",
     "description": "SYS-2-VTT_OK: VTT modules recovered from failure",
     "event_class__name": "Chassis | PSU | PSU Recovered",

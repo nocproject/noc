@@ -4,10 +4,26 @@
     "uuid": "521a13ae-19e0-48db-a733-0f5452237013",
     "vendor__code": "HUAWEI",
     "description": "AC-DC Power,-25degC,60degC,90V,290V,12V/29.2A",
-    "connections": [],
+    "cr_context": "POWER",
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | AR 2240 | POWER"
+        }
+    ],
     "data": {
         "asset": {
-            "part_no": ["02131212"]
+            "part_no": ["PAC-350WB-L"]
         }
     }
 }

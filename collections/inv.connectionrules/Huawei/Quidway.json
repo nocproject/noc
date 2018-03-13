@@ -1,0 +1,100 @@
+{
+    "name": "Huawei | Quidway",
+    "$collection": "inv.connectionrules",
+    "uuid": "9c731c34-087a-4285-a628-c6d69789647f",
+    "description": "Huawei Quidway switch following convenction:\n\nExtension slots: emN\nTPB (stack ext cads): tpbN\nTransceiver slots: sfpN\nPower Supply: psuN\nFan module: fanN",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "em",
+            "type": "EM"
+        },
+        {
+            "reset_scopes": ["em"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "GigabitEthernetX/0/{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "XGigabitEthernetX/0/{N}_xfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "XGigabitEthernetX/0/{N}_sfp+",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "EM",
+            "scope": "chassis",
+            "target_connection": "em{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "TPB",
+            "scope": "chassis",
+            "target_connection": "tpb{N}",
+            "target_number": null,
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "POWER",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "GigabitEthernetX/0/{N}_sfp",
+            "target_number": "",
+            "target_type": "EM"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "XGigabitEthernetX/0/{N}_xfp",
+            "target_number": "",
+            "target_type": "EM"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "em",
+            "target_connection": "XGigabitEthernetX/0/{N}_sfp+",
+            "target_number": "",
+            "target_type": "EM"
+        }
+    ]
+}
