@@ -16,6 +16,7 @@ tower_path: /opt/tower
 tower_dist_dir: "{{tower_path}}/var/tower/data/src_dist"
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
 tower_show_secrets: "{{ not lookup('env','TOWER_SHOW_SECRETS') or False | bool }}"
+tower_run_checks: "{{ lookup('env','TOWER_RUN_CHECKS') or True | bool }}"
 tower_minimum_version: "0.4.0"
 
 noc_system_service: noc
