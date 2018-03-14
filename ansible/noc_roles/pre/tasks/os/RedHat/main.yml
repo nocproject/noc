@@ -11,7 +11,7 @@
 - name: Disable selinux
   selinux:
     policy: targeted
-    state: permissive
+    state: disabled
 
 - name: Install Rhel system packages pre
   yum:
