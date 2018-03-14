@@ -27,10 +27,13 @@ from noc.core.debug import error_report
 from .alarmclass import AlarmClass
 from .alarmdiagnostic import AlarmDiagnostic
 from .utils import get_alarm
+from noc.core.scheduler.job import Job
 
 
 ac_lock = Lock()
 logger = logging.getLogger(__name__)
+
+PERIODIC_JOB_MAX_RUNS = 5
 
 
 class AlarmDiagnosticConfig(Document):
@@ -110,7 +113,7 @@ class AlarmDiagnosticConfig(Document):
                     }]
                 if c.on_raise_action:
                     r_cfg[c.on_raise_delay] += [{
-                        "action": c.on_raise_action.id,
+                        "action": c.on_raise_action.name,
                         "header": c.on_raise_header
                     }]
                 if c.on_raise_handler:
@@ -126,7 +129,7 @@ class AlarmDiagnosticConfig(Document):
                     }]
                 if c.periodic_action:
                     p_cfg[c.periodic_interval] += [{
-                        "action": c.periodic_action.id,
+                        "action": c.periodic_action.name,
                         "header": c.periodic_header
                     }]
                 if c.periodic_handler:
@@ -144,6 +147,18 @@ class AlarmDiagnosticConfig(Document):
                 alarm=alarm.id,
                 cfg=r_cfg[delay]
             )
+        # Submit periodic job
+        for delay in p_cfg:
+            call_later(
+                "noc.fm.models.alarmdiagnosticconfig.periodic",
+                scheduler="correlator",
+                max_runs=PERIODIC_JOB_MAX_RUNS,
+                pool=alarm.managed_object.pool.name,
+                delay=delay,
+                alarm=alarm.id,
+                cfg={"cfg": p_cfg[delay], "delay": delay}
+            )
+
         # @todo: Submit periodic job
 
     @classmethod
@@ -238,6 +253,19 @@ def on_raise(alarm, cfg, *args, **kwargs):
         logger.info("[%s] Alarm is closed, skipping", alarm)
         return
     AlarmDiagnosticConfig.get_diag(a, cfg, "R")
+
+
+def periodic(alarm, cfg, *args, **kwargs):
+    a = get_alarm(alarm)
+    if not a:
+        logger.info("[%s] Alarm is not found, skipping", alarm)
+        return
+    if a.status == "C":
+        logger.info("[%s] Alarm is closed, skipping", alarm)
+        return
+    AlarmDiagnosticConfig.get_diag(a, cfg["cfg"], "R")
+    if cfg.get("delay"):
+        Job.retry_after(delay=cfg["delay"])
 
 
 def on_clear(alarm, cfg, *args, **kwargs):
