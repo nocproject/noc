@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_oam_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
     rx_line = re.compile(r"^  Interface:\s+", re.MULTILINE)
     rx_interface = re.compile(r"^(?P<interface>\S+)", re.MULTILINE)
     rx_mac = re.compile(
-        r"^\s+(?P<mac>[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:"
+        r"^\s+(Peer address: )?(?P<mac>[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:"
         r"[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2})", re.MULTILINE)
     rx_capsU = re.compile(
         r"Unidirection mode: (?P<caps_U>supported|unsupported)",

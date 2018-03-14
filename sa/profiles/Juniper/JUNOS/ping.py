@@ -25,8 +25,9 @@ class Script(BaseScript):
         r"received, (\d+\.)?\d+% packet loss\n",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
-    def execute(self, address, count=None, source_address=None, size=None,
-      df=None, vrf=None):
+    def execute(
+        self, address, count=None, source_address=None, size=None, df=None, vrf=None
+    ):
         cmd = "ping no-resolve"
         if count:
             cmd += " count %d" % int(count)
