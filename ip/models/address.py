@@ -29,7 +29,7 @@ from .addressprofile import AddressProfile
 
 @full_text_search
 class Address(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
         db_table = "ip_address"
@@ -149,13 +149,19 @@ class Address(models.Model):
         Field validation
         :return:
         """
-        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         super(Address, self).clean()
+        # Get proper AFI
+        self.afi = "6" if ":" in self.address else "4"
         # Check prefix is of AFI type
-        if self.afi == "4":
+        if self.is_ipv4:
             check_ipv4(self.address)
-        elif self.afi == "6":
+        elif self.is_ipv6:
             check_ipv6(self.address)
+        # Check VRF
+        if not self.vrf:
+            self.vrf = VRF.get_global()
+        # Find parent prefix
+        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         # Check VRF group restrictions
         cv = self.get_collision(self.vrf, self.address)
         if cv:
@@ -206,3 +212,11 @@ class Address(models.Model):
                 )
             }
         )
+
+    @property
+    def is_ipv4(self):
+        return self.afi == "4"
+
+    @property
+    def is_ipv6(self):
+        return self.afi == "6"
