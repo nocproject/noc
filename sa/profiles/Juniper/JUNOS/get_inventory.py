@@ -67,18 +67,18 @@ class Script(BaseScript):
         Parse "show chassis hardware"
         and yeld name, revision, part_no, serial, description
         """
-        for l in v.splitlines():
-            l = l.strip()
-            if not l:
+        for line in v.splitlines():
+            line = line.strip()
+            if not line:
                 continue
-            if l.startswith("node"):
-                self.chassis_no = l.strip()[4:-1]
+            if line.startswith("node"):
+                self.chassis_no = line[4:-1]
                 continue
-            match = self.rx_part.search(l)
+            match = self.rx_part.search(line)
             if match:
                 yield match.groups()
             else:
-                match = self.rx_chassis.search(l)
+                match = self.rx_chassis.search(line)
                 if match:
                     rev = match.group("revision")
                     yield ("Chassis", rev, None,
