@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------
-// NOC.core.LookupField -
-// Lookup form field
+// NOC.core.TextField -
+// Text form field with clear trigger
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
@@ -24,7 +24,7 @@ Ext.define("NOC.core.TextField", {
             scope: 'this'
         }
     },
-    // override private method, don't use change listener
+    // override private method, don't want to use change listener
     publishValue: function() {
         var me = this;
         me.showClearTrigger(me);

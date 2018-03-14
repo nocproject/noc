@@ -32,6 +32,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.main.remotesystem.LookupField",
         "NOC.fm.ttsystem.LookupField",
         "NOC.inv.platform.LookupField",
+        "NOC.inv.map.Maintenance",
+        "NOC.maintenance.maintenancetype.LookupField",
         "NOC.core.TextField",
         "NOC.core.ComboField"
     ],
@@ -53,6 +55,16 @@ Ext.define("NOC.sa.managedobject.Application", {
             title: __("Set unmanaged"),
             action: "set_unmanaged",
             glyph: NOC.glyph.times
+        },
+        {
+            title: __("New Maintaince"),
+            glyph: NOC.glyph.wrench,
+            run: "newMaintaince"
+        },
+        {
+            title: __("Add to Maintaince"),
+            glyph: NOC.glyph.plus,
+            run: "addToMaintaince"
         }
     ],
     validationModelId: "sa.ManagedObject",
@@ -139,6 +151,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             glyph: NOC.glyph.exclamation_triangle,
             scope: me,
             handler: me.onAlarm
+        });
+
+        me.maintainceButton = Ext.create("Ext.button.Button", {
+            text: __("New Maintaince"),
+            glyph: NOC.glyph.wrench,
+            scope: me,
+            handler: me.onMaintaince
         });
 
         me.inventoryButton = Ext.create("Ext.button.Button", {
@@ -317,7 +336,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [ // first column
                                 {
                                     name: "name",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Name"),
                                     allowBlank: false,
                                     autoFocus: true,
@@ -458,12 +477,11 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     fieldLabel: __("Scheme"),
                                     allowBlank: false,
                                     tabIndex: 40,
-                                    groupEdit: true,
-                                    showClearTrigger: true
+                                    groupEdit: true
                                 },
                                 {
                                     name: "address",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Address"),
                                     allowBlank: false,
                                     tabIndex: 50,
@@ -481,7 +499,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                         ["SC", __("SNMP, CLI")],
                                         ["CS", __("CLI, SNMP")]
                                     ],
-                                    value: "P",
                                     groupEdit: true
                                 },
                                 {
@@ -497,7 +514,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "cli_session_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("CLI Session Policy"),
                                     allowBlank: true,
                                     store: [
@@ -510,7 +527,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "cli_privilege_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("CLI Privilege Policy"),
                                     allowBlank: true,
                                     store: [
@@ -523,7 +540,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "remote_path",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Path"),
                                     allowBlank: true,
                                     groupEdit: true
@@ -543,7 +560,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "user",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("User"),
                                     tabIndex: 61,
                                     allowBlank: true,
@@ -551,7 +568,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "password",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Password"),
                                     tabIndex: 62,
                                     allowBlank: true,
@@ -560,7 +577,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "super_password",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Super Password"),
                                     allowBlank: true,
                                     inputType: "password",
@@ -576,23 +593,11 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "snmp_rw",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("RW Community"),
                                     tabIndex: 64,
                                     allowBlank: true,
-                                    groupEdit: true,
-                                    triggers: {
-                                        clear: {
-                                            cls: 'x-form-clear-trigger',
-                                            hidden: true,
-                                            scope: me,
-                                            handler: me.toDefaultValueString
-                                        }
-                                    },
-                                    listeners: {
-                                        scope: me,
-                                        change: me.showClearTrigger
-                                    }
+                                    groupEdit: true
                                 },
                                 {
                                     name: "max_scripts",
@@ -671,7 +676,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "autosegmentation_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Autosegmentation Policy"),
                                     allowBlank: true,
                                     groupEdit: true,
@@ -702,7 +707,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "event_processing_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Event Policy"),
                                     store: [
                                         ["P", __("Profile")],
@@ -716,7 +721,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "trap_source_type",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Trap Source"),
                                     store: [
                                         ["d", __("Disable")],
@@ -739,7 +744,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "trap_source_ip",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Trap Source IP"),
                                     allowBlank: true,
                                     groupEdit: true
@@ -749,7 +754,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "syslog_source_type",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Syslog Source"),
                                     store: [
                                         ["d", __("Disable")],
@@ -772,14 +777,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "syslog_source_ip",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Syslog Source IP"),
                                     allowBlank: true,
                                     groupEdit: true
                                 },
                                 {
                                     name: "trap_community",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Trap Community"),
                                     allowBlank: true,
                                     groupEdit: true
@@ -844,7 +849,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "local_cpe_id",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Local CPE Id"),
                                     allowBlank: true
                                 }]
@@ -854,7 +859,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "global_cpe_id",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Global CPE Id"),
                                     allowBlank: true
                                 },
@@ -883,7 +888,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "config_filter_rule",
                                     xtype: "main.pyrule.LookupField",
-                                    showClearTrigger: true,
                                     fieldLabel: __("Config Filter pyRule"),
                                     allowBlank: true,
                                     groupEdit: true
@@ -929,7 +933,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 },
                                 {
                                     name: "remote_id",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("Remote ID"),
                                     allowBlank: true
                                 }]
@@ -954,7 +958,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "escalation_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Escalation Policy"),
                                     allowBlank: true,
                                     store: [
@@ -978,14 +982,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "tt_queue",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("TT Queue"),
                                     allowBlank: true,
                                     groupEdit: true
                                 },
                                 {
                                     name: "tt_system_id",
-                                    xtype: "textfield",
+                                    xtype: "nocTextField",
                                     fieldLabel: __("TT System ID"),
                                     allowBlank: true
                                 }
@@ -1008,7 +1012,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "box_discovery_alarm_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Box Alarm"),
                                     allowBlank: true,
                                     store: [
@@ -1024,7 +1028,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "periodic_discovery_alarm_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Periodic Alarm"),
                                     allowBlank: true,
                                     store: [
@@ -1053,7 +1057,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "box_discovery_telemetry_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Box Telemetry"),
                                     allowBlank: true,
                                     store: [
@@ -1075,7 +1079,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "periodic_discovery_telemetry_policy",
-                                    xtype: "combobox",
+                                    xtype: "nocComboField",
                                     fieldLabel: __("Periodic Alarm"),
                                     allowBlank: true,
                                     store: [
@@ -1108,6 +1112,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.linksButton,
                 me.discoveryButton,
                 me.alarmsButton,
+                me.maintainceButton,
                 me.interactionsButton,
                 me.validationSettingsButton,
                 me.capsButton,
@@ -1201,8 +1206,8 @@ Ext.define("NOC.sa.managedobject.Application", {
             ftype: "tag"
         }
     ],
-    inlines:
-        [{
+    inlines: [
+        {
             title: __("Attributes"),
             collapsed: true,
             model: "NOC.sa.managedobject.AttributesModel",
@@ -1220,7 +1225,8 @@ Ext.define("NOC.sa.managedobject.Application", {
                     flex: 1
                 }
             ]
-        }],
+        }
+    ],
     //
     onCard: function() {
         var me = this;
@@ -1292,6 +1298,54 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
     },
     //
+    onMaintaince: function() {
+        var me = this;
+        me.newMaintaince([{
+            object: me.currentRecord.get("id"),
+            object__label: me.currentRecord.get("name")
+        }]);
+    },
+    //
+    addToMaintaince: function(objects) {
+        NOC.run(
+            'NOC.inv.map.Maintenance',
+            __('Add To Maintenance'),
+            {
+                args: [
+                    {mode: 'Object'},
+                    objects
+                ]
+            }
+        );
+    },
+    //
+    newMaintaince: function(objects) {
+        var args = {
+            direct_objects: objects,
+            subject: __('created from managed objects list at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+            contacts: NOC.email ? NOC.email : NOC.username,
+            start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+            start_time: Ext.Date.format(new Date(), 'H:i'),
+            stop_time: '12:00',
+            suppress_alarms: true
+        };
+        Ext.create("NOC.maintenance.maintenancetype.LookupField")
+        .getStore()
+        .load({
+            params: {__query: 'РНР'},
+            callback: function(records) {
+                if(records.length > 0) {
+                    Ext.apply(args, {
+                        type: records[0].id
+                    })
+                }
+                NOC.launch("maintenance.maintenance", "new", {
+                    args: args
+                });
+            }
+        });
+    },
+    //
     onCaps: function() {
         var me = this;
         me.previewItem(me.ITEM_CAPS, me.currentRecord);
@@ -1329,6 +1383,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.linksButton.setDisabled(disabled);
         me.discoveryButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
         me.alarmsButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
+        me.maintainceButton.setDisabled(disabled || !me.currentRecord.get("is_managed"));
 
     },
     //
@@ -1369,22 +1424,5 @@ Ext.define("NOC.sa.managedobject.Application", {
                     break;
             }
         });
-    },
-    toDefaultValueString: function(self) {
-        var defaultValue = Ext.create(this.model).fields.filter(function(f) {
-            return f.name === self.name
-        })[0].defaultValue || "";
-        self.setValue(defaultValue);
-        self.getTrigger('clear').hide();
-        self.updateLayout();
-    },
-    showClearTrigger: function(self, newValue) {
-        var defaultValue = Ext.create(this.model).fields.filter(function(f) {
-            return f.name === self.name
-        })[0].defaultValue || "";
-        if(self.getTrigger('clear').hidden && newValue !== defaultValue) {
-            self.getTrigger('clear').show();
-            self.updateLayout();
-        }
     }
 });

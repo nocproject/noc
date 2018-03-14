@@ -8,7 +8,7 @@
 console.debug("Defining NOC.core.LookupField");
 
 Ext.define("NOC.core.LookupField", {
-    extend: "Ext.form.ComboBox",
+    extend: "NOC.core.ComboField",
     displayField: "label",
     valueField: "id",
     queryMode: "remote",

@@ -1235,7 +1235,7 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         }
         if(Ext.isFunction(item.run) || Ext.isFunction(me[item.run])) {
-            if(typeof item.run === 'string'){
+            if(typeof item.run === 'string') {
                 item.run = me[item.run];
             }
             item.run(
@@ -1436,7 +1436,7 @@ Ext.define("NOC.core.ModelApplication", {
                             if(v.groupEdit === true) {
                                 x = {
                                     xtype: "combobox",
-                                    fieldLabel: v.boxLabel,
+                                    fieldLabel: v.fieldLabel,
                                     name: v.name,
                                     store: [
                                         [0, "Leave unchanged"],
@@ -1470,6 +1470,15 @@ Ext.define("NOC.core.ModelApplication", {
                 return items;
             };
 
+        me.saveGroupButton = Ext.create("Ext.button.Button", {
+            text: __("Save"),
+            glyph: NOC.glyph.save,
+            disabled: true,
+            scope: me,
+            // @todo: check access
+            handler: me.onGroupSave
+        });
+
         me.groupCheckboxFields = {};
 
         me.groupFormTitle = Ext.create("Ext.container.Container", {
@@ -1484,21 +1493,24 @@ Ext.define("NOC.core.ModelApplication", {
             padding: 4,
             bodyPadding: 4,
             autoScroll: true,
+            listeners: {
+                dirtychange: function() {
+                    var isDisable = true;
+                    Ext.Array.each(me.groupForm.getFields().items, function(field) {
+                        if(Ext.isFunction(field.isDirty) && field.isDirty()) {
+                            isDisable = false;
+                        }
+                    });
+                    me.saveGroupButton.setDisabled(isDisable);
+                }
+            },
             items: [me.groupFormTitle].concat(getFormItems(me.fields)),
             dockedItems: [
                 {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        {
-                            text: __("Save"),
-                            glyph: NOC.glyph.save,
-                            // formBind: true,
-                            // disabled: true,
-                            scope: me,
-                            // @todo: check access
-                            handler: me.onGroupSave
-                        },
+                        me.saveGroupButton,
                         {
                             text: __("Close"),
                             glyph: NOC.glyph.arrow_left,
@@ -1565,6 +1577,21 @@ Ext.define("NOC.core.ModelApplication", {
         me.groupFormTitle.update(Ext.String.format(
             me.groupChangeTitle, items.length, me.appTitle
         ));
+        var selection = me.grid.getSelectionModel().getSelection();
+        var r = Ext.clone(selection[0].data);
+        for(var i = 1; i < selection.length; i++) {
+            Ext.Object.each(selection[i].data, function(key, value) {
+                if(r.hasOwnProperty(key) && r[key] !== value) {
+                    if(me.store.defaultValues.hasOwnProperty(key)) {
+                        r[key] = me.store.defaultValues[key];
+                    } else {
+                        delete r[key];
+                    }
+                }
+            });
+        }
+        me.groupForm.reset();
+        me.groupForm.setValues(r);
         me.showItem(me.ITEM_GROUP_FORM);
     },
     //
@@ -1575,30 +1602,58 @@ Ext.define("NOC.core.ModelApplication", {
     //
     onGroupSave: function() {
         var me = this,
-            values;
+            values = {},
+            valuesTxt = "";
         // @todo: Form validation
-        values = me.groupForm.getValues();
+        // values = me.groupForm.getValues();
         // Normalize checkboxes and fields
-        Ext.Object.each(values, function(v) {
-            if((me.groupCheckboxFields[v] && values[v] === 0) || values[v] === "") {
-                delete values[v];
+        // Ext.Object.each(values, function(v) {
+        //     if((me.groupCheckboxFields[v] && values[v] === 0) || values[v] === "") {
+        //         delete values[v];
+        //     }
+        // });
+        Ext.Array.each(me.groupForm.getFields().items, function(field) {
+            if(Ext.isFunction(field.isDirty) && field.isDirty()) {
+                valuesTxt += (field.fieldLabel || field.name) + ": ";
+                if(Ext.isFunction(field.getDisplayValue)) {
+                    valuesTxt += field.getDisplayValue();
+                } else {
+                    valuesTxt += field.getValue();
+                }
+                valuesTxt += "</br>";
+                values[field.name] = field.getValue();
             }
         });
-        values.ids = me.groupEditItems;
-        Ext.Ajax.request({
-            url: me.base_url + "actions/group_edit/",
-            method: "POST",
-            scope: me,
-            jsonData: values,
-            success: function(response) {
-                NOC.info(__("Records has been updated"));
-                me.showGrid();
-                me.reloadStore();
-            },
-            failure: function() {
-                NOC.error(__("Failed"));
-            }
-        });
+        if(!Ext.Object.isEmpty(values)) {
+            values.ids = me.groupEditItems;
+            var message = Ext.String.format("Do you wish to change {0} record(s): <br/><br/>{1}<br/>This operation cannot be undone!", values.ids.length, valuesTxt);
+            console.log(values);
+            Ext.Msg.show({
+                title: __("Change records?"),
+                msg: message,
+                buttons: Ext.Msg.YESNO,
+                icon: Ext.window.MessageBox.QUESTION,
+                modal: true,
+                fn: function(button) {
+                    if(button === "yes") {
+                        Ext.Ajax.request({
+                            url: me.base_url + "actions/group_edit/",
+                            method: "POST",
+                            scope: me,
+                            jsonData: values,
+                            success: function() {
+                                NOC.info(__("Records has been updated"));
+                                me.showGrid();
+                                me.reloadStore();
+                            },
+                            failure: function() {
+                                NOC.error(__("Failed"));
+                            }
+                        });
+                    }
+                }
+            });
+        }
     },
     //
     onMetrics: function(record) {

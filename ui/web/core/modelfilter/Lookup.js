@@ -17,7 +17,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
     initComponent: function() {
         var me = this, className, widget;
         if(me.lookup === "local") {
-            widget = Ext.create("Ext.form.field.ComboBox", {
+            widget = Ext.create("NOC.core.ComboField", {
                 fieldLabel: me.title,
                 labelAlign: "top",
                 width: 180,

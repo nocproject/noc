@@ -10,6 +10,7 @@ console.debug("Defining NOC.core.ComboField");
 Ext.define("NOC.core.ComboField", {
     extend: "Ext.form.field.ComboBox",
     alias: 'widget.nocComboField',
+    width: 180,
 
     mixins: [
         "NOC.core.ClearField"
@@ -29,7 +30,7 @@ Ext.define("NOC.core.ComboField", {
             scope: 'this'
         }
     },
-    // override private method, don't use change listener
+    // override private method, don't want to use change listener
     updateValue: function() {
         var me = this;
         me.showClearTrigger(me);
