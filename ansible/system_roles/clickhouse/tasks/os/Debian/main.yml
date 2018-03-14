@@ -10,22 +10,9 @@
 
 - name: Add CH repository
   apt_repository:
-    repo: "deb http://repo.yandex.ru/clickhouse/trusty stable main"
+    repo: "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
     state: present
     update_cache: yes
-  when: "'jessie' in ansible_distribution_release"
-  environment:
-    https_proxy: "{{ http_proxy }}"
-    http_proxy: "{{ http_proxy }}"
-  tags:
-    - repo
-
-- name: Add CH repository
-  apt_repository:
-    repo: "deb http://repo.yandex.ru/clickhouse/xenial stable main"
-    state: present
-    update_cache: yes
-  when: "'stretch' in ansible_distribution_release"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

@@ -10,7 +10,7 @@
 
 - name: Add CH repository
   apt_repository:
-    repo: "deb http://repo.yandex.ru/clickhouse/{{ansible_distribution_release}} stable main"
+    repo: "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
     state: present
     update_cache: yes
   environment:
