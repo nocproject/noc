@@ -160,6 +160,8 @@ class Address(models.Model):
         # Check VRF
         if not self.vrf:
             self.vrf = VRF.get_global()
+        if not self.profile:
+            self.profile = AddressProfile.get_default_profile()
         # Find parent prefix
         self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         # Check VRF group restrictions
