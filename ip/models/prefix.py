@@ -149,7 +149,8 @@ class Prefix(models.Model):
             return bool(self.ipv6_transition)
         else:
             try:
-                self.ipv4_transition
+                # pylint: disable=pointless-statement
+                self.ipv4_transition  # noqa
                 return True
             except Prefix.DoesNotExist:
                 return False
@@ -196,11 +197,21 @@ class Prefix(models.Model):
         Field validation
         """
         super(Prefix, self).clean()
+        # Set defaults
+        self.afi = "6" if ":" in self.prefix else "4"
         # Check prefix is of AFI type
         if self.is_ipv4:
             check_ipv4_prefix(self.prefix)
         elif self.is_ipv6:
             check_ipv6_prefix(self.prefix)
+        # Set defaults
+        if not self.vrf:
+            self.vrf = VRF.get_global()
+        if not self.asn:
+            self.asn = AS.default_as()
+        if not self.is_root:
+            # Set proper parent
+            self.parent = Prefix.get_parent(self.vrf, self.afi, self.prefix)
         # Check root prefix have no parent
         if self.is_root and self.parent:
             raise ValidationError("Root prefix cannot have parent")
@@ -209,16 +220,7 @@ class Prefix(models.Model):
         """
         Save prefix
         """
-        # Set defaults
-        self.afi = "6" if ":" in self.prefix else "4"
-        if not self.vrf:
-            self.vrf = VRF.get_global()
-        if not self.asn:
-            self.asn = AS.default_as()
-        if not self.is_root:
-            # Set proper parent
-            self.parent = Prefix.get_parent(
-                self.vrf, self.afi, self.prefix)
+        self.clean()
         super(Prefix, self).save(**kwargs)
         # Rebuild tree if necessary
         # Reconnect children children prefixes
