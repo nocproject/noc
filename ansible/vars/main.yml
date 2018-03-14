@@ -25,12 +25,5 @@ mongo_dir: "{{etc_prefix}}/mongod"
 postgres_listen: 5432
 postgres_user: postgres
 
-
-
-
-
-
 fake_shell: /bin/false
 
-
-haproxy_clickhouse_listen: 8124
