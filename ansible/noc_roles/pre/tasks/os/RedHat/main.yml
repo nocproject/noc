@@ -13,6 +13,15 @@
     policy: targeted
     state: disabled
 
+- name: register rhel instances
+  include_role:
+    name: rhel-register
+  when:
+    - has_svc_rhel_register is defined
+    - has_svc_rhel_register
+    - rhel_register_rhel_subscription_password
+    - rhel_register_rhel_subscription_username
+
 - name: Install Rhel system packages pre
   yum:
     name: "{{ item }}"
