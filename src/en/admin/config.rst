@@ -32,6 +32,7 @@ loglevel
 ==================  ===================
 
 Possible values:
+
 * critical
 * error
 * warning
