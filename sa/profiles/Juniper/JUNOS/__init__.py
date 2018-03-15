@@ -25,6 +25,7 @@ class Profile(BaseProfile):
     ]
     pattern_syntax_error = \
         r"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
+    pattern_operation_error = r"error: abnormal communication termination with"
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
