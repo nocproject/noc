@@ -181,6 +181,7 @@ _MODELS = {
     "sa.ManagedObjectSelector": "noc.sa.models.managedobjectselector.ManagedObjectSelector",
     "sa.ManagedObjectSelectorByAttribute": "noc.sa.models.managedobjectselector.ManagedObjectSelectorByAttribute",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
+    "sa.ObjectStatus": "noc.sa.models.objectstatus.ObjectStatus",
     "sa.Profile": "noc.sa.models.profile.Profile",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
     "sa.Service": "noc.sa.models.service.Service",
