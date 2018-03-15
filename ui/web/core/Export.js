@@ -92,7 +92,7 @@ Ext.define("NOC.core.Export", {
         return this.toCsv(out);
     },
 
-    save: function(grid, filename) {
+    save: function(grid, filename, cols) {
         var records, columns;
 
         try {
@@ -105,7 +105,11 @@ Ext.define("NOC.core.Export", {
             } else {
                 records = grid.getStore().getRange(0);
             }
-            columns = grid.getVisibleColumns();
+            if(cols){
+                columns = cols;
+            } else {
+                columns = grid.getVisibleColumns();
+            }
         } catch(e) {
             return false;
         }
