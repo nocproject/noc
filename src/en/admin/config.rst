@@ -1,7 +1,6 @@
 .. _admin-config:
 
-
-
+=======================
 Configuration Reference
 =======================
 
@@ -15,28 +14,29 @@ Configuration Reference
 
 .. _config-Config:
 
-Config
-------
-
-
-.. _config-Config-loglevel:
-
-loglevel
-~~~~~~~~
-
-==================  ===================================================================================================================================================================
-**YAML_Path**       Config.loglevel
-**Key_Value_Path**  Config/loglevel
-**Environment**     NOC_CONFIG_LOGLEVEL
-**Default_Value**   MapParameter(default="info",
-                    mappings={"critical": logging.CRITICAL,"error": logging.ERROR,"warning": logging.WARNING, "info": logging.INFO, "debug": logging.DEBUG}
-==================  ===================================================================================================================================================================
-
-
 Global
 ------
 
 Global settings applicable to all services
+
+.. _config-loglevel:
+
+loglevel
+~~~~~~~~
+
+==================  ===================
+**YAML Path**       loglevel
+**Key-Value Path**  loglevel
+**Environment**     NOC_LOGLEVEL
+**Default Value**   info
+==================  ===================
+
+Possible values:
+* critical
+* error
+* warning
+* info
+* debug
 
 .. _config-brand:
 
@@ -44,10 +44,10 @@ brand
 ~~~~~
 
 ==================  =========
-**YAML_Path**       brand
-**Key_Value_Path**  brand
+**YAML Path**       brand
+**Key-Value Path**  brand
 **Environment**     NOC_BRAND
-**Default_Value**   NOC
+**Default Value**   NOC
 ==================  =========
 
 
@@ -57,10 +57,10 @@ global_n_instances
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       global_n_instances
-**Key_Value_Path**  global_n_instances
+**YAML Path**       global_n_instances
+**Key-Value Path**  global_n_instances
 **Environment**     NOC_GLOBAL_N_INSTANCES
-**Default_Value**   1
+**Default Value**   1
 ==================  ======================
 
 
@@ -70,10 +70,10 @@ installation_name
 ~~~~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       installation_name
-**Key_Value_Path**  installation_name
+**YAML Path**       installation_name
+**Key-Value Path**  installation_name
 **Environment**     NOC_INSTALLATION_NAME
-**Default_Value**   Unconfigured installation
+**Default Value**   Unconfigured installation
 ==================  =========================
 
 
@@ -83,10 +83,10 @@ instance
 ~~~~~~~~
 
 ==================  ============
-**YAML_Path**       instance
-**Key_Value_Path**  instance
+**YAML Path**       instance
+**Key-Value Path**  instance
 **Environment**     NOC_INSTANCE
-**Default_Value**   0
+**Default Value**   0
 ==================  ============
 
 
@@ -96,10 +96,10 @@ language
 ~~~~~~~~
 
 ==================  ============
-**YAML_Path**       language
-**Key_Value_Path**  language
+**YAML Path**       language
+**Key-Value Path**  language
 **Environment**     NOC_LANGUAGE
-**Default_Value**   en
+**Default Value**   en
 ==================  ============
 
 
@@ -109,10 +109,10 @@ language_code
 ~~~~~~~~~~~~~
 
 ==================  =================
-**YAML_Path**       language_code
-**Key_Value_Path**  language_code
+**YAML Path**       language_code
+**Key-Value Path**  language_code
 **Environment**     NOC_LANGUAGE_CODE
-**Default_Value**   en-us
+**Default Value**   en-us
 ==================  =================
 
 
@@ -122,10 +122,10 @@ listen
 ~~~~~~
 
 ==================  ==========
-**YAML_Path**       listen
-**Key_Value_Path**  listen
+**YAML Path**       listen
+**Key-Value Path**  listen
 **Environment**     NOC_LISTEN
-**Default_Value**   auto:0
+**Default Value**   auto:0
 ==================  ==========
 
 
@@ -135,10 +135,10 @@ log_format
 ~~~~~~~~~~
 
 ==================  ==================================
-**YAML_Path**       log_format
-**Key_Value_Path**  log_format
+**YAML Path**       log_format
+**Key-Value Path**  log_format
 **Environment**     NOC_LOG_FORMAT
-**Default_Value**   %(asctime)s [%(name)s] %(message)s
+**Default Value**   %(asctime)s [%(name)s] %(message)s
 ==================  ==================================
 
 
@@ -148,10 +148,10 @@ thread_stack_size
 ~~~~~~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       thread_stack_size
-**Key_Value_Path**  thread_stack_size
+**YAML Path**       thread_stack_size
+**Key-Value Path**  thread_stack_size
 **Environment**     NOC_THREAD_STACK_SIZE
-**Default_Value**   0
+**Default Value**   0
 ==================  =====================
 
 
@@ -161,10 +161,10 @@ node
 ~~~~
 
 ==================  ====================
-**YAML_Path**       node
-**Key_Value_Path**  node
+**YAML Path**       node
+**Key-Value Path**  node
 **Environment**     NOC_NODE
-**Default_Value**   socket.gethostname()
+**Default Value**   socket.gethostname()
 ==================  ====================
 
 
@@ -174,10 +174,10 @@ pool
 ~~~~
 
 ==================  ==============================
-**YAML_Path**       pool
-**Key_Value_Path**  pool
+**YAML Path**       pool
+**Key-Value Path**  pool
 **Environment**     NOC_POOL
-**Default_Value**   os.environ.get("NOC_POOL", "")
+**Default Value**   os.environ.get("NOC_POOL", "")
 ==================  ==============================
 
 
@@ -187,10 +187,10 @@ secret_key
 ~~~~~~~~~~
 
 ==================  ==============
-**YAML_Path**       secret_key
-**Key_Value_Path**  secret_key
+**YAML Path**       secret_key
+**Key-Value Path**  secret_key
 **Environment**     NOC_SECRET_KEY
-**Default_Value**   12345
+**Default Value**   12345
 ==================  ==============
 
 
@@ -200,10 +200,10 @@ timezone
 ~~~~~~~~
 
 ==================  =============
-**YAML_Path**       timezone
-**Key_Value_Path**  timezone
+**YAML Path**       timezone
+**Key-Value Path**  timezone
 **Environment**     NOC_TIMEZONE
-**Default_Value**   Europe/Moscow
+**Default Value**   Europe/Moscow
 ==================  =============
 
 
@@ -219,11 +219,16 @@ tos
 ~~~
 
 ==================  =======================================
-**YAML_Path**       activator.tos
-**Key_Value_Path**  activator/tos
+**YAML Path**       activator.tos
+**Key-Value Path**  activator/tos
 **Environment**     NOC_ACTIVATOR_TOS
-**Default_Value**   IntParameter(min=0, max=255, default=0)
+**Default Value**   0
 ==================  =======================================
+
+Possible values:
+
+* min=0
+* max=255
 
 
 .. _config-activator-script_threads:
@@ -232,10 +237,10 @@ script_threads
 ~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       activator.script_threads
-**Key_Value_Path**  activator/script_threads
+**YAML Path**       activator.script_threads
+**Key-Value Path**  activator/script_threads
 **Environment**     NOC_ACTIVATOR_SCRIPT_THREADS
-**Default_Value**   10
+**Default Value**   10
 ==================  ============================
 
 
@@ -245,10 +250,10 @@ buffer_size
 ~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       activator.buffer_size
-**Key_Value_Path**  activator/buffer_size
+**YAML Path**       activator.buffer_size
+**Key-Value Path**  activator/buffer_size
 **Environment**     NOC_ACTIVATOR_BUFFER_SIZE
-**Default_Value**   1048576
+**Default Value**   1048576
 ==================  =========================
 
 
@@ -260,10 +265,10 @@ connect_retries
 retries on immediate disconnect
 
 ==================  =============================
-**YAML_Path**       activator.connect_retries
-**Key_Value_Path**  activator/connect_retries
+**YAML Path**       activator.connect_retries
+**Key-Value Path**  activator/connect_retries
 **Environment**     NOC_ACTIVATOR_CONNECT_RETRIES
-**Default_Value**   3
+**Default Value**   3
 ==================  =============================
 
 
@@ -275,10 +280,10 @@ connect_timeout
 timeout after immediate disconnect
 
 ==================  =============================
-**YAML_Path**       activator.connect_timeout
-**Key_Value_Path**  activator/connect_timeout
+**YAML Path**       activator.connect_timeout
+**Key-Value Path**  activator/connect_timeout
 **Environment**     NOC_ACTIVATOR_CONNECT_TIMEOUT
-**Default_Value**   3
+**Default Value**   3
 ==================  =============================
 
 
@@ -288,10 +293,10 @@ http_connect_timeout
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ==================================
-**YAML_Path**       activator.http_connect_timeout
-**Key_Value_Path**  activator/http_connect_timeout
+**YAML Path**       activator.http_connect_timeout
+**Key-Value Path**  activator/http_connect_timeout
 **Environment**     NOC_ACTIVATOR_HTTP_CONNECT_TIMEOUT
-**Default_Value**   20
+**Default Value**   20
 ==================  ==================================
 
 
@@ -301,10 +306,10 @@ http_request_timeout
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ==================================
-**YAML_Path**       activator.http_request_timeout
-**Key_Value_Path**  activator/http_request_timeout
+**YAML Path**       activator.http_request_timeout
+**Key-Value Path**  activator/http_request_timeout
 **Environment**     NOC_ACTIVATOR_HTTP_REQUEST_TIMEOUT
-**Default_Value**   30
+**Default Value**   30
 ==================  ==================================
 
 
@@ -314,10 +319,10 @@ http_validate_cert
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ================================
-**YAML_Path**       activator.http_validate_cert
-**Key_Value_Path**  activator/http_validate_cert
+**YAML Path**       activator.http_validate_cert
+**Key-Value Path**  activator/http_validate_cert
 **Environment**     NOC_ACTIVATOR_HTTP_VALIDATE_CERT
-**Default_Value**   False
+**Default Value**   False
 ==================  ================================
 
 
@@ -333,10 +338,10 @@ command_ttl
 ~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       audit.command_ttl
-**Key_Value_Path**  audit/command_ttl
+**YAML Path**       audit.command_ttl
+**Key-Value Path**  audit/command_ttl
 **Environment**     NOC_AUDIT_COMMAND_TTL
-**Default_Value**   1m
+**Default Value**   1m
 ==================  =====================
 
 
@@ -346,10 +351,10 @@ login_ttl
 ~~~~~~~~~
 
 ==================  ===================
-**YAML_Path**       audit.login_ttl
-**Key_Value_Path**  audit/login_ttl
+**YAML Path**       audit.login_ttl
+**Key-Value Path**  audit/login_ttl
 **Environment**     NOC_AUDIT_LOGIN_TTL
-**Default_Value**   1m
+**Default Value**   1m
 ==================  ===================
 
 
@@ -359,10 +364,10 @@ reboot_ttl
 ~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       audit.reboot_ttl
-**Key_Value_Path**  audit/reboot_ttl
+**YAML Path**       audit.reboot_ttl
+**Key-Value Path**  audit/reboot_ttl
 **Environment**     NOC_AUDIT_REBOOT_TTL
-**Default_Value**   0
+**Default Value**   0
 ==================  ====================
 
 
@@ -372,10 +377,10 @@ config_ttl
 ~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       audit.config_ttl
-**Key_Value_Path**  audit/config_ttl
+**YAML Path**       audit.config_ttl
+**Key-Value Path**  audit/config_ttl
 **Environment**     NOC_AUDIT_CONFIG_TTL
-**Default_Value**   1y
+**Default Value**   1y
 ==================  ====================
 
 
@@ -385,10 +390,10 @@ db_ttl
 ~~~~~~
 
 ==================  ================
-**YAML_Path**       audit.db_ttl
-**Key_Value_Path**  audit/db_ttl
+**YAML Path**       audit.db_ttl
+**Key-Value Path**  audit/db_ttl
 **Environment**     NOC_AUDIT_DB_TTL
-**Default_Value**   5y
+**Default Value**   5y
 ==================  ================
 
 
@@ -398,10 +403,10 @@ config_changed_ttl
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       audit.config_changed_ttl
-**Key_Value_Path**  audit/config_changed_ttl
+**YAML Path**       audit.config_changed_ttl
+**Key-Value Path**  audit/config_changed_ttl
 **Environment**     NOC_AUDIT_CONFIG_CHANGED_TTL
-**Default_Value**   1y
+**Default Value**   1y
 ==================  ============================
 
 
@@ -417,10 +422,10 @@ keep_days
 ~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       backup.keep_days
-**Key_Value_Path**  backup/keep_days
+**YAML Path**       backup.keep_days
+**Key-Value Path**  backup/keep_days
 **Environment**     NOC_BACKUP_KEEP_DAYS
-**Default_Value**   14d
+**Default Value**   14d
 ==================  ====================
 
 
@@ -430,10 +435,10 @@ keep_weeks
 ~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       backup.keep_weeks
-**Key_Value_Path**  backup/keep_weeks
+**YAML Path**       backup.keep_weeks
+**Key-Value Path**  backup/keep_weeks
 **Environment**     NOC_BACKUP_KEEP_WEEKS
-**Default_Value**   12w
+**Default Value**   12w
 ==================  =====================
 
 
@@ -443,10 +448,10 @@ keep_day_of_week
 ~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       backup.keep_day_of_week
-**Key_Value_Path**  backup/keep_day_of_week
+**YAML Path**       backup.keep_day_of_week
+**Key-Value Path**  backup/keep_day_of_week
 **Environment**     NOC_BACKUP_KEEP_DAY_OF_WEEK
-**Default_Value**   6
+**Default Value**   6
 ==================  ===========================
 
 
@@ -456,10 +461,10 @@ keep_months
 ~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       backup.keep_months
-**Key_Value_Path**  backup/keep_months
+**YAML Path**       backup.keep_months
+**Key-Value Path**  backup/keep_months
 **Environment**     NOC_BACKUP_KEEP_MONTHS
-**Default_Value**   12
+**Default Value**   12
 ==================  ======================
 
 
@@ -469,17 +474,17 @@ keep_day_of_month
 ~~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       backup.keep_day_of_month
-**Key_Value_Path**  backup/keep_day_of_month
+**YAML Path**       backup.keep_day_of_month
+**Key-Value Path**  backup/keep_day_of_month
 **Environment**     NOC_BACKUP_KEEP_DAY_OF_MONTH
-**Default_Value**   1
+**Default Value**   1
 ==================  ============================
 
 
 .. _config-bi:
 
 bi
-##
+--
 
 
 .. _config-bi-language:
@@ -488,10 +493,10 @@ language
 ~~~~~~~~
 
 ==================  ===============
-**YAML_Path**       bi.language
-**Key_Value_Path**  bi/language
+**YAML Path**       bi.language
+**Key-Value Path**  bi/language
 **Environment**     NOC_BI_LANGUAGE
-**Default_Value**   en
+**Default Value**   en
 ==================  ===============
 
 
@@ -501,10 +506,10 @@ query_threads
 ~~~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       bi.query_threads
-**Key_Value_Path**  bi/query_threads
+**YAML Path**       bi.query_threads
+**Key-Value Path**  bi/query_threads
 **Environment**     NOC_BI_QUERY_THREADS
-**Default_Value**   10
+**Default Value**   10
 ==================  ====================
 
 
@@ -514,10 +519,10 @@ extract_delay_alarms
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       bi.extract_delay_alarms
-**Key_Value_Path**  bi/extract_delay_alarms
+**YAML Path**       bi.extract_delay_alarms
+**Key-Value Path**  bi/extract_delay_alarms
 **Environment**     NOC_BI_EXTRACT_DELAY_ALARMS
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ===========================
 
 
@@ -527,10 +532,10 @@ clean_delay_alarms
 ~~~~~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       bi.clean_delay_alarms
-**Key_Value_Path**  bi/clean_delay_alarms
+**YAML Path**       bi.clean_delay_alarms
+**Key-Value Path**  bi/clean_delay_alarms
 **Environment**     NOC_BI_CLEAN_DELAY_ALARMS
-**Default_Value**   1d
+**Default Value**   1d
 ==================  =========================
 
 
@@ -540,10 +545,10 @@ reboot_interval
 ~~~~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       bi.reboot_interval
-**Key_Value_Path**  bi/reboot_interval
+**YAML Path**       bi.reboot_interval
+**Key-Value Path**  bi/reboot_interval
 **Environment**     NOC_BI_REBOOT_INTERVAL
-**Default_Value**   1M
+**Default Value**   1M
 ==================  ======================
 
 
@@ -553,10 +558,10 @@ extract_delay_reboots
 ~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       bi.extract_delay_reboots
-**Key_Value_Path**  bi/extract_delay_reboots
+**YAML Path**       bi.extract_delay_reboots
+**Key-Value Path**  bi/extract_delay_reboots
 **Environment**     NOC_BI_EXTRACT_DELAY_REBOOTS
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ============================
 
 
@@ -566,10 +571,10 @@ clean_delay_reboots
 ~~~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       bi.clean_delay_reboots
-**Key_Value_Path**  bi/clean_delay_reboots
+**YAML Path**       bi.clean_delay_reboots
+**Key-Value Path**  bi/clean_delay_reboots
 **Environment**     NOC_BI_CLEAN_DELAY_REBOOTS
-**Default_Value**   1d
+**Default Value**   1d
 ==================  ==========================
 
 
@@ -579,10 +584,10 @@ chunk_size
 ~~~~~~~~~~
 
 ==================  =================
-**YAML_Path**       bi.chunk_size
-**Key_Value_Path**  bi/chunk_size
+**YAML Path**       bi.chunk_size
+**Key-Value Path**  bi/chunk_size
 **Environment**     NOC_BI_CHUNK_SIZE
-**Default_Value**   3000
+**Default Value**   3000
 ==================  =================
 
 
@@ -592,10 +597,10 @@ extract_window
 ~~~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       bi.extract_window
-**Key_Value_Path**  bi/extract_window
+**YAML Path**       bi.extract_window
+**Key-Value Path**  bi/extract_window
 **Environment**     NOC_BI_EXTRACT_WINDOW
-**Default_Value**   1d
+**Default Value**   1d
 ==================  =====================
 
 
@@ -605,10 +610,10 @@ enable_alarms
 ~~~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       bi.enable_alarms
-**Key_Value_Path**  bi/enable_alarms
+**YAML Path**       bi.enable_alarms
+**Key-Value Path**  bi/enable_alarms
 **Environment**     NOC_BI_ENABLE_ALARMS
-**Default_Value**   False
+**Default Value**   False
 ==================  ====================
 
 
@@ -618,10 +623,10 @@ enable_reboots
 ~~~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       bi.enable_reboots
-**Key_Value_Path**  bi/enable_reboots
+**YAML Path**       bi.enable_reboots
+**Key-Value Path**  bi/enable_reboots
 **Environment**     NOC_BI_ENABLE_REBOOTS
-**Default_Value**   False
+**Default Value**   False
 ==================  =====================
 
 
@@ -631,10 +636,10 @@ enable_managedobjects
 ~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       bi.enable_managedobjects
-**Key_Value_Path**  bi/enable_managedobjects
+**YAML Path**       bi.enable_managedobjects
+**Key-Value Path**  bi/enable_managedobjects
 **Environment**     NOC_BI_ENABLE_MANAGEDOBJECTS
-**Default_Value**   False
+**Default Value**   False
 ==================  ============================
 
 
@@ -650,10 +655,10 @@ vcinterfacescount
 ~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       cache.vcinterfacescount
-**Key_Value_Path**  cache/vcinterfacescount
+**YAML Path**       cache.vcinterfacescount
+**Key-Value Path**  cache/vcinterfacescount
 **Environment**     NOC_CACHE_VCINTERFACESCOUNT
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ===========================
 
 
@@ -663,10 +668,10 @@ vcprefixes
 ~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       cache.vcprefixes
-**Key_Value_Path**  cache/vcprefixes
+**YAML Path**       cache.vcprefixes
+**Key-Value Path**  cache/vcprefixes
 **Environment**     NOC_CACHE_VCPREFIXES
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ====================
 
 
@@ -676,10 +681,10 @@ cache_class
 ~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       cache.cache_class
-**Key_Value_Path**  cache/cache_class
+**YAML Path**       cache.cache_class
+**Key-Value Path**  cache/cache_class
 **Environment**     NOC_CACHE_CACHE_CLASS
-**Default_Value**   noc.core.cache.mongo.MongoCache
+**Default Value**   noc.core.cache.mongo.MongoCache
 ==================  ===============================
 
 
@@ -689,10 +694,10 @@ default_ttl
 ~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       cache.default_ttl
-**Key_Value_Path**  cache/default_ttl
+**YAML Path**       cache.default_ttl
+**Key-Value Path**  cache/default_ttl
 **Environment**     NOC_CACHE_DEFAULT_TTL
-**Default_Value**   1d
+**Default Value**   1d
 ==================  =====================
 
 
@@ -702,10 +707,10 @@ pool_size
 ~~~~~~~~~
 
 ==================  ===================
-**YAML_Path**       cache.pool_size
-**Key_Value_Path**  cache/pool_size
+**YAML Path**       cache.pool_size
+**Key-Value Path**  cache/pool_size
 **Environment**     NOC_CACHE_POOL_SIZE
-**Default_Value**   8
+**Default Value**   8
 ==================  ===================
 
 
@@ -721,10 +726,10 @@ language
 ~~~~~~~~
 
 ==================  =================
-**YAML_Path**       card.language
-**Key_Value_Path**  card/language
+**YAML Path**       card.language
+**Key-Value Path**  card/language
 **Environment**     NOC_CARD_LANGUAGE
-**Default_Value**   en
+**Default Value**   en
 ==================  =================
 
 
@@ -734,10 +739,10 @@ alarmheat_tooltip_limit
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ================================
-**YAML_Path**       card.alarmheat_tooltip_limit
-**Key_Value_Path**  card/alarmheat_tooltip_limit
+**YAML Path**       card.alarmheat_tooltip_limit
+**Key-Value Path**  card/alarmheat_tooltip_limit
 **Environment**     NOC_CARD_ALARMHEAT_TOOLTIP_LIMIT
-**Default_Value**   5
+**Default Value**   5
 ==================  ================================
 
 
@@ -753,10 +758,10 @@ batch_size
 ~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       chwriter.batch_size
-**Key_Value_Path**  chwriter/batch_size
+**YAML Path**       chwriter.batch_size
+**Key-Value Path**  chwriter/batch_size
 **Environment**     NOC_CHWRITER_BATCH_SIZE
-**Default_Value**   50000
+**Default Value**   50000
 ==================  =======================
 
 
@@ -766,10 +771,10 @@ records_buffer
 ~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       chwriter.records_buffer
-**Key_Value_Path**  chwriter/records_buffer
+**YAML Path**       chwriter.records_buffer
+**Key-Value Path**  chwriter/records_buffer
 **Environment**     NOC_CHWRITER_RECORDS_BUFFER
-**Default_Value**   1000000
+**Default Value**   1000000
 ==================  ===========================
 
 
@@ -779,10 +784,10 @@ batch_delay_ms
 ~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       chwriter.batch_delay_ms
-**Key_Value_Path**  chwriter/batch_delay_ms
+**YAML Path**       chwriter.batch_delay_ms
+**Key-Value Path**  chwriter/batch_delay_ms
 **Environment**     NOC_CHWRITER_BATCH_DELAY_MS
-**Default_Value**   10000
+**Default Value**   10000
 ==================  ===========================
 
 
@@ -792,10 +797,10 @@ channel_expire_interval
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ====================================
-**YAML_Path**       chwriter.channel_expire_interval
-**Key_Value_Path**  chwriter/channel_expire_interval
+**YAML Path**       chwriter.channel_expire_interval
+**Key-Value Path**  chwriter/channel_expire_interval
 **Environment**     NOC_CHWRITER_CHANNEL_EXPIRE_INTERVAL
-**Default_Value**   5M
+**Default Value**   5M
 ==================  ====================================
 
 
@@ -805,10 +810,10 @@ suspend_timeout_ms
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       chwriter.suspend_timeout_ms
-**Key_Value_Path**  chwriter/suspend_timeout_ms
+**YAML Path**       chwriter.suspend_timeout_ms
+**Key-Value Path**  chwriter/suspend_timeout_ms
 **Environment**     NOC_CHWRITER_SUSPEND_TIMEOUT_MS
-**Default_Value**   3000
+**Default Value**   3000
 ==================  ===============================
 
 
@@ -818,10 +823,10 @@ topic
 ~~~~~
 
 ==================  ==================
-**YAML_Path**       chwriter.topic
-**Key_Value_Path**  chwriter/topic
+**YAML Path**       chwriter.topic
+**Key-Value Path**  chwriter/topic
 **Environment**     NOC_CHWRITER_TOPIC
-**Default_Value**   chwriter
+**Default Value**   chwriter
 ==================  ==================
 
 
@@ -831,10 +836,10 @@ write_to
 ~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       chwriter.write_to
-**Key_Value_Path**  chwriter/write_to
+**YAML Path**       chwriter.write_to
+**Key-Value Path**  chwriter/write_to
 **Environment**     NOC_CHWRITER_WRITE_TO
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =====================
 
 
@@ -844,10 +849,10 @@ max_in_flight
 ~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       chwriter.max_in_flight
-**Key_Value_Path**  chwriter/max_in_flight
+**YAML Path**       chwriter.max_in_flight
+**Key-Value Path**  chwriter/max_in_flight
 **Environment**     NOC_CHWRITER_MAX_IN_FLIGHT
-**Default_Value**   10
+**Default Value**   10
 ==================  ==========================
 
 
@@ -863,10 +868,10 @@ lookup_handler
 ~~~~~~~~~~~~~~
 
 ==================  =============================================
-**YAML_Path**       classifier.lookup_handler
-**Key_Value_Path**  classifier/lookup_handler
+**YAML Path**       classifier.lookup_handler
+**Key-Value Path**  classifier/lookup_handler
 **Environment**     NOC_CLASSIFIER_LOOKUP_HANDLER
-**Default_Value**   noc.services.classifier.rulelookup.RuleLookup
+**Default Value**   noc.services.classifier.rulelookup.RuleLookup
 ==================  =============================================
 
 
@@ -876,10 +881,10 @@ default_interface_profile
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ========================================
-**YAML_Path**       classifier.default_interface_profile
-**Key_Value_Path**  classifier/default_interface_profile
+**YAML Path**       classifier.default_interface_profile
+**Key-Value Path**  classifier/default_interface_profile
 **Environment**     NOC_CLASSIFIER_DEFAULT_INTERFACE_PROFILE
-**Default_Value**   default
+**Default Value**   default
 ==================  ========================================
 
 
@@ -889,10 +894,10 @@ default_rule
 ~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       classifier.default_rule
-**Key_Value_Path**  classifier/default_rule
+**YAML Path**       classifier.default_rule
+**Key-Value Path**  classifier/default_rule
 **Environment**     NOC_CLASSIFIER_DEFAULT_RULE
-**Default_Value**   Unknown | Default
+**Default Value**   Unknown | Default
 ==================  ===========================
 
 
@@ -908,10 +913,10 @@ rw_addresses
 ~~~~~~~~~~~~
 
 ==================  =================================================
-**YAML_Path**       clickhouse.rw_addresses
-**Key_Value_Path**  clickhouse/rw_addresses
+**YAML Path**       clickhouse.rw_addresses
+**Key-Value Path**  clickhouse/rw_addresses
 **Environment**     NOC_CLICKHOUSE_RW_ADDRESSES
-**Default_Value**   ServiceParameter(service='clickhouse', wait=True)
+**Default Value**   ServiceParameter(service='clickhouse', wait=True)
 ==================  =================================================
 
 
@@ -921,10 +926,10 @@ db
 --
 
 ==================  =================
-**YAML_Path**       clickhouse.db
-**Key_Value_Path**  clickhouse/db
+**YAML Path**       clickhouse.db
+**Key-Value Path**  clickhouse/db
 **Environment**     NOC_CLICKHOUSE_DB
-**Default_Value**   noc
+**Default Value**   noc
 ==================  =================
 
 
@@ -934,10 +939,10 @@ rw_user
 ~~~~~~~
 
 ==================  ======================
-**YAML_Path**       clickhouse.rw_user
-**Key_Value_Path**  clickhouse/rw_user
+**YAML Path**       clickhouse.rw_user
+**Key-Value Path**  clickhouse/rw_user
 **Environment**     NOC_CLICKHOUSE_RW_USER
-**Default_Value**   default
+**Default Value**   default
 ==================  ======================
 
 
@@ -947,10 +952,10 @@ rw_password
 ~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       clickhouse.rw_password
-**Key_Value_Path**  clickhouse/rw_password
+**YAML Path**       clickhouse.rw_password
+**Key-Value Path**  clickhouse/rw_password
 **Environment**     NOC_CLICKHOUSE_RW_PASSWORD
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  ==========================
 
 
@@ -960,10 +965,10 @@ ro_addresses
 ~~~~~~~~~~~~
 
 ==================  =================================================
-**YAML_Path**       clickhouse.ro_addresses
-**Key_Value_Path**  clickhouse/ro_addresses
+**YAML Path**       clickhouse.ro_addresses
+**Key-Value Path**  clickhouse/ro_addresses
 **Environment**     NOC_CLICKHOUSE_RO_ADDRESSES
-**Default_Value**   ServiceParameter(service='clickhouse', wait=True)
+**Default Value**   ServiceParameter(service='clickhouse', wait=True)
 ==================  =================================================
 
 
@@ -973,10 +978,10 @@ ro_user
 ~~~~~~~
 
 ==================  ======================
-**YAML_Path**       clickhouse.ro_user
-**Key_Value_Path**  clickhouse/ro_user
+**YAML Path**       clickhouse.ro_user
+**Key-Value Path**  clickhouse/ro_user
 **Environment**     NOC_CLICKHOUSE_RO_USER
-**Default_Value**   readonly
+**Default Value**   readonly
 ==================  ======================
 
 
@@ -986,10 +991,10 @@ ro_password
 ~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       clickhouse.ro_password
-**Key_Value_Path**  clickhouse/ro_password
+**YAML Path**       clickhouse.ro_password
+**Key-Value Path**  clickhouse/ro_password
 **Environment**     NOC_CLICKHOUSE_RO_PASSWORD
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  ==========================
 
 
@@ -999,10 +1004,10 @@ request_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       clickhouse.request_timeout
-**Key_Value_Path**  clickhouse/request_timeout
+**YAML Path**       clickhouse.request_timeout
+**Key-Value Path**  clickhouse/request_timeout
 **Environment**     NOC_CLICKHOUSE_REQUEST_TIMEOUT
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ==============================
 
 
@@ -1012,10 +1017,10 @@ connect_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       clickhouse.connect_timeout
-**Key_Value_Path**  clickhouse/connect_timeout
+**YAML Path**       clickhouse.connect_timeout
+**Key-Value Path**  clickhouse/connect_timeout
 **Environment**     NOC_CLICKHOUSE_CONNECT_TIMEOUT
-**Default_Value**   10s
+**Default Value**   10s
 ==================  ==============================
 
 
@@ -1025,10 +1030,10 @@ default_merge_tree_granularity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =============================================
-**YAML_Path**       clickhouse.default_merge_tree_granularity
-**Key_Value_Path**  clickhouse/default_merge_tree_granularity
+**YAML Path**       clickhouse.default_merge_tree_granularity
+**Key-Value Path**  clickhouse/default_merge_tree_granularity
 **Environment**     NOC_CLICKHOUSE_DEFAULT_MERGE_TREE_GRANULARITY
-**Default_Value**   8192
+**Default Value**   8192
 ==================  =============================================
 
 
@@ -1038,12 +1043,17 @@ encoding
 ~~~~~~~~
 
 ==================  ===================================
-**YAML_Path**       clickhouse.encoding
-**Key_Value_Path**  clickhouse/encoding
+**YAML Path**       clickhouse.encoding
+**Key-Value Path**  clickhouse/encoding
 **Environment**     NOC_CLICKHOUSE_ENCODING
-**Default_Value**   '', choices=['', 'deflate', 'gzip']
+**Default Value**
 ==================  ===================================
 
+Possible values:
+
+*
+* deflate
+* gzip
 
 .. _config-clickhouse-cluster:
 
@@ -1054,10 +1064,10 @@ Cluster name for sharded/replicated configuration
 Matches appropriative <remote_servers> part
 
 ==================  ======================
-**YAML_Path**       clickhouse.cluster
-**Key_Value_Path**  clickhouse/cluster
+**YAML Path**       clickhouse.cluster
+**Key-Value Path**  clickhouse/cluster
 **Environment**     NOC_CLICKHOUSE_CLUSTER
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  ======================
 
 
@@ -1067,10 +1077,10 @@ cluster_topology
 ~~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       clickhouse.cluster_topology
-**Key_Value_Path**  clickhouse/cluster_topology
+**YAML Path**       clickhouse.cluster_topology
+**Key-Value Path**  clickhouse/cluster_topology
 **Environment**     NOC_CLICKHOUSE_CLUSTER_TOPOLOGY
-**Default_Value**   1
+**Default Value**   1
 ==================  ===============================
 
 Examples:
@@ -1091,7 +1101,7 @@ Examples:
 .. _config-cm:
 
 cm
-##
+--
 
 
 .. _config-cm-vcs_type:
@@ -1100,10 +1110,10 @@ vcs_type
 ~~~~~~~~
 
 ==================  ===========================================
-**YAML_Path**       cm.vcs_type
-**Key_Value_Path**  cm/vcs_type
+**YAML Path**       cm.vcs_type
+**Key-Value Path**  cm/vcs_type
 **Environment**     NOC_CM_VCS_TYPE
-**Default_Value**   'gridvcs', choices=['hg', 'CVS', 'gridvcs']
+**Default Value**   'gridvcs', choices=['hg', 'CVS', 'gridvcs']
 ==================  ===========================================
 
 
@@ -1119,10 +1129,10 @@ token
 ~~~~~
 
 ==================  =================
-**YAML_Path**       consul.token
-**Key_Value_Path**  consul/token
+**YAML Path**       consul.token
+**Key-Value Path**  consul/token
 **Environment**     NOC_CONSUL_TOKEN
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  =================
 
 
@@ -1132,10 +1142,10 @@ connect_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       consul.connect_timeout
-**Key_Value_Path**  consul/connect_timeout
+**YAML Path**       consul.connect_timeout
+**Key-Value Path**  consul/connect_timeout
 **Environment**     NOC_CONSUL_CONNECT_TIMEOUT
-**Default_Value**   5s
+**Default Value**   5s
 ==================  ==========================
 
 
@@ -1145,10 +1155,10 @@ request_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       consul.request_timeout
-**Key_Value_Path**  consul/request_timeout
+**YAML Path**       consul.request_timeout
+**Key-Value Path**  consul/request_timeout
 **Environment**     NOC_CONSUL_REQUEST_TIMEOUT
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ==========================
 
 
@@ -1158,10 +1168,10 @@ near_retry_timeout
 ~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       consul.near_retry_timeout
-**Key_Value_Path**  consul/near_retry_timeout
+**YAML Path**       consul.near_retry_timeout
+**Key-Value Path**  consul/near_retry_timeout
 **Environment**     NOC_CONSUL_NEAR_RETRY_TIMEOUT
-**Default_Value**   1
+**Default Value**   1
 ==================  =============================
 
 
@@ -1171,10 +1181,10 @@ host
 ~~~~
 
 ==================  ===============
-**YAML_Path**       consul.host
-**Key_Value_Path**  consul/host
+**YAML Path**       consul.host
+**Key-Value Path**  consul/host
 **Environment**     NOC_CONSUL_HOST
-**Default_Value**   consul
+**Default Value**   consul
 ==================  ===============
 
 
@@ -1184,10 +1194,10 @@ port
 ~~~~
 
 ==================  ===============
-**YAML_Path**       consul.port
-**Key_Value_Path**  consul/port
+**YAML Path**       consul.port
+**Key-Value Path**  consul/port
 **Environment**     NOC_CONSUL_PORT
-**Default_Value**   8500
+**Default Value**   8500
 ==================  ===============
 
 
@@ -1197,10 +1207,10 @@ check_interval
 ~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       consul.check_interval
-**Key_Value_Path**  consul/check_interval
+**YAML Path**       consul.check_interval
+**Key-Value Path**  consul/check_interval
 **Environment**     NOC_CONSUL_CHECK_INTERVAL
-**Default_Value**   10s
+**Default Value**   10s
 ==================  =========================
 
 
@@ -1210,10 +1220,10 @@ check_timeout
 ~~~~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       consul.check_timeout
-**Key_Value_Path**  consul/check_timeout
+**YAML Path**       consul.check_timeout
+**Key-Value Path**  consul/check_timeout
 **Environment**     NOC_CONSUL_CHECK_TIMEOUT
-**Default_Value**   1s
+**Default Value**   1s
 ==================  ========================
 
 
@@ -1223,10 +1233,10 @@ release
 ~~~~~~~
 
 ==================  ==================
-**YAML_Path**       consul.release
-**Key_Value_Path**  consul/release
+**YAML Path**       consul.release
+**Key-Value Path**  consul/release
 **Environment**     NOC_CONSUL_RELEASE
-**Default_Value**   1M
+**Default Value**   1M
 ==================  ==================
 
 
@@ -1236,10 +1246,10 @@ session_ttl
 ~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       consul.session_ttl
-**Key_Value_Path**  consul/session_ttl
+**YAML Path**       consul.session_ttl
+**Key-Value Path**  consul/session_ttl
 **Environment**     NOC_CONSUL_SESSION_TTL
-**Default_Value**   10s
+**Default Value**   10s
 ==================  ======================
 
 
@@ -1249,10 +1259,10 @@ lock_delay
 ~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       consul.lock_delay
-**Key_Value_Path**  consul/lock_delay
+**YAML Path**       consul.lock_delay
+**Key-Value Path**  consul/lock_delay
 **Environment**     NOC_CONSUL_LOCK_DELAY
-**Default_Value**   20s
+**Default Value**   20s
 ==================  =====================
 
 
@@ -1262,10 +1272,10 @@ retry_timeout
 ~~~~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       consul.retry_timeout
-**Key_Value_Path**  consul/retry_timeout
+**YAML Path**       consul.retry_timeout
+**Key-Value Path**  consul/retry_timeout
 **Environment**     NOC_CONSUL_RETRY_TIMEOUT
-**Default_Value**   1s
+**Default Value**   1s
 ==================  ========================
 
 
@@ -1275,10 +1285,10 @@ keepalive_attempts
 ~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       consul.keepalive_attempts
-**Key_Value_Path**  consul/keepalive_attempts
+**YAML Path**       consul.keepalive_attempts
+**Key-Value Path**  consul/keepalive_attempts
 **Environment**     NOC_CONSUL_KEEPALIVE_ATTEMPTS
-**Default_Value**   5
+**Default Value**   5
 ==================  =============================
 
 
@@ -1290,10 +1300,10 @@ base
 kv lookup base
 
 ==================  ===============
-**YAML_Path**       consul.base
-**Key_Value_Path**  consul/base
+**YAML Path**       consul.base
+**Key-Value Path**  consul/base
 **Environment**     NOC_CONSUL_BASE
-**Default_Value**   noc
+**Default Value**   noc
 ==================  ===============
 
 
@@ -1309,10 +1319,10 @@ max_threads
 ~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       correlator.max_threads
-**Key_Value_Path**  correlator/max_threads
+**YAML Path**       correlator.max_threads
+**Key-Value Path**  correlator/max_threads
 **Environment**     NOC_CORRELATOR_MAX_THREADS
-**Default_Value**   20
+**Default Value**   20
 ==================  ==========================
 
 
@@ -1322,10 +1332,10 @@ topology_rca_window
 ~~~~~~~~~~~~~~~~~~~
 
 ==================  ==================================
-**YAML_Path**       correlator.topology_rca_window
-**Key_Value_Path**  correlator/topology_rca_window
+**YAML Path**       correlator.topology_rca_window
+**Key-Value Path**  correlator/topology_rca_window
 **Environment**     NOC_CORRELATOR_TOPOLOGY_RCA_WINDOW
-**Default_Value**   0
+**Default Value**   0
 ==================  ==================================
 
 
@@ -1335,10 +1345,10 @@ oo_close_delay
 ~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       correlator.oo_close_delay
-**Key_Value_Path**  correlator/oo_close_delay
+**YAML Path**       correlator.oo_close_delay
+**Key-Value Path**  correlator/oo_close_delay
 **Environment**     NOC_CORRELATOR_OO_CLOSE_DELAY
-**Default_Value**   20s
+**Default Value**   20s
 ==================  =============================
 
 
@@ -1348,10 +1358,10 @@ discovery_delay
 ~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       correlator.discovery_delay
-**Key_Value_Path**  correlator/discovery_delay
+**YAML Path**       correlator.discovery_delay
+**Key-Value Path**  correlator/discovery_delay
 **Environment**     NOC_CORRELATOR_DISCOVERY_DELAY
-**Default_Value**   10M
+**Default Value**   10M
 ==================  ==============================
 
 
@@ -1361,10 +1371,10 @@ auto_escalation
 ~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       correlator.auto_escalation
-**Key_Value_Path**  correlator/auto_escalation
+**YAML Path**       correlator.auto_escalation
+**Key-Value Path**  correlator/auto_escalation
 **Environment**     NOC_CORRELATOR_AUTO_ESCALATION
-**Default_Value**   True
+**Default Value**   True
 ==================  ==============================
 
 
@@ -1380,10 +1390,10 @@ favicon_url
 ~~~~~~~~~~~
 
 ==================  =====================================
-**YAML_Path**       customization.favicon_url
-**Key_Value_Path**  customization/favicon_url
+**YAML Path**       customization.favicon_url
+**Key-Value Path**  customization/favicon_url
 **Environment**     NOC_CUSTOMIZATION_FAVICON_URL
-**Default_Value**   /static/img/logo_24x24_deep_azure.png
+**Default Value**   /static/img/logo_24x24_deep_azure.png
 ==================  =====================================
 
 
@@ -1393,10 +1403,10 @@ logo_url
 ~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       customization.logo_url
-**Key_Value_Path**  customization/logo_url
+**YAML Path**       customization.logo_url
+**Key-Value Path**  customization/logo_url
 **Environment**     NOC_CUSTOMIZATION_LOGO_URL
-**Default_Value**   /static/img/logo_white.svg
+**Default Value**   /static/img/logo_white.svg
 ==================  ==========================
 
 
@@ -1406,10 +1416,10 @@ logo_width
 ~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       customization.logo_width
-**Key_Value_Path**  customization/logo_width
+**YAML Path**       customization.logo_width
+**Key-Value Path**  customization/logo_width
 **Environment**     NOC_CUSTOMIZATION_LOGO_WIDTH
-**Default_Value**   24
+**Default Value**   24
 ==================  ============================
 
 
@@ -1419,10 +1429,10 @@ logo_height
 ~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       customization.logo_height
-**Key_Value_Path**  customization/logo_height
+**YAML Path**       customization.logo_height
+**Key-Value Path**  customization/logo_height
 **Environment**     NOC_CUSTOMIZATION_LOGO_HEIGHT
-**Default_Value**   24
+**Default Value**   24
 ==================  =============================
 
 
@@ -1432,10 +1442,10 @@ branding_color
 ~~~~~~~~~~~~~~
 
 ==================  ================================
-**YAML_Path**       customization.branding_color
-**Key_Value_Path**  customization/branding_color
+**YAML Path**       customization.branding_color
+**Key-Value Path**  customization/branding_color
 **Environment**     NOC_CUSTOMIZATION_BRANDING_COLOR
-**Default_Value**   #ffffff
+**Default Value**   #ffffff
 ==================  ================================
 
 
@@ -1445,10 +1455,10 @@ branding_background_color
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================================
-**YAML_Path**       customization.branding_background_color
-**Key_Value_Path**  customization/branding_background_color
+**YAML Path**       customization.branding_background_color
+**Key-Value Path**  customization/branding_background_color
 **Environment**     NOC_CUSTOMIZATION_BRANDING_BACKGROUND_COLOR
-**Default_Value**   #34495e
+**Default Value**   #34495e
 ==================  ===========================================
 
 
@@ -1458,10 +1468,10 @@ preview_theme
 ~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       customization.preview_theme
-**Key_Value_Path**  customization/preview_theme
+**YAML Path**       customization.preview_theme
+**Key-Value Path**  customization/preview_theme
 **Environment**     NOC_CUSTOMIZATION_PREVIEW_THEME
-**Default_Value**   midnight
+**Default Value**   midnight
 ==================  ===============================
 
 
@@ -1477,10 +1487,10 @@ date_format
 ~~~~~~~~~~~
 
 ==================  =================================
-**YAML_Path**       date_time_formats.date_format
-**Key_Value_Path**  date_time_formats/date_format
+**YAML Path**       date_time_formats.date_format
+**Key-Value Path**  date_time_formats/date_format
 **Environment**     NOC_DATE_TIME_FORMATS_DATE_FORMAT
-**Default_Value**   d.m.Y
+**Default Value**   d.m.Y
 ==================  =================================
 
 
@@ -1490,10 +1500,10 @@ datetime_format
 ~~~~~~~~~~~~~~~
 
 ==================  =====================================
-**YAML_Path**       date_time_formats.datetime_format
-**Key_Value_Path**  date_time_formats/datetime_format
+**YAML Path**       date_time_formats.datetime_format
+**Key-Value Path**  date_time_formats/datetime_format
 **Environment**     NOC_DATE_TIME_FORMATS_DATETIME_FORMAT
-**Default_Value**   d.m.Y H:i:s
+**Default Value**   d.m.Y H:i:s
 ==================  =====================================
 
 
@@ -1503,10 +1513,10 @@ month_day_format
 ~~~~~~~~~~~~~~~~
 
 ==================  ======================================
-**YAML_Path**       date_time_formats.month_day_format
-**Key_Value_Path**  date_time_formats/month_day_format
+**YAML Path**       date_time_formats.month_day_format
+**Key-Value Path**  date_time_formats/month_day_format
 **Environment**     NOC_DATE_TIME_FORMATS_MONTH_DAY_FORMAT
-**Default_Value**   F j
+**Default Value**   F j
 ==================  ======================================
 
 
@@ -1516,10 +1526,10 @@ time_format
 ~~~~~~~~~~~
 
 ==================  =================================
-**YAML_Path**       date_time_formats.time_format
-**Key_Value_Path**  date_time_formats/time_format
+**YAML Path**       date_time_formats.time_format
+**Key-Value Path**  date_time_formats/time_format
 **Environment**     NOC_DATE_TIME_FORMATS_TIME_FORMAT
-**Default_Value**   H:i:s
+**Default Value**   H:i:s
 ==================  =================================
 
 
@@ -1529,10 +1539,10 @@ year_month_format
 ~~~~~~~~~~~~~~~~~
 
 ==================  =======================================
-**YAML_Path**       date_time_formats.year_month_format
-**Key_Value_Path**  date_time_formats/year_month_format
+**YAML Path**       date_time_formats.year_month_format
+**Key-Value Path**  date_time_formats/year_month_format
 **Environment**     NOC_DATE_TIME_FORMATS_YEAR_MONTH_FORMAT
-**Default_Value**   F Y
+**Default Value**   F Y
 ==================  =======================================
 
 
@@ -1548,10 +1558,10 @@ resolution_timeout
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       dcs.resolution_timeout
-**Key_Value_Path**  dcs/resolution_timeout
+**YAML Path**       dcs.resolution_timeout
+**Key-Value Path**  dcs/resolution_timeout
 **Environment**     NOC_DCS_RESOLUTION_TIMEOUT
-**Default_Value**   5M
+**Default Value**   5M
 ==================  ==========================
 
 
@@ -1567,10 +1577,10 @@ max_threads
 ~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       discovery.max_threads
-**Key_Value_Path**  discovery/max_threads
+**YAML Path**       discovery.max_threads
+**Key-Value Path**  discovery/max_threads
 **Environment**     NOC_DISCOVERY_MAX_THREADS
-**Default_Value**   20
+**Default Value**   20
 ==================  =========================
 
 
@@ -1580,10 +1590,10 @@ sample
 ~~~~~~
 
 ==================  ====================
-**YAML_Path**       discovery.sample
-**Key_Value_Path**  discovery/sample
+**YAML Path**       discovery.sample
+**Key-Value Path**  discovery/sample
 **Environment**     NOC_DISCOVERY_SAMPLE
-**Default_Value**   0
+**Default Value**   0
 ==================  ====================
 
 
@@ -1599,10 +1609,10 @@ warn_before_expired
 ~~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       dns.warn_before_expired
-**Key_Value_Path**  dns/warn_before_expired
+**YAML Path**       dns.warn_before_expired
+**Key-Value Path**  dns/warn_before_expired
 **Environment**     NOC_DNS_WARN_BEFORE_EXPIRED
-**Default_Value**   30d
+**Default Value**   30d
 ==================  ===========================
 
 
@@ -1618,10 +1628,10 @@ max_threads
 ~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       escalator.max_threads
-**Key_Value_Path**  escalator/max_threads
+**YAML Path**       escalator.max_threads
+**Key-Value Path**  escalator/max_threads
 **Environment**     NOC_ESCALATOR_MAX_THREADS
-**Default_Value**   5
+**Default Value**   5
 ==================  =========================
 
 
@@ -1631,10 +1641,10 @@ retry_timeout
 ~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       escalator.retry_timeout
-**Key_Value_Path**  escalator/retry_timeout
+**YAML Path**       escalator.retry_timeout
+**Key-Value Path**  escalator/retry_timeout
 **Environment**     NOC_ESCALATOR_RETRY_TIMEOUT
-**Default_Value**   60s
+**Default Value**   60s
 ==================  ===========================
 
 
@@ -1644,10 +1654,10 @@ tt_escalation_limit
 ~~~~~~~~~~~~~~~~~~~
 
 ==================  =================================
-**YAML_Path**       escalator.tt_escalation_limit
-**Key_Value_Path**  escalator/tt_escalation_limit
+**YAML Path**       escalator.tt_escalation_limit
+**Key-Value Path**  escalator/tt_escalation_limit
 **Environment**     NOC_ESCALATOR_TT_ESCALATION_LIMIT
-**Default_Value**   10
+**Default Value**   10
 ==================  =================================
 
 
@@ -1657,10 +1667,10 @@ ets
 ~~~
 
 ==================  =================
-**YAML_Path**       escalator.ets
-**Key_Value_Path**  escalator/ets
+**YAML Path**       escalator.ets
+**Key-Value Path**  escalator/ets
 **Environment**     NOC_ESCALATOR_ETS
-**Default_Value**   60s
+**Default Value**   60s
 ==================  =================
 
 
@@ -1670,10 +1680,10 @@ wait_tt_check_interval
 ~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ====================================
-**YAML_Path**       escalator.wait_tt_check_interval
-**Key_Value_Path**  escalator/wait_tt_check_interval
+**YAML Path**       escalator.wait_tt_check_interval
+**Key-Value Path**  escalator/wait_tt_check_interval
 **Environment**     NOC_ESCALATOR_WAIT_TT_CHECK_INTERVAL
-**Default_Value**   60s
+**Default Value**   60s
 ==================  ====================================
 
 
@@ -1683,10 +1693,10 @@ sample
 ~~~~~~
 
 ==================  ====================
-**YAML_Path**       escalator.sample
-**Key_Value_Path**  escalator/sample
+**YAML Path**       escalator.sample
+**Key-Value Path**  escalator/sample
 **Environment**     NOC_ESCALATOR_SAMPLE
-**Default_Value**   0
+**Default Value**   0
 ==================  ====================
 
 
@@ -1702,10 +1712,10 @@ use_uvlib
 ~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       features.use_uvlib
-**Key_Value_Path**  features/use_uvlib
+**YAML Path**       features.use_uvlib
+**Key-Value Path**  features/use_uvlib
 **Environment**     NOC_FEATURES_USE_UVLIB
-**Default_Value**   False
+**Default Value**   False
 ==================  ======================
 
 
@@ -1715,10 +1725,10 @@ cp
 --
 
 ==================  ===============
-**YAML_Path**       features.cp
-**Key_Value_Path**  features/cp
+**YAML Path**       features.cp
+**Key-Value Path**  features/cp
 **Environment**     NOC_FEATURES_CP
-**Default_Value**   True
+**Default Value**   True
 ==================  ===============
 
 
@@ -1728,10 +1738,10 @@ sentry
 ~~~~~~
 
 ==================  ===================
-**YAML_Path**       features.sentry
-**Key_Value_Path**  features/sentry
+**YAML Path**       features.sentry
+**Key-Value Path**  features/sentry
 **Environment**     NOC_FEATURES_SENTRY
-**Default_Value**   False
+**Default Value**   False
 ==================  ===================
 
 
@@ -1741,10 +1751,10 @@ traefik
 ~~~~~~~
 
 ==================  ====================
-**YAML_Path**       features.traefik
-**Key_Value_Path**  features/traefik
+**YAML Path**       features.traefik
+**Key-Value Path**  features/traefik
 **Environment**     NOC_FEATURES_TRAEFIK
-**Default_Value**   False
+**Default Value**   False
 ==================  ====================
 
 
@@ -1754,10 +1764,10 @@ cpclient
 ~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       features.cpclient
-**Key_Value_Path**  features/cpclient
+**YAML Path**       features.cpclient
+**Key-Value Path**  features/cpclient
 **Environment**     NOC_FEATURES_CPCLIENT
-**Default_Value**   False
+**Default Value**   False
 ==================  =====================
 
 
@@ -1769,10 +1779,10 @@ telemetry
 Enable internal telemetry export to Clickhouse
 
 ==================  ======================
-**YAML_Path**       features.telemetry
-**Key_Value_Path**  features/telemetry
+**YAML Path**       features.telemetry
+**Key-Value Path**  features/telemetry
 **Environment**     NOC_FEATURES_TELEMETRY
-**Default_Value**   False
+**Default Value**   False
 ==================  ======================
 
 
@@ -1784,10 +1794,10 @@ consul_healthchecks
 While registering serive in consul also register health check
 
 ==================  ================================
-**YAML_Path**       features.consul_healthchecks
-**Key_Value_Path**  features/consul_healthchecks
+**YAML Path**       features.consul_healthchecks
+**Key-Value Path**  features/consul_healthchecks
 **Environment**     NOC_FEATURES_CONSUL_HEALTHCHECKS
-**Default_Value**   True
+**Default Value**   True
 ==================  ================================
 
 
@@ -1799,10 +1809,10 @@ service_registration
 Permit consul self registration
 
 ==================  =================================
-**YAML_Path**       features.service_registration
-**Key_Value_Path**  features/service_registration
+**YAML Path**       features.service_registration
+**Key-Value Path**  features/service_registration
 **Environment**     NOC_FEATURES_SERVICE_REGISTRATION
-**Default_Value**   True
+**Default Value**   True
 ==================  =================================
 
 
@@ -1812,10 +1822,10 @@ pypy
 ~~~~
 
 ==================  =================
-**YAML_Path**       features.pypy
-**Key_Value_Path**  features/pypy
+**YAML Path**       features.pypy
+**Key-Value Path**  features/pypy
 **Environment**     NOC_FEATURES_PYPY
-**Default_Value**   False
+**Default Value**   False
 ==================  =================
 
 
@@ -1825,10 +1835,10 @@ forensic
 ~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       features.forensic
-**Key_Value_Path**  features/forensic
+**YAML Path**       features.forensic
+**Key-Value Path**  features/forensic
 **Environment**     NOC_FEATURES_FORENSIC
-**Default_Value**   False
+**Default Value**   False
 ==================  =====================
 
 
@@ -1844,10 +1854,10 @@ active_window
 ~~~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       fm.active_window
-**Key_Value_Path**  fm/active_window
+**YAML Path**       fm.active_window
+**Key-Value Path**  fm/active_window
 **Environment**     NOC_FM_ACTIVE_WINDOW
-**Default_Value**   1d
+**Default Value**   1d
 ==================  ====================
 
 
@@ -1857,10 +1867,10 @@ keep_events_wo_alarm
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       fm.keep_events_wo_alarm
-**Key_Value_Path**  fm/keep_events_wo_alarm
+**YAML Path**       fm.keep_events_wo_alarm
+**Key-Value Path**  fm/keep_events_wo_alarm
 **Environment**     NOC_FM_KEEP_EVENTS_WO_ALARM
-**Default_Value**   0
+**Default Value**   0
 ==================  ===========================
 
 
@@ -1870,10 +1880,10 @@ keep_events_with_alarm
 ~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       fm.keep_events_with_alarm
-**Key_Value_Path**  fm/keep_events_with_alarm
+**YAML Path**       fm.keep_events_with_alarm
+**Key-Value Path**  fm/keep_events_with_alarm
 **Environment**     NOC_FM_KEEP_EVENTS_WITH_ALARM
-**Default_Value**   -1
+**Default Value**   -1
 ==================  =============================
 
 
@@ -1883,10 +1893,10 @@ alarm_close_retries
 ~~~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       fm.alarm_close_retries
-**Key_Value_Path**  fm/alarm_close_retries
+**YAML Path**       fm.alarm_close_retries
+**Key-Value Path**  fm/alarm_close_retries
 **Environment**     NOC_FM_ALARM_CLOSE_RETRIES
-**Default_Value**   5
+**Default Value**   5
 ==================  ==========================
 
 
@@ -1896,10 +1906,10 @@ outage_refresh
 ~~~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       fm.outage_refresh
-**Key_Value_Path**  fm/outage_refresh
+**YAML Path**       fm.outage_refresh
+**Key-Value Path**  fm/outage_refresh
 **Environment**     NOC_FM_OUTAGE_REFRESH
-**Default_Value**   60s
+**Default Value**   60s
 ==================  =====================
 
 
@@ -1909,10 +1919,10 @@ total_outage_refresh
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       fm.total_outage_refresh
-**Key_Value_Path**  fm/total_outage_refresh
+**YAML Path**       fm.total_outage_refresh
+**Key-Value Path**  fm/total_outage_refresh
 **Environment**     NOC_FM_TOTAL_OUTAGE_REFRESH
-**Default_Value**   60s
+**Default Value**   60s
 ==================  ===========================
 
 
@@ -1928,10 +1938,10 @@ order
 ~~~~~
 
 ==================  ===================
-**YAML_Path**       geocoding.order
-**Key_Value_Path**  geocoding/order
+**YAML Path**       geocoding.order
+**Key-Value Path**  geocoding/order
 **Environment**     NOC_GEOCODING_ORDER
-**Default_Value**   yandex,google
+**Default Value**   yandex,google
 ==================  ===================
 
 
@@ -1941,10 +1951,10 @@ yandex_key
 ~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       geocoding.yandex_key
-**Key_Value_Path**  geocoding/yandex_key
+**YAML Path**       geocoding.yandex_key
+**Key-Value Path**  geocoding/yandex_key
 **Environment**     NOC_GEOCODING_YANDEX_KEY
-**Default_Value**
+**Default Value**
 ==================  ========================
 
 
@@ -1954,10 +1964,10 @@ google_key
 ~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       geocoding.google_key
-**Key_Value_Path**  geocoding/google_key
+**YAML Path**       geocoding.google_key
+**Key-Value Path**  geocoding/google_key
 **Environment**     NOC_GEOCODING_GOOGLE_KEY
-**Default_Value**
+**Default Value**
 ==================  ========================
 
 
@@ -1967,10 +1977,10 @@ google_language
 ~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       geocoding.google_language
-**Key_Value_Path**  geocoding/google_language
+**YAML Path**       geocoding.google_language
+**Key-Value Path**  geocoding/google_language
 **Environment**     NOC_GEOCODING_GOOGLE_LANGUAGE
-**Default_Value**   en
+**Default Value**   en
 ==================  =============================
 
 
@@ -1986,10 +1996,10 @@ ellipsoid
 ~~~~~~~~~
 
 ==================  =================
-**YAML_Path**       gis.ellipsoid
-**Key_Value_Path**  gis/ellipsoid
+**YAML Path**       gis.ellipsoid
+**Key-Value Path**  gis/ellipsoid
 **Environment**     NOC_GIS_ELLIPSOID
-**Default_Value**   PZ-90
+**Default Value**   PZ-90
 ==================  =================
 
 
@@ -1999,10 +2009,10 @@ enable_osm
 ~~~~~~~~~~
 
 ==================  ==================
-**YAML_Path**       gis.enable_osm
-**Key_Value_Path**  gis/enable_osm
+**YAML Path**       gis.enable_osm
+**Key-Value Path**  gis/enable_osm
 **Environment**     NOC_GIS_ENABLE_OSM
-**Default_Value**   True
+**Default Value**   True
 ==================  ==================
 
 
@@ -2012,10 +2022,10 @@ enable_google_sat
 ~~~~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       gis.enable_google_sat
-**Key_Value_Path**  gis/enable_google_sat
+**YAML Path**       gis.enable_google_sat
+**Key-Value Path**  gis/enable_google_sat
 **Environment**     NOC_GIS_ENABLE_GOOGLE_SAT
-**Default_Value**   False
+**Default Value**   False
 ==================  =========================
 
 
@@ -2025,10 +2035,10 @@ enable_google_roadmap
 ~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       gis.enable_google_roadmap
-**Key_Value_Path**  gis/enable_google_roadmap
+**YAML Path**       gis.enable_google_roadmap
+**Key-Value Path**  gis/enable_google_roadmap
 **Environment**     NOC_GIS_ENABLE_GOOGLE_ROADMAP
-**Default_Value**   False
+**Default Value**   False
 ==================  =============================
 
 
@@ -2040,10 +2050,10 @@ tile_size
 Tile size 256x256
 
 ==================  =================
-**YAML_Path**       gis.tile_size
-**Key_Value_Path**  gis/tile_size
+**YAML Path**       gis.tile_size
+**Key-Value Path**  gis/tile_size
 **Environment**     NOC_GIS_TILE_SIZE
-**Default_Value**   256
+**Default Value**   256
 ==================  =================
 
 
@@ -2053,10 +2063,10 @@ tilecache_padding
 ~~~~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       gis.tilecache_padding
-**Key_Value_Path**  gis/tilecache_padding
+**YAML Path**       gis.tilecache_padding
+**Key-Value Path**  gis/tilecache_padding
 **Environment**     NOC_GIS_TILECACHE_PADDING
-**Default_Value**   0
+**Default Value**   0
 ==================  =========================
 
 
@@ -2072,10 +2082,10 @@ db_threads
 ~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       grafanads.db_threads
-**Key_Value_Path**  grafanads/db_threads
+**YAML Path**       grafanads.db_threads
+**Key-Value Path**  grafanads/db_threads
 **Environment**     NOC_GRAFANADS_DB_THREADS
-**Default_Value**   10
+**Default Value**   10
 ==================  ========================
 
 
@@ -2091,10 +2101,10 @@ connect_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       http_client.connect_timeout
-**Key_Value_Path**  http_client/connect_timeout
+**YAML Path**       http_client.connect_timeout
+**Key-Value Path**  http_client/connect_timeout
 **Environment**     NOC_HTTP_CLIENT_CONNECT_TIMEOUT
-**Default_Value**   10s
+**Default Value**   10s
 ==================  ===============================
 
 
@@ -2104,10 +2114,10 @@ request_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       http_client.request_timeout
-**Key_Value_Path**  http_client/request_timeout
+**YAML Path**       http_client.request_timeout
+**Key-Value Path**  http_client/request_timeout
 **Environment**     NOC_HTTP_CLIENT_REQUEST_TIMEOUT
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ===============================
 
 
@@ -2117,10 +2127,10 @@ user_agent
 ~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       http_client.user_agent
-**Key_Value_Path**  http_client/user_agent
+**YAML Path**       http_client.user_agent
+**Key-Value Path**  http_client/user_agent
 **Environment**     NOC_HTTP_CLIENT_USER_AGENT
-**Default_Value**   noc
+**Default Value**   noc
 ==================  ==========================
 
 
@@ -2130,10 +2140,10 @@ buffer_size
 ~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       http_client.buffer_size
-**Key_Value_Path**  http_client/buffer_size
+**YAML Path**       http_client.buffer_size
+**Key-Value Path**  http_client/buffer_size
 **Environment**     NOC_HTTP_CLIENT_BUFFER_SIZE
-**Default_Value**   128 * 1024
+**Default Value**   128 * 1024
 ==================  ===========================
 
 
@@ -2143,10 +2153,10 @@ max_redirects
 ~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       http_client.max_redirects
-**Key_Value_Path**  http_client/max_redirects
+**YAML Path**       http_client.max_redirects
+**Key-Value Path**  http_client/max_redirects
 **Environment**     NOC_HTTP_CLIENT_MAX_REDIRECTS
-**Default_Value**   5
+**Default Value**   5
 ==================  =============================
 
 
@@ -2156,10 +2166,10 @@ ns_cache_size
 ~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       http_client.ns_cache_size
-**Key_Value_Path**  http_client/ns_cache_size
+**YAML Path**       http_client.ns_cache_size
+**Key-Value Path**  http_client/ns_cache_size
 **Environment**     NOC_HTTP_CLIENT_NS_CACHE_SIZE
-**Default_Value**   1000
+**Default Value**   1000
 ==================  =============================
 
 
@@ -2169,10 +2179,10 @@ resolver_ttl
 ~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       http_client.resolver_ttl
-**Key_Value_Path**  http_client/resolver_ttl
+**YAML Path**       http_client.resolver_ttl
+**Key-Value Path**  http_client/resolver_ttl
 **Environment**     NOC_HTTP_CLIENT_RESOLVER_TTL
-**Default_Value**   3s
+**Default Value**   3s
 ==================  ============================
 
 
@@ -2182,10 +2192,10 @@ http_port
 ~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       http_client.http_port
-**Key_Value_Path**  http_client/http_port
+**YAML Path**       http_client.http_port
+**Key-Value Path**  http_client/http_port
 **Environment**     NOC_HTTP_CLIENT_HTTP_PORT
-**Default_Value**   80
+**Default Value**   80
 ==================  =========================
 
 
@@ -2195,10 +2205,10 @@ https_port
 ~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       http_client.https_port
-**Key_Value_Path**  http_client/https_port
+**YAML Path**       http_client.https_port
+**Key-Value Path**  http_client/https_port
 **Environment**     NOC_HTTP_CLIENT_HTTPS_PORT
-**Default_Value**   443
+**Default Value**   443
 ==================  ==========================
 
 
@@ -2210,10 +2220,10 @@ validate_certs
 Have to be set as True
 
 ==================  ==============================
-**YAML_Path**       http_client.validate_certs
-**Key_Value_Path**  http_client/validate_certs
+**YAML Path**       http_client.validate_certs
+**Key-Value Path**  http_client/validate_certs
 **Environment**     NOC_HTTP_CLIENT_VALIDATE_CERTS
-**Default_Value**   False
+**Default Value**   False
 ==================  ==============================
 
 
@@ -2229,10 +2239,10 @@ addresses
 ~~~~~~~~~
 
 ==================  ===============================================
-**YAML_Path**       influxdb.addresses
-**Key_Value_Path**  influxdb/addresses
+**YAML Path**       influxdb.addresses
+**Key-Value Path**  influxdb/addresses
 **Environment**     NOC_INFLUXDB_ADDRESSES
-**Default_Value**   ServiceParameter(service='influxdb', wait=True)
+**Default Value**   ServiceParameter(service='influxdb', wait=True)
 ==================  ===============================================
 
 
@@ -2242,10 +2252,10 @@ db
 ~~
 
 ==================  ===============
-**YAML_Path**       influxdb.db
-**Key_Value_Path**  influxdb/db
+**YAML Path**       influxdb.db
+**Key-Value Path**  influxdb/db
 **Environment**     NOC_INFLUXDB_DB
-**Default_Value**   noc
+**Default Value**   noc
 ==================  ===============
 
 
@@ -2255,10 +2265,10 @@ user
 ~~~~
 
 ==================  =================
-**YAML_Path**       influxdb.user
-**Key_Value_Path**  influxdb/user
+**YAML Path**       influxdb.user
+**Key-Value Path**  influxdb/user
 **Environment**     NOC_INFLUXDB_USER
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =================
 
 
@@ -2268,10 +2278,10 @@ password
 ~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       influxdb.password
-**Key_Value_Path**  influxdb/password
+**YAML Path**       influxdb.password
+**Key-Value Path**  influxdb/password
 **Environment**     NOC_INFLUXDB_PASSWORD
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  =====================
 
 
@@ -2281,10 +2291,10 @@ request_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       influxdb.request_timeout
-**Key_Value_Path**  influxdb/request_timeout
+**YAML Path**       influxdb.request_timeout
+**Key-Value Path**  influxdb/request_timeout
 **Environment**     NOC_INFLUXDB_REQUEST_TIMEOUT
-**Default_Value**   10M
+**Default Value**   10M
 ==================  ============================
 
 
@@ -2294,10 +2304,10 @@ connect_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       influxdb.connect_timeout
-**Key_Value_Path**  influxdb/connect_timeout
+**YAML Path**       influxdb.connect_timeout
+**Key-Value Path**  influxdb/connect_timeout
 **Environment**     NOC_INFLUXDB_CONNECT_TIMEOUT
-**Default_Value**   10s
+**Default Value**   10s
 ==================  ============================
 
 
@@ -2313,10 +2323,10 @@ log_api_calls
 ~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       logging.log_api_calls
-**Key_Value_Path**  logging/log_api_calls
+**YAML Path**       logging.log_api_calls
+**Key-Value Path**  logging/log_api_calls
 **Environment**     NOC_LOGGING_LOG_API_CALLS
-**Default_Value**   False
+**Default Value**   False
 ==================  =========================
 
 
@@ -2326,10 +2336,10 @@ log_sql_statements
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       logging.log_sql_statements
-**Key_Value_Path**  logging/log_sql_statements
+**YAML Path**       logging.log_sql_statements
+**Key-Value Path**  logging/log_sql_statements
 **Environment**     NOC_LOGGING_LOG_SQL_STATEMENTS
-**Default_Value**   False
+**Default Value**   False
 ==================  ==============================
 
 
@@ -2345,10 +2355,10 @@ methods
 ~~~~~~~
 
 ==================  =================
-**YAML_Path**       login.methods
-**Key_Value_Path**  login/methods
+**YAML Path**       login.methods
+**Key-Value Path**  login/methods
 **Environment**     NOC_LOGIN_METHODS
-**Default_Value**   local
+**Default Value**   local
 ==================  =================
 
 
@@ -2358,10 +2368,10 @@ session_ttl
 ~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       login.session_ttl
-**Key_Value_Path**  login/session_ttl
+**YAML Path**       login.session_ttl
+**Key-Value Path**  login/session_ttl
 **Environment**     NOC_LOGIN_SESSION_TTL
-**Default_Value**   7d
+**Default Value**   7d
 ==================  =====================
 
 
@@ -2371,10 +2381,10 @@ language
 ~~~~~~~~
 
 ==================  ==================
-**YAML_Path**       login.language
-**Key_Value_Path**  login/language
+**YAML Path**       login.language
+**Key-Value Path**  login/language
 **Environment**     NOC_LOGIN_LANGUAGE
-**Default_Value**   en
+**Default Value**   en
 ==================  ==================
 
 
@@ -2384,10 +2394,10 @@ restrict_to_group
 ~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       login.restrict_to_group
-**Key_Value_Path**  login/restrict_to_group
+**YAML Path**       login.restrict_to_group
+**Key-Value Path**  login/restrict_to_group
 **Environment**     NOC_LOGIN_RESTRICT_TO_GROUP
-**Default_Value**
+**Default Value**
 ==================  ===========================
 
 
@@ -2397,10 +2407,10 @@ single_session_group
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       login.single_session_group
-**Key_Value_Path**  login/single_session_group
+**YAML Path**       login.single_session_group
+**Key-Value Path**  login/single_session_group
 **Environment**     NOC_LOGIN_SINGLE_SESSION_GROUP
-**Default_Value**
+**Default Value**
 ==================  ==============================
 
 
@@ -2410,10 +2420,10 @@ mutual_exclusive_group
 ~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ================================
-**YAML_Path**       login.mutual_exclusive_group
-**Key_Value_Path**  login/mutual_exclusive_group
+**YAML Path**       login.mutual_exclusive_group
+**Key-Value Path**  login/mutual_exclusive_group
 **Environment**     NOC_LOGIN_MUTUAL_EXCLUSIVE_GROUP
-**Default_Value**
+**Default Value**
 ==================  ================================
 
 
@@ -2423,10 +2433,10 @@ idle_timeout
 ~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       login.idle_timeout
-**Key_Value_Path**  login/idle_timeout
+**YAML Path**       login.idle_timeout
+**Key-Value Path**  login/idle_timeout
 **Environment**     NOC_LOGIN_IDLE_TIMEOUT
-**Default_Value**   1w
+**Default Value**   1w
 ==================  ======================
 
 
@@ -2436,10 +2446,10 @@ pam_service
 ~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       login.pam_service
-**Key_Value_Path**  login/pam_service
+**YAML Path**       login.pam_service
+**Key-Value Path**  login/pam_service
 **Environment**     NOC_LOGIN_PAM_SERVICE
-**Default_Value**   noc
+**Default Value**   noc
 ==================  =====================
 
 
@@ -2449,10 +2459,10 @@ radius_secret
 ~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       login.radius_secret
-**Key_Value_Path**  login/radius_secret
+**YAML Path**       login.radius_secret
+**Key-Value Path**  login/radius_secret
 **Environment**     NOC_LOGIN_RADIUS_SECRET
-**Default_Value**   noc
+**Default Value**   noc
 ==================  =======================
 
 
@@ -2462,10 +2472,10 @@ radius_server
 ~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       login.radius_server
-**Key_Value_Path**  login/radius_server
+**YAML Path**       login.radius_server
+**Key-Value Path**  login/radius_server
 **Environment**     NOC_LOGIN_RADIUS_SERVER
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =======================
 
 
@@ -2475,10 +2485,10 @@ user_cookie_ttl
 ~~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       login.user_cookie_ttl
-**Key_Value_Path**  login/user_cookie_ttl
+**YAML Path**       login.user_cookie_ttl
+**Key-Value Path**  login/user_cookie_ttl
 **Environment**     NOC_LOGIN_USER_COOKIE_TTL
-**Default_Value**   1
+**Default Value**   1
 ==================  =========================
 
 
@@ -2494,10 +2504,10 @@ smtp_server
 ~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       mailsender.smtp_server
-**Key_Value_Path**  mailsender/smtp_server
+**YAML Path**       mailsender.smtp_server
+**Key-Value Path**  mailsender/smtp_server
 **Environment**     NOC_MAILSENDER_SMTP_SERVER
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  ==========================
 
 
@@ -2507,10 +2517,10 @@ smtp_port
 ~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       mailsender.smtp_port
-**Key_Value_Path**  mailsender/smtp_port
+**YAML Path**       mailsender.smtp_port
+**Key-Value Path**  mailsender/smtp_port
 **Environment**     NOC_MAILSENDER_SMTP_PORT
-**Default_Value**   25
+**Default Value**   25
 ==================  ========================
 
 
@@ -2520,10 +2530,10 @@ use_tls
 ~~~~~~~
 
 ==================  ======================
-**YAML_Path**       mailsender.use_tls
-**Key_Value_Path**  mailsender/use_tls
+**YAML Path**       mailsender.use_tls
+**Key-Value Path**  mailsender/use_tls
 **Environment**     NOC_MAILSENDER_USE_TLS
-**Default_Value**   False
+**Default Value**   False
 ==================  ======================
 
 
@@ -2533,10 +2543,10 @@ helo_hostname
 ~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       mailsender.helo_hostname
-**Key_Value_Path**  mailsender/helo_hostname
+**YAML Path**       mailsender.helo_hostname
+**Key-Value Path**  mailsender/helo_hostname
 **Environment**     NOC_MAILSENDER_HELO_HOSTNAME
-**Default_Value**   noc
+**Default Value**   noc
 ==================  ============================
 
 
@@ -2546,10 +2556,10 @@ from_address
 ~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       mailsender.from_address
-**Key_Value_Path**  mailsender/from_address
+**YAML Path**       mailsender.from_address
+**Key-Value Path**  mailsender/from_address
 **Environment**     NOC_MAILSENDER_FROM_ADDRESS
-**Default_Value**   noc@example.com
+**Default Value**   noc@example.com
 ==================  ===========================
 
 
@@ -2559,10 +2569,10 @@ smtp_user
 ~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       mailsender.smtp_user
-**Key_Value_Path**  mailsender/smtp_user
+**YAML Path**       mailsender.smtp_user
+**Key-Value Path**  mailsender/smtp_user
 **Environment**     NOC_MAILSENDER_SMTP_USER
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  ========================
 
 
@@ -2572,10 +2582,10 @@ smtp_password
 ~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       mailsender.smtp_password
-**Key_Value_Path**  mailsender/smtp_password
+**YAML Path**       mailsender.smtp_password
+**Key-Value Path**  mailsender/smtp_password
 **Environment**     NOC_MAILSENDER_SMTP_PASSWORD
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  ============================
 
 
@@ -2591,10 +2601,10 @@ addresses
 ~~~~~~~~~
 
 ==================  ==================================================================
-**YAML_Path**       memcached.addresses
-**Key_Value_Path**  memcached/addresses
+**YAML Path**       memcached.addresses
+**Key-Value Path**  memcached/addresses
 **Environment**     NOC_MEMCACHED_ADDRESSES
-**Default_Value**   ServiceParameter(service='memcached', wait=True, full_result=True)
+**Default Value**   ServiceParameter(service='memcached', wait=True, full_result=True)
 ==================  ==================================================================
 
 
@@ -2604,10 +2614,10 @@ pool_size
 ~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       memcached.pool_size
-**Key_Value_Path**  memcached/pool_size
+**YAML Path**       memcached.pool_size
+**Key-Value Path**  memcached/pool_size
 **Environment**     NOC_MEMCACHED_POOL_SIZE
-**Default_Value**   8
+**Default Value**   8
 ==================  =======================
 
 
@@ -2617,10 +2627,10 @@ default_ttl
 ~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       memcached.default_ttl
-**Key_Value_Path**  memcached/default_ttl
+**YAML Path**       memcached.default_ttl
+**Key-Value Path**  memcached/default_ttl
 **Environment**     NOC_MEMCACHED_DEFAULT_TTL
-**Default_Value**   1d
+**Default Value**   1d
 ==================  =========================
 
 
@@ -2636,10 +2646,10 @@ addresses
 ~~~~~~~~~
 
 ==================  ============================================
-**YAML_Path**       mongo.addresses
-**Key_Value_Path**  mongo/addresses
+**YAML Path**       mongo.addresses
+**Key-Value Path**  mongo/addresses
 **Environment**     NOC_MONGO_ADDRESSES
-**Default_Value**   ServiceParameter(service='mongo', wait=True)
+**Default Value**   ServiceParameter(service='mongo', wait=True)
 ==================  ============================================
 
 
@@ -2649,10 +2659,10 @@ db
 ~~
 
 ==================  ============
-**YAML_Path**       mongo.db
-**Key_Value_Path**  mongo/db
+**YAML Path**       mongo.db
+**Key-Value Path**  mongo/db
 **Environment**     NOC_MONGO_DB
-**Default_Value**   noc
+**Default Value**   noc
 ==================  ============
 
 
@@ -2662,10 +2672,10 @@ user
 ~~~~
 
 ==================  =================
-**YAML_Path**       mongo.user
-**Key_Value_Path**  mongo/user
+**YAML Path**       mongo.user
+**Key-Value Path**  mongo/user
 **Environment**     NOC_MONGO_USER
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =================
 
 
@@ -2675,10 +2685,10 @@ password
 ~~~~~~~~
 
 ==================  ==================
-**YAML_Path**       mongo.password
-**Key_Value_Path**  mongo/password
+**YAML Path**       mongo.password
+**Key-Value Path**  mongo/password
 **Environment**     NOC_MONGO_PASSWORD
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  ==================
 
 
@@ -2688,10 +2698,10 @@ rs
 ~~
 
 ==================  =================
-**YAML_Path**       mongo.rs
-**Key_Value_Path**  mongo/rs
+**YAML Path**       mongo.rs
+**Key-Value Path**  mongo/rs
 **Environment**     NOC_MONGO_RS
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =================
 
 
@@ -2701,10 +2711,10 @@ retries
 ~~~~~~~
 
 ==================  =================
-**YAML_Path**       mongo.retries
-**Key_Value_Path**  mongo/retries
+**YAML Path**       mongo.retries
+**Key-Value Path**  mongo/retries
 **Environment**     NOC_MONGO_RETRIES
-**Default_Value**   20
+**Default Value**   20
 ==================  =================
 
 
@@ -2714,10 +2724,10 @@ timeout
 ~~~~~~~
 
 ==================  =================
-**YAML_Path**       mongo.timeout
-**Key_Value_Path**  mongo/timeout
+**YAML Path**       mongo.timeout
+**Key-Value Path**  mongo/timeout
 **Environment**     NOC_MONGO_TIMEOUT
-**Default_Value**   3s
+**Default Value**   3s
 ==================  =================
 
 
@@ -2733,10 +2743,10 @@ max_concurrency
 ~~~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       mrt.max_concurrency
-**Key_Value_Path**  mrt/max_concurrency
+**YAML Path**       mrt.max_concurrency
+**Key-Value Path**  mrt/max_concurrency
 **Environment**     NOC_MRT_MAX_CONCURRENCY
-**Default_Value**   50
+**Default Value**   50
 ==================  =======================
 
 
@@ -2752,10 +2762,10 @@ addresses
 ~~~~~~~~~
 
 ==================  =========================================================================
-**YAML_Path**       nsqd.addresses
-**Key_Value_Path**  nsqd/addresses
+**YAML Path**       nsqd.addresses
+**Key-Value Path**  nsqd/addresses
 **Environment**     NOC_NSQD_ADDRESSES
-**Default_Value**   ServiceParameter(service='nsqd', wait=True, near=True, full_result=False)
+**Default Value**   ServiceParameter(service='nsqd', wait=True, near=True, full_result=False)
 ==================  =========================================================================
 
 
@@ -2765,10 +2775,10 @@ http_addresses
 ~~~~~~~~~~~~~~
 
 ==================  =============================================================================
-**YAML_Path**       nsqd.http_addresses
-**Key_Value_Path**  nsqd/http_addresses
+**YAML Path**       nsqd.http_addresses
+**Key-Value Path**  nsqd/http_addresses
 **Environment**     NOC_NSQD_HTTP_ADDRESSES
-**Default_Value**   ServiceParameter(service='nsqdhttp', wait=True, near=True, full_result=False)
+**Default Value**   ServiceParameter(service='nsqdhttp', wait=True, near=True, full_result=False)
 ==================  =============================================================================
 
 
@@ -2778,10 +2788,10 @@ pub_retry_delay
 ~~~~~~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       nsqd.pub_retry_delay
-**Key_Value_Path**  nsqd/pub_retry_delay
+**YAML Path**       nsqd.pub_retry_delay
+**Key-Value Path**  nsqd/pub_retry_delay
 **Environment**     NOC_NSQD_PUB_RETRY_DELAY
-**Default_Value**   0.1
+**Default Value**   0.1
 ==================  ========================
 
 
@@ -2791,10 +2801,10 @@ ch_chunk_size
 ~~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       nsqd.ch_chunk_size
-**Key_Value_Path**  nsqd/ch_chunk_size
+**YAML Path**       nsqd.ch_chunk_size
+**Key-Value Path**  nsqd/ch_chunk_size
 **Environment**     NOC_NSQD_CH_CHUNK_SIZE
-**Default_Value**   4000
+**Default Value**   4000
 ==================  ======================
 
 
@@ -2804,10 +2814,10 @@ connect_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       nsqd.connect_timeout
-**Key_Value_Path**  nsqd/connect_timeout
+**YAML Path**       nsqd.connect_timeout
+**Key-Value Path**  nsqd/connect_timeout
 **Environment**     NOC_NSQD_CONNECT_TIMEOUT
-**Default_Value**   3s
+**Default Value**   3s
 ==================  ========================
 
 
@@ -2817,10 +2827,10 @@ request_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       nsqd.request_timeout
-**Key_Value_Path**  nsqd/request_timeout
+**YAML Path**       nsqd.request_timeout
+**Key-Value Path**  nsqd/request_timeout
 **Environment**     NOC_NSQD_REQUEST_TIMEOUT
-**Default_Value**   30s
+**Default Value**   30s
 ==================  ========================
 
 
@@ -2830,10 +2840,10 @@ reconnect_interval
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       nsqd.reconnect_interval
-**Key_Value_Path**  nsqd/reconnect_interval
+**YAML Path**       nsqd.reconnect_interval
+**Key-Value Path**  nsqd/reconnect_interval
 **Environment**     NOC_NSQD_RECONNECT_INTERVAL
-**Default_Value**   15
+**Default Value**   15
 ==================  ===========================
 
 
@@ -2842,12 +2852,18 @@ reconnect_interval
 compression
 ~~~~~~~~~~~
 
-==================  =====================================
-**YAML_Path**       nsqd.compression
-**Key_Value_Path**  nsqd/compression
+==================  ====================
+**YAML Path**       nsqd.compression
+**Key-Value Path**  nsqd/compression
 **Environment**     NOC_NSQD_COMPRESSION
-**Default_Value**   '', choices=['', 'deflate', 'snappy']
-==================  =====================================
+**Default Value**
+==================  ====================
+
+Possible values:
+
+*
+* deflate
+* snappy
 
 
 .. _config-nsqd-compression_level:
@@ -2856,10 +2872,10 @@ compression_level
 ~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       nsqd.compression_level
-**Key_Value_Path**  nsqd/compression_level
+**YAML Path**       nsqd.compression_level
+**Key-Value Path**  nsqd/compression_level
 **Environment**     NOC_NSQD_COMPRESSION_LEVEL
-**Default_Value**   6
+**Default Value**   6
 ==================  ==========================
 
 
@@ -2869,10 +2885,10 @@ max_in_flight
 ~~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       nsqd.max_in_flight
-**Key_Value_Path**  nsqd/max_in_flight
+**YAML Path**       nsqd.max_in_flight
+**Key-Value Path**  nsqd/max_in_flight
 **Environment**     NOC_NSQD_MAX_IN_FLIGHT
-**Default_Value**   1
+**Default Value**   1
 ==================  ======================
 
 
@@ -2888,10 +2904,10 @@ addresses
 ~~~~~~~~~
 
 ==================  ===============================================================================
-**YAML_Path**       nsqlookupd.addresses
-**Key_Value_Path**  nsqlookupd/addresses
+**YAML Path**       nsqlookupd.addresses
+**Key-Value Path**  nsqlookupd/addresses
 **Environment**     NOC_NSQLOOKUPD_ADDRESSES
-**Default_Value**   ServiceParameter(service='nsqlookupd', wait=True, near=True, full_result=False)
+**Default Value**   ServiceParameter(service='nsqlookupd', wait=True, near=True, full_result=False)
 ==================  ===============================================================================
 
 
@@ -2901,10 +2917,10 @@ http_addresses
 ~~~~~~~~~~~~~~
 
 ==================  ========================================================================
-**YAML_Path**       nsqlookupd.http_addresses
-**Key_Value_Path**  nsqlookupd/http_addresses
+**YAML Path**       nsqlookupd.http_addresses
+**Key-Value Path**  nsqlookupd/http_addresses
 **Environment**     NOC_NSQLOOKUPD_HTTP_ADDRESSES
-**Default_Value**   ServiceParameter(service='nsqlookupdhttp', wait=True, full_result=False)
+**Default Value**   ServiceParameter(service='nsqlookupdhttp', wait=True, full_result=False)
 ==================  ========================================================================
 
 
@@ -2920,10 +2936,10 @@ smilint
 ~~~~~~~
 
 ==================  =================
-**YAML_Path**       path.smilint
-**Key_Value_Path**  path/smilint
+**YAML Path**       path.smilint
+**Key-Value Path**  path/smilint
 **Environment**     NOC_PATH_SMILINT
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =================
 
 
@@ -2933,10 +2949,10 @@ smidump
 ~~~~~~~
 
 ==================  =================
-**YAML_Path**       path.smidump
-**Key_Value_Path**  path/smidump
+**YAML Path**       path.smidump
+**Key-Value Path**  path/smidump
 **Environment**     NOC_PATH_SMIDUMP
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =================
 
 
@@ -2946,10 +2962,10 @@ dig
 ~~~
 
 ==================  =================
-**YAML_Path**       path.dig
-**Key_Value_Path**  path/dig
+**YAML Path**       path.dig
+**Key-Value Path**  path/dig
 **Environment**     NOC_PATH_DIG
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =================
 
 
@@ -2959,10 +2975,10 @@ vcs_path
 ~~~~~~~~
 
 ==================  =================
-**YAML_Path**       path.vcs_path
-**Key_Value_Path**  path/vcs_path
+**YAML Path**       path.vcs_path
+**Key-Value Path**  path/vcs_path
 **Environment**     NOC_PATH_VCS_PATH
-**Default_Value**   /usr/local/bin/hg
+**Default Value**   /usr/local/bin/hg
 ==================  =================
 
 
@@ -2972,10 +2988,10 @@ repo
 ~~~~
 
 ==================  =============
-**YAML_Path**       path.repo
-**Key_Value_Path**  path/repo
+**YAML Path**       path.repo
+**Key-Value Path**  path/repo
 **Environment**     NOC_PATH_REPO
-**Default_Value**   /var/repo
+**Default Value**   /var/repo
 ==================  =============
 
 
@@ -2985,10 +3001,10 @@ config_mirror_path
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       path.config_mirror_path
-**Key_Value_Path**  path/config_mirror_path
+**YAML Path**       path.config_mirror_path
+**Key-Value Path**  path/config_mirror_path
 **Environment**     NOC_PATH_CONFIG_MIRROR_PATH
-**Default_Value**   StringParameter('')
+**Default Value**   StringParameter('')
 ==================  ===========================
 
 
@@ -2998,10 +3014,10 @@ backup_dir
 ~~~~~~~~~~
 
 ==================  ===================
-**YAML_Path**       path.backup_dir
-**Key_Value_Path**  path/backup_dir
+**YAML Path**       path.backup_dir
+**Key-Value Path**  path/backup_dir
 **Environment**     NOC_PATH_BACKUP_DIR
-**Default_Value**   /var/backup
+**Default Value**   /var/backup
 ==================  ===================
 
 
@@ -3011,10 +3027,10 @@ etl_import
 ~~~~~~~~~~
 
 ==================  ===================
-**YAML_Path**       path.etl_import
-**Key_Value_Path**  path/etl_import
+**YAML Path**       path.etl_import
+**Key-Value Path**  path/etl_import
 **Environment**     NOC_PATH_ETL_IMPORT
-**Default_Value**   /var/lib/noc/import
+**Default Value**   /var/lib/noc/import
 ==================  ===================
 
 
@@ -3024,10 +3040,10 @@ ssh_key_prefix
 ~~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       path.ssh_key_prefix
-**Key_Value_Path**  path/ssh_key_prefix
+**YAML Path**       path.ssh_key_prefix
+**Key-Value Path**  path/ssh_key_prefix
 **Environment**     NOC_PATH_SSH_KEY_PREFIX
-**Default_Value**   etc/noc_ssh
+**Default Value**   etc/noc_ssh
 ==================  =======================
 
 
@@ -3037,10 +3053,10 @@ beef_prefix
 ~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       path.beef_prefix
-**Key_Value_Path**  path/beef_prefix
+**YAML Path**       path.beef_prefix
+**Key-Value Path**  path/beef_prefix
 **Environment**     NOC_PATH_BEEF_PREFIX
-**Default_Value**   /var/lib/noc/beef/sa
+**Default Value**   /var/lib/noc/beef/sa
 ==================  ====================
 
 
@@ -3050,10 +3066,10 @@ cp_new
 ~~~~~~
 
 ==================  =============================
-**YAML_Path**       path.cp_new
-**Key_Value_Path**  path/cp_new
+**YAML Path**       path.cp_new
+**Key-Value Path**  path/cp_new
 **Environment**     NOC_PATH_CP_NEW
-**Default_Value**   /var/lib/noc/cp/crashinfo/new
+**Default Value**   /var/lib/noc/cp/crashinfo/new
 ==================  =============================
 
 
@@ -3063,10 +3079,10 @@ bi_data_prefix
 ~~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       path.bi_data_prefix
-**Key_Value_Path**  path/bi_data_prefix
+**YAML Path**       path.bi_data_prefix
+**Key-Value Path**  path/bi_data_prefix
 **Environment**     NOC_PATH_BI_DATA_PREFIX
-**Default_Value**   /var/lib/noc/bi
+**Default Value**   /var/lib/noc/bi
 ==================  =======================
 
 
@@ -3076,10 +3092,10 @@ babel_cfg
 ~~~~~~~~~
 
 ==================  ==================
-**YAML_Path**       path.babel_cfg
-**Key_Value_Path**  path/babel_cfg
+**YAML Path**       path.babel_cfg
+**Key-Value Path**  path/babel_cfg
 **Environment**     NOC_PATH_BABEL_CFG
-**Default_Value**   etc/babel.cfg
+**Default Value**   etc/babel.cfg
 ==================  ==================
 
 
@@ -3089,10 +3105,10 @@ babel
 ~~~~~
 
 ==================  ==============
-**YAML_Path**       path.babel
-**Key_Value_Path**  path/babel
+**YAML Path**       path.babel
+**Key-Value Path**  path/babel
 **Environment**     NOC_PATH_BABEL
-**Default_Value**   ./bin/pybabel
+**Default Value**   ./bin/pybabel
 ==================  ==============
 
 
@@ -3102,10 +3118,10 @@ pojson
 ~~~~~~
 
 ==================  ===============
-**YAML_Path**       path.pojson
-**Key_Value_Path**  path/pojson
+**YAML Path**       path.pojson
+**Key-Value Path**  path/pojson
 **Environment**     NOC_PATH_POJSON
-**Default_Value**   ./bin/pojson
+**Default Value**   ./bin/pojson
 ==================  ===============
 
 
@@ -3115,10 +3131,10 @@ collection_fm_mibs
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       path.collection_fm_mibs
-**Key_Value_Path**  path/collection_fm_mibs
+**YAML Path**       path.collection_fm_mibs
+**Key-Value Path**  path/collection_fm_mibs
 **Environment**     NOC_PATH_COLLECTION_FM_MIBS
-**Default_Value**   collections/fm.mibs/
+**Default Value**   collections/fm.mibs/
 ==================  ===========================
 
 
@@ -3128,10 +3144,10 @@ supervisor_cfg
 ~~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       path.supervisor_cfg
-**Key_Value_Path**  path/supervisor_cfg
+**YAML Path**       path.supervisor_cfg
+**Key-Value Path**  path/supervisor_cfg
 **Environment**     NOC_PATH_SUPERVISOR_CFG
-**Default_Value**   etc/noc_services.conf
+**Default Value**   etc/noc_services.conf
 ==================  =======================
 
 
@@ -3141,10 +3157,10 @@ legacy_config
 ~~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       path.legacy_config
-**Key_Value_Path**  path/legacy_config
+**YAML Path**       path.legacy_config
+**Key-Value Path**  path/legacy_config
 **Environment**     NOC_PATH_LEGACY_CONFIG
-**Default_Value**   etc/noc.yml
+**Default Value**   etc/noc.yml
 ==================  ======================
 
 
@@ -3154,10 +3170,10 @@ cythonize
 ~~~~~~~~~
 
 ==================  ==================
-**YAML_Path**       path.cythonize
-**Key_Value_Path**  path/cythonize
+**YAML Path**       path.cythonize
+**Key-Value Path**  path/cythonize
 **Environment**     NOC_PATH_CYTHONIZE
-**Default_Value**   ./bin/cythonize
+**Default Value**   ./bin/cythonize
 ==================  ==================
 
 
@@ -3167,10 +3183,10 @@ npkg_root
 ~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       path.npkg_root
-**Key_Value_Path**  path/npkg_root
+**YAML Path**       path.npkg_root
+**Key-Value Path**  path/npkg_root
 **Environment**     NOC_PATH_NPKG_ROOT
-**Default_Value**   /var/lib/noc/var/pkg
+**Default Value**   /var/lib/noc/var/pkg
 ==================  ====================
 
 
@@ -3180,10 +3196,10 @@ card_template_path
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ====================================
-**YAML_Path**       path.card_template_path
-**Key_Value_Path**  path/card_template_path
+**YAML Path**       path.card_template_path
+**Key-Value Path**  path/card_template_path
 **Environment**     NOC_PATH_CARD_TEMPLATE_PATH
-**Default_Value**   services/card/templates/card.html.j2
+**Default Value**   services/card/templates/card.html.j2
 ==================  ====================================
 
 
@@ -3193,10 +3209,10 @@ pm_templates
 ~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       path.pm_templates
-**Key_Value_Path**  path/pm_templates
+**YAML Path**       path.pm_templates
+**Key-Value Path**  path/pm_templates
 **Environment**     NOC_PATH_PM_TEMPLATES
-**Default_Value**   templates/ddash/
+**Default Value**   templates/ddash/
 ==================  =====================
 
 
@@ -3212,10 +3228,10 @@ addresses
 ~~~~~~~~~
 
 ==================  =============================================================================
-**YAML_Path**       pg.addresses
-**Key_Value_Path**  pg/addresses
+**YAML Path**       pg.addresses
+**Key-Value Path**  pg/addresses
 **Environment**     NOC_PG_ADDRESSES
-**Default_Value**   ServiceParameter(service='postgres', wait=True, near=True, full_result=False)
+**Default Value**   ServiceParameter(service='postgres', wait=True, near=True, full_result=False)
 ==================  =============================================================================
 
 
@@ -3225,10 +3241,10 @@ db
 ~~
 
 ==================  =========
-**YAML_Path**       pg.db
-**Key_Value_Path**  pg/db
+**YAML Path**       pg.db
+**Key-Value Path**  pg/db
 **Environment**     NOC_PG_DB
-**Default_Value**   noc
+**Default Value**   noc
 ==================  =========
 
 
@@ -3238,10 +3254,10 @@ user
 ~~~~
 
 ==================  =================
-**YAML_Path**       pg.user
-**Key_Value_Path**  pg/user
+**YAML Path**       pg.user
+**Key-Value Path**  pg/user
 **Environment**     NOC_PG_USER
-**Default_Value**   StringParameter()
+**Default Value**   StringParameter()
 ==================  =================
 
 
@@ -3251,10 +3267,10 @@ password
 ~~~~~~~~
 
 ==================  =================
-**YAML_Path**       pg.password
-**Key_Value_Path**  pg/password
+**YAML Path**       pg.password
+**Key-Value Path**  pg/password
 **Environment**     NOC_PG_PASSWORD
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  =================
 
 
@@ -3264,10 +3280,10 @@ connect_timeout
 ~~~~~~~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       pg.connect_timeout
-**Key_Value_Path**  pg/connect_timeout
+**YAML Path**       pg.connect_timeout
+**Key-Value Path**  pg/connect_timeout
 **Environment**     NOC_PG_CONNECT_TIMEOUT
-**Default_Value**   5
+**Default Value**   5
 ==================  ======================
 
 
@@ -3283,10 +3299,10 @@ throttle_threshold
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       ping.throttle_threshold
-**Key_Value_Path**  ping/throttle_threshold
+**YAML Path**       ping.throttle_threshold
+**Key-Value Path**  ping/throttle_threshold
 **Environment**     NOC_PING_THROTTLE_THRESHOLD
-**Default_Value**   FloatParameter()
+**Default Value**   FloatParameter()
 ==================  ===========================
 
 
@@ -3296,10 +3312,10 @@ restore_threshold
 ~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       ping.restore_threshold
-**Key_Value_Path**  ping/restore_threshold
+**YAML Path**       ping.restore_threshold
+**Key-Value Path**  ping/restore_threshold
 **Environment**     NOC_PING_RESTORE_THRESHOLD
-**Default_Value**   FloatParameter()
+**Default Value**   FloatParameter()
 ==================  ==========================
 
 
@@ -3309,10 +3325,10 @@ tos
 ~~~
 
 ==================  =======================================
-**YAML_Path**       ping.tos
-**Key_Value_Path**  ping/tos
+**YAML Path**       ping.tos
+**Key-Value Path**  ping/tos
 **Environment**     NOC_PING_TOS
-**Default_Value**   IntParameter(min=0, max=255, default=0)
+**Default Value**   IntParameter(min=0, max=255, default=0)
 ==================  =======================================
 
 
@@ -3322,10 +3338,10 @@ send_buffer
 ~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       ping.send_buffer
-**Key_Value_Path**  ping/send_buffer
+**YAML Path**       ping.send_buffer
+**Key-Value Path**  ping/send_buffer
 **Environment**     NOC_PING_SEND_BUFFER
-**Default_Value**   4 * 1048576
+**Default Value**   4 * 1048576
 ==================  ====================
 
 
@@ -3335,10 +3351,10 @@ receive_buffer
 ~~~~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       ping.receive_buffer
-**Key_Value_Path**  ping/receive_buffer
+**YAML Path**       ping.receive_buffer
+**Key-Value Path**  ping/receive_buffer
 **Environment**     NOC_PING_RECEIVE_BUFFER
-**Default_Value**   4 * 1048576
+**Default Value**   4 * 1048576
 ==================  =======================
 
 
@@ -3354,10 +3370,10 @@ batch_size
 ~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       pmwriter.batch_size
-**Key_Value_Path**  pmwriter/batch_size
+**YAML Path**       pmwriter.batch_size
+**Key-Value Path**  pmwriter/batch_size
 **Environment**     NOC_PMWRITER_BATCH_SIZE
-**Default_Value**   2500
+**Default Value**   2500
 ==================  =======================
 
 
@@ -3367,10 +3383,10 @@ metrics_buffer
 ~~~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       pmwriter.metrics_buffer
-**Key_Value_Path**  pmwriter/metrics_buffer
+**YAML Path**       pmwriter.metrics_buffer
+**Key-Value Path**  pmwriter/metrics_buffer
 **Environment**     NOC_PMWRITER_METRICS_BUFFER
-**Default_Value**   50000
+**Default Value**   50000
 ==================  ===========================
 
 
@@ -3380,10 +3396,10 @@ read_from
 ~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       pmwriter.read_from
-**Key_Value_Path**  pmwriter/read_from
+**YAML Path**       pmwriter.read_from
+**Key-Value Path**  pmwriter/read_from
 **Environment**     NOC_PMWRITER_READ_FROM
-**Default_Value**   pmwriter
+**Default Value**   pmwriter
 ==================  ======================
 
 
@@ -3393,10 +3409,10 @@ write_to
 ~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       pmwriter.write_to
-**Key_Value_Path**  pmwriter/write_to
+**YAML Path**       pmwriter.write_to
+**Key-Value Path**  pmwriter/write_to
 **Environment**     NOC_PMWRITER_WRITE_TO
-**Default_Value**   influxdb
+**Default Value**   influxdb
 ==================  =====================
 
 
@@ -3406,10 +3422,10 @@ write_to_port
 ~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       pmwriter.write_to_port
-**Key_Value_Path**  pmwriter/write_to_port
+**YAML Path**       pmwriter.write_to_port
+**Key-Value Path**  pmwriter/write_to_port
 **Environment**     NOC_PMWRITER_WRITE_TO_PORT
-**Default_Value**   8086
+**Default Value**   8086
 ==================  ==========================
 
 
@@ -3419,10 +3435,10 @@ max_delay
 ~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       pmwriter.max_delay
-**Key_Value_Path**  pmwriter/max_delay
+**YAML Path**       pmwriter.max_delay
+**Key-Value Path**  pmwriter/max_delay
 **Environment**     NOC_PMWRITER_MAX_DELAY
-**Default_Value**   1.0
+**Default Value**   1.0
 ==================  ======================
 
 
@@ -3438,10 +3454,10 @@ http_proxy
 ~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       proxy.http_proxy
-**Key_Value_Path**  proxy/http_proxy
+**YAML Path**       proxy.http_proxy
+**Key-Value Path**  proxy/http_proxy
 **Environment**     NOC_PROXY_HTTP_PROXY
-**Default_Value**   os.environ.get('http_proxy')
+**Default Value**   os.environ.get('http_proxy')
 ==================  ============================
 
 
@@ -3451,10 +3467,10 @@ https_proxy
 ~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       proxy.https_proxy
-**Key_Value_Path**  proxy/https_proxy
+**YAML Path**       proxy.https_proxy
+**Key-Value Path**  proxy/https_proxy
 **Environment**     NOC_PROXY_HTTPS_PROXY
-**Default_Value**   os.environ.get('https_proxy')
+**Default Value**   os.environ.get('https_proxy')
 ==================  =============================
 
 
@@ -3464,10 +3480,10 @@ ftp_proxy
 ~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       proxy.ftp_proxy
-**Key_Value_Path**  proxy/ftp_proxy
+**YAML Path**       proxy.ftp_proxy
+**Key-Value Path**  proxy/ftp_proxy
 **Environment**     NOC_PROXY_FTP_PROXY
-**Default_Value**   os.environ.get('ftp_proxy')
+**Default Value**   os.environ.get('ftp_proxy')
 ==================  ===========================
 
 
@@ -3483,10 +3499,10 @@ retry_timeout
 ~~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       rpc.retry_timeout
-**Key_Value_Path**  rpc/retry_timeout
+**YAML Path**       rpc.retry_timeout
+**Key-Value Path**  rpc/retry_timeout
 **Environment**     NOC_RPC_RETRY_TIMEOUT
-**Default_Value**   0.1,0.5,1,3,10,30
+**Default Value**   0.1,0.5,1,3,10,30
 ==================  =====================
 
 
@@ -3496,10 +3512,10 @@ sync_connect_timeout
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       rpc.sync_connect_timeout
-**Key_Value_Path**  rpc/sync_connect_timeout
+**YAML Path**       rpc.sync_connect_timeout
+**Key-Value Path**  rpc/sync_connect_timeout
 **Environment**     NOC_RPC_SYNC_CONNECT_TIMEOUT
-**Default_Value**   20s
+**Default Value**   20s
 ==================  ============================
 
 
@@ -3509,10 +3525,10 @@ sync_request_timeout
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       rpc.sync_request_timeout
-**Key_Value_Path**  rpc/sync_request_timeout
+**YAML Path**       rpc.sync_request_timeout
+**Key-Value Path**  rpc/sync_request_timeout
 **Environment**     NOC_RPC_SYNC_REQUEST_TIMEOUT
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ============================
 
 
@@ -3522,10 +3538,10 @@ sync_retry_timeout
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       rpc.sync_retry_timeout
-**Key_Value_Path**  rpc/sync_retry_timeout
+**YAML Path**       rpc.sync_retry_timeout
+**Key-Value Path**  rpc/sync_retry_timeout
 **Environment**     NOC_RPC_SYNC_RETRY_TIMEOUT
-**Default_Value**   1.0
+**Default Value**   1.0
 ==================  ==========================
 
 
@@ -3535,10 +3551,10 @@ sync_retry_delta
 ~~~~~~~~~~~~~~~~
 
 ==================  ========================
-**YAML_Path**       rpc.sync_retry_delta
-**Key_Value_Path**  rpc/sync_retry_delta
+**YAML Path**       rpc.sync_retry_delta
+**Key-Value Path**  rpc/sync_retry_delta
 **Environment**     NOC_RPC_SYNC_RETRY_DELTA
-**Default_Value**   2.0
+**Default Value**   2.0
 ==================  ========================
 
 
@@ -3548,10 +3564,10 @@ sync_retries
 ~~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       rpc.sync_retries
-**Key_Value_Path**  rpc/sync_retries
+**YAML Path**       rpc.sync_retries
+**Key-Value Path**  rpc/sync_retries
 **Environment**     NOC_RPC_SYNC_RETRIES
-**Default_Value**   5
+**Default Value**   5
 ==================  ====================
 
 
@@ -3561,10 +3577,10 @@ async_connect_timeout
 ~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       rpc.async_connect_timeout
-**Key_Value_Path**  rpc/async_connect_timeout
+**YAML Path**       rpc.async_connect_timeout
+**Key-Value Path**  rpc/async_connect_timeout
 **Environment**     NOC_RPC_ASYNC_CONNECT_TIMEOUT
-**Default_Value**   20s
+**Default Value**   20s
 ==================  =============================
 
 
@@ -3574,10 +3590,10 @@ async_request_timeout
 ~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       rpc.async_request_timeout
-**Key_Value_Path**  rpc/async_request_timeout
+**YAML Path**       rpc.async_request_timeout
+**Key-Value Path**  rpc/async_request_timeout
 **Environment**     NOC_RPC_ASYNC_REQUEST_TIMEOUT
-**Default_Value**   1h
+**Default Value**   1h
 ==================  =============================
 
 
@@ -3593,10 +3609,10 @@ db_threads
 ~~~~~~~~~~
 
 ==================  ==================
-**YAML_Path**       sae.db_threads
-**Key_Value_Path**  sae/db_threads
+**YAML Path**       sae.db_threads
+**Key-Value Path**  sae/db_threads
 **Environment**     NOC_SAE_DB_THREADS
-**Default_Value**   20
+**Default Value**   20
 ==================  ==================
 
 
@@ -3606,10 +3622,10 @@ activator_resolution_retries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ====================================
-**YAML_Path**       sae.activator_resolution_retries
-**Key_Value_Path**  sae/activator_resolution_retries
+**YAML Path**       sae.activator_resolution_retries
+**Key-Value Path**  sae/activator_resolution_retries
 **Environment**     NOC_SAE_ACTIVATOR_RESOLUTION_RETRIES
-**Default_Value**   5
+**Default Value**   5
 ==================  ====================================
 
 
@@ -3619,10 +3635,10 @@ activator_resolution_timeout
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ====================================
-**YAML_Path**       sae.activator_resolution_timeout
-**Key_Value_Path**  sae/activator_resolution_timeout
+**YAML Path**       sae.activator_resolution_timeout
+**Key-Value Path**  sae/activator_resolution_timeout
 **Environment**     NOC_SAE_ACTIVATOR_RESOLUTION_TIMEOUT
-**Default_Value**   2s
+**Default Value**   2s
 ==================  ====================================
 
 
@@ -3638,10 +3654,10 @@ max_threads
 ~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       scheduler.max_threads
-**Key_Value_Path**  scheduler/max_threads
+**YAML Path**       scheduler.max_threads
+**Key-Value Path**  scheduler/max_threads
 **Environment**     NOC_SCHEDULER_MAX_THREADS
-**Default_Value**   20
+**Default Value**   20
 ==================  =========================
 
 
@@ -3651,10 +3667,10 @@ submit_threshold_factor
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =====================================
-**YAML_Path**       scheduler.submit_threshold_factor
-**Key_Value_Path**  scheduler/submit_threshold_factor
+**YAML Path**       scheduler.submit_threshold_factor
+**Key-Value Path**  scheduler/submit_threshold_factor
 **Environment**     NOC_SCHEDULER_SUBMIT_THRESHOLD_FACTOR
-**Default_Value**   10
+**Default Value**   10
 ==================  =====================================
 
 
@@ -3664,10 +3680,10 @@ max_chunk_factor
 ~~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       scheduler.max_chunk_factor
-**Key_Value_Path**  scheduler/max_chunk_factor
+**YAML Path**       scheduler.max_chunk_factor
+**Key-Value Path**  scheduler/max_chunk_factor
 **Environment**     NOC_SCHEDULER_MAX_CHUNK_FACTOR
-**Default_Value**   1
+**Default Value**   1
 ==================  ==============================
 
 
@@ -3677,10 +3693,10 @@ updates_per_check
 ~~~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       scheduler.updates_per_check
-**Key_Value_Path**  scheduler/updates_per_check
+**YAML Path**       scheduler.updates_per_check
+**Key-Value Path**  scheduler/updates_per_check
 **Environment**     NOC_SCHEDULER_UPDATES_PER_CHECK
-**Default_Value**   4
+**Default Value**   4
 ==================  ===============================
 
 
@@ -3690,10 +3706,10 @@ cache_default_ttl
 ~~~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       scheduler.cache_default_ttl
-**Key_Value_Path**  scheduler/cache_default_ttl
+**YAML Path**       scheduler.cache_default_ttl
+**Key-Value Path**  scheduler/cache_default_ttl
 **Environment**     NOC_SCHEDULER_CACHE_DEFAULT_TTL
-**Default_Value**   1d
+**Default Value**   1d
 ==================  ===============================
 
 
@@ -3703,10 +3719,10 @@ autointervaljob_interval
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ======================================
-**YAML_Path**       scheduler.autointervaljob_interval
-**Key_Value_Path**  scheduler/autointervaljob_interval
+**YAML Path**       scheduler.autointervaljob_interval
+**Key-Value Path**  scheduler/autointervaljob_interval
 **Environment**     NOC_SCHEDULER_AUTOINTERVALJOB_INTERVAL
-**Default_Value**   1d
+**Default Value**   1d
 ==================  ======================================
 
 
@@ -3716,10 +3732,10 @@ autointervaljob_initial_submit_interval
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  =====================================================
-**YAML_Path**       scheduler.autointervaljob_initial_submit_interval
-**Key_Value_Path**  scheduler/autointervaljob_initial_submit_interval
+**YAML Path**       scheduler.autointervaljob_initial_submit_interval
+**Key-Value Path**  scheduler/autointervaljob_initial_submit_interval
 **Environment**     NOC_SCHEDULER_AUTOINTERVALJOB_INITIAL_SUBMIT_INTERVAL
-**Default_Value**   1d
+**Default Value**   1d
 ==================  =====================================================
 
 
@@ -3737,10 +3753,10 @@ timeout
 Default sa script script timeout
 
 ==================  ==================
-**YAML_Path**       script.timeout
-**Key_Value_Path**  script/timeout
+**YAML Path**       script.timeout
+**Key-Value Path**  script/timeout
 **Environment**     NOC_SCRIPT_TIMEOUT
-**Default_Value**   2M
+**Default Value**   2M
 ==================  ==================
 
 
@@ -3752,10 +3768,10 @@ session_idle_timeout
 Default session timeout
 
 ==================  ===============================
-**YAML_Path**       script.session_idle_timeout
-**Key_Value_Path**  script/session_idle_timeout
+**YAML Path**       script.session_idle_timeout
+**Key-Value Path**  script/session_idle_timeout
 **Environment**     NOC_SCRIPT_SESSION_IDLE_TIMEOUT
-**Default_Value**   1M
+**Default Value**   1M
 ==================  ===============================
 
 
@@ -3765,10 +3781,10 @@ caller_timeout
 ~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       script.caller_timeout
-**Key_Value_Path**  script/caller_timeout
+**YAML Path**       script.caller_timeout
+**Key-Value Path**  script/caller_timeout
 **Environment**     NOC_SCRIPT_CALLER_TIMEOUT
-**Default_Value**   1M
+**Default Value**   1M
 ==================  =========================
 
 
@@ -3778,10 +3794,10 @@ calling_service
 ~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       script.calling_service
-**Key_Value_Path**  script/calling_service
+**YAML Path**       script.calling_service
+**Key-Value Path**  script/calling_service
 **Environment**     NOC_SCRIPT_CALLING_SERVICE
-**Default_Value**   MTManager
+**Default Value**   MTManager
 ==================  ==========================
 
 
@@ -3797,10 +3813,10 @@ url
 ~~~
 
 ==================  ==============
-**YAML_Path**       sentry.url
-**Key_Value_Path**  sentry/url
+**YAML Path**       sentry.url
+**Key-Value Path**  sentry/url
 **Environment**     NOC_SENTRY_URL
-**Default_Value**
+**Default Value**
 ==================  ==============
 
 
@@ -3816,10 +3832,10 @@ config_ttl
 ~~~~~~~~~~
 
 ==================  ===================
-**YAML_Path**       sync.config_ttl
-**Key_Value_Path**  sync/config_ttl
+**YAML Path**       sync.config_ttl
+**Key-Value Path**  sync/config_ttl
 **Environment**     NOC_SYNC_CONFIG_TTL
-**Default_Value**   1d
+**Default Value**   1d
 ==================  ===================
 
 
@@ -3829,10 +3845,10 @@ ttl_jitter
 ~~~~~~~~~~
 
 ==================  ===================
-**YAML_Path**       sync.ttl_jitter
-**Key_Value_Path**  sync/ttl_jitter
+**YAML Path**       sync.ttl_jitter
+**Key-Value Path**  sync/ttl_jitter
 **Environment**     NOC_SYNC_TTL_JITTER
-**Default_Value**   0.1
+**Default Value**   0.1
 ==================  ===================
 
 
@@ -3842,10 +3858,10 @@ expired_refresh_timeout
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ================================
-**YAML_Path**       sync.expired_refresh_timeout
-**Key_Value_Path**  sync/expired_refresh_timeout
+**YAML Path**       sync.expired_refresh_timeout
+**Key-Value Path**  sync/expired_refresh_timeout
 **Environment**     NOC_SYNC_EXPIRED_REFRESH_TIMEOUT
-**Default_Value**   25
+**Default Value**   25
 ==================  ================================
 
 
@@ -3855,10 +3871,10 @@ expired_refresh_chunk
 ~~~~~~~~~~~~~~~~~~~~~
 
 ==================  ==============================
-**YAML_Path**       sync.expired_refresh_chunk
-**Key_Value_Path**  sync/expired_refresh_chunk
+**YAML Path**       sync.expired_refresh_chunk
+**Key-Value Path**  sync/expired_refresh_chunk
 **Environment**     NOC_SYNC_EXPIRED_REFRESH_CHUNK
-**Default_Value**   100
+**Default Value**   100
 ==================  ==============================
 
 
@@ -3874,10 +3890,10 @@ listen
 ~~~~~~
 
 ==================  ==========================
-**YAML_Path**       syslogcollector.listen
-**Key_Value_Path**  syslogcollector/listen
+**YAML Path**       syslogcollector.listen
+**Key-Value Path**  syslogcollector/listen
 **Environment**     NOC_SYSLOGCOLLECTOR_LISTEN
-**Default_Value**   0.0.0.0:514
+**Default Value**   0.0.0.0:514
 ==================  ==========================
 
 
@@ -3893,10 +3909,10 @@ token
 ~~~~~
 
 ==================  ==================
-**YAML_Path**       tgsender.token
-**Key_Value_Path**  tgsender/token
+**YAML Path**       tgsender.token
+**Key-Value Path**  tgsender/token
 **Environment**     NOC_TGSENDER_TOKEN
-**Default_Value**   SecretParameter()
+**Default Value**   SecretParameter()
 ==================  ==================
 
 
@@ -3906,10 +3922,10 @@ retry_timeout
 ~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       tgsender.retry_timeout
-**Key_Value_Path**  tgsender/retry_timeout
+**YAML Path**       tgsender.retry_timeout
+**Key-Value Path**  tgsender/retry_timeout
 **Environment**     NOC_TGSENDER_RETRY_TIMEOUT
-**Default_Value**   2
+**Default Value**   2
 ==================  ==========================
 
 
@@ -3919,10 +3935,10 @@ use_proxy
 ~~~~~~~~~
 
 ==================  ======================
-**YAML_Path**       tgsender.use_proxy
-**Key_Value_Path**  tgsender/use_proxy
+**YAML Path**       tgsender.use_proxy
+**Key-Value Path**  tgsender/use_proxy
 **Environment**     NOC_TGSENDER_USE_PROXY
-**Default_Value**   False
+**Default Value**   False
 ==================  ======================
 
 
@@ -3938,10 +3954,10 @@ idle_timeout
 ~~~~~~~~~~~~
 
 ==================  ===========================
-**YAML_Path**       threadpool.idle_timeout
-**Key_Value_Path**  threadpool/idle_timeout
+**YAML Path**       threadpool.idle_timeout
+**Key-Value Path**  threadpool/idle_timeout
 **Environment**     NOC_THREADPOOL_IDLE_TIMEOUT
-**Default_Value**   30s
+**Default Value**   30s
 ==================  ===========================
 
 
@@ -3951,10 +3967,10 @@ shutdown_timeout
 ~~~~~~~~~~~~~~~~
 
 ==================  ===============================
-**YAML_Path**       threadpool.shutdown_timeout
-**Key_Value_Path**  threadpool/shutdown_timeout
+**YAML Path**       threadpool.shutdown_timeout
+**Key-Value Path**  threadpool/shutdown_timeout
 **Environment**     NOC_THREADPOOL_SHUTDOWN_TIMEOUT
-**Default_Value**   1M
+**Default Value**   1M
 ==================  ===============================
 
 
@@ -3970,10 +3986,10 @@ reverse
 ~~~~~~~
 
 ==================  =====================
-**YAML_Path**       traceback.reverse
-**Key_Value_Path**  traceback/reverse
+**YAML Path**       traceback.reverse
+**Key-Value Path**  traceback/reverse
 **Environment**     NOC_TRACEBACK_REVERSE
-**Default_Value**   True
+**Default Value**   True
 ==================  =====================
 
 
@@ -3989,10 +4005,10 @@ listen
 ~~~~~~
 
 ==================  ========================
-**YAML_Path**       trapcollector.listen
-**Key_Value_Path**  trapcollector/listen
+**YAML Path**       trapcollector.listen
+**Key-Value Path**  trapcollector/listen
 **Environment**     NOC_TRAPCOLLECTOR_LISTEN
-**Default_Value**   0.0.0.0:162
+**Default Value**   0.0.0.0:162
 ==================  ========================
 
 
@@ -4008,10 +4024,10 @@ api_row_limit
 ~~~~~~~~~~~~~
 
 ==================  =====================
-**YAML_Path**       web.api_row_limit
-**Key_Value_Path**  web/api_row_limit
+**YAML Path**       web.api_row_limit
+**Key-Value Path**  web/api_row_limit
 **Environment**     NOC_WEB_API_ROW_LIMIT
-**Default_Value**   0
+**Default Value**   0
 ==================  =====================
 
 
@@ -4021,10 +4037,10 @@ api_arch_alarm_limit
 ~~~~~~~~~~~~~~~~~~~~
 
 ==================  ============================
-**YAML_Path**       web.api_arch_alarm_limit
-**Key_Value_Path**  web/api_arch_alarm_limit
+**YAML Path**       web.api_arch_alarm_limit
+**Key-Value Path**  web/api_arch_alarm_limit
 **Environment**     NOC_WEB_API_ARCH_ALARM_LIMIT
-**Default_Value**   4 * 86400
+**Default Value**   4 * 86400
 ==================  ============================
 
 
@@ -4034,10 +4050,10 @@ language
 ~~~~~~~~
 
 ==================  ================
-**YAML_Path**       web.language
-**Key_Value_Path**  web/language
+**YAML Path**       web.language
+**Key-Value Path**  web/language
 **Environment**     NOC_WEB_LANGUAGE
-**Default_Value**   en
+**Default Value**   en
 ==================  ================
 
 
@@ -4047,10 +4063,10 @@ install_collection
 ~~~~~~~~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       web.install_collection
-**Key_Value_Path**  web/install_collection
+**YAML Path**       web.install_collection
+**Key-Value Path**  web/install_collection
 **Environment**     NOC_WEB_INSTALL_COLLECTION
-**Default_Value**   False
+**Default Value**   False
 ==================  ==========================
 
 
@@ -4060,10 +4076,10 @@ max_threads
 ~~~~~~~~~~~
 
 ==================  ===================
-**YAML_Path**       web.max_threads
-**Key_Value_Path**  web/max_threads
+**YAML Path**       web.max_threads
+**Key-Value Path**  web/max_threads
 **Environment**     NOC_WEB_MAX_THREADS
-**Default_Value**   10
+**Default Value**   10
 ==================  ===================
 
 
@@ -4073,10 +4089,10 @@ macdb_window
 ~~~~~~~~~~~~
 
 ==================  ====================
-**YAML_Path**       web.macdb_window
-**Key_Value_Path**  web/macdb_window
+**YAML Path**       web.macdb_window
+**Key-Value Path**  web/macdb_window
 **Environment**     NOC_WEB_MACDB_WINDOW
-**Default_Value**   4 * 86400
+**Default Value**   4 * 86400
 ==================  ====================
 
 
@@ -4092,10 +4108,10 @@ chunk_size
 ~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       datasource.chunk_size
-**Key_Value_Path**  datasource/chunk_size
+**YAML Path**       datasource.chunk_size
+**Key-Value Path**  datasource/chunk_size
 **Environment**     NOC_DATASOURCE_CHUNK_SIZE
-**Default_Value**   1000
+**Default Value**   1000
 ==================  =========================
 
 
@@ -4105,10 +4121,10 @@ max_threads
 ~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       datasource.max_threads
-**Key_Value_Path**  datasource/max_threads
+**YAML Path**       datasource.max_threads
+**Key-Value Path**  datasource/max_threads
 **Environment**     NOC_DATASOURCE_MAX_THREADS
-**Default_Value**   10
+**Default Value**   10
 ==================  ==========================
 
 
@@ -4118,10 +4134,10 @@ default_ttl
 ~~~~~~~~~~~
 
 ==================  ==========================
-**YAML_Path**       datasource.default_ttl
-**Key_Value_Path**  datasource/default_ttl
+**YAML Path**       datasource.default_ttl
+**Key-Value Path**  datasource/default_ttl
 **Environment**     NOC_DATASOURCE_DEFAULT_TTL
-**Default_Value**   1h
+**Default Value**   1h
 ==================  ==========================
 
 
@@ -4137,10 +4153,10 @@ enable_coverage
 ~~~~~~~~~~~~~~~
 
 ==================  =========================
-**YAML_Path**       tests.enable_coverage
-**Key_Value_Path**  tests/enable_coverage
+**YAML Path**       tests.enable_coverage
+**Key-Value Path**  tests/enable_coverage
 **Environment**     NOC_TESTS_ENABLE_COVERAGE
-**Default_Value**   False
+**Default Value**   False
 ==================  =========================
 
 
@@ -4150,10 +4166,10 @@ events_path
 ~~~~~~~~~~~
 
 ==================  =======================
-**YAML_Path**       tests.events_path
-**Key_Value_Path**  tests/events_path
+**YAML Path**       tests.events_path
+**Key-Value Path**  tests/events_path
 **Environment**     NOC_TESTS_EVENTS_PATH
-**Default_Value**   collections/test.events
+**Default Value**   collections/test.events
 ==================  =======================
 
 
@@ -4163,8 +4179,8 @@ profilecheck_path
 ~~~~~~~~~~~~~~~~~
 
 ==================  =============================
-**YAML_Path**       tests.profilecheck_path
-**Key_Value_Path**  tests/profilecheck_path
+**YAML Path**       tests.profilecheck_path
+**Key-Value Path**  tests/profilecheck_path
 **Environment**     NOC_TESTS_PROFILECHECK_PATH
-**Default_Value**   collections/test.profilecheck
+**Default Value**   collections/test.profilecheck
 ==================  =============================
