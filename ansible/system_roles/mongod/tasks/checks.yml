@@ -17,5 +17,6 @@
       Wainting for upstream mongo version.
       Details:  http://repo.mongodb.org/apt/debian/dists/
   when:
+    - has_svc_mongod is defined
     - ansible_distribution == "Debian"
     - ansible_distribution_version is version_compare(9.0, '>=')
