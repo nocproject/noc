@@ -10,7 +10,8 @@
       access: proxy
       isDefault: True
       database: "{{ clickhouse_db }}"
-      user: "readonly"
-      password: "{{ clickhouse_ro_password }}"
+      basicAuth: true
+      basicAuthUser: "readonly"
+      basicAuthPassword: "{{ clickhouse_ro_password }}"
   delegate_to: "{{item}}"
   with_items: '{{groups["svc-grafana-exec"]}}'
