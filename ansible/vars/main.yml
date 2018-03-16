@@ -4,7 +4,7 @@
 etc_prefix: /etc
 
 # packages
-grafana_version: "5.0.1"
+grafana_version: "5.0.3"
 nsq_version: "0.3.8"
 
 consul_version: "0.9.3"
