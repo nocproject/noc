@@ -25,13 +25,6 @@
     - ansible_distribution == "Debian"
     - ansible_distribution_version is version_compare(8.0, '<')
 
-- name: Fail if too new release of Debian
-  fail:
-    msg: "{{ ansible_distribution_version }} currently is not an acceptable version of {{ ansible_distribution }} for this role"
-  when:
-    - ansible_distribution == "Debian"
-    - ansible_distribution_version is version_compare(9.0, '>=')
-
 - name: Fail for a new release of Ubuntu
   fail:
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
