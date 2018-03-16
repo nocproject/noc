@@ -49,7 +49,7 @@
   template:
     src: "etc/logrotate.d/mongod.conf.j2"
     dest: "/etc/logrotate.d/mongod.conf"
-  when: "'Linux' in ansible_system and 'file' in mongo_logging_driver"
+  when: "'Linux' in ansible_system and 'file' in mongod_logging_destination"
   tags:
     - config
 
