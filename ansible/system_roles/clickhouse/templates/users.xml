@@ -1,3 +1,4 @@
+#jinja2: lstrip_blocks: True
 <?xml version="1.0"?>
 <yandex>
     <!-- Profiles of settings. -->
