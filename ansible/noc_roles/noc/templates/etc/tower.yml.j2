@@ -12,6 +12,7 @@ mongo:
 clickhouse:
   rw_user: {{ clickhouse_user }}
   rw_password: {{ clickhouse_password }}
+  ro_password: {{clickhouse_ro_password}}
 
 {% for service in noc_services %}
     {%- if not service.pool %}
