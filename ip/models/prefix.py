@@ -18,7 +18,6 @@ import cachetools
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
-from noc.main.models import ResourceState
 from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
@@ -27,6 +26,8 @@ from noc.core.model.fields import DocumentReferenceField
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
+from noc.core.wf.decorator import workflow
+from noc.wf.models.state import State
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
@@ -35,6 +36,7 @@ id_lock = Lock()
 
 
 @full_text_search
+@workflow
 class Prefix(models.Model):
     """
     Allocated prefix
@@ -92,10 +94,10 @@ class Prefix(models.Model):
         blank=True,
         null=True,
         help_text=_("Ticket #"))
-    state = models.ForeignKey(
-        ResourceState,
-        verbose_name=_("State"),
-        default=ResourceState.get_default)
+    state = DocumentReferenceField(
+        State,
+        null=True, blank=True
+    )
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,

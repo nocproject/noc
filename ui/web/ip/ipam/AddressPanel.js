@@ -79,7 +79,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     name: "state",
                     xtype: "statefield",
                     fieldLabel: __("State"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "project",

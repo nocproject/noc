@@ -13,7 +13,6 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
         "NOC.ip.vrf.LookupField",
         "NOC.peer.as.LookupField",
         "NOC.vc.vc.LookupField",
-        "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField"
     ],
     currentPrefixId: null,
@@ -92,9 +91,9 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                 },
                 {
                     name: "state",
-                    xtype: "main.resourcestate.LookupField",
+                    xtype: "statefield",
                     fieldLabel: __("State"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "allocated_till",

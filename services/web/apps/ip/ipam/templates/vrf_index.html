@@ -156,7 +156,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 {% if f %}
                     <tr {% if p.style %}class="{{p.style.css_class_name}}"{% endif %}>
                         <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
-                        <td>{{ p.state }}</td>
+                        <td>{{ p.state.name }}</td>
                         <td>{% if p.project %}{{ p.project.code }}{% endif %}</td>
                         <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
                         <td title="{{p.description}}">{{p.short_description}}</td>
@@ -466,7 +466,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
         <!-- State -->
         <tr>
             <td><b>State</b></td>
-            <td>{{ prefix.state }}</td>
+            <td>{{ prefix.state.name }}</td>
         </tr>
         {%  if prefix.afi == "4" and prefix.ipv6_transition %}
             <tr>
