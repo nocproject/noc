@@ -10,7 +10,6 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
     extend: "NOC.core.FormPanel",
     requires: [
         "NOC.ip.addressprofile.LookupField",
-        "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField",
         "NOC.sa.managedobject.LookupField"
     ],
@@ -78,7 +77,7 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                 },
                 {
                     name: "state",
-                    xtype: "main.resourcestate.LookupField",
+                    xtype: "statefield",
                     fieldLabel: __("State"),
                     allowBlank: false
                 },

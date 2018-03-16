@@ -123,7 +123,7 @@ def model_set_state(self, state):
     self.state = state
     # Update database directly
     # to avoid full save
-    self.objects.filter(id=self.id).update(state=str(state.id))
+    self.__class__.objects.filter(id=self.id).update(state=str(state.id))
     # Invalidate caches
     ic_handler = getattr(self, "invalidate_caches", None)
     if ic_handler:

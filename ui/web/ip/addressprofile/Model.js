@@ -36,8 +36,18 @@ Ext.define("NOC.ip.addressprofile.Model", {
             type: "string"
         },
         {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "workflow",
             type: "string"
+        },
+        {
+            name: "workflow__label",
+            type: "string",
+            persist: false
         },
         {
             name: "bi_id",

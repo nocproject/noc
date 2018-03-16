@@ -10,6 +10,7 @@ Ext.define("NOC.ip.addressprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.ip.addressprofile.Model",
+        "NOC.wf.workflow.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
@@ -23,7 +24,14 @@ Ext.define("NOC.ip.addressprofile.Application", {
             columns: [
                 {
                     text: __("Name"),
-                    dataIndex: "name"
+                    dataIndex: "name",
+                    width: 100
+                },
+                {
+                    text: __("Workflow"),
+                    dataIndex: "workflow",
+                    width: 100,
+                    renderer: NOC.render.Lookup("workflow")
                 }
             ],
 
@@ -40,6 +48,12 @@ Ext.define("NOC.ip.addressprofile.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Description"),
                     allowBlank: true
+                },
+                {
+                    name: "workflow",
+                    xtype: "wf.workflow.LookupField",
+                    fieldLabel: __("Workflow"),
+                    allowBlank: false
                 },
                 {
                     name: "style",
