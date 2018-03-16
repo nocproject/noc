@@ -18,7 +18,6 @@ clickhouse:
 {% for service in noc_services %}
     {%- if not service.pool %}
         {%- if service.config %}
-
 {{ service.name }}:
 {{ service.config |  to_nice_yaml | indent(2, true)}}
         {%- endif %}
