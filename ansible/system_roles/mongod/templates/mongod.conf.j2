@@ -5,14 +5,14 @@ storage:
   dbPath: {{ mongo_db_path }}
   journal:
     enabled: true
-  engine: {{ noc_mongo_storageengine }}
+  engine: {{ mongod_engine }}
   wiredTiger:
     engineConfig:
       directoryForIndexes: true
 
 systemLog:
   verbosity: 0
-{% if mongo_logging_driver == "syslog" %}
+{% if mongod_logging_destination == "syslog" %}
   destination: syslog
 {% else %}
   destination: file
@@ -34,7 +34,7 @@ security:
   authorization: enabled
 
 replication:
-  replSetName: {{ noc_mongo_replicaset }}
+  replSetName: {{ mongod_rs }}
 
 #operationProfiling:
 
