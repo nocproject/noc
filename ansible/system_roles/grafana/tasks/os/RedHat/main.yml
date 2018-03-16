@@ -25,9 +25,3 @@
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
-
-- name: Provide better renderjs
-  template:
-    src: "render.js"
-    dest: "/usr/share/grafana/vendor/phantomjs/render.js"
-    force: no
