@@ -71,7 +71,7 @@ class Prefix(models.Model):
     asn = models.ForeignKey(
         AS, verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
-        default=AS.default_as
+        null=True, blank=True
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",

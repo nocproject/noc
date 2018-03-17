@@ -69,7 +69,7 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     name: "asn",
                     xtype: "peer.as.LookupField",
                     fieldLabel: __("AS"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "vc",
