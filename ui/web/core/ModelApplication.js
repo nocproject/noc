@@ -728,6 +728,17 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.currentRecord) {
             result[me.idField] = me.currentRecord.get(me.idField);
         }
+        me.inlineStores
+        .filter(function(store) {
+            return store.hasOwnProperty("rootProperty") && store.hasOwnProperty("parentField");
+        })
+        .forEach(function(store) {
+            result[store.rootProperty] = store.getData().items.map(function(item) {
+                var obj = {};
+                obj[store.parentField] = item.get(store.parentField);
+                return obj;
+            });
+        });
         me.mask("Saving ...");
         // Save data
         Ext.Ajax.request({
@@ -744,7 +755,11 @@ Ext.define("NOC.core.ModelApplication", {
                 }
                 me.showGrid();
                 me.reloadStore();
-                me.saveInlines(data[me.idField], me.inlineStores);
+                me.saveInlines(
+                    data[me.idField],
+                    me.inlineStores.filter(function(store) {
+                        return !store.hasOwnProperty("rootProperty");
+                    }));
                 me.unmask();
                 NOC.msg.complete(__("Saved"));
             },
@@ -1234,7 +1249,7 @@ Ext.define("NOC.core.ModelApplication", {
             return;
         }
         if(Ext.isFunction(item.run) || Ext.isFunction(me[item.run])) {
-            if(typeof item.run === 'string'){
+            if(typeof item.run === 'string') {
                 item.run = me[item.run];
             }
             item.run(
