@@ -6,9 +6,11 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from base import (DictListParameter, IPParameter,
+from .base import (DictListParameter, IPParameter,
                   InterfaceNameParameter, StringParameter, IntParameter, ListOfParameter)
 
 
