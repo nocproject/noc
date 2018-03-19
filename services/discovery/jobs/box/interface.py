@@ -47,14 +47,12 @@ class InterfaceCheck(DiscoveryCheck):
             )
             # Move LAG members to the end
             # for effective caching
-            in_lag = lambda x: ("aggregated_interface" in x and
-                                bool(x["aggregated_interface"]))
-            ifaces = sorted(fi["interfaces"], key=in_lag)
+            ifaces = sorted(fi["interfaces"], key=self.in_lag)
             icache = {}
             for i in ifaces:
                 # Get LAG
                 agg = None
-                if in_lag(i):
+                if self.in_lag(i):
                     agg = icache.get(i["aggregated_interface"])
                     if not agg:
                         self.logger.error(
@@ -381,3 +379,7 @@ class InterfaceCheck(DiscoveryCheck):
                 self.logger.info("Set ifindex for %s: %s", n, i)
                 iface.ifindex = i
                 iface.save()  # Signals will be sent
+
+    @staticmethod
+    def in_lag(x):
+        return "aggregated_interface" in x and bool(x["aggregated_interface"])
