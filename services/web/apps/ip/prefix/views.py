@@ -16,8 +16,10 @@ from noc.ip.models.prefixaccess import PrefixAccess
 from noc.core.translation import ugettext as _
 from noc.sa.interfaces.base import ModelParameter, PrefixParameter
 from noc.core.ip import IP
+from noc.lib.app.decorators.state import state_handler
 
 
+@state_handler
 class PrefixApplication(ExtModelApplication):
     """
     Prefix application

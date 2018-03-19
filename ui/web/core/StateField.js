@@ -1,10 +1,11 @@
 //---------------------------------------------------------------------
 // NOC.core.State
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2017 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.StateField");
+
 Ext.define("NOC.core.StateField", {
     alias: "widget.statefield",
     extend: "Ext.form.FieldContainer",
@@ -18,6 +19,7 @@ Ext.define("NOC.core.StateField", {
     showTransitionCls: "fa fa-arrow-circle-right",
     shownTransitionCls: "fa fa-arrow-circle-down",
     currentRecord: undefined,
+    inEditor: true,  // Do not inject result into .getFormData()
 
     initComponent: function () {
         var me = this;
@@ -35,6 +37,7 @@ Ext.define("NOC.core.StateField", {
             baseBodyCls: "noc-wc-state-base-body",
             uiStyle: "medium",
             editable: false,
+            inEditor: true,  // Do not inject result into .getFormData()
             triggers: {
                 right: {
                     cls: me.showTransitionCls,

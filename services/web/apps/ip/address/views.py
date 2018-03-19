@@ -10,8 +10,10 @@
 from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.ip.models.address import Address
 from noc.ip.models.prefixaccess import PrefixAccess
+from noc.lib.app.decorators.state import state_handler
 
 
+@state_handler
 class AddressApplication(ExtModelApplication):
     """
     Address application

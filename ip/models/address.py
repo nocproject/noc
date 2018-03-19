@@ -13,14 +13,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.project.models.project import Project
-from noc.main.models.resourcestate import ResourceState
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
 from noc.lib.app.site import site
-from noc.lib.validators import (
-    ValidationError, check_fqdn, check_ipv4, check_ipv6)
+from noc.lib.validators import ValidationError, check_fqdn, check_ipv4, check_ipv6
 from noc.main.models.textindex import full_text_search
 from noc.core.model.fields import DocumentReferenceField
+from noc.core.wf.decorator import workflow
+from noc.wf.models.state import State
 from .afi import AFI_CHOICES
 from .vrf import VRF
 from .prefix import Prefix
@@ -28,6 +28,7 @@ from .addressprofile import AddressProfile
 
 
 @full_text_search
+@workflow
 class Address(models.Model):
     class Meta(object):
         verbose_name = _("Address")
@@ -84,10 +85,10 @@ class Address(models.Model):
         _("TT"),
         blank=True, null=True,
         help_text=_("Ticket #"))
-    state = models.ForeignKey(
-        ResourceState,
-        verbose_name=_("State"),
-        default=ResourceState.get_default)
+    state = DocumentReferenceField(
+        State,
+        null=True, blank=True
+    )
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True, blank=True,
