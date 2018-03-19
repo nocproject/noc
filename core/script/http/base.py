@@ -53,6 +53,7 @@ class HTTP(object):
         code, headers, result = fetch_sync(
             self.get_url(path),
             headers=headers,
+            request_timeout=60,
             follow_redirects=True,
             allow_proxy=False,
             validate_cert=False,
@@ -91,6 +92,7 @@ class HTTP(object):
             self.get_url(path),
             method="POST",
             headers=headers,
+            request_timeout=60,
             follow_redirects=True,
             allow_proxy=False,
             validate_cert=False,
