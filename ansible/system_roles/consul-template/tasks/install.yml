@@ -11,6 +11,7 @@
 
 - name: Get Consul-template package checksum
   command: "grep {{ consul_template_pkg }} {{ consul_template_temp_file_checksum }}"
+  check_mode: no
   register: consul_sha256
   delegate_to: 127.0.0.1
   become: no

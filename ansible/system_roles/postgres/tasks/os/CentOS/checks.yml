@@ -2,6 +2,7 @@
 - name: look for installed postgres version
   shell: yum list installed postgresql*|grep -Po 'postgresql\K9.(?=-server)'
   ignore_errors: true
+  check_mode: no
   no_log: "{{tower_show_secrets}}"
   register: pkg_postgres_version
 

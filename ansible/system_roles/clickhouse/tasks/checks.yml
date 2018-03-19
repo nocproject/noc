@@ -29,6 +29,7 @@
   register: sse42_support
   failed_when: False
   changed_when: False
+  check_mode: no
   when:
     - has_svc_clickhouse is defined
 

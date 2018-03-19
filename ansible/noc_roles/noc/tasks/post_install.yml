@@ -33,6 +33,7 @@
 
 - name: check if noc running
   command: "{{ noc_root }}/noc ctl status"
+  check_mode: no
   changed_when: false
   register: noc_ctl_status
   tags:
