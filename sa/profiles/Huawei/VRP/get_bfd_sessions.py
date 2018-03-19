@@ -36,7 +36,8 @@ class Script(BaseScript):
         "ISIS": "ISIS",
         "OSPF": "OSPF",
         "BGP": "BGP",
-        "EIGRP": "EIGRP"
+        "EIGRP": "EIGRP",
+        "IFNET": "IFNET"
     }
 
     client_ignored = ["CEF"]
