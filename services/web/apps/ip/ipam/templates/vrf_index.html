@@ -355,6 +355,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                     {% if max_slots %}<th colspan="{{max_slots}}" style="width: 0px"></th>{%endif%}
                     <th class="status">Up</th>
                     <th class="ip">Address</th>
+                    <th class="fqdn">Name</th>
                     <th class="state">State</th>
                     <th class="project">Project</th>
                     <th class="fqdn" style="width: auto">FQDN</th>
@@ -382,6 +383,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                             {{a.address}}
                         {%endif%}
                     </td>
+                    <td>{{ a.name }}</td>
                     <td class="state">{{ a.state.name }}</td>
                     <td class="state">{% if a.project %}{{ a.project.code }}{% endif %}</td>
                     <td style="width: auto">{{a.fqdn}}</td>
