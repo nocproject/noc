@@ -1,5 +1,6 @@
 ---
 - name: set postgres master
+  changed_when: False
   add_host:
     name: "{{ inventory_hostname }}"
     groups: svc-postgres-master

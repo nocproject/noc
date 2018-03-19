@@ -1,5 +1,6 @@
 ---
 - name: make servers group
+  changed_when: False
   add_host:
     group: svc-mongo-primary
     host: "{{item}}"
