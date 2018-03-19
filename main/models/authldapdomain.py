@@ -190,7 +190,7 @@ class AuthLDAPDomain(Document):
 
     def get_user_search_attributes(self):
         return ["dn"] + list(self.DEFAULT_ATTR_MAPPING[self.type])
-        
+
     def get_user_search_dn(self):
         if self.user_search_dn:
             user_search_dn = self.user_search_dn
@@ -204,3 +204,16 @@ class AuthLDAPDomain(Document):
         else:
             group_search_dn = self.root
         return group_search_dn
+
+    def get_group_mappings(self):
+        if not hasattr(self, "_group_dn"):
+            mappings = {}
+            for gm in self.groups:
+                if not gm.is_active:
+                    continue
+                if gm.group in mappings:
+                    mappings[gm.group].add(gm.group_dn.lower())
+                else:
+                    mappings[gm.group] = {gm.group_dn.lower()}
+            self._group_dn = mappings
+        return self._group_dn
