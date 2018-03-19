@@ -86,6 +86,10 @@ def get_objects_metrics(managed_objects):
 def get_interface_metrics(managed_objects):
     from noc.sa.models.managedobject import ManagedObject
     # mo = self.object
+    meric_map = {"load_in": "Interface | Load | In",
+                 "load_out": "Interface | Load | Out",
+                 "errors_in": "Interface | Errors | In",
+                 "errors_out": "Interface | Errors | Out"}
     if not isinstance(managed_objects, Iterable):
         managed_objects = [managed_objects]
     bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
@@ -94,7 +98,7 @@ def get_interface_metrics(managed_objects):
     ) * 1.5
     from_date = datetime.datetime.now() - datetime.timedelta(seconds=query_interval or 3600)
     from_date = from_date.replace(microsecond=0)
-    SQL = """SELECT managed_object, arrayStringConcat(path) as iface, argMax(ts, ts), argMax(load_in, ts), argMax(load_out, ts), argMax(errors_in, ts), argMax(errors_out, ts)
+    SQL = """SELECT managed_object, path[4] as iface, argMax(ts, ts), argMax(load_in, ts), argMax(load_out, ts), argMax(errors_in, ts), argMax(errors_out, ts)
             FROM interface
             WHERE
               date >= toDate('%s')
@@ -112,10 +116,10 @@ def get_interface_metrics(managed_objects):
             mo = bi_map.get(mo_bi_id)
             if mo:
                 mtable += [[mo, iface, ts, load_in, load_out]]
-                metric_map[mo][iface] = {"load_in": int(load_in),
-                                         "load_out": int(load_out),
-                                         "errors_in": int(errors_in),
-                                         "errors_out": int(errors_out)}
+                metric_map[mo][iface] = {meric_map["load_in"]: int(load_in),
+                                         meric_map["load_out"]: int(load_out),
+                                         meric_map["errors_in"]: int(errors_in),
+                                         meric_map["errors_out"]: int(errors_out)}
                 last_ts[mo] = max(ts, last_ts.get(mo, ts))
     except ClickhouseError:
         pass
