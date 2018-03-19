@@ -6,10 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
@@ -40,7 +42,6 @@ class Script(BaseScript):
             1:49  02:XX:XX:XX:XX:XX    165        Version-2   Slot:  1, Port: 49
 
             """
-            print match
             if not match or not self.rx_rem_ports.match(match[4]):
                 continue
             neighbors += [{"device_id": match[1],
