@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Extreme.XOS.get_capabilities"
 
     rx_lldp = re.compile(r"^\s*\d+(\:\d+)?\s+Enabled\s+Enabled", re.MULTILINE)
-    rx_cdp = re.compile(r"^\s*CDP \S+ enabled ports\s+:\s+\d+", re.MULTILINE)
+    rx_cdp = re.compile(r"^\s*CDP(\s\S+|)\s*[Ee]nabled ports\s+:\s+\d+", re.MULTILINE)
 
     @false_on_cli_error
     def has_lldp_cli(self):

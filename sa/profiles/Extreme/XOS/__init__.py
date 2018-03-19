@@ -14,8 +14,15 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Extreme.XOS"
     pattern_prompt = r"^(\*\s)?(Slot-\d+ )?\S+? #"
-    pattern_more = "^Press <SPACE> to continue or <Q> to quit:"
     pattern_syntax_error = \
         r"%% (Incomplete command|Invalid input detected at)"
-    command_more = " "
     command_disable_pager = "disable clipaging"
+    pattern_more = [
+        (r"^Press <SPACE> to continue or <Q> to quit:", " "),
+        (r"^Do you want to continue with download and remove existing files from internal-memory\? \(y/N\)", "y\n"),
+        (r"Do you want to install image after downloading\? \(y - yes, n - no, \<cr\> - cancel\)", "y\n"),
+        (r"Are you sure you want to reboot the stack\? \(y/N\)", "y\n"),
+        (r"Do you want to save configuration changes to currently selected configuration file (primary.cfg) and reboot?"
+         r"(y - save and reboot, n - reboot without save, <cr> - cancel command)", "y\n"),
+        (r"Do you want to save configuration to \S+ and overwrite it\? \(y/N\)", "y\n")
+    ]
