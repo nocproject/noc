@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from collections import defaultdict
+
 # Python modules
 import datetime
 import operator
@@ -168,20 +170,20 @@ class ManagedObjectCard(BaseCard):
 
         meta = ""
 
-        iface_metric_type = dict(MetricType.objects.filter().scalar("field_name", "measure"))
-        obj_metric_type = dict(MetricType.objects.filter().scalar("name", "measure"))
+        metric_type_name = dict(MetricType.objects.filter().scalar("name", "measure"))
+        metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
 
         if objects_metrics is not None:
             if objects_metrics.get("") is not None:
                 for key in objects_metrics.get("").keys():
-                    if obj_metric_type[key] in ["bytes", "bit/s", "bool"]:
-                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
+                    if metric_type_name[key] in ["bytes", "bit/s", "bool"]:
+                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])}
                     else:
-                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
+                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": objects_metrics.get("")[key]}
                 meta = objects_metrics.get("")
             else:
                 meta = {}
-                
+
         load_in = "-"
         load_out = "-"
         errors_in = "-"
@@ -189,21 +191,50 @@ class ManagedObjectCard(BaseCard):
 
         if iface_metrics is not None:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
+                interfaces = []
                 if iface_metrics.get(str(i.name)) is not None:
                     for key in iface_metrics.get(str(i.name)).keys():
-                        if iface_metric_type[key] in ["bytes", "bit/s", "bool"]:
-                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], iface_metric_type[key])}
+                        if key in metric_type_name.keys():
+                            meta_type = metric_type_name[key]
+                        if key in metric_type_field.keys():
+                            meta_type = metric_type_field[key]
+                        if meta_type in ["bytes", "bit/s", "bool"]:
+                            iface_metrics.get(str(i.name))[key] = {"type": meta_type, "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], meta_type)}
                         else:
-                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
-
-                    if str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
-                        load_in = str(iface_metrics.get(str(i.name))["load_in"]["value"]) + iface_metrics.get(str(i.name))["load_in"]["type"]
-                    if str(iface_metrics.get(str(i.name))["load_out"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
-                        load_out = str(iface_metrics.get(str(i.name))["load_out"]["value"]) + iface_metrics.get(str(i.name))["load_out"]["type"]
-                    errors_in = iface_metrics.get(str(i.name))["errors_in"]["value"]
-                    errors_out = iface_metrics.get(str(i.name))["errors_out"]["value"]
+                            iface_metrics.get(str(i.name))[key] = {"type": meta_type, "value": iface_metrics.get(str(i.name))[key]}
+                            
+                        if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
+                            try:
+                                if str(iface_metrics.get(str(i.name))['Interface | Load | In']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['Interface | Load | In']["value"]) is not None:
+                                    load_in = str(iface_metrics.get(str(i.name))['Interface | Load | In']["value"]) + iface_metrics.get(str(i.name))['Interface | Load | In']["type"]
+                                if str(iface_metrics.get(str(i.name))['Interface | Load | Out']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['Interface | Load | Out']["value"]) is not None:
+                                    load_out = str(iface_metrics.get(str(i.name))['Interface | Load | Out']["value"]) + iface_metrics.get(str(i.name))['Interface | Load | Out']["type"]
+                                errors_in = iface_metrics.get(str(i.name))['Interface | Errors | In']["value"]
+                                erros_out = iface_metrics.get(str(i.name))['Interface | Errors | Out']["value"]
+                            except:
+                                load_in = "-"
+                                load_out = "-"
+                                error_in = "-"
+                                error_out = "-"
+                        if key in ['load_in', 'load_out', 'error_in', 'error_out']:
+                            try:
+                                if str(iface_metrics.get(str(i.name))['load_in']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['load_in']["value"]) is not None:
+                                    load_in = str(iface_metrics.get(str(i.name))['load_in']["value"]) + iface_metrics.get(str(i.name))['load_in']["type"]
+                                if str(iface_metrics.get(str(i.name))['load_out']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['load_out']["value"]) is not None:
+                                    load_out = str(iface_metrics.get(str(i.name))['load_out']["value"]) + iface_metrics.get(str(i.name))['load_out']["type"]
+                                errors_in = iface_metrics.get(str(i.name))['error_in']["value"]
+                                errors_out = iface_metrics.get(str(i.name))['error_out']["value"]
+                            except:
+                                load_in = "-"
+                                load_out = "-"
+                                error_in = "-"
+                                error_out = "-"
                 else:
                     iface_metrics.get(str(i.name), {}).keys()
+                    load_in = "-"
+                    load_out = "-"
+                    errors_in = "-"
+                    errors_out = "-"
 
                 interfaces += [{
                         "id": i.id,
@@ -408,7 +439,7 @@ class ManagedObjectCard(BaseCard):
     def humanize_speed(speed, type_speed):
         if not speed:
             return "-"
-            
+
         try:
             speed = int(speed)
         except:
@@ -444,6 +475,8 @@ class ManagedObjectCard(BaseCard):
                     else:
                         return "%.2f %s" % (float(speed) / t, n)
             return str(speed)
+        if type_speed == "bool":
+            return bool(speed)
 
     @staticmethod
     def get_root(_root):
