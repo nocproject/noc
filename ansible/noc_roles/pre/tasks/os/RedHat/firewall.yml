@@ -1,10 +1,9 @@
 ---
-# ignore erros will be even here or later
 - name: check firewalld state
-  command: systemctl is-active firewalld
+  systemd:
+    name: firewalld
+  check_mode: yes
   register: firewalld_state
-  changed_when: false
-  ignore_errors: yes
   tags:
     - config
     - firewall
@@ -16,7 +15,7 @@
     state: enabled
     immediate: true
   with_items: "{{ groups['all'] }}"
-  when: "firewalld_state.stdout == 'active'"
+  when: "firewalld_state.status.ActiveState == 'active'"
   tags:
     - config
     - firewall
@@ -27,7 +26,7 @@
     permanent: true
     state: enabled
     immediate: true
-  when: "firewalld_state.stdout == 'active'"
+  when: "firewalld_state.status.ActiveState == 'active'"
   tags:
     - config
     - firewall
