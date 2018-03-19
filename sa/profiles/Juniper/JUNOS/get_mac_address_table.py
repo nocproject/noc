@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_mac_address_table
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,8 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+(?P<type>Learn|Static)\s+"
+        r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+"
+        r"(?P<type>Learn|Static|S|D|L|P)\s+"
         r"[^ ]+\s+(?P<interfaces>.*)$"
     )
 
@@ -54,7 +55,15 @@ class Script(BaseScript):
                     "interfaces": [ifname],
                     "type": {
                         "learn": "D",
-                        "static": "S"
-                    }[match.group("type").lower()],
+                        "static": "S",
+                        "d": "D",  # dynamic
+                        "s": "S",  # static
+                        "l": "D",  # locally learned
+                        "p": "S",  # Persistent static
+                        # "se": "s",  # statistics enabled
+                        # "nm": "s",  # non configured MAC
+                        # "r": "s",  # remote PE MAC
+                        # "o": "s"  # ovsdb MAC
+                    }[match.group("type").lower()]
                 }]
         return r

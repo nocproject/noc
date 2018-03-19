@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -67,18 +67,18 @@ class Script(BaseScript):
         Parse "show chassis hardware"
         and yeld name, revision, part_no, serial, description
         """
-        for l in v.splitlines():
-            l = l.strip()
-            if not l:
+        for line in v.splitlines():
+            line = line.strip()
+            if not line:
                 continue
-            if l.startswith("node"):
-                self.chassis_no = l.strip()[4:-1]
+            if line.startswith("node"):
+                self.chassis_no = line[4:-1]
                 continue
-            match = self.rx_part.search(l)
+            match = self.rx_part.search(line)
             if match:
                 yield match.groups()
             else:
-                match = self.rx_chassis.search(l)
+                match = self.rx_chassis.search(line)
                 if match:
                     rev = match.group("revision")
                     yield ("Chassis", rev, None,
@@ -89,8 +89,8 @@ class Script(BaseScript):
         v = self.cli("show chassis hardware")
         objects = []
         chassis_sn = set()
-        for name, revision, part_no, serial, description in \
-          self.parse_hardware(v):
+        p_hardware = self.parse_hardware(v)
+        for name, revision, part_no, serial, description in p_hardware:
             builtin = False
             # Detect type
             t, number = self.get_type(name)
@@ -126,8 +126,10 @@ class Script(BaseScript):
             elif serial == "BUILTIN" or serial in chassis_sn:
                 builtin = True
                 part_no = []
-            if t == "CHASSIS" and number is None \
-              and self.chassis_no is not None:
+            if (
+                t == "CHASSIS" and number is None and
+                self.chassis_no is not None
+            ):
                 number = self.chassis_no
             # Submit object
             objects += [{

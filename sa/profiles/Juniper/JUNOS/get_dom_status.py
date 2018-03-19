@@ -34,7 +34,7 @@ class Script(BaseScript):
         r = []
         v = self.cli("show interfaces diagnostics optics")
         for I in self.rx_phy_split.split(v)[1:]:
-            name = self.re_search(self.rx_phy_name, I).group("ifname")
+            name = self.rx_phy_name.search(I).group("ifname")
             match = self.rx_temp.search(I)
             if match:
                 temp_c = match.group("temp")
@@ -45,9 +45,9 @@ class Script(BaseScript):
                 voltage_v = match.group("volt")
             else:
                 voltage_v = 0
-            current_ma = self.re_search(self.rx_bias, I).group("bias")
-            optical_tx_dbm = self.re_search(self.rx_tx_dbm, I).group("tx_dbm")
-            optical_rx_dbm = self.re_search(self.rx_rx_dbm, I).group("rx_dbm")
+            current_ma = self.rx_bias.search(I).group("bias")
+            optical_tx_dbm = self.rx_tx_dbm.search(I).group("tx_dbm")
+            optical_rx_dbm = self.rx_rx_dbm.search(I).group("rx_dbm")
             r += [{
                 "interface": name,
                 "temp_c": temp_c,
