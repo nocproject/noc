@@ -6,10 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # NOC Modules
 from noc.core.interface.base import BaseInterface
-from base import (DictListParameter, IPParameter,
-                  InterfaceNameParameter, StringParameter, IntParameter, ListOfParameter)
+from .base import (DictListParameter, IPParameter,
+                   InterfaceNameParameter, StringParameter, IntParameter, ListOfParameter)
 
 
 class IGetBFDSessions(BaseInterface):
@@ -21,7 +23,7 @@ class IGetBFDSessions(BaseInterface):
         "remote_discriminator": IntParameter(),
         "state": StringParameter(choices=["UP", "DOWN"]),
         "clients": ListOfParameter(element=StringParameter(choices=[
-            "L2", "RSVP", "ISIS", "OSPF", "BGP", "EIGRP", "PIM"
+            "L2", "RSVP", "ISIS", "OSPF", "BGP", "EIGRP", "PIM", "IFNET"
         ])),
         # Transmit interval, microseconds
         "tx_interval": IntParameter(),

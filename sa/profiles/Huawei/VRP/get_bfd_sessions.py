@@ -36,7 +36,8 @@ class Script(BaseScript):
         "ISIS": "ISIS",
         "OSPF": "OSPF",
         "BGP": "BGP",
-        "EIGRP": "EIGRP"
+        "EIGRP": "EIGRP",
+        "IFNET": "IFNET"
     }
 
     client_ignored = ["CEF"]
@@ -48,7 +49,6 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         for match in self.rx_neigh.finditer(s):
-            print(match)
             r += [{
                 "remote_address": match.group("remote_address").strip(),
                 "local_interface": match.group("local_interface").strip(),
