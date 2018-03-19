@@ -28,23 +28,17 @@
   tags:
     - repo
 
-- name: Enable the PostgreSQL repository RHEL
-  yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-2.noarch.rpm
-    state: present
-  when: postgres_version=='9.4'
+- name: Add PostgreSQL repository RHEL
+  yum_repository:
+    name: pgdg-{{ postgres_version|replace(".","") }}-centos
+    description: PostgreSQL {{ postgres_version }}
+    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
+    enabled: yes
   environment:
     http_proxy: "{{http_proxy}}"
-  tags:
-    - repo
-
-- name: Enable the PostgreSQL repository RHEL
-  yum:
-    name: http://download.postgresql.org/pub/repos/yum/{{postgres_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat{{postgres_version|replace(".","")}}-{{postgres_version}}-3.noarch.rpm
-    state: present
-  when: postgres_version=='9.6'
-  environment:
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
   tags:
     - repo
 
