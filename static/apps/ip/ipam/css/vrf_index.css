@@ -96,3 +96,7 @@ th[class=ippool-to]
 #ranges th[class=address] {
     width: 7em;
 }
+
+.breadcrumbs {
+    display: none !important;
+}

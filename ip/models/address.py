@@ -52,11 +52,18 @@ class Address(models.Model):
         AddressProfile,
         null=False, blank=False
     )
+    name = models.CharField(
+        _("Name"),
+        max_length=255,
+        null=False, blank=False
+    )
     fqdn = models.CharField(
         _("FQDN"),
         max_length=255,
         help_text=_("Full-qualified Domain Name"),
-        validators=[check_fqdn])
+        validators=[check_fqdn],
+        null=True, blank=True
+    )
     project = models.ForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
