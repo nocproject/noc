@@ -38,10 +38,17 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     uiStyle: "medium"
                 },
                 {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: __("Name"),
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
                     name: "fqdn",
                     xtype: "textfield",
                     fieldLabel: __("FQDN"),
-                    allowBlank: false,
+                    allowBlank: true,
                     uiStyle: "medium",
                     regex: /^[0-9a-z\-]+(\.[0-9a-z\-]+)+$/
                 },
