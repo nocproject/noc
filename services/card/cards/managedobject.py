@@ -191,7 +191,6 @@ class ManagedObjectCard(BaseCard):
 
         if iface_metrics is not None:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
-                interfaces = []
                 if iface_metrics.get(str(i.name)) is not None:
                     for key in iface_metrics.get(str(i.name)).keys():
                         if key in metric_type_name.keys():
