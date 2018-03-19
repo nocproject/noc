@@ -35,6 +35,7 @@
   file:
     dest: "{{ consul_template_temp_unarchive }}"
     state: directory
+  when: not ansible_check_mode
 
 - name: Unarchive Consul-template and install binary
   unarchive:
@@ -44,6 +45,8 @@
     group: "{{ consul_template_group }}"
     mode: 0755
     creates: "{{ consul_template_temp_unarchive }}/{{consul_template_binary}}"
+  when: not ansible_check_mode
+  register: ct_archive_extracted
 
 - name: Overwrite Consul-template binary if needed
   copy:
@@ -51,5 +54,8 @@
     dest : "{{ consul_template_bin_path }}/{{consul_template_binary}}"
     remote_src: yes
     mode: 0755
+  when:
+    - consul_archive_extracted | changed
+    - not ansible_check_mode
   notify:
     - restart consul-template
