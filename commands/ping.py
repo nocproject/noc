@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Pretty command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Pretty command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import argparse
-import os
 # Third-party modules
 from tornado.ioloop import IOLoop
 import tornado.gen
 import tornado.queues
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
 from noc.core.ioloop.ping import Ping
@@ -53,10 +52,10 @@ class Command(BaseCommand):
             for fn in input:
                 try:
                     with open(fn) as f:
-                        for l in f:
-                            l = l.strip()
-                            if is_ipv4(l):
-                                self.addresses.add(l)
+                        for line in f:
+                            line = line.strip()
+                            if is_ipv4(line):
+                                self.addresses.add(line)
                 except OSError as e:
                     self.die("Cannot read file %s: %s\n" % (fn, e))
         # Ping
@@ -85,7 +84,7 @@ class Command(BaseCommand):
         while True:
             a = yield self.queue.get()
             if a:
-                rtt = yield self.ping.ping_check_rtt(
+                rtt, attempts = yield self.ping.ping_check_rtt(
                     a,
                     count=1,
                     timeout=1000
