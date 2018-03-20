@@ -55,7 +55,7 @@
     remote_src: yes
     mode: 0755
   when:
-    - consul_archive_extracted | changed
+    - ct_archive_extracted | changed
     - not ansible_check_mode
   notify:
     - restart consul-template
