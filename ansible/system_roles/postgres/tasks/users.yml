@@ -2,10 +2,12 @@
   postgresql_user:
     name: "{{db_name}}"
     password: "{{db_password}}"
-    login_user: "{{ postgres_user }}"
+    login_user: "{{ postgres_superuser }}"
+    login_password: "{{ postgres_password | default(omit) }}"
     db: postgres
     role_attr_flags: CREATEDB,NOSUPERUSER
   become_user: "{{postgres_user}}"
+  become: "{{postgres_become_user}}"
   when: db_name is defined
 
 - name: "Create postgres {{db_name}} database"
@@ -13,7 +15,9 @@
     name: "{{db_name}}"
     encoding: "UTF-8"
     owner: "{{db_user}}"
-    login_user: "{{ postgres_user }}"
+    login_user: "{{ postgres_superuser }}"
+    login_password: "{{ postgres_password | default(omit) }}"
     state: "present"
   become_user: "{{postgres_user}}"
+  become: "{{postgres_become_user}}"
   when: db_name is defined

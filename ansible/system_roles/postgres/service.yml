@@ -1,5 +1,5 @@
 - name: Install and configure postgres
-  hosts: svc-postgres-exec
+  hosts: svc-postgres-exec:!svc-patroni-exec
   become: yes
   serial: 1
   any_errors_fatal: true

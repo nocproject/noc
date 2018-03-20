@@ -13,61 +13,11 @@
   tags:
     - config
 
-- name: Add Debian PostgreSQL key
-  apt_key:
-    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-    state: present
-  environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
-  tags:
-    - repo
-
-- name: Add Debian PostgreSQL repo
-  apt_repository:
-    repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_lsb.codename }}-pgdg main"
-    state: present
-    update_cache: yes
-  environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
-  tags:
-    - repo
-
-- name: "Install PostgreSQL"
-  apt:
-    name: "{{ item }}"
-    update_cache: yes
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-    state: present
-  with_items:
-    - postgresql-{{ postgres_version }}
-    - postgresql-contrib-{{ postgres_version }}
-    - python-psycopg2
-  environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
-
+- import_tasks: install.yml
 
 - name: Install postgres limits file
   template:
     src: "etc/security/limits.d/postgres_limits.conf.j2"
     dest: "/etc/security/limits.d/postgres_limits.conf"
-  tags:
-    - config
-
-- name: Including postgres.conf
-  lineinfile:
-    dest: "{{postgresql_conf_path}}"
-    line: "include = '{{ postgresql_conf_prefix }}/noc.conf'"
-  notify: restart postgres
-  tags:
-    - config
-
-- name: Setting config
-  template:
-    src: "postgres.conf.j2"
-    dest: "{{ postgresql_conf_prefix }}/noc.conf"
-  notify: reload postgres
   tags:
     - config

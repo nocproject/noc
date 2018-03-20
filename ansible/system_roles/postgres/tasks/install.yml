@@ -1,0 +1,2 @@
+# ansible cant launch tasks on dynamic path.
+- include_tasks: "os/{{ ansible_distribution }}/install.yml"

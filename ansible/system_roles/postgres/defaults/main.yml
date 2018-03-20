@@ -1,4 +1,4 @@
-postgres_max_connections: 301
+postgres_max_clients: 301
 postgresql_conf_path: "{{postgresql_conf_prefix}}/postgresql.conf"
 postgresql_hba_path: "{{postgresql_conf_prefix}}/pg_hba.conf"
 #Memtune
@@ -8,6 +8,7 @@ kernel_shmmax: "{{ kernel_shmall|int() * 4096 }}"
 postgres_path: /usr/bin/postgres
 postgres_system_service: postgresql
 postgres_user: postgres
+postgres_superuser: postgres
 postgres_version: 9.6
 postgres_replicator_password: noc
 postgres_superuser_password: noc

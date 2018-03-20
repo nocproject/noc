@@ -1,0 +1,43 @@
+---
+- name: Add EPEL Repo
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: present
+    validate_certs: yes
+  register: epel_task_result
+  retries: 4
+  delay: 2
+  until: epel_task_result|succeeded
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
+- name: Add PostgreSQL repository RHEL
+  yum_repository:
+    name: pgdg-{{ postgres_version|replace(".","") }}-centos
+    description: PostgreSQL {{ postgres_version }}
+    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
+    enabled: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
+
+- name: Install PostgreSQL
+  yum:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+    - postgresql{{postgres_version|replace(".","")}}-server
+    - postgresql{{postgres_version|replace(".","")}}-contrib
+    - postgresql{{postgres_version|replace(".","")}}-plpython
+    - python-psycopg2
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
