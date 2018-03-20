@@ -64,7 +64,8 @@ class ManagedObjectApplication(ExtModelApplication):
     extra_permissions = ["alarm", "change_interface"]
     implied_permissions = {
         "read": [
-            "inv:networksegment:lookup"
+            "inv:networksegment:lookup",
+            "main:handler:lookup"
         ]
     }
     order_map = {

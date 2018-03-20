@@ -32,7 +32,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.fm.ttsystem.LookupField",
         "NOC.inv.platform.LookupField",
         "NOC.inv.map.Maintenance",
-        "NOC.maintenance.maintenancetype.LookupField"
+        "NOC.maintenance.maintenancetype.LookupField",
+        "NOC.main.handler.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -885,30 +886,36 @@ Ext.define("NOC.sa.managedobject.Application", {
                             items: [
                                 {
                                     name: "config_filter_handler",
-                                    xtype: "textfield",
+                                    xtype: "main.handler.LookupField",
                                     fieldLabel: __("Config Filter Handler"),
                                     allowBlank: true,
                                     groupEdit: true,
-                                    vtype: "handler"
+                                    query: {
+                                        allow_config_filter: true
+                                    }
                                 },
                                 {
                                     name: "config_diff_filter_handler",
-                                    xtype: "textfield",
+                                    xtype: "main.handler.LookupField",
                                     fieldLabel: __("Config Diff Filter Handler"),
                                     allowBlank: true,
                                     groupEdit: true,
-                                    vtype: "handler"
+                                    query: {
+                                        allow_config_filter: true
+                                    }
                                 }]
                         }, {
                             xtype: "container",
                             items: [
                                 {
                                     name: "config_validation_handler",
-                                    xtype: "textfield",
+                                    xtype: "main.handler.LookupField",
                                     fieldLabel: __("Config Validation Handler"),
                                     allowBlank: true,
                                     groupEdit: true,
-                                    vtype: "handler"
+                                    query: {
+                                        allow_config_validation: true
+                                    }
                                 }]
                         }
                     ]
