@@ -70,7 +70,9 @@
     file:
       dest: "{{consul_config_path}}/.consul_bootstrapped"
       state: touch
-  when: consul_power == 'bootstrap' and not bootstrap_marker.stat.exists
+  when:
+    - consul_power == 'bootstrap'
+    - not bootstrap_marker.stat.exists
 
 - name: Install consul monitoring
   include_role:
