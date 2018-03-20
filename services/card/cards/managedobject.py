@@ -184,19 +184,17 @@ class ManagedObjectCard(BaseCard):
             else:
                 meta = {}
 
-        load_in = "-"
-        load_out = "-"
-        errors_in = "-"
-        errors_out = "-"
-
         if iface_metrics is not None:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
+                load_in = "-"
+                load_out = "-"
+                errors_in = "-"
+                errors_out = "-"
                 if iface_metrics.get(str(i.name)) is not None:
                     for key in iface_metrics.get(str(i.name)).keys():
-                        if key in metric_type_name.keys():
-                            meta_type = metric_type_name[key]
-                        if key in metric_type_field.keys():
-                            meta_type = metric_type_field[key]
+                        
+                        meta_type = metric_type_name.get(key) or metric_type_field.get(key)
+                        
                         if meta_type in ["bytes", "bit/s", "bool"]:
                             iface_metrics.get(str(i.name))[key] = {"type": meta_type, "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], meta_type)}
                         else:
@@ -210,11 +208,8 @@ class ManagedObjectCard(BaseCard):
                                     load_out = str(iface_metrics.get(str(i.name))['Interface | Load | Out']["value"]) + iface_metrics.get(str(i.name))['Interface | Load | Out']["type"]
                                 errors_in = iface_metrics.get(str(i.name))['Interface | Errors | In']["value"]
                                 erros_out = iface_metrics.get(str(i.name))['Interface | Errors | Out']["value"]
-                            except:
-                                load_in = "-"
-                                load_out = "-"
-                                error_in = "-"
-                                error_out = "-"
+                            except TypeError:
+                                pass
                         if key in ['load_in', 'load_out', 'error_in', 'error_out']:
                             try:
                                 if str(iface_metrics.get(str(i.name))['load_in']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['load_in']["value"]) is not None:
@@ -223,17 +218,10 @@ class ManagedObjectCard(BaseCard):
                                     load_out = str(iface_metrics.get(str(i.name))['load_out']["value"]) + iface_metrics.get(str(i.name))['load_out']["type"]
                                 errors_in = iface_metrics.get(str(i.name))['error_in']["value"]
                                 errors_out = iface_metrics.get(str(i.name))['error_out']["value"]
-                            except:
-                                load_in = "-"
-                                load_out = "-"
-                                error_in = "-"
-                                error_out = "-"
+                            except TypeError:
+                                pass
                 else:
                     iface_metrics.get(str(i.name), {}).keys()
-                    load_in = "-"
-                    load_out = "-"
-                    errors_in = "-"
-                    errors_out = "-"
 
                 interfaces += [{
                         "id": i.id,
