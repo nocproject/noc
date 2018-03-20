@@ -190,38 +190,40 @@ class ManagedObjectCard(BaseCard):
                 load_out = "-"
                 errors_in = "-"
                 errors_out = "-"
-                if iface_metrics.get(str(i.name)) is not None:
-                    for key in iface_metrics.get(str(i.name)).keys():
+                iface_get_link_name = iface_metrics.get(str(i.name))
+                
+                if iface_get_link_name != None:
+                    for key in iface_get_link_name.keys():
                         
                         meta_type = metric_type_name.get(key) or metric_type_field.get(key)
                         
                         if meta_type in ["bytes", "bit/s", "bool"]:
-                            iface_metrics.get(str(i.name))[key] = {"type": meta_type, "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], meta_type)}
+                            iface_get_link_name[key] = {"type": meta_type, "value": self.humanize_speed(str(iface_get_link_name[key]), meta_type)}
                         else:
-                            iface_metrics.get(str(i.name))[key] = {"type": meta_type, "value": iface_metrics.get(str(i.name))[key]}
+                            iface_get_link_name[key] = {"type": meta_type, "value": str(iface_get_link_name[key])}
                             
                         if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
                             try:
-                                if str(iface_metrics.get(str(i.name))['Interface | Load | In']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['Interface | Load | In']["value"]) is not None:
-                                    load_in = str(iface_metrics.get(str(i.name))['Interface | Load | In']["value"]) + iface_metrics.get(str(i.name))['Interface | Load | In']["type"]
-                                if str(iface_metrics.get(str(i.name))['Interface | Load | Out']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['Interface | Load | Out']["value"]) is not None:
-                                    load_out = str(iface_metrics.get(str(i.name))['Interface | Load | Out']["value"]) + iface_metrics.get(str(i.name))['Interface | Load | Out']["type"]
-                                errors_in = iface_metrics.get(str(i.name))['Interface | Errors | In']["value"]
-                                erros_out = iface_metrics.get(str(i.name))['Interface | Errors | Out']["value"]
+                                if iface_get_link_name['Interface | Load | In']["value"] != "-" and iface_get_link_name['Interface | Load | In']["value"] is not None:
+                                    load_in = iface_get_link_name['Interface | Load | In']["value"] + iface_get_link_name['Interface | Load | In']["type"]
+                                if iface_get_link_name['Interface | Load | Out']["value"] != "-" and iface_get_link_name['Interface | Load | Out']["value"] is not None:
+                                    load_out = iface_get_link_name['Interface | Load | Out']["value"] + iface_get_link_name['Interface | Load | Out']["type"]
+                                errors_in = iface_get_link_name['Interface | Errors | In']["value"]
+                                erros_out = iface_get_link_name['Interface | Errors | Out']["value"]
                             except TypeError:
                                 pass
                         if key in ['load_in', 'load_out', 'error_in', 'error_out']:
                             try:
-                                if str(iface_metrics.get(str(i.name))['load_in']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['load_in']["value"]) is not None:
-                                    load_in = str(iface_metrics.get(str(i.name))['load_in']["value"]) + iface_metrics.get(str(i.name))['load_in']["type"]
-                                if str(iface_metrics.get(str(i.name))['load_out']["value"]) is not "-" and str(iface_metrics.get(str(i.name))['load_out']["value"]) is not None:
-                                    load_out = str(iface_metrics.get(str(i.name))['load_out']["value"]) + iface_metrics.get(str(i.name))['load_out']["type"]
-                                errors_in = iface_metrics.get(str(i.name))['error_in']["value"]
-                                errors_out = iface_metrics.get(str(i.name))['error_out']["value"]
+                                if iface_get_link_name['load_in']["value"] != "-" and iface_get_link_name['load_in']["value"] is not None:
+                                    load_in = iface_get_link_name['load_in']["value"] + iface_get_link_name['load_in']["type"]
+                                if iface_get_link_name['load_out']["value"] is not "-" and iface_get_link_name['load_out']["value"] is not None:
+                                    load_out = iface_get_link_name['load_out']["value"] + iface_get_link_name['load_out']["type"]
+                                errors_in = iface_get_link_name['error_in']["value"]
+                                errors_out = iface_get_link_name['error_out']["value"]
                             except TypeError:
                                 pass
                 else:
-                    iface_metrics.get(str(i.name), {}).keys()
+                    iface_get_link_name = {}
 
                 interfaces += [{
                         "id": i.id,
