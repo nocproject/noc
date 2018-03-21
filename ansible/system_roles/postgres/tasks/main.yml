@@ -11,7 +11,7 @@
 - name: set postgres master fact
   changed_when: False
   set_fact:
-    postgres_master: "{{groups['svc-postgres-master'][0].ansible_host}}"
+    postgres_master: "{{hostvars[groups['svc-postgres-master'][0]].ansible_host}}"
     postgres_master_node: "{{groups['svc-postgres-master'][0]}}"
     postgres_listen: "{{postgres_listen}}"
   delegate_to: "{{item}}"
