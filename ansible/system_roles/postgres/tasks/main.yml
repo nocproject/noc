@@ -11,7 +11,7 @@
 - name: set postgres master fact
   changed_when: False
   set_fact:
-    postgres_master: "{{svc-postgres-master[0]}}"
+    postgres_master: "{{groups['svc-postgres-master'][0]}}"
 
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
