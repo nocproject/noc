@@ -15,3 +15,4 @@ postgres_superuser_password: noc
 postgres_noc_db: noc
 postgres_noc_user: noc
 postgres_noc_password:
+postgres_become_user: True
