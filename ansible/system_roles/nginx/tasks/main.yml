@@ -4,7 +4,6 @@
 
 - name: include certs
   import_tasks: certs.yml
-  static: true
   tags:
     - config
 
