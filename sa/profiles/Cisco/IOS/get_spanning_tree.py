@@ -89,12 +89,15 @@ class Script(BaseScript):
     #
     rx_pvst_bridge = re.compile(
         r"Bridge Identifier has priority (?P<bridge_priority>\d+)(?:, sysid \d+)?, address (?P<bridge_id>\S+).*?"
-        r"(Current root has priority (?P<root_priority>\d+), address (?P<root_id>\S+)|We are the root of the spanning tree)",
+        r"(Current root has priority (?P<root_priority>\d+), "
+        r"address (?P<root_id>\S+)|We are the root of the spanning tree)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_pvst_interfaces = re.compile(
         r"Port \d+ \((?P<interface>\S+)\) of VLAN(?P<instance_id>\d+) is \S+.*?"
-        r"Port path cost (?P<cost>\d+), Port priority (?P<priority>\d+), Port Identifier\s+(?P<port_id>\S+)\..*?"
-        r"Designated bridge has priority (?P<designated_bridge_priority>\d+), address (?P<designated_bridge_id>\S+).*?"
+        r"Port path cost (?P<cost>\d+), Port priority (?P<priority>\d+), "
+        r"Port Identifier\s+(?P<port_id>\S+)\..*?"
+        r"Designated bridge has priority (?P<designated_bridge_priority>\d+), "
+        r"address (?P<designated_bridge_id>\S+).*?"
         r"Designated port id is (?P<designated_port_id>\S+), designated path cost \d+",
         re.DOTALL | re.IGNORECASE | re.MULTILINE)
 
@@ -160,7 +163,8 @@ class Script(BaseScript):
     rx_mstp_interfaces = re.compile(
         r"^(?P<interface>\S+)\s+of\s+MST(?P<instance_id>\d+)\s+is\s+(?P<role>\S+)\s+(?P<status>\S+).+?"
         r"Port\s+info\s+port\s+id\s+(?P<port_id>\S+)\s+priority\s+(?P<priority>\d+)\s+cost\s+(?P<cost>\d+).+?"
-        r"Designated\s+bridge\s+address\s+(?P<designated_bridge_id>\S+)\s+priority\s+(?P<designated_bridge_priority>\d+)\s+port\s+id\s+(?P<designated_port_id>\S+)",
+        r"Designated\s+bridge\s+address\s+(?P<designated_bridge_id>\S+)\s+"
+        r"priority\s+(?P<designated_bridge_priority>\d+)\s+port\s+id\s+(?P<designated_port_id>\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def process_mstp(self, cli_stp):
