@@ -19,6 +19,8 @@
     db_password: "{{grafana_pg_password}}"
     db_user: "{{grafana_pg_user}}"
   delegate_to: "{{postgres_master_node}}"
+  tags:
+    - postgres
 
 - name: create Grafana dir
   file:

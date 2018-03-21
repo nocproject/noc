@@ -1,6 +1,5 @@
 # Migrate database schema
 ---
-
 - name: create noc user
   import_role:
     name: postgres
@@ -10,6 +9,8 @@
     db_password: "{{postgres_noc_password}}"
     db_user: "{{postgres_noc_user}}"
   delegate_to: "{{postgres_master_node}}"
+  tags:
+    - postgres
 
 - import_tasks: configure_consul.yml
 
