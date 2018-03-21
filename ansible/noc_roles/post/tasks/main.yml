@@ -18,13 +18,6 @@
   tags:
     - restart
 
-- name: Wait for NOC to start
-  pause:
-    seconds: 30
-  tags:
-    - soft_restart
-    - restart
-
 - name: notify deploy finished
   include_role:
     name: deploy_notification
