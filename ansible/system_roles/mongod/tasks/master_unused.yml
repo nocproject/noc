@@ -23,7 +23,7 @@
 - name: create rs
   mongodb_replica_set:
     member: "{{ansible_hostname}}"
-    replset: "{{ noc_mongo_replicaset }}"
+    replset: "{{ mongod_rs }}"
     state: present
     login_user: "{{ noc_mongo_admin_user }}"
     login_password: "{{ noc_mongo_admin_password }}"
@@ -54,7 +54,7 @@
     database: "{{ noc_mongo_db }}"
     name: "{{ noc_mongo_user }}"
     password: "{{ noc_mongo_password }}"
-    replica_set: "{{ noc_mongo_replicaset }}"
+    replica_set: "{{ mongod_rs }}"
     roles:
       - db: "{{ noc_mongo_db }}"
         role: dbOwner

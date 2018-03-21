@@ -1,6 +1,6 @@
 ---
 - name: Check replica set is initialized
-  command: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ ansible_hostname }} --eval 1"
+  command: "{{ mongo_path }} --host {{ mongod_rs }}/{{ ansible_hostname }} --eval 1"
   register: rs_status
   changed_when:
     - "'No primary detected for set' in rs_status.stdout"

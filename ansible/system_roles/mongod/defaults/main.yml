@@ -5,7 +5,7 @@ noc_mongo_admin_password: "noc"
 noc_mongo_admin_user: "root"
 noc_mongo_db: "noc"
 noc_mongo_password: "noc"
-noc_mongo_replicaset: "noc"
+mongod_rs: "noc"
 noc_mongo_storageengine: "wiredTiger"
 noc_mongo_user: "noc"
 

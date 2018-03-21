@@ -64,7 +64,7 @@
     } else {
         // New config
         rs.initiate({
-            _id: "{{noc_mongo_replicaset}}",
+            _id: "{{mongod_rs}}",
             version: 1,
             members: [{
                 _id: {{ hostvars[groups['svc-mongo-primary'][0]]["node_id"]}},
