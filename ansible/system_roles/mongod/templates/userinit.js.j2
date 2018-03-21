@@ -2,7 +2,7 @@
 // Create database and initialize users
 //
 (function() {
-    var user = "{{ noc_mongo_user }}",
+    var user = "{{ mongod_user }}",
         passwd = "{{ mongod_password }}",
         du = db.getUser(user);
     if(du) {

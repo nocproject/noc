@@ -5,7 +5,7 @@ storage:
   dbPath: {{ noc_root }}/var/db/mongo-arbiter
   journal:
     enabled: false
-  engine: {{ noc_mongo_storageengine }}
+  engine: {{ mongod_engine }}
 
 systemLog:
   verbosity: 0

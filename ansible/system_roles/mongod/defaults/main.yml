@@ -5,8 +5,8 @@ noc_mongo_admin_user: "root"
 mongod_db: "noc"
 mongod_password: "noc"
 mongod_rs: "noc"
-noc_mongo_storageengine: "wiredTiger"
-noc_mongo_user: "noc"
+mongod_engine: "wiredTiger"
+mongod_user: "noc"
 
 mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
 mongo_arbiter_pid: /var/run/mongodb/mongod-arbiter.pid

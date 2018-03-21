@@ -52,7 +52,7 @@
     login_password: "{{ mongod_password }}"
     login_database: admin
     database: "{{ mongod_db }}"
-    name: "{{ noc_mongo_user }}"
+    name: "{{ mongod_user }}"
     password: "{{ mongod_password }}"
     replica_set: "{{ mongod_rs }}"
     roles:
