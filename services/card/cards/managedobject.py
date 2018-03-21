@@ -194,32 +194,14 @@ class ManagedObjectCard(BaseCard):
                 
                 if iface_get_link_name != None:
                     for key in iface_get_link_name.keys():
-                        
                         meta_type = metric_type_name.get(key) or metric_type_field.get(key)
-                        
-                        if meta_type in ["bytes", "bit/s", "bool"]:
-                            iface_get_link_name[key] = {"type": meta_type, "value": self.humanize_speed(str(iface_get_link_name[key]), meta_type)}
-                        else:
-                            iface_get_link_name[key] = {"type": meta_type, "value": str(iface_get_link_name[key])}
-                            
+                        iface_get_link_name[key] = {"type": meta_type, "value": self.humanize_speed(str(iface_get_link_name[key]), meta_type)}
                         if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
                             try:
-                                if iface_get_link_name['Interface | Load | In']["value"] != "-" and iface_get_link_name['Interface | Load | In']["value"] is not None:
-                                    load_in = iface_get_link_name['Interface | Load | In']["value"] + iface_get_link_name['Interface | Load | In']["type"]
-                                if iface_get_link_name['Interface | Load | Out']["value"] != "-" and iface_get_link_name['Interface | Load | Out']["value"] is not None:
-                                    load_out = iface_get_link_name['Interface | Load | Out']["value"] + iface_get_link_name['Interface | Load | Out']["type"]
+                                load_in = iface_get_link_name['Interface | Load | In']["value"] + iface_get_link_name['Interface | Load | In']["type"]
+                                load_out = iface_get_link_name['Interface | Load | Out']["value"] + iface_get_link_name['Interface | Load | Out']["type"]
                                 errors_in = iface_get_link_name['Interface | Errors | In']["value"]
                                 erros_out = iface_get_link_name['Interface | Errors | Out']["value"]
-                            except TypeError:
-                                pass
-                        if key in ['load_in', 'load_out', 'error_in', 'error_out']:
-                            try:
-                                if iface_get_link_name['load_in']["value"] != "-" and iface_get_link_name['load_in']["value"] is not None:
-                                    load_in = iface_get_link_name['load_in']["value"] + iface_get_link_name['load_in']["type"]
-                                if iface_get_link_name['load_out']["value"] is not "-" and iface_get_link_name['load_out']["value"] is not None:
-                                    load_out = iface_get_link_name['load_out']["value"] + iface_get_link_name['load_out']["type"]
-                                errors_in = iface_get_link_name['error_in']["value"]
-                                errors_out = iface_get_link_name['error_out']["value"]
                             except TypeError:
                                 pass
                 else:
@@ -426,9 +408,9 @@ class ManagedObjectCard(BaseCard):
 
     @staticmethod
     def humanize_speed(speed, type_speed):
+        result = speed
         if not speed:
-            return "-"
-
+            result = "-"
         try:
             speed = int(speed)
         except:
@@ -438,7 +420,7 @@ class ManagedObjectCard(BaseCard):
            speed = int(speed)
 
            if speed < 1000 and speed > 0:
-               return "%s " % speed
+               result = "%s " % speed
 
            for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
                if speed >= t:
@@ -455,7 +437,7 @@ class ManagedObjectCard(BaseCard):
             #speed = speed / 8.0
 
             if speed < 1024:
-                return speed
+                result = speed
 
             for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
                 if speed >= t:
@@ -463,9 +445,14 @@ class ManagedObjectCard(BaseCard):
                         return "%d% s" % (speed // t, n)
                     else:
                         return "%.2f %s" % (float(speed) / t, n)
-            return str(speed)
+            result = str(speed)
         if type_speed == "bool":
-            return bool(speed)
+            result = bool(speed)
+
+        if result == speed:
+            result = speed
+            
+        return result
 
     @staticmethod
     def get_root(_root):
