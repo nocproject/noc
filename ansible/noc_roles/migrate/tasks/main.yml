@@ -6,10 +6,10 @@
     name: postgres
     tasks_from: users
   vars:
-      db_name: "{{postgres_noc_db}}"
-      db_password: "{{postgres_noc_password}}"
-      db_user: "{{postgres_noc_user}}"
-  delegate_to: "{{groups['svc-postgres-master'][0]}}"
+    db_name: "{{postgres_noc_db}}"
+    db_password: "{{postgres_noc_password}}"
+    db_user: "{{postgres_noc_user}}"
+  delegate_to: "{{postgres_master}}"
 
 - import_tasks: configure_consul.yml
 

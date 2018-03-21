@@ -4,6 +4,8 @@ postgresql_hba_path: "{{postgresql_conf_prefix}}/pg_hba.conf"
 #Memtune
 kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
 kernel_shmmax: "{{ kernel_shmall|int() * 4096 }}"
+postgres_listen: 5432
+
 
 postgres_path: /usr/bin/postgres
 postgres_system_service: postgresql

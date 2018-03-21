@@ -56,6 +56,5 @@ services:
   postgres:
     level: system
     category: external
-    port: 5432
     depends:
       - consul

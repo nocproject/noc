@@ -6,7 +6,7 @@
   vars:
     consul_service_name: postgres
     consul_service_tags: ""
-    consul_service_port: 5432
+    consul_service_port: 5432  # noqa have to be number
     consul_service_check_type: "script"
     consul_service_check_value: "postgres_check.sh"
     consul_service_check_interval: "10s"
@@ -20,7 +20,7 @@
   vars:
     monitoring_service_name: postgresql
     monitoring_service_tags: ""
-    monitoring_service_port: 5432
+    monitoring_service_port: 5432  # noqa have to be number
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
     monitoring_service_procstat_check: False

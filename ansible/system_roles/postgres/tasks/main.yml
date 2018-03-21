@@ -1,5 +1,5 @@
 ---
-- name: set postgres master
+- name: search for postgres master
   changed_when: False
   add_host:
     name: "{{ inventory_hostname }}"
@@ -7,6 +7,11 @@
   when:
     - '"master" in postgres_power'
     - "'svc-postgres-master' not in groups"
+
+- name: set postgres master fact
+  changed_when: False
+  set_fact:
+    postgres_master: "{{svc-postgres-master[0]}}"
 
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
 

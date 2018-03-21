@@ -22,7 +22,6 @@ tower_minimum_version: "0.4.0"
 noc_system_service: noc
 mongo_dir: "{{etc_prefix}}/mongod"
 
-postgres_listen: 5432
 postgres_user: postgres
 
 fake_shell: /bin/false
