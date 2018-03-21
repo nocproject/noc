@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+from collections import defaultdict
+
 # Python modules
 import datetime
 import operator
@@ -168,42 +170,42 @@ class ManagedObjectCard(BaseCard):
 
         meta = ""
 
-        iface_metric_type = dict(MetricType.objects.filter().scalar("field_name", "measure"))
-        obj_metric_type = dict(MetricType.objects.filter().scalar("name", "measure"))
+        metric_type_name = dict(MetricType.objects.filter().scalar("name", "measure"))
+        metric_type_field = dict(MetricType.objects.filter().scalar("field_name", "measure"))
 
         if objects_metrics is not None:
             if objects_metrics.get("") is not None:
                 for key in objects_metrics.get("").keys():
-                    if obj_metric_type[key] in ["bytes", "bit/s", "bool"]:
-                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": self.humanize_speed(objects_metrics.get("")[key], obj_metric_type[key])}
+                    if metric_type_name[key] in ["bytes", "bit/s", "bool"]:
+                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": self.humanize_speed(objects_metrics.get("")[key], metric_type_name[key])}
                     else:
-                        objects_metrics.get("")[key] = {"type": obj_metric_type[key], "value": objects_metrics.get("")[key]}
+                        objects_metrics.get("")[key] = {"type": metric_type_name[key], "value": objects_metrics.get("")[key]}
                 meta = objects_metrics.get("")
             else:
                 meta = {}
-                
-        load_in = "-"
-        load_out = "-"
-        errors_in = "-"
-        errors_out = "-"
 
         if iface_metrics is not None:
             for i in Interface.objects.filter(managed_object=self.object.id, type="physical"):
-                if iface_metrics.get(str(i.name)) is not None:
-                    for key in iface_metrics.get(str(i.name)).keys():
-                        if iface_metric_type[key] in ["bytes", "bit/s", "bool"]:
-                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": self.humanize_speed(iface_metrics.get(str(i.name))[key], iface_metric_type[key])}
-                        else:
-                            iface_metrics.get(str(i.name))[key] = {"type": iface_metric_type[key], "value": iface_metrics.get(str(i.name))[key]}
-
-                    if str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
-                        load_in = str(iface_metrics.get(str(i.name))["load_in"]["value"]) + iface_metrics.get(str(i.name))["load_in"]["type"]
-                    if str(iface_metrics.get(str(i.name))["load_out"]["value"]) is not "-" and str(iface_metrics.get(str(i.name))["load_in"]["value"]) is not None:
-                        load_out = str(iface_metrics.get(str(i.name))["load_out"]["value"]) + iface_metrics.get(str(i.name))["load_out"]["type"]
-                    errors_in = iface_metrics.get(str(i.name))["errors_in"]["value"]
-                    errors_out = iface_metrics.get(str(i.name))["errors_out"]["value"]
+                load_in = "-"
+                load_out = "-"
+                errors_in = "-"
+                errors_out = "-"
+                iface_get_link_name = iface_metrics.get(str(i.name))
+                
+                if iface_get_link_name != None:
+                    for key in iface_get_link_name.keys():
+                        meta_type = metric_type_name.get(key) or metric_type_field.get(key)
+                        iface_get_link_name[key] = {"type": meta_type, "value": self.humanize_speed(str(iface_get_link_name[key]), meta_type)}
+                        if key in ['Interface | Load | In', 'Interface | Load | Out', 'Interface | Errors | In', 'Interface | Errors | Out']:
+                            try:
+                                load_in = iface_get_link_name['Interface | Load | In']["value"] + iface_get_link_name['Interface | Load | In']["type"]
+                                load_out = iface_get_link_name['Interface | Load | Out']["value"] + iface_get_link_name['Interface | Load | Out']["type"]
+                                errors_in = iface_get_link_name['Interface | Errors | In']["value"]
+                                erros_out = iface_get_link_name['Interface | Errors | Out']["value"]
+                            except TypeError:
+                                pass
                 else:
-                    iface_metrics.get(str(i.name), {}).keys()
+                    iface_get_link_name = {}
 
                 interfaces += [{
                         "id": i.id,
@@ -406,9 +408,9 @@ class ManagedObjectCard(BaseCard):
 
     @staticmethod
     def humanize_speed(speed, type_speed):
+        result = speed
         if not speed:
-            return "-"
-            
+            result = "-"
         try:
             speed = int(speed)
         except:
@@ -418,7 +420,7 @@ class ManagedObjectCard(BaseCard):
            speed = int(speed)
 
            if speed < 1000 and speed > 0:
-               return "%s " % speed
+               result = "%s " % speed
 
            for t, n in [(1000000000, "G"), (1000000, "M"), (1000, "k")]:
                if speed >= t:
@@ -435,7 +437,7 @@ class ManagedObjectCard(BaseCard):
             #speed = speed / 8.0
 
             if speed < 1024:
-                return speed
+                result = speed
 
             for t, n in [(pow(2, 30), "G"), (pow(2, 20), "M"), (pow(2, 10), "k")]:
                 if speed >= t:
@@ -443,7 +445,14 @@ class ManagedObjectCard(BaseCard):
                         return "%d% s" % (speed // t, n)
                     else:
                         return "%.2f %s" % (float(speed) / t, n)
-            return str(speed)
+            result = str(speed)
+        if type_speed == "bool":
+            result = bool(speed)
+
+        if result == speed:
+            result = speed
+            
+        return result
 
     @staticmethod
     def get_root(_root):
