@@ -15,10 +15,10 @@
     name: postgres
     tasks_from: users
   vars:
-      db_name: "{{grafana_pg_db}}"
-      db_password: "{{grafana_pg_password}}"
-      db_user: "{{grafana_pg_user}}"
-  delegate_to: "{{postgres_master}}"
+    db_name: "{{grafana_pg_db}}"
+    db_password: "{{grafana_pg_password}}"
+    db_user: "{{grafana_pg_user}}"
+  delegate_to: "{{postgres_master_node}}"
 
 - name: create Grafana dir
   file:
