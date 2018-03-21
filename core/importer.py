@@ -61,6 +61,8 @@ class NOCLoader(object):
 
     def load_module(self, fullname):
         source = self.get_source(fullname)
+        if source is None:
+            return None
 
         if fullname in sys.modules:
             mod = sys.modules[fullname]
@@ -127,7 +129,7 @@ class NOCPyruleLoader(NOCLoader):
                 self.packages.add(fullname)
                 return self.INIT_SOURCE
             # Invalid modules
-            raise ImportError("could not find source for {}".format(fullname))
+            return None
         except Exception as e:
             raise ImportError(str(e))
 
