@@ -158,11 +158,12 @@ class Script(BaseScript):
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
     rx_mstp_instance = re.compile(r"^\s*(\d+)\s+(\S+)", re.MULTILINE)
     rx_mstp_bridge = re.compile(
-        "Bridge\s+address\s+(?P<bridge_id>\S+)\s+priority\s+(?P<bridge_priority>\d+).+?Root\s+address\s+(?P<root_id>\S+)\s+priority\s+(?P<root_priority>\d+)",
+        r"Bridge\s+address\s+(?P<bridge_id>\S+)\s+priority\s+(?P<bridge_priority>\d+).*?"
+        r"Root\s+address\s+(?P<root_id>\S+)\s+priority\s+(?P<root_priority>\d+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_mstp_interfaces = re.compile(
-        r"^(?P<interface>\S+)\s+of\s+MST(?P<instance_id>\d+)\s+is\s+(?P<role>\S+)\s+(?P<status>\S+).+?"
-        r"Port\s+info\s+port\s+id\s+(?P<port_id>\S+)\s+priority\s+(?P<priority>\d+)\s+cost\s+(?P<cost>\d+).+?"
+        r"^(?P<interface>\S+)\s+of\s+MST(?P<instance_id>\d+)\s+is\s+(?P<role>\S+)\s+(?P<status>\S+).*?"
+        r"Port\s+info\s+port\s+id\s+(?P<port_id>\S+)\s+priority\s+(?P<priority>\d+)\s+cost\s+(?P<cost>\d+).*?"
         r"Designated\s+bridge\s+address\s+(?P<designated_bridge_id>\S+)\s+"
         r"priority\s+(?P<designated_bridge_priority>\d+)\s+port\s+id\s+(?P<designated_port_id>\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
