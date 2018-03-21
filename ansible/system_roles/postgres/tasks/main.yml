@@ -12,6 +12,7 @@
   changed_when: False
   set_fact:
     postgres_master: "{{groups['svc-postgres-master'][0]}}"
+    postgres_listen: "{{postgres_listen}}"
 
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
