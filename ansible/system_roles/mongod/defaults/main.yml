@@ -1,10 +1,9 @@
 mongod_logging_destination: "syslog"
 mongo_path: /usr/bin/mongo
 mongod_version: "3.4"
-noc_mongo_admin_password: "noc"
 noc_mongo_admin_user: "root"
-noc_mongo_db: "noc"
-noc_mongo_password: "noc"
+mongod_db: "noc"
+mongod_password: "noc"
 mongod_rs: "noc"
 noc_mongo_storageengine: "wiredTiger"
 noc_mongo_user: "noc"

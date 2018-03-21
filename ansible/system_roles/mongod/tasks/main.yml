@@ -139,7 +139,7 @@
     monitoring_service_procstat_value: mongod
     monitoring_config:
         gather_perdb_stats: "true"
-        servers: ["mongodb://{{ noc_mongo_admin_user }}:{{ noc_mongo_admin_password }}@127.0.0.1:27017/admin"]
+        servers: ["mongodb://{{ noc_mongo_admin_user }}:{{ mongod_password }}@127.0.0.1:27017/admin"]
   when: has_svc_monitoring is defined
   tags:
     - monitoring

@@ -47,11 +47,11 @@
     - config
 
 - name: Create database user
-  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' {{ noc_mongo_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"
   when: user_status | changed
 
 - name: Update replica set configuration
-  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ mongo_dir }}/rsinit.js"
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' admin {{ mongo_dir }}/rsinit.js"
   when:
     - rs_conf_status | changed
     - rs_status | changed

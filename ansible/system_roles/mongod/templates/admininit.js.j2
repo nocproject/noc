@@ -3,7 +3,7 @@
 //
 db.createUser({
     user: "{{ noc_mongo_admin_user }}",
-    pwd: "{{ noc_mongo_admin_password }}",
+    pwd: "{{ mongod_password }}",
     roles: ["root"]
 });
 

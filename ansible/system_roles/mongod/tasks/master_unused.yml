@@ -26,7 +26,7 @@
     replset: "{{ mongod_rs }}"
     state: present
     login_user: "{{ noc_mongo_admin_user }}"
-    login_password: "{{ noc_mongo_admin_password }}"
+    login_password: "{{ mongod_password }}"
   register: rs_status
 
 - block:
@@ -49,14 +49,14 @@
 - name: create noc user
   mongodb_user:
     login_user: "{{ noc_mongo_admin_user }}"
-    login_password: "{{ noc_mongo_admin_password }}"
+    login_password: "{{ mongod_password }}"
     login_database: admin
-    database: "{{ noc_mongo_db }}"
+    database: "{{ mongod_db }}"
     name: "{{ noc_mongo_user }}"
-    password: "{{ noc_mongo_password }}"
+    password: "{{ mongod_password }}"
     replica_set: "{{ mongod_rs }}"
     roles:
-      - db: "{{ noc_mongo_db }}"
+      - db: "{{ mongod_db }}"
         role: dbOwner
     state: present
 
