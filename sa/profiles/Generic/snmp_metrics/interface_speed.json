@@ -1,0 +1,15 @@
+{
+  "$metric": "Interface | Speed",
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHighSpeed.{{ ifIndex }}",
+    "type": "gauge",
+    "scale": 1000000
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifSpeed.{{ ifIndex }}",
+    "type": "gauge"
+  }
+}
