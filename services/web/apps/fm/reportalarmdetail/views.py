@@ -12,6 +12,7 @@ import csv
 import tempfile
 # Third-party modules
 from django.http import HttpResponse
+import StringIO
 import xlsxwriter
 import bson
 from pymongo import ReadPreference
@@ -32,7 +33,6 @@ from noc.services.web.apps.sa.reportobjectdetail.views import ReportAttrResolver
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
-
 
 class ReportAlarmDetailApplication(ExtApplication):
     menu = _("Reports") + "|" + _("Alarm Detail")
@@ -303,18 +303,16 @@ class ReportAlarmDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif format == "xlsx":
-            with tempfile.NamedTemporaryFile(mode="wb") as f:
-                wb = xlsxwriter.Workbook(f.name)
-                ws = wb.add_worksheet("Alarms")
-                for rn, x in enumerate(r):
-                    for cn, c in enumerate(x):
-                        ws.write(rn, cn, c)
-                ws.autofilter(0, 0, rn, cn)
-                wb.close()
-                response = HttpResponse(
-                    content_type="application/x-ms-excel")
-                response[
-                    "Content-Disposition"] = "attachment; filename=\"alarms.xlsx\""
-                with open(f.name) as ff:
-                    response.write(ff.read())
+            response = StringIO.StringIO()
+            wb = xlsxwriter.Workbook(response)
+            ws = wb.add_worksheet("Alarms")
+            for rn, x in enumerate(r):
+                for cn, c in enumerate(x):
+                    ws.write(rn, cn, c)
+            ws.autofilter(0, 0, rn, cn)
+            wb.close()
+            response.seek(0)
+            response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
+            response["Content-Disposition"] = "attachment; filename=\"alarms.xlsx\""
+            response.close()
             return response
