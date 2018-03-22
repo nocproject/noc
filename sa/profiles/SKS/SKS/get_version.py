@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,12 +12,13 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.lib.text import parse_table
 
 
 class Script(BaseScript):
     name = "SKS.SKS.get_version"
-    cache = True
     interface = IGetVersion
+    cache = True
 
     rx_ver = re.compile(
         r"^\s*SW version\s+(?P<version>\S+).*\n"
@@ -58,19 +59,49 @@ class Script(BaseScript):
                 platform = "SW-24"
             r["platform"] = platform
             v = self.cli("show system id", cached=True)
-            match = self.re_search(self.rx_serial, v)
+            match = self.rx_serial.search(v)
             r["attributes"]["Serial Number"] = match.group("serial")
         else:
             match = self.rx_ver2.search(v)
-            r = {
-                "vendor": "SKS",
-                "platform": match.group("platform"),
-                "version": match.group("version")
-            }
-            match = self.rx_rs.search(v)
-            r["attributes"] = {
-                "Boot PROM": match.group("bootprom"),
-                "HW version": match.group("hardware"),
-                "Serial Number": match.group("serial")
-            }
+            if match:
+                r = {
+                    "vendor": "SKS",
+                    "platform": match.group("platform"),
+                    "version": match.group("version")
+                }
+                match = self.rx_rs.search(v)
+                r["attributes"] = {
+                    "Boot PROM": match.group("bootprom"),
+                    "HW version": match.group("hardware"),
+                    "Serial Number": match.group("serial")
+                }
+            else:
+                t = parse_table(v)
+                for i in t:
+                    r = {
+                        "vendor": "SKS",
+                        "version": i[1],
+                        "attributes": {
+                            "Boot PROM": i[2],
+                            "HW version": i[3]
+                        }
+                    }
+                    break
+                v = self.cli("show system", cached=True)
+                t = parse_table(v)
+                for i in t:
+                    platform = i[1]
+                    break
+                if platform == "SKS 10G":
+                    platform = "SKS-16E1-IP-1U"
+                elif platform.startswith("SKS"):
+                    platform = "SW-24"
+                r["platform"] = platform
+                v = self.cli("show system id", cached=True)
+                t = parse_table(v)
+                for i in t:
+                    serial = i[1]
+                    break
+                r["attributes"]["Serial Number"] = serial
+
         return r
