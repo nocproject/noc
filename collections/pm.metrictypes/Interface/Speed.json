@@ -4,7 +4,7 @@
     "uuid": "868f5a6e-0eab-4b17-9617-a4c4b5a1136c",
     "scope__name": "Interface",
     "field_name": "speed",
-    "field_type": "UInt32",
+    "field_type": "UInt64",
     "description": "Interface speed",
     "measure": "bit/s"
 }
