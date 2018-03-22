@@ -33,10 +33,13 @@ class Script(BaseScript):
             val = mw2dbm(float(val) / 1000.0)
         elif mea == "uA":
             val = float(val) / 1000.0
+        elif mea == "V":
+            val = val / 1000.0
         return val
 
     def execute_cli(self, interface=None):
         # @todo without stack slot (Members | Ids)
+        # show ports transceiver information
         cmd = "debug hal show optic-info ddmi"
         if interface is not None:
             cmd = "debug hal show optic-info ddmi slot %s port %s" % interface.split(":")

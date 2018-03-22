@@ -26,3 +26,15 @@ class Profile(BaseProfile):
          r"(y - save and reboot, n - reboot without save, <cr> - cancel command)", "y\n"),
         (r"Do you want to save configuration to \S+ and overwrite it\? \(y/N\)", "y\n")
     ]
+
+    def get_interface_names(self, name):
+        """
+        TODO: for QFX convert it from ifIndex
+        QFX send like:
+        Port type          : Locally assigned
+        Port ID            : 546
+        """
+        names = []
+        if ":" in name:
+            names += [name.split(":")[-1]]
+        return names
