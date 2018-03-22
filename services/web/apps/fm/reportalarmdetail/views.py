@@ -241,7 +241,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     total_subscribers,
                     a.get("escalation_tt"),
                     a.get("escalation_ts"),
-                    container_lookup[mo.id].get("text", "") if container_lookup is not None else ""
+                    container_lookup[mo.id].get("text", "") if container_lookup else ""
                 ], container_path, segment_path), cmap)]
         # Active Alarms
         if source in ["active", "both"]:
