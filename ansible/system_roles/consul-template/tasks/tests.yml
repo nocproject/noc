@@ -1,0 +1,18 @@
+---
+- block:
+  - name: check if consul_template running
+    command: pgrep -x consul-template -c
+    failed_when: False
+    changed_when: False
+    register: consul_template_running
+    check_mode: no
+
+  - name: fail if no consul_template found
+    debug:
+      msg: |
+        There should be consul_template proccess. But `pgrep -x consul-template -c` can't find any
+    when:
+      - consul_template_running.rc != 0
+
+  when:
+    - has_svc_consul_template is defined

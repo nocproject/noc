@@ -1,0 +1,50 @@
+---
+- block:
+  - name: check if grafana running
+    command: pgrep -x grafana-server -c
+    failed_when: False
+    changed_when: False
+    register: grafana_running
+    check_mode: no
+
+  - name: fail if no grafana found
+    debug:
+      msg: |
+        There should be grafana proccess. But `pgrep -x grafana -c` can't find any
+    when:
+      - grafana_running.rc != 0
+
+  #tests uses static grafana port cause we do not have acces to defaults dir
+  - name: check if grafana http iface is reachable
+    uri:
+      url: http://127.0.0.1:8002/api/health
+    register: grafana_ping
+    failed_when: False
+    check_mode: no
+
+  - name: fail if grafana http iface is not reachable
+    debug:
+      msg: |
+        grafana is not answering ping request.
+        Check with `curl http://127.0.0.1:8002/api/health`
+    when:
+      - grafana_ping.status != 200
+
+  - name: check for consul service status
+    uri:
+      url: "http://127.0.0.1:8500/v1/health/service/grafana"
+      return_content: yes
+    register: consul_req
+    changed_when: False
+    check_mode: no
+
+  - name: fail if no grafana found
+    debug:
+      msg: |
+        There are toubles with grafana on
+        {{consul_req.json | json_query("[].Checks[?ServiceName=='grafana'].{node:Node, status:Status}[]") | to_nice_yaml}}
+    when:
+      - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='grafana'].Status[]\")"
+
+  when:
+    - has_svc_grafana is defined

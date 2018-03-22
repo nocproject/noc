@@ -1,0 +1,34 @@
+---
+- block:
+  - name: check if supervisord running
+    command: pgrep -f supervisord -c
+    failed_when: False
+    changed_when: False
+    register: supervisord_running
+    check_mode: no
+
+  - name: fail if no supervisord found
+    debug:
+      msg: |
+        There should be supervisord proccess. But `pgrep -f supervisord -c` can't find any
+    when:
+      - supervisord_running.rc != 0
+
+  - name: check if noc services are down
+    shell: /opt/noc/noc ctl status | grep -v RUNNING
+    become: yes
+    changed_when: False
+    register: noc_status
+    failed_when: False
+    check_mode: no
+
+  - name: fail if noc services are down
+    debug:
+      msg: |
+        Some NOC services seems down
+        {{noc_status.stdout}}
+    when:
+      - noc_status.stdout_lines | count  > 0
+
+  when:
+    - has_svc_noc is defined

@@ -1,0 +1,36 @@
+---
+- block:
+  - name: check if consul running
+    command: pgrep -x consul -c
+    failed_when: False
+    changed_when: False
+    register: consul_running
+    check_mode: no
+
+  - name: fail if no consul found
+    debug:
+      msg: |
+        There should be consul proccess. But `pgrep -x consul -c` can't find any
+    when:
+      - consul_running.rc != 0
+
+  - name: fail if consul http iface is not reachable
+    run_once: yes
+    debug:
+      msg: |
+        Crosschecking node health
+        curl -v http://127.0.0.1:8500/v1/health/node/node_names/
+        You will get an error from consul if any
+
+  - name: check if consul http iface is reachable
+    uri:
+      url: "http://127.0.0.1:8500/v1/health/node/{{host}}/"
+    register: consul_ping
+    changed_when: False
+    check_mode: no
+    loop_control:
+      loop_var: host
+    with_items: "{{groups['svc-consul-exec']}}"
+
+  when:
+    - has_svc_consul is defined

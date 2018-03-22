@@ -2,6 +2,7 @@
 - name: Finally
   hosts: svc-noc-exec
   become: no
+  gather_facts: no
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
@@ -12,3 +13,10 @@
       become: yes
       tags:
         - post
+  post_tasks:
+    - name: Run post installation tests
+      include_tasks: "{{item}}"
+      with_myglob: ["./*_roles/*/tasks/tests.yml"]
+      when: tower_run_tests
+      tags:
+        - tests

@@ -10,7 +10,8 @@
   vars:
     ansible_tags: "{{ lookup('get_tags') }}"
   pre_tasks:
-    - include_tasks: "{{item}}"
+    - name: Run pre installation checks
+      include_tasks: "{{item}}"
       with_myglob: ["./*_roles/*/tasks/checks.yml"]
       when: tower_run_checks
       tags:

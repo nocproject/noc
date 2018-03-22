@@ -1,0 +1,34 @@
+---
+- block:
+  - name: check if clickhouse-server running
+    command: pgrep -f clickhouse-server -c
+    failed_when: False
+    changed_when: False
+    register: clickhouse_server_running
+    check_mode: no
+
+  - name: fail if no consul found
+    debug:
+      msg: |
+        There should be clickhouse-server proccess. But `pgrep -f clickhouse-server -c` can't find any
+    when:
+      - clickhouse_server_running.rc != 0
+
+  #tests uses static clickhouse port cause we do not have acces to defaults dir
+  - name: check if clickhouse http iface is reachable
+    uri:
+      url: http://127.0.0.1:8123/
+    register: clickhouse_ping
+    failed_when: False
+    check_mode: no
+
+  - name: fail if clickhouse http iface is not reachable
+    debug:
+      msg: |
+        grafana is not answering ping request.
+        Check with `curl http://127.0.0.1:8123/`
+    when:
+      - clickhouse_ping.status != 200
+
+  when:
+    - has_svc_clickhouse is defined

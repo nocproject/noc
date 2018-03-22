@@ -1,0 +1,50 @@
+---
+- block:
+  - name: check if mongod running
+    command: pgrep -x mongod -c
+    failed_when: false
+    changed_when: False
+    register: mongod_running
+    check_mode: no
+
+  - name: fail if no mongod found
+    debug:
+      msg: |
+        There should be mongod proccess. But `pgrep -x mongod -c` can't find any
+    when:
+      - mongod_running.rc != 0
+
+  - name: check mongo disk size
+    shell: df /var/lib/mongo/ | grep -Po '/dev.+\K...(?=\%)'
+    changed_when: False
+    failed_when: false
+    register: mongod_dir_size
+    check_mode: no
+
+  - name: fail if no mongod disk is not full
+    debug:
+      msg: |
+        It seems there are trouble with mongo disk size.
+        Script result is {{mongod_dir_size.stdout | int}}
+        Check with `df /var/lib/mongo/`
+    when:
+      - mongod_dir_size.stdout | int >= 99
+
+  - name: check for consul service status
+    uri:
+      url: "http://127.0.0.1:8500/v1/health/service/mongo"
+      return_content: yes
+    register: consul_req
+    changed_when: False
+    check_mode: no
+
+  - name: fail if no mongo found
+    debug:
+      msg: |
+        There are toubles with mongo on
+        {{consul_req.json | json_query("[].Checks[?ServiceName=='mongo'].{node:Node, status:Status}[]") | to_nice_yaml}}
+    when:
+      - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='mongo'].Status[]\")"
+
+  when:
+    - has_svc_mongod is defined
