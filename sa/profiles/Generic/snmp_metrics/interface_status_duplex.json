@@ -1,0 +1,6 @@
+{
+  "$metric": "Interface | Status | Duplex",
+  "$type": "ifindex",
+  "oid": "EtherLike-MIB::dot3StatsDuplexStatus.{{ ifIndex }}",
+  "type": "gauge"
+}
