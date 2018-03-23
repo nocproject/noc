@@ -31,14 +31,14 @@ class Script(BaseScript):
             d["mfg_date"] = datetime.datetime.strptime(d["mfg_date"], "%m/%d/%Y")
             d["mfg_date"] = d["mfg_date"].strftime("%Y-%m-%d")
         r += [{
-                "type": "CHASSIS",
-                "number": 1,
-                "vendor": "APC",
-                "serial": d["serial"],
-                "mfg_date": d.get("mfg_date", "00-00-00"),
-                "description": d["model"],
-                "part_no": d["part_no"],
-            }]
+            "type": "CHASSIS",
+            "number": 1,
+            "vendor": "APC",
+            "serial": d["serial"],
+            "mfg_date": d.get("mfg_date", "00-00-00"),
+            "description": d["model"],
+            "part_no": d["part_no"],
+        }]
         mgmt_card_map = {"model number": "part_no",
                          "serial number": "serial",
                          "hardware revision": "revision",
@@ -50,14 +50,14 @@ class Script(BaseScript):
             d["mfg_date"] = datetime.datetime.strptime(d["mfg_date"], "%m/%d/%Y")
             d["mfg_date"] = d["mfg_date"].strftime("%Y-%m-%d")
         r += [{
-                "type": "MGMT",
-                "number": 1,
-                "vendor": "APC",
-                "serial": d["serial"],
-                "description": "Management card",
-                "mfg_date": d.get("mfg_date", "00-00-00"),
-                "revision": d["revision"],
-                "part_no": d["part_no"],
-            }]
+            "type": "MGMT",
+            "number": 1,
+            "vendor": "APC",
+            "serial": d["serial"],
+            "description": "Management card",
+            "mfg_date": d.get("mfg_date", "00-00-00"),
+            "revision": d["revision"],
+            "part_no": d["part_no"],
+        }]
 
         return r
