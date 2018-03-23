@@ -189,7 +189,7 @@ class Script(BaseScript):
                 continue
             elif "-" not in k or not v:
                 continue
-            slots = slots.get(k)
+            ss = slots.get(k)
             m_type, m_number = k.split("-")
             slot = int(m_number)
             m_part_no, serial_no, rev = v.split(" ", 2)
@@ -197,7 +197,7 @@ class Script(BaseScript):
             r += [{
                 "type": self.get_type(m_type),
                 "number": m_number,
-                "description": slots["type"] if slots else "",
+                "description": ss["type"] if ss else "",
                 "vendor": "EXTREME",
                 "part_no": m_part_no,
                 "revision": rev,
@@ -207,5 +207,5 @@ class Script(BaseScript):
                 r += psu[slot]
             if slot in fan:
                 r += fan[slot]
-            r += self.get_transiever(slot=slot if slots else None)
+            r += self.get_transiever(slot=slot if ss else None)
         return r

@@ -20,7 +20,12 @@ class Script(BaseScript):
     rx_domain_name = re.compile(r"^ip domain[ \-]name\s+(?P<domain>\S+)",
                                 re.MULTILINE)
 
-    def execute(self):
+    def execute_snmp(self):
+        v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)
+        if v:
+            return v
+
+    def execute_cli(self):
         if self.has_snmp():
             try:
                 # sysName.0

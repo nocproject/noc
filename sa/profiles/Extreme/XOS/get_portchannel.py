@@ -42,7 +42,7 @@ class Script(BaseScript):
             for d in self.profile.parse_table_struct(t, header_start="Config", table_start="=======",
                                                      table_end="======="):
                 r += [{
-                    "interface": d["Config Master"][0],
+                    "interface": "T%s" % d["Config Master"][0],
                     "members": d["Ld Share Group"],
                     "type": "L" if d["Agg Control"][0].lower() == "lacp" else "S"
                 }]

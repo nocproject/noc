@@ -27,7 +27,7 @@ class Script(BaseScript):
         if out and len(out.split()) == 3:
             val, mea, he = out.split()
         else:
-            self.logger.warning("Unkwonws output format value: %s, skipping" % out)
+            self.logger.warning("Unknown output format value: %s, skipping" % out)
             return None
         if mea == "uW":
             val = mw2dbm(float(val) / 1000.0)

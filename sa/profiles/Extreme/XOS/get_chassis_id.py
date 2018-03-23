@@ -26,8 +26,8 @@ class Script(BaseScript):
         if match:
             mac = match.group("mac").lower()
             return {
-               "first_chassis_mac": mac,
-               "last_chassis_mac": mac
+                "first_chassis_mac": mac,
+                "last_chassis_mac": mac
             }
-        else:
-            return {}
+
+        raise self.NotSupportedError()
