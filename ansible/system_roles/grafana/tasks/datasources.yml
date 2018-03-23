@@ -12,4 +12,4 @@
   service:
     name: "{{ grafana_system_service }}"
     state: restarted
-  when: ds_result|changed
+  when: ds_result is changed

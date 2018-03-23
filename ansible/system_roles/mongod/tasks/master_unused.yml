@@ -44,7 +44,7 @@
 
   - name: Create admin user
     command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
-  when: rs_status | changed
+  when: rs_status is changed
 
 - name: create noc user
   mongodb_user:

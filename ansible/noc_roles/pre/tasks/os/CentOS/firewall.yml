@@ -15,6 +15,7 @@
     state: enabled
     immediate: true
   with_items: "{{ groups['all'] }}"
+  become: true
   when: "firewalld_state.status.ActiveState == 'active'"
   tags:
     - config
@@ -27,6 +28,7 @@
     state: enabled
     immediate: true
   when: "firewalld_state.status.ActiveState == 'active'"
+  become: true
   tags:
     - config
     - firewall
