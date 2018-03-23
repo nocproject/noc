@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.lib.text import parse_kv
 
 
 class Script(BaseScript):
@@ -23,17 +24,35 @@ class Script(BaseScript):
     rx_platform = re.compile(r"^(?P<platform>.+?)\s+named\s+", re.MULTILINE)
 
     rx_platform1 = re.compile(r"^Name\s+: (?P<platform>.+?)\s+Date",
-        re.MULTILINE)
+                              re.MULTILINE)
 
-    def execute(self):
+    def execute_snmp(self, **kwargs):
+        platform = self.snmp.get("1.3.6.1.2.1.33.1.1.2.0")
+        firmware = self.snmp.get(".1.3.6.1.2.1.33.1.1.3.0")
+        return {
+            "vendor": "APC",
+            "platform": platform,
+            # "version": firmware
+            "version": firmware
+        }
+
+    def execute_cli(self):
         m = self.motd
-        match = self.rx_platform.search(m)
-        if not match:
-            match = self.rx_platform1.search(m)
-        platform = match.group("platform").strip()
+        if m:
+            match = self.rx_platform.search(m)
+            if not match:
+                match = self.rx_platform1.search(m)
+            platform = match.group("platform").strip()
+            version = self.re_search(self.rx_fwver, m).group("version")
+        else:
+            v = self.cli("upsabout")
+            d = parse_kv({"model": "platform",
+                          "firmware revision": "version"}, v)
+            platform = d["platform"]
+            version = d["version"]
 
         return {
             "vendor": "APC",
             "platform": platform,
-            "version": self.re_search(self.rx_fwver, m).group("version")
-            }
+            "version": version
+        }
