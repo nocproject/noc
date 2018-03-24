@@ -1,0 +1,40 @@
+{
+    "name": "Siemon | Transceiver | 40G | QSFP26-05",
+    "$collection": "inv.objectmodels",
+    "uuid": "a2a24994-83a9-4b70-b13b-174505f62f34",
+    "vendor__code": "SIEMON",
+    "description": "Siemon QSFP+ 40 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 5m ",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": "QSFP30-01",
+            "part_no": ["900973-10-01"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}
