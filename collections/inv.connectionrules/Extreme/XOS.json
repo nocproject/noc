@@ -1,0 +1,52 @@
+{
+    "name": "Extreme | XOS",
+    "$collection": "inv.connectionrules",
+    "uuid": "7eef4ae8-de75-40ef-a059-74b0841db855",
+    "description": "Extreme XOS (Summit) connection rules",
+    "context": [
+        {
+            "reset_scopes": ["vim"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "vim",
+            "type": "VIM"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "VIM",
+            "scope": "chassis",
+            "target_connection": "vim{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "{N}_sfp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

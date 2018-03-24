@@ -1,0 +1,30 @@
+{
+    "name": "Extreme | Summit | PWR-550W-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "5a21afad-15dc-422d-9dbd-b3d7b6da9f40",
+    "vendor__code": "EXTREME",
+    "description": "550W AC Power Supply module for Summit switches, Front-to-Back airflow",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Extreme | Summit | PSU"
+        },
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["10925"],
+            "part_no": ["800462-00-04"]
+        }
+    }
+}

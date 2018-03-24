@@ -1,0 +1,30 @@
+{
+    "name": "Extreme | Summit | PWR-715W-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "c2d6459c-9b87-48be-94d7-bb72974839bf",
+    "vendor__code": "EXTREME",
+    "description": "715W AC PoE Power Supply Module for X460-G2 and X450-G2 series switches with Front-to-Back airflow",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Extreme | Summit | X460G2/X450G2 | PSU"
+        },
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["10951"],
+            "part_no": ["800592-00-05", "800592-00-07"]
+        }
+    }
+}

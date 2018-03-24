@@ -1,0 +1,23 @@
+{
+    "name": "Extreme | Summit | X460G2 | FAN-FB",
+    "$collection": "inv.objectmodels",
+    "uuid": "3bdce020-1e58-4486-a9b1-944c9ce6a070",
+    "vendor__code": "EXTREME",
+    "description": "Front-to-back airflow fan module for X460-G2 series switches",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Extreme | Summit | X460G2 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["10945"],
+            "part_no": ["800560-00-03"]
+        }
+    }
+}
