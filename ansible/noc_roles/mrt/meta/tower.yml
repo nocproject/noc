@@ -29,6 +29,7 @@ forms:
       default: 50
       label: "Amount of concurrent tasks"
       type: int
+
 services:
   mrt:
     level: global

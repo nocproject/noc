@@ -1,3 +1,4 @@
+---
 - name: install {{ct_service_name}} template
   copy:
     src: "{{ct_service_source}}"

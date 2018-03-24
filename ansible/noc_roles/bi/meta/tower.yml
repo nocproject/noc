@@ -40,7 +40,6 @@ forms:
       max: 100
       min: 5
 
-
 services:
   bi:
     level: global

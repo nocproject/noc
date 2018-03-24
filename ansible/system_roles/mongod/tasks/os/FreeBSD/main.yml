@@ -11,4 +11,6 @@
   lineinfile: dest=/etc/rc.conf regexp=^mongod_limits= line=mongod_limits=\"YES\"
 
 - name: Install MongoDB
-  pkgng: name="mongodb32" state=present
+  pkgng:
+    name: "mongodb32"
+    state: present

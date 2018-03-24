@@ -48,7 +48,6 @@ forms:
       common: environment
     engine:
       default: wiredTiger
-      type: str
       label: MongoDB engine
       description: "Do not use mmapv1 in production"
       type: list

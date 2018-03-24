@@ -5,18 +5,18 @@
     regexp: "^proxy=.*"
     line: "proxy={{ http_proxy }}"
   when: "http_proxy is defined and http_proxy"
-  become: true
+  become: "True"
   tags:
     - config
 
 - name: Disable selinux
-  become: true
+  become: "True"
   selinux:
     policy: targeted
     state: disabled
 
 - name: register rhel instances
-  become: true
+  become: "True"
   include_role:
     name: rhel-register
   when:
@@ -26,11 +26,11 @@
     - rhel_register_rhel_subscription_username
 
 - name: Install Rhel system packages pre
-  become: true
+  become: "True"
   yum:
     name: "{{ item }}"
     state: present
-    update_cache: yes
+    update_cache: "True"
   with_items:
     - unzip
     - ca-certificates

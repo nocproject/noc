@@ -1,11 +1,11 @@
 ---
 - name: reload clickhouse-server
-  become: no
+  become: "False"
   debug:
     msg: Clickhouse consiguration was changed. hope it will reload it automaticaly
 
 - name: restart clickhouse-server
-  become: yes
+  become: "True"
   service:
     name: "{{clickhouse_service_name}}"
     state: restarted

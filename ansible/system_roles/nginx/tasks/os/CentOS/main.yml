@@ -4,9 +4,9 @@
     name: nginx
     description: CentOS Nginx repo
     baseurl: http://nginx.org/packages/centos/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
-    gpgcheck: yes
+    gpgcheck: "True"
     gpgkey: http://nginx.org/packages/keys/nginx_signing.key
-    enabled: yes
+    enabled: "True"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
@@ -17,7 +17,7 @@
   yum:
     name: nginx
     state: latest
-    update_cache: no
+    update_cache: "False"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -31,7 +31,7 @@
 - name: Enable Nginx system service
   service:
     name: "{{ nginx_system_service }}"
-    enabled: yes
+    enabled: "True"
     state: started
 
 - include_tasks: "firewall.yml"

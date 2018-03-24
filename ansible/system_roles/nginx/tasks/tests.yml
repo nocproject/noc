@@ -1,51 +1,53 @@
 ---
 - block:
-  - name: check if nginx running
-    command: pgrep -x nginx -c
-    failed_when: False
-    changed_when: False
-    register: nginx_running
-    check_mode: no
+    - name: check if nginx running
+      command: pgrep -x nginx -c
+      failed_when: "False"
+      changed_when: "False"
+      register: nginx_running
+      check_mode: "False"
 
-  - name: fail if no nginx found
-    debug:
-      msg: |
-        There should be nginx proccess. But `pgrep -x nginx -c` can't find any
-    when:
-      - nginx_running.rc != 0
+    - name: fail if no nginx found
+      debug:
+        msg: |
+          There should be nginx proccess. But `pgrep -x nginx -c` can't find any
+      when:
+        - nginx_running.rc != 0
 
-  - name: check if nginx http iface is reachable
-    uri:
-      url: "https://{{noc_web_host}}/ng_stats"
-      validate_certs: "{{not nginx_self_signed_cerificate }}"
-    register: nginx_ping
-    changed_when: False
-    failed_when: False
-    check_mode: no
+    - name: check if nginx http iface is reachable
+      uri:
+        url: "https://{{noc_web_host}}/ng_stats"
+        validate_certs: "{{not nginx_self_signed_cerificate }}"
+      register: nginx_ping
+      changed_when: "False"
+      failed_when: "False"
+      check_mode: "False"
 
-  - name: fail if nginx http iface is not reachable
-    debug:
-      msg: |
-        nginx is not answering stats request.
-        Check with `curl https://{{noc_web_host}}/ng_stats`
-    when:
-      - nginx_ping.status != 200
+    - name: fail if nginx http iface is not reachable
+      debug:
+        msg: |
+          nginx is not answering stats request.
+          Check with `curl https://{{noc_web_host}}/ng_stats`
+      when:
+        - nginx_ping.status != 200
 
-  - name: check if nginx http iface is reachable
-    uri:
-      url: "https://{{noc_web_host}}/api/login/index.html"
-      validate_certs: "{{not nginx_self_signed_cerificate }}"
-    register: nginx_ping
-    changed_when: False
-    failed_when: False
-    check_mode: no
+    - name: check if nginx http iface is reachable
+      uri:
+        url: "https://{{noc_web_host}}/api/login/index.html"
+        validate_certs: "{{not nginx_self_signed_cerificate }}"
+      register: nginx_ping
+      changed_when: "False"
+      failed_when: "False"
+      check_mode: "False"
 
-  - name: fail if nginx http iface is not reachable
-    debug:
-      msg: |
-        nginx is not answering ping request.
-        Check with `curl https://{{noc_web_host}}/api/login/index.html`
-    when:
-      - nginx_ping.status != 200
+    - name: fail if nginx http iface is not reachable
+      debug:
+        msg: |
+          nginx is not answering ping request.
+          Check with `curl https://{{noc_web_host}}/api/login/index.html`
+      when:
+        - nginx_ping.status != 200
   when:
     - has_svc_nginx is defined
+  tags:
+    - tests

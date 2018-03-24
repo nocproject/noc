@@ -1,3 +1,4 @@
+---
 - block:
   - name: Clone NOC
     command: git clone "{{noc_repo}}" "{{noc_root}}"
@@ -10,7 +11,9 @@
       repo: "{{noc_root}}"
       scope: local
       value: 'noc_user@{{ ansible_fqdn }}'
-    when: git_user_email.stdout is defined and not git_user_email.stdout
+    when:
+      - git_user_email.stdout is defined
+      - not git_user_email.stdout
 
   - name: set up dummy git user name
     git_config:
@@ -18,9 +21,13 @@
       repo: "{{noc_root}}"
       scope: local
       value: 'Noc User {{ansible_fqdn}}'
-    when: git_user_email.stdout is defined and not git_user_email.stdout
+    when:
+      - git_user_email.stdout is defined
+      - not git_user_email.stdout
 
-  when: noc_root_state.stat.exists is defined and not noc_root_state.stat.exists
+  when:
+    - noc_root_state.stat.exists is defined
+    - not noc_root_state.stat.exists
 
 - name: Fetch changes from upstream
   command: git fetch origin
@@ -38,9 +45,9 @@
     dest: "{{noc_root}}"
     version: "{{noc_version}}"
     force: "{{noc_env_type == 'prod'}}"
-    clone: yes
+    clone: "True"
   register: pull_state
-  diff: False
+  diff: "False"
   ignore_errors: "{{noc_env_type != 'prod'}}"
   environment:
     https_proxy: "{{http_proxy}}"
@@ -49,16 +56,18 @@
 
 - name: fail if local modifications found
   fail:
-    msg: "There are local modifications to {{noc_root}} directory. Local modification have to be placed to {{noc_root | dirname}}/noc_custom/ directory.\n
-To continue update please do one of the following:\n
-* revert them `git checkout microservices`\n
-* stash them https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning\n
-for example\n
-** `git stash`\n
-** `git stash pop`\n
-* make merge request to https://code.getnoc.com/noc/noc with them\n
-* also you can change installation type to develop and resolve updates manually"
-
-  when: pull_state.failed is defined and pull_state.failed
+    msg: |
+      There are local modifications to {{noc_root}} directory. Local modification have to be placed to {{noc_root | dirname}}/noc_custom/ directory.\n
+      To continue update please do one of the following:\n
+      * revert them `git checkout microservices`\n
+      * stash them https://git-scm.com/book/en/v2/Git-Tools-Stashing-and-Cleaning\n
+      for example\n
+      ** `git stash`\n
+      ** `git stash pop`\n
+      * make merge request to https://code.getnoc.com/noc/noc with them\n
+      * also you can change installation type to develop and resolve updates manually
+  when:
+    - pull_state.failed is defined
+    - pull_state.failed
   tags:
     - get_source

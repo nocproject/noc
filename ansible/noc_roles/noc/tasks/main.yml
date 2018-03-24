@@ -30,15 +30,16 @@
   register: git_user_email
 
 - block:
-  - name: check if noc under mercurial control
-    stat:
-      path: "{{noc_root}}/.hg"
-    register: noc_hg_state
+    - name: check if noc under mercurial control
+      stat:
+        path: "{{noc_root}}/.hg"
+      register: noc_hg_state
 
-  - name: migrate to git
-    include_tasks: "migrate_git.yml"
-    when: noc_hg_state.stat.exists is defined and noc_hg_state.stat.exists
-  when: noc_root_state.stat.exists is defined and noc_root_state.stat.exists
+    - name: migrate to git
+      include_tasks: "migrate_git.yml"
+  when:
+    - noc_root_state.stat.exists is defined
+    - noc_root_state.stat.exists
 
 - name: Include {{install_method}} install method
   include_tasks: "{{install_method}}.yml"
@@ -63,4 +64,3 @@
 
 - name: Include post install
   import_tasks: "post_install.yml"
-

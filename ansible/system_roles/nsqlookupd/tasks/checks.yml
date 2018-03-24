@@ -1,0 +1,7 @@
+---
+- name: No nsqlookupd server set
+  fail:
+    msg: "No nsqlookupd server set. Please setup at least one."
+  when: "'svc-nsqlookupd-exec' not in groups"
+  tags:
+    - checks

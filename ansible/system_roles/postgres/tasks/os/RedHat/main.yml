@@ -5,7 +5,7 @@
     name: "{{item.name}}"
     value: "{{item.value}}"
     state: present
-    reload: yes
+    reload: "True"
   with_items:
     - { name: kernel.shmmax, value: "{{ kernel_shmmax }}" }
     - { name: kernel.shmall, value: "{{ kernel_shmall }}" }
@@ -19,7 +19,6 @@
   command: '{{postgres_bin_dir}}/postgresql{{postgres_version|replace(".","")}}-setup initdb'
   args:
     creates: /var/lib/pgsql/{{ postgres_version }}/initdb.log
-
 
 - name: Install postgres limits file
   template:

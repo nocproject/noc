@@ -11,7 +11,7 @@
   apt_repository:
     repo: 'deb http://nginx.org/packages/debian/ {{ ansible_distribution_release }} nginx'
     state: present
-    update_cache: yes
+    update_cache: "True"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -21,7 +21,7 @@
 - name: Install Nginx
   apt:
     name: "nginx"
-    update_cache: yes
+    update_cache: "True"
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
     state: latest
   environment:

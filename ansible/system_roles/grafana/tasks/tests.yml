@@ -2,10 +2,10 @@
 - block:
   - name: check if grafana running
     command: pgrep -x grafana-server -c
-    failed_when: False
-    changed_when: False
+    failed_when: "False"
+    changed_when: "False"
     register: grafana_running
-    check_mode: no
+    check_mode: "False"
 
   - name: fail if no grafana found
     debug:
@@ -19,8 +19,8 @@
     uri:
       url: http://127.0.0.1:8002/api/health
     register: grafana_ping
-    failed_when: False
-    check_mode: no
+    failed_when: "False"
+    check_mode: "False"
 
   - name: fail if grafana http iface is not reachable
     debug:
@@ -33,10 +33,10 @@
   - name: check for consul service status
     uri:
       url: "http://127.0.0.1:8500/v1/health/service/grafana"
-      return_content: yes
+      return_content: "True"
     register: consul_req
-    changed_when: False
-    check_mode: no
+    changed_when: "False"
+    check_mode: "False"
 
   - name: fail if no grafana found
     debug:
@@ -48,3 +48,5 @@
 
   when:
     - has_svc_grafana is defined
+  tags:
+    - tests

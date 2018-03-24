@@ -1,20 +1,9 @@
+---
 - name: init check vars
   set_fact:
     postgres_masters_count: 0
-
-- name: No postgres server set
-  fail:
-    msg: "No postgres server set. Please setup exactly one."
-  when: "'svc-postgres-exec' not in groups"
-
-- name: fail if postrgres in role secondary and no ha setup
-  fail:
-    msg: |
-      Postgres secondary config require role postgres-ha. Leave only one postres or setup HA
-  when:
-    - has_svc_postgres is defined
-    - postgres_power == 'secondary'
-    - "'svc-ha-postgres-exec' not in groups"
+  tags:
+    - checks
 
 - name: count postgres masters set
   set_fact:
@@ -23,45 +12,63 @@
   when: "'master' in hostvars[srv]['postgres_power']"
   loop_control:
     loop_var: srv
+  tags:
+    - checks
 
-- name: Fail if too many postgres masters set
+- name: No postgres server set
   fail:
-    msg: |
-      Postgres in multimaster mode is not supported.
-      Setup excactly one master
-  when:
-    - has_svc_postgres is defined
-    - postgres_masters_count | int  != 1
+    msg: "No postgres server set. Please setup exactly one."
+  when: "'svc-postgres-exec' not in groups"
+  tags:
+    - checks
 
-- name: fail if consul is not selected
-  fail:
-    msg: "Postgres role have to be set along with consul role to check weather postgres is alive"
-  when:
-    - has_svc_postgres is defined
-    - has_svc_consul is not defined
+- block:
+    - name: fail if postrgres in role secondary and no ha setup
+      fail:
+        msg: |
+          Postgres secondary config require role postgres-ha. Leave only one postres or setup HA
+      when:
+        - postgres_power == 'secondary'
+        - "'svc-ha-postgres-exec' not in groups"
 
-- include_tasks: "os/{{ ansible_distribution }}/checks.yml"
-  when:
-    - has_svc_postgres is defined
+    - name: Fail if too many postgres masters set
+      fail:
+        msg: |
+          Postgres in multimaster mode is not supported.
+          Setup excactly one master
+      when:
+        - postgres_masters_count | int  != 1
 
-- name: fail if postgres version requested not same as used
-  fail:
-    msg: |
-      Database upgrade is too complicated job to be done on unknown system with perfectly unknown environment.
-      To make continue deploy make sure that only one version of Postgres database is installed and it same as used in tower.
-      Currently requested is "{{postgres_version}}"
-      Currently used is "{{postgres_version_used}}"
-  when:
-    - has_svc_postgres is defined
-    - postgres_version_used is defined
-    - postgres_version | string != postgres_version_used | string
+    - name: fail if consul is not selected
+      fail:
+        msg: "Postgres role have to be set along with consul role to check weather postgres is alive"
+      when:
+        - has_svc_consul is not defined
 
-- name: fail if too many postgres servers installed
-  fail:
-    msg: |
-      There are too many postgres servers installed on {{ansible_hostname}}. Remove some.
-      Currently requested in tower: "{{postgres_version}}"
-      Currently installed are: "{{too_many_postgres_installed}}"
+    - include_tasks: "os/{{ ansible_distribution }}/checks.yml"
+      when:
+        - has_svc_postgres is defined
+
+    - name: fail if postgres version requested not same as used
+      fail:
+        msg: |
+          Database upgrade is too complicated job to be done on unknown system with perfectly unknown environment.
+          To make continue deploy make sure that only one version of Postgres database is installed and it same as used in tower.
+          Currently requested is "{{postgres_version}}"
+          Currently used is "{{postgres_version_used}}"
+      when:
+        - postgres_version_used is defined
+        - postgres_version | string != postgres_version_used | string
+
+    - name: fail if too many postgres servers installed
+      fail:
+        msg: |
+          There are too many postgres servers installed on {{ansible_hostname}}. Remove some.
+          Currently requested in tower: "{{postgres_version}}"
+          Currently installed are: "{{too_many_postgres_installed}}"
+      when:
+        - too_many_postgres_installed is defined
   when:
     - has_svc_postgres is defined
-    - too_many_postgres_installed is defined
+  tags:
+    - checks

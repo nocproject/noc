@@ -18,6 +18,7 @@ forms:
       description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
       label: "Max message size"
       type: int
+
 services:
   nsqd:
     level: system

@@ -12,7 +12,7 @@
   apt_repository:
     repo: "deb https://packagecloud.io/grafana/stable/debian/ jessie main"
     state: present
-    update_cache: yes
+    update_cache: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -23,7 +23,7 @@
   apt:
     name: grafana={{ grafana_version }}
     state: present
-    update_cache: yes
+    update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   notify: restart grafana
   tags:

@@ -2,10 +2,10 @@
 - block:
   - name: check if clickhouse-server running
     command: pgrep -f clickhouse-server -c
-    failed_when: False
-    changed_when: False
+    failed_when: "False"
+    changed_when: "False"
     register: clickhouse_server_running
-    check_mode: no
+    check_mode: "False"
 
   - name: fail if no consul found
     debug:
@@ -19,8 +19,8 @@
     uri:
       url: http://127.0.0.1:8123/
     register: clickhouse_ping
-    failed_when: False
-    check_mode: no
+    failed_when: "False"
+    check_mode: "False"
 
   - name: fail if clickhouse http iface is not reachable
     debug:
@@ -32,3 +32,5 @@
 
   when:
     - has_svc_clickhouse is defined
+  tags:
+    - tests

@@ -1,4 +1,4 @@
-
+---
 - name: Set up SSL directory
   file:
     path: "{{ nginx_ssl_key_path | dirname }}"

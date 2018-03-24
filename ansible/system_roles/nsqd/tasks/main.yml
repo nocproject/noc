@@ -33,12 +33,12 @@
     ct_service_dest: "{{nsqd_config_dir}}/nsqd.conf"
     ct_service_command: "{{reload_command}}"
     ct_service_command_timeout: "60s"
-    ct_service_source_template: True
+    ct_service_source_template: "True"
 
 - name: Enable nsq system service
   service:
     name: "nsqd"
-    enabled: yes
+    enabled: "True"
   notify:
     - reload consul-template
     - restart nsqd
@@ -54,7 +54,7 @@
     consul_service_check_type: "tcp"
     consul_service_check_value: "127.0.0.1:4150"
     consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: False
+    consul_service_check_http_skip_verify: "False"
 
 - name: place nsqdhttp consul check
   import_role:
@@ -67,7 +67,7 @@
     consul_service_check_type: "http"
     consul_service_check_value: "http://127.0.0.1:4151/ping"
     consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: False
+    consul_service_check_http_skip_verify: "False"
 
 - name: Install postgres monitoring
   include_role:
@@ -79,10 +79,10 @@
     monitoring_service_port: 4151
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: True
+    monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pattern
     monitoring_service_procstat_value: nsqd
-    monitoring_service_tagexclude: ["client_deflate","client_address","client_hostname","client_name","client_snappy","client_tls","client_user_agent","client_version","server_version"]
+    monitoring_service_tagexclude: ["client_deflate", "client_address", "client_hostname", "client_name", "client_snappy", "client_tls", "client_user_agent", "client_version", "server_version"]
     monitoring_config:
       endpoints: ["http://{{ansible_nodename}}:4151"]
   when: has_svc_monitoring is defined

@@ -3,10 +3,10 @@
   get_url:
     url: "{{nsq_url}}"
     dest: "{{nsq_temp_file}}"
-    validate_certs: yes
+    validate_certs: "True"
   delegate_to: 127.0.0.1
-  become: no
-  run_once: true
+  become: "False"
+  run_once: "True"
   environment:
     https_proxy: "{{http_proxy}}"
 
@@ -19,8 +19,8 @@
 
 - name: install nsqlookupd.service file
   template:
-     src: "etc/systemd/system/nsqlookupd.service"
-     dest: "/etc/systemd/system/nsqlookupd.service"
+    src: "etc/systemd/system/nsqlookupd.service"
+    dest: "/etc/systemd/system/nsqlookupd.service"
   notify:
     - reload systemd
     - restart nsqlookupd

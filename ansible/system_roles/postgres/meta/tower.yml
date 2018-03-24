@@ -52,6 +52,7 @@ forms:
       type: str
       label: Password
       common: environment
+
 services:
   postgres:
     level: system

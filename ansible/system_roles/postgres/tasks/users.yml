@@ -1,3 +1,4 @@
+---
 - name: "Create postgres {{db_name}} user"
   postgresql_user:
     name: "{{db_name}}"

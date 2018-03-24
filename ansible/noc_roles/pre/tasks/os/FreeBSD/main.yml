@@ -1,6 +1,6 @@
 ---
 - name: Setting hostname in rc.conf
-  become: true
+  become: "True"
   lineinfile: dest=/etc/rc.conf regexp=^hostname= line="hostname=\"{{ ansible_nodename }}\""
   tags:
     - config
@@ -9,7 +9,7 @@
   pkgng:
     name: "{{item}}"
     state: present
-  become: true
+  become: "True"
   with_items:
     - ca_root_nss
     - sudo
@@ -25,7 +25,7 @@
 #    - config
 
 - name: create dirs
-  become: true
+  become: "True"
   file:
     state: directory
     path: "{{item}}"

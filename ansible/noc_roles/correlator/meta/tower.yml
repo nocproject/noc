@@ -29,6 +29,7 @@ forms:
       default: 10
       label: "Correlator threads"
       type: int
+
 services:
   correlator:
     level: pool

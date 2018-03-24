@@ -2,10 +2,10 @@
 - name: reload systemd
   systemd:
     name: nsqd
-    daemon_reload: yes
+    daemon_reload: "True"
 
 - name: restart nsqd
-  become: yes
+  become: "True"
   service:
     name: nsqd
     state: restarted

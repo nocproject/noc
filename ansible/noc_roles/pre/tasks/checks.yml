@@ -1,15 +1,21 @@
+---
 - name: Check ansible version
   fail:
-    msg: "{{ ansible_version.full }} is not supported by this role. Please use at least 2.3.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
+    msg: "{{ ansible_version.full }} is not supported by this role. Please use at least 2.5.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
   when:
     - ansible_version is defined
-    - ansible_version.full is version_compare('2.4.0.0', '<')
+    - ansible_version.full is version_compare('2.5.0.0', '<')
+  tags:
+    - checks
 
 - name: Check distribution compatibility
   fail:
     msg: "{{ ansible_distribution }} is not supported by NOC"
   when:
     - ansible_distribution not in ['RedHat', 'CentOS', 'Debian', 'Ubuntu', 'FreeBSD']
+  tags:
+    - checks
+
 
 - name: Fail if not a new release of Red Hat / CentOS
   fail:
@@ -17,6 +23,9 @@
   when:
     - ansible_distribution in ['RedHat', 'CentOS']
     - ansible_distribution_version is version_compare(7, '<')
+  tags:
+    - checks
+
 
 - name: Fail if not a new release of Debian
   fail:
@@ -24,34 +33,44 @@
   when:
     - ansible_distribution == "Debian"
     - ansible_distribution_version is version_compare(8.0, '<')
-
-- name: Fail for a new release of Ubuntu
-  fail:
-    msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version is version_compare("16.10", '>')
-
-- name: Fail for a old release of Ubuntu
-  fail:
-    msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version is version_compare("16.04", '<')
+  tags:
+    - checks
 
 - block:
-  - name: tower version is too old
-    fail:
-      msg: "tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'. \n\n\n See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md  \n\n\n "
-    when: "'old' in tower_version"
+    - name: Fail for a new release of Ubuntu
+      fail:
+        msg: |
+          {{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role
+      when:
+        - ansible_distribution_version is version_compare("16.10", '>')
 
-  - name: tower version is old
-    fail:
-      msg: |
+    - name: Fail for a old release of Ubuntu
+      fail:
+        msg: |
+          {{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role
+      when:
+        - ansible_distribution_version is version_compare("16.04", '<')
+  when:
+    - ansible_distribution == "Ubuntu"
+  tags:
+    - checks
 
-        tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'.
+- block:
+    - name: tower version is too old
+      fail:
+        msg: "tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'. \n\n\n See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md  \n\n\n "
+      when: "'old' in tower_version"
 
-        See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md
+    - name: tower version is old
+      fail:
+        msg: |
 
-    when: "tower_version|version_compare(tower_minimum_version, '<')"
-  when: tower_version != ''
+          tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'.
+
+          See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md
+
+      when: "tower_version is version_compare(tower_minimum_version, '<')"
+  when:
+    - tower_version != ''
+  tags:
+    - checks

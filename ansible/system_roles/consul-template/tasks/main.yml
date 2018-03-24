@@ -44,7 +44,7 @@
 - name: start consul-template service
   service:
     name: consul-template
-    enabled: yes
+    enabled: "True"
     state: started
 
 - name: Install consul-template monitoring
@@ -57,7 +57,7 @@
     monitoring_service_port: ""
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: True
+    monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pattern
     monitoring_service_procstat_value: consul-template
   when: has_svc_monitoring is defined

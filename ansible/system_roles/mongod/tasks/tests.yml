@@ -2,10 +2,10 @@
 - block:
   - name: check if mongod running
     command: pgrep -x mongod -c
-    failed_when: false
-    changed_when: False
+    failed_when: "False"
+    changed_when: "False"
     register: mongod_running
-    check_mode: no
+    check_mode: "False"
 
   - name: fail if no mongod found
     debug:
@@ -16,10 +16,10 @@
 
   - name: check mongo disk size
     shell: df /var/lib/mongo/ | grep -Po '/dev.+\K...(?=\%)'
-    changed_when: False
-    failed_when: false
+    changed_when: "False"
+    failed_when: "False"
     register: mongod_dir_size
-    check_mode: no
+    check_mode: "False"
 
   - name: fail if no mongod disk is not full
     debug:
@@ -33,10 +33,10 @@
   - name: check for consul service status
     uri:
       url: "http://127.0.0.1:8500/v1/health/service/mongo"
-      return_content: yes
+      return_content: "True"
     register: consul_req
-    changed_when: False
-    check_mode: no
+    changed_when: "False"
+    check_mode: "False"
 
   - name: fail if no mongo found
     debug:
@@ -48,3 +48,5 @@
 
   when:
     - has_svc_mongod is defined
+  tags:
+    - tests

@@ -1,22 +1,23 @@
+---
 - name: Get Consul-template package checksum file
   get_url:
     url: "{{ consul_template_checksum_file_url }}"
     dest: "{{ consul_template_temp_file_checksum }}"
-    validate_certs: yes
+    validate_certs: "True"
   delegate_to: 127.0.0.1
-  become: no
-  run_once: yes
+  become: "False"
+  run_once: "True"
   environment:
     https_proxy: "{{http_proxy}}"
 
 - name: Get Consul-template package checksum
   command: "grep {{ consul_template_pkg }} {{ consul_template_temp_file_checksum }}"
-  check_mode: no
+  check_mode: "False"
   register: consul_sha256
   delegate_to: 127.0.0.1
-  become: no
-  run_once: yes
-  changed_when: false
+  become: "False"
+  run_once: "True"
+  changed_when: "False"
 
 - name: Download Consul-template
   get_url:
@@ -24,10 +25,10 @@
     dest: "{{consul_template_temp_file}}"
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
-    validate_certs: yes
+    validate_certs: "True"
   delegate_to: 127.0.0.1
-  become: no
-  run_once: yes
+  become: "False"
+  run_once: "True"
   environment:
     https_proxy: "{{http_proxy}}"
 
@@ -51,8 +52,8 @@
 - name: Overwrite Consul-template binary if needed
   copy:
     src: "{{ consul_template_temp_unarchive }}/{{consul_template_binary}}"
-    dest : "{{ consul_template_bin_path }}/{{consul_template_binary}}"
-    remote_src: yes
+    dest: "{{ consul_template_bin_path }}/{{consul_template_binary}}"
+    remote_src: "True"
     mode: 0755
   when:
     - ct_archive_extracted is changed

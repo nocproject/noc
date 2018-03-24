@@ -5,7 +5,7 @@
   changed_when:
     - "'No primary detected for set' in rs_status.stdout"
     - "'connect failed to replica set' in rs_status.stdout"
-  failed_when: False
+  failed_when: "False"
   tags:
     - config
 
@@ -18,23 +18,23 @@
     - config
 
 - block:
-  - name: Initial replica set configuration
-    command: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
+    - name: Initial replica set configuration
+      command: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
 
-  - name: Create admin user configuration script
-    template:
-      src: admininit.js.j2
-      dest: "{{ mongo_dir }}/admininit.js"
-    no_log: "{{tower_show_secrets}}"
-    tags:
-      - config
+    - name: Create admin user configuration script
+      template:
+        src: admininit.js.j2
+        dest: "{{ mongo_dir }}/admininit.js"
+      no_log: "{{tower_show_secrets}}"
+      tags:
+        - config
 
-  - name: sleep while mongodb electing primary
-    pause:
-      seconds: 5
+    - name: sleep while mongodb electing primary
+      pause:
+        seconds: 5
 
-  - name: Create admin user
-    command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
+    - name: Create admin user
+      command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
   when: rs_status is changed
 
 - name: Create database user configuration script
@@ -58,4 +58,4 @@
 
 - name: set master_init done
   set_fact:
-    mongo_master_init_done: True
+    mongo_master_init_done: "True"

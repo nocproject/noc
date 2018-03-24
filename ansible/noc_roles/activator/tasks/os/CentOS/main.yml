@@ -2,7 +2,7 @@
 - name: Install CentOS system packages
   yum:
     name: "{{ item }}"
-    update_cache: yes
+    update_cache: "True"
   with_items:
     - libssh2
     - libssh2-devel

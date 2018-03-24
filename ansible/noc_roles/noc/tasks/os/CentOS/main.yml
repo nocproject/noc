@@ -4,9 +4,9 @@
     name: pgdg-{{ postgres_version|replace(".","") }}-centos
     description: PostgreSQL {{ postgres_version }}
     baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
-    gpgcheck: yes
+    gpgcheck: "True"
     gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
-    enabled: yes
+    enabled: "True"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
@@ -17,9 +17,9 @@
   yum:
     name: "{{ item }}"
     state: present
-    update_cache: no
+    update_cache: "False"
   with_items:
-   - epel-release
+    - epel-release
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -30,22 +30,22 @@
   yum:
     name: "{{ item }}"
     state: present
-    update_cache: yes
+    update_cache: "True"
   with_items:
-   - git
-   - patch
-   - python-virtualenv
-   - gcc
-   - postgresql{{ postgres_version|replace(".","") }}
-   - postgresql-devel
-   - postgresql{{ postgres_version|replace(".","") }}-devel
-   - libffi
-   - libffi-devel
-   - libmemcached
-   - libmemcached-devel
-   - zlib-devel
-   - jemalloc
-   - bzip2
+    - git
+    - patch
+    - python-virtualenv
+    - gcc
+    - postgresql{{ postgres_version|replace(".","") }}
+    - postgresql-devel
+    - postgresql{{ postgres_version|replace(".","") }}-devel
+    - libffi
+    - libffi-devel
+    - libmemcached
+    - libmemcached-devel
+    - zlib-devel
+    - jemalloc
+    - bzip2
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

@@ -4,7 +4,7 @@
     name: "{{item.name}}"
     value: "{{item.value}}"
     state: present
-    reload: yes
+    reload: "True"
   with_items:
     - { name: 'net.ipv4.ip_local_port_range', value: '20024 65000'}
   tags:
@@ -21,4 +21,3 @@
   when:
     - "'Linux' in ansible_system"
     - "'prod' in noc_env_type"
-

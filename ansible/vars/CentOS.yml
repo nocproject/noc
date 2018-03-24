@@ -1,6 +1,6 @@
 # CentOS settings
 ---
-mongo_fork: "true"
+mongo_fork: "True"
 mongo_user: mongod
 pgbouncer_path_pid: /var/run/pgbouncer
 postgres_system_service: postgresql-{{ postgres_version }}

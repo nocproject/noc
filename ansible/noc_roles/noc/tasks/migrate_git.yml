@@ -1,3 +1,4 @@
+---
 - name: archive current noc dir
   archive:
     path: "{{noc_root}}"
@@ -19,8 +20,8 @@
     repo: "{{noc_root}}"
     dest: "{{noc_root}}"
     revision: "feature/microservices"
-    force: yes
-    purge: yes
+    force: "True"
+    purge: "True"
 
 - name: remove .hg
   file:
@@ -31,19 +32,19 @@
   command: git init "{{noc_root}}"
 
 - block:
-  - name: set up dummy git user email
-    git_config:
-      name: user.email
-      repo: "{{noc_root}}"
-      scope: local
-      value: 'noc_user@{{ ansible_fqdn }}'
+    - name: set up dummy git user email
+      git_config:
+        name: user.email
+        repo: "{{noc_root}}"
+        scope: local
+        value: 'noc_user@{{ ansible_fqdn }}'
 
-  - name: set up dummy git user name
-    git_config:
-      name: user.name
-      repo: "{{noc_root}}"
-      scope: local
-      value: 'Noc User {{ansible_fqdn}}'
+    - name: set up dummy git user name
+      git_config:
+        name: user.name
+        repo: "{{noc_root}}"
+        scope: local
+        value: 'Noc User {{ansible_fqdn}}'
   when: not git_user_email.config_value
 
 - name: add correct origin
@@ -57,7 +58,7 @@
   command: git pull origin
   args:
     chdir: "{{noc_root}}"
-  ignore_errors: yes
+  ignore_errors: "True"
   environment:
     https_proxy: "{{http_proxy}}"
 

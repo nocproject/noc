@@ -1,12 +1,13 @@
+---
 - name: Add EPEL Repo
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
-    validate_certs: yes
+    validate_certs: "True"
   register: epel_task_result
   retries: 4
   delay: 2
-  until: epel_task_result|succeeded
+  until: epel_task_result is succeeded
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -37,19 +38,19 @@
   yum:
     name: "{{item}}"
     state: present
-    update_cache: yes
+    update_cache: "True"
   with_items:
-   - git
-   - python-virtualenv
-   - gcc
-   - postgresql{{postgres_version|replace(".","")}}
-   - postgresql{{postgres_version|replace(".","")}}-devel
-   - patch
-   - libffi
-   - libffi-devel
-   - libmemcached
-   - zlib-devel
-   - bzip2
+    - git
+    - python-virtualenv
+    - gcc
+    - postgresql{{postgres_version|replace(".","")}}
+    - postgresql{{postgres_version|replace(".","")}}-devel
+    - patch
+    - libffi
+    - libffi-devel
+    - libmemcached
+    - zlib-devel
+    - bzip2
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -61,8 +62,8 @@
     name: "{{item}}"
     state: present
   with_items:
-   - jemalloc
-   - libmemcached-devel
+    - jemalloc
+    - libmemcached-devel
   environment:
     http_proxy: "{{http_proxy}}"
 
@@ -72,4 +73,3 @@
     dest: "/usr/lib/systemd/system/{{ noc_system_service }}.service"
     mode: "a+rx"
   notify: reload systemd
-

@@ -1,9 +1,9 @@
 ---
 - name: pre tasks
   hosts: all
-  become: no
+  become: "False"
   any_errors_fatal: "{{tower_run_checks}}"
-  gather_facts: True
+  gather_facts: "True"
   vars_files:
     - "vars/main.yml"
     - "vars/{{ ansible_distribution }}.yml"
@@ -25,4 +25,4 @@
   post_tasks:
     - name: set pre complete
       set_fact:
-        pre_complete: True
+        pre_complete: "True"

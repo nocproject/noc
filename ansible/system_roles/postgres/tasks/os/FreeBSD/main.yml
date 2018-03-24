@@ -18,7 +18,7 @@
 - name: Enable postgres system service
   service:
     name: "{{postgres_system_service}}"
-    enabled: yes
+    enabled: "True"
 
 - name: PostgreSQL init db
   command: service postgresql initdb

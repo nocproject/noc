@@ -2,7 +2,7 @@
 # File: main.yml - Main tasks for Consul
 
 - name: make servers group
-  changed_when: False
+  changed_when: "False"
   add_host:
     group: svc-consul-server
     host: "{{item}}"
@@ -15,7 +15,7 @@
     name: "{{ consul_user }}"
     comment: "Consul user"
     group: "{{ consul_group }}"
-    system: yes
+    system: "True"
     home: "{{ consul_home }}"
 
 - name: "Include OS-specific tasks"
@@ -26,7 +26,7 @@
     path: "{{consul_config_path}}/.consul_bootstrapped"
   register: bootstrap_marker
   when: consul_power == 'bootstrap'
-  ignore_errors: true
+  ignore_errors: "True"
   tags: always
 
 - name: Include dir settings
@@ -57,19 +57,19 @@
   service:
     name: consul
     state: started
-    enabled: yes
+    enabled: "True"
 
 - block:
-  - name: Consul HTTP API reachable? wait for port 8500 for 60 seconds
-    wait_for:
-      delay: 15
-      port: 8500
-      timeout: 60
+    - name: Consul HTTP API reachable? wait for port 8500 for 60 seconds
+      wait_for:
+        delay: 15
+        port: 8500
+        timeout: 60
 
-  - name: Create bootstrapped marker
-    file:
-      dest: "{{consul_config_path}}/.consul_bootstrapped"
-      state: touch
+    - name: Create bootstrapped marker
+      file:
+        dest: "{{consul_config_path}}/.consul_bootstrapped"
+        state: touch
   when:
     - consul_power == 'bootstrap'
     - not bootstrap_marker.stat.exists
@@ -84,13 +84,13 @@
     monitoring_service_port: 8500
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: True
+    monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pid_file
     monitoring_service_procstat_value: "{{ consul_pid_path }}"
     monitoring_config:
-        address: "consul:8500"
-        token: "{{ consul_token }}"
-        datacentre: "{{ consul_datacenter }}"
+      address: "consul:8500"
+      token: "{{ consul_token }}"
+      datacentre: "{{ consul_datacenter }}"
   when:
     - consul_power == 'bootstrap'
     - has_svc_monitoring is defined
@@ -107,7 +107,7 @@
     monitoring_service_port: 8500
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: True
+    monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pid_file
     monitoring_service_procstat_value: "{{ consul_pid_path }}"
   when:

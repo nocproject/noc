@@ -1,3 +1,4 @@
+---
 - name: create "{{consul_service_name}}" service file and render script for it
   block:
   - name: create "{{consul_service_name}}" service file
@@ -14,7 +15,7 @@
       check_interval: "{{consul_service_check_interval}}"
       check_http_skip_verify: "{{consul_service_check_http_skip_verify}}"
     notify:
-    - reload consul
+      - reload consul
   - name: copy script to consul localtion
     template:
       src: "{{consul_service_check_script}}"
@@ -22,7 +23,7 @@
       mode: 0755
     no_log: "{{tower_show_secrets}}"
     notify:
-    - reload consul
+      - reload consul
   when: consul_service_check_type == "script"
 
 - name: create "{{consul_service_name}}" service file

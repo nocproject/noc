@@ -31,10 +31,10 @@
   consul_kv:
     key: "{{consul_service_key}}"
     value: "{{ consul_key_response.data.Value
-      | from_json
-      | combine({ consul_service_internal_key: consul_service_value })
-      | to_nice_json
-      }}"
+            | from_json
+            | combine({ consul_service_internal_key: consul_service_value })
+            | to_nice_json
+            }}"
     cas: "{{consul_key_response.index}}"
     #token: "{{consul_service_token}}"
   vars:

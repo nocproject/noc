@@ -1,11 +1,12 @@
+---
 - name: Get pypy portable
   get_url:
     url: "{{ pypy_download_url }}"
     dest: "{{ pypy_tmp_path }}"
-    validate_certs: yes
+    validate_certs: "True"
   delegate_to: 127.0.0.1
-  become: no
-  run_once: yes
+  become: "False"
+  run_once: "True"
   environment:
     https_proxy: "{{http_proxy}}"
 
@@ -27,21 +28,24 @@
   register: venv_init
 
 - block:
-  - name: remove lib dir
-    file:
-      path: "{{noc_root}}/lib"
-      state: absent
+    - name: remove lib dir
+      file:
+        path: "{{noc_root}}/lib"
+        state: absent
 
-  - name: init venv
-    command: "{{ pypy_path }}/bin/virtualenv-pypy {{noc_root}}"
-    args:
-      chdir: "{{noc_root | dirname }}"
+    - name: init venv
+      command: "{{ pypy_path }}/bin/virtualenv-pypy {{noc_root}}"
+      args:
+        chdir: "{{noc_root | dirname }}"
 
-  - name: refetch actual source
-    command: "git checkout {{noc_root}}/lib"
-    args:
-      chdir: "{{noc_root }}"
-  when: venv_init.stat.exists is defined and not venv_init.stat.exists
+    - name: refetch actual source
+      command: "git checkout {{noc_root}}/lib"
+      args:
+        chdir: "{{noc_root }}"
+
+  when:
+    - venv_init.stat.exists is defined
+    - not venv_init.stat.exists
 
 - name: Install node pypy numpy(should take a while for a first time)
   pip:
@@ -88,7 +92,7 @@
   template:
     src: "lib/python/site-packages/sitecustomize.py.j2"
     dest: "{{noc_root}}/site-packages/sitecustomize.py"
-  when: sitecustomizes.stat.exists == False
+  when: sitecustomizes.stat.exists
   tags:
     - config
 
@@ -97,4 +101,4 @@
     dest: "{{noc_root}}/lib-python/2.7/site.py"
     regexp: "encoding = 'ascii'"
     replace: "encoding = 'utf-8'"
-  when: sitecustomizes.stat.exists == True
+  when: sitecustomizes.stat.exists

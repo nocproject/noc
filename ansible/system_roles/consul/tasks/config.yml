@@ -79,7 +79,7 @@
     name: "{{item.name}}"
     value: "{{item.value}}"
     state: present
-    reload: yes
+    reload: "True"
   with_items:
     - { name: 'net.ipv4.tcp_tw_reuse', value: 1}
     - { name: 'net.ipv4.tcp_rfc1337', value: 1}
@@ -94,9 +94,11 @@
     name: "{{item.name}}"
     value: "{{item.value}}"
     state: present
-    reload: yes
+    reload: "True"
   with_items:
     - { name: 'net.ipv4.tcp_tw_recycle', value: 1}
   tags:
     - config
-  when: "'Linux' in ansible_system and 'prod' in noc_env_type"
+  when:
+    - "'Linux' in ansible_system"
+    - "'prod' in noc_env_type"

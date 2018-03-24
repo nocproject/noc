@@ -1,10 +1,9 @@
 # Post-deployment tasks
 ---
-
 - name: Serial NOC restart
   command: "{{ noc_root }}/noc ctl serialrestart all"
   when: "noc_ctl_reread"
-  changed_when: False
+  changed_when: "False"
   tags:
     - soft_restart
 
@@ -13,8 +12,8 @@
     name: "{{ noc_system_service }}"
     state: restarted
     sleep: 3
-    enabled: yes
-  changed_when: True
+    enabled: "True"
+  changed_when: "True"
   tags:
     - restart
 

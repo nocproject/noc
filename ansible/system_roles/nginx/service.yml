@@ -1,12 +1,13 @@
+---
 - name: Install and configure nginx
   hosts: svc-nginx-exec
   serial: 50%
-  become: yes
+  become: "True"
   tags:
     - nginx
     - web
     - external
-  any_errors_fatal: true
+  any_errors_fatal: "True"
   vars_files:
     - "../../vars/main.yml"
     - "../../vars/{{ ansible_distribution }}.yml"
@@ -15,4 +16,4 @@
   post_tasks:
     - name: set nginx complete
       set_fact:
-        nginx_complete: True
+        nginx_complete: "True"

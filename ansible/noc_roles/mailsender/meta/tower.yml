@@ -47,9 +47,10 @@ forms:
       label: "SMTP HELO hostname"
       type: str
     use_tls:
-      default: false
+      default: "False"
       label: "Use SMTP TLS"
       type: bool
+
 services:
   mailsender:
     level: global

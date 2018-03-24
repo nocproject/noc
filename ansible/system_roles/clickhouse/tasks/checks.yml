@@ -1,44 +1,42 @@
-- name: fail if consul-template is not selected
-  fail:
-    msg: "Clickhouse role have to be set along with consul-template role to get access to noc ch_datasource service."
-  when:
-    - has_svc_clickhouse is defined
-    - has_svc_consul_template is not defined
+---
+- block:
+    - name: fail if consul-template is not selected
+      fail:
+        msg: "Clickhouse role have to be set along with consul-template role to get access to noc ch_datasource service."
+      when:
+        - has_svc_consul_template is not defined
 
-- name: fail if consul is not selected
-  fail:
-    msg: "Clickhouse role have to be set along with consul role to get access to noc ch_datasource service."
-  when:
-    - has_svc_clickhouse is defined
-    - has_svc_consul is not defined
+    - name: fail if consul is not selected
+      fail:
+        msg: "Clickhouse role have to be set along with consul role to get access to noc ch_datasource service."
+      when:
+        - has_svc_consul is not defined
 
-- name: fail if too many clickhouses selected
-  fail:
-    msg: |
-      Too many clickhouse servers selected: {{groups['svc-clickhouse-exec'] | length}}
-      HA setup is not selected.
-      Remove some servers or setup HA.
-      Will install clickhouse to: {{groups['svc-clickhouse-exec'] | join (', ')}}
-  when:
-    - has_svc_clickhouse is defined
-    - groups['svc-clickhouse-exec'] | length > 1
-    - "'svc-ha-clickhouse-exec' not in groups"
+    - name: fail if too many clickhouses selected
+      fail:
+        msg: |
+          Too many clickhouse servers selected: {{groups['svc-clickhouse-exec'] | length}}
+          HA setup is not selected.
+          Remove some servers or setup HA.
+          Will install clickhouse to: {{groups['svc-clickhouse-exec'] | join (', ')}}
+      when:
+        - groups['svc-clickhouse-exec'] | length > 1
+        - "'svc-ha-clickhouse-exec' not in groups"
 
-- name: check clickhouse server for sse42 support
-  command: grep -q sse4_2 /proc/cpuinfo
-  register: sse42_support
-  failed_when: False
-  changed_when: False
-  check_mode: no
-  when:
-    - has_svc_clickhouse is defined
+    - name: check clickhouse server for sse42 support
+      command: grep -q sse4_2 /proc/cpuinfo
+      register: sse42_support
+      failed_when: "False"
+      changed_when: "False"
+      check_mode: "False"
 
-- name: fail if SSE 4.2 not supported
-  fail:
-    msg: |
-      Clickhouse role have to be set on server with sse42 support.
-      More info https://clickhouse.yandex/docs/en/getting_started/
-      Quick test with "grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported""
+    - name: fail if SSE 4.2 not supported
+      fail:
+        msg: |
+          Clickhouse role have to be set on server with sse42 support.
+          More info https://clickhouse.yandex/docs/en/getting_started/
+          Quick test with "grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported""
+      when:
+        - sse42_support.rc != 0
   when:
     - has_svc_clickhouse is defined
-    - sse42_support.rc != 0

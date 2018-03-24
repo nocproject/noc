@@ -42,7 +42,7 @@
     name: "{{item.name}}"
     value: "{{item.value}}"
     state: present
-    reload: yes
+    reload: "True"
   with_items:
     - { name: 'net.ipv4.tcp_no_metrics_save', value: 1}
     - { name: 'net.ipv4.tcp_window_scaling', value: 0}

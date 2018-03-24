@@ -1,13 +1,12 @@
 ---
-
 - name: reload systemd
-  become: yes
+  become: "True"
   systemd:
     name: grafana-server
-    daemon_reload: yes
+    daemon_reload: "True"
 
 - name: restart grafana
-  become: yes
+  become: "True"
   service:
     name: "{{ grafana_system_service }}"
     state: restarted

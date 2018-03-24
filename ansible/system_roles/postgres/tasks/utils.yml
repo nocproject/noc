@@ -1,4 +1,4 @@
-
+---
 - name: place postgres consul check
   import_role:
     name: consul
@@ -10,7 +10,7 @@
     consul_service_check_type: "script"
     consul_service_check_value: "postgres_check.sh"
     consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: False
+    consul_service_check_http_skip_verify: "False"
     consul_service_check_script: postgres_check.sh.j2
 
 - name: Install postgres monitoring
@@ -23,10 +23,10 @@
     monitoring_service_port: 5432  # noqa have to be number
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: False
+    monitoring_service_procstat_check: "False"
     monitoring_config:
-        address: "host={{ ansible_host }} user={{postgres_noc_user}} password={{postgres_noc_password}} sslmode=disable database={{postgres_noc_db}}"
-        ignored_databases: ["postgres", "template0", "template1"]
+      address: "host={{ ansible_host }} user={{postgres_noc_user}} password={{postgres_noc_password}} sslmode=disable database={{postgres_noc_db}}"
+      ignored_databases: ["postgres", "template0", "template1"]
   when: has_svc_monitoring is defined
   tags:
     - monitoring

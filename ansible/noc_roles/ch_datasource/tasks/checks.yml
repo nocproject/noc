@@ -1,3 +1,4 @@
+---
 - name: fail if noc is not selected
   fail:
     msg: "Ch_datasource role have to be set with noc role to get own sources."

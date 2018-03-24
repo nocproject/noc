@@ -1,3 +1,4 @@
+---
 - name: add clickhouse group
   group:
     name: clickhouse
@@ -46,7 +47,7 @@
     ct_service_name: "{{item[:-10]| basename}}"
     ct_service_source: "{{item | basename}}"
     ct_service_dest: "{{ch_dictionaries_path}}/{{item[:-6] |basename}}"
-    ct_service_source_template: False
+    ct_service_source_template: "False"
   with_fileglob:
     - "*.ctmpl"
 
@@ -54,7 +55,7 @@
   template:
     src: "noc.xml"
     dest: "{{ ch_etc_path }}/noc.xml"
-    force: no
+    force: "False"
   no_log: "{{tower_show_secrets}}"
   notify: reload clickhouse-server
   tags:
@@ -63,14 +64,14 @@
 - name: Start clickhouse service
   service:
     name: "{{clickhouse_service_name}}"
-    enabled: yes
+    enabled: "True"
     state: started
 
 - name: create grafana ds
   include_tasks: ds.yml
   when:
     - "'svc-grafana-exec' in groups"
-#ha setup will take care of datasource by itself
+    #ha setup will take care of datasource by itself
     - has_svc_ha_clickhouse is not defined
 
 - name: place consul check
@@ -84,7 +85,7 @@
     consul_service_check_type: "http"
     consul_service_check_value: "http://localhost:{{clickhouse_http_port}}/"
     consul_service_check_interval: "10s"
-    consul_service_check_http_skip_verify: False
+    consul_service_check_http_skip_verify: "False"
 
 - name: Install clickhouse monitoring
   include_role:
@@ -96,7 +97,7 @@
     monitoring_service_port: 8123
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: True
+    monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pattern
     monitoring_service_procstat_value: clickhouse-server
   when: has_svc_monitoring is defined

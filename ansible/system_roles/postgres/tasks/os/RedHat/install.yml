@@ -3,7 +3,7 @@
   yum:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
-    validate_certs: yes
+    validate_certs: "True"
   register: epel_task_result
   retries: 4
   delay: 2
@@ -19,9 +19,9 @@
     name: pgdg-{{ postgres_version|replace(".","") }}-centos
     description: PostgreSQL {{ postgres_version }}
     baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgres_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
-    gpgcheck: yes
+    gpgcheck: "True"
     gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgres_version|replace(".","") }}
-    enabled: yes
+    enabled: "True"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
@@ -32,7 +32,7 @@
   yum:
     name: "{{item}}"
     state: present
-    update_cache: yes
+    update_cache: "True"
   with_items:
     - postgresql{{postgres_version|replace(".","")}}-server
     - postgresql{{postgres_version|replace(".","")}}-contrib

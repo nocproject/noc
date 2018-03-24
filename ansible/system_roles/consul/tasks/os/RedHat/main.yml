@@ -3,9 +3,9 @@
   yum:
     name: "{{ item }}"
     state: present
-    update_cache: yes
+    update_cache: "True"
   with_items:
-   - python-virtualenv
+    - python-virtualenv
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
@@ -28,7 +28,7 @@
 - name: check firewalld state
   systemd:
     name: firewalld
-  check_mode: yes
+  check_mode: "True"
   register: firewalld_state
   tags:
     - config
@@ -37,9 +37,9 @@
 - name: Add firewall permissions for nodes
   firewalld:
     port: "{{item}}"
-    permanent: true
+    permanent: "True"
     state: enabled
-    immediate: true
+    immediate: "True"
   when: "firewalld_state.status.ActiveState == 'active'"
   with_items:
     - 8300/tcp

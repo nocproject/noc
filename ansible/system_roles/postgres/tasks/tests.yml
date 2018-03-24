@@ -1,34 +1,36 @@
 ---
 - block:
-  - name: check if postgres running
-    command: pgrep -f postgres -c
-    failed_when: false
-    changed_when: False
-    register: postgres_running
-    check_mode: no
+    - name: check if postgres running
+      command: pgrep -f postgres -c
+      failed_when: "False"
+      changed_when: "False"
+      register: postgres_running
+      check_mode: "False"
 
-  - name: fail if no postgres found
-    debug:
-      msg: |
-        There should be postgres proccess. But `pgrep -f postgres -c` can't find any
-    when:
-      - postgres_running.rc != 0
+    - name: fail if no postgres found
+      debug:
+        msg: |
+          There should be postgres proccess. But `pgrep -f postgres -c` can't find any
+      when:
+        - postgres_running.rc != 0
 
-  - name: check for consul service status
-    uri:
-      url: "http://127.0.0.1:8500/v1/health/service/postgres"
-      return_content: yes
-    register: consul_req
-    changed_when: False
-    check_mode: no
+    - name: check for consul service status
+      uri:
+        url: "http://127.0.0.1:8500/v1/health/service/postgres"
+        return_content: "True"
+      register: consul_req
+      changed_when: "False"
+      check_mode: "False"
 
-  - name: fail if no postgres found
-    debug:
-      msg: |
-        There are toubles with postgres on
-        {{consul_req.json | json_query("[].Checks[?ServiceName=='postgres'].{node:Node, status:Status}[]") | to_nice_yaml}}
-    when:
-      - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='postgres'].Status[]\")"
+    - name: fail if no postgres found
+      debug:
+        msg: |
+          There are toubles with postgres on
+          {{consul_req.json | json_query("[].Checks[?ServiceName=='postgres'].{node:Node, status:Status}[]") | to_nice_yaml}}
+      when:
+        - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='postgres'].Status[]\")"
 
   when:
     - has_svc_postgres is defined
+  tags:
+    - tests

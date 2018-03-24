@@ -2,7 +2,7 @@
 - name: check firewalld state
   systemd:
     name: firewalld
-  check_mode: yes
+  check_mode: "True"
   register: firewalld_state
   tags:
     - config
@@ -11,9 +11,9 @@
 - name: Add firewall permissions for nodes
   firewalld:
     service: https
-    permanent: true
+    permanent: "True"
     state: enabled
-    immediate: true
+    immediate: "True"
   when: "firewalld_state.status.ActiveState == 'active'"
   tags:
     - config

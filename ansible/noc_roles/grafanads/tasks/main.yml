@@ -1,3 +1,4 @@
+---
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
@@ -11,7 +12,7 @@
       type: grafana-simple-json-datasource
       access: direct
       url: "https://{{ noc_web_host }}/api/grafanads"
-      isDefault: False
-      editable: false
+      isDefault: "False"
+      editable: "False"
   delegate_to: "{{item}}"
   with_items: '{{groups["svc-grafana-exec"]}}'

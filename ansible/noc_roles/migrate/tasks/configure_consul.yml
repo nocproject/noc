@@ -2,7 +2,7 @@
 # have to be in migrate role because it's run once by default. and not in free strategy
 
 - name: call consul to setup discovery
-  run_once: true
+  run_once: "True"
   include_role:
     name: consul
     tasks_from: service_config_update
@@ -16,7 +16,7 @@
     - discovery
 
 - name: call consul to setup ping
-  run_once: true
+  run_once: "True"
   include_role:
     name: consul
     tasks_from: service_config_update

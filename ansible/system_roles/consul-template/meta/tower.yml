@@ -11,7 +11,7 @@ forms:
     use_dedup:
       label: "Use dedup"
       type: bool
-      default: false
+      default: "False"
       description: "Useful start from 20 nodes"
       common: environment
 services:

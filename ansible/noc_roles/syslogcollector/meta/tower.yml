@@ -29,6 +29,7 @@ forms:
       default: "0.0.0.0:514"
       label: "Listen SYSLOG"
       type: str
+
 services:
   syslogcollector:
     level: pool

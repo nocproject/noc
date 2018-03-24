@@ -1,8 +1,9 @@
+---
 - name: Install and configure postgres
   hosts: svc-postgres-exec:!svc-patroni-exec
-  become: yes
+  become: "True"
   serial: 1
-  any_errors_fatal: true
+  any_errors_fatal: "True"
   tags:
     - postgres
     - external
@@ -14,4 +15,4 @@
   post_tasks:
     - name: set postgres complete
       set_fact:
-        postgres_complete: True
+        postgres_complete: "True"

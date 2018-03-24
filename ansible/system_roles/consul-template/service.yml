@@ -1,8 +1,9 @@
+---
 - name: Consul tasks
   hosts: svc-consul-template-exec
-  become: yes
-  any_errors_fatal: false
-  gather_facts: True
+  become: "True"
+  any_errors_fatal: "False"
+  gather_facts: "True"
   vars_files:
     - "../../vars/main.yml"
     - "../../vars/{{ ansible_distribution }}.yml"
@@ -14,4 +15,4 @@
   post_tasks:
     - name: set consul-template complete
       set_fact:
-        ct_complete: True
+        ct_complete: "True"

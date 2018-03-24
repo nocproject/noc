@@ -1,3 +1,4 @@
+---
 ch_log_dir: /var/log/clickhouse-server
 ch_data_dir: /var/lib/clickhouse
 ch_big_query_dir: "{{ch_data_dir}}/tmp"

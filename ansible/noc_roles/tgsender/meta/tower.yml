@@ -28,6 +28,7 @@ forms:
     token:
       label: Token
       type: str
+
 services:
   tgsender:
     level: global

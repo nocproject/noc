@@ -1,3 +1,4 @@
+---
 - name: Compile bytecode
   command: ./scripts/deploy/compile-bytecode
   args:
@@ -33,8 +34,8 @@
 
 - name: check if noc running
   command: "{{ noc_root }}/noc ctl status"
-  check_mode: no
-  changed_when: false
+  check_mode: "False"
+  changed_when: "False"
   register: noc_ctl_status
   tags:
     - config

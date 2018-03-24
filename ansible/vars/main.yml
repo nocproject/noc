@@ -1,3 +1,4 @@
+---
 # General settings
 #
 # for os specific see pre role
@@ -26,4 +27,3 @@ mongo_dir: "{{etc_prefix}}/mongod"
 postgres_user: postgres
 
 fake_shell: /bin/false
-

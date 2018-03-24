@@ -5,7 +5,7 @@
     name: "{{item.name}}"
     value: "{{item.value}}"
     state: present
-    reload: yes
+    reload: "True"
   with_items:
     - { name: kernel.shmmax, value: "{{ kernel_shmmax }}" }
     - { name: kernel.shmall, value: "{{ kernel_shmall }}" }

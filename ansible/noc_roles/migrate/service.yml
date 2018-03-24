@@ -1,7 +1,8 @@
+---
 - name: migrate
   hosts: svc-noc-exec
-  become: yes
-  gather_facts: True
+  become: "True"
+  gather_facts: "True"
   tags:
     - node
     - noc
@@ -10,8 +11,8 @@
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: migrate
-      become: yes
-      run_once: true
+      become: "True"
+      run_once: "True"
       tags:
         - migrate
       environment:

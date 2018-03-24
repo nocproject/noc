@@ -25,6 +25,7 @@ forms:
         - warning
         - error
         - critial
+
 services:
   omap:
     level: global

@@ -8,6 +8,7 @@ forms:
       <strong>Scale Recommendations</strong>: Have to be at least one <br/>
       <strong>docs</strong>: <a href=http://nsq.io/components/nsqlookupd.html target=_blank>Nsqlookupd</a> <br/>
       <strong>Placement constraint</strong>: Long living node. <br/>
+
 services:
   nsqlookupd:
     level: system

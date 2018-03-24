@@ -1,10 +1,11 @@
+---
 - import_playbook: pre.yml
 
 - name: Install NOC
   hosts: noc-svc-*
-  become: yes
+  become: "True"
   strategy: "{% if groups['svc-noc-exec'] > 2 %}free{%else%}linear{%endif%}"
-  gather_facts: True
+  gather_facts: "True"
   tags:
     - node
     - noc
@@ -35,8 +36,8 @@
     - role: discovery
     - role: bi
     - role: migrate
-      become: yes
-      run_once: true
+      become: "True"
+      run_once: "True"
       tags:
         - migrate
 

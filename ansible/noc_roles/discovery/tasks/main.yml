@@ -1,3 +1,4 @@
+---
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
@@ -6,7 +7,7 @@
     name: "{{item.name}}"
     value: "{{item.value}}"
     state: present
-    reload: yes
+    reload: "True"
   with_items:
     - { name: 'net.ipv4.tcp_keepalive_time', value: 60 }
     - { name: 'net.ipv4.tcp_keepalive_intvl', value: 10 }

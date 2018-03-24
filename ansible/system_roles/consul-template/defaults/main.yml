@@ -29,7 +29,7 @@ consul_template_dl_dir: "/tmp"
 
 consul_template_user: root
 consul_template_group: bin
-consultemplate_use_dedup: false
+consultemplate_use_dedup: "False"
 
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{etc_prefix}}/consul-template/templates"

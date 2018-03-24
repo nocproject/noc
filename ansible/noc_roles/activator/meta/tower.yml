@@ -14,7 +14,7 @@ forms:
       type: int
       max: 64
       min: 0
-      required: True
+      required: "True"
     loglevel:
       default: info
       label: Loglevel
@@ -30,12 +30,12 @@ forms:
       default: 20
       label: "Script threads"
       type: int
-      required: True
+      required: "True"
     tos:
       default: 0
       label: "IP ToS mark"
       type: int
-      required: True
+      required: "True"
 
 services:
   activator:
@@ -53,4 +53,3 @@ services:
       stdout_logfile_backups: 3
       stdout_logfile_maxbytes: 10MB
       stopwaitsecs: 3
-

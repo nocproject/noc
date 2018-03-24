@@ -1,6 +1,6 @@
 ---
 - name: search for postgres master
-  changed_when: False
+  changed_when: "False"
   add_host:
     name: "{{ inventory_hostname }}"
     groups: svc-postgres-master
@@ -9,13 +9,13 @@
     - "'svc-postgres-master' not in groups"
 
 - name: set postgres master fact
-  changed_when: False
+  changed_when: "False"
   set_fact:
     postgres_master: "{{hostvars[groups['svc-postgres-master'][0]].ansible_host}}"
     postgres_master_node: "{{groups['svc-postgres-master'][0]}}"
     postgres_listen: "{{postgres_listen}}"
   delegate_to: "{{item}}"
-  delegate_facts: True
+  delegate_facts: "True"
   with_items: "{{groups['all']}}"
 
 - include_tasks: "os/{{ ansible_distribution }}/main.yml"
@@ -47,9 +47,8 @@
 - name: Enable postgres system service
   service:
     name: "{{postgres_system_service}}"
-    enabled: yes
+    enabled: "True"
     state: started
 
 - name: lanuch various roles
   import_tasks: utils.yml
-

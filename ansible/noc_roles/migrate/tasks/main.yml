@@ -33,7 +33,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
-  become: yes
+  become: "True"
   register: migrate_out
   changed_when: "'Nothing to migrate' not in migrate_out.stdout"
 
@@ -41,16 +41,16 @@
   command: ./noc ensure-indexes
   args:
     chdir: "{{ noc_root }}"
-  become: yes
+  become: "True"
   become_user: "{{ noc_user }}"
-  changed_when: False
+  changed_when: "False"
 
 - name: Apply pools
   command: "{{ noc_root }}/scripts/deploy/apply-pools"
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
-  become: yes
+  become: "True"
   register: result
   changed_when: "'CHANGED' in result.stdout"
 
@@ -73,7 +73,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
-  become: yes
+  become: "True"
   when: coll_exists.stat.exists
   tags:
     - coll_sync
@@ -83,7 +83,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
-  become: yes
+  become: "True"
   tags:
     - perms
 
@@ -92,7 +92,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
-  become: yes
+  become: "True"
   register: mibs_out
   changed_when: mibs_out.stdout | length > 7
 

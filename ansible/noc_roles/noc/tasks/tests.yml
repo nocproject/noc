@@ -2,10 +2,10 @@
 - block:
   - name: check if supervisord running
     command: pgrep -f supervisord -c
-    failed_when: False
-    changed_when: False
+    failed_when: "False"
+    changed_when: "False"
     register: supervisord_running
-    check_mode: no
+    check_mode: "False"
 
   - name: fail if no supervisord found
     debug:
@@ -16,11 +16,11 @@
 
   - name: check if noc services are down
     shell: /opt/noc/noc ctl status | grep -v RUNNING
-    become: yes
-    changed_when: False
+    become: "True"
+    changed_when: "False"
     register: noc_status
-    failed_when: False
-    check_mode: no
+    failed_when: "False"
+    check_mode: "False"
 
   - name: fail if noc services are down
     debug:

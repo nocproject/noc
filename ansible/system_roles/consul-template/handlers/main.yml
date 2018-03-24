@@ -2,27 +2,26 @@
 # File: main.yml - Handlers for Consul template
 
 - name: reload systemd
-  become: yes
+  become: "True"
   systemd:
     name: consul-template
-    daemon_reload: yes
+    daemon_reload: "True"
 
 - name: restart consul-template
-  become: yes
+  become: "True"
   service:
     name: consul-template
     state: restarted
 
 - name: reload consul-template
-  become: yes
+  become: "True"
   service:
     name: consul-template
     state: reloaded
 
 - name: start consul-template
-  become: yes
+  become: "True"
   service:
     name: consul-template
-    enabled: yes
+    enabled: "True"
     state: started
-

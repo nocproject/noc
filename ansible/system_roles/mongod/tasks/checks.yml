@@ -1,22 +1,28 @@
+---
 - name: No mongodb server set
   fail:
     msg: "No mongodb server set. Please setup at least one. "
   when: "'svc-mongod-exec' not in groups"
+  tags:
+    - checks
 
-- name: fail if consul is not selected
-  fail:
-    msg: "Mongodb role have to be set along with consul role to check weather mongo is alive"
+- block:
+    - name: fail if consul is not selected
+      fail:
+        msg: "Mongodb role have to be set along with consul role to check weather mongo is alive"
+      when:
+        - has_svc_consul is not defined
+
+    - name: Fail if too new release of Debian for mongo.
+      fail:
+        msg: |
+          {{ ansible_distribution_version }} currently is not an acceptable version of {{ ansible_distribution }} for this role.
+          Wainting for upstream mongo version.
+          Details:  http://repo.mongodb.org/apt/debian/dists/
+      when:
+        - ansible_distribution == "Debian"
+        - ansible_distribution_version is version_compare(9.0, '>=')
   when:
     - has_svc_mongod is defined
-    - has_svc_consul is not defined
-
-- name: Fail if too new release of Debian for mongo.
-  fail:
-    msg: |
-      {{ ansible_distribution_version }} currently is not an acceptable version of {{ ansible_distribution }} for this role.
-      Wainting for upstream mongo version.
-      Details:  http://repo.mongodb.org/apt/debian/dists/
-  when:
-    - has_svc_mongod is defined
-    - ansible_distribution == "Debian"
-    - ansible_distribution_version is version_compare(9.0, '>=')
+  tags:
+    - checks

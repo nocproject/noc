@@ -2,10 +2,10 @@
 - block:
   - name: check if consul_template running
     command: pgrep -x consul-template -c
-    failed_when: False
-    changed_when: False
+    failed_when: "False"
+    changed_when: "False"
     register: consul_template_running
-    check_mode: no
+    check_mode: "False"
 
   - name: fail if no consul_template found
     debug:
@@ -16,3 +16,5 @@
 
   when:
     - has_svc_consul_template is defined
+  tags:
+    - tests

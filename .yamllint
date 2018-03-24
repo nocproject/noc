@@ -45,12 +45,12 @@ rules:
     # Defaults
     # spaces: consistent
     # indent-sequences: true
-    # check-multi-line-strings: false
+    check-multi-line-strings: true
 
     # Requiring 2 space indentation
-    spaces: 2
+    spaces: consistent
     # Requiring consistent indentation within a file, either indented or not
-    indent-sequences: consistent
+    indent-sequences: true
 
   # Disabling due to copious amounts of long lines in the code which would
   # require a code style change to resolve
@@ -62,7 +62,7 @@ rules:
 
   # Disabling due to copious amounts of truthy warnings in the code which would
   # require a code style change to resolve
-  truthy: disable
+  truthy: enable
     # Defaults
     # level: warning
-
+  key-duplicates: enable

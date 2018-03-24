@@ -4,9 +4,9 @@
     name: mongodb
     description: MongoDB Repository
     baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongod_version }}/x86_64/
-    gpgcheck: yes
+    gpgcheck: "True"
     gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongod_version }}.asc
-    enabled: yes
+    enabled: "True"
   register: mongo_repo_stat
   environment:
     http_proxy: "{{http_proxy}}"
@@ -21,10 +21,11 @@
   register: dht_status
 
 - name: Disable Transparent Hugepages (runtime)
-  shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
-            echo never > /sys/kernel/mm/transparent_hugepage/enabled;
-            echo never > /sys/kernel/mm/transparent_hugepage/defrag;
-         fi
+  shell: |
+    if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+    echo never > /sys/kernel/mm/transparent_hugepage/defrag;
+    fi
   when: dht_status.changed
   notify: restart mongod
 
@@ -39,7 +40,7 @@
   yum:
     name: "{{item}}"
     state: latest
-    update_cache: yes
+    update_cache: "True"
   when: mongo_repo_stat.changed
   with_items:
     - mongodb-org
@@ -54,14 +55,14 @@
   yum:
     name: mongodb-org
     state: present
-    update_cache: yes
+    update_cache: "True"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
 
 - name: Copy mongod service file
   template:
-    src:  etc/systemd/system/mongod.service.j2
+    src: etc/systemd/system/mongod.service.j2
     dest: /etc/systemd/system/mongod.service
   register: mongod_service
   notify:

@@ -1,3 +1,4 @@
+---
 ### Package
 consul_architecture_map:
   # this first entry seems... redundant (but it's required for reasons)
@@ -52,12 +53,12 @@ consul_ports:
   dns: 8600
 
 ## ACL
-consul_acl_enable: True
+consul_acl_enable: "True"
 consul_acl_datacenter: "{{noc_env}}"
 consul_acl_default_policy: "allow"
 consul_acl_down_policy: "allow"
-consul_acl_master_token_display: False
-consul_acl_replication_token_display: False
+consul_acl_master_token_display: "False"
+consul_acl_replication_token_display: "False"
 
 consul_replication_token: ""
 consul_token: ""

@@ -41,6 +41,7 @@ forms:
       default: 1000000
       label: "Records buffer size (in records)"
       type: int
+
 services:
   chwriter:
     level: global

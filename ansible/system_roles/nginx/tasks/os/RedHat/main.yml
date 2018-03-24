@@ -12,8 +12,8 @@
   yum:
     name: nginx
     state: latest
-    disable_gpg_check: yes
-    update_cache: no
+    disable_gpg_check: "True"
+    update_cache: "False"
   environment:
     http_proxy: "{{http_proxy}}"
 
@@ -26,5 +26,5 @@
 - name: Enable Nginx system service
   service:
     name: "{{ nginx_system_service }}"
-    enabled: yes
+    enabled: "True"
     state: started

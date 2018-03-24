@@ -14,4 +14,6 @@
   notify: restart grafana
 
 - name: Create newsyslog rules
-  template: src="os/FreeBSD/grafana.conf" dest="/usr/local/etc/newsyslog.conf.d/grafana.conf"
+  template:
+    src: "os/FreeBSD/grafana.conf"
+    dest: "/usr/local/etc/newsyslog.conf.d/grafana.conf"

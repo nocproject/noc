@@ -1,3 +1,4 @@
+---
 mongod_logging_destination: "syslog"
 mongo_path: /usr/bin/mongo
 mongod_version: "3.4"

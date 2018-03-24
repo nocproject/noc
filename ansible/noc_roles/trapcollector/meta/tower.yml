@@ -29,6 +29,7 @@ forms:
       default: "0.0.0.0:162"
       label: "Listen SNNP Traps"
       type: str
+
 services:
   trapcollector:
     level: pool

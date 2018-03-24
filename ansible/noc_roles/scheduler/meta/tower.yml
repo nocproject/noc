@@ -29,6 +29,7 @@ forms:
       default: 10
       label: "Scheduler threads"
       type: int
+
 services:
   scheduler:
     level: global

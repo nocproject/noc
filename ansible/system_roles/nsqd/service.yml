@@ -1,7 +1,8 @@
+---
 - name: Install and configure nsq
   hosts: svc-nsqd-exec
-  become: yes
-  any_errors_fatal: true
+  become: "True"
+  any_errors_fatal: "True"
   tags:
     - nsq
     - nsqd
@@ -14,4 +15,4 @@
   post_tasks:
     - name: set nsqd complete
       set_fact:
-        nsqd_complete: True
+        nsqd_complete: "True"

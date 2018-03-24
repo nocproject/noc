@@ -28,12 +28,12 @@
     ct_service_dest: "{{nginx_conf_upstream_path}}"
     ct_service_command: "{{reload_command}}"
     ct_service_command_timeout: "60s"
-    ct_service_source_template: False
+    ct_service_source_template: "False"
 
 - name: Enable Nginx system service
   service:
     name: "{{ nginx_system_service }}"
-    enabled: yes
+    enabled: "True"
     state: started
 
 - name: place consul check
@@ -59,12 +59,12 @@
     monitoring_service_port: 443
     monitoring_service_address: "{{ ansible_host }}"
     monitoring_service_check_interval: "10s"
-    monitoring_service_procstat_check: True
+    monitoring_service_procstat_check: "True"
     monitoring_service_procstat_type: pid_file
     monitoring_service_procstat_value: "/var/run/nginx.pid"
     monitoring_config:
-        urls: ["https://{{ noc_web_host }}/ng_stats"]
-        insecure_skip_verify: "{% if nginx_self_signed_cerificate %}true{% else %}false{% endif %}"
+      urls: ["https://{{ noc_web_host }}/ng_stats"]
+      insecure_skip_verify: "{% if nginx_self_signed_cerificate %}true{% else %}false{% endif %}"
   when: has_svc_monitoring is defined
   tags:
     - monitoring

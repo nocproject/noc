@@ -1,9 +1,10 @@
+---
 - name: Set up dynamic dashboards
   template:
     src: "{{item.src}}"
     dest: "{{item.dest}}"
   no_log: "{{tower_show_secrets}}"
-  diff: False
+  diff: "False"
   with_items:
     - src: noc.js.j2
       dest: "{{ grafana_home }}/public/dashboards/noc.js"

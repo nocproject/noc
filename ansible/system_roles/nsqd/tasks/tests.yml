@@ -1,65 +1,67 @@
 ---
 - block:
-  - name: check if nsqd running
-    command: pgrep -x nsqd -c
-    failed_when: False
-    changed_when: False
-    register: nsqd_running
-    check_mode: no
+    - name: check if nsqd running
+      command: pgrep -x nsqd -c
+      failed_when: "False"
+      changed_when: "False"
+      register: nsqd_running
+      check_mode: "False"
 
-  - name: fail if no nsqd found
-    debug:
-      msg: |
-        There should be nsqd proccess. But `pgrep -x nsqd -c` can't find any
-    when:
-      - nsqd_running.rc != 0
+    - name: fail if no nsqd found
+      debug:
+        msg: |
+          There should be nsqd proccess. But `pgrep -x nsqd -c` can't find any
+      when:
+        - nsqd_running.rc != 0
 
-  - name: check if nsqd http iface is reachable
-    uri:
-      url: http://127.0.0.1:4151/ping
-    register: nsqd_ping
-    changed_when: False
-    failed_when: False
-    check_mode: no
+    - name: check if nsqd http iface is reachable
+      uri:
+        url: http://127.0.0.1:4151/ping
+      register: nsqd_ping
+      changed_when: "False"
+      failed_when: "False"
+      check_mode: "False"
 
-  - name: fail if nsqd http iface is not reachable
-    debug:
-      msg: |
-        nsqd is not answering ping request.
-        Check with `curl http://127.0.0.1:4151/ping`
-    when:
-      - nsqd_ping.status != 200
+    - name: fail if nsqd http iface is not reachable
+      debug:
+        msg: |
+          nsqd is not answering ping request.
+          Check with `curl http://127.0.0.1:4151/ping`
+      when:
+        - nsqd_ping.status != 200
 
-  - name: check for consul service status
-    uri:
-      url: "http://127.0.0.1:8500/v1/health/service/nsqd"
-      return_content: yes
-    register: consul_req
-    changed_when: False
-    check_mode: no
+    - name: check for consul service status
+      uri:
+        url: "http://127.0.0.1:8500/v1/health/service/nsqd"
+        return_content: "True"
+      register: consul_req
+      changed_when: "False"
+      check_mode: "False"
 
-  - name: fail if no nsqd found
-    debug:
-      msg: |
-        There are toubles with nsqd on
-        {{consul_req.json | json_query("[].Checks[?ServiceName=='nsqd'].{node:Node, status:Status}[]") | to_nice_yaml}}
-    when:
-      - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='nsqd'].Status[]\")"
+    - name: fail if no nsqd found
+      debug:
+        msg: |
+          There are toubles with nsqd on
+          {{consul_req.json | json_query("[].Checks[?ServiceName=='nsqd'].{node:Node, status:Status}[]") | to_nice_yaml}}
+      when:
+        - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='nsqd'].Status[]\")"
 
-  - name: check for consul service status
-    uri:
-      url: "http://127.0.0.1:8500/v1/health/service/nsqdhttp"
-      return_content: yes
-    register: consul_req
-    changed_when: False
-    check_mode: no
+    - name: check for consul service status
+      uri:
+        url: "http://127.0.0.1:8500/v1/health/service/nsqdhttp"
+        return_content: "True"
+      register: consul_req
+      changed_when: "False"
+      check_mode: "False"
 
-  - name: fail if no nsqdhttp found
-    debug:
-      msg: |
-        There are toubles with nsqdhttp on
-        {{consul_req.json | json_query("[].Checks[?ServiceName=='nsqdhttp'].{node:Node, status:Status}[]") | to_nice_yaml}}
-    when:
-      - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='nsqdhttp'].Status[]\")"
+    - name: fail if no nsqdhttp found
+      debug:
+        msg: |
+          There are toubles with nsqdhttp on
+          {{consul_req.json | json_query("[].Checks[?ServiceName=='nsqdhttp'].{node:Node, status:Status}[]") | to_nice_yaml}}
+      when:
+        - "'passing' not in consul_req.json | json_query(\"[].Checks[?ServiceName=='nsqdhttp'].Status[]\")"
   when:
     - has_svc_nsqd is defined
+  tags:
+    - tests

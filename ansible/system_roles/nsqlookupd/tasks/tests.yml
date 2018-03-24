@@ -2,10 +2,10 @@
 - block:
   - name: check if nsqloopupd running
     command: pgrep -x nsqlookupd -c
-    failed_when: False
-    changed_when: False
+    failed_when: "False"
+    changed_when: "False"
     register: nsqlookupd_running
-    check_mode: no
+    check_mode: "False"
 
   - name: fail if no nsqlookupd found
     debug:
@@ -18,9 +18,9 @@
     uri:
       url: http://127.0.0.1:4161/ping
     register: nsqlookupd_ping
-    changed_when: False
-    failed_when: False
-    check_mode: no
+    changed_when: "False"
+    failed_when: "False"
+    check_mode: "False"
 
   - name: fail if nsqlookupd http iface is not reachable
     debug:
@@ -33,10 +33,10 @@
   - name: check for consul service status
     uri:
       url: "http://127.0.0.1:8500/v1/health/service/nsqlookupd"
-      return_content: yes
+      return_content: "True"
     register: consul_req
-    changed_when: False
-    check_mode: no
+    changed_when: "False"
+    check_mode: "False"
 
   - name: fail if no nsqlookupd found
     debug:
@@ -49,10 +49,10 @@
   - name: check for consul service status
     uri:
       url: "http://127.0.0.1:8500/v1/health/service/nsqlookupdhttp"
-      return_content: yes
+      return_content: "True"
     register: consul_req
-    changed_when: False
-    check_mode: no
+    changed_when: "False"
+    check_mode: "False"
 
   - name: fail if no nsqlookupdhttp found
     debug:
@@ -64,3 +64,5 @@
 
   when:
     - has_svc_nsqlookupd is defined
+  tags:
+    - tests

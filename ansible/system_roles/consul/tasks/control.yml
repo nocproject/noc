@@ -1,3 +1,4 @@
+---
 - name: Install python-consul
   pip:
     name: "python-consul=={{python_consul_version}}"

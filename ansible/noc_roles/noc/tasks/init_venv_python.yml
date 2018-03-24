@@ -1,3 +1,4 @@
+---
 - name: Initialize virtualenv
   pip:
     chdir: "{{noc_root}}"
@@ -92,7 +93,7 @@
   template:
     src: "lib/python/site-packages/sitecustomize.py.j2"
     dest: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
-  when: sitecustomizes.stat.exists == False
+  when: sitecustomizes.stat.exists
   tags:
     - config
 
@@ -101,4 +102,4 @@
     dest: "{{noc_root}}/lib/python/site.py"
     regexp: "encoding = 'ascii'"
     replace: "encoding = 'utf-8'"
-  when: sitecustomizes.stat.exists == True
+  when: sitecustomizes.stat.exists

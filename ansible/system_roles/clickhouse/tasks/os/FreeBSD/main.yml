@@ -1,3 +1,5 @@
 ---
 - name: Install Clickhouse
-  pkgng: name="clickhouse" state=present
+  pkgng:
+    name: "clickhouse"
+    state: present

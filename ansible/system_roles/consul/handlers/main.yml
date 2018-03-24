@@ -1,25 +1,25 @@
 ---
 - name: reload systemd
-  become: yes
+  become: "True"
   systemd:
     name: consul
-    daemon_reload: yes
+    daemon_reload: "True"
 
 - name: restart consul
-  become: yes
+  become: "True"
   service:
     name: consul
     state: restarted
 
 - name: reload consul
-  become: yes
+  become: "True"
   service:
     name: consul
     state: reloaded
 
 - name: start consul
-  become: yes
+  become: "True"
   service:
     name: consul
-    enabled: yes
+    enabled: "True"
     state: started

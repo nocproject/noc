@@ -1,5 +1,6 @@
-nginx_json_logging: false
-nginx_http_redirect_enabled: false
+---
+nginx_json_logging: "False"
+nginx_http_redirect_enabled: "False"
 required_assets:
   - card
   - web

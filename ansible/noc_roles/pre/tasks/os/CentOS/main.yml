@@ -4,13 +4,13 @@
     dest: /etc/yum.conf
     regexp: "^proxy=.*"
     line: "proxy={{ http_proxy }}"
-  become: true
+  become: "True"
   when: "http_proxy is defined and http_proxy"
   tags:
     - config
 
 - name: Disable selinux
-  become: true
+  become: "True"
   selinux:
     policy: targeted
     state: disabled
@@ -19,8 +19,8 @@
   yum:
     name: "{{ item }}"
     state: present
-    update_cache: yes
-  become: true
+    update_cache: "True"
+  become: "True"
   with_items:
     - unzip
     - ca-certificates

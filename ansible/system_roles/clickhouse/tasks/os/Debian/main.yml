@@ -1,3 +1,4 @@
+---
 - name: Add CH apt key
   apt_key:
     keyserver: keyserver.ubuntu.com
@@ -12,7 +13,7 @@
   apt_repository:
     repo: "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
     state: present
-    update_cache: yes
+    update_cache: "True"
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

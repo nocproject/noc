@@ -19,20 +19,20 @@ forms:
       type: text
       common: environment
     http_redirect:
-      default: true
+      default: "True"
       label: "Redirect http to https"
       type: bool
     json_logging:
-      default: false
+      default: "False"
       label: "Use JSON logging"
       type: bool
     self_signed_cerificate:
-      default: true
+      default: "True"
       label: "Self-signed certificate"
       description: "Is provided certificate is trusted by nodes?"
       type: bool
     external_cert_management:
-      default: False
+      default: "False"
       label: "Use external certificate management"
       description: "Certificate under <a href=https://kb.nocproject.org/x/KYHJAQ target=_blank>letsencrypt management </a>"
       type: bool
@@ -43,7 +43,7 @@ services:
     level: system
     category: external
     port: 443
-    require_cert: true
+    require_cert: "True"
     depends:
       - consul-template
     required_assets:

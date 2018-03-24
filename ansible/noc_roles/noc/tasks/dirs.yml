@@ -1,4 +1,5 @@
-- name: Create required directories #hack. have to be fixed
+---
+- name: Create required directories  #hack. have to be fixed
   file:
     path: "{{noc_root}}/lib/python2.7/site-packages/__pycache__"
     state: "directory"
@@ -12,7 +13,7 @@
     state: "directory"
     owner: "{{noc_user}}"
     mode: 0755
-    recurse: yes
+    recurse: "True"
   with_items:
     - "{{noc_etc}}"
     - "{{noc_root}}/var"
@@ -30,6 +31,6 @@
     mode: 0755
   with_items:
     - "{{noc_etc}}"
-    - "{{noc_etc}}/services/"
-    - "{{noc_etc}}/address/"
-    - "{{noc_etc}}/ssh/"
+    - "{{noc_etc}}/services"
+    - "{{noc_etc}}/address"
+    - "{{noc_etc}}/ssh"

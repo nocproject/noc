@@ -22,7 +22,7 @@
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
-  become: true
+  become: "True"
   tags:
     - config
     - always
@@ -39,16 +39,16 @@
   service:
     name: "{{ noc_system_service }}"
     state: stopped
-  become: yes
-  failed_when: False
-  changed_when: False
+  become: "True"
+  failed_when: "False"
+  changed_when: "False"
   tags:
     - restart
 
 - name: Setup hostname
   hostname: name="{{ inventory_hostname }}"
   when: "'Linux' in ansible_system"
-  become: true
+  become: "True"
   register: hname
   tags:
     - config
@@ -58,7 +58,7 @@
     path: "/etc/hosts"
     block: "{{ lookup('template', './hosts.j2') }}"
     marker: "# {mark} NOC Ansible Managed block"
-  become: true
+  become: "True"
   tags:
     - config
     - fill_hosts

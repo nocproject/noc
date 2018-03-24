@@ -1,7 +1,8 @@
+---
 - name: Install and configure nsqlookupd
   hosts: svc-nsqlookupd-exec
-  become: yes
-  any_errors_fatal: true
+  become: "True"
+  any_errors_fatal: "True"
   tags:
     - nsq
     - nsqlookupd
@@ -14,4 +15,4 @@
   post_tasks:
     - name: set nsqlookupd complete
       set_fact:
-        nsqlookupd_complete: True
+        nsqlookupd_complete: "True"

@@ -1,17 +1,18 @@
+---
 - name: reload systemd
-  become: yes
+  become: "True"
   systemd:
     name: "{{ mongod_system_service }}"
-    daemon_reload: yes
+    daemon_reload: "True"
 
 - name: restart mongod
-  become: yes
+  become: "True"
   service:
     name: "{{ mongod_system_service }}"
     state: restarted
 
 - name: restart mongod-arbiter
-  become: yes
+  become: "True"
   service:
     name: "{{ mongod_arbiter_system_service }}"
     state: restarted

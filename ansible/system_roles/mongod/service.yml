@@ -1,8 +1,9 @@
+---
 - name: Install and configure mongo
   hosts: svc-mongod-exec
-  become: yes
+  become: "True"
   serial: 30%
-  any_errors_fatal: true
+  any_errors_fatal: "True"
   tags:
     - mongod
     - external

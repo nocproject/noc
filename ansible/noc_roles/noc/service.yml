@@ -1,8 +1,9 @@
+---
 - name: Install NOC
   hosts: svc-noc-exec
-  become: yes
-  strategy: "{% if groups['svc-noc-exec'] > 2 %}free{%else%}linear{%endif%}"
-  gather_facts: True
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
   tags:
     - node
     - noc

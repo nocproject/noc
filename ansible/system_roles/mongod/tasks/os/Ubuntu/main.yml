@@ -17,7 +17,7 @@
   apt_repository:
     repo: "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongod_version }} multiverse"
     state: present
-    update_cache: yes
+    update_cache: "True"
   register: mongo_repo_stat
   environment:
     https_proxy: "{{ http_proxy }}"
@@ -26,17 +26,18 @@
     - repo
 
 - name: Disable Transparent Hugepages (runtime)
-  shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
-            echo never > /sys/kernel/mm/transparent_hugepage/enabled;
-            echo never > /sys/kernel/mm/transparent_hugepage/defrag;
-         fi
+  shell: |
+    if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+    echo never > /sys/kernel/mm/transparent_hugepage/defrag;
+    fi
   notify: restart mongod
 
 - name: ReInstall MongoDB on version change
   apt:
     name: "{{item}}"
     state: latest
-    update_cache: yes
+    update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   when: mongo_repo_stat.changed
   with_items:
@@ -52,7 +53,7 @@
   apt:
     name: mongodb-org
     state: present
-    update_cache: yes
+    update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   environment:
     https_proxy: "{{ http_proxy }}"
@@ -60,7 +61,7 @@
 
 - name: Copy mongod service file
   template:
-    src:  "os/Ubuntu/etc/systemd/system/mongod.service.j2"
+    src: "os/Ubuntu/etc/systemd/system/mongod.service.j2"
     dest: "/etc/systemd/system/mongod.service"
   register: mongod_service
   notify: restart mongod

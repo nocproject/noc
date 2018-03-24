@@ -1,3 +1,4 @@
+---
 - name: Setup supervisor config
   template:
     src: "etc/supervisord.conf.j2"
@@ -76,5 +77,3 @@
     - tgsender.conf
     - trapcollector.conf
     - web.conf
-
-

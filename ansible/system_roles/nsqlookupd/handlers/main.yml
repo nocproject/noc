@@ -2,11 +2,11 @@
 - name: reload systemd
   systemd:
     name: nsqlookupd
-    daemon_reload: yes
+    daemon_reload: "True"
 
 - name: restart nsqlookupd
-  become: yes
+  become: "True"
   service:
     name: nsqlookupd
-    enabled: yes
+    enabled: "True"
     state: restarted
