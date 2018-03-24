@@ -1,0 +1,39 @@
+{
+    "name": "Siemon | Transceiver | 10G | SFPP30-01",
+    "$collection": "inv.objectmodels",
+    "uuid": "64a78b47-acdd-4875-8030-aebf552e2044",
+    "vendor__code": "SIEMON",
+    "description": "Siemon Interconnect Solutions SFP+Copper (twinax copper cable) 1 m",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["900074-10-02"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

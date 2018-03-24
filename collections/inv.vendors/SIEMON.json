@@ -1,0 +1,8 @@
+{
+    "name": "Siemon",
+    "uuid": "b4903914-a820-4722-ab1c-2354f4bc3dca",
+    "code": "SIEMON",
+    "site": "http://www.siemon.com",
+    "aliases": [],
+    "$collection": "inv.vendors"
+}
