@@ -12,7 +12,7 @@
       type: grafana-simple-json-datasource
       access: direct
       url: "https://{{ noc_web_host }}/api/grafanads"
-      isDefault: "False"
-      editable: "False"
+      isDefault: False  # yamllint disable-line rule:truthy
+      editable: False  # yamllint disable-line rule:truthy
   delegate_to: "{{item}}"
   with_items: '{{groups["svc-grafana-exec"]}}'

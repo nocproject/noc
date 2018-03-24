@@ -4,7 +4,7 @@
     msg: "{{ ansible_version.full }} is not supported by this role. Please use at least 2.5.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
   when:
     - ansible_version is defined
-    - ansible_version.full is version_compare('2.5.0.0', '<')
+    - ansible_version.full is version_compare('2.5.0', '<')
   tags:
     - checks
 
