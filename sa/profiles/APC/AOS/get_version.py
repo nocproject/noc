@@ -28,7 +28,7 @@ class Script(BaseScript):
 
     def execute_snmp(self, **kwargs):
         platform = self.snmp.get("1.3.6.1.2.1.33.1.1.2.0")
-        firmware = self.snmp.get(".1.3.6.1.2.1.33.1.1.3.0")
+        firmware = self.snmp.get("1.3.6.1.2.1.33.1.1.3.0")
         return {
             "vendor": "APC",
             "platform": platform,
