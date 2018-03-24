@@ -1,0 +1,8 @@
+{
+    "name": "APC | UPS | BR1200G-JP",
+    "$collection": "inv.connectiontypes",
+    "uuid": "78d1d927-f29d-4c20-b955-2cc22505c6e0",
+    "description": "APC External battery pack connector",
+    "c_group": [],
+    "genders": "mf"
+}
