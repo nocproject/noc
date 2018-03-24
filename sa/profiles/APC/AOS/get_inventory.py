@@ -20,7 +20,6 @@ class Script(BaseScript):
 
     @staticmethod
     def part_no_detect(model):
-        print model
         if "Smart-UPS RT 6000" in model:  # model == "Smart-UPS RT 6000 XL"
             return "SRT6KRMXLI"
         return None
