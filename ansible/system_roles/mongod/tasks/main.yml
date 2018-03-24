@@ -38,7 +38,8 @@
     dest: "{{ mongo_dir }}/mongo.key"
   no_log: "{{tower_show_secrets}}"
 
-- include_tasks: "os/{{ ansible_distribution }}/main.yml"
+- name: "Include OS-specific tasks"
+  include_tasks: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Setting mongo.key permissions
   file:

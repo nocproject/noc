@@ -9,9 +9,9 @@
       type: vertamedia-clickhouse-datasource
       url: "http://{{ ch_host }}:{{ch_port}}"
       access: proxy
-      isDefault: "True"
+      isDefault: True  # yamllint disable-line rule:truthy
       database: "{{ clickhouse_db }}"
-      basicAuth: "True"
+      basicAuth: True  # yamllint disable-line rule:truthy
       basicAuthUser: "readonly"
       basicAuthPassword: "{{ clickhouse_ro_password }}"
   delegate_to: "{{item}}"
