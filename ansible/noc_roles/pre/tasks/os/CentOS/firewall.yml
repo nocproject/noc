@@ -3,6 +3,7 @@
   systemd:
     name: firewalld
   check_mode: yes
+  become: true
   register: firewalld_state
   tags:
     - config

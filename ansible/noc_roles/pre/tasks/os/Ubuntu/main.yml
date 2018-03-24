@@ -1,5 +1,6 @@
 ---
 - name: Install Ubuntu system packages
+  become: true
   apt:
     name: "{{item}}"
     update_cache: yes

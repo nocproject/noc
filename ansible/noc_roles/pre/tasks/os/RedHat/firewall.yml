@@ -3,6 +3,7 @@
   systemd:
     name: firewalld
   check_mode: yes
+  become: true
   register: firewalld_state
   tags:
     - config
@@ -14,6 +15,7 @@
     permanent: true
     state: enabled
     immediate: true
+  become: true
   with_items: "{{ groups['all'] }}"
   when: "firewalld_state.status.ActiveState == 'active'"
   tags:
@@ -26,6 +28,7 @@
     permanent: true
     state: enabled
     immediate: true
+  become: true
   when: "firewalld_state.status.ActiveState == 'active'"
   tags:
     - config
