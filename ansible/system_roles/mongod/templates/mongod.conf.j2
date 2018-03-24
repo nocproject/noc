@@ -25,7 +25,7 @@ net:
   bindIp: 0.0.0.0
 
 processManagement:
-  fork: {{ mongo_fork }}
+  fork: {{ mongo_fork | lower}}
   pidFilePath: {{ mongo_pid }}
 
 security:
