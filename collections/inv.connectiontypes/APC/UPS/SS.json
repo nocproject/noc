@@ -1,0 +1,8 @@
+{
+    "name": "APC | UPS | SS",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5d62edbb-32a3-4a34-bbd0-a5f84bdeb9c7",
+    "description": "APC Smart Slot",
+    "c_group": [],
+    "genders": "mf"
+}
