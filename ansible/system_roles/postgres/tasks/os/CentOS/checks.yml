@@ -10,12 +10,12 @@
   set_fact:
     postgres_version_used: "{{pkg_postgres_version.stdout | join('.')}}"
   when:
-    - not pkg_postgres_version | failed
+    - not pkg_postgres_version is failed
     - pkg_postgres_version.stdout_lines | length == 1
 
 - name: expose too may postgres installed fact
   set_fact:
     too_many_postgres_installed: "{{pkg_postgres_version.stdout_lines | join(', ')}}"
   when:
-    - not pkg_postgres_version | failed
+    - not pkg_postgres_version is failed
     - pkg_postgres_version.stdout_lines | length > 1
