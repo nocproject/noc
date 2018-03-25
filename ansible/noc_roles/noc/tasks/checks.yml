@@ -1,21 +1,46 @@
 ---
-- name: fail if noc repo is not set
-  fail:
-    msg: "Noc repo is empty. What an awful pity fatal fail. Set noc repo on noc service it tower."
-  when:
-    - has_svc_noc is defined
-    - noc_repo == '' or noc_repo is not defined
+- block:
+    - name: fail if noc repo is not set
+      fail:
+        msg: "Noc repo is empty. What an awful pity fatal fail. Set noc repo on noc service it tower."
+      when:
+        - noc_repo == '' or noc_repo is not defined
 
-- name: fail if noc version is not set
-  fail:
-    msg: "Noc version is empty. What an awful pity fatal fail. Set noc version on noc service it tower."
-  when:
-    - has_svc_noc is defined
-    - noc_version == '' or noc_version is not defined
+    - name: fail if noc version is not set
+      fail:
+        msg: "Noc version is empty. What an awful pity fatal fail. Set noc version on noc service it tower."
+      when:
+        - noc_version == '' or noc_version is not defined
 
-- name: fail if noc root is not set
-  fail:
-    msg: "Noc root is empty. What an awful pity fatal fail. Set noc root on noc service it tower."
+    - name: fail if noc root is not set
+      fail:
+        msg: "Noc root is empty. What an awful pity fatal fail. Set noc root on noc service it tower."
+      when:
+        - noc_root == '' or noc_root is not defined
+
+    - name: check if noc_root exists
+      stat:
+        path: "{{noc_root}}"
+      register: noc_root_state
+
+    - block:
+        - name: check if noc under mercurial control
+          stat:
+            path: "{{noc_root}}/.hg"
+          register: noc_hg_state
+
+        - name: fail install if we are under mercurial
+          fail:
+            msg: |
+              It seems noc under mercurial control.
+              You have to add migrate_git role in tower additional roles.
+              Manual: https://code.getnoc.com/noc/tower/blob/master/docs/migrate_git.md
+          when:
+            - noc_hg_state.stat.exists is defined
+            - noc_hg_state.stat.exists
+            - has_svc_git_migrate is not defined
+      when:
+        - noc_root_state.stat.exists is defined
+        - noc_root_state.stat.exists
   when:
     - has_svc_noc is defined
-    - noc_root == '' or noc_root is not defined
