@@ -3,7 +3,7 @@ Description=Realtime distributed messaging (nsqd)
 After=network.target
 
 [Service]
-ExecStart={{nsq_root}}/nsqd -config {{nsqd_config_dir}}/nsqd.conf
+ExecStart={{ nsq_root }}/nsqd -config {{ nsqd_config_dir }}/nsqd.conf
 ExecReload=/bin/kill -HUP $MAINPID
 Type=simple
 KillMode=process
