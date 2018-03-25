@@ -11,7 +11,7 @@
 - name: Install Nginx
   yum:
     name: nginx
-    state: latest
+    state: present
     disable_gpg_check: "True"
     update_cache: "False"
   environment:
