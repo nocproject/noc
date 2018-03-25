@@ -9,11 +9,15 @@
   command: hg add .
   args:
     chdir: "{{noc_root}}"
+  tags:
+    - skip_ansible_lint
 
 - name: make diff
   shell: hg diff > /tmp/noc_diff.diff
   args:
     chdir: "{{noc_root}}"
+  tags:
+    - skip_ansible_lint
 
 - name: reset current dir
   hg:
@@ -27,9 +31,14 @@
   file:
     path: "{{noc_root}}/.hg"
     state: absent
+  register: hg_removed
 
 - name: git init
   command: git init "{{noc_root}}"
+  when: hg_removed is changed
+  creates: "{{noc_root}}/./git"
+  tags:
+    - skip_ansible_lint
 
 - block:
     - name: set up dummy git user email
@@ -48,28 +57,25 @@
   when: not git_user_email.config_value
 
 - name: add correct origin
-  command: git remote add origin {{noc_repo}}
-  args:
-    chdir: "{{noc_root}}"
-  environment:
-    https_proxy: "{{http_proxy}}"
+  git_config:
+    name: remote.upstream.url
+    value: "{{noc_repo}}"
+    repo: "{{noc_root}}"
+    scope: local
 
 - name: git reset branch
-  command: git pull origin
-  args:
-    chdir: "{{noc_root}}"
-  ignore_errors: "True"
-  environment:
-    https_proxy: "{{http_proxy}}"
-
-- name: git reset branch
-  command: git checkout {{noc_version}} -f
-  args:
-    chdir: "{{noc_root}}"
+  git:
+    repo: "{{noc_repo}}"
+    dest: "{{noc_root}}"
+    version: "{{noc_version}}"
+    force: "True"
+    clone: "True"
   environment:
     https_proxy: "{{http_proxy}}"
 
 - name: patch new dir with old hg
-  shell: patch -f -p 1 < /tmp/noc_diff.diff
+  patch:
+    src: /tmp/noc_diff.diff
+    strip: 1
   args:
     chdir: "{{noc_root}}"

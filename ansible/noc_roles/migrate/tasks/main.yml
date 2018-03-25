@@ -86,6 +86,7 @@
   become: "True"
   tags:
     - perms
+    - skip_ansible_lint
 
 - name: Synchronize MIBs
   command: ./noc sync-mibs
