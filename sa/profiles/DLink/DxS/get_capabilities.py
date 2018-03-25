@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,6 +28,19 @@ class Script(BaseScript):
         """
         cmd = self.cli("show lldp")
         return self.rx_lldp.search(cmd) is not None
+
+    def has_lldp_snmp(self):
+        """
+        Check box has lldp enabled
+        """
+        # swL2DevCtrlLLDPState can only get from l2mgmt-mib
+        # LLDP-MIB::lldpStatsRemTablesInserts.0
+        try:
+            r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
+            if r > 0:
+                return True
+        except self.snmp.TimeOutError:
+            return False
 
     @false_on_cli_error
     def has_stp_cli(self):
@@ -55,5 +68,5 @@ class Script(BaseScript):
             if s:
                 caps["Stack | Members"] = len(s) if len(s) != 1 else 0
                 caps["Stack | Member Ids"] = " | ".join(s)
-        except:
+        except self.CLISyntaxError:
             pass

@@ -39,6 +39,14 @@ Ext.define('NOC.inv.map.BasketController', {
     },
 
     onExportClick: function() {
-        this.save(this.getView(), 'basket.csv')
+        this.save(this.getView(),
+            'basket.csv',
+            [
+                {dataIndex: 'object'},
+                {dataIndex: 'address'},
+                {dataIndex: 'platform'},
+                {dataIndex: 'time'}
+
+            ])
     }
 });

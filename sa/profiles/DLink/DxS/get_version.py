@@ -26,13 +26,20 @@ class Script(BaseScript):
         r"[Ff]irmware [Vv]ersion(?: 1)?\s+:\s*(?:Build\s+)?(?P<version>\S+).+"
         r"[Hh]ardware [Vv]ersion\s+:\s*(?P<hardware>\S+)",
         re.MULTILINE | re.DOTALL)
+    rx_ver_old = re.compile(
+        r"^System hardware version\s+:\s+(?P<hardware>\S+)\s*\n"
+        r"^System firmware version\s+:\s+(?P<version>\S+)\s*\n"
+        r"^System boot version\s+:\s+(?P<bootprom>\S+)\s*\n",
+        re.MULTILINE)
     rx_fwt = re.compile(
         r"(?:Firmware Type|System [Ff]irmware [Vv]ersion)\s+:\s*"
         r"(?P<fwt>\S+)\s*\n", re.MULTILINE | re.DOTALL)
     rx_ser = re.compile(
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
-    rx_platform = re.compile("^(?:D-Link )?(?P<platform>\S+)\s+")
+    rx_platform = re.compile(
+        "^(?:D-Link )?(?P<platform>\S+)(\s+(?P<version>\d+\.\d+.B\d+))?")
+    rx_motd = re.compile("(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
 
     def execute_snmp(self):
         """
@@ -56,10 +63,12 @@ class Script(BaseScript):
             v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
             match = self.rx_platform.search(v)
             platform = match.group("platform")
-            # RMON2-MIB::probeSoftwareRev
-            version = self.snmp.get("1.3.6.1.2.1.16.19.2", cached=True)
-            if not version:
-                version = self.snmp.get("1.3.6.1.2.1.16.19.2.0", cached=True)
+            version = match.group("version")
+            if version is None:
+                # RMON2-MIB::probeSoftwareRev
+                version = self.snmp.get("1.3.6.1.2.1.16.19.2", cached=True)
+                if not version:
+                    version = self.snmp.get("1.3.6.1.2.1.16.19.2.0", cached=True)
             # RMON2-MIB::probeHardwareRev
             hardware = self.snmp.get("1.3.6.1.2.1.16.19.3", cached=True)
             if not hardware:
@@ -99,11 +108,15 @@ class Script(BaseScript):
     def execute_cli(self):
         s = self.scripts.get_switch()
         match = self.rx_ver.search(s)
+        if match.group("platform"):
+            platform = match.group("platform")
+        else:
+            match = self.rx_ver_old.search(s)
+            m = self.motd
+            platform = self.rx_motd.search(m).group("platform")
         r = {
             "vendor": "DLink",
-            "platform": get_platform(
-                match.group("platform"), match.group("hardware")
-            ),
+            "platform": get_platform(platform, match.group("hardware")),
             "version": match.group("version"),
             "attributes": {
                 "Boot PROM": match.group("bootprom"),

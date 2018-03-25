@@ -8,7 +8,7 @@
 
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
-from noc.lib.validators import is_ipv4
+from noc.lib.validators import is_ipv4, is_mac
 
 
 class CDPCheck(TopologyDiscoveryCheck):
@@ -39,5 +39,7 @@ class CDPCheck(TopologyDiscoveryCheck):
             return nn
         if is_ipv4(n):
             return self.get_neighbor_by_ip(n)
+        elif is_mac(n):
+            return self.get_neighbor_by_mac(n)
         else:
             return None

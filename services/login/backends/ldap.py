@@ -2,15 +2,17 @@
 # ---------------------------------------------------------------------
 # LDAP Authentication backend
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import ldap3
 # NOC modules
-from base import BaseAuthBackend
 from noc.main.models.authldapdomain import AuthLDAPDomain
+from .base import BaseAuthBackend
 
 
 class LdapBackend(BaseAuthBackend):
@@ -108,28 +110,24 @@ class LdapBackend(BaseAuthBackend):
         # Synchronize user
         user = ldap_domain.clean_username(user)
         u = self.ensure_user(user, **user_info)
+        # Get group mappings
+        group_mappings = ldap_domain.get_group_mappings()
         # Apply groups
         ug = []
-        for g in ldap_domain.groups:
-            if not g.is_active:
-                self.logger.debug(
-                    "%s: Group %s is not active",
-                    u.username, g.group.name
-                )
-                continue
-            if g.group_dn.lower() in user_groups:
+        for group in group_mappings:
+            if group_mappings[group] & user_groups:
                 self.logger.debug(
                     "%s: Ensure group %s",
-                    u.username, g.group.name
+                    u.username, group.name
                 )
-                self.ensure_group(u, g.group)
-                ug += [g.group.name]
+                self.ensure_group(u, group)
+                ug += [group.name]
             else:
                 self.logger.debug(
                     "%s: Deny group %s",
-                    u.username, g.group.name
+                    u.username, group.name
                 )
-                self.deny_group(u, g.group)
+                self.deny_group(u, group)
         # Final check
         if not user_info["is_active"]:
             raise self.LoginError("Access denied")

@@ -496,11 +496,12 @@ class ConsulDCS(DCSBase):
         index = 0
         while True:
             try:
-                index, services = yield self.consul.catalog.service(
+                index, services = yield self.consul.health.service(
                     service=name,
                     index=index,
                     near="_agent",
-                    token=self.consul_token
+                    token=self.consul_token,
+                    passing=True
                 )
             except ConsulRepeatableErrors as e:
                 metrics["error", ("type", "dcs_consul_failed_resolve_near")] += 1
@@ -520,8 +521,8 @@ class ConsulDCS(DCSBase):
                 continue
             r = []
             for svc in services:
-                r += ["%s:%s" % (str(svc["ServiceAddress"] or svc["Address"]),
-                                 str(svc["ServicePort"]))]
+                r += ["%s:%s" % (str(svc["Service"]["Address"] or svc["Node"]["Address"]),
+                                 str(svc["Service"]["Port"]))]
                 if not full_result:
                     break
             self.logger.info("Resolved near service %s to %s", name, r)

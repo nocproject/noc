@@ -6,11 +6,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
+# Python modules
+from __future__ import absolute_import
 # NOC modules
 from noc.core.interface.base import BaseInterface
-from base import (DictListParameter, StringParameter,
-                  StringListParameter, BooleanParameter)
+from .base import (DictListParameter, StringParameter,
+                   StringListParameter, BooleanParameter)
 
 
 class IGetSLAProbes(BaseInterface):
@@ -31,6 +32,7 @@ class IGetSLAProbes(BaseInterface):
             "icmp-echo",
             "path-jitter",
             "udp-echo",
+            "tcp-connect",
             "http-get",
             "dns",
             "ftp",

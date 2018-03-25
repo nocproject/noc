@@ -166,6 +166,7 @@ class BaseScript(object):
         # Cached results of self.cli calls
         self.cli_cache = {}
         #
+        self.http_cache = {}
         self.partial_result = None
         #
         if not parent and version and not name.endswith(".get_version"):
@@ -429,6 +430,9 @@ class BaseScript(object):
                     return r
             except self.snmp.TimeOutError:
                 self.logger.info("SNMP timeout. Passing to next method")
+                if access_preference == "S*":
+                    self.logger.info("Last S method break by timeout.")
+                    raise self.snmp.TimeOutError
             except NotImplementedError:
                 self.logger.debug("Access method '%s' is not implemented. Passing to next method", m)
         raise self.NotSupportedError("Access preference '%s' is not supported" % access_preference[:-1])

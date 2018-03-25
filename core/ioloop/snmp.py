@@ -233,7 +233,8 @@ def snmp_getnext(address, oid, port=161,
                  only_first=False,
                  tos=None,
                  ioloop=None,
-                 udp_socket=None):
+                 udp_socket=None,
+                 max_retries=0):
     """
     Perform SNMP GETNEXT/BULK request and returns Future to be used
     inside @tornado.gen.coroutine
@@ -273,8 +274,11 @@ def snmp_getnext(address, oid, port=161,
             yield sock.sendto(pdu, (address, port))
             data, addr = yield sock.recvfrom(4096)
         except socket.timeout:
-            close_socket()
-            raise SNMPError(code=TIMED_OUT, oid=oid)
+            if not max_retries:
+                close_socket()
+                raise SNMPError(code=TIMED_OUT, oid=oid)
+            max_retries -= 1
+            continue
         except socket.gaierror as e:
             logger.debug("[%s] Cannot resolve address: %s", address, e)
             close_socket()
@@ -322,7 +326,7 @@ def snmp_set(address, varbinds, port=161,
     logger.debug("[%s] SNMP SET %s", address, varbinds)
     if udp_socket:
         sock = udp_socket
-        prev_timeout = sock.get_timeout()
+        prev_timeout = sock.get_timeout()  # noqa
     else:
         sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)

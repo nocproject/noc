@@ -13,14 +13,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.project.models.project import Project
-from noc.main.models.resourcestate import ResourceState
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
 from noc.lib.app.site import site
-from noc.lib.validators import (
-    ValidationError, check_fqdn, check_ipv4, check_ipv6)
+from noc.lib.validators import ValidationError, check_fqdn, check_ipv4, check_ipv6
 from noc.main.models.textindex import full_text_search
 from noc.core.model.fields import DocumentReferenceField
+from noc.core.wf.decorator import workflow
+from noc.wf.models.state import State
 from .afi import AFI_CHOICES
 from .vrf import VRF
 from .prefix import Prefix
@@ -28,8 +28,9 @@ from .addressprofile import AddressProfile
 
 
 @full_text_search
+@workflow
 class Address(models.Model):
-    class Meta:
+    class Meta(object):
         verbose_name = _("Address")
         verbose_name_plural = _("Addresses")
         db_table = "ip_address"
@@ -84,10 +85,10 @@ class Address(models.Model):
         _("TT"),
         blank=True, null=True,
         help_text=_("Ticket #"))
-    state = models.ForeignKey(
-        ResourceState,
-        verbose_name=_("State"),
-        default=ResourceState.get_default)
+    state = DocumentReferenceField(
+        State,
+        null=True, blank=True
+    )
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True, blank=True,
@@ -149,13 +150,19 @@ class Address(models.Model):
         Field validation
         :return:
         """
-        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         super(Address, self).clean()
+        # Get proper AFI
+        self.afi = "6" if ":" in self.address else "4"
         # Check prefix is of AFI type
-        if self.afi == "4":
+        if self.is_ipv4:
             check_ipv4(self.address)
-        elif self.afi == "6":
+        elif self.is_ipv6:
             check_ipv6(self.address)
+        # Check VRF
+        if not self.vrf:
+            self.vrf = VRF.get_global()
+        # Find parent prefix
+        self.prefix = Prefix.get_parent(self.vrf, self.afi, self.address)
         # Check VRF group restrictions
         cv = self.get_collision(self.vrf, self.address)
         if cv:
@@ -206,3 +213,11 @@ class Address(models.Model):
                 )
             }
         )
+
+    @property
+    def is_ipv4(self):
+        return self.afi == "4"
+
+    @property
+    def is_ipv6(self):
+        return self.afi == "6"

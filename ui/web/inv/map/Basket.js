@@ -78,7 +78,7 @@ Ext.define('NOC.inv.map.Basket', {
     },
     store: {
         storeId: 'basketStore',
-        fields: ['object', 'object__label'],
+        fields: ['object', 'object__label', 'address', 'platform', 'time'],
         data: []
     },
     columns: [{

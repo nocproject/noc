@@ -3,7 +3,7 @@
 # Vendor: Juniper
 # OS:     JUNOS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -25,6 +25,7 @@ class Profile(BaseProfile):
     ]
     pattern_syntax_error = \
         r"\'\S+\' is ambiguous\.|syntax error, expecting|unknown command\."
+    pattern_operation_error = r"error: abnormal communication termination with"
     command_disable_pager = "set cli screen-length 0"
     command_enter_config = "configure"
     command_leave_config = "commit and-quit"
@@ -49,6 +50,8 @@ class Profile(BaseProfile):
         }
     }
 
+    rx_ver = re.compile(r"\d+")
+
     # https://www.juniper.net/documentation/en_US/junos/topics/reference/general/junos-release-numbers.html
     def cmp_version(self, x, y):
         """
@@ -57,39 +60,36 @@ class Profile(BaseProfile):
         Version format:
         <major>.<minor>R<h>.<l>
         """
-        def c(v, t):
-            # v = v.upper()
-            l, r = v.split(t)
-            return [int(x) for x in l.split(".")] + [
-                int(x) for x in r.split(".")
-            ]
-
         # FRS/maintenance release software
         if "R" in x and "R" in y:
-            return cmp(c(x, "R"), c(y, "R"))
+            pass
         # Feature velocity release software
         elif "F" in x and "F" in y:
-            return cmp(c(x, "F"), c(y, "F"))
+            pass
         # Beta release software
         elif "B" in x and "B" in y:
-            return cmp(c(x, "B"), c(y, "B"))
+            pass
         # Internal release software:
         # private software release for verifying fixes
         elif "I" in x and "I" in y:
-            return cmp(c(x, "I"), c(y, "I"))
+            pass
         # Service release software:
         # released to customers to solve a specific problem—this release
         # will be maintained along with the life span of the underlying release
         elif "S" in x and "S" in y:
-            return cmp(c(x, "S"), c(y, "S"))
+            pass
         # Special (eXception) release software:
         # releases that follow a numbering system that differs from
         # the standard Junos OS release numbering
         elif "X" in x and "X" in y:
-            return cmp(c(x, "X"), c(y, "X"))
+            pass
         # https://kb.juniper.net/InfoCenter/index?page=content&id=KB30092
         else:
             return None
+
+        a = [int(z) for z in self.rx_ver.findall(x)]
+        b = [int(z) for z in self.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     def generate_prefix_list(self, name, pl):
         """
@@ -131,7 +131,7 @@ class Profile(BaseProfile):
 
     internal_interfaces = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
-        r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|me0|sp-|fab|mams-|"
+        r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|sp-|fab|mams-|"
         r"bme|esi|ams)")
     internal_interfaces_olive = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")

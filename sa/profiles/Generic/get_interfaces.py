@@ -24,6 +24,8 @@ class Script(BaseScript):
 
     MAX_REPETITIONS = 20
 
+    MAX_GETNEXT_RETIRES = 0
+
     INTERFACE_TYPES = {
         1: "other",
         6: "physical",  # ethernetCsmacd
@@ -42,13 +44,17 @@ class Script(BaseScript):
     def collect_ifnames(self):
         return self.INTERFACE_NAMES
 
+    def get_getnext_retires(self):
+        return self.MAX_GETNEXT_RETIRES
+
     def get_ifindexes(self):
         r = {}
         unknown_interfaces = []
         if self.has_snmp():
             try:
                 for oid, name in self.snmp.getnext(mib["IF-MIB::ifDescr"],
-                                                   max_repetitions=self.get_max_repetitions()):
+                                                   max_repetitions=self.get_max_repetitions(),
+                                                   max_retries=self.get_getnext_retires()):
                     try:
                         v = self.profile.convert_interface_name(name)
                     except InterfaceTypeError as why:
@@ -72,7 +78,7 @@ class Script(BaseScript):
             oid = mib[oid]
         for oid, v in self.snmp.getnext(oid,
                                         max_repetitions=self.get_max_repetitions(),
-                                        timeout=20):
+                                        max_retries=self.get_getnext_retires()):
             yield int(oid.rsplit(".", 1)[-1]) if transform else oid, v
 
     def apply_table(self, r, mib, name, f=None):

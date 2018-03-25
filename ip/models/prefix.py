@@ -18,7 +18,6 @@ import cachetools
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.vc.models.vc import VC
-from noc.main.models import ResourceState
 from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
@@ -27,6 +26,8 @@ from noc.core.model.fields import DocumentReferenceField
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
+from noc.core.wf.decorator import workflow
+from noc.wf.models.state import State
 from .vrf import VRF
 from .afi import AFI_CHOICES
 from .prefixprofile import PrefixProfile
@@ -35,6 +36,7 @@ id_lock = Lock()
 
 
 @full_text_search
+@workflow
 class Prefix(models.Model):
     """
     Allocated prefix
@@ -69,7 +71,7 @@ class Prefix(models.Model):
     asn = models.ForeignKey(
         AS, verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
-        default=AS.default_as
+        null=True, blank=True
     )
     project = models.ForeignKey(
         Project, verbose_name="Project",
@@ -92,10 +94,10 @@ class Prefix(models.Model):
         blank=True,
         null=True,
         help_text=_("Ticket #"))
-    state = models.ForeignKey(
-        ResourceState,
-        verbose_name=_("State"),
-        default=ResourceState.get_default)
+    state = DocumentReferenceField(
+        State,
+        null=True, blank=True
+    )
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
@@ -149,7 +151,8 @@ class Prefix(models.Model):
             return bool(self.ipv6_transition)
         else:
             try:
-                self.ipv4_transition
+                # pylint: disable=pointless-statement
+                self.ipv4_transition  # noqa
                 return True
             except Prefix.DoesNotExist:
                 return False
@@ -196,11 +199,21 @@ class Prefix(models.Model):
         Field validation
         """
         super(Prefix, self).clean()
+        # Set defaults
+        self.afi = "6" if ":" in self.prefix else "4"
         # Check prefix is of AFI type
         if self.is_ipv4:
             check_ipv4_prefix(self.prefix)
         elif self.is_ipv6:
             check_ipv6_prefix(self.prefix)
+        # Set defaults
+        if not self.vrf:
+            self.vrf = VRF.get_global()
+        if not self.asn:
+            self.asn = AS.default_as()
+        if not self.is_root:
+            # Set proper parent
+            self.parent = Prefix.get_parent(self.vrf, self.afi, self.prefix)
         # Check root prefix have no parent
         if self.is_root and self.parent:
             raise ValidationError("Root prefix cannot have parent")
@@ -209,16 +222,7 @@ class Prefix(models.Model):
         """
         Save prefix
         """
-        # Set defaults
-        self.afi = "6" if ":" in self.prefix else "4"
-        if not self.vrf:
-            self.vrf = VRF.get_global()
-        if not self.asn:
-            self.asn = AS.default_as()
-        if not self.is_root:
-            # Set proper parent
-            self.parent = Prefix.get_parent(
-                self.vrf, self.afi, self.prefix)
+        self.clean()
         super(Prefix, self).save(**kwargs)
         # Rebuild tree if necessary
         # Reconnect children children prefixes

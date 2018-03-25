@@ -16,14 +16,17 @@ from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.ioloop.udp import UDPSocket
+from noc.core.error import NOCError, ERR_SNMP_TIMEOUT, ERR_SNMP_FATAL_TIMEOUT
 
 
 class SNMP(object):
-    class TimeOutError(Exception):
-        pass
+    class TimeOutError(NOCError):
+        default_code = ERR_SNMP_TIMEOUT
+        default_msg = "SNMP Timeout"
 
-    class FatalTimeoutError(Exception):
-        pass
+    class FatalTimeoutError(NOCError):
+        default_code = ERR_SNMP_FATAL_TIMEOUT
+        default_msg = "Fatal SNMP Timeout"
 
     SNMPError = SNMPError
 
@@ -184,7 +187,8 @@ class SNMP(object):
     def getnext(self, oid, community_suffix=None,
                 filter=None, cached=False,
                 only_first=False, bulk=None,
-                max_repetitions=None, version=None):
+                max_repetitions=None, version=None,
+                max_retries=0):
         @tornado.gen.coroutine
         def run():
             try:
@@ -199,7 +203,8 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
                     udp_socket=self.get_socket(),
-                    version=version
+                    version=version,
+                    max_retries=max_retries
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -237,7 +242,7 @@ class SNMP(object):
                 pass
 
     def get_tables(self, oids, community_suffix=None, bulk=False,
-                   min_index=None, max_index=None, cached=False):
+                   min_index=None, max_index=None, cached=False, max_retries=0):
         """
         Query list of SNMP tables referenced by oids and yields
         tuples of (key, value1, ..., valueN)
@@ -248,13 +253,14 @@ class SNMP(object):
         :param min_index:
         :param max_index:
         :param cached:
+        :param max_retries:
         :return:
         """
         def gen_table(oid):
-            l = len(oid) + 1
+            line = len(oid) + 1
             for o, v in self.getnext(oid, community_suffix=community_suffix,
-                                     cached=cached, bulk=bulk):
-                yield tuple([int(x) for x in o[l:].split(".")]), v
+                                     cached=cached, bulk=bulk, max_retries=max_retries):
+                yield tuple([int(x) for x in o[line:].split(".")]), v
 
         # Retrieve tables
         tables = [dict(gen_table(oid)) for oid in oids]

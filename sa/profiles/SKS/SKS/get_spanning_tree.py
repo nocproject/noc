@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # SKS.SKS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -93,6 +93,8 @@ class Script(BaseScript):
         try:
             v = self.cli("show spanning-tree detail")
         except self.CLISyntaxError:
+            return {"mode": "None", "instances": []}
+        if "Spanning tree disabled" in v:
             return {"mode": "None", "instances": []}
         match = self.rx_mode1.search(v)
         if not match:

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,6 +17,8 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "Cisco.IOS.get_spanning_tree"
     interface = IGetSpanningTree
+
+    rx_prio = re.compile("^\d+\.\d+$")
 
     def get_ports_attrs(self, cli_stp, instance_sep):
         """
@@ -33,33 +35,53 @@ class Script(BaseScript):
             ports[instance_id] = {}
             for R in parse_table(
                 # Skip empty first line on 3750
-                I.replace("---\n\n", "---\n")):
+                I.replace("---\n\n", "---\n")
+            ):
                 interface = self.profile.convert_interface_name(R[0])
-                settings = R[-1]
-                ports[instance_id][interface] = {
-                    "point_to_point": True,  # @todo: detect P2P properly
-                    "edge": "edge" in settings.lower(),
-                    "role": {
-                        "dis": "disabled",
-                        "altn": "alternate",
-                        "back": "backup",
-                        "root": "root",
-                        "desg": "designated",
-                        "mstr": "master",
-                        "????": "nonstp",
-                        "_": "unknown"
-                    }[R[1].lower()],  # @todo: refine roles
-                    "state": {
-                        "dis": "disabled",
-                        "blk": "discarding",
-                        "bkn": "broken",
-                        "lrn": "learning",
-                        "??": "learning",
-                        "fwd": "forwarding",
-                        "lis": "listen",
-                        "lbk": "loopback"
-                    }[R[2].lower()],  # @todo: refine states
-                }
+                # Found in WS-C2950T-24 12.1(9)EA1
+                # This device do not display port state and capabilities
+                if self.rx_prio.search(R[1]):
+                    ports[instance_id][interface] = {
+                        "point_to_point": True,  # @todo: detect P2P properly
+                        "edge": False,
+                        "role": "unknown",
+                        "state": {
+                            "dis": "disabled",
+                            "blk": "discarding",
+                            "bkn": "broken",
+                            "lrn": "learning",
+                            "??": "learning",
+                            "fwd": "forwarding",
+                            "lis": "listen",
+                            "lbk": "loopback"
+                        }[R[3].lower()]  # @todo: refine states
+                    }
+                else:
+                    settings = R[-1]
+                    ports[instance_id][interface] = {
+                        "point_to_point": True,  # @todo: detect P2P properly
+                        "edge": "edge" in settings.lower(),
+                        "role": {
+                            "dis": "disabled",
+                            "altn": "alternate",
+                            "back": "backup",
+                            "root": "root",
+                            "desg": "designated",
+                            "mstr": "master",
+                            "????": "nonstp",
+                            "_": "unknown"
+                        }[R[1].lower()],  # @todo: refine roles
+                        "state": {
+                            "dis": "disabled",
+                            "blk": "discarding",
+                            "bkn": "broken",
+                            "lrn": "learning",
+                            "??": "learning",
+                            "fwd": "forwarding",
+                            "lis": "listen",
+                            "lbk": "loopback"
+                        }[R[2].lower()],  # @todo: refine states
+                    }
         return ports
 
     #
@@ -67,12 +89,15 @@ class Script(BaseScript):
     #
     rx_pvst_bridge = re.compile(
         r"Bridge Identifier has priority (?P<bridge_priority>\d+)(?:, sysid \d+)?, address (?P<bridge_id>\S+).*?"
-        r"(Current root has priority (?P<root_priority>\d+), address (?P<root_id>\S+)|We are the root of the spanning tree)",
+        r"(Current root has priority (?P<root_priority>\d+), "
+        r"address (?P<root_id>\S+)|We are the root of the spanning tree)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_pvst_interfaces = re.compile(
-        r"Port \d+ \((?P<interface>\S+)\) of VLAN(?P<instance_id>\d+) is \S+.+?"
-        r"Port path cost (?P<cost>\d+), Port priority (?P<priority>\d+), Port Identifier\s+(?P<port_id>\S+)\..+?"
-        r"Designated bridge has priority (?P<designated_bridge_priority>\d+), address (?P<designated_bridge_id>\S+).+?"
+        r"Port \d+ \((?P<interface>\S+)\) of VLAN(?P<instance_id>\d+) is \S+.*?"
+        r"Port path cost (?P<cost>\d+), Port priority (?P<priority>\d+), "
+        r"Port Identifier\s+(?P<port_id>\S+)\..*?"
+        r"Designated bridge has priority (?P<designated_bridge_priority>\d+), "
+        r"address (?P<designated_bridge_id>\S+).*?"
         r"Designated port id is (?P<designated_port_id>\S+), designated path cost \d+",
         re.DOTALL | re.IGNORECASE | re.MULTILINE)
 
@@ -97,7 +122,7 @@ class Script(BaseScript):
                     "root_priority") else match.group("bridge_priority"),
                 "bridge_id": match.group("bridge_id"),
                 "bridge_priority": match.group("bridge_priority"),
-                }]
+            }]
             for match in self.rx_pvst_interfaces.finditer(I):
                 instance_id = int(match.group("instance_id"))
                 if instance_id not in interfaces:
@@ -118,7 +143,7 @@ class Script(BaseScript):
                         "designated_port_id": match.group("designated_port_id"),
                         "point_to_point": port_attrs["point_to_point"],
                         "edge": port_attrs["edge"],
-                        }]
+                    }]
                 except KeyError:
                     pass
         for I in r["instances"]:
@@ -133,12 +158,14 @@ class Script(BaseScript):
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
     rx_mstp_instance = re.compile(r"^\s*(\d+)\s+(\S+)", re.MULTILINE)
     rx_mstp_bridge = re.compile(
-        "Bridge\s+address\s+(?P<bridge_id>\S+)\s+priority\s+(?P<bridge_priority>\d+).+?Root\s+address\s+(?P<root_id>\S+)\s+priority\s+(?P<root_priority>\d+)",
+        r"Bridge\s+address\s+(?P<bridge_id>\S+)\s+priority\s+(?P<bridge_priority>\d+).*?"
+        r"Root\s+address\s+(?P<root_id>\S+)\s+priority\s+(?P<root_priority>\d+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_mstp_interfaces = re.compile(
-        r"^(?P<interface>\S+)\s+of\s+MST(?P<instance_id>\d+)\s+is\s+(?P<role>\S+)\s+(?P<status>\S+).+?"
-        r"Port\s+info\s+port\s+id\s+(?P<port_id>\S+)\s+priority\s+(?P<priority>\d+)\s+cost\s+(?P<cost>\d+).+?"
-        r"Designated\s+bridge\s+address\s+(?P<designated_bridge_id>\S+)\s+priority\s+(?P<designated_bridge_priority>\d+)\s+port\s+id\s+(?P<designated_port_id>\S+)",
+        r"^(?P<interface>\S+)\s+of\s+MST(?P<instance_id>\d+)\s+is\s+(?P<role>\S+)\s+(?P<status>\S+).*?"
+        r"Port\s+info\s+port\s+id\s+(?P<port_id>\S+)\s+priority\s+(?P<priority>\d+)\s+cost\s+(?P<cost>\d+).*?"
+        r"Designated\s+bridge\s+address\s+(?P<designated_bridge_id>\S+)\s+"
+        r"priority\s+(?P<designated_bridge_priority>\d+)\s+port\s+id\s+(?P<designated_port_id>\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def process_mstp(self, cli_stp):
@@ -154,7 +181,7 @@ class Script(BaseScript):
                 "MSTP": {
                     "region": match.group("region"),
                     "revision": match.group("revision"),
-                    }
+                }
             }
         }
         iv = {}  # instance -> vlans
@@ -174,7 +201,7 @@ class Script(BaseScript):
                 "root_priority": match.group("root_priority"),
                 "bridge_id": match.group("bridge_id"),
                 "bridge_priority": match.group("bridge_priority"),
-                }]
+            }]
             for match in self.rx_mstp_interfaces.finditer(I):
                 instance_id = int(match.group("instance_id"))
                 if instance_id not in interfaces:
@@ -194,7 +221,7 @@ class Script(BaseScript):
                     "designated_port_id": match.group("designated_port_id"),
                     "point_to_point": port_attrs["point_to_point"],
                     "edge": port_attrs["edge"],
-                    }]
+                }]
         for I in r["instances"]:
             I["interfaces"] = interfaces[I["id"]]
         return r

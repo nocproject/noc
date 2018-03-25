@@ -37,10 +37,9 @@ class Profile(BaseProfile):
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
-        return cmp(
-            [int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)]
-        )
+        a = [int(z) for z in self.rx_ver.findall(x)]
+        b = [int(z) for z in self.rx_ver.findall(y)]
+        return (a > b) - (a < b)
 
     """
     IF-MIB:IfDescr
@@ -489,6 +488,13 @@ def get_platform(platform, hw_revision):
         platform.startswith("DGS-3420-") or
         platform.startswith("DGS-3620-")
     ):
+        if hw_revision is not None:
+            if platform.endswith("/%s" % hw_revision):
+                return platform
+        else:
+            # Found in DES-1210-28/ME/A1 with SNMP
+            if platform.startswith("DES-1210-"):
+                hw_revision = "A1"
         return "%s/%s" % (platform, hw_revision)
     else:
         return platform

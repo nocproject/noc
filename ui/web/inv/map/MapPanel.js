@@ -1014,11 +1014,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         if(store.getCount() === 0) {
             me.fireEvent("openbasket");
         }
-        store.add({
-            id: objectId,
-            object: objectId,
-            object__label: me.objectNodes[objectId].attributes.attrs.text.text.replace("\n", "")
-        });
+        me.addObjectToBasket(objectId, store);
     },
 
     onSegmentMenuAddToBasket: function() {
@@ -1031,11 +1027,29 @@ Ext.define("NOC.inv.map.MapPanel", {
         Ext.each(this.graph.getElements(), function(e) {
             if('managedobject' === e.get('id').split(':')[0]) {
                 var objectId = Number(e.get('id').split(':')[1]);
-                store.add({
-                    id: objectId,
-                    object: objectId,
-                    object__label: me.objectNodes[objectId].attributes.attrs.text.text
-                });
+                me.addObjectToBasket(objectId, store);
+            }
+        });
+    },
+
+    addObjectToBasket: function(id, store) {
+        Ext.Ajax.request({
+            url: "/sa/managedobject/" + id + "/",
+            method: "GET",
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                var object = {
+                    id: id,
+                    object: id,
+                    object__label: data.name,
+                    address: data.address,
+                    platform: data.platform__label,
+                    time: data.time_pattern
+                };
+                store.add(object);
+            },
+            failure: function() {
+                NOC.msg.failed(__("Failed to get object data"));
             }
         });
     },
