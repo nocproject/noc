@@ -115,7 +115,7 @@ class ReportFilterApplication(SimpleReport):
                 mo.name,
                 mo.address,
                 mo.profile.name,
-                mo.administrative_domain,
+                mo.administrative_domain.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
@@ -129,7 +129,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.administrative_domain,
+                mo.administrative_domain.name,
                 mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
@@ -143,7 +143,7 @@ class ReportFilterApplication(SimpleReport):
             data += [(
                 mo.name,
                 mo.address,
-                mo.administrative_domain,
+                mo.administrative_domain.name,
                 mo.profile.name,
                 mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
