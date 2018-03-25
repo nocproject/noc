@@ -61,7 +61,7 @@
         <b>{{ _("Dashboard") }}</b>
     </div>
     <div class="col-sm-10">
-        <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ object.id }}&orgId=1&from=now-3h&to=now&refresh=15m&var-bi_id=All"><i class="fa fa-dashboard"></i></a>
+        <a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=container&id={{ object.id }}&orgId=1&from=now-3h&to=now&refresh=15m&var-bi_id=All"><i class="fa fa-dashboard"></i> - {{ _("Graphics") }}</a>
     </div>
 </div>
 
@@ -105,7 +105,7 @@
                     <td>
                         <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.name }}</a>
                         <div class="line"></div>
-                        <b>{{ _("Dashboard") }}:&nbsp;</b><a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ o.id }}"><i class="fa fa-dashboard"></i></a>
+                        <b>{{ _("Dashboard") }}:&nbsp;</b><a target="_blank" href="/ui/grafana/dashboard/script/noc.js?dashboard=mo&id={{ o.id }}"><i class="fa fa-dashboard"></i> - {{ _("Graphics") }}</a>
                     </td>
                     <td>
                         {# Display metrics information #}
