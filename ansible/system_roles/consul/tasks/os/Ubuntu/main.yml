@@ -28,6 +28,8 @@
 - name: Expose consul_bind_address as fact
   set_fact:
     consul_bind_address: "{{ansible_host}}"
-  when: consul_address is defined and consul_address!='node_ip'
+  when:
+    - consul_address is defined
+    - consul_address!='node_ip'
   tags:
     - config

@@ -11,21 +11,27 @@
     dest: "{{noc_root}}/etc/noc_services.conf"
     owner: "{{noc_user}}"
     mode: "0640"
-  when: "noc_services is defined and noc_services"
+  when:
+    - noc_services is defined
+    - noc_services
 
 - name: Generate NOC config
   template:
     src: "etc/tower.yml.j2"
     dest: "{{ noc_etc }}/tower.yml"
   no_log: "{{tower_show_secrets}}"
-  when: "noc_services is defined and noc_services"
+  when:
+    - noc_services is defined
+    - noc_services
 
 - name: Generate NOC config for pooled services
   template:
     src: "etc/pooled.yml.j2"
     dest: "{{ noc_etc }}/pool-{{item.name}}.yml"
   no_log: "{{tower_show_secrets}}"
-  when: "noc_services is defined and noc_services"
+  when:
+    - noc_services is defined
+    - noc_services
   vars:
     pool_name: "{{item.name}}"
   with_items:

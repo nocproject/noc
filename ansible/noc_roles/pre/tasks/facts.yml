@@ -11,6 +11,8 @@
 - name: Set tower_ip on local connection
   set_fact:
     tower_ip: "{{ansible_default_ipv4.address}}"
-  when: "'smart' not in ansible_connection and 'ssh' not in ansible_connection"
+  when:
+    - "'smart' not in ansible_connection"
+    - "'ssh' not in ansible_connection"
   tags:
     - always
