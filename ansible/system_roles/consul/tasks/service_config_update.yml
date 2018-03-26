@@ -10,6 +10,7 @@
   vars:
     ansible_python_interpreter: "{{consul_control_python}}"
   register: consul_key_response
+  check_mode: no
 
 # if default value is unset provide default json
 # waiting for https://github.com/ansible/ansible/pull/32738
