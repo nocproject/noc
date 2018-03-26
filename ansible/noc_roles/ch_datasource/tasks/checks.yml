@@ -5,3 +5,5 @@
   when:
     - has_svc_ch_datasource is defined
     - has_svc_noc is not defined
+  tags:
+    - checks

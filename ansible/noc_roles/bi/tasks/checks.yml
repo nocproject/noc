@@ -17,3 +17,5 @@
       - has_svc_noc is not defined
   when:
     - has_svc_bi is defined
+  tags:
+    - checks

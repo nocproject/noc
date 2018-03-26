@@ -44,3 +44,5 @@
         - noc_root_state.stat.exists
   when:
     - has_svc_noc is defined
+  tags:
+    - checks

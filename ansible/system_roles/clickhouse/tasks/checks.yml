@@ -40,3 +40,5 @@
         - sse42_support.rc != 0
   when:
     - has_svc_clickhouse is defined
+  tags:
+    - checks
