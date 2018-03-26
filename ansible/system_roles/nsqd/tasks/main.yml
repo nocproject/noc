@@ -17,11 +17,11 @@
     owner: nsq
   with_items:
     - dir: "{{nsqd_db_dir}}"
-      mode: 0700
+      mode: "u=rwx"
     - dir: "{{nsqd_config_dir}}"
-      mode: 0755
+      mode: "u=rwx,g=rx,o=rx"
     - dir: "{{nsq_root}}"
-      mode: 0755
+      mode: "u=rwx,g=rx,o=rx"
 
 - name: include nsqd os specific tasks
   include_tasks: "os/{{ ansible_distribution }}/main.yml"

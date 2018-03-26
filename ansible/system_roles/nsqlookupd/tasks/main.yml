@@ -17,9 +17,9 @@
     owner: nsq
   with_items:
     - dir: "{{nsqd_config_dir}}"
-      mode: 0755
+      mode: "u=rwx,g=rx,o=rx"
     - dir: "{{nsq_root}}"
-      mode: 0755
+      mode: "u=rwx,g=rx,o=rx"
 
 - name: include nsqlookupd os specific tasks
   include_tasks: "os/{{ ansible_distribution }}/main.yml"
@@ -36,7 +36,7 @@
   file:
     path: "{{ item }}"
     state: directory
-    mode: 0770
+    mode: "u=rwx,g=r,o=r"
     group: nsq
     owner: nsq
   when: "'FreeBSD' in ansible_system"
