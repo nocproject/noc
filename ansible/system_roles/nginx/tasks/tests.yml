@@ -29,6 +29,15 @@
           nginx is not answering stats request.
           Check with `curl https://{{noc_web_host}}/ng_stats`
       when:
+        - nginx_ping.status is not defined
+
+    - name: fail if nginx http iface is not reachable
+      debug:
+        msg: |
+          nginx is not answering stats request.
+          Check with `curl https://{{noc_web_host}}/ng_stats`
+      when:
+        - nginx_ping.status is defined
         - nginx_ping.status != 200
 
     - name: check if nginx http iface is reachable
