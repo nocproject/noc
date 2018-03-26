@@ -32,7 +32,7 @@
     dest: "{{consul_configd_path}}/{{consul_service_name}}.json"
   vars:
     name: "{{consul_service_name}}"
-    tags: "{{consul_service_tags}}"
+    consul_tags: "{{consul_service_tags}}"
     port: "{{consul_service_port}}"
     check_type: "{{consul_service_check_type}}"
     check_value: "{{consul_service_check_value}}"
