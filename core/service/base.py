@@ -216,7 +216,7 @@ class Service(object):
             )
 
     def handle_callback_exception(self, callback):
-        sys.stdout.write("Exception in callback %r\n" % callback)
+        sys.stdout.write("Exception in callback %s\n" % repr(callback))
         error_report()
 
     @classmethod
