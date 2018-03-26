@@ -14,6 +14,13 @@
       tags:
         - post
   post_tasks:
+    - name:
+      debug:
+        msg: |
+          Running tests. Threat all messages after that one as FATAL error.
+      tags:
+        - tests
+
     - name: Run post installation tests
       include_tasks: "{{item}}"
       with_myglob: ["./*_roles/*/tasks/tests.yml"]
