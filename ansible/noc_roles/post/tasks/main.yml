@@ -19,7 +19,7 @@
 
 - name: notify deploy finished
   include_role:
-    name: deploy_notification
+    name: deploy_notifications
     tasks_from: stop
   vars:
     ansible_tags: "tag list is broken https://code.getnoc.com/noc/tower/issues/18"
