@@ -23,7 +23,7 @@
       failed_when: "False"
       check_mode: "False"
 
-    - name: fail if nginx http iface is not reachable
+    - name: fail if nginx http iface is not reachable 1/2
       debug:
         msg: |
           nginx is not answering stats request.
@@ -31,7 +31,7 @@
       when:
         - nginx_ping.status is not defined
 
-    - name: fail if nginx http iface is not reachable
+    - name: fail if nginx http iface is not reachable 2/2
       debug:
         msg: |
           nginx is not answering stats request.
@@ -49,12 +49,21 @@
       failed_when: "False"
       check_mode: "False"
 
-    - name: fail if nginx http iface is not reachable
+    - name: fail if login interface is not reachable 1/2
       debug:
         msg: |
           nginx is not answering ping request.
           Check with `curl https://{{noc_web_host}}/api/login/index.html`
       when:
+        - nginx_ping.status is not defined
+
+    - name: fail if login interface is not reachable 2/2
+      debug:
+        msg: |
+          nginx is not answering ping request.
+          Check with `curl https://{{noc_web_host}}/api/login/index.html`
+      when:
+        - nginx_ping.status is defined
         - nginx_ping.status != 200
   when:
     - has_svc_nginx is defined
