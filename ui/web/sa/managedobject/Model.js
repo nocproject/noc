@@ -26,8 +26,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "administrative_domain",
-            type: "int",
-            defaultValue: 1
+            type: "string",
+            defaultValue: "1"
         },
         {
             name: "administrative_domain__label",
@@ -172,11 +172,13 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "trap_source_type",
-            type: "string"
+            type: "string",
+            defaultValue: "d"
         },
         {
             name: "syslog_source_type",
-            type: "string"
+            type: "string",
+            defaultValue: "d"
         },
         {
             name: "trap_community",
@@ -329,7 +331,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "autosegmentation_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "p"
         },
         {
             name: "tt_system",
