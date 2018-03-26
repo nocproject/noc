@@ -7,7 +7,6 @@
   become: "True"
   when:
     - http_proxy is defined
-    - http_proxy
   tags:
     - config
 
