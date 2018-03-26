@@ -5,25 +5,25 @@
   register: noc_root_state
 
 - block:
-  - name: Clone NOC
-    command: git clone "{{noc_repo}}" "{{noc_root}}"
-    creates: "{{noc_root}}/.git"
-    environment:
-      https_proxy: "{{http_proxy}}"
+    - name: Clone NOC
+      command: git clone "{{noc_repo}}" "{{noc_root}}"
+      creates: "{{noc_root}}/.git"
+      environment:
+        https_proxy: "{{http_proxy}}"
 
-  - name: set up dummy git user email
-    git_config:
-      name: user.email
-      repo: "{{noc_root}}"
-      scope: local
-      value: 'noc_user@{{ ansible_fqdn }}'
+    - name: set up dummy git user email
+      git_config:
+        name: user.email
+        repo: "{{noc_root}}"
+        scope: local
+        value: 'noc_user@{{ ansible_fqdn }}'
 
-  - name: set up dummy git user name
-    git_config:
-      name: user.name
-      repo: "{{noc_root}}"
-      scope: local
-      value: 'Noc User {{ansible_fqdn}}'
+    - name: set up dummy git user name
+      git_config:
+        name: user.name
+        repo: "{{noc_root}}"
+        scope: local
+        value: 'Noc User {{ansible_fqdn}}'
 
   when:
     - noc_root_state.stat.exists is defined
