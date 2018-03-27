@@ -1,9 +1,22 @@
 ---
-- name: fail if noc is not selected
-  fail:
-    msg: "Tgsender role have to be set with noc role to get own sources."
+- block:
+  - name: fail if noc is not selected
+    fail:
+      msg: "Tgsender role have to be set with noc role to get own sources."
+    when:
+      - has_svc_noc is not defined
+    tags:
+      - checks
+  - debug: var=tgsender_token
+  - name: fail if tgsender token is not set
+    fail:
+      msg: |
+        Tgsender role have to work only if telegram token provided.
+        Setup telegram token or disable tgsender service.
+    when:
+      - not tgsender_token
+
   when:
     - has_svc_tgsender is defined
-    - has_svc_noc is not defined
   tags:
     - checks
