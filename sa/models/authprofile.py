@@ -124,7 +124,7 @@ class AuthProfileSuggestSNMP(models.Model):
         "RW Community", blank=True, null=True, max_length=64)
 
     def __unicode__(self):
-        return u"Change suggest SNMP for " % self.auth_profile.name
+        return self.auth_profile.name
 
 
 class AuthProfileSuggestCLI(models.Model):
@@ -143,4 +143,4 @@ class AuthProfileSuggestCLI(models.Model):
         "Super Password", max_length=32, blank=True, null=True)
 
     def __unicode__(self):
-        return u"Change suggest CLI for " % self.auth_profile.name
+        return self.auth_profile.name
