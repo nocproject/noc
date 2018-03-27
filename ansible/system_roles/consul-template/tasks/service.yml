@@ -3,7 +3,7 @@
   copy:
     src: "{{ct_service_source}}"
     dest: "{{ consul_template_templates_dir }}/{{ct_service_source}}"
-  when: not ct_service_source_template
+  when: not ct_service_source_template | bool
   notify:
     - reload consul-template
 
@@ -11,7 +11,7 @@
   template:
     src: "{{ct_service_source}}"
     dest: "{{ consul_template_templates_dir }}/{{ct_service_source}}"
-  when: ct_service_source_template
+  when: ct_service_source_template | bool
   notify:
     - reload consul-template
 
