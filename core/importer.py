@@ -10,6 +10,8 @@
 import sys
 import os
 import imp
+# NOC modules
+from noc.config import config
 
 
 class ImportRouter(object):
@@ -134,7 +136,34 @@ class NOCPyruleLoader(NOCLoader):
             raise ImportError(str(e))
 
 
+class NOCCustomLoader(NOCLoader):
+    PREFIX = "noc.custom"
+
+    def get_source(self, fullname):
+        key = fullname[len(self.PREFIX) + 1:]
+        if not key:
+            return self.INIT_SOURCE  # Importing noc.custom
+        path = os.path.join(config.path.custom_path, key.replace(".", os.sep))
+        f_path = path + ".py"
+        # File exists
+        if os.path.exists(f_path):
+            with open(f_path) as f:
+                return f.read()
+        # Not found, resolve as package name
+        if os.path.exists(path):
+            self.packages.add(fullname)
+            return self.INIT_SOURCE
+        return None
+
+
+def _get_loader():
+    loader_map = {
+        NOCPyruleLoader.PREFIX: NOCPyruleLoader
+    }
+    if config.path.custom_path and os.path.exists(config.path.custom_path):
+        loader_map[NOCCustomLoader.PREFIX] = NOCCustomLoader
+    return ImportRouter(loader_map)
+
+
 # Install loader
-sys.meta_path += [ImportRouter({
-    NOCPyruleLoader.PREFIX: NOCPyruleLoader
-})]
+sys.meta_path += [_get_loader()]

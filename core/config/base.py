@@ -116,8 +116,10 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
         p = url.split(":", 1)[0]
         h = cls.PROTOCOLS.get(p)
         if h:
-            from noc.core.handler import get_handler
-            return get_handler(h)
+            # NB: We cannot use get_handler, so use naive implementation
+            module_name, handler_class = h.rsplit(".", 1)
+            module = __import__(module_name, {}, {}, [handler_class])
+            return getattr(module, handler_class)
         else:
             raise ValueError("Invalid protocol %s" % p)
 
