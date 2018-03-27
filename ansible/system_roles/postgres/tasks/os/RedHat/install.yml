@@ -7,7 +7,7 @@
   register: epel_task_result
   retries: 4
   delay: 2
-  until: epel_task_result|succeeded
+  until: epel_task_result is succeeded
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
