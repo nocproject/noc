@@ -11,4 +11,6 @@ Developer's Guide
     /dev/workflow-integration
     /dev/remote-system-integration
     /dev/tt-integration
+    /dev/handlers
+
 
