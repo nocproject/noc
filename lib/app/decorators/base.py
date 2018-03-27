@@ -18,6 +18,9 @@ class BaseAppDecorator(object):
     def add_view(self, *args, **kwargs):
         self.cls.add_view(*args, **kwargs)
 
+    def add_method(self, name, method):
+        setattr(self.cls, name, method)
+
     def contribute_to_class(self):
         """
         Override for specific behavior

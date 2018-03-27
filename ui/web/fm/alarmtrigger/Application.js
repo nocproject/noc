@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarmtrigger application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarmtrigger.Application");
@@ -13,10 +13,10 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
         "NOC.main.timepattern.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.notificationgroup.LookupField",
-        "NOC.main.template.LookupField",
-        "NOC.main.pyrule.LookupField"
+        "NOC.main.template.LookupField"
     ],
     model: "NOC.fm.alarmtrigger.Model",
+    search: true,
     columns: [
         {
             text: __("Name"),
@@ -57,9 +57,9 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
             renderer: NOC.render.Lookup("template")
         },
         {
-            text: __("PyRule"),
-            dataIndex: "pyrule",
-            renderer: NOC.render.Lookup("pyrule")
+            text: __("Handler"),
+            dataIndex: "handler",
+            flex: 1
         }
     ],
     fields: [
@@ -74,6 +74,12 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
             xtype: "checkboxfield",
             boxLabel: __("Is Enabled"),
             allowBlank: false
+        },
+        {
+            name: "description",
+            xtype: "textarea",
+            fieldLabel: __("Description"),
+            allowBlank: true
         },
         {
             name: "alarm_class_re",
@@ -112,10 +118,11 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
             allowBlank: true
         },
         {
-            name: "pyrule",
-            xtype: "main.pyrule.LookupField",
-            fieldLabel: __("pyRule"),
-            allowBlank: true
+            name: "handler",
+            xtype: "textfield",
+            fieldLabel: __("Handler"),
+            allowBlank: true,
+            vtype: "handler"
         }
     ],
     filters: [

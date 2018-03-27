@@ -1,41 +1,39 @@
 //---------------------------------------------------------------------
-// main.pyrule Model
+// main.handler Model
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.pyrule.Model");
+console.debug("Defining NOC.main.handler.Model");
 
-Ext.define("NOC.main.pyrule.Model", {
+Ext.define("NOC.main.handler.Model", {
     extend: "Ext.data.Model",
-    rest_url: "/main/pyrule/",
+    rest_url: "/main/handler/",
 
     fields: [
         {
             name: "id",
             type: "string"
         },
-
+        {
+            name: "handler",
+            type: "string"
+        },
         {
             name: "name",
             type: "string"
         },
         {
-            name: "full_name",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "source",
-            type: "string"
-        },
-        {
-            name: "last_changed",
-            type: "date"
-        },
-        {
             name: "description",
             type: "string"
+        },
+        {
+            name: "allow_config_filter",
+            type: "boolean"
+        },
+        {
+            name: "allow_config_validation",
+            type: "boolean"
         }
     ]
 });

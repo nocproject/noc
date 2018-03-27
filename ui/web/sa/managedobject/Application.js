@@ -23,7 +23,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.vc.vcdomain.LookupField",
         "NOC.ip.vrf.LookupField",
-        "NOC.main.pyrule.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.terminationgroup.LookupField",
@@ -33,7 +32,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.fm.ttsystem.LookupField",
         "NOC.inv.platform.LookupField",
         "NOC.inv.map.Maintenance",
-        "NOC.maintenance.maintenancetype.LookupField"
+        "NOC.maintenance.maintenancetype.LookupField",
+        "NOC.main.handler.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -885,28 +885,37 @@ Ext.define("NOC.sa.managedobject.Application", {
                             xtype: "container",
                             items: [
                                 {
-                                    name: "config_filter_rule",
-                                    xtype: "main.pyrule.LookupField",
-                                    fieldLabel: __("Config Filter pyRule"),
+                                    name: "config_filter_handler",
+                                    xtype: "main.handler.LookupField",
+                                    fieldLabel: __("Config Filter Handler"),
                                     allowBlank: true,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    query: {
+                                        allow_config_filter: true
+                                    }
                                 },
                                 {
-                                    name: "config_diff_filter_rule",
-                                    xtype: "main.pyrule.LookupField",
-                                    fieldLabel: __("Config Diff Filter Rule"),
+                                    name: "config_diff_filter_handler",
+                                    xtype: "main.handler.LookupField",
+                                    fieldLabel: __("Config Diff Filter Handler"),
                                     allowBlank: true,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    query: {
+                                        allow_config_filter: true
+                                    }
                                 }]
                         }, {
                             xtype: "container",
                             items: [
                                 {
-                                    name: "config_validation_rule",
-                                    xtype: "main.pyrule.LookupField",
-                                    fieldLabel: __("Config Validation pyRule"),
+                                    name: "config_validation_handler",
+                                    xtype: "main.handler.LookupField",
+                                    fieldLabel: __("Config Validation Handler"),
                                     allowBlank: true,
-                                    groupEdit: true
+                                    groupEdit: true,
+                                    query: {
+                                        allow_config_validation: true
+                                    }
                                 }]
                         }
                     ]

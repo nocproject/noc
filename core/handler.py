@@ -1,13 +1,16 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Handler management utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+#  -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+#  Handler management utilities
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2016 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import cachetools
+# NOC modules
+# Activate custom module loaders
+import noc.core.importer  # noqa
 
 _CCACHE = {}  # handler -> object cache
 

@@ -1,57 +1,66 @@
 //---------------------------------------------------------------------
-// main.pyrule application
+// main.handler application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.main.pyrule.Application");
+console.debug("Defining NOC.main.handler.Application");
 
-Ext.define("NOC.main.pyrule.Application", {
+Ext.define("NOC.main.handler.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.main.pyrule.Model"
+        "NOC.main.handler.Model"
     ],
-    model: "NOC.main.pyrule.Model",
-    formLayout: {
-        type: "vbox",
-        align: "stretch"
-    },
+    model: "NOC.main.handler.Model",
     search: true,
-    initComponent: function () {
+
+    initComponent: function() {
         var me = this;
         Ext.apply(me, {
             columns: [
                 {
                     text: __("Name"),
                     dataIndex: "name",
-                    width: 200
+                    width: 150
                 },
                 {
-                    text: __("Full Name"),
-                    dataIndex: "full_name",
+                    text: __("Handler"),
+                    dataIndex: "handler",
                     flex: 1
                 }
             ],
+
             fields: [
                 {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
+                    uiStyle: "meduim"
+                },
+                {
+                    name: "handler",
+                    xtype: "textfield",
+                    fieldLabel: __("Handler"),
+                    allowBlank: false,
+                    vtype: "handler",
                     uiStyle: "medium"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: __("Description")
+                    fieldLabel: __("Description"),
+                    allowBlank: true
                 },
                 {
-                    name: "source",
-                    xtype: "cmtext",
-                    fieldLabel: __("Source"),
-                    allowBlank: true,
-                    flex: 1,
-                    mode: "python"
+                    name: "allow_config_filter",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Config Filter")
+                },
+                {
+                    name: "allow_config_validation",
+                    xtype: "checkbox",
+                    boxLabel: __("Allow Config Validation")
                 }
             ]
         });

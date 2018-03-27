@@ -233,29 +233,29 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
-            name: "config_filter_rule",
-            type: "int"
+            name: "config_filter_handler",
+            type: "string"
         },
         {
-            name: "config_filter_rule__label",
+            name: "config_filter_handler__label",
             type: "string",
             persist: false
         },
         {
-            name: "config_diff_filter_rule",
-            type: "int"
+            name: "config_diff_filter_handler",
+            type: "string"
         },
         {
-            name: "config_diff_filter_rule__label",
+            name: "config_diff_filter_handler__label",
             type: "string",
             persist: false
         },
         {
-            name: "config_validation_rule",
-            type: "int"
+            name: "config_validation_handler",
+            type: "string"
         },
         {
-            name: "config_validation_rule__label",
+            name: "config_validation_handler__label",
             type: "string",
             persist: false
         },
