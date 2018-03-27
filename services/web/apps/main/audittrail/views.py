@@ -23,8 +23,4 @@ class AuditTrailApplication(ExtDocApplication):
     query_fields = ["model_id", "user"]
 
     def field_object_name(self, o):
-        try:
-            object_name = get_object(o.model_id, o.object).name
-        except Exception:
-            object_name = o.object
-        return str(object_name)
+        return unicode(get_object(o.model_id, o.object))
