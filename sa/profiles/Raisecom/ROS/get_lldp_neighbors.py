@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Raisecom.ROS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6
+from noc.lib.validators import is_ipv4, is_ipv6
 
 
 class Script(BaseScript):
@@ -29,11 +29,10 @@ class Script(BaseScript):
         r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
         r"^\s*PortDesc:\s+(?P<port_descr>.+)\s*\n"
         r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc:\s+(?P<sys_descr>[\S\s?]+?)\n"
+        r"^\s*SysDesc:\s+(?P<sys_descr>.+?)\n"
         r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
-        re.MULTILINE | re.IGNORECASE)
-
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_lldp_womac = re.compile(
         r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
         r"^\s*Remote\s*1\s*\n"
@@ -43,11 +42,10 @@ class Script(BaseScript):
         r"^\s*PortId\s*:\s+(?P<port_id>.+)\s*\n"
         r"^\s*PortDesc\s*:\s+(?P<port_descr>.+)\s*\n"
         r"^\s*SysName\s*:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc\s*:\s+(?P<sys_descr>[\S\s?]+?)\n"
+        r"^\s*SysDesc\s*:\s+(?P<sys_descr>.+?)\n"
         r"^\s*SysCapSupported\s*:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled\s*:\s+(?P<sys_caps_enabled>\S+)\s*\n",
-        re.MULTILINE | re.IGNORECASE)
-
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_lldp_rem = re.compile(
         r"^port(?P<port>\d+)\s+(?P<ch_id>\S+)", re.MULTILINE)
 
@@ -92,17 +90,17 @@ class Script(BaseScript):
                 }[c]
             n = {
                 "remote_chassis_id_subtype": {
-                        "macAddress": 4,
-                        "networkAddress": 5
-                    }[match.group("ch_type")],
+                    "macAddress": 4,
+                    "networkAddress": 5
+                }[match.group("ch_type")],
                 "remote_chassis_id": match.group("ch_id") if not ext_ch_id else None,
                 "remote_port_subtype": {
-                        "ifAlias": 1,
-                        "macAddress": 3,
-                        "ifName": 5,
-                        "portComponent": 5,
-                        "local": 7
-                    }[match.group("port_id_subtype")],
+                    "ifAlias": 1,
+                    "macAddress": 3,
+                    "ifName": 5,
+                    "portComponent": 5,
+                    "local": 7
+                }[match.group("port_id_subtype")],
                 "remote_port": match.group("port_id"),
                 "remote_capabilities": cap
             }
@@ -114,7 +112,8 @@ class Script(BaseScript):
                     sd = sd.split()[-1]
                 n["remote_system_description"] = sd
             if match.group("port_descr") != "N/A":
-                n["remote_port_description"] = match.group("port_descr")
+                n["remote_port_description"] = \
+                    re.sub("\n\s{29,30}", "", match.group("port_descr").strip())
             if n["remote_chassis_id"] is None:
                 for j in r_rem:
                     if i["local_interface"] == j["local_interface"]:
