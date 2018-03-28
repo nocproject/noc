@@ -128,8 +128,8 @@ class Script(BaseScript):
         try:
             v = self.cli("show inventory raw")
             i = 0
+            serial = None
             for match in self.rx_item.finditer(v):
-                serial = None
                 name = match.group("name")
                 pid = match.group("pid")
                 if pid is None:
@@ -153,9 +153,9 @@ class Script(BaseScript):
                     platform = pid
                     serial = match.group("serial")
                     break
-                if serial in self.IGNORED_SERIAL:
-                    serial = None
                 i = 1
+            if serial in self.IGNORED_SERIAL:
+                serial = None
         except self.CLISyntaxError:
             c = self.cli("show version", cached=True)
             match = self.rx_ver.search(c)
