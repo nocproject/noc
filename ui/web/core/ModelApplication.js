@@ -1600,7 +1600,6 @@ Ext.define("NOC.core.ModelApplication", {
             autoScroll: true,
             listeners: {
                 dirtychange: function(form, dirty) {
-                    console.warn('dirtychange');
                     me.saveGroupButton.setDisabled(!dirty);
                 }
             },
@@ -1683,17 +1682,10 @@ Ext.define("NOC.core.ModelApplication", {
             Ext.Object.each(selection[i].data, function(key, value) {
                 if(r.hasOwnProperty(key)) {
                     if(r[key] !== value) {
-                        // if(me.store.defaultValues.hasOwnProperty(key)) {
-                        //     r[key] = me.store.defaultValues[key];
-                        // } else {
-                        // delete r[key];
                         r[key] = "Leave unchanged";
-                        // r[key] = "";
-                        // }
                     }
                 } else {
                     r[key] = "Leave unchanged";
-                    // r[key] = "";
                 }
             });
         }
@@ -1705,18 +1697,12 @@ Ext.define("NOC.core.ModelApplication", {
             }
             field.initValue();
         }, me);
-        console.log(r);
-        // var data = Ext.create(me.model, r);
-        // me.groupForm.loadRecord(data);
-        console.log(r);
         me.saveGroupButton.setDisabled(true);
         me.showItem(me.ITEM_GROUP_FORM);
-        console.log('form isDirty : ', me.groupForm.isDirty())
     },
     //
     toDefaultValueString: function(field) {
         var me = this;
-        console.log('toDefaultValueString');
         field.setValue(this.store.defaultValues[field.name]);
         me.saveGroupButton.setDisabled(false);
     },
@@ -1725,7 +1711,6 @@ Ext.define("NOC.core.ModelApplication", {
         var me = this, newValue = field.getValue() || "";
         if(me.store.defaultValues.hasOwnProperty(field.name)) {
             var defaultValue = me.store.defaultValues[field.name] || "";
-            // console.log(field.name, newValue, "!==", defaultValue, newValue !== defaultValue);
             if(field.getTrigger('clear').hidden && newValue !== defaultValue) {
                 field.getTrigger('clear').show();
                 field.updateLayout();
@@ -1757,30 +1742,21 @@ Ext.define("NOC.core.ModelApplication", {
             values = {},
             valuesTxt = "";
         // @todo: Form validation
-        // values = me.groupForm.getValues();
-        // Normalize checkboxes and fields
-        // Ext.Object.each(values, function(v) {
-        //     if((me.groupCheckboxFields[v] && values[v] === 0) || values[v] === "") {
-        //         delete values[v];
-        //     }
-        // });
-        console.log('form is isDirty : ', me.groupForm.isDirty());
         Ext.Array.each(me.groupForm.getFields().items, function(field) {
             if(Ext.isFunction(field.isDirty) && field.isDirty()) {
-                valuesTxt += (field.fieldLabel || field.name) + ": ";
+                valuesTxt += (field.fieldLabel || field.name) + ": '";
                 if(Ext.isFunction(field.getDisplayValue)) {
                     valuesTxt += field.getDisplayValue();
                 } else {
                     valuesTxt += field.getValue();
                 }
-                valuesTxt += "</br>";
+                valuesTxt += "'</br>";
                 values[field.name] = field.getValue();
             }
         });
         if(!Ext.Object.isEmpty(values)) {
             values.ids = me.groupEditItems;
             var message = Ext.String.format("Do you wish to change {0} record(s): <br/><br/>{1}<br/>This operation cannot be undone!", values.ids.length, valuesTxt);
-            console.log(values);
             Ext.Msg.show({
                 title: __("Change records?"),
                 msg: message,

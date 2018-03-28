@@ -26,8 +26,8 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "administrative_domain",
-            type: "string",
-            defaultValue: "1"
+            type: "int",
+            defaultValue: 1
         },
         {
             name: "administrative_domain__label",
@@ -303,12 +303,12 @@ Ext.define("NOC.sa.managedobject.Model", {
         },
         {
             name: "interface_count",
-            type: "integer",
+            type: "int",
             persist: false
         },
         {
             name: "link_count",
-            type: "integer",
+            type: "int",
             persist: false
         },
         {
