@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -26,6 +26,7 @@ class Script(BaseScript):
 
     PORT_STATE = {
         "bkn": "broken",
+        "blk": "blocking",
         "dsbl": "disabled",
         "dscr": "discarding",
         "frw": "forwarding",
