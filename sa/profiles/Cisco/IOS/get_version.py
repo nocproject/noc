@@ -128,8 +128,8 @@ class Script(BaseScript):
         try:
             v = self.cli("show inventory raw")
             i = 0
+            serial = None
             for match in self.rx_item.finditer(v):
-                serial = None
                 name = match.group("name")
                 pid = match.group("pid")
                 if pid is None:
