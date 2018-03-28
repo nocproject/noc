@@ -20,6 +20,7 @@ class AdministrativeDomainApplication(ExtModelApplication):
     menu = [_("Setup"), _("Administrative Domains")]
     model = AdministrativeDomain
     query_fields = ["name__icontains", "description__icontains"]
+    lookup_default = [{"has_children": False, "id": "Leave unchanged", "label": "Leave unchanged"}]
 
     def field_object_count(self, o):
         return o.managedobject_set.count()

@@ -26,7 +26,7 @@ from noc.sa.interfaces.base import (
     BooleanParameter, GeoPointParameter,
     ModelParameter, ListOfParameter,
     EmbeddedDocumentParameter, DictParameter,
-    InterfaceTypeError, DocumentParameter)
+    InterfaceTypeError, DocumentParameter, ObjectIdParameter)
 from noc.lib.validators import is_int, is_uuid
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
@@ -39,9 +39,10 @@ class ExtDocApplication(ExtApplication):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
     int_query_fields = []  # Integer fields for exact match
-    clean_fields = {}  # field name -> Parameter instance
+    clean_fields = {"id": ObjectIdParameter()}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
     parent_model = None
+    lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = set(["id", "bi_id"])
 
     def __init__(self, *args, **kwargs):
@@ -265,7 +266,10 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
-        return self.list_data(request, self.instance_to_lookup)
+        try:
+            return self.list_data(request, self.instance_to_lookup)
+        except ValueError:
+            return self.response(self.lookup_default, status=self.OK)
 
     @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
     def api_lookup_tree(self, request):
