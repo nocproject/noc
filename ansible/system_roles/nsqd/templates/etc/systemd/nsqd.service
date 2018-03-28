@@ -4,10 +4,9 @@ After=network.target
 
 [Service]
 ExecStart={{ nsq_root }}/nsqd -config {{ nsqd_config_dir }}/nsqd.conf
-ExecReload=/bin/kill -HUP $MAINPID
 Type=simple
 KillMode=process
-Restart=on-failure
+Restart=always
 RestartSec=10s
 User=nsq
 Group=nsq
