@@ -87,7 +87,7 @@ class Profile(BaseProfile):
         Ports in CLI like 1:1-24,2:1-24
         """
         platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100', "DGS-3420")
-        match = self.rx_interface_name.match(s)
+        match = self.rx_interface_name.match(s.strip())
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
                 match.group("re_platform") and \
