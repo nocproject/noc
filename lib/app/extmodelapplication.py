@@ -41,9 +41,10 @@ class ExtModelApplication(ExtApplication):
     query_condition = "startswith"  # Match method for string fields
     int_query_fields = []  # Query integer fields for exact match
     pk_field_name = None  # Set by constructor
-    clean_fields = {}  # field name -> Parameter instance
+    clean_fields = {"id": IntParameter()}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
     order_map = {}  # field name -> SQL query for ordering
+    lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = set(["id", "bi_id"])
 
     def __init__(self, *args, **kwargs):
@@ -409,7 +410,10 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
-        return self.list_data(request, self.instance_to_lookup)
+        try:
+            return self.list_data(request, self.instance_to_lookup)
+        except ValueError:
+            return self.response(self.lookup_default, status=self.OK)
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
