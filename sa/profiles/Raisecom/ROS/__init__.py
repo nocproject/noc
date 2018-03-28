@@ -3,7 +3,7 @@
 # Vendor: Raisecom
 # OS:     ROS
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -23,7 +23,10 @@ class Profile(BaseProfile):
     command_more = " "
     command_exit = "exit"
     pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
+    pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
+    config_volatile = [r"radius(-| accounting-server )encrypt-key \S+\n",
+                       r"tacacs(-server | accounting-server )encrypt-key \S+\n"]
 
     # Version until ROS_4.15.1086.ISCOM2128EA-MA-AC.002.20151224
     rx_ver = re.compile(
@@ -99,8 +102,8 @@ class Profile(BaseProfile):
         if match:
             return match.groupdict()
         else:
-           match = self.rx_ver_2015.search(c)
-           return match.groupdict()
+            match = self.rx_ver_2015.search(c)
+            return match.groupdict()
 
     def get_interface_names(self, name):
         r = []
