@@ -153,9 +153,9 @@ class Script(BaseScript):
                     platform = pid
                     serial = match.group("serial")
                     break
+                if serial in self.IGNORED_SERIAL:
+                    serial = None
                 i = 1
-            if serial in self.IGNORED_SERIAL:
-                serial = None
         except self.CLISyntaxError:
             c = self.cli("show version", cached=True)
             match = self.rx_ver.search(c)
