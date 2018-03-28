@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_lacp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,13 +11,12 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
     name = "Huawei.VRP.get_lacp_neighbors"
     interface = IGetLACPNeighbors
+
     split_re = re.compile(r"(\S+)'s state information is:", re.IGNORECASE)
 
     def execute(self):
@@ -48,7 +47,9 @@ class Script(BaseScript):
                 if i == 0:
                     i += 1
                     continue
-                # print("Bundle %s" % bun)
+                if len(bun) < 2:
+                    self.logger.info("Bundle %s" % bun)
+                    continue
                 bundle += [{
                     "interface": bun[0],
                     "local_port_id": int(bun[4]),
