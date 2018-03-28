@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
@@ -59,6 +59,7 @@ class Script(BaseScript):
         "Gigabit-Combo": "physical",
         "Gigabit-TX": "physical",
         "SFP": "physical",
+        "EtherChannel": "aggregated",
         "EtherSVI": "SVI"
     }
 
