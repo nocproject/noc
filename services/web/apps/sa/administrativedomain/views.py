@@ -26,7 +26,7 @@ class AdministrativeDomainApplication(ExtModelApplication):
 
     def instance_to_lookup(self, o, fields=None):
         return {
-            "id": str(o.id),
+            "id": o.id,
             "label": unicode(o),
             "has_children": o.has_children
         }
