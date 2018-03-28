@@ -25,6 +25,8 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
     pattern_operation_error = r"% You Need higher priority!"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
+    config_volatile = [r"radius(-| accounting-server )encrypt-key \S+\n",
+                       r"tacacs(-server | accounting-server )encrypt-key \S+\n"]
 
     # Version until ROS_4.15.1086.ISCOM2128EA-MA-AC.002.20151224
     rx_ver = re.compile(
