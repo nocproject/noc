@@ -3,7 +3,7 @@
 # Vendor: Angtel (Angstrem telecom - http://www.angtel.ru/)
 # OS:     Topaz
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ class Profile(BaseProfile):
     pattern_more = [(r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
                     (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n")]
     command_exit = "exit"
+    convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     def setup_session(self, script):
         # Do not erase this.
