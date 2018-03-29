@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -72,8 +72,9 @@ class Script(BaseScript):
             v = self.cli("show ip ospf interface", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(match.group("ifaddr") for
-            match in self.rx_ospf_status.finditer(v))
+        return set(
+            match.group("ifaddr") for match in self.rx_ospf_status.finditer(v)
+        )
 
     def get_rip_addresses(self):
         """
@@ -85,9 +86,11 @@ class Script(BaseScript):
             v = self.cli("show router rip", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(IPv4(match.group("ip"), netmask=match.group("mask")).prefix
+        return set(
+            IPv4(match.group("ip"), netmask=match.group("mask")).prefix
             for match in self.rx_rip_status.finditer(v)
-            if match.group("direction").lower() != "none")
+            if match.group("direction").lower() != "none"
+        )
 
     def execute(self):
         interfaces = []
@@ -95,7 +98,12 @@ class Script(BaseScript):
         rip_addresses = self.get_rip_addresses()
 
         # Get ifindexes
-        ifindexes = self.scripts.get_ifindexes()
+        ifindexes = {}
+        if self.has_snmp():
+            try:
+                ifindexes = self.scripts.get_ifindexes()
+            except self.snmp.TimeOutError:
+                pass
 
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
@@ -165,11 +173,11 @@ class Script(BaseScript):
                     "admin_status": admin,
                     "oper_status": swp["status"],
                     "enabled_afi": ["BRIDGE"],
-                    "mac": mac,
-                    "snmp_ifindex": ifindexes.get(name)
+                    "mac": mac
                 }]
             }
-            iface["snmp_ifindex"] = iface["subinterfaces"][0]["snmp_ifindex"]
+            if ifindexes.get(name) is not None:
+                iface["snmp_ifindex"] = ifindexes.get(name)
             if swp["tagged"]:
                 iface["subinterfaces"][0]["tagged_vlans"] = swp["tagged"]
             try:
