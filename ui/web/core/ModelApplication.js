@@ -1439,11 +1439,17 @@ Ext.define("NOC.core.ModelApplication", {
                                     fieldLabel: v.fieldLabel,
                                     name: v.name,
                                     store: [
-                                        [0, "Leave unchanged"],
+                                        ["Leave unchanged", "Leave unchanged"],
                                         [true, "Set"],
                                         [false, "Reset"]
                                     ],
-                                    value: 0
+                                    // fix catch changeDirty
+                                    listeners: {
+                                        scope: me,
+                                        change: function() {
+                                            this.saveGroupButton.setDisabled(false);
+                                        }
+                                    }
                                 }
                             } else {
                                 x = v.cloneConfig ? v.cloneConfig() : v;
@@ -1756,7 +1762,9 @@ Ext.define("NOC.core.ModelApplication", {
                     valuesTxt += field.getValue();
                 }
                 valuesTxt += "'</br>";
-                values[field.name] = field.getValue();
+                if(field.getValue() !== "Leave unchanged") {
+                    values[field.name] = field.getValue();
+                }
             }
         });
         if(!Ext.Object.isEmpty(values)) {
@@ -1787,6 +1795,8 @@ Ext.define("NOC.core.ModelApplication", {
                     }
                 }
             });
+        } else {
+            me.showGrid();
         }
     },
     //
