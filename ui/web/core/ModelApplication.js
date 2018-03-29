@@ -1489,6 +1489,11 @@ Ext.define("NOC.core.ModelApplication", {
                                 }
                             };
                             x.listeners = {
+                                focus: function(field) {
+                                    if(field.value === "Leave unchanged") {
+                                        field.setValue("");
+                                    }
+                                },
                                 render: me.clearTriggerToolTip
                             };
                             x.updateValue = function() {
