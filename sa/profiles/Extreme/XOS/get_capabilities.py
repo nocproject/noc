@@ -36,6 +36,21 @@ class Script(BaseScript):
         cmd = self.cli("show cdp")
         return self.rx_cdp.search(cmd) is not None
 
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check box has LACP enable
+        Check:
+        LACP Up                             : Yes
+        LACP Enabled                        : Yes
+        :return:
+        """
+        cmd = self.cli("show lacp")
+        cmd = [c for c in cmd.splitlines() if
+               ("LACP Up" in c and "Yes" in c) or
+               ("LACP Enabled" in c and "Yes" in c)]
+        return len(cmd) == 2
+
     def execute_platform_cli(self, caps):
         try:
             s = []

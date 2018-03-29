@@ -74,7 +74,10 @@ class Profile(BaseProfile):
                 header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])
                 head = []
             head += [lines]
-
+        else:
+            # last column
+            head = np.array(head)
+            header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
         return header
 
     def parse_table_struct(self, v, header_start="", header_end="",
@@ -134,7 +137,7 @@ class Profile(BaseProfile):
                     v = line[left:right].strip()
                     field[ph[num]] = [v] if v else []
                     i = num
-                if not field[ph[min(ph)]]:
+                if not field[ph[min(ph)]] and r:
                     self.update_dict(r[-1], field)
                 else:
                     r += [field]
