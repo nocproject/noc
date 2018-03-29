@@ -176,7 +176,6 @@ class Profile(BaseProfile):
         r = defaultdict(dict)
         current_iface = ""
         for line in e.splitlines():
-            print line
             if not line:
                 continue
             if (line.startswith("LoopBack") or line.startswith("MEth") or
@@ -191,7 +190,6 @@ class Profile(BaseProfile):
                 line = line[12:]
             elif "Route Port" in line:
                 line = line[11:]
-            print line
             # while split:
             for part in line.split(",", split - 1):
                 if ":" in part:
