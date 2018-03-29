@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 # Python modules
@@ -59,6 +59,7 @@ class Script(BaseScript):
         "Gigabit-Combo": "physical",
         "Gigabit-TX": "physical",
         "SFP": "physical",
+        "EtherChannel": "aggregated",
         "EtherSVI": "SVI"
     }
 
@@ -68,8 +69,8 @@ class Script(BaseScript):
         lldp = []
         c = self.cli("show lldp", ignore_errors=True)
         if self.rx_lldp_en.search(c):
-            l = self.rx_lldp.search(c)
-            lldp = l.group("local_if").split()
+            ll = self.rx_lldp.search(c)
+            lldp = ll.group("local_if").split()
         v = self.cli("show interface", cached=True)
         for match in self.rx_sh_int.finditer(v):
             name = match.group("interface")
