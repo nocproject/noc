@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.audittrail application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2018 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.audittrail.Application");
@@ -36,6 +36,11 @@ Ext.define("NOC.main.audittrail.Application", {
                     width: 150
                 },
                 {
+                    text: __("Object"),
+                    dataIndex: "object_name",
+                    width: 250
+                },
+                {
                     text: __("Operation"),
                     dataIndex: "op",
                     flex: 1,
@@ -62,6 +67,11 @@ Ext.define("NOC.main.audittrail.Application", {
                     name: "model_id",
                     xtype: "displayfield",
                     fieldLabel: __("Model")
+                },
+                {
+                    name: "object_name",
+                    xtype: "displayfield",
+                    fieldLabel: __("Object")
                 },
                 {
                     name: "op",
