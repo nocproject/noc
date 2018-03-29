@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Extreme.XOS.get_capabilities"
 
     rx_lldp = re.compile(r"^\s*\d+(\:\d+)?\s+Enabled\s+Enabled", re.MULTILINE)
-    rx_cdp = re.compile(r"^\s*CDP \S+ enabled ports\s+:\s+\d+", re.MULTILINE)
+    rx_cdp = re.compile(r"^\s*CDP(\s\S+|)\s*[Ee]nabled ports\s+:\s+\d+", re.MULTILINE)
 
     @false_on_cli_error
     def has_lldp_cli(self):
@@ -36,6 +36,21 @@ class Script(BaseScript):
         cmd = self.cli("show cdp")
         return self.rx_cdp.search(cmd) is not None
 
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check box has LACP enable
+        Check:
+        LACP Up                             : Yes
+        LACP Enabled                        : Yes
+        :return:
+        """
+        cmd = self.cli("show lacp")
+        cmd = [c for c in cmd.splitlines() if
+               ("LACP Up" in c and "Yes" in c) or
+               ("LACP Enabled" in c and "Yes" in c)]
+        return len(cmd) == 2
+
     def execute_platform_cli(self, caps):
         try:
             s = []
@@ -45,5 +60,5 @@ class Script(BaseScript):
             if s:
                 caps["Stack | Members"] = len(s) if len(s) != 1 else 0
                 caps["Stack | Member Ids"] = " | ".join(s)
-        except:
+        except Exception:
             pass
