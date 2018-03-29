@@ -11,8 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -37,25 +35,23 @@ class Script(BaseScript):
                 pc_name = block
                 continue
             self.logger.info("Block is: %s" % block)
-            out = self.profile.parse_table(block)
+            out = self.profile.parse_block(block)
             self.logger.info("Out, %s" % out)
-            i = 0
             bundle = []
             if "Local" not in out:
                 first = True
                 continue
             for bun in out["Local"]["table"]:
-                if i == 0:
-                    i += 1
-                    continue
                 # print("Bundle %s" % bun)
+                partner = [o for o in out["Partner"]["table"] if o["ActorPortName"][0] == bun["ActorPortName"][0]]
+                if not partner:
+                    continue
                 bundle += [{
-                    "interface": bun[0],
-                    "local_port_id": int(bun[4]),
-                    "remote_system_id": out["Partner"]["table"][i][2],
-                    "remote_port_id": int(out["Partner"]["table"][i][4])
+                    "interface": bun["ActorPortName"][0],
+                    "local_port_id": int(bun["PortNo"][0]),
+                    "remote_system_id": partner[0]["SystemID"][0],
+                    "remote_port_id": int(partner[0]["PortNo"][0])
                 }]
-                i += 1
 
             r += [{"lag_id": int(out["Local"]["LAG ID"]),
                    "interface": pc_name,
