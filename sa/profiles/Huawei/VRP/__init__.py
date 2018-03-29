@@ -239,6 +239,10 @@ class Profile(BaseProfile):
                 header[num] = " ".join(["".join(s).strip() for s in head.transpose().tolist()])
                 head = []
             head += [lines]
+        else:
+            # last column
+            head = np.array(head)
+            header[num] = " ".join(["".join(s).strip(" -") for s in head.transpose().tolist()])
 
         return header
 
