@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Beef management
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Beef management
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import pprint
 import glob
 import os
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.script.beef import Beef
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
             help="Beef UUID or path"
         )
         # list command
-        list_parser = subparsers.add_parser("list")
+        list_parser = subparsers.add_parser("list")  # noqa
         # test command
         test_parser = subparsers.add_parser("test")
         test_parser.add_argument(
@@ -165,6 +165,7 @@ class ServiceStub(object):
 
     def __init__(self, pool):
         self.config = self.ServiceConfig(pool=pool)
+
 
 if __name__ == "__main__":
     Command().run()
