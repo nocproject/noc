@@ -13,7 +13,7 @@ Ext.define("NOC.sa.administrativedomain.Model", {
     fields: [
         {
             name: "id",
-            type: "string"
+            type: "int"
         },
 
         {
