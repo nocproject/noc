@@ -56,7 +56,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             self._handle(*args, **options)
-        except CommandError, why:
+        except CommandError as why:
             raise CommandError(why)
         except SystemExit:
             pass
