@@ -19,6 +19,8 @@
 
 - name: Include {{install_method}} install method
   include_tasks: "{{install_method}}.yml"
+  tags:
+    - get_source
 
 - name: Include venv init for {{noc_python_interpreter}}
   include_tasks: "init_venv_{{noc_python_interpreter}}.yml"
