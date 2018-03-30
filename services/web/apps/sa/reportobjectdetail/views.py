@@ -10,7 +10,7 @@
 import logging
 import datetime
 import csv
-import tempfile
+import StringIO
 from collections import (defaultdict, namedtuple)
 # Third-party modules
 from django.db import connection
@@ -19,12 +19,13 @@ from pymongo import ReadPreference
 import xlsxwriter
 import bson
 # NOC modules
-from noc.lib.nosql import get_db
+from noc.lib.nosql import (get_db, OperationError)
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.capability import Capability
+from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
@@ -51,7 +52,6 @@ class ReportObjectBuild(object):
         self.report = report
         self.site = site
         self.run_as = user
-        pass
 
     class RequestStub(object):
         def __init__(self, user):
@@ -80,6 +80,27 @@ class ReportObjectBuild(object):
         return data
 
 
+class ReportAdPath(object):
+    """
+    Return AD path
+    """
+
+    def __init__(self):
+        self.out = self.load()
+
+    def load(self):
+        cursor = connection.cursor()
+        cursor.execute("""SELECT ad.id, ad.name, r.name, ad2.name
+                          FROM sa_administrativedomain r
+                          JOIN sa_administrativedomain ad ON ad.parent_id = r.id
+                          JOIN sa_administrativedomain ad2 ON r.parent_id = ad2.id;
+                """)
+        return {r[1]: (r[2], r[3]) for r in cursor}
+
+    def __getitem__(self, item):
+        return self.out.get(item, [])
+
+
 class ReportObjectCaps(object):
     """
     Report caps for MO
@@ -93,10 +114,15 @@ class ReportObjectCaps(object):
         self.mo_ids = mo_ids
         self.caps = dict([("c_%s" % str(key), value) for key, value in
                           Capability.objects.filter().scalar("id", "name")])
-        self.out = self.load(mo_ids)
+        try:
+            self.out = self.load(mo_ids)
+        except OperationError:
+            logger.warning("Operation error when objectcapabilities load")
+            self.out = {}
 
     def load(self, mo_ids):
         # Namedtuple caps, for save
+        # @todo
         Caps = namedtuple("Caps", self.caps.keys())
         Caps.__new__.__defaults__ = ("",) * len(Caps._fields)
 
@@ -213,7 +239,7 @@ class ReportDiscoveryResult(object):
                 yield x
 
     def __getitem__(self, item):
-        return self.out[item] if item in self.out else {}
+        return self.out[item] if item in self.out else {"problems": {}, "time": ""}
 
 
 class ReportContainer(object):
@@ -301,6 +327,7 @@ class ReportObjectIfacesStatusStat(object):
 
     def load(self):
         # @todo Make reports field
+        # @todo Sort Error
         """
         { "_id" : { "managed_object" : 6757 }, "count_in_speed" : 3 }
         { "_id" : { "oper_status" : true, "in_speed" : 10000, "managed_object" : 6757 }, "count_in_speed" : 2 }
@@ -310,6 +337,7 @@ class ReportObjectIfacesStatusStat(object):
         { "_id" : { "oper_status" : false, "in_speed" : 100000, "managed_object" : 6757 }, "count_in_speed" : 1 }
         :return:
         """
+        r = defaultdict(lambda: [""] * len(self.columns))
         group = {"in_speed": "$in_speed",
                  "managed_object": "$managed_object"}
         if self.oper:
@@ -319,12 +347,17 @@ class ReportObjectIfacesStatusStat(object):
         if self.mo_ids:
             match = {"type": "physical",
                      "managed_object": {"$in": self.mo_ids}}
-        value = get_db()["noc.interfaces"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
-            {"$match": match},
-            {"$group": {"_id": group,
-                        "count": {"$sum": 1}}}
-        ])
-        r = defaultdict(lambda: [""] * len(self.columns))
+        try:
+            value = get_db()["noc.interfaces"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+            ).aggregate([
+                {"$match": match},
+                {"$group": {"_id": group,
+                            "count": {"$sum": 1}}}
+            ])
+        except OperationError:
+            logger.warning("Operation error when interfacestatus load")
+            return r
         for v in value:
             c = {
                 True: "Up",
@@ -450,10 +483,11 @@ class ReportObjects(object):
 
     @staticmethod
     def load(mos_id):
-        query = "select sa.id,sa.name,sa.address, sa.is_managed, "
-        query += "profile, op.name as object_profile, ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
+        query = "select sa.id, sa.name,sa.address, sa.is_managed, sa.auth_profile_id, "
+        query += "profile, op.name as object_profile, "
+        query += "ad.name as  administrative_domain, sa.segment, array_to_string(sa.tags, ';') "
         query += "FROM sa_managedobject sa, sa_managedobjectprofile op, sa_administrativedomain ad "
-        query += "WHERE op.id = sa.object_profile_id and ad.id = sa.administrative_domain_id "
+        query += "WHERE op.id = sa.object_profile_id and ad.id = sa.administrative_domain_id"
         # query += "LIMIT 20"
         cursor = connection.cursor()
         cursor.execute(query)
@@ -558,13 +592,15 @@ class ReportObjectDetailApplication(ExtApplication):
             "object_platform",
             "object_version",
             "object_serial",
+            "auth_profile",
             "avail",
             "admin_domain",
             "container",
             "segment",
             "phys_interface_count",
             "link_count",
-            "discovery_problem"
+            # "adm_path"
+            # "discovery_problem"
             # "object_tags"
             # "sorted_tags"
             # "object_caps"
@@ -582,14 +618,16 @@ class ReportObjectDetailApplication(ExtApplication):
             "OBJECT_PLATFORM",
             "OBJECT_VERSION",
             "OBJECT_SERIAL",
+            "AUTH_PROFILE",
             "AVAIL",
             "ADMIN_DOMAIN",
             "CONTAINER",
             "SEGMENT",
             "PHYS_INTERFACE_COUNT",
             "LINK_COUNT",
-            "DISCOVERY_PROBLEM"
         ]
+        # "ADM_PATH
+        # "DISCOVERY_PROBLEM"
         # "OBJECT_TAGS"
         # "SORTED_TAGS"
         # "OBJECT_CAPS"
@@ -636,6 +674,8 @@ class ReportObjectDetailApplication(ExtApplication):
             if segment:
                 mos = mos.filter(segment__in=segment.get_nested_ids())
         mos_id = list(mos.values_list("id", flat=True))
+        if len(mos_id) > 70000:
+            return self.response("Request Too Large, Objects limit is 70000", status=self.TOO_LARGE)
         avail = {}
         segment_lookup = {}
         attr = {}
@@ -648,6 +688,10 @@ class ReportObjectDetailApplication(ExtApplication):
         object_caps = {}
         tags_o = []
         container_lookup = ReportContainer(mos_id)
+        auth_resolve = dict(AuthProfile.objects.filter().values_list("id", "name"))
+        if "adm_path" in columns.split(","):
+            ad_path = ReportAdPath()
+            r[-1].extend([_("ADM_PATH1"), _("ADM_PATH1"), _("ADM_PATH1")])
         if "segment" in columns.split(","):
             segment_lookup = dict(NetworkSegment.objects.all().values_list("id", "name"))
         if "avail" in columns.split(","):
@@ -658,8 +702,6 @@ class ReportObjectDetailApplication(ExtApplication):
             iface_type_count = ReportObjectIfacesStatusStat(mos_id, columns=type_columns)
         if "link_count" in columns.split(","):
             link_count = ReportObjectLinkCount([])
-        if "discovery_problem" in columns.split(","):
-            discovery_problem = ReportDiscoveryResult(mos, load=True)
         if "object_caps" in columns.split(","):
             object_caps = ReportObjectCaps(mos_id)
             caps_columns = object_caps.caps.values()
@@ -668,10 +710,17 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend([_("OBJECT_TAGS")])
         if "sorted_tags" in columns.split(","):
             tags = set()
-            for s in ManagedObject.objects.filter(is_managed=True).exclude(tags=None).values_list('tags', flat=True).distinct():
+            for s in ManagedObject.objects.filter(is_managed=True).exclude(
+                    tags=None).values_list('tags', flat=True).distinct():
                 tags.update(set(s))
             tags_o = sorted([t for t in tags if "{" not in t])
             r[-1].extend(tags_o)
+        if "discovery_problem" in columns.split(","):
+            discovery_problem = ReportDiscoveryResult(mos, load=True)
+            # print(discovery_problem.out)
+            discovery = ["suggest_snmp", "suggest_cli", "profile",
+                         "version", "caps", "interface", "chassis_id"]
+            r[-1].extend(discovery)
 
         if len(mos_id) < 70000:
             # @todo Warning - too many objects
@@ -683,7 +732,6 @@ class ReportObjectDetailApplication(ExtApplication):
         for mo in moss:
             if mo not in mos_id:
                 continue
-            dp = discovery_problem[mo] if discovery_problem else {}
             r += [translate_row(row([
                 mo,
                 moss[0],
@@ -691,35 +739,39 @@ class ReportObjectDetailApplication(ExtApplication):
                 "managed" if moss[2] else "unmanaged",
                 attr_resolv[mo][0],
                 # Profile
-                moss[4],
+                moss[5],
                 attr_resolv[mo][1] if attr_resolv else "",
                 attr_resolv[mo][2] if attr_resolv else "",
                 attr_resolv[mo][3] if attr_resolv else "",
                 # Serial
                 attr[mo][0] if attr and len(attr[mo]) > 3 else container_lookup[mo].get("serial", ""),
+                auth_resolve.get(moss[3], ""),  # Auth profile
                 _("Yes") if avail.get(mo, None) else _("No"),
-                moss[5],
+                moss[6],
                 container_lookup[mo].get("text", ""),
-                segment_lookup.get(bson.objectid.ObjectId(moss[6]), "No segment") if segment_lookup else "",
+                segment_lookup.get(bson.objectid.ObjectId(moss[7]), "No segment") if segment_lookup else "",
                 iface_count[mo] if iface_count else "",
                 link_count[mo] if link_count else "",
-                dp.get("problems", "") if dp else ""
                 # iface_type_count[mo] if iface_type_count else ["", "", "", ""]
             ]), cmap)]
+            if "adm_path" in columns.split(","):
+                r[-1].extend([moss[6]] + list(ad_path[moss[6]]))
             if "interface_type_count" in columns.split(","):
                 r[-1].extend(iface_type_count[mo] if iface_type_count else ["", "", "", ""])
             if "object_caps" in columns.split(","):
                 r[-1].extend(object_caps[mo][:])
             if "object_tags" in columns.split(","):
-                r[-1].extend([moss[7]] if moss[7] else [])
+                r[-1].extend([moss[8]] if moss[8] else [])
             if "sorted_tags" in columns.split(","):
                 out_tags = [""] * len(tags_o)
-                if moss[7]:
-                    for m in moss[7].split(";"):
+                if moss[8]:
+                    for m in moss[8].split(";"):
                         out_tags[tags_o.index(m)] = m
                 r[-1].extend(out_tags)
                 # r[-1].extend(sorted(moss[7].split(";") if moss[7] else []))
-            pass
+            if "discovery_problem" in columns.split(","):
+                dp = discovery_problem[mo] if discovery_problem else {"problems": {}}
+                r[-1].extend([dp["problems"].get(d, {"": ""})[""] for d in discovery])
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
@@ -730,18 +782,23 @@ class ReportObjectDetailApplication(ExtApplication):
             writer.writerows(r)
             return response
         elif o_format == "xlsx":
-            with tempfile.NamedTemporaryFile(mode="wb") as f:
-                wb = xlsxwriter.Workbook(f.name)
+            # with tempfile.NamedTemporaryFile(mode="wb") as f:
+
+            #    wb = xlsxwriter.Workbook(f.name)
+                response = StringIO.StringIO()
+                wb = xlsxwriter.Workbook(response)
                 ws = wb.add_worksheet("Objects")
                 for rn, x in enumerate(r):
                     for cn, c in enumerate(x):
                         ws.write(rn, cn, c)
                 ws.autofilter(0, 0, rn, cn)
                 wb.close()
-                response = HttpResponse(
-                    content_type="application/x-ms-excel")
+                response.seek(0)
+                response = HttpResponse(response.getvalue(), content_type="application/vnd.ms-excel")
+
+                # response = HttpResponse(
+                #     content_type="application/x-ms-excel")
                 response[
                     "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
-                with open(f.name) as ff:
-                    response.write(ff.read())
+                response.close()
                 return response
