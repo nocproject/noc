@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -46,18 +45,10 @@ class Script(BaseScript):
 
     # @todo: vlan trunking, STP, LLDP (fw >= 3.90)
 
-    def get_admin_status(self, iface, ifindex=None):
+    def get_admin_status(self, iface):
         """
         Returns admin status of the interface
         """
-        if self.has_snmp() and ifindex:
-            try:
-                # IF-MIB::ifAdminStatus
-                s = self.snmp.get(mib["IF-MIB::ifAdminStatus", int(ifindex[iface])])
-                return int(s) == 1
-            except self.snmp.TimeOutError:
-                pass  # Fallback to CLI
-
         s = self.cli("show interface config %s" % iface)
         match = self.rx_admin_status.search(s)
         return match.group("admin").lower() == "yes"
@@ -72,8 +63,9 @@ class Script(BaseScript):
             v = self.cli("show ip ospf interface", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(match.group("ifaddr") for
-            match in self.rx_ospf_status.finditer(v))
+        return set(
+            match.group("ifaddr") for match in self.rx_ospf_status.finditer(v)
+        )
 
     def get_rip_addresses(self):
         """
@@ -85,17 +77,16 @@ class Script(BaseScript):
             v = self.cli("show router rip", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(IPv4(match.group("ip"), netmask=match.group("mask")).prefix
+        return set(
+            IPv4(match.group("ip"), netmask=match.group("mask")).prefix
             for match in self.rx_rip_status.finditer(v)
-            if match.group("direction").lower() != "none")
+            if match.group("direction").lower() != "none"
+        )
 
     def execute(self):
         interfaces = []
         ospf_addresses = self.get_ospf_addresses()
         rip_addresses = self.get_rip_addresses()
-
-        # Get ifindexes
-        ifindexes = self.scripts.get_ifindexes()
 
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
@@ -107,7 +98,7 @@ class Script(BaseScript):
                     portchannel_members[m] = (i, t)
         # Get portchannel members' details
         for m in portchannel_members:
-            admin = self.get_admin_status(m, ifindexes)
+            admin = self.get_admin_status(m)
             oper = self.scripts.get_interface_status(interface=m)[0]["status"]
             iface = {
                 "name": m,
@@ -165,11 +156,9 @@ class Script(BaseScript):
                     "admin_status": admin,
                     "oper_status": swp["status"],
                     "enabled_afi": ["BRIDGE"],
-                    "mac": mac,
-                    "snmp_ifindex": ifindexes.get(name)
+                    "mac": mac
                 }]
             }
-            iface["snmp_ifindex"] = iface["subinterfaces"][0]["snmp_ifindex"]
             if swp["tagged"]:
                 iface["subinterfaces"][0]["tagged_vlans"] = swp["tagged"]
             try:
