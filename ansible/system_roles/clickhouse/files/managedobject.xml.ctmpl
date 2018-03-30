@@ -67,6 +67,18 @@
                  <null_value>Unknown</null_value>
                  <hierarchical>false</hierarchical>
              </attribute>
+             <attribute>
+                 <name>adm_domain_id</name>
+                 <type>String</type>
+                 <null_value>0</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
+             <attribute>
+                 <name>adm_domain_name</name>
+                 <type>String</type>
+                 <null_value>Unknown</null_value>
+                 <hierarchical>false</hierarchical>
+             </attribute>
         </structure>
     </dictionary>
 </dictionaries>
