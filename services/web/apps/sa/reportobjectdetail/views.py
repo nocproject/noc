@@ -10,7 +10,6 @@
 import logging
 import datetime
 import csv
-import tempfile
 import StringIO
 from collections import (defaultdict, namedtuple)
 # Third-party modules
@@ -53,7 +52,6 @@ class ReportObjectBuild(object):
         self.report = report
         self.site = site
         self.run_as = user
-        pass
 
     class RequestStub(object):
         def __init__(self, user):
@@ -92,11 +90,10 @@ class ReportAdPath(object):
 
     def load(self):
         cursor = connection.cursor()
-        cursor.execute("""
-                    SELECT ad.id, ad.name, r.name, ad2.name 
-                    FROM sa_administrativedomain r 
-                    JOIN sa_administrativedomain ad ON ad.parent_id = r.id 
-                    JOIN sa_administrativedomain ad2 ON r.parent_id = ad2.id;
+        cursor.execute("""SELECT ad.id, ad.name, r.name, ad2.name
+                          FROM sa_administrativedomain r
+                          JOIN sa_administrativedomain ad ON ad.parent_id = r.id
+                          JOIN sa_administrativedomain ad2 ON r.parent_id = ad2.id;
                 """)
         return {r[1]: (r[2], r[3]) for r in cursor}
 
@@ -351,7 +348,9 @@ class ReportObjectIfacesStatusStat(object):
             match = {"type": "physical",
                      "managed_object": {"$in": self.mo_ids}}
         try:
-            value = get_db()["noc.interfaces"].with_options(read_preference=ReadPreference.SECONDARY_PREFERRED).aggregate([
+            value = get_db()["noc.interfaces"].with_options(
+                read_preference=ReadPreference.SECONDARY_PREFERRED
+            ).aggregate([
                 {"$match": match},
                 {"$group": {"_id": group,
                             "count": {"$sum": 1}}}
@@ -711,7 +710,8 @@ class ReportObjectDetailApplication(ExtApplication):
             r[-1].extend([_("OBJECT_TAGS")])
         if "sorted_tags" in columns.split(","):
             tags = set()
-            for s in ManagedObject.objects.filter(is_managed=True).exclude(tags=None).values_list('tags', flat=True).distinct():
+            for s in ManagedObject.objects.filter(is_managed=True).exclude(
+                    tags=None).values_list('tags', flat=True).distinct():
                 tags.update(set(s))
             tags_o = sorted([t for t in tags if "{" not in t])
             r[-1].extend(tags_o)
@@ -772,7 +772,6 @@ class ReportObjectDetailApplication(ExtApplication):
             if "discovery_problem" in columns.split(","):
                 dp = discovery_problem[mo] if discovery_problem else {"problems": {}}
                 r[-1].extend([dp["problems"].get(d, {"": ""})[""] for d in discovery])
-            pass
 
         filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if o_format == "csv":
