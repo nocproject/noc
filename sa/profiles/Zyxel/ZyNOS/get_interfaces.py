@@ -12,7 +12,6 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -46,18 +45,10 @@ class Script(BaseScript):
 
     # @todo: vlan trunking, STP, LLDP (fw >= 3.90)
 
-    def get_admin_status(self, iface, ifindex=None):
+    def get_admin_status(self, iface):
         """
         Returns admin status of the interface
         """
-        if self.has_snmp() and ifindex:
-            try:
-                # IF-MIB::ifAdminStatus
-                s = self.snmp.get(mib["IF-MIB::ifAdminStatus", int(ifindex[iface])])
-                return int(s) == 1
-            except self.snmp.TimeOutError:
-                pass  # Fallback to CLI
-
         s = self.cli("show interface config %s" % iface)
         match = self.rx_admin_status.search(s)
         return match.group("admin").lower() == "yes"
@@ -97,14 +88,6 @@ class Script(BaseScript):
         ospf_addresses = self.get_ospf_addresses()
         rip_addresses = self.get_rip_addresses()
 
-        # Get ifindexes
-        ifindexes = {}
-        if self.has_snmp():
-            try:
-                ifindexes = self.scripts.get_ifindexes()
-            except self.snmp.TimeOutError:
-                pass
-
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
         with self.cached():
@@ -115,7 +98,7 @@ class Script(BaseScript):
                     portchannel_members[m] = (i, t)
         # Get portchannel members' details
         for m in portchannel_members:
-            admin = self.get_admin_status(m, ifindexes)
+            admin = self.get_admin_status(m)
             oper = self.scripts.get_interface_status(interface=m)[0]["status"]
             iface = {
                 "name": m,
@@ -176,8 +159,6 @@ class Script(BaseScript):
                     "mac": mac
                 }]
             }
-            if ifindexes.get(name) is not None:
-                iface["snmp_ifindex"] = ifindexes.get(name)
             if swp["tagged"]:
                 iface["subinterfaces"][0]["tagged_vlans"] = swp["tagged"]
             try:
