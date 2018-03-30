@@ -13,6 +13,7 @@ import sys
 # Django modules
 from django.db import models
 # NOC modules
+from noc.sa.models.managedobject import ManagedObject  # noqa
 from noc.core.management.base import BaseCommand, CommandError
 from noc.core.debug import error_report
 from noc.core.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
@@ -55,7 +56,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             self._handle(*args, **options)
-        except CommandError, why:
+        except CommandError as why:
             raise CommandError(why)
         except SystemExit:
             pass

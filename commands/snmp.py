@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Pretty command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Pretty command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import argparse
 # Third-party modules
 from tornado.ioloop import IOLoop
 import tornado.gen
 import tornado.queues
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
 from noc.core.ioloop.snmp import snmp_get, SNMPError
@@ -69,7 +69,7 @@ class Command(BaseCommand):
             "--version",
             type=int,
             help="version snmp check"
-        )  
+        )
 
     def handle(self, input, addresses, jobs, community, oid, timeout, convert, version,
                *args, **options):
@@ -83,10 +83,10 @@ class Command(BaseCommand):
             for fn in input:
                 try:
                     with open(fn) as f:
-                        for l in f:
-                            l = l.strip()
-                            if is_ipv4(l):
-                                self.addresses.add(l)
+                        for line in f:
+                            line = line.strip()
+                            if is_ipv4(line):
+                                self.addresses.add(line)
                 except OSError as e:
                     self.die("Cannot read file %s: %s\n" % (fn, e))
         # @todo: Add community oid check
@@ -144,8 +144,8 @@ class Command(BaseCommand):
                 if self.convert:
                     try:
                         r = MACAddressParameter().clean(r)
-                    except ValueError:    
-                        pass 
+                    except ValueError:
+                        pass
                 self.stdout.write(
                     "%s,%s,%s,%s,%r\n" % (a, s, dt, mc, r)
                 )
