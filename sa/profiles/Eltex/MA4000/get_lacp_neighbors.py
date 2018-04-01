@@ -50,15 +50,14 @@ class Script(BaseScript):
                 for match1 in self.rx_members.finditer(c):
                     if match1.group("remote_sys_id") == "00:00:00:00:00:00":
                         continue
-                    else:
-                        bundle = {
-                            "interface": match1.group("interface"),
-                            "local_port_id": match1.group("local_port_id"),
-                            "remote_system_id": match1.group("remote_sys_id"),
-                            "remote_port_id": match1.group("remote_port_id"),
-                        }
-                        i["system_id"] = match1.group("sys_id")
-                        i["bundle"] += [bundle]
+                    bundle = {
+                        "interface": match1.group("interface"),
+                        "local_port_id": match1.group("local_port_id"),
+                        "remote_system_id": match1.group("remote_sys_id"),
+                        "remote_port_id": match1.group("remote_port_id"),
+                    }
+                    i["system_id"] = match1.group("sys_id")
+                    i["bundle"] += [bundle]
                 if i["bundle"]:
                     r += [i]
         return r
