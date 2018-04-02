@@ -7,25 +7,30 @@
   consul_kv:
     key: "{{consul_service_key}}"
     state: present
+    cas: 0
   vars:
     ansible_python_interpreter: "{{consul_control_python}}"
   register: consul_key_response
+  changed_when: "False"
   check_mode: "False"
+
+- debug: var=consul_key_response
 
 # if default value is unset provide default json
 # waiting for https://github.com/ansible/ansible/pull/32738
 - name: init default if unset
   consul_kv:
     key: "{{consul_service_key}}"
-    cas: "{{consul_key_response.index}}"
     value: "{{ service_tmpl | to_nice_json }}"
+    cas: "{{consul_key_response.index}}"
   vars:
     service_tmpl:
       Holders: []
       Limit: "{{consul_service_value | int}}"
     ansible_python_interpreter: "{{consul_control_python}}"
   when:
-    - not consul_key_response.data
+    - consul_key_response.data is defined
+    - not consul_key_response.data or not consul_key_response.data.Value
 
 # if json is already valid just update needed value
 - name: Update a key/value pair for key {{consul_service_key}}
@@ -40,4 +45,7 @@
     #token: "{{consul_service_token}}"
   vars:
     ansible_python_interpreter: "{{consul_control_python}}"
-  when: consul_key_response.data
+  when:
+    - consul_key_response.data is defined
+    - consul_key_response.data.Value is defined
+    - consul_key_response.data.Value
