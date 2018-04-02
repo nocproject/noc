@@ -12,11 +12,12 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
+
 class Script(BaseScript):
     name = "IBM.NOS.get_version"
     cache = True
     interface = IGetVersion
-    
+
     rx_ver = re.compile(
         r"Software Version\s+(?P<version>\S+)\s\(\w+\s(?P<image>\S+)\)",
         re.MULTILINE | re.DOTALL
@@ -28,7 +29,6 @@ class Script(BaseScript):
     )
 
     rx_pla = re.compile(
-#        r"IBM (?P<platform>Flex System (Fabric )?\w{2}\d{4}\w?)",
         r"^IBM\s.*(?P<platform>(EN|CN|SI|G)\d{4}\w?)\s+",
         re.MULTILINE | re.DOTALL
     )
@@ -47,7 +47,7 @@ class Script(BaseScript):
                     "platform": platform,
                     "version": version,
                     "image": image,
-                    "attributes": { "Serial Number": serial }
+                    "attributes": {"Serial Number": serial}
                 }
             except self.snmp.TimeOutError:
                 pass
@@ -69,5 +69,5 @@ class Script(BaseScript):
             "platform": platform,
             "version": version,
             "image": image,
-            "attributes": { "Serial Number": serial }
+            "attributes": {"Serial Number": serial}
         }
