@@ -34,41 +34,52 @@ class Script(BaseScript):
         elif mea == "uA":
             val = float(val) / 1000.0
         elif mea == "V":
-            val = val / 1000.0
+            val = float(val) / 1000.0
         return val
 
     def execute_cli(self, interface=None):
         # @todo without stack slot (Members | Ids)
         # show ports transceiver information
-        cmd = "debug hal show optic-info ddmi"
         if interface is not None:
-            cmd = "debug hal show optic-info ddmi slot %s port %s" % interface.split(":")
-        try:
-            v = self.cli(cmd)
-        except self.CLISyntaxError:
-            return []
-        port = None
-        r = []
-        k_map = {"temperature": "temp_c",
-                 "voltage": "voltage_v",
-                 "tx bias": "current_ma",
-                 "tx power": "optical_tx_dbm",
-                 "rx power": "optical_rx_dbm"
-                 }
-        for block in self.rx_trans_split.split(v):
-            if is_int(block):
-                port = block.strip()
-                continue
-            if self.rx_no_trans.match(block) or not port:
-                continue
-            d = parse_kv(k_map, block)
-
-            r += [{
-                "interface": port,
-                "temp_c": self.normalize_output(d.get("temp_c")),
-                "voltage_v": self.normalize_output(d.get("voltage_v")),
-                "current_ma": self.normalize_output(d.get("current_ma")),
-                "optical_rx_dbm": self.normalize_output(d.get("optical_rx_dbm")),
-                "optical_tx_dbm": self.normalize_output(d.get("optical_tx_dbm"))
-            }]
+            ifaces = [interface.split(":")]
+        elif self.has_capability("Stack | Member Ids"):
+            ifaces = [(s_id, None) for s_id in
+                      self.capabilities["Stack | Member Ids"].split(" | ")]
+        else:
+            ifaces = (None, None)
+        for slot, port in ifaces:
+            cmd = "debug hal show optic-info ddmi "
+            if port is not None:
+                cmd += "slot %s, port %s" % (slot, port)
+            elif slot is not None:
+                cmd += "slot %s" % slot
+            try:
+                v = self.cli(cmd)
+            except self.CLISyntaxError:
+                return []
+            port = None
+            r = []
+            k_map = {"temperature": "temp_c",
+                     "voltage": "voltage_v",
+                     "tx bias": "current_ma",
+                     "tx power": "optical_tx_dbm",
+                     "rx power": "optical_rx_dbm"
+                     }
+            for block in self.rx_trans_split.split(v):
+                if is_int(block):
+                    port = block.strip()
+                    continue
+                if self.rx_no_trans.match(block) or not port:
+                    continue
+                d = parse_kv(k_map, block)
+                if slot is not None:
+                    port = "%s:%s" % (slot, port)
+                r += [{
+                    "interface": port,
+                    "temp_c": self.normalize_output(d.get("temp_c")),
+                    "voltage_v": self.normalize_output(d.get("voltage_v")),
+                    "current_ma": self.normalize_output(d.get("current_ma")),
+                    "optical_rx_dbm": self.normalize_output(d.get("optical_rx_dbm")),
+                    "optical_tx_dbm": self.normalize_output(d.get("optical_tx_dbm"))
+                }]
         return r
