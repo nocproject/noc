@@ -14,8 +14,6 @@
   changed_when: "False"
   check_mode: "False"
 
-- debug: var=consul_key_response
-
 # if default value is unset provide default json
 # waiting for https://github.com/ansible/ansible/pull/32738
 - name: init default if unset
