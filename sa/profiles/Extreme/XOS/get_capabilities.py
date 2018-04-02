@@ -56,6 +56,8 @@ class Script(BaseScript):
             s = []
             cmd = self.cli("show stacking")
             for i in parse_table(cmd, footer="Indicates this node"):
+                if i[1] == "-":
+                    continue
                 s += [i[1]]
             if s:
                 caps["Stack | Members"] = len(s) if len(s) != 1 else 0
