@@ -33,10 +33,9 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_stp_cli(self):
         """
-	Check box has stp enabled
+        Check box has stp enabled
         """
-	r = self.cli("show spanning-tree")
-        if ("Spanning Tree is shut down" in r or
-                "No spanning tree instances exist" in r):
+        r = self.cli("show spanning-tree")
+        if ("Spanning Tree is shut down" in r):
             return False
         return True
