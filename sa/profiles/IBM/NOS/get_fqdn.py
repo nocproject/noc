@@ -24,7 +24,7 @@ class Script(BaseScript):
             try:
                 v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)  # sysName.0
                 if v:
-                   return v
+                    return v
             except self.snmp.TimeOutError:
                 pass
         h = self.cli(
