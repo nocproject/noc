@@ -8,10 +8,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
+# import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
-from noc.sa.interfaces.base import InterfaceTypeError
+#from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Profile(BaseProfile):
@@ -25,4 +25,3 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
-
