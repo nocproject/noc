@@ -19,18 +19,17 @@ class Script(BaseScript):
     rx_hostname = re.compile(r'^hostname\s+\"(?P<hostname>\S+)\"', re.MULTILINE)
     rx_domain_name = re.compile(r"^ip dns domain\-name\s+(?P<domain>\S+)", re.MULTILINE)
 
-    def execute(self):
-        if not self.has_snmp():
-            try:
-                v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)  # sysName.0
-                if v:
-                    return v
-            except self.snmp.TimeOutError:
-                pass
-        h = self.cli(
-            "show running-config | include hostname")
-        d = self.cli(
-            "show running-config | include domain-name")
+    def execute_snmp(self):
+        try:
+            v = self.snmp.get("1.3.6.1.2.1.1.5.0", cached=True)  # sysName.0
+            if v:
+                return v
+        except self.snmp.TimeOutError:
+            pass
+
+    def execute_cli(self):
+        h = self.cli("show running-config | include hostname")
+        d = self.cli("show running-config | include domain-name")
         fqdn = []
         match = self.rx_hostname.search(h)
         if match:
