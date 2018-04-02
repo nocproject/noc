@@ -29,7 +29,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         v = self.cli("show version")
-        match = self.re_search(self.rx_small, v)
+        match = self.rx_small.search(v)
         base = match.group("mac")
         return [{
             "first_chassis_mac": base,
