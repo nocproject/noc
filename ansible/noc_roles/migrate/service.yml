@@ -4,16 +4,12 @@
   become: "True"
   gather_facts: "True"
   tags:
-    - node
-    - noc
+    - migrate
   vars_files:
     - "../../vars/main.yml"
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: migrate
-      become: "True"
       run_once: "True"
-      tags:
-        - migrate
       environment:
         NOC_CONFIG: "{{config_order}}"
