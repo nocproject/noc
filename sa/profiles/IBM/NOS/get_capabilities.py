@@ -17,8 +17,7 @@ class Script(BaseScript):
     name = "IBM.NOS.get_capabilities"
 
     rx_lldp = re.compile(
-        r"LLDP setting\:\s+(?P<lldp>\w+)\s+",
-        re.MULTILINE | re.DOTALL
+        r"LLDP setting\:\s+(?P<lldp>\w+)\s+", re.MULTILINE
     )
 
     @false_on_cli_error
