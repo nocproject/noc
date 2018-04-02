@@ -462,7 +462,7 @@ class ConsulDCS(DCSBase):
                 r = yield self.consul.kv.put(
                     key=manifest_path,
                     value=ujson.dumps({
-                        "Limit": total_slots,
+                        "Limit": str(total_slots),
                         "Holders": holders
                     }, indent=2),
                     cas=cas
