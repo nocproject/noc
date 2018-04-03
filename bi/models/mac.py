@@ -49,7 +49,7 @@ class MAC(Model):
       AND uni = 1;
     """
 
-    class Meta:
+    class Meta(object):
         db_table = "mac"
         engine = MergeTree("date", ("ts", "managed_object"))
 
