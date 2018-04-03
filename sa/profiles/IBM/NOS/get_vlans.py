@@ -33,6 +33,5 @@ class Script(BaseScript):
         ]
 
     def execute_cli(self):
-        vlans = None
         vlans = self.cli("show vlan")
         return self.extract_vlans(vlans)
