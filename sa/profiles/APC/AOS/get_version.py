@@ -33,6 +33,8 @@ class Script(BaseScript):
         if not platform:
             # Use SysName for old version
             platform = self.snmp.get(mib["SNMPv2-MIB::sysName", 0])
+        if not platform:
+            raise self.NotSupportedError
         return {
             "vendor": "APC",
             "platform": platform,
