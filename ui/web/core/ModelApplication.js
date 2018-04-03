@@ -18,6 +18,8 @@ Ext.define("NOC.core.ModelApplication", {
 
     layout: "card",
     search: false,
+    searchPlaceholder: undefined,
+    searchTooltip: undefined,
     filters: null,
     gridToolbar: [],  // Additional grid toolbar buttons
     formToolbar: [],  // Additional form toolbar buttons
@@ -129,11 +131,16 @@ Ext.define("NOC.core.ModelApplication", {
             width: 400,
             typeAhead: false,
             typeAheadDelay: 500,
+            emptyText: me.searchPlaceholder,
+            tooltip: me.searchTooltip,
             hasAccess: function(app) {
                 return app.search === true;
             },
             scope: me,
-            handler: me.onSearch
+            handler: me.onSearch,
+            listeners: {
+                render: me.addTooltip
+            }
         });
 
         me.refreshButton = Ext.create("Ext.button.Button", {
@@ -1857,6 +1864,15 @@ Ext.define("NOC.core.ModelApplication", {
                     filter.tree.restoreById(newRoot)
                 }
             })
+        }
+    },
+    //
+    addTooltip: function(element) {
+        if(element.tooltip) {
+            Ext.create('Ext.tip.ToolTip', {
+                target: element.getEl(),
+                html: element.tooltip
+            });
         }
     }
 });
