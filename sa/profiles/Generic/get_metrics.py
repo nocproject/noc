@@ -11,6 +11,8 @@ import time
 import os
 from threading import Lock
 import re
+from collections import defaultdict
+import itertools
 # Third-party modules
 import six
 import ujson
@@ -366,6 +368,30 @@ class CapabilityListRule(OIDRule):
                     yield oid, self.type, self.scale, cfg.path
 
 
+@six.add_metaclass(OIDRuleBase)
+class CLIRule(object):
+    """
+    Rule for getting metrics from CLI
+    handler - method name, for getting metrics
+    """
+    name = "cli"
+
+    def __init__(self, handler, type, scale=1):
+        self.handler = handler
+        self.type = type
+        self.scale = scale
+
+    @classmethod
+    def from_json(cls, data):
+        if "handler" not in data:
+            raise ValueError("Handler is required")
+        return CLIRule(
+            handler=data["handler"],
+            type=data.get("type", "gauge"),
+            scale=data.get("scale", 1)
+        )
+
+
 class Script(BaseScript):
     """
     Retrieve data for topology discovery
@@ -412,9 +438,11 @@ class Script(BaseScript):
         """
         metrics = [MetricConfig(**m) for m in metrics]
         self.collect_profile_metrics(metrics)
+        snmp_batch, cli_batch = self.proccess_rules(metrics)
         if self.has_capability("SNMP"):
-            self.collect_snmp_metrics(metrics)
+            self.collect_snmp_metrics(snmp_batch)
         #
+        self.collect_cli_metrics(cli_batch)
         return self.get_metrics()
 
     def collect_profile_metrics(self, metrics):
@@ -423,24 +451,102 @@ class Script(BaseScript):
         """
         pass
 
-    def collect_snmp_metrics(self, metrics):
+    def proccess_rules(self, metrics):
         """
-        Collect all collectible SNMP metrics
+        Proccess rules files and return batch
+        :param metrics:
+        :return:
         """
-        batch = {}
+        snmp_batch = dict()
+        cli_batch = defaultdict(list)
         for m in metrics:
             # Calculate oids
             self.logger.debug("Make oid for metrics: %s" % m.metric)
             snmp_rule = self.get_snmp_rule(m.metric)
+            if isinstance(snmp_rule, CLIRule):
+                cli_batch[snmp_rule.handler] += [BatchConfig(
+                    id=m.id,
+                    metric=m.metric,
+                    path=m.path,
+                    type=snmp_rule.type,
+                    scale=snmp_rule.scale
+                    )]
+                continue
             if snmp_rule:
                 for oid, vtype, scale, path in snmp_rule.iter_oids(self, m):
-                    batch[oid] = BatchConfig(
+                    snmp_batch[oid] = BatchConfig(
                         id=m.id,
                         metric=m.metric,
                         path=path,
                         type=vtype,
                         scale=scale
                     )
+        return snmp_batch, cli_batch
+
+    def collect_cli_metrics(self, batch):
+        """
+        Collect all collectible CLI metrics
+        and filter it for batch
+        :param batch:
+        :return:
+        """
+        self.logger.debug("Batch: %s" % batch)
+        procc = []
+        m = {}
+        paths = {}
+        ts = self.get_ts()  # @todo save it to result handler
+
+        for m_handler, m_batch in six.iteritems(batch):
+            if m_handler not in procc:
+                # Getting metrics from CLI
+                handler = getattr(self, m_handler, None)
+                if handler:
+                    m.update(handler())
+                    for k, v in itertools.groupby(sorted(m, key=lambda x: x[-1]), key=lambda x: x[-1]):
+                        paths[k] = list(v)
+                for bv in m_batch:
+                    self.logger.debug("Proccess CLI metric: %s, path: %s", bv.metric, bv.path)
+                    # @todo Refactoring
+                    if bv.path:
+                        # If path in batch - filter by batch path
+                        if tuple(bv.path + [bv.metric]) not in m:
+                            continue
+                        pp = [tuple(bv.path + [bv.metric])]
+                    elif "slot" in m:
+                        # if path in metrics output, proccess it
+                        pp = paths[bv.metric]
+                    else:
+                        continue
+                    for p in pp:
+                        self.set_metric(
+                            id=bv.id,
+                            metric=bv.metric,
+                            value=m[p],
+                            type=bv.type,
+                            ts=ts,
+                            path=p[:-1],
+                        )
+
+        pass
+
+    def collect_snmp_metrics(self, batch):
+        """
+        Collect all collectible SNMP metrics
+        """
+        # batch = {}
+        # for m in metrics:
+        #     # Calculate oids
+        #     self.logger.debug("Make oid for metrics: %s" % m.metric)
+        #     snmp_rule = self.get_snmp_rule(m.metric)
+        #     if snmp_rule:
+        #         for oid, vtype, scale, path in snmp_rule.iter_oids(self, m):
+        #             batch[oid] = BatchConfig(
+        #                 id=m.id,
+        #                 metric=m.metric,
+        #                 path=path,
+        #                 type=vtype,
+        #                 scale=scale
+        #             )
         self.logger.debug("Batch: %s" % batch)
         # Run snmp batch
         if not batch:
