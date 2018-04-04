@@ -121,6 +121,17 @@ class Prefix(models.Model):
         blank=False,
         null=False
     )
+    source = models.CharField(
+        "Source",
+        max_length=1,
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("n", "Neighbor")
+        ],
+        null=False, blank=False,
+        default="M"
+    )
 
     csv_ignored_fields = ["parent"]
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

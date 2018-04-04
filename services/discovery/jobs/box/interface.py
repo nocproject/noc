@@ -32,6 +32,7 @@ class InterfaceCheck(DiscoveryCheck):
         self.seen_interfaces = []
         self.vrf_artefact = {}  # name -> {name:, type:, rd:}
         self.prefix_artefact = {}
+        self.interface_prefix_artefact = []
 
     def handler(self):
         self.logger.info("Checking interfaces")
@@ -62,8 +63,9 @@ class InterfaceCheck(DiscoveryCheck):
                         )
                         continue
                 # Submit discovered interface
+                mac = i.get("mac")
                 iface = self.submit_interface(
-                    name=i["name"], type=i["type"], mac=i.get("mac"),
+                    name=i["name"], type=i["type"], mac=mac,
                     description=i.get("description"),
                     aggregated_interface=agg,
                     enabled_protocols=i.get("enabled_protocols", []),
@@ -74,7 +76,8 @@ class InterfaceCheck(DiscoveryCheck):
                 for si in i["subinterfaces"]:
                     self.submit_subinterface(
                         forwarding_instance=forwarding_instance,
-                        interface=iface, name=si["name"],
+                        interface=iface,
+                        name=si["name"],
                         description=si.get("description"),
                         mac=si.get("mac", i.get("mac")),
                         vlan_ids=si.get("vlan_ids", []),
@@ -90,6 +93,17 @@ class InterfaceCheck(DiscoveryCheck):
                         # ip_unnumbered_subinterface
                         ifindex=si.get("snmp_ifindex")
                     )
+                    addresses = si.get("ipv4_addresses", []) + si.get("ipv6_addresses", [])
+                    if addresses:
+                        rd = forwarding_instance.rd if forwarding_instance else "0:0"
+                        for a in addresses:
+                            self.interface_prefix_artefact += [{
+                                "rd": rd,
+                                "address": a,
+                                "subinterface": si["name"],
+                                "description": si.get("description"),
+                                "mac": mac
+                            }]
                 # Delete hanging subinterfaces
                 self.cleanup_subinterfaces(
                     forwarding_instance, iface,
@@ -113,6 +127,7 @@ class InterfaceCheck(DiscoveryCheck):
         }, source="interface")
         self.set_artefact("interface_macs", self.interface_macs)
         self.set_artefact("vrf", self.vrf_artefact)
+        self.set_artefact("interface_prefix", self.interface_prefix_artefact)
 
     def submit_forwarding_instance(self, name, type, rd, vr):
         if name == "default":

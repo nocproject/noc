@@ -33,6 +33,8 @@ from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, Boolea
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
 from noc.core.window import wf_choices
+from noc.ip.models.addressprofile import AddressProfile
+
 
 m_valid = DictListParameter(attrs={
     "metric_type": ObjectIdParameter(required=True),
@@ -93,7 +95,9 @@ class ManagedObjectProfile(models.Model):
                                      blank=True, null=True)
     # IPAM Synchronization
     # During ManagedObject save
+    # @todo: Remove
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
+    # @todo: Remove
     fqdn_template = models.TextField(_("FQDN template"),
                                      null=True, blank=True)
     # @todo: Name validation function
@@ -177,6 +181,10 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_address = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_address_interface = models.BooleanField(default=False)
+    # IP discovery (Management)
+    enable_box_discovery_address_management = models.BooleanField(default=False)
+    # IP discovery (DHCP)
+    enable_box_discovery_address_dhcp = models.BooleanField(default=False)
     # IP discovery (neighbbors)
     enable_box_discovery_prefix = models.BooleanField(default=False)
     # IP discovery (interface)
@@ -420,6 +428,23 @@ class ManagedObjectProfile(models.Model):
     neighbor_cache_ttl = models.IntegerField(
         "Neighbor Cache TTL",
         default=0
+    )
+    # Address discovery profiles
+    address_profile_interface = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_management = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_dhcp = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_neighbor = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
     )
     #
     metrics = PickledField(blank=True)

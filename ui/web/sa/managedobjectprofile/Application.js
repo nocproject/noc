@@ -18,7 +18,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.ip.addressprofile.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -68,13 +69,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         }
                         return v
                     },
-                    align: "center"
-                },
-                {
-                    text: __("Sync IPAM"),
-                    dataIndex: "sync_ipam",
-                    width: 60,
-                    renderer: NOC.render.Bool,
                     align: "center"
                 },
                 {
@@ -254,24 +248,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     fieldLabel: __("Card Title Template"),
                                     labelWidth: 200,
                                     allowBlank: false,
-                                    uiStyle: "extra"
-                                }
-                            ]
-                        },
-                        {
-                            title: "IPAM",
-                            items: [
-                                {
-                                    name: "sync_ipam",
-                                    xtype: "checkboxfield",
-                                    boxLabel: __("Enable IPAM synchronization"),
-                                    allowBlank: false
-                                },
-                                {
-                                    name: "fqdn_template",
-                                    xtype: "textarea",
-                                    fieldLabel: __("FQDN template"),
-                                    allowBlank: true,
                                     uiStyle: "extra"
                                 }
                             ]
@@ -764,16 +740,83 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_box_discovery_prefix",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Prefix (Neighbors)")
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IPAM (Address)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
+                                    defaults: {
+                                        padding: "2px 4px 2px 4px"
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "label",
+                                            text: __("Type")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Address Profile")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
                                         },
                                         {
                                             name: "enable_box_discovery_address_interface",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Address (Interface)")
+                                            xtype: "checkbox"
+                                        },
+                                        {
+                                            name: "address_profile_interface",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Management")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_management",
+                                            xtype: "checkbox"
+                                        },
+                                        {
+                                            name: "address_profile_management",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("DHCP")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_dhcp",
+                                            xtype: "checkbox"
+                                        },
+                                        {
+                                            name: "address_profile_dhcp",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Neighbor")
                                         },
                                         {
                                             name: "enable_box_discovery_address",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Address (Neighbors)")
+                                            xtype: "checkbox"
+                                        },
+                                        {
+                                            name: "address_profile_neighbor",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true
                                         }
                                     ]
                                 },

@@ -191,6 +191,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_address_management",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_address_dhcp",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_box_discovery_id",
             type: "boolean",
             defaultValue: false
@@ -491,6 +501,42 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "event_processing_policy",
             type: "string"
+        },
+        {
+            name: "address_profile_interface",
+            type: "string"
+        },
+        {
+            name: "address_profile_interface__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "address_profile_management",
+            type: "string"
+        },
+        {
+            name: "address_profile_management__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "address_profile_neighbor",
+            type: "string"
+        },
+        {
+            name: "address_profile_neighbor__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "address_profile_dhcp",
+            type: "string"
+        },
+        {
+            name: "address_profile_dhcp__label",
+            type: "string",
+            persist: false
         }
     ]
 });
