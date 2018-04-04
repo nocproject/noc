@@ -212,7 +212,7 @@ class Address(models.Model):
         card = "Address %s, Name %s" % (self.address, self.name)
         if self.fqdn:
             content += [self.fqdn]
-            card += [", FQDN %s" % self.fqdn]
+            card += ", FQDN %s" % self.fqdn
         if self.mac:
             content += [self.mac]
             card += ", MAC %s" % self.mac
