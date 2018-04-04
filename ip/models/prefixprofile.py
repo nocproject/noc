@@ -17,6 +17,7 @@ import cachetools
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
+from noc.main.models.template import Template
 from noc.wf.models.workflow import Workflow
 from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
@@ -54,6 +55,9 @@ class PrefixProfile(Document):
     # Prefix workflow
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
+    # Template.subject to render Prefix.name
+    name_template = ForeignKeyField(Template)
+    #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from

@@ -45,9 +45,9 @@ class AddressProfile(Document):
     # Address workflow
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
-    # Template.body to render Address.name
+    # Template.subject to render Address.name
     name_template = ForeignKeyField(Template)
-    # Template.body to render Address.fqdn
+    # Template.subject to render Address.fqdn
     fqdn_template = ForeignKeyField(Template)
     #
     tags = ListField(StringField())
