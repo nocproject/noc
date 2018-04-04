@@ -363,6 +363,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                     <th class="managed-object">Managed Object</th>
                     <th class="gw" title="Address belongs to router interface">GW</th>
                     <th>Description</th>
+                    <th>Source</th>
                     <th class="tt">TT</th>
                     <th>Tags</th>
                 </tr>
@@ -386,11 +387,18 @@ document.currentPrefix = "{{ prefix.prefix }}";
                     <td>{{ a.name }}</td>
                     <td class="state">{{ a.state.name }}</td>
                     <td class="state">{% if a.project %}{{ a.project.code }}{% endif %}</td>
-                    <td style="width: auto">{{a.fqdn}}</td>
+                    <td style="width: auto">{% if a.fqdn %}{{a.fqdn}}{% endif %}</td>
                     <td>{% if a.mac %}{{a.mac}}{% endif %}</td>
-                    <td>{% if a.managed_object %}{{a.managed_object.name}}{% endif %}</td>
+                    <td>{% if a.managed_object %}<a href="/api/card/view/managedobject/{{ a.managed_object.id }}/" target="_">{{a.managed_object.name}}</a>{% if a.subinterface %}@{{ a.subinterface }}{% endif %}{% endif %}</td>
                     <td>{% if a.managed_object and a.managed_object.is_router %}<i class='noc-yes fa fa-check'></i>{% endif %}</td>
                     <td title="{{a.description}}">{{a.short_description}}</td>
+                    <td>
+                        {% ifequal a.source "M" %}Manual{% endifequal %}
+                        {% ifequal a.source "i" %}Interface{% endifequal %}
+                        {% ifequal a.source "m" %}Mgmt{% endifequal %}
+                        {% ifequal a.source "d" %}DHCP{% endifequal %}
+                        {% ifequal a.source "n" %}Neighbor{% endifequal %}
+                    </td>
                     <td>{%if a.tt %}#{{a.tt}}{%endif%}</td>
                     <td>{% tags a %}</td>
                 </tr>
