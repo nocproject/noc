@@ -25,6 +25,15 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     search: true,
     rowClassField: "row_class",
     validationModelId: "sa.ManagedObjectProfile",
+    viewModel: {
+        data: {
+            enableBoxDiscoveryAddressInterface: false,
+            enableBoxDiscoveryAddressManagement: false,
+            enableBoxDiscoveryAddressDHCP: false,
+            enableBoxDiscoveryAddressNeighbor: false,
+            enableBoxDiscoveryHK: false
+        }
+    },
 
     initComponent: function() {
         var me = this;
@@ -772,12 +781,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         },
                                         {
                                             name: "enable_box_discovery_address_interface",
-                                            xtype: "checkbox"
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressInterface"
                                         },
                                         {
                                             name: "address_profile_interface",
                                             xtype: "ip.addressprofile.LookupField",
-                                            allowBlank: true
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressInterface.checked}"
+                                            }
                                         },
                                         {
                                             xtype: "label",
@@ -785,12 +798,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         },
                                         {
                                             name: "enable_box_discovery_address_management",
-                                            xtype: "checkbox"
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressManagement"
                                         },
                                         {
                                             name: "address_profile_management",
                                             xtype: "ip.addressprofile.LookupField",
-                                            allowBlank: true
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressManagement.checked}"
+                                            }
                                         },
                                         {
                                             xtype: "label",
@@ -798,12 +815,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         },
                                         {
                                             name: "enable_box_discovery_address_dhcp",
-                                            xtype: "checkbox"
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressDHCP"
                                         },
                                         {
                                             name: "address_profile_dhcp",
                                             xtype: "ip.addressprofile.LookupField",
-                                            allowBlank: true
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressDHCP.checked}"
+                                            }
                                         },
                                         {
                                             xtype: "label",
@@ -811,12 +832,17 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         },
                                         {
                                             name: "enable_box_discovery_address",
-                                            xtype: "checkbox"
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressNeighbor"
                                         },
                                         {
                                             name: "address_profile_neighbor",
                                             xtype: "ip.addressprofile.LookupField",
-                                            allowBlank: true
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressNeighbor.checked}"
+                                            }
+
                                         }
                                     ]
                                 },
@@ -945,14 +971,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_hk",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Housekeeping")
+                                            boxLabel: __("Housekeeping"),
+                                            reference: "enableBoxDiscoveryHK"
                                         },
                                         {
                                             name: "hk_handler",
                                             xtype: "textfield",
                                             labelAlign: "left",
                                             fieldLabel: __("Handler"),
-                                            allowBlank: true
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryHK.checked}"
+                                            }
                                         }
                                     ]
                                 },
