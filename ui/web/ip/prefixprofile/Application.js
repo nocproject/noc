@@ -12,6 +12,7 @@ Ext.define("NOC.ip.prefixprofile.Application", {
         "NOC.ip.prefixprofile.Model",
         "NOC.ip.prefixprofile.LookupField",
         "NOC.main.style.LookupField",
+        "NOC.main.template.LookupField",
         "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.ip.prefixprofile.Model",
@@ -67,6 +68,12 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     name: "style",
                     xtype: "main.style.LookupField",
                     fieldLabel: __("Style"),
+                    allowBlank: true
+                },
+                {
+                    name: "name_template",
+                    xtype: "main.template.LookupField",
+                    fieldLabel: __("Template"),
                     allowBlank: true
                 },
                 {

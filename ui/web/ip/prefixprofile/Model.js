@@ -64,6 +64,15 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             type: "string"
         },
         {
+            name: "name_template",
+            type: "string"
+        },
+        {
+            name: "name_template__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "name",
             type: "string"
         },
