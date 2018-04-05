@@ -109,11 +109,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             CPECheck(self).run()
         if self.object.object_profile.enable_box_discovery_mac:
             MACCheck(self).run()
-        if (
-            self.object.object_profile.enable_box_discovery_address or
-            self.object.object_profile.enable_box_discovery_address_interface or
-            self.object.object_profile.enable_box_discovery_address_management
-        ):
+        if AddressCheck.is_enabled_for_object(self.object):
             AddressCheck(self).run()
         if self.object.enable_autosegmentation:
             SegmentationCheck(self).run()

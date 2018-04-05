@@ -427,3 +427,12 @@ class AddressCheck(DiscoveryCheck):
             "get_handler": get_handler,
             "object": self.object
         }
+
+    @staticmethod
+    def is_enabled_for_object(object):
+        return (
+            object.object_profile.enable_box_discovery_address or
+            object.object_profile.enable_box_discovery_address_interface or
+            object.object_profile.enable_box_discovery_address_management or
+            object.object_profile.enable_box_discovery_address_dhcp
+        )
