@@ -64,6 +64,11 @@ class Prefix(models.Model):
         max_length=1,
         choices=AFI_CHOICES)
     prefix = CIDRField(_("Prefix"))
+    name = models.CharField(
+        _("Name"),
+        max_length=255,
+        null=True, blank=True
+    )
     profile = DocumentReferenceField(
         PrefixProfile,
         null=False, blank=False

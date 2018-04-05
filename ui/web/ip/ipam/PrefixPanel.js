@@ -48,6 +48,13 @@ Ext.define("NOC.ip.ipam.PrefixPanel", {
                     store: []
                 },
                 {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: __("Name"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
