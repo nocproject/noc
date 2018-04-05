@@ -123,7 +123,7 @@ class AddressCheck(DiscoveryCheck):
         self.logger.debug("Checking for hanging addresses")
         for a in Address.objects.filter(managed_object=self.object):
             address = addresses.get((a.vrf.rd, a.address))
-            if not address or address.source == SRC_NEIGHBOR:
+            if not address or address.source not in LOCAL_SRC:
                 self.logger.info("Detaching %s:%s", a.vrf.name, a.address)
                 a.managed_object = None
                 a.save()
