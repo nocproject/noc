@@ -539,7 +539,10 @@ class ClassifierService(Service):
         # @todo: Use config.pool instead
         self.pub(
             "correlator.dispose.%s" % event.managed_object.pool.name,
-            {"event_id": str(event.id)}
+            {
+                "event_id": str(event.id),
+                "event": event.to_json()
+            }
         )
         metrics[CR_DISPOSED] += 1
 
