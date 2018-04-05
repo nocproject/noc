@@ -56,14 +56,6 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             type: "int"
         },
         {
-            name: "autocreated_prefix_profile",
-            type: "string"
-        },
-        {
-            name: "autocreated_prefix_profile__label",
-            type: "string"
-        },
-        {
             name: "name_template",
             type: "string"
         },

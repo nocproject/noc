@@ -10,7 +10,6 @@ Ext.define("NOC.ip.prefixprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.ip.prefixprofile.Model",
-        "NOC.ip.prefixprofile.LookupField",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.remotesystem.LookupField"
@@ -48,11 +47,6 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     name: "enable_prefix_discovery",
                     xtype: "checkbox",
                     boxLabel: __("Prefix Discovery")
-                },
-                {
-                    name: "autocreated_prefix_profile",
-                    xtype: "ip.prefixprofile.LookupField",
-                    fieldLabel: __("Discovered Prefix Profile")
                 },
                 {
                     name: "enable_ip_discovery",
