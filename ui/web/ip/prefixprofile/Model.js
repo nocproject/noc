@@ -44,6 +44,11 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             type: "string"
         },
         {
+            name: "workflow__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "enable_ip_ping_discovery",
             type: "boolean"
         },

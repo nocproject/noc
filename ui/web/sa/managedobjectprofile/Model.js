@@ -537,6 +537,24 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "address_profile_dhcp__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "prefix_profile_interface",
+            type: "string"
+        },
+        {
+            name: "prefix_profile_interface__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "prefix_profile_neighbor",
+            type: "string"
+        },
+        {
+            name: "prefix_profile_neighbor__label",
+            type: "string",
+            persist: false
         }
     ]
 });

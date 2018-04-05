@@ -19,6 +19,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.pm.metrictype.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
+        "NOC.ip.prefixprofile.LookupField",
         "NOC.ip.addressprofile.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
@@ -27,6 +28,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     validationModelId: "sa.ManagedObjectProfile",
     viewModel: {
         data: {
+            enableBoxDiscoveryPrefixInterface: false,
+            enableBoxDiscoveryPrefixNeighbor: false,
             enableBoxDiscoveryAddressInterface: false,
             enableBoxDiscoveryAddressManagement: false,
             enableBoxDiscoveryAddressDHCP: false,
@@ -592,11 +595,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Interface")
                                         },
                                         {
-                                            name: "enable_box_discovery_prefix",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Prefix")
-                                        },
-                                        {
                                             name: "enable_box_discovery_id",
                                             xtype: "checkboxfield",
                                             boxLabel: __("ID")
@@ -729,26 +727,61 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
-                                    title: __("IPAM"),
-                                    layout: "hbox",
+                                    title: __("IPAM (Prefix)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
                                     defaults: {
-                                        padding: "0 8 0 0"
+                                        padding: "2px 4px 2px 4px"
                                     },
                                     items: [
                                         {
-                                            name: "enable_box_discovery_vrf",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("VRF")
+                                            xtype: "label",
+                                            text: __("Type")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Prefix Profile")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
                                         },
                                         {
                                             name: "enable_box_discovery_prefix_interface",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Prefix (Interface)")
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryPrefixInterface"
+                                        },
+                                        {
+                                            name: "prefix_profile_interface",
+                                            xtype: "ip.prefixprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryPrefixInterface.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Neighbor")
                                         },
                                         {
                                             name: "enable_box_discovery_prefix",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Prefix (Neighbors)")
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryPrefixNeighbor"
+                                        },
+                                        {
+                                            name: "prefix_profile_neighbor",
+                                            xtype: "ip.prefixprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryPrefixNeighbor.checked}"
+                                            }
+
                                         }
                                     ]
                                 },
