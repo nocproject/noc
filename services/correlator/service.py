@@ -508,7 +508,11 @@ class CorrelatorService(Service):
         :return:
         """
         self.perf_metrics["event_hints"] += 1
-        return ActiveEvent.from_json(hint)
+        e = ActiveEvent.from_json(hint)
+        # Prevent TypeError: can't compare offset-naive and offset-aware datetimes
+        # when calculating alarm timestamp
+        e.timestamp = e.timestamp.replace(tzinfo=None)
+        return e
 
     def dispose_event(self, e):
         """
