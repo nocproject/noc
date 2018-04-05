@@ -33,6 +33,7 @@ from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, Boolea
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
 from noc.core.window import wf_choices
+from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
 
 
@@ -428,6 +429,15 @@ class ManagedObjectProfile(models.Model):
     neighbor_cache_ttl = models.IntegerField(
         "Neighbor Cache TTL",
         default=0
+    )
+    # Prefix discovery profiles
+    prefix_profile_interface = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    prefix_profile_neighbor = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
     )
     # Address discovery profiles
     address_profile_interface = DocumentReferenceField(

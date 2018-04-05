@@ -102,7 +102,8 @@ class InterfaceCheck(DiscoveryCheck):
                                 "address": a,
                                 "subinterface": si["name"],
                                 "description": si.get("description"),
-                                "mac": mac
+                                "mac": mac,
+                                "vlan_ids": si.get("vlan_ids", [])
                             }]
                 # Delete hanging subinterfaces
                 self.cleanup_subinterfaces(

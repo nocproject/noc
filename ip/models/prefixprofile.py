@@ -29,7 +29,9 @@ id_lock = Lock()
 
 @bi_sync
 @on_delete_check(check=[
-    ("ip.Prefix", "profile")
+    ("ip.Prefix", "profile"),
+    ("sa.ManagedObjectProfile", "prefix_profile_interface"),
+    ("sa.ManagedObjectProfile", "prefix_profile_neighbor")
 ])
 class PrefixProfile(Document):
     meta = {

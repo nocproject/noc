@@ -23,8 +23,6 @@ DiscoveredAddress = namedtuple("DiscoveredAddress", [
     "description",
     "source",
     "subinterface",
-    "name_template",
-    "fqdn_template",
     "mac"
 ])
 
@@ -174,8 +172,6 @@ class AddressCheck(DiscoveryCheck):
                 source=SRC_INTERFACE,
                 description=a["description"],
                 subinterface=a["subinterface"],
-                name_template=self.object.object_profile.address_profile_interface.name_template,
-                fqdn_template=self.object.object_profile.address_profile_interface.fqdn_template,
                 mac=a["mac"]
             ) for a in addresses
         ]
@@ -199,8 +195,6 @@ class AddressCheck(DiscoveryCheck):
                     source=SRC_MANAGEMENT,
                     description="Management address",
                     subinterface=None,
-                    name_template=self.object.object_profile.address_profile_management.name_template,
-                    fqdn_template=self.object.object_profile.address_profile_management.fqdn_template,
                     mac=None
                 )
             ]
@@ -228,8 +222,6 @@ class AddressCheck(DiscoveryCheck):
                 source=SRC_DHCP,
                 description=None,
                 subinterface=None,
-                name_template=self.object.object_profile.address_profile_dhcp.name_template,
-                fqdn_template=self.object.object_profile.address_profile_dhcp.fqdn_template,
                 mac=a.get("mac")
             ) for a in leases
         ]
@@ -259,8 +251,6 @@ class AddressCheck(DiscoveryCheck):
                         source=SRC_NEIGHBOR,
                         description=None,
                         subinterface=None,
-                        name_template=self.object.object_profile.address_profile_neighbor.name_template,
-                        fqdn_template=self.object.object_profile.address_profile_neighbor.fqdn_template,
                         mac=a.get("mac")
                     )
                 ]

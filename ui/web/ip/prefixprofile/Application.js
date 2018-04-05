@@ -26,6 +26,12 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     text: __("Name"),
                     dataIndex: "name",
                     width: 150
+                },
+                {
+                    text: __("Workflow"),
+                    dataIndex: "workflow",
+                    width: 100,
+                    renderer: NOC.render.Lookup("workflow")
                 }
             ],
 
@@ -57,6 +63,12 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     name: "enable_ip_ping_discovery",
                     xtype: "checkbox",
                     boxLabel: __("IP Discovery (Ping)")
+                },
+                {
+                    name: "workflow",
+                    xtype: "wf.workflow.LookupField",
+                    fieldLabel: __("Workflow"),
+                    allowBlank: false
                 },
                 {
                     name: "style",
