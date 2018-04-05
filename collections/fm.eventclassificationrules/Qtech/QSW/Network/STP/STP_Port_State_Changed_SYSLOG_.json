@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%STP-4-Stp:\\s+\\S+\\s+port\\s+(?P<interface>.+)\\s+turns\\s+to\\s+(?P<state>\\S+)$"
+            "value_re": "%STP-4-Stp:\\s+\\S+\\s+port\\s+(?P<interface>.+)\\s+turns\\s+to\\s+(?P<state__enum__stp_state>\\S+)$"
         }
     ]
 }

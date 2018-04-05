@@ -12,6 +12,12 @@
             "required": false
         },
         {
+            "name": "ip",
+            "description": "User IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
             "name": "command",
             "description": "Command",
             "type": "str",
@@ -21,8 +27,8 @@
     "handlers": [
         "noc.fm.handlers.event.audit.log_cmd"
     ],
-    "subject_template": "Command executed{% if user %} by {{user}}{% endif %}: {{command}}",
-    "body_template": "Command executed{% if user %} by {{user}}{% endif %}: {{command}}",
+    "subject_template": "Command executed{% if user %} by {{user}}{% endif %}{% if ip %} from {{ip}}{% endif %}: {{command}}",
+    "body_template": "Command executed{% if user %} by {{user}}{% endif %}{% if ip %} from {{ip}}{% endif %}: {{command}}",
     "symptoms": "No specific symptoms",
     "probable_causes": "Command executed by user logged by audit system",
     "recommended_actions": "No reaction needed"

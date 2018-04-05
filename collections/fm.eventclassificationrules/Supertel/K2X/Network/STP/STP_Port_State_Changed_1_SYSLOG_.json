@@ -8,7 +8,7 @@
     "patterns": [
         {
             "key_re": "^message$",
-            "value_re": "^%STP-W-PORTSTATUS: (?P<interface>\\S+): STP status (?P<state>\\S+)$"
+            "value_re": "^%STP-W-PORTSTATUS: (?P<interface>\\S+): STP status (?P<state__enum__stp_state>\\S+)$"
         },
         {
             "key_re": "^profile$",

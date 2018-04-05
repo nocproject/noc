@@ -16,7 +16,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "IFNET/\\d+/IF_STATE.+Interface (?P<interface>\\S+)( has)? turned into DOWN state\\.$"
+            "value_re": "IF(?:NET|PDT)/\\d+/IF_STATE.+Interface (?P<interface>\\S+)( has)? turned into DOWN state\\.$"
         }
     ]
 }

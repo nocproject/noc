@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | SMB | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c8d3acd9-2b79-4450-b7e7-c6372426581b",
+    "description": "Apr  5 13:34:18 192.168.32.16 %LINK-I-Up:  gi43",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco.SMB$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LINK-I-Up:\\s+(?P<interface>\\S+)$"
+        }
+    ]
+}
