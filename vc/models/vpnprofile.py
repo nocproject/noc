@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # VPN Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ import cachetools
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.style import Style
 from noc.wf.models.workflow import Workflow
+from noc.main.models.template import Template
 from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
@@ -50,9 +51,10 @@ class VPNProfile(Document):
         ("ipip", "IP-IP")
     ], default="vrf")
     workflow = PlainReferenceField(Workflow)
+    # Template.subject to render VPN/VRF.name
+    name_template = ForeignKeyField(Template)
+    #
     style = ForeignKeyField(Style)
-    # For vrf type -- default prefix profile
-    default_prefix_profile = PlainReferenceField("ip.PrefixProfile")
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
@@ -78,7 +80,3 @@ class VPNProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, id):
         return VPNProfile.objects.filter(bi_id=id).first()
-
-    def clean(self):
-        if self.type == "vrf" and not self.default_prefix_profile:
-            raise ValidationError("default_prefix_profile must be set for vrf type")
