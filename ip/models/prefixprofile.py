@@ -48,10 +48,6 @@ class PrefixProfile(Document):
     enable_ip_ping_discovery = BooleanField(default=False)
     # Enable nested prefix prefix discovery
     enable_prefix_discovery = BooleanField(default=False)
-    # Default prefix profile for children prefixes
-    autocreated_prefix_profile = PlainReferenceField("self")
-    # Default address profile for children addresses
-    autocreated_address_profile = PlainReferenceField(AddressProfile)
     # Prefix workflow
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
