@@ -9,7 +9,7 @@
         {
             "key_re": "^source$",
             "value_re": "^syslog$"
-        }m
+        },
         {
             "key_re": "^profile$",
             "value_re": "^Cisco.SMB$"

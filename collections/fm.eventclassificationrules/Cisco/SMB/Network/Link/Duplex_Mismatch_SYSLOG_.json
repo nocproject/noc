@@ -7,6 +7,10 @@
     "preference": 1000,
     "patterns": [
         {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
             "key_re": "^profile$",
             "value_re": "^Cisco.SMB$"
         },
