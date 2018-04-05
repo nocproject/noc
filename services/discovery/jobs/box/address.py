@@ -77,7 +77,7 @@ class AddressCheck(DiscoveryCheck):
                 self.get_dhcp_addresses()
             )
         # Apply neighbor addresses
-        if self.object.object_profile.enable_box_discovery_address:
+        if self.object.object_profile.enable_box_discovery_address_neighbor:
             addresses = self.apply_addresses(
                 addresses,
                 self.get_neighbor_addresses()
@@ -417,8 +417,8 @@ class AddressCheck(DiscoveryCheck):
     @staticmethod
     def is_enabled_for_object(object):
         return (
-            object.object_profile.enable_box_discovery_address or
             object.object_profile.enable_box_discovery_address_interface or
             object.object_profile.enable_box_discovery_address_management or
-            object.object_profile.enable_box_discovery_address_dhcp
+            object.object_profile.enable_box_discovery_address_dhcp or
+            object.object_profile.enable_box_discovery_address_neighbor
         )

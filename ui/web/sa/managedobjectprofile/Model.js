@@ -171,7 +171,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_prefix",
+            name: "enable_box_discovery_prefix_neighbor",
             type: "boolean",
             defaultValue: false
         },
@@ -181,7 +181,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_address",
+            name: "enable_box_discovery_address_neighbor",
             type: "boolean",
             defaultValue: false
         },

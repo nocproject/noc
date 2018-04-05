@@ -178,8 +178,6 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_nri = models.BooleanField(default=False)
     # VRF discovery
     enable_box_discovery_vrf = models.BooleanField(default=False)
-    # IP discovery (neighbbors)
-    enable_box_discovery_address = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_address_interface = models.BooleanField(default=False)
     # IP discovery (Management)
@@ -187,9 +185,11 @@ class ManagedObjectProfile(models.Model):
     # IP discovery (DHCP)
     enable_box_discovery_address_dhcp = models.BooleanField(default=False)
     # IP discovery (neighbbors)
-    enable_box_discovery_prefix = models.BooleanField(default=False)
+    enable_box_discovery_address_neighbor = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_prefix_interface = models.BooleanField(default=False)
+    # IP discovery (neighbbors)
+    enable_box_discovery_prefix_neighbor = models.BooleanField(default=False)
     # Collect static vlans
     enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD

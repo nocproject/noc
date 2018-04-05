@@ -770,7 +770,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             text: __("Neighbor")
                                         },
                                         {
-                                            name: "enable_box_discovery_prefix",
+                                            name: "enable_box_discovery_prefix_neighbor",
                                             xtype: "checkbox",
                                             reference: "enableBoxDiscoveryPrefixNeighbor"
                                         },
@@ -864,7 +864,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             text: __("Neighbor")
                                         },
                                         {
-                                            name: "enable_box_discovery_address",
+                                            name: "enable_box_discovery_address_neighbor",
                                             xtype: "checkbox",
                                             reference: "enableBoxDiscoveryAddressNeighbor"
                                         },
