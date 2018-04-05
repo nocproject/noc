@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | SMB | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "41de7f09-fe25-4d5e-9a48-0da87129545f",
+    "description": "Apr  5 13:30:09 192.168.32.16 %LINK-W-Down:  gi37",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco.SMB$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LINK-W-Down:\\s+(?P<interface>\\S+)$"
+        }
+    ]
+}
