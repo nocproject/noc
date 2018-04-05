@@ -6,7 +6,7 @@ forms:
       <strong>Short description</strong>: Ping service <br/>
       <strong>Long description</strong>: Pings network equipment with icmp. Creates events on state changes<br/>
       <strong>Scale Recommendations</strong>: At least one per pool.  <br/>
-      <strong>docs</strong>: "To be done"<br/>
+      <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/ping/ target=_blank>ping</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>
     power:
       default: 4
