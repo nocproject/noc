@@ -9,6 +9,13 @@
   tags:
     - repo
 
+- name: remove obsolete yandex repo
+  file:
+    path: /etc/apt/sources.list.d/repo_yandex_ru_clickhouse_trusty.list
+    state: absent
+  tags:
+    - repo
+
 - name: Add CH repository
   apt_repository:
     repo: "deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
