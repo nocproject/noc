@@ -344,7 +344,10 @@ class AddressCheck(DiscoveryCheck):
                 # Change managed object
                 if (
                     discovered_address.source in LOCAL_SRC and
-                    address.managed_object.id != self.object.id
+                    (
+                        not address.managed_object or
+                        address.managed_object.id != self.object.id
+                    )
                 ):
                     changes += ["object: %s -> %s" % (
                         address.managed_object, self.object
