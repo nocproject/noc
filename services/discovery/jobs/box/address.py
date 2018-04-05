@@ -215,6 +215,9 @@ class AddressCheck(DiscoveryCheck):
         Return addresses from DHCP leases
         :return:
         """
+        if not self.object.object_profile.address_profile_dhcp:
+            self.logger.info("Default DHCP address profile is not set. Skipping DHCP address discovery")
+            return []
         # @todo: Check DHCP server capability
         if "get_dhcp_binding" not in self.object.scripts:
             self.logger.info("No get_dhcp_binding script, skipping neighbor discovery")
@@ -241,6 +244,9 @@ class AddressCheck(DiscoveryCheck):
         Return addresses from ARP/IPv6 ND
         :return:
         """
+        if not self.object.object_profile.address_profile_neighbor:
+            self.logger.info("Default neighbor address profile is not set. Skipping neighbor address discovery")
+            return []
         if "get_ip_discovery" not in self.object.scripts:
             self.logger.info("No get_ip_discovery script, skipping neighbor discovery")
             return []
@@ -257,8 +263,8 @@ class AddressCheck(DiscoveryCheck):
                         source=SRC_NEIGHBOR,
                         description=None,
                         subinterface=None,
-                        name_template=self.object.object_profile.address_profile_dhcp.name_template,
-                        fqdn_template=self.object.object_profile.address_profile_dhcp.fqdn_template,
+                        name_template=self.object.object_profile.address_profile_neighbor.name_template,
+                        fqdn_template=self.object.object_profile.address_profile_neighbor.fqdn_template,
                         mac=a.get("mac")
                     )
                 ]
