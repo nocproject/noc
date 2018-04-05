@@ -151,11 +151,7 @@ class AddressCheck(DiscoveryCheck):
         enabled = super(AddressCheck, self).is_enabled()
         if not enabled:
             return False
-        return (
-            self.object.object_profile.enable_box_discovery_address_interface or
-            self.object.object_profile.enable_box_discovery_address_management or
-            self.object.object_profile.enable_box_discovery_address
-        )
+        return self.is_enabled_for_object(self.object)
 
     def get_interface_addresses(self):
         """
