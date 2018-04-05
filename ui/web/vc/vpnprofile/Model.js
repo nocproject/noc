@@ -76,6 +76,15 @@ Ext.define("NOC.vc.vpnprofile.Model", {
             name: "default_prefix_profile__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "name_template",
+            type: "string"
+        },
+        {
+            name: "name_template__label",
+            type: "string",
+            persist: false
         }
     ]
 });

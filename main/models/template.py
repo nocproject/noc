@@ -32,7 +32,8 @@ def template_validator(value):
 @on_delete_check(check=[
     ("ip.AddressProfile", "name_template"),
     ("ip.AddressProfile", "fqdn_template"),
-    ("ip.PrefixProfile", "name_template")
+    ("ip.PrefixProfile", "name_template"),
+    ("vc.VPNProfile", "name_template")
 ])
 class Template(models.Model):
     class Meta:
