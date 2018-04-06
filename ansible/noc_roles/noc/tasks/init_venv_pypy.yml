@@ -35,11 +35,15 @@
 
     - name: init venv
       command: "{{ pypy_path }}/bin/virtualenv-pypy {{noc_root}}"
+      environment:
+        https_proxy: "{{http_proxy}}"
       args:
         chdir: "{{noc_root | dirname }}"
 
     - name: refetch actual source
       command: "git checkout {{noc_root}}/lib"
+      environment:
+        https_proxy: "{{http_proxy}}"
       args:
         chdir: "{{noc_root }}"
 
