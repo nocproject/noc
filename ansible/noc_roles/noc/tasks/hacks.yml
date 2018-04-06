@@ -21,3 +21,4 @@
   when:
     - "'Linux' in ansible_system"
     - "'prod' in noc_env_type"
+    - "noc_python_interpreter == 'python'"
