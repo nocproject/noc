@@ -105,3 +105,5 @@
   with_items: "{{groups['svc-clickhouse-exec']}}"
   delegate_to: "{{groups['svc-chwriter-exec'][0]}}"
   changed_when: "'CHANGED' in migrate_ch.stdout"
+  when:
+    - "'svc-chwriter-exec' in groups"
