@@ -10,7 +10,9 @@
     https_proxy: "{{http_proxy}}"
     CFLAGS: "{{ pip_cflags | default('') }}"
     LDFLAGS: "{{ pip_ldflags | default('') }}"
-  when: "'prod' in noc_env_type"
+  when:
+    - "'prod' in noc_env_type"
+    - "noc_python_interpreter == 'python'"
   tags:
     - requirements
 
