@@ -168,7 +168,7 @@ class LegacyProtocol(BaseProtocol):
 
         if not os.path.exists(self.path):
             return
-        logger.info("Legacy config will be deprecated after 1 November 2018. "
+        logger.info("Legacy config will be deprecated after 1 June 2018. "
                     "Please update tower and remove from used config options.")
         with open(self.path) as f:
             data = yaml.load(f)["config"]
