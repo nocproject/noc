@@ -1,4 +1,4 @@
-<!--- #//English is preferred but you can use Russian if you like -->
+<!--- English is preferred but you can use Russian if you like! -->
 ## Steps to reproduce
 <!--- How one can reproduce the issue - this is very important) -->
 
