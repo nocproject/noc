@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-from django.db import models
 from south.db import db
 # NOC models
 from noc.core.model.fields import DocumentReferenceField
