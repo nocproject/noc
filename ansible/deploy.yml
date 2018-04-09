@@ -4,7 +4,6 @@
 - name: Install NOC
   hosts: svc-noc-exec
   become: "True"
-  strategy: "{% if groups['svc-noc-exec'] > 2 %}free{%else%}linear{%endif%}"
   gather_facts: "True"
   tags:
     - node
@@ -14,6 +13,19 @@
     - "vars/{{ ansible_distribution }}.yml"
   roles:
     - role: noc
+
+- name: Install NOC microservices
+  hosts: svc-noc-exec
+  become: "True"
+  strategy: "{% if groups['svc-noc-exec'] > 2 %}free{%else%}linear{%endif%}"
+  gather_facts: "True"
+  tags:
+    - node
+    - noc
+  vars_files:
+    - "vars/main.yml"
+    - "vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: login
     - role: mrt
     - role: escalator
@@ -35,10 +47,21 @@
     - role: scheduler
     - role: discovery
     - role: bi
+
+- name: migrate
+  hosts: svc-noc-exec
+  become: "True"
+  gather_facts: "True"
+  tags:
+    - migrate
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: migrate
-      become: "True"
       run_once: "True"
-      tags:
-        - migrate
+      environment:
+        NOC_CONFIG: "{{config_order}}"
+
 
 - import_playbook: post.yml
