@@ -22,7 +22,6 @@ from noc.wf.models.workflow import Workflow
 from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
-from .addressprofile import AddressProfile
 
 id_lock = Lock()
 

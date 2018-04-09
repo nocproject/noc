@@ -35,6 +35,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.window import wf_choices
 from noc.ip.models.prefixprofile import PrefixProfile
 from noc.ip.models.addressprofile import AddressProfile
+from noc.vc.models.vpnprofile import VPNProfile
 
 
 m_valid = DictListParameter(attrs={
@@ -176,8 +177,10 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_asset = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_nri = models.BooleanField(default=False)
-    # VRF discovery
-    enable_box_discovery_vrf = models.BooleanField(default=False)
+    # VPN discovery (interface)
+    enable_box_discovery_vpn_interface = models.BooleanField(default=False)
+    # VPN discovery (MPLS)
+    enable_box_discovery_vpn_mpls = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_address_interface = models.BooleanField(default=False)
     # IP discovery (Management)
@@ -429,6 +432,15 @@ class ManagedObjectProfile(models.Model):
     neighbor_cache_ttl = models.IntegerField(
         "Neighbor Cache TTL",
         default=0
+    )
+    # VPN discovery profiles
+    vpn_profile_interface = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
+    vpn_profile_mpls = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
     )
     # Prefix discovery profiles
     prefix_profile_interface = DocumentReferenceField(

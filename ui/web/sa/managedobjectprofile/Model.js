@@ -166,7 +166,12 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_vrf",
+            name: "enable_box_discovery_vpn_interface",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_vpn_mpls",
             type: "boolean",
             defaultValue: false
         },
@@ -555,6 +560,24 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "prefix_profile_neighbor__label",
             type: "string",
             persist: false
-        }
+        },
+        {
+            name: "vpn_profile_interface",
+            type: "string"
+        },
+        {
+            name: "vpn_profile_interface__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "vpn_profile_mpls",
+            type: "string"
+        },
+        {
+            name: "vpn_profile_mpls__label",
+            type: "string",
+            persist: false
+        },
     ]
 });

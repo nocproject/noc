@@ -97,6 +97,17 @@ class VRF(models.Model):
         null=True,
         blank=True,
         help_text=_("VRF temporary allocated till the date"))
+    source = models.CharField(
+        "Source",
+        max_length=1,
+        choices=[
+            ("M", "Manual"),
+            ("i", "Interface"),
+            ("m", "MPLS")
+        ],
+        null=False, blank=False,
+        default="M"
+    )
 
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"

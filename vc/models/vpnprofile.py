@@ -12,7 +12,6 @@ import operator
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, ListField
-from mongoengine.errors import ValidationError
 import cachetools
 # NOC modules
 from noc.main.models.remotesystem import RemoteSystem
@@ -29,7 +28,9 @@ id_lock = Lock()
 @bi_sync
 @on_delete_check(check=[
     ("vc.VPN", "profile"),
-    ("ip.VRF", "profile")
+    ("ip.VRF", "profile"),
+    ("sa.ManagedObjectProfile", "vpn_profile_interface"),
+    ("sa.ManagedObjectProfile", "vpn_profile_mpls")
 ])
 class VPNProfile(Document):
     meta = {
