@@ -48,20 +48,6 @@
     - role: discovery
     - role: bi
 
-- name: migrate
-  hosts: svc-noc-exec
-  become: "True"
-  gather_facts: "True"
-  tags:
-    - migrate
-  vars_files:
-    - "../../vars/main.yml"
-    - "../../vars/{{ ansible_distribution }}.yml"
-  roles:
-    - role: migrate
-      run_once: "True"
-      environment:
-        NOC_CONFIG: "{{config_order}}"
-
+- import_playbook: noc_roles/migrate/service.yml
 
 - import_playbook: post.yml
