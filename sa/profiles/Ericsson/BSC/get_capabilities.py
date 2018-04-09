@@ -14,5 +14,5 @@ class Script(BaseScript):
     name = "Ericsson.BSC.get_capabilities"
     cache = True
 
-    def execute_platform(self, caps):
+    def execute_platform_cli(self, caps):
         caps["Mobile | BSC"] = True

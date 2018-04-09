@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # ID check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -27,8 +27,6 @@ class CPECheck(DiscoveryCheck):
     required_capabilities = ["Mobile | BSC"]
 
     def handler(self):
-        pop_mod = ObjectModel.objects.get(name="PoP | Core")
-        cont = Object.objects.get(name="Казань")
         co_id = self.object.id
         self.logger.info("Checking CPEs")
         now = datetime.datetime.now()
@@ -173,35 +171,10 @@ class CPECheck(DiscoveryCheck):
                     if cpe["type"] == "bs":
                         cd["Mobile | BS"] = True
                         mo.update_caps(cd, "cpe")
-                        if mo.container is None:
-                            pop = Object(model=pop_mod, name=mo.name, container=cont.id)
-                            pop.save()
-                            self.logger.info("Create PoP | Access %s for mo %s" % (pop, mo.name))
-                            mo.container = pop
-                            mo.save()
-                            self.logger.info("Add PoP | Access %s for mo %s" % (pop, mo.name))
-                        else:
-                            self.logger.debug("MO %s have container %s" % (mo.name, mo.container))
-                            pass
                     if cpe["type"] == "st":
                         cd = mo.get_caps()
                         cd["Mobile | Sector"] = True
                         mo.update_caps(cd, "cpe")
-                        if mo.container is None:
-                            co = None
-                            for co in ManagedObject.objects.filter(is_managed=True, local_cpe_id=mo.name.split("#")[0],
-                                                                   controller=co_id):
-                                if not co:
-                                    self.logger.info("Not CO for %s" % mo.name)
-                                    continue
-                                else:
-                                    mo.container = co.container
-                                    mo.save()
-                                    self.logger.info("Containder  %s add for mo %s" % (co.container, mo.name))
-                        else:
-                            self.logger.debug("MO %s have container %s" % (mo.name, mo.container))
-                            pass
-
             else:
                 continue
 
