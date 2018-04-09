@@ -137,7 +137,7 @@ class VPNCheck(DiscoveryCheck):
                 source=SRC_INTERFACE,
                 description=None
             )
-            for p in vpns
+            for p in vpns.values()
         ]
 
     def get_mpls_vpns(self):
