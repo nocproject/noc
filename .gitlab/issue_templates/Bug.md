@@ -1,38 +1,29 @@
-Summary
-
-(Summarize the bug encountered concisely)
-
-
-Steps to reproduce
-
+#//English is preferred but you can use Russian if you like
+##Steps to reproduce
 (How one can reproduce the issue - this is very important)
 
+1) ...
+2) ...
+3) ...
 
-Example Project
-
-(If possible, please create an example project here on GitLab.com that exhibits the problematic behaviour, and link to it here in the bug report)
-
-(If you are using an older version of GitLab, this will also determine whether the bug has been fixed in a more recent version)
-
-
-What is the current bug behavior?
-
+##What is the current bug behavior?
 (What actually happens)
 
 
-What is the expected correct behavior?
-
+##What is the expected correct behavior?
 (What you should see instead)
 
 
-Relevant logs and/or screenshots
-
+##Relevant logs and/or screenshots
 (Paste any relevant logs - please use code blocks (```) to format console output,
 logs, and code as it's very hard to read otherwise.)
-
+[If you find Traceback in crashinfo list, send us all of the output `./noc crashinfo view UUID` command]
 
 Possible fixes
-
 (If you can, link to the line of code that might be responsible for the problem)
 
-/label ~bug
+##Paste NOC version (./noc about)
+NOC version is: ```
+
+
+```
