@@ -21,6 +21,4 @@
   include_role:
     name: deploy_notifications
     tasks_from: stop
-  vars:
-    ansible_tags: "tag list is broken https://code.getnoc.com/noc/tower/issues/18"
   when: has_deploy_notificator is defined
