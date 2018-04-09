@@ -1,5 +1,8 @@
 ---
 - import_playbook: pre.yml
+  vars:
+    tower_run_checks: "False"
+    has_deploy_notificator: "True"
 
 - name: Install NOC
   hosts: svc-noc-exec
@@ -51,3 +54,6 @@
 - import_playbook: noc_roles/migrate/service.yml
 
 - import_playbook: post.yml
+  vars:
+    tower_run_tests: "True"
+    has_deploy_notificator: "True"
