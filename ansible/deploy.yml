@@ -2,7 +2,7 @@
 - import_playbook: pre.yml
 
 - name: Install NOC
-  hosts: noc-svc-*
+  hosts: svc-noc-exec
   become: "True"
   strategy: "{% if groups['svc-noc-exec'] > 2 %}free{%else%}linear{%endif%}"
   gather_facts: "True"
