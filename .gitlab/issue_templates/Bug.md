@@ -1,9 +1,11 @@
-#//English is preferred but you can use Russian if you like
+<!--- #//English is preferred but you can use Russian if you like -->
 ## Steps to reproduce
-(How one can reproduce the issue - this is very important)
+<!--- How one can reproduce the issue - this is very important) -->
 
 1) ...
+
 2) ...
+
 3) ...
 
 ## What is the current bug behavior?
@@ -23,7 +25,4 @@ logs, and code as it's very hard to read otherwise.
 <!--- (If you can, link to the line of code that might be responsible for the problem) -->
 
 ## Paste NOC version (./noc about)
-NOC version is: ```
-
-
-```
+NOC version is: ``` ```
