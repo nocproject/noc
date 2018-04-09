@@ -31,22 +31,3 @@
   failed_when: "'ERROR' in result.stdout"
   tags:
     - get_source
-
-- name: check if noc running
-  command: "{{ noc_root }}/noc ctl status"
-  check_mode: "False"
-  changed_when: "False"
-  register: noc_ctl_status
-  tags:
-    - config
-    - soft_restart
-    - noc_config
-
-- name: Reread config
-  command: "{{ noc_root }}/noc ctl reread"
-  when: "'RUNNING' in noc_ctl_status.stdout"
-  register: noc_ctl_reread
-  tags:
-    - config
-    - soft_restart
-    - noc_config

@@ -28,6 +28,7 @@
     - always
 
 - name: notify deploy started
+  run_once: "True"
   include_role:
     name: deploy_notifications
     tasks_from: start
@@ -40,8 +41,7 @@
   become: "True"
   failed_when: "False"
   changed_when: "False"
-  tags:
-    - restart
+  when: tower_stop_noc
 
 - name: Setup hostname
   hostname: name="{{ inventory_hostname }}"
