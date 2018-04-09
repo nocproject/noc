@@ -9,6 +9,7 @@
     db_password: "{{postgres_noc_password}}"
     db_user: "{{postgres_noc_user}}"
   delegate_to: "{{postgres_master_node}}"
+  when: postgres_master_node is defined
   tags:
     - postgres
 
