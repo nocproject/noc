@@ -12,8 +12,6 @@ import datetime
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
 from noc.sa.models.profile import Profile
 
 
@@ -27,6 +25,7 @@ class CPECheck(DiscoveryCheck):
     required_capabilities = ["Mobile | BSC"]
 
     def handler(self):
+
         co_id = self.object.id
         self.logger.info("Checking CPEs")
         now = datetime.datetime.now()
