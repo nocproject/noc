@@ -127,7 +127,7 @@ class InterfaceCheck(DiscoveryCheck):
             ).count()
         }, source="interface")
         self.set_artefact("interface_macs", self.interface_macs)
-        self.set_artefact("vrf", self.vrf_artefact)
+        self.set_artefact("interface_vpn", self.vrf_artefact)
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
 
     def submit_forwarding_instance(self, name, type, rd, vr):

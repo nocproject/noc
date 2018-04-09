@@ -20,7 +20,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.pm.thresholdprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.ip.prefixprofile.LookupField",
-        "NOC.ip.addressprofile.LookupField"
+        "NOC.ip.addressprofile.LookupField",
+        "NOC.vc.vpnprofile.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -28,6 +29,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     validationModelId: "sa.ManagedObjectProfile",
     viewModel: {
         data: {
+            enableBoxDiscoveryVPNInterface: false,
+            enableBoxDiscoveryVPNMPLS: false,
             enableBoxDiscoveryPrefixInterface: false,
             enableBoxDiscoveryPrefixNeighbor: false,
             enableBoxDiscoveryAddressInterface: false,
@@ -722,6 +725,65 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     value: __("sec")
                                                 }
                                             ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IPAM (VPN)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
+                                    defaults: {
+                                        padding: "2px 4px 2px 4px"
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "label",
+                                            text: __("Type")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("VPN Profile")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_vpn_interface",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryVPNInterface"
+                                        },
+                                        {
+                                            name: "vpn_profile_interface",
+                                            xtype: "vc.vpnprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVPNInterface.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("MPLS")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_vpn_mpls",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryVPNMPLS"
+                                        },
+                                        {
+                                            name: "vpn_profile_mpls",
+                                            xtype: "vc.vpnprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVPNMPLS.checked}"
+                                            }
                                         }
                                     ]
                                 },
