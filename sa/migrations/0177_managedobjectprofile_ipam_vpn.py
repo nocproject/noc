@@ -16,8 +16,8 @@ from noc.core.model.fields import DocumentReferenceField
 class Migration(object):
     def forwards(self):
         db.execute("""
-          ALTER TABLE sa_managedobjectprofile 
-          RENAME enable_box_discovery_vrf 
+          ALTER TABLE sa_managedobjectprofile
+          RENAME enable_box_discovery_vrf
           TO enable_box_discovery_vpn_interface""")
         db.add_column(
             "sa_managedobjectprofile",
