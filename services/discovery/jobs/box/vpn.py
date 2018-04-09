@@ -162,7 +162,7 @@ class VPNCheck(DiscoveryCheck):
                 profile=self.object.object_profile.vpn_profile_mpls,
                 description=vpn.get("description"),
                 source=SRC_MPLS
-            ) for vpn in vpns
+            ) for vpn in vpns if vpn.get("rd")
         ]
         return r
 
