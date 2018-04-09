@@ -70,7 +70,7 @@ class VPNCheck(DiscoveryCheck):
         :return:
         """
         # Get existing VRFs
-        self.logger.debbug("Getting VRFs to synchronize")
+        self.logger.debug("Getting VRFs to synchronize")
         vrfs = dict((vrf.rd, vrf) for vrf in VRF.objects.filter(rd__in=list(vpns)))
         #
         seen = set()
