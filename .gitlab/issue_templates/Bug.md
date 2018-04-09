@@ -25,4 +25,4 @@ logs, and code as it's very hard to read otherwise.
 ## Paste NOC version (`./noc about`)
 NOC version is: ``` ```
 
-/label ~bug
+/label ~Bug
