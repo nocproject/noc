@@ -17,7 +17,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 # NOC modules
-from noc.main.models import ResourceState
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from noc.lib.validators import check_rd
@@ -26,13 +25,17 @@ from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.vc.models.vpnprofile import VPNProfile
+from noc.wf.models.state import State
 from .vrfgroup import VRFGroup
+from noc.core.wf.decorator import workflow
+
 
 id_lock = Lock()
 
 
 @full_text_search
 @on_init
+@workflow
 @on_delete_check(check=[
     ("ip.Address", "vrf"),
     ("ip.AddressRange", "vrf"),
@@ -88,10 +91,10 @@ class VRF(models.Model):
         null=True,
         help_text=_("Ticket #"))
     tags = TagsField(_("Tags"), null=True, blank=True)
-    state = models.ForeignKey(
-        ResourceState,
-        verbose_name=_("State"),
-        default=ResourceState.get_default)
+    state = DocumentReferenceField(
+        State,
+        null=True, blank=True
+    )
     allocated_till = models.DateField(
         _("Allocated till"),
         null=True,
