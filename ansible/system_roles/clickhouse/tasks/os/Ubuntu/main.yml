@@ -11,7 +11,7 @@
 
 - name: remove obsolete yandex repo
   file:
-    path: /etc/apt/sources.list.d/repo_yandex_ru_clickhouse_trusty.list
+    path: /etc/apt/sources.list.d/repo_yandex_ru_clickhouse_xenial.list
     state: absent
   tags:
     - repo
