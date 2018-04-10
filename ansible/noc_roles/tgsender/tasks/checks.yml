@@ -7,7 +7,7 @@
       - has_svc_noc is not defined
     tags:
       - checks
-  - debug: var=tgsender_token
+
   - name: fail if tgsender token is not set
     fail:
       msg: |
