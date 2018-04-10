@@ -14,7 +14,7 @@
         Tgsender role have to work only if telegram token provided.
         Setup telegram token or disable tgsender service.
     when:
-      - not tgsender_token
+      - tgsender_token is not defined or not tgsender_token
 
   when:
     - has_svc_tgsender is defined
