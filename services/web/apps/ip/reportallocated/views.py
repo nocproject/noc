@@ -24,8 +24,7 @@ class ReportForm(forms.Form):
     """
     vrf = forms.ModelChoiceField(
         label=_("VRF"),
-        queryset=VRF.objects.filter(
-            state__is_provisioned=True).order_by("name"))
+        queryset=VRF.objects.all().order_by("name"))
     afi = forms.ChoiceField(label=_("Address Family"),
                             choices=[("4", _("IPv4")), ("6", _("IPv6"))])
     prefix = forms.CharField(label=_("Prefix"))

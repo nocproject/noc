@@ -60,7 +60,7 @@ class IPAMApplication(ExtApplication):
         @todo: Display only VRFs accessible by user
         """
         # Check only one active VRF with only one active address family exists
-        vl = list(VRF.objects.filter(state__is_provisioned=True))
+        vl = list(VRF.objects.all()[:2])
         if len(vl) == 1:
             vrf = vl.pop()
             if vrf.afi_ipv4 ^ vrf.afi_ipv6:
@@ -77,20 +77,32 @@ class IPAMApplication(ExtApplication):
         query = ""
         if "q" in request.GET:
             query = request.GET["q"]
-            q = Q(name__icontains=query) | Q(rd=query) | Q(
-                description__icontains=query)
+            q = (
+                Q(name__icontains=query) |
+                Q(rd=query) | Q(description__icontains=query)
+            )
         else:
             q = Q()
         # Display grouped VRFs
         q_afi = Q(afi_ipv4=True) | Q(afi_ipv6=True)
         groups = []
+        if not query:
+            ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).order_by("name"))
+            if ungroupped:
+                # Add Ungroupped virtual group
+                groups += [(
+                    VRFGroup(name="Ungroupped"),
+                    ungroupped
+                )]
         for vg in VRFGroup.objects.all().order_by("name"):
-            vrfs = list(vg.vrf_set.filter(state__is_provisioned=True).filter(q_afi).filter(q).order_by("name"))
+            vrfs = list(vg.vrf_set.filter(q_afi).filter(q).order_by("name"))
             if len(vrfs):
                 # Set up bookmarks
                 for v in vrfs:
-                    v.bookmarks = PrefixBookmark.user_bookmarks(request.user,
-                                                                vrf=v)
+                    v.bookmarks = PrefixBookmark.user_bookmarks(
+                        request.user,
+                        vrf=v
+                    )
                     # Add to groups
                 groups += [(vg, vrfs)]
         return self.render(request, "index.html", groups=groups, query=query)
