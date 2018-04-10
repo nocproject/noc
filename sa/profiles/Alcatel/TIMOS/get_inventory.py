@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Alcatel.TIMOS.get_inventory
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.interfaces.base import InterfaceTypeError
 
 
 class Script(BaseScript):
@@ -27,6 +26,8 @@ class Script(BaseScript):
         r"^(?P<slot>\d+)/(?P<number>\d+)\s+(?P<name>(?:m|imm)\d+\S+)\s+(?:up|down)\s+(?:up|down)")
     rx_cfm = re.compile(
         r"^(?P<number>A|B)\s+(?P<name>sfm\d+\S+)\s+(?:up|down)\s+(?:up|down)")
+    rx_cpm = re.compile(
+        r"^(?P<number>A|B)\s+(?P<name>cpm\d+)\s+(?:up|down)\s+(?:up|down)")
     rx_ch = re.compile(
         r"^\s*Hardware Data\s*\n"
         r"^\s+Part number\s+:\s+(?P<part_no>\S+)\s*\n"
@@ -93,7 +94,6 @@ class Script(BaseScript):
                 c = self.cli("show card %s detail" % number)
                 match1 = self.rx_hw.search(c)
                 if match1:
-                    mfg_date = match1.group("mfg_date")
                     p["part_no"] = match1.group("part_no")
                     p["serial"] = match1.group("serial")
                     p["mfg_date"] = self.get_date(match1.group("mfg_date"))
@@ -110,7 +110,6 @@ class Script(BaseScript):
                 c = self.cli("show card %s detail" % number)
                 match1 = self.rx_hw.search(c)
                 if match1:
-                    mfg_date = match1.group("mfg_date")
                     p["part_no"] = match1.group("part_no")
                     p["serial"] = match1.group("serial")
                     p["mfg_date"] = self.get_date(match1.group("mfg_date"))
@@ -128,7 +127,6 @@ class Script(BaseScript):
                 c = self.cli("show mda %s/%s detail" % (match.group("slot"), number))
                 match1 = self.rx_hw.search(c)
                 if match1:
-                    mfg_date = match1.group("mfg_date")
                     p["part_no"] = match1.group("part_no")
                     p["serial"] = match1.group("serial")
                     p["mfg_date"] = self.get_date(match1.group("mfg_date"))
@@ -146,7 +144,37 @@ class Script(BaseScript):
                 c = self.cli("show card %s detail" % number)
                 match1 = self.rx_hw.search(c)
                 if match1:
-                    mfg_date = match1.group("mfg_date")
+                    p["part_no"] = match1.group("part_no")
+                    p["serial"] = match1.group("serial")
+                    p["mfg_date"] = self.get_date(match1.group("mfg_date"))
+                    p["description"] = match1.group("platform")
+                r += [p]
+                for match1 in self.rx_flash.finditer(c):
+                    if "ALU" in match1.group("part_no"):
+                        vendor = "ALU"
+                    else:
+                        vendor = "NONAME"
+                    p = {
+                        "type": "CF",
+                        "number": match1.group("number"),
+                        "vendor": vendor,
+                        "part_no": [match1.group("part_no").strip()],
+                        "serial": match1.group("serial"),
+                        "revision": match1.group("revision")
+                    }
+                    r += [p]
+            match = self.rx_cpm.search(l)
+            if match:
+                number = match.group("number")
+                p = {
+                    "type": "CPM",
+                    "number": number,
+                    "vendor": "ALU",
+                    "part_no": [match.group("name")],
+                }
+                c = self.cli("show card %s detail" % number)
+                match1 = self.rx_hw.search(c)
+                if match1:
                     p["part_no"] = match1.group("part_no")
                     p["serial"] = match1.group("serial")
                     p["mfg_date"] = self.get_date(match1.group("mfg_date"))
