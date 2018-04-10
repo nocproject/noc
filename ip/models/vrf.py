@@ -65,7 +65,9 @@ class VRF(models.Model):
         help_text=_("Unique VRF Name"))
     profile = DocumentReferenceField(VPNProfile)
     vrf_group = models.ForeignKey(
-        VRFGroup, verbose_name=_("VRF Group"))
+        VRFGroup, verbose_name=_("VRF Group"),
+        null=True, blank=True
+    )
     rd = models.CharField(
         _("RD"),
         unique=True,

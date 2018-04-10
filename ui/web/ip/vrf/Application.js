@@ -95,7 +95,7 @@ Ext.define("NOC.ip.vrf.Application", {
                     name: "vrf_group",
                     xtype: "ip.vrfgroup.LookupField",
                     fieldLabel: __("VRF Group"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "description",
