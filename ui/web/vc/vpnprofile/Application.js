@@ -19,6 +19,21 @@ Ext.define("NOC.vc.vpnprofile.Application", {
     model: "NOC.vc.vpnprofile.Model",
     rowClassField: "row_class",
     search: true,
+    viewModel: {
+        data: {
+            vpnType: null
+        },
+        formulas: {
+            requireDefaultPrefix: {
+                bind: {
+                    bindTo: "{vpnType.selection}"
+                },
+                get: function(t) {
+                    return t && t.data.field1 === "vrf"
+                }
+            }
+        }
+    },
 
     initComponent: function () {
         var me = this;
@@ -65,7 +80,8 @@ Ext.define("NOC.vc.vpnprofile.Application", {
                         ["ipip", "IP-IP"]
                     ],
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "medium",
+                    reference: "vpnType"
                 },
                 {
                     name: "description",
@@ -90,6 +106,15 @@ Ext.define("NOC.vc.vpnprofile.Application", {
                     xtype: "main.template.LookupField",
                     fieldLabel: __("Template"),
                     allowBlank: true
+                },
+                {
+                    name: "default_prefix_profile",
+                    xtype: "ip.prefixprofile.LookupField",
+                    fieldLabel: __("Default Prefix Profile"),
+                    bind: {
+                        disabled: "{!requireDefaultPrefix}"
+                    },
+                    allowBlank: false
                 },
                 {
                     xtype: "fieldset",
