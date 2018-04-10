@@ -29,5 +29,7 @@
   register: result
   changed_when: "'CHANGED' in result.stdout"
   failed_when: "'ERROR' in result.stdout"
+  environment:
+    NOC_CONFIG: "{{config_order}}"
   tags:
     - get_source
