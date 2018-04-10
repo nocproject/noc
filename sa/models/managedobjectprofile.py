@@ -598,3 +598,7 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
                     key=mo_id,
                     pool=pool
                 )
+
+# Avoid circular references
+# No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
+from noc.sa.models.managedobject import ManagedObject # noqa
