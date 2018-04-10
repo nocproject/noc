@@ -93,7 +93,8 @@
   template:
     src: "lib/python/site-packages/sitecustomize.py.j2"
     dest: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
-  when: sitecustomizes.stat.exists
+  when:
+    - not sitecustomizes.stat.exists
   tags:
     - config
 
@@ -102,4 +103,5 @@
     dest: "{{noc_root}}/lib/python/site.py"
     regexp: "encoding = 'ascii'"
     replace: "encoding = 'utf-8'"
-  when: sitecustomizes.stat.exists
+  when:
+    - sitecustomizes.stat.exists
