@@ -247,7 +247,7 @@ class AddressCheck(DiscoveryCheck):
                     DiscoveredAddress(
                         rd=a.get("rd", GLOBAL_VRF),
                         address=a["ip"],
-                        profile=self.object.object_profile.address_profile_dhcp,
+                        profile=self.object.object_profile.address_profile_neighbor,
                         source=SRC_NEIGHBOR,
                         description=None,
                         subinterface=None,
