@@ -71,7 +71,7 @@ id_lock = Lock()
 ])
 class ManagedObjectProfile(models.Model):
 
-    class Meta:
+    class Meta(object):
         verbose_name = _("Managed Object Profile")
         verbose_name_plural = _("Managed Object Profiles")
         db_table = "sa_managedobjectprofile"
@@ -601,4 +601,4 @@ def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
 
 # Avoid circular references
 # No delete, fixed 'ManagedObjectProfile' object has no attribute 'managedobject_set'
-from noc.sa.models.managedobject import ManagedObject # noqa
+from .managedobject import ManagedObject # noqa
