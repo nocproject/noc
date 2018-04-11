@@ -96,6 +96,17 @@
   "data": {
 	"asset": {
 	  "part_no": ["WS-C6504-E"]
+	},
+	"dimensions": {
+	  "depth": 552,
+	  "height": 222,
+	  "width": 445
+	},
+	"management": {
+	  "managed": true
+	},
+	"rackmount": {
+	  "units": 5
 	}
   }
 }
