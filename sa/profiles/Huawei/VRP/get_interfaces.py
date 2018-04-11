@@ -57,38 +57,6 @@ class Script(BaseScript):
         r"\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
     )
 
-    types = {
-        "Aux": "tunnel",
-        "Cellular": "tunnel",
-        "Eth-Trunk": "aggregated",
-        "Ip-Trunk": "aggregated",
-        "XGigabitEthernet": "physical",
-        "Ten-GigabitEthernet": "physical",
-        "GigabitEthernet": "physical",
-        "FastEthernet": "physical",
-        "Ethernet": "physical",
-        "Cascade": "physical",
-        "Logic-Channel": "tunnel",
-        "LoopBack": "loopback",
-        "MEth": "management",
-        "M-Ethernet": "management",
-        "MTunnel": None,
-        "Ring-if": "physical",
-        "Tunnel": "tunnel",
-        "Virtual-Ethernet": None,
-        "Virtual-Template": "template",
-        "Bridge-Template": "template",
-        "Bridge-template": "template",
-        "Vlanif": "SVI",
-        "Vlan-interface": "SVI",
-        "NULL": "null",
-        "RprPos": "unknown",
-        "Rpr": "unknown",
-        "100GE": "physical",
-        "Serial": None,
-        "Pos": None
-    }
-
     def get_ospfint(self):
         try:
             v = self.cli("display ospf interface all")
@@ -191,15 +159,17 @@ class Script(BaseScript):
         # Get LLDP interfaces
         lldps = self.get_lldpint()
 
-        v = self.cli("display interface")
+        v = self.cli("display interface", cached=True)
         il = self.rx_iface_sep.split(v)[1:]
         for full_ifname, data in zip(il[::2], il[1::2]):
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname.startswith("NULL"):
                 continue
             # I do not known, what are these
-            if ifname.startswith("DCN-Serial") \
-            or ifname.startswith("Cpos-Trunk"):
+            if (
+                ifname.startswith("DCN-Serial") or
+                ifname.startswith("Cpos-Trunk")
+            ):
                 continue
             sub = {
                 "name": ifname,
@@ -208,8 +178,9 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "enabled_afi": []
             }
-            if (ifname in switchports and
-                        ifname not in portchannel_members):
+            if (
+                ifname in switchports and ifname not in portchannel_members
+            ):
                 # Bridge
                 sub["enabled_afi"] += ['BRIDGE']
                 u, t = switchports[ifname]
@@ -286,7 +257,7 @@ class Script(BaseScript):
                 if o_stat is None:
                     o_stat = False
                 match = self.rx_iftype.match(ifname)
-                iftype = self.types[match.group(1)]
+                iftype = self.profile.if_types[match.group(1)]
                 if iftype is None:
                     continue  # Skip ignored interfaces
                 iface = {
@@ -355,8 +326,10 @@ class Script(BaseScript):
             if subs:
                 for vrf in set(imap.get(si["name"], "default") for si in subs):
                     c = i.copy()
-                    c["subinterfaces"] = [si for si in subs
-                                          if imap.get(si["name"], "default") == vrf]
+                    c["subinterfaces"] = [
+                        si for si in subs
+                        if imap.get(si["name"], "default") == vrf
+                    ]
                     vrfs[vrf]["interfaces"] += [c]
             elif i.get("aggregated_interface"):
                 vrfs["default"]["interfaces"] += [i]

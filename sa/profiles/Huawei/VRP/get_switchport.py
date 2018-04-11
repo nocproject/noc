@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_switchport
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     rx_vlan_comment = re.compile(r"\([^)]+\)", re.MULTILINE | re.DOTALL)
+    rx_iftype = re.compile(r"^(\S+?)\d+.*$")
 
     def execute(self):
         rx_line = re.compile(
@@ -36,7 +37,7 @@ class Script(BaseScript):
                 r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
                 r"(?P<duplex>.+?)\s+"
                 r"(?P<mode>access|trunk|hybrid|trunking|A|T|H)\s+"
-                r"(?P<pvid>\d+)\s*(?P<description>.*)$" , re.MULTILINE)
+                r"(?P<pvid>\d+)\s*(?P<description>.*)$", re.MULTILINE)
             try:
                 v = self.cli("display brief interface")
             except self.CLISyntaxError:
@@ -45,7 +46,7 @@ class Script(BaseScript):
         for match in rx_descr.finditer(v):
             interface = self.profile.convert_interface_name(match.group("interface"))
             description = match.group("description").strip()
-            if description.startswith("HUAWEI"):
+            if description.upper().startswith("HUAWEI"):
                 description = ""
             if match.group("interface") != "Interface":
                 descriptions[interface] = description
@@ -58,26 +59,51 @@ class Script(BaseScript):
         portchannels = self.scripts.get_portchannel()
 
         # Get vlans
-        known_vlans = set([vlan["vlan_id"] for vlan in
-                           self.scripts.get_vlans()])
+        known_vlans = set(
+            [vlan["vlan_id"] for vlan in self.scripts.get_vlans()]
+        )
+
+        r = []
+        for iface in descriptions:
+            match = self.rx_iftype.match(iface)
+            iftype = self.profile.if_types[match.group(1)]
+            if iftype is None or iftype != "physical":
+                continue  # Skip ignored interfaces
+
+            members = []
+            if iface.startswith("Eth-Trunk"):
+                for p in portchannels:
+                    if p["interface"] == iface:
+                        members = p["members"]
+            port = {
+                "interface": iface,
+                "status": interface_status.get(iface, False),
+                "802.1Q Enabled": False,
+                "802.1ad Tunnel": False,
+                "members": members,
+                "tagged": []
+            }
+            description = descriptions.get(iface)
+            if description:
+                port["description"] = description
+            r += [port]
 
         # Get ports in vlans
-        r = []
         version = self.profile.fix_version(self.scripts.get_version())
         if version.startswith("5.3"):
             v = self.cli("display port allow-vlan")
         elif version.startswith("3.10"):
             rx_line = re.compile(
-               r"""
-               (?P<interface>\S+)\scurrent\sstate
-               .*?
-               PVID:\s(?P<pvid>\d+)
-               .*?
-               Port\slink-type:\s(?P<mode>access|trunk|hybrid|trunking)
-               .*?
-               (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
-               """,
-               re.MULTILINE | re.DOTALL | re.VERBOSE)
+                r"""
+                (?P<interface>\S+)\scurrent\sstate
+                .*?
+                PVID:\s(?P<pvid>\d+)
+                .*?
+                Port\slink-type:\s(?P<mode>access|trunk|hybrid|trunking)
+                .*?
+                (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
+                """,
+                re.MULTILINE | re.DOTALL | re.VERBOSE)
             v = self.cli("display interface")
         else:
             try:
@@ -89,47 +115,28 @@ class Script(BaseScript):
                 )
 
         for match in rx_line.finditer(v):
-            port = {}
-            tagged = []
-            trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
-            if trunk:
-                vlans = match.group("vlans").strip()
-                if vlans and (vlans not in ["-", "none"]) \
-                  and is_int(vlans[0]):
-                    vlans = self.rx_vlan_comment.sub("", vlans)
-                    vlans = vlans.replace(" ", ",")
-                    tagged = self.expand_rangelist(vlans)
-                    # For VRP version 5.3
-                    if r and r[-1]["interface"] == match.group("interface"):
-                        r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
-                        continue
-            members = []
+            for port in r:
+                if port["interface"] == match.group("interface"):
+                    tagged = []
+                    trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
+                    if trunk:
+                        vlans = match.group("vlans").strip()
+                        if (
+                            vlans and (vlans not in ["-", "none"]) and
+                            is_int(vlans[0])
+                        ):
+                            vlans = self.rx_vlan_comment.sub("", vlans)
+                            vlans = vlans.replace(" ", ",")
+                            tagged = self.expand_rangelist(vlans)
+                            # For VRP version 5.3
+                            if r and r[-1]["interface"] == match.group("interface"):
+                                r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
+                                continue
+                        port["tagged"] = [v for v in tagged if v in known_vlans]
+                        port["802.1Q Enabled"] = True
 
-            interface = match.group("interface")
-            if interface.startswith("Eth-Trunk"):
-                ifname = self.profile.convert_interface_name(interface)
-                for p in portchannels:
-                    if p["interface"] in (ifname, interface):
-                        members = p["members"]
+                    pvid = int(match.group("pvid"))
+                    if pvid != 0 and match.group("mode") in ("access", "hybrid"):
+                        port["untagged"] = pvid
 
-            pvid = int(match.group("pvid"))
-            # This is an exclusive Chinese networks ?
-            if pvid == 0:
-                pvid = 1
-
-            port = {
-                "interface": interface,
-                "status": interface_status.get(interface, False),
-                "802.1Q Enabled": trunk,
-                "802.1ad Tunnel": False,
-                "tagged": [v for v in tagged if v in known_vlans],
-                "members": members
-            }
-            if match.group("mode") in ("access", "hybrid"):
-                port["untagged"] = pvid
-            description = descriptions.get(interface)
-            if description:
-                port["description"] = description
-
-            r += [port]
         return r
