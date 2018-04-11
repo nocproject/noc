@@ -103,6 +103,6 @@
 - name: Update site.py
   replace:
     dest: "{{noc_root}}/lib-python/2.7/site.py"
-    regexp: 'encoding = "ascii"'
+    regexp: "encoding = ['\"]ascii['\"]"
     replace: 'encoding = "utf-8"'
   when: sitecustomizes.stat.exists
