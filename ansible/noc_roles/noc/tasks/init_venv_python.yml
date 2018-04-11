@@ -82,19 +82,10 @@
     src: "lib/python/site-packages/noc.pth.j2"
     dest: "{{noc_root}}/lib/python/site-packages/noc.pth"
 
-- name: Check sitecustomize
-  stat:
-    path: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
-  register: sitecustomizes
-  tags:
-    - config
-
 - name: Install sitecustomize.py
   template:
     src: "lib/python/site-packages/sitecustomize.py.j2"
     dest: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
-  when:
-    - not sitecustomizes.stat.exists
   tags:
     - config
 
@@ -103,5 +94,5 @@
     dest: "{{noc_root}}/lib/python/site.py"
     regexp: "encoding = ['\"]ascii['\"]"
     replace: "encoding = 'utf-8'"
-  when:
-    - sitecustomizes.stat.exists
+  tags:
+    - config
