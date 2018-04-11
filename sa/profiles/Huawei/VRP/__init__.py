@@ -159,10 +159,9 @@ class Profile(BaseProfile):
         row = []
         if part_name:
             is_part = True
-        for l in block.splitlines(True):
-            # print l
+        for line in block.splitlines(True):
             # Part section
-            if "-" * 5 in l:
+            if "-" * 5 in line:
                 is_table = True
                 # print("Table start")
                 continue
@@ -178,10 +177,10 @@ class Profile(BaseProfile):
                 row = []
             if part_splitter.match(l) and not is_part:
                 is_part = True
-                part_name = part_splitter.match(l).group(1)
+                part_name = part_splitter.match(line).group(1)
                 # print("Part start: %s" % part_name)
                 continue
-            if not l.strip():
+            if not line.strip():
                 # is_part = False
                 # print("Part End")
                 continue
@@ -189,7 +188,7 @@ class Profile(BaseProfile):
             if is_part and is_table:
                 row.append(l.split())
             elif is_part and not is_table:
-                k_v_list.extend(k_v_splitter.findall(l))
+                k_v_list.extend(k_v_splitter.findall(line))
             continue
         else:
             r[part_name] = dict(k_v_list)
@@ -205,7 +204,7 @@ class Profile(BaseProfile):
         r = defaultdict(dict)
         current_iface = ""
         for line in e.splitlines():
-            print line
+            # print line
             if not line:
                 continue
             if (line.startswith("LoopBack") or line.startswith("MEth") or
@@ -220,7 +219,7 @@ class Profile(BaseProfile):
                 line = line[12:]
             elif "Route Port" in line:
                 line = line[11:]
-            print line
+            # print line
             # while split:
             for part in line.split(",", split - 1):
                 if ":" in part:
