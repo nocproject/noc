@@ -104,7 +104,7 @@ class Script(BaseScript):
                 (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
                 """,
                 re.MULTILINE | re.DOTALL | re.VERBOSE)
-            c = self.cli("display interface")
+            c = self.cli("display interface", cached=True)
         else:
             try:
                 c = self.cli("display port vlan")
