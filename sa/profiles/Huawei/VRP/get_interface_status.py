@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_interface_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -11,19 +11,19 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 import re
 
-rx_ifc_status = re.compile(
-    r"^\s*(?P<interface>[^ ]+) current state\s*:.*?(?P<status>up|down)",
-    re.IGNORECASE)
-rx_ifc_block = re.compile(
-    r"Interface\s+(PHY|Physical)\s+Protocol[^\n]+\n(?P<block>.*)$",
-    re.MULTILINE | re.DOTALL | re.IGNORECASE)
-rx_ifc_br_status = re.compile(
-    r"^\s*(?P<interface>[^ ]+)\s+(?P<status>up|down|\*down).*$", re.IGNORECASE)
-
 
 class Script(BaseScript):
     name = "Huawei.VRP.get_interface_status"
     interface = IGetInterfaceStatus
+
+    rx_ifc_status = re.compile(
+        r"^\s*(?P<interface>[^ ]+) current state\s*:.*?(?P<status>up|down)",
+        re.IGNORECASE)
+    rx_ifc_block = re.compile(
+        r"Interface\s+(PHY|Physical)\s+Protocol[^\n]+\n(?P<block>.*)$",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ifc_br_status = re.compile(
+        r"^\s*(?P<interface>[^ ]+)\s+(?P<status>up|down|\*down).*$", re.IGNORECASE)
 
     def execute(self, interface=None):
         if self.has_snmp():
@@ -35,30 +35,32 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.2.2.1.8"
                 ]):
+                    iface = self.profile.convert_interface_name(n)
                     # ifOperStatus up(1)
-                    if (interface and
-                                interface == self.profile.convert_interface_name(n)):
-                        return [{"interface": n, "status": int(s) == 1}]
-                    r += [{"interface": n, "status": int(s) == 1}]
+                    if (interface and interface == iface):
+                        return [{"interface": iface, "status": int(s) == 1}]
+                    r += [{"interface": iface, "status": int(s) == 1}]
                 return r
             except self.snmp.TimeOutError:
                 pass
         # Fallback to CLI
         r = []
-        ##
-        ## VRP3 style
-        ##
+        #
+        # VRP3 style
+        #
         version = self.profile.fix_version(self.scripts.get_version())
         if version.startswith("3."):
-            for l in self.cli("display interface").splitlines():
-                if ((l.find(" current state :") != -1 \
-                or l.find(" current state:") != -1) \
-                and l.find("Line protocol ") == -1):
-                    match_int = rx_ifc_status.match(l)
+            for line in self.cli("display interface").splitlines():
+                if (
+                    (
+                        line.find(" current state :") != -1 or
+                        line.find(" current state:") != -1
+                    ) and line.find("Line protocol ") == -1
+                ):
+                    match_int = self.rx_ifc_status.match(line)
                     if match_int:
-                        iface = match_int.group("interface")
-                        if (interface and
-                                    interface == self.profile.convert_interface_name(iface)):
+                        iface = self.profile.convert_interface_name(match_int.group("interface"))
+                        if (interface and interface == iface):
                             return [{
                                 "interface": iface,
                                 "status": match_int.group("status").lower() == "up"
@@ -67,19 +69,18 @@ class Script(BaseScript):
                             "interface": iface,
                             "status": match_int.group("status").lower() == "up"
                         }]
-        ##
-        ## Other (VRP5 style)
-        ##
+        #
+        # Other (VRP5 style)
+        #
         else:
             cli = self.cli("display interface brief", cached=True)
-            match = rx_ifc_block.search(cli)
+            match = self.rx_ifc_block.search(cli)
             if match:
-                for l in match.group("block").splitlines():
-                    match_int = rx_ifc_br_status.match(l)
+                for line in match.group("block").splitlines():
+                    match_int = self.rx_ifc_br_status.match(line)
                     if match_int:
-                        iface = match_int.group("interface")
-                        if (interface and
-                                    interface == self.profile.convert_interface_name(iface)):
+                        iface = self.profile.convert_interface_name(match_int.group("interface"))
+                        if (interface and interface == iface):
                             return [{
                                 "interface": iface,
                                 "status": match_int.group("status").lower() == "up"

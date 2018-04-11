@@ -10,7 +10,7 @@
 # Python modules
 import re
 import numpy as np
-from itertools import izip_longest
+from itertools import izip, izip_longest, dropwhile, imap
 from collections import defaultdict
 # NOC modules
 from noc.core.profile.base import BaseProfile
@@ -49,7 +49,31 @@ class Profile(BaseProfile):
     rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
-    rx_ver = re.compile(r"\s*(\d+)\.(\d+)\s*(\((?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)\))?\S*")
+    matchers = {
+        "is_kernel_3": {
+            "version": {
+                "$gte": "3.0",
+                "$lt": "5.0"
+            }
+        },
+        "is_kernelgte_5": {
+            "version": {
+                "$gte": "5.0"
+            }
+        },
+        "is_bad_platform": {
+            "version": {
+                "$in": ["5.20"]
+            },
+            "platform": {
+                "$in": ["S5628F", "S5628F-HI"]
+            }
+        }
+    }
+
+    rx_ver = re.compile(r"((?:(\d)\.(\d+))\s*)?\(?(?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)(?:B(\d+)|)(?:SPC(\d+)|)\)?")
+    rx_ver_kern = re.compile(r"\s*(\d)\.(\d+)\s*")
+    rx_ver_rel = re.compile(r"\(?(?:V(\d+)|)(?:R(\d+)|)(?:C(\d+)|)(?:B(\d+)|)(?:SPC(\d+)|)\)?")
 
     def cmp_version(self, x, y):
         """
@@ -67,15 +91,74 @@ class Profile(BaseProfile):
                such as the original VR version is V100R005, the new VR version V200R005.
           In the same R version, C version of XX from 00 to 1 units numbered. If the R version number change,
           the C version number of the XX began to re numbered 01, such as V100R001C01, V100R001C02, V100R002C01
-        :param x: [12358].x (VxxxRxxxCxx)
-        :param y: [12358].x (VxxxRxxxCxx)
-        :return:
+        :param x: [12358].x (VxxxRxxxCxxBxxx)
+        :param y: [12358].x (VxxxRxxxCxxBxxx)
+        :return: <0 , if v1<v2
+                  0 , if v1==v2
+                 >0 , if v1>v2
+               None , if v1 and v2 cannot be compared
+
+        >>> Profile().cmp_version("5.30 (V100R005C02B236)", "5.30")
+        0
+        >>> Profile().cmp_version("5.30 (V100R005C02B236)", "5.40")
+        -1
+        >>> Profile().cmp_version("R006C02", "5.30 (V100R005C02B236)")
+        1
+        >>> Profile().cmp_version("5.30 (V100R003C00SPC100)", "5.30 (V100R005C02B236)")
+        -1
+        >>> Profile().cmp_version("5.80 (V100R005C02SPC100)", "5.80 (V100R005C02B236)")
+        0
+        >>> Profile().cmp_version("5.00 (V100R005C02SPC100)", "3.80 (V100R005C02B236)")
+        1
+        >>> Profile().cmp_version("3.10 (V100R005C02SPC100)", "3.80 (V100R005C02B236)")
+        -1
+        >>> Profile().cmp_version("100", "5.30 (V100R005C02B236)")
         """
-        # pylint: disable=cmp-builtin
-        return cmp(  # noqa
-            [int(z) for z in self.rx_ver.findall(str(x))[0] if z.isdigit()],
-            [int(z) for z in self.rx_ver.findall(str(y))[0] if z.isdigit()]
-        )
+        print x, y
+        a, b = self.rx_ver.search(str(x)).groups()[1:], self.rx_ver.search(str(y)).groups()[1:]
+        # if set(self.rx_ver.search(x).groups()) and self.rx_ver.search(y):
+        if any(a) and any(b):
+            r = list(dropwhile(lambda s: s == 0,
+                               [(int(a) > int(b)) - (int(a) < int(b)) for a, b in izip(a, b)
+                                if a is not None and b is not None]))
+            return r[0] if r else 0
+        else:
+            return None
+
+    INTERFACE_TYPES = {
+        "Aux": "tunnel",
+        "Cellular": "tunnel",
+        "Eth-Trunk": "aggregated",
+        "Ip-Trunk": "aggregated",
+        "XGigabitEthernet": "physical",
+        "Ten-GigabitEthernet": "physical",
+        "GigabitEthernet": "physical",
+        "FastEthernet": "physical",
+        "Ethernet": "physical",
+        "Cascade": "physical",
+        "Logic-Channel": "tunnel",
+        "LoopBack": "loopback",
+        "MEth": "management",
+        "M-Ethernet": "management",
+        "MTunnel": None,
+        "Ring-if": "physical",
+        "Tunnel": "tunnel",
+        "Virtual-Ethernet": None,
+        "Virtual-Template": "template",
+        "Bridge-Template": "template",
+        "Bridge-template": "template",
+        "Vlanif": "SVI",
+        "Vlan-interface": "SVI",
+        "NULL": "null",
+        "RprPos": "unknown",
+        "Rpr": "unknown",
+        "100GE": "physical",
+        "Serial": None,
+        "Pos": None
+    }
+
+    def get_interface_type(cls, name):
+        return cls.INTERFACE_TYPES.get(name)
 
     def generate_prefix_list(self, name, pl, strict=True):
         me = "ip ip-prefix %s permit %%s" % name
