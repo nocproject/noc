@@ -361,12 +361,17 @@ class BaseVRPParser(BaseParser):
         """
         ip route-static 0.0.0.0 0.0.0.0 172.20.66.30 preference 30
         @todo ip route-static 10.10.10.0 255.255.254.0 Vlanif7 10.10.100.1
+        ip route-static vpn-instance vpn1 1.1.1.1 255.255.255.255 10.10.10.10
         """
-        p = IPv4(tokens[2], netmask=tokens[3])
+        if tokens[2] == "vpn-instance":
+            p = IPv4(tokens[4], netmask=tokens[5])
+            nh = tokens[6]
+        else:
+            p = IPv4(tokens[2], netmask=tokens[3])
+            nh = tokens[4]
         sf = self.get_static_route_fact(str(p))
         # rest = tokens[3].split()
         # nh = rest.pop(0)
-        nh = tokens[4]
         if is_ipv4(nh):
             sf.next_hop = nh
         else:
