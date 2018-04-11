@@ -165,7 +165,7 @@ class Profile(BaseProfile):
                 is_table = True
                 # print("Table start")
                 continue
-            if part_splitter.match(l) and is_part:
+            if part_splitter.match(line) and is_part:
                 # @todo many table in part ?
                 is_part = False
                 is_table = False
@@ -175,7 +175,7 @@ class Profile(BaseProfile):
                 # print("Part End")
                 k_v_list = []
                 row = []
-            if part_splitter.match(l) and not is_part:
+            if part_splitter.match(line) and not is_part:
                 is_part = True
                 part_name = part_splitter.match(line).group(1)
                 # print("Part start: %s" % part_name)
@@ -186,7 +186,7 @@ class Profile(BaseProfile):
                 continue
             # Parse Section
             if is_part and is_table:
-                row.append(l.split())
+                row.append(line.split())
             elif is_part and not is_table:
                 k_v_list.extend(k_v_splitter.findall(line))
             continue
