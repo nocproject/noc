@@ -30,7 +30,7 @@ class Script(BaseScript):
         # Get descriptions
         descriptions = {}
         try:
-            v = self.cli("display interface description")
+            c = self.cli("display interface description")
         except self.CLISyntaxError:
             rx_descr = re.compile(
                 r"^(?P<interface>(?:Eth|GE|TENGE)\d+/\d+/\d+)\s+"
@@ -39,11 +39,11 @@ class Script(BaseScript):
                 r"(?P<mode>access|trunk|hybrid|trunking|A|T|H)\s+"
                 r"(?P<pvid>\d+)\s*(?P<description>.*)$", re.MULTILINE)
             try:
-                v = self.cli("display brief interface")
+                c = self.cli("display brief interface")
             except self.CLISyntaxError:
-                v = self.cli("display interface brief")
+                c = self.cli("display interface brief")
 
-        for match in rx_descr.finditer(v):
+        for match in rx_descr.finditer(c):
             interface = self.profile.convert_interface_name(match.group("interface"))
             description = match.group("description").strip()
             if description.upper().startswith("HUAWEI"):
@@ -91,7 +91,7 @@ class Script(BaseScript):
         # Get ports in vlans
         version = self.profile.fix_version(self.scripts.get_version())
         if version.startswith("5.3"):
-            v = self.cli("display port allow-vlan")
+            c = self.cli("display port allow-vlan")
         elif version.startswith("3.10"):
             rx_line = re.compile(
                 r"""
@@ -104,17 +104,17 @@ class Script(BaseScript):
                 (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
                 """,
                 re.MULTILINE | re.DOTALL | re.VERBOSE)
-            v = self.cli("display interface")
+            c = self.cli("display interface")
         else:
             try:
-                v = self.cli("display port vlan")
+                c = self.cli("display port vlan")
             except self.CLISyntaxError:
-                v = "%s\n%s" % (
+                c = "%s\n%s" % (
                     self.cli("display port trunk"),
                     self.cli("display port hybrid")
                 )
 
-        for match in rx_line.finditer(v):
+        for match in rx_line.finditer(c):
             for port in r:
                 if port["interface"] == match.group("interface"):
                     tagged = []
