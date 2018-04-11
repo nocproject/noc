@@ -191,8 +191,20 @@ class VPNCheck(DiscoveryCheck):
             )
             metrics["vpn_creation_denied"] += 1
             return
+        name = self.get_vpn_name(vpn)
+        # Check for naming clash
+        if VRF.objects.filter(name=name).exists():
+            # Naming clash
+            old_name = name
+            name = "%s (%s)" % (name, vpn.rd)
+            self.logger.info(
+                "Name '%s' is already exists with other rd. Rename to '%s'",
+                old_name, name
+            )
+            metrics["vpn_name_clash"] += 1
+        #
         p = VRF(
-            name=self.get_vpn_name(vpn),
+            name=name,
             rd=vpn.rd,
             profile=vpn.profile,
             source=vpn.source
