@@ -166,7 +166,7 @@ class AddressCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredAddress(
-                rd=a["rd"],
+                rd=a["rd"] or GLOBAL_VRF,
                 address=a["address"].rsplit("/", 1)[0],
                 profile=self.object.object_profile.address_profile_interface,
                 source=SRC_INTERFACE,
@@ -245,7 +245,7 @@ class AddressCheck(DiscoveryCheck):
             for a in rd["addresses"]:
                 r += [
                     DiscoveredAddress(
-                        rd=a.get("rd", GLOBAL_VRF),
+                        rd=a.get("rd", GLOBAL_VRF) or GLOBAL_VRF,
                         address=a["ip"],
                         profile=self.object.object_profile.address_profile_neighbor,
                         source=SRC_NEIGHBOR,
