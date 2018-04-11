@@ -143,7 +143,7 @@ class PrefixCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredPrefix(
-                rd=p["rd"],
+                rd=p["rd"] or GLOBAL_VRF,
                 prefix=str(IP.prefix(p["address"]).first),
                 profile=self.object.object_profile.prefix_profile_interface,
                 source=SRC_INTERFACE,
