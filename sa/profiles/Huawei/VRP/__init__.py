@@ -150,6 +150,7 @@ class Profile(BaseProfile):
         :type block: str
         :return:
         """
+        # @todo migrate to parse_block
         k_v_splitter = re.compile(
             r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
         part_splitter = re.compile(
@@ -162,6 +163,7 @@ class Profile(BaseProfile):
         if part_name:
             is_part = True
         for line in block.splitlines(True):
+            # print l
             # Part section
             if "-" * 5 in line:
                 is_table = True
@@ -206,7 +208,6 @@ class Profile(BaseProfile):
         r = defaultdict(dict)
         current_iface = ""
         for line in e.splitlines():
-            # print line
             if not line:
                 continue
             if (line.startswith("LoopBack") or line.startswith("MEth") or
@@ -221,7 +222,6 @@ class Profile(BaseProfile):
                 line = line[12:]
             elif "Route Port" in line:
                 line = line[11:]
-            # print line
             # while split:
             for part in line.split(",", split - 1):
                 if ":" in part:
