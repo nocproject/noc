@@ -147,7 +147,7 @@ class Address(models.Model):
         :return: VRF already containing address or None
         :rtype: VRF or None
         """
-        if vrf.vrf_group.address_constraint != "G":
+        if not vrf.vrf_group or vrf.vrf_group.address_constraint != "G":
             return None
         afi = cls.get_afi(address)
         try:
