@@ -8,6 +8,13 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "description": " Fan Tray 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Cisco | 7600 | 7609 Fan"
+        },
+        {
             "description": "CLK module slot 1",
             "direction": "i",
             "gender": "f",
