@@ -20,7 +20,7 @@ class IGetARP(BaseInterface):
     vrf = StringParameter(required=False)
     interface = InterfaceNameParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
-        "vrf": StringParameter(required=False),
+        "virtual_router": StringParameter(required=False),
         "ip": IPv4Parameter(),
         # NONE for incomplete entries
         "mac": MACAddressParameter(required=False),
