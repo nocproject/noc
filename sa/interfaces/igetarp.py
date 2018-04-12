@@ -12,7 +12,7 @@ from __future__ import absolute_import
 from noc.core.interface.base import BaseInterface
 from .base import (
     StringParameter, InterfaceNameParameter, ListOfParameter,
-    DictParameter, IPv4Parameter, MACAddressParameter
+    DictParameter, RDParameter, IPv4Parameter, MACAddressParameter
 )
 
 
@@ -21,6 +21,7 @@ class IGetARP(BaseInterface):
     interface = InterfaceNameParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
         "virtual_router": StringParameter(required=False),
+        "rd": RDParameter(required=False),
         "ip": IPv4Parameter(),
         # NONE for incomplete entries
         "mac": MACAddressParameter(required=False),
