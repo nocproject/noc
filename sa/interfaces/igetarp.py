@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # IGetARP - interface to query ARP cache
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2012 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ class IGetARP(BaseInterface):
     vrf = StringParameter(required=False)
     interface = InterfaceNameParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
+        "vrf": StringParameter(required=False),
         "ip": IPv4Parameter(),
         # NONE for incomplete entries
         "mac": MACAddressParameter(required=False),
