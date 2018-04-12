@@ -89,7 +89,7 @@
             "match_connection": "in",
             "match_type": "FAN-E",
             "scope": "chassis",
-            "target_connection": "fan{N}",
+            "target_connection": "fan",
             "target_number": "",
             "target_type": "CHASSIS"
         },
