@@ -196,7 +196,7 @@ class VPNCheck(DiscoveryCheck):
         if VRF.objects.filter(name=name).exists():
             # Naming clash
             old_name = name
-            name = "%s (%s)" % (name, vpn.rd)
+            name = self.get_unique_vpn_name(vpn)
             self.logger.info(
                 "Name '%s' is already exists with other rd. Rename to '%s'",
                 old_name, name
@@ -229,7 +229,11 @@ class VPNCheck(DiscoveryCheck):
             if vpn.source != discovered_vpn.source:
                 changes += ["source: %s -> %s" % (vpn.source, discovered_vpn.source)]
                 vpn.source = discovered_vpn.source
-            if discovered_vpn.name and discovered_vpn.name != vpn.name:
+            if (
+                discovered_vpn.name and
+                discovered_vpn.name != vpn.name and
+                self.get_unique_vpn_name(discovered_vpn) != vpn.name
+            ):
                 changes += ["name: %s -> %s" % (vpn.name, discovered_vpn.name)]
                 vpn.name = discovered_vpn.name
             if changes:
@@ -286,4 +290,15 @@ class VPNCheck(DiscoveryCheck):
         return (
             object.object_profile.enable_box_discovery_vpn_interface or
             object.object_profile.enable_box_discovery_vpn_mpls
+        )
+
+    def get_unique_vpn_name(self, vpn):
+        """
+        Generate unique VPN name by adding rd
+        :param vpn: DiscoveredVPN
+        :return: unique name
+        """
+        return "%s (%s)" % (
+            self.get_vpn_name(vpn),
+            vpn.rd
         )
