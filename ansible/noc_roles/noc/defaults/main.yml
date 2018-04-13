@@ -8,10 +8,9 @@ pypy_path: "{{noc_root}}/../pypy"
 python_interpreter: python
 noc_service_pidfile: /var/run/noc.pid
 noc_system_service: noc
-bi_export_dir: "{{noc_var_lib}}/bi"
 noc_logs: /var/log/noc
 noc_var_lib: /var/lib/noc
-noc_var: /var/opt/noc
+bi_export_dir: "{{noc_var_lib}}/bi"
 noc_etc: "{{noc_root}}/etc"
 noc_reports_dir: "{{noc_var_lib}}/reports"
 noc_crashinfo_dir: "{{noc_var_lib}}/var/cp/crashinfo/new"
