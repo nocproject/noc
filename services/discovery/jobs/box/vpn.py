@@ -99,6 +99,9 @@ class VPNCheck(DiscoveryCheck):
         :returns: Resulted vpns
         """
         for vpn in discovered_vpns:
+            if not vpn.rd:
+                metrics["vpn_wo_rd"] += 1
+                continue
             old = vpns.get(vpn.rd)
             if old:
                 if VPNCheck.is_preferred(old.source, vpn.source):
