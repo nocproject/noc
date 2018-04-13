@@ -20,32 +20,32 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_lldp = re.compile(
-        r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
+        r"^\s*(Port\s+)?port(?P<port>\d+)\s*has\s+1\s*remotes:\n(?:\n)?"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
         r"^\s*ChassisIdSubtype:\s+(?P<ch_type>\S+)\s*\n"
         r"^\s*ChassisId:\s+(?P<ch_id>\S+)\s*\n"
         r"^\s*PortIdSubtype:\s+(?P<port_id_subtype>\S+)\s*\n"
         r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
-        r"^\s*PortDesc:\s+(?P<port_descr>.+)\s*\n"
-        r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc:\s+(?P<sys_descr>.+?)\n"
+        r"^\s*PortDesc:\s+(?P<port_descr>(?:.+\n)*)"
+        r"^\s*SysName:\s+(?P<sys_name>(?:.+\n)*)"
+        r"^\s*SysDesc:\s+(?P<sys_descr>(?:.+\n)*)"
         r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE)
     rx_lldp_womac = re.compile(
-        r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
+        r"^\s*(Port\s+)?port(?P<port>\d+)\s*has\s+1\s*remotes:\n(?:\n)?"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
         r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
         r"^\s*PortIdSubtype\s*:\s+(?P<port_id_subtype>\S+)\s*\n"
         r"^\s*PortId\s*:\s+(?P<port_id>.+)\s*\n"
-        r"^\s*PortDesc\s*:\s+(?P<port_descr>.+)\s*\n"
-        r"^\s*SysName\s*:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc\s*:\s+(?P<sys_descr>.+?)\n"
+        r"^\s*PortDesc:\s+(?P<port_descr>(?:.+\n)*)"
+        r"^\s*SysName:\s+(?P<sys_name>(?:.+\n)*)"
+        r"^\s*SysDesc:\s+(?P<sys_descr>(?:.+\n)*)"
         r"^\s*SysCapSupported\s*:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled\s*:\s+(?P<sys_caps_enabled>\S+)\s*\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE)
     rx_lldp_rem = re.compile(
         r"^port(?P<port>\d+)\s+(?P<ch_id>\S+)", re.MULTILINE)
 
@@ -106,11 +106,13 @@ class Script(BaseScript):
             }
             if match.group("sys_name") != "N/A":
                 n["remote_system_name"] = match.group("sys_name")
-            if match.group("sys_descr") != "N/A" and "\n" not in match.group("sys_descr"):
+            if match.group("sys_descr") != "N/A":
                 sd = match.group("sys_descr")
+                # Need more examples
                 if "SysDesc:" in sd:
                     sd = sd.split()[-1]
-                n["remote_system_description"] = sd
+                n["remote_system_description"] = \
+                    re.sub("\n\s{29,30}", "", sd.strip())
             if match.group("port_descr") != "N/A":
                 n["remote_port_description"] = \
                     re.sub("\n\s{29,30}", "", match.group("port_descr").strip())
