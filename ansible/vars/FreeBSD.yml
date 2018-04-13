@@ -2,8 +2,13 @@
 ---
 etc_prefix: /usr/local/etc
 
+noc_var_lib: /var/db/noc
+
 grafana_home: /usr/local/share/grafana
 grafana_system_service: grafana
+grafana_dashboard_dir: /var/db/grafana/dashboards
+grafana_plugins_dir: /var/db/grafana/plugins
+grafana_provisioning_dir: /var/db/grafana/provisioning
 
 influx_path: /usr/local/bin/influx
 influxdb_conf: /usr/local/etc/influxd.conf
@@ -52,7 +57,6 @@ consul_template_group: wheel
 pip_cflags: "-O2 -pipe -fno-strict-aliasing -fstack-protector -I/usr/local/include"
 pip_ldflags: "-L/usr/local/lib"
 
-pgbouncer_path_pid: /var/run/pgbouncer
 nsd_log_dir: /var/log/nsq
 nsq_root: /usr/local/nsq
 
@@ -61,8 +65,7 @@ ch_data_dir: /var/db/clickhouse
 
 fake_shell: /sbin/nologin
 
-grafana_dashboard_dir: /var/db/grafana/dashboards
-grafana_plugins_dir: /var/db/grafana/plugins
-
 clickhouse_service_name: clickhouse
+
 pgbouncer_user: pgbouncer
+pgbouncer_path_pid: /var/run/pgbouncer
