@@ -14,3 +14,8 @@
   pkgng:
     name: "mongodb32"
     state: present
+
+- name: Add newsyslogd rules
+  template:
+    src: "os/FreeBSD/mongo.conf"
+    dest: "/usr/local/etc/newsyslog.conf.d/mongo.conf"
