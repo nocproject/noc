@@ -434,13 +434,13 @@ class AddressCheck(DiscoveryCheck):
         """
         if ":" in address.address:
             # IPv6
-            if not vrf.is_ipv6:
+            if not vrf.afi_ipv6:
                 self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.rd)
-                vrf.is_ipv6 = True
+                vrf.afi_ipv6 = True
                 vrf.save()
         else:
             # IPv4
-            if not vrf.is_ipv4:
+            if not vrf.afi_ipv4:
                 self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.rd)
-                vrf.is_ipv4 = True
+                vrf.afi_ipv4 = True
                 vrf.save()
