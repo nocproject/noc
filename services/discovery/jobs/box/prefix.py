@@ -178,8 +178,10 @@ class PrefixCheck(DiscoveryCheck):
             )
             metrics["prefix_creation_denied"] += 1
             return
+        vrf = VRF.get_by_rd(prefix.rd)
+        self.ensure_afi(vrf, prefix)
         p = Prefix(
-            vrf=VRF.get_by_rd(prefix.rd),
+            vrf=vrf,
             prefix=prefix.prefix,
             name=self.get_prefix_name(prefix),
             profile=prefix.profile,
@@ -267,3 +269,23 @@ class PrefixCheck(DiscoveryCheck):
     @staticmethod
     def is_enabled_for_object(object):
         return object.object_profile.enable_box_discovery_prefix_interface
+
+    def ensure_afi(self, vrf, prefix):
+        """
+        Ensure VRF has appropriate AFI enabled
+        :param vrf: VRF instance
+        :param prefix: DiscoveredPrefix instance
+        :return:
+        """
+        if ":" in prefix.prefix:
+            # IPv6
+            if not vrf.is_ipv6:
+                self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.rd)
+                vrf.is_ipv6 = True
+                vrf.save()
+        else:
+            # IPv4
+            if not vrf.is_ipv4:
+                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.rd)
+                vrf.is_ipv4 = True
+                vrf.save()
