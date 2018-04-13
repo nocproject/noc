@@ -7,7 +7,7 @@ forms:
       <strong>Long description</strong>: Secondary DB. Used to store network equipment info, IPAM and others. <br/>
       <strong>Scale Recommendations</strong>: At least one per system. <br/>
       <strong>docs</strong>: <a href=https://www.postgresql.org/docs/9.6/static/index.html target=_blank>PostgresSQL</a> <br/>
-      <strong>Placement constraint</strong>: Low cpu usage, low memory usage. low io usage. Nothing works without it.<br/>
+      <strong>Placement constraint</strong>: Low CPU usage, low memory usage. low IO usage. Nothing works without it.<br/>
     power:
       default: master
       label: "Postgres Role"
@@ -17,24 +17,24 @@ forms:
         - secondary
     max_clients:
       default: 300
-      label: "Postgresql max clients"
+      label: "PostgreSQL max clients"
       type: int
     version:
       default: 9.6
       description: "<strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field."
-      label: "Postgresql version"
+      label: "PostgreSQL version"
       type: str
       common: environment
     replicator_password:
       default: noc
       description: "Password for user \"replicator\""
-      label: "Postgresql replicator password"
+      label: "PostgreSQL replicator password"
       type: str
       common: environment
     superuser_password:
       default: noc
       description: "Password for user \"superuser\""
-      label: "Postgresql superuser password"
+      label: "PostgreSQL superuser password"
       type: str
       common: environment
     noc_db:
