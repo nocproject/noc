@@ -4,7 +4,7 @@ forms:
     description: >
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: SNMP Trap listener service<br/>
-      <strong>Long description</strong>: Listen for SNMP Traps from network equipment adds them to nsqd queue<br/>
+      <strong>Long description</strong>: Listen for SNMP Traps from network equipment and adds them to nsqd queue<br/>
       <strong>Scale Recommendations</strong>: One per pool. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/trapcollector/ target=_blank>Trapcollector</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>

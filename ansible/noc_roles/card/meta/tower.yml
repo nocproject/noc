@@ -4,7 +4,7 @@ forms:
     description: >
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Card service <br/>
-      <strong>Long description</strong>: Responsible for an alternative web interface - cards. They are ReadOnly pages showing information on netwrk equipment, segments, and accidents.<br/>
+      <strong>Long description</strong>: Responsible for an alternative web interface - cards. They are ReadOnly pages showing information on network equipment, segments, and accidents.<br/>
       <strong>Scale Recommendations</strong>: At least two per installation.<br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/card/ target=_blank>Card</a><br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>

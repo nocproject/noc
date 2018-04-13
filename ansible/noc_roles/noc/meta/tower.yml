@@ -4,7 +4,7 @@ forms:
     description: >
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: NOC settings <br/>
-      <strong>Long description</strong>: Special settings for noc<br/>
+      <strong>Long description</strong>: Special settings for NOC<br/>
       <strong>Scale Recommendations</strong>: At one any node <br/>
       <strong>docs</strong>: <br/>
       <strong>Placement constraint</strong>: Any <br/>

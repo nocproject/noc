@@ -4,7 +4,7 @@ forms:
     description: >
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Ping service <br/>
-      <strong>Long description</strong>: Pings network equipment with icmp. Creates events on state changes<br/>
+      <strong>Long description</strong>: Pings network equipment with ICMP. Creates events on state changes<br/>
       <strong>Scale Recommendations</strong>: At least one per pool.  <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/ping/ target=_blank>ping</a><br/>
       <strong>Placement constraint</strong>: On node with activator<br/>

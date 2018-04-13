@@ -1,6 +1,6 @@
 Ansible playbooks for NOC Tower
 
-Primary goal of that playbook provide simple install of Noc.
+Primary goal of that playbook provide simple install of NOC.
 
 Several notes that it will not do:
 * remove external service from node (postgres, mongodb and so on) after disabling service in Tower

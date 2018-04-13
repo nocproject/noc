@@ -4,7 +4,7 @@ forms:
     description: >
       <strong>Service type</strong>: Internal <br/>
       <strong>Short description</strong>: Telegram sender<br/>
-      <strong>Long description</strong>: Sends alarms and messages to Telegram messandger.<br/>
+      <strong>Long description</strong>: Sends alarms and messages to Telegram messenger.<br/>
       <strong>Scale Recommendations</strong>: One per system. <br/>
       <strong>docs</strong>: <a href=http://docs.getnoc.com/en/latest/services/tgsender/ target=_blank>tgsender</a><br/>
       <strong>Placement constraint</strong>: No special recommendations.<br/>

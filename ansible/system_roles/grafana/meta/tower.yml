@@ -4,8 +4,8 @@ forms:
     description: >
       <strong>Service type</strong>: External <br/>
       <strong>Short description</strong>: The open platform for beautiful analytics and monitoring <br/>
-      <strong>Long description</strong>: Shows graphs based on noc collected data.<br/>
-      <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. Stores data in postgres. Uses noc internal auth. <br/>
+      <strong>Long description</strong>: Shows graphs based on NOC collected data.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. Stores data in postgres. Uses NOC internal auth. <br/>
       <strong>docs</strong>: <a href=http://docs.grafana.org/ target=_blank>Grafana docs</a> <br/>
       <strong>Placement constraint</strong>: On node with nginx<br/>
     pg_password:
