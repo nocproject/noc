@@ -281,8 +281,10 @@ class AddressCheck(DiscoveryCheck):
             )
             metrics["address_creation_denied"] += 1
             return
+        vrf = VRF.get_by_rd(address.rd)
+        self.ensure_afi(vrf, address)
         a = Address(
-            vrf=VRF.get_by_rd(address.rd),
+            vrf=vrf,
             address=address.address,
             name=self.get_address_name(address),
             fqdn=self.get_address_fqdn(address),
@@ -422,3 +424,23 @@ class AddressCheck(DiscoveryCheck):
             object.object_profile.enable_box_discovery_address_dhcp or
             object.object_profile.enable_box_discovery_address_neighbor
         )
+
+    def ensure_afi(self, vrf, address):
+        """
+        Ensure VRF has appropriate AFI enabled
+        :param vrf: VRF instance
+        :param address: DiscoveredAddress instance
+        :return:
+        """
+        if ":" in address.address:
+            # IPv6
+            if not vrf.is_ipv6:
+                self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.rd)
+                vrf.is_ipv6 = True
+                vrf.save()
+        else:
+            # IPv4
+            if not vrf.is_ipv4:
+                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.rd)
+                vrf.is_ipv4 = True
+                vrf.save()
