@@ -2,7 +2,7 @@
 - name: Initialize virtualenv
   pip:
     chdir: "{{noc_root}}"
-    name: "pip"
+    name: "pip==9.0.3"
     virtualenv: "{{ noc_root }}"
     state: "present"
   environment:
