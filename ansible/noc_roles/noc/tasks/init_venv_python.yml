@@ -19,17 +19,6 @@
   environment:
     https_proxy: "{{http_proxy}}"
 
-- name: Upgrade PIP
-  pip:
-    chdir: "{{noc_root}}"
-    virtualenv: "{{noc_root}}"
-    name: "pip"
-    state: latest
-  environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-    LC_ALL: C
-
 - name: Upgrade setuptools
   pip:
     name: setuptools
