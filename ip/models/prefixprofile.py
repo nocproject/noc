@@ -54,6 +54,19 @@ class PrefixProfile(Document):
     style = ForeignKeyField(Style)
     # Template.subject to render Prefix.name
     name_template = ForeignKeyField(Template)
+    # Discovery policies
+    prefix_discovery_policy = StringField(
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ], default="D"
+    )
+    address_discovery_policy = StringField(
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ], default="D"
+    )
     #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems

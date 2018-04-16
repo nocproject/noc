@@ -114,15 +114,27 @@ class Prefix(models.Model):
         null=True, blank=True,
         limit_choices_to={"afi": "6"},
         on_delete=models.SET_NULL)
-    enable_ip_discovery = models.CharField(
-        _("Enable IP Discovery"),
+    prefix_discovery_policy = models.CharField(
+        _("Prefix Discovery Policy"),
         max_length=1,
         choices=[
-            ("I", "Inherit"),
+            ("P", "Profile"),
             ("E", "Enable"),
             ("D", "Disable")
         ],
-        default="I",
+        default="P",
+        blank=False,
+        null=False
+    )
+    address_discovery_policy = models.CharField(
+        _("Address Discovery Policy"),
+        max_length=1,
+        choices=[
+            ("P", "Profile"),
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="P",
         blank=False,
         null=False
     )
@@ -645,12 +657,16 @@ class Prefix(models.Model):
             yield str(fp)
 
     @property
-    def effective_ip_discovery(self):
-        if self.enable_ip_discovery == "I":
-            if self.parent:
-                return self.parent.effective_ip_discovery
-            return "E"
-        return self.enable_ip_discovery
+    def effective_address_discovery(self):
+        if self.address_discovery_policy == "P":
+            return self.profile.address_discovery_policy
+        return self.address_discovery_policy
+
+    @property
+    def effective_prefix_discovery(self):
+        if self.prefix_discovery_policy == "P":
+            return self.profile.prefix_discovery_policy
+        return self.prefix_discovery_policy
 
     @property
     def usage(self):
