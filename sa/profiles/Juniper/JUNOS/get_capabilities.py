@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -45,6 +45,14 @@ class Script(BaseScript):
         """
         r = self.cli("show bfd session")
         return "0 sessions, 0 clients" not in r
+
+    @false_on_cli_error
+    def has_lacp_cli(self):
+        """
+        Check box has lacp enabled
+        """
+        r = self.cli("show lacp interfaces")
+        return "lacp subsystem not running" not in r
 
     @false_on_cli_error
     def get_rpm_probes(self):
