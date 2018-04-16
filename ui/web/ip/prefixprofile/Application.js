@@ -12,7 +12,8 @@ Ext.define("NOC.ip.prefixprofile.Application", {
         "NOC.ip.prefixprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.template.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.wf.workflow.LookupField"
     ],
     model: "NOC.ip.prefixprofile.Model",
     search: true,
@@ -32,6 +33,24 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     dataIndex: "workflow",
                     width: 100,
                     renderer: NOC.render.Lookup("workflow")
+                },
+                {
+                    text: __("Prefix"),
+                    dataIndex: "prefix_discovery_policy",
+                    width: 100,
+                    renderer: NOC.render.Choices({
+                        E: __("Enabled"),
+                        D: __("Disabled")
+                    })
+                },
+                {
+                    text: __("Address"),
+                    dataIndex: "address_discovery_policy",
+                    width: 100,
+                    renderer: NOC.render.Choices({
+                        E: __("Enabled"),
+                        D: __("Disabled")
+                    })
                 }
             ],
 
@@ -50,14 +69,26 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "enable_prefix_discovery",
-                    xtype: "checkbox",
-                    boxLabel: __("Prefix Discovery")
+                    name: "prefix_discovery_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Prefix Discovery"),
+                    store: [
+                        ["E", "Enable"],
+                        ["D", "Disable"]
+                    ],
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
-                    name: "enable_ip_discovery",
-                    xtype: "checkbox",
-                    boxLabel: __("IP Discovery")
+                    name: "address_discovery_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Address Discovery"),
+                    store: [
+                        ["E", "Enable"],
+                        ["D", "Disable"]
+                    ],
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "enable_ip_ping_discovery",

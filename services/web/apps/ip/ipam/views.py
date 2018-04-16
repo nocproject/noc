@@ -169,13 +169,22 @@ class IPAMApplication(ExtApplication):
                 prefix_info += [
                     ("Free addresses", free - 2 if free >= 2 else free)
                 ]
-        t = {
+        # Prefix discovery
+        dmap = {
             "E": "Enabled",
             "D": "Disabled"
-        }[prefix.effective_ip_discovery]
-        if prefix.enable_ip_discovery == "I":
-            t = "Inherit (%s)" % t
-        prefix_info += [("IP Discovery", t)]
+        }
+        if prefix.prefix_discovery_policy == "P":
+            t = "Inherit (%s)" % dmap[prefix.profile.prefix_discovery_policy]
+        else:
+            t = dmap[prefix.prefix_discovery_policy]
+        prefix_info += [("Prefix Discovery", t)]
+        # Address discovery
+        if prefix.address_discovery_policy == "P":
+            t = "Inherit (%s)" % dmap[prefix.profile.address_discovery_policy]
+        else:
+            t = dmap[prefix.address_discovery_policy]
+        prefix_info += [("Address Discovery", t)]
         #
         ippools = prefix.ippools
         # Add custom fields

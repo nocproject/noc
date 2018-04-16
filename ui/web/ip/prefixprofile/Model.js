@@ -36,8 +36,8 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             type: "string"
         },
         {
-            name: "enable_prefix_discovery",
-            type: "boolean"
+            name: "prefix_discovery_policy",
+            type: "string"
         },
         {
             name: "workflow",
@@ -49,11 +49,11 @@ Ext.define("NOC.ip.prefixprofile.Model", {
             persist: false
         },
         {
-            name: "enable_ip_ping_discovery",
-            type: "boolean"
+            name: "address_discovery_policy",
+            type: "string"
         },
         {
-            name: "enable_ip_discovery",
+            name: "enable_ip_ping_discovery",
             type: "boolean"
         },
         {
