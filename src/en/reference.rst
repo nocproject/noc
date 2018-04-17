@@ -31,3 +31,5 @@ Reference
     /reference/user
     /reference/group
     /reference/pool
+    /reference/notification-group
+    /reference/template
