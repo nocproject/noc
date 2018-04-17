@@ -11,6 +11,7 @@ from collections import namedtuple, defaultdict
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
@@ -274,15 +275,15 @@ class AddressCheck(DiscoveryCheck):
         :param address: DiscoveredAddress instance
         :return:
         """
-        if not self.has_address_permission(address):
+        vrf = VRF.get_by_rd(address.rd)
+        self.ensure_afi(vrf, address)
+        if not self.has_address_permission(vrf, address):
             self.logger.debug(
                 "Do not creating rd=%s address=%s: Disabled by policy",
                 address.rd, address.address
             )
             metrics["address_creation_denied"] += 1
             return
-        vrf = VRF.get_by_rd(address.rd)
-        self.ensure_afi(vrf, address)
         a = Address(
             vrf=vrf,
             address=address.address,
@@ -370,14 +371,21 @@ class AddressCheck(DiscoveryCheck):
             metrics["address_update_denied"] += 1
         address.fire_event("seen")
 
-    def has_address_permission(self, address):
+    def has_address_permission(self, vrf, address):
         """
         Check discovery has permission to manipulate address
+        :param vrf: VRF instance
         :param address: DiscoveredAddress instance
         :return:
         """
-        # @todo: Implement properly
-        return True
+        parent = Prefix.get_parent(
+            vrf,
+            "6" if ":" in address.address else "4",
+            address.address
+        )
+        if parent:
+            return parent.effective_address_discovery == "E"
+        return False
 
     def get_address_name(self, address):
         """
