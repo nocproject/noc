@@ -522,7 +522,7 @@ class Service(object):
         # Flush pending NSQ messages
         if self.nsq_writer:
             conns = list(self.nsq_writer.conns)
-            n = self.NSQ_WRITER_CLOSE_TRY_TIMEOUT
+            n = self.NSQ_WRITER_CLOSE_RETRIES
             while conns:
                 self.logger.info("Waiting for %d NSQ connections to finish", len(conns))
                 waiting = []
