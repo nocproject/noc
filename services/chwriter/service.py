@@ -280,5 +280,6 @@ class CHWriterService(Service):
         # .stop() will wait until queued data will be really published
         super(CHWriterService, self).stop()
 
+
 if __name__ == "__main__":
     CHWriterService().start()
