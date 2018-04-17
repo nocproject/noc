@@ -7,15 +7,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from __future__ import absolute_import
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.http.client import fetch
-from channel import Channel
 from noc.config import config
 from noc.core.perf import metrics
+from .channel import Channel
 
 
 class CHWriterService(Service):
