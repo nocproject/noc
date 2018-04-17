@@ -21,7 +21,7 @@ class Migration(object):
             "ip_prefix",
             "prefix_discovery_policy",
             models.CharField(
-                _("Prefix Discovery Policy"),
+                "Prefix Discovery Policy",
                 max_length=1,
                 choices=[
                     ("P", "Profile"),
@@ -37,7 +37,7 @@ class Migration(object):
             "ip_prefix",
             "address_discovery_policy",
             models.CharField(
-                _("Address Discovery Policy"),
+                "Address Discovery Policy",
                 max_length=1,
                 choices=[
                     ("P", "Profile"),
