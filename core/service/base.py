@@ -527,7 +527,9 @@ class Service(object):
                 self.logger.info("Waiting for %d NSQ connections to finish", len(conns))
                 waiting = []
                 for conn_id in conns:
-                    connect = conns[conn_id]
+                    connect = self.nsq_writer.conns.get(conn_id)
+                    if not connect:
+                        continue
                     if connect.callback_queue:
                         # Pending operations
                         waiting += [conn_id]
