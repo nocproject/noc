@@ -545,6 +545,8 @@ class Service(object):
                         break
                     # Wait
                     yield tornado.gen.sleep(self.NSQ_WRITER_CLOSE_TRY_TIMEOUT)
+                else:
+                    self.logger.info("NSQ writer is shut down clearly")
         # Continue deactivation
         # Finally stop ioloop
         self.dcs = None
