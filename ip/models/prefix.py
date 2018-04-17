@@ -190,21 +190,20 @@ class Prefix(models.Model):
         """
         Get nearest closing prefix
         """
-        r = list(
-            Prefix.objects.raw("""
-                SELECT id, prefix
-                FROM ip_prefix
-                WHERE
-                        vrf_id=%s
-                    AND afi=%s
-                    AND prefix >> %s
-                ORDER BY masklen(prefix) DESC
-                LIMIT 1
-            """, [vrf.id, str(afi), str(prefix)])
-        )
-        if not r:
-            return None
-        return r[0]
+        r = Prefix.objects.filter(
+            vrf=vrf,
+            afi=str(afi)
+        ).extra(
+            select={
+                "masklen": "masklen(prefix)"
+            },
+            where=["prefix >> %s"],
+            params=[str(prefix)],
+            order_by=["-masklen"]
+        )[:1]
+        if r:
+            return r[0]
+        return None
 
     @property
     def is_ipv4(self):

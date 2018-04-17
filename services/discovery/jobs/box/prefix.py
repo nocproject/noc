@@ -171,15 +171,15 @@ class PrefixCheck(DiscoveryCheck):
         :param prefix: DiscoveredPrefix instance
         :return:
         """
-        if not self.has_prefix_permission(prefix):
+        vrf = VRF.get_by_rd(prefix.rd)
+        self.ensure_afi(vrf, prefix)
+        if not self.has_prefix_permission(vrf, prefix):
             self.logger.debug(
                 "Do not creating rd=%s prefix=%s: Disabled by policy",
                 prefix.rd, prefix.prefix
             )
             metrics["prefix_creation_denied"] += 1
             return
-        vrf = VRF.get_by_rd(prefix.rd)
-        self.ensure_afi(vrf, prefix)
         p = Prefix(
             vrf=vrf,
             prefix=prefix.prefix,
@@ -233,14 +233,21 @@ class PrefixCheck(DiscoveryCheck):
             metrics["prefix_update_denied"] += 1
         prefix.fire_event("seen")
 
-    def has_prefix_permission(self, prefix):
+    def has_prefix_permission(self, vrf, prefix):
         """
         Check discovery has permission to manipulate prefix
+        :param vrf: VRF instance
         :param prefix: DiscoveredPrefix instance
         :return:
         """
-        # @todo: Implement properly
-        return True
+        parent = Prefix.get_parent(
+            vrf,
+            "6" if ":" in prefix.prefix else "4",
+            prefix.prefix
+        )
+        if parent:
+            return parent.effective_prefix_discovery == "E"
+        return False
 
     def get_prefix_name(self, prefix):
         """

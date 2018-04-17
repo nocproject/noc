@@ -132,22 +132,20 @@ class VRF(models.Model):
         operator.attrgetter("_id_cache"),
         lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        mo = VRF.objects.filter(id=id)[:1]
-        if mo:
-            return mo[0]
-        else:
-            return None
+        vrf = VRF.objects.filter(id=id)[:1]
+        if vrf:
+            return vrf[0]
+        return None
 
     @classmethod
     @cachetools.cachedmethod(
         operator.attrgetter("_rd_cache"),
         lock=lambda _: id_lock)
     def get_by_rd(cls, rd):
-        mo = VRF.objects.filter(rd=rd)[:1]
-        if mo:
-            return mo[0]
-        else:
-            return None
+        vrf = VRF.objects.filter(rd=rd)[:1]
+        if vrf:
+            return vrf[0]
+        return None
 
     def get_absolute_url(self):
         return site.reverse("ip:vrf:change", self.id)
