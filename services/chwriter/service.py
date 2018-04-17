@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # chwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,13 +15,14 @@ from noc.core.service.base import Service
 from noc.core.http.client import fetch
 from channel import Channel
 from noc.config import config
+from noc.core.perf import metrics
 
 
 class CHWriterService(Service):
     name = "chwriter"
     require_nsq_writer = True
 
-    CH_SUSPEND_ERRORS = set([598, 599])
+    CH_SUSPEND_ERRORS = {598, 599}
 
     def __init__(self):
         super(CHWriterService, self).__init__()
@@ -31,6 +32,7 @@ class CHWriterService(Service):
         self.table_fields = {}  # table name -> fields
         self.last_columns = 0
         self.is_sharded = False
+        self.stopping = False
         if config.clickhouse.cluster and config.chwriter.write_to:
             # Distributed configuration
             self.ch_address = config.chwriter.write_to
@@ -68,7 +70,7 @@ class CHWriterService(Service):
                 self.ch_address,
                 config.clickhouse.db
             )
-            self.perf_metrics["channels_active"] += 1
+            metrics["channels_active"] += 1
         return self.channels[fields]
 
     def on_data(self, message, records, *args, **kwargs):
@@ -80,36 +82,39 @@ class CHWriterService(Service):
         ...
         <v1>\t...\t<vN>\n
         """
+        if self.stopping:
+            self.logger.info("Message received during stopping, requeueing message")
+            return False
         if self.restore_timeout:
             self.logger.info("ClickHouse is not available, requeueing message")
             return False
-        if self.perf_metrics["records_buffered"].value > config.chwriter.records_buffer:
+        if metrics["records_buffered"].value > config.chwriter.records_buffer:
             self.logger.info(
                 "Input buffer is full (%s/%s). Deferring message",
-                self.perf_metrics["records_buffered"].value,
+                metrics["records_buffered"].value,
                 config.chwriter.records_buffer
             )
-            self.perf_metrics["deferred_messages"] += 1
+            metrics["deferred_messages"] += 1
             return False
         fields, data = records.split("\n", 1)
         self.logger.debug("Receiving %s", fields)
         channel = self.get_channel(fields)
         n = channel.feed(data)
-        self.perf_metrics["records_received"] += n
-        self.perf_metrics["records_buffered"] += n
+        metrics["records_received"] += n
+        metrics["records_buffered"] += n
         return True
 
     @tornado.gen.coroutine
     def report(self):
-        nm = self.perf_metrics["records_written"].value
+        nm = metrics["records_written"].value
         t = self.ioloop.time()
         if self.last_ts:
             speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
                 "Feeding speed: %.2frecords/sec, active channels: %s, buffered records: %d",
                 speed,
-                self.perf_metrics["channels_active"],
-                self.perf_metrics["records_buffered"].value
+                metrics["channels_active"],
+                metrics["records_buffered"].value
             )
         self.last_metrics = nm
         self.last_ts = t
@@ -120,7 +125,7 @@ class CHWriterService(Service):
         for x in expired:
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
-            self.perf_metrics["channels_active"] = len(self.channels)
+            metrics["channels_active"] = len(self.channels)
         self.logger.debug("Active channels: %s", ", ".join(self.channels[c].name for c in self.channels))
         for c in list(self.channels):
             if self.restore_timeout:
@@ -158,15 +163,15 @@ class CHWriterService(Service):
                     channel.name,
                     n, (self.ioloop.time() - t0) * 1000
                 )
-                self.perf_metrics["records_written"] += n
-                self.perf_metrics["records_buffered"] -= n
+                metrics["records_written"] += n
+                metrics["records_buffered"] -= n
                 written = True
             elif code in self.CH_SUSPEND_ERRORS:
                 self.logger.info(
                     "[%s] Timed out: %s",
                     channel.name, body
                 )
-                self.perf_metrics["error", ("type", "records_spool_timeouts")] += 1
+                metrics["error", ("type", "records_spool_timeouts")] += 1
                 suspended = True
             else:
                 self.logger.info(
@@ -174,7 +179,7 @@ class CHWriterService(Service):
                     channel.name,
                     code, body
                 )
-                self.perf_metrics["error", ("type", "records_spool_failed")] += 1
+                metrics["error", ("type", "records_spool_failed")] += 1
         except Exception as e:
             self.logger.error(
                 "[%s] Failed to spool %d records due to unknown error: %s",
@@ -208,8 +213,8 @@ class CHWriterService(Service):
                 ),
                 raw=True
             )
-            self.perf_metrics["records_requeued"] += cl
-            self.perf_metrics["records_buffered"] -= cl
+            metrics["records_requeued"] += cl
+            metrics["records_buffered"] -= cl
         channel.stop_flushing()
 
     def suspend(self):
@@ -220,39 +225,60 @@ class CHWriterService(Service):
             self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
             self.check_restore
         )
-        self.perf_metrics["suspends"] += 1
+        metrics["suspends"] += 1
         self.suspend_subscription(self.on_data)
         # Return data to channels
+        self.requeue_channels()
+
+    def requeue_channels(self):
+        """
+        Return buffered data back to queue
+        :return:
+        """
         for c in list(self.channels):
             channel = self.channels.get(c)
             self.requeue_channel(channel)
 
     def resume(self):
+        if self.stopping:
+            self.logger.info("Trying to restore during stopping. Ignoring")
+            return
         self.logger.info("Resuming")
         self.ioloop.remove_timeout(self.restore_timeout)
         self.restore_timeout = None
-        self.perf_metrics["resumes"] += 1
+        metrics["resumes"] += 1
         self.resume_subscription(self.on_data)
 
     @tornado.gen.coroutine
     def check_restore(self):
-        code, headers, body = yield fetch(
-            "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
-                self.ch_address,
-                config.clickhouse.rw_user,
-                config.clickhouse.rw_password,
-                config.clickhouse.db,
-                "SELECT%20dummy%20FROM%20system.one"
-            )
-        )
-        if code == 200:
-            self.resume()
+        if self.stopping:
+            self.logger.info("Checking restore during stopping. Ignoring")
         else:
-            self.restore_timeout = self.ioloop.add_timeout(
-                self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
-                self.check_restore
+            code, headers, body = yield fetch(
+                "http://%s/?user=%s&password=%s&database=%s&query=%s" % (
+                    self.ch_address,
+                    config.clickhouse.rw_user,
+                    config.clickhouse.rw_password,
+                    config.clickhouse.db,
+                    "SELECT%20dummy%20FROM%20system.one"
+                )
             )
+            if code == 200:
+                self.resume()
+            else:
+                self.restore_timeout = self.ioloop.add_timeout(
+                    self.ioloop.time() + float(config.chwriter.suspend_timeout_ms) / 1000.0,
+                    self.check_restore
+                )
 
+    def stop(self):
+        self.stopping = True
+        # Stop consuming messages
+        self.suspend_subscription(self.on_data)
+        # Return messages back to queue
+        self.requeue_channels()
+        # .stop() will wait until queued data will be really published
+        super(CHWriterService, self).stop()
 
 if __name__ == "__main__":
     CHWriterService().start()
