@@ -100,3 +100,8 @@ th[class=ippool-to]
 .breadcrumbs {
     display: none !important;
 }
+
+.object-tools {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
