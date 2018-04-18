@@ -18,10 +18,16 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% Unrecognized command|% Wrong number of parameters"
     command_super = "enable"
     command_disable_pager = "terminal datadump"
-    pattern_more = [(r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
-                    (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n")]
+    pattern_more = [
+        (r"More: <space>,  Quit: q or CTRL+Z, One line: <return>", "a"),
+        (r"^Overwrite file \[\S+\]\.+\s*\(Y/N\).+", "Y\n")
+    ]
     command_exit = "exit"
-    convert_interface_name = BaseProfile.convert_interface_name_cisco
+
+    def convert_interface_name(self, interface):
+        if str(interface) == "0":
+            return "CPU"
+        return self.convert_interface_name_cisco(interface)
 
     def setup_session(self, script):
         # Do not erase this.
