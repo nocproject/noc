@@ -15,6 +15,7 @@ from noc.ip.models.prefix import Prefix
 from noc.ip.models.address import Address
 from noc.core.perf import metrics
 from noc.core.handler import get_handler
+from noc.lib.validators import is_fqdn
 
 
 DiscoveredAddress = namedtuple("DiscoveredAddress", [
@@ -410,7 +411,14 @@ class AddressCheck(DiscoveryCheck):
             fqdn = address.profile.fqdn_template.render_subject(
                 **self.get_template_context(address)
             )
-            return self.strip(fqdn)
+            fqdn = self.strip(fqdn)
+            if is_fqdn(fqdn):
+                return fqdn
+            self.logger.error(
+                "Address %s renders to invalid FQDN '%s'. "
+                "Ignoring FQDN",
+                address.address, fqdn
+            )
         return None
 
     @staticmethod
