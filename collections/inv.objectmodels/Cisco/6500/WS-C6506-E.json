@@ -43,10 +43,10 @@
             "type__name": "Cisco | 6500 | VTT-E"
         },
         {
-            "description": "Enhanced 9-slot Fan Tray 1",
+            "description": "Enhanced 6-slot Fan Tray 1",
             "direction": "i",
             "gender": "f",
-            "name": "fan1",
+            "name": "fan",
             "type__name": "Cisco | 6500 | FAN-E"
         },
         {
