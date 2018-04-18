@@ -96,7 +96,7 @@ class Script(BaseScript):
                 "vlan_ids": [int(match.group("vlan_id"))]
             }]
         }
-        if match.group("ipv6_address") is not None:
+        if match.group("ipv6_address"):
             iface["subinterfaces"][0]["enabled_afi"] += ['IPv6']
             iface["subinterfaces"][0]["ipv6_addresses"] = [match.group("ipv6_address")]
         interfaces += [iface]
