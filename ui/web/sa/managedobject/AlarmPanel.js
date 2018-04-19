@@ -115,9 +115,7 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
             },
             listeners: {
                 scope: me,
-                itemdblclick: function(grid, record) {
-                    me.onOpenAlarm(record.get("id"));
-                }
+                itemdblclick: me.onOpenAlarm
             }
         });
         Ext.apply(me, {
@@ -158,14 +156,12 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
     },
     //
     getRowClass: function(record) {
-        var me = this;
         return record.get("row_class");
     },
     //
-    onOpenAlarm: function(alarmId) {
-        var me = this;
+    onOpenAlarm: function(grid, record) {
         NOC.launch(
-            "fm.alarm", "history", {args: [alarmId]}
+            "fm.alarm", "history", {args: [record.get("id")]}
         );
     }
 });
