@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Zyxel.MSAN.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetSpanningTree
 
     rx_status = re.compile(
-        "^status\s+: (?P<status>enabled|disabled)\s*\n", re.MULTILINE)
+        "^status\s+: (?P<status>enable|disable)d?\s*\n", re.MULTILINE)
     rx_config = re.compile(
         r"^config name\s+: (?P<region>\S+)\s*\n"
         r"^revision level\s+: (?P<revision>\S+)\s*\n"
@@ -31,9 +31,9 @@ class Script(BaseScript):
     rx_mstid = re.compile(
         r"^\s*(?P<id>\d+) (?P<vlans>[0-9\-\,]+)\s*\n", re.MULTILINE)
     rx_bridge = re.compile(
-        r"BridgeID\s+:\s+(?P<bridge_priority>[0-9a-fx]+)-(?P<bridge_id>\S+)")
+        r"(?:BridgeID|bridge id)\s+:\s+(?P<bridge_priority>[0-9a-fx]+)-(?P<bridge_id>\S+)")
     rx_root = re.compile(
-        r"ExtRootID\s+:\s+(?P<root_priority>[0-9a-fx]+)-(?P<root_id>\S+)")
+        r"(?:ExtRootID|designated root)\s+:\s+(?P<root_priority>[0-9a-fx]+)-(?P<root_id>\S+)")
     rx_port = re.compile(
         r"^Port \[\s*(?P<iface>\S+)\] info\s*\n"
         r"^Uptime\s+:.+\n"
@@ -71,7 +71,10 @@ class Script(BaseScript):
             "vlans": vlans,
             "interfaces": []
         }
-        v = self.cli("show mstp %s" % inst_id)
+        try:
+            v = self.cli("show mstp %s" % inst_id)
+        except self.CLISyntaxError:
+            v = self.cli("statistics rstp")
         match = self.rx_root.search(v)
         inst["root_priority"] = int(match.group("root_priority"), 16)
         inst["root_id"] = match.group("root_id")
@@ -114,16 +117,17 @@ class Script(BaseScript):
     def execute(self):
         try:
             v = self.cli("switch mstp show", cached=True)
+            mode = "mstp"
         except self.CLISyntaxError:
             v = self.cli("switch rstp show", cached=True)
+            mode = "rstp"
         match = self.rx_status.search(v)
-        if match.group("status") != "enabled":
+        if match.group("status") != "enable":
             return {
                 "mode": "None",
                 "instances": []
             }
-        match = self.rx_config.search(v)
-        if match.group("version") == "rstp":
+        if mode == "rstp":
             r = {
                 "mode": "RSTP",
                 "instances": [self.process_rstp()]
@@ -140,8 +144,7 @@ class Script(BaseScript):
                 "instances": []
             }
             for match1 in self.rx_mstid.finditer(v):
-                r["instances"] += [self.process_mstp(
-                    match1.group("id"),
-                    match1.group("vlans")
-                    )]
+                r["instances"] += [
+                    self.process_mstp(match1.group("id"), match1.group("vlans"))
+                ]
         return r
