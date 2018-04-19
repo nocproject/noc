@@ -18,7 +18,7 @@ import ujson
 class AutoCompleteTags(Input):
     input_type = "text"
 
-    class Media:
+    class Media(object):
         css = {
             "all": ["/ui/pkg/jquery-tokeninput/jquery.tokeninput.css"]
         }
