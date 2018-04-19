@@ -1,5 +1,6 @@
 {% extends "raw.html" %}
 {% block extrahead %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" type="text/css" href="/ui/pkg/bootstrap/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="/ui/pkg/bootstrap/css/bootstrap-theme.min.css" />
 <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
@@ -112,7 +113,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
 <!-- prefixes -->
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-12 col-lg-8">
+        <div class="col-sm-12 col-lg-9">
 {% if prefixes %}
     <script type="text/javascript">
     p_free_shown=false;
@@ -494,7 +495,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
 <!-- end ip pools -->
 <!-- block info -->
         </div>
-    <div class="col-lg-2">
+    <div class="col-sm-12 col-lg-3">
 <div class="module">
     <table class="table table-striped">
         <caption class="module">{{prefix.prefix}} Info</caption>
