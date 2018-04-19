@@ -247,7 +247,7 @@ class AddressCheck(DiscoveryCheck):
             for a in rd["addresses"]:
                 r += [
                     DiscoveredAddress(
-                        rd=a.get("rd", GLOBAL_VRF) or GLOBAL_VRF,
+                        rd=rd.get("rd", GLOBAL_VRF) or GLOBAL_VRF,
                         address=a["ip"],
                         profile=self.object.object_profile.address_profile_neighbor,
                         source=SRC_NEIGHBOR,
