@@ -119,11 +119,13 @@ document.currentPrefix = "{{ prefix.prefix }}";
     function toggle_free_prefixes() {
         if(p_free_shown) {
             $(".free-prefix").hide();
-            $("#toggle-free-prefixes-link").text("Show free prefixes");
+            $("#show-free-prefixes").show();
+            $("#hide-free-prefixes").hide();
             p_free_shown=false;
         } else {
             $(".free-prefix").show();
-            $("#toggle-free-prefixes-link").text("Hide free prefixes");
+            $("#show-free-prefixes").hide();
+            $("#hide-free-prefixes").show();
             p_free_shown=true;
         }
         return false;
@@ -132,10 +134,15 @@ document.currentPrefix = "{{ prefix.prefix }}";
     <table class="table table-striped">
         <caption class="module">Allocated Prefixes
              <button type="button"
-                     id="toggle-free-prefixes-link"
+                     id="show-free-prefixes"
                      style="float: right"
                      class="btn btn-info btn-sm"
-                     onclick="toggle_free_prefixes()">Show free prefixes</button>
+                     onclick="toggle_free_prefixes()"><i class="fa fa-eye"></i> Show Free</button>
+             <button type="button"
+                     id="hide-free-prefixes"
+                     style="float: right;display:none"
+                     class="btn btn-info btn-sm"
+                     onclick="toggle_free_prefixes()"><i class="fa fa-eye-slash"></i> Hide Free</button>
         </caption>
         <thead>
             <tr>
@@ -158,7 +165,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                         <i class="fa fa-2x fa-star"></i>
                     </td>
                     <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
-                    <td>{{ p.state.name }}</td>
+                    <td title="{{ p.state.description|safe }}">{{ p.state.name }}</td>
                     <td>{% if p.project %}{{ p.project.code }}{% endif %}</td>
                     <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
                     <td title="{{p.description}}">{{p.short_description}}</td>
@@ -406,7 +413,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                         {%endif%}
                     </td>
                     <td>{{ a.name }}</td>
-                    <td class="state">{{ a.state.name }}</td>
+                    <td class="state" title="{{ p.state.description|safe }}">{{ a.state.name }}</td>
                     <td class="state">{% if a.project %}{{ a.project.code }}{% endif %}</td>
                     <td style="width: auto">{% if a.fqdn %}{{a.fqdn}}{% endif %}</td>
                     <td>{% if a.mac %}{{a.mac}}{% endif %}</td>
