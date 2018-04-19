@@ -74,7 +74,7 @@ Ext.define("NOC.ip.vrf.Model", {
         },
         {
             name: "state",
-            type: "int"
+            type: "string"
         },
         {
             name: "state__label",

@@ -105,7 +105,7 @@ Ext.define("NOC.ip.vrf.Application", {
                 },
                 {
                     name: "state",
-                    xtype: "main.resourcestate.LookupField",
+                    xtype: "statefield",
                     fieldLabel: __("State"),
                     allowBlank: false
                 },
