@@ -25,7 +25,7 @@ class Script(BaseScript):
         r"(?P<desc>\S+)$", re.MULTILINE)
     rx_vlan = re.compile(
         r"^interface (?P<port>\d+/\d+)\s*\n"
-        r"(^vlan pvid (?P<pvid>\d+)\s*\n)?"
+        r"(?:^no.+\n)*(^vlan pvid (?P<pvid>\d+)\s*$)?"
         r"^vlan participation include \S+\s*\n"
         r"(^vlan tagging (?P<tagged>\S+)\s*\n)?",
         re.MULTILINE)
@@ -40,7 +40,10 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
-        c = self.scripts.get_config()
+        sw = {sp["interface"]: {
+            "tagged": sp["tagged"],
+            "untagged": sp.get("untagged")
+        } for sp in self.scripts.get_switchport()}
         d = self.cli("show port description all", ignore_errors=True)
         interfaces = []
         snmp_ifindex = 1  # Dirty hack. I can not found another way
@@ -64,14 +67,13 @@ class Script(BaseScript):
                 if matchd.group("port") == ifname:
                     iface["description"] = matchd.group("desc")
                     iface["subinterfaces"][0]["description"] = matchd.group("desc")
-            for match1 in self.rx_vlan.finditer(c):
-                if match1.group("port") == ifname:
-                    if match1.group("pvid"):
-                        iface["subinterfaces"][0]["untagged_vlan"] = \
-                            match1.group("pvid")
-                    if match1.group("tagged"):
-                        iface["subinterfaces"][0]["tagged_vlans"] = \
-                            self.expand_rangelist(match1.group("tagged"))
+            if ifname in sw:
+                if sw[ifname]["tagged"]:
+                    iface["subinterfaces"][0]["tagged_vlans"] = \
+                        sw[ifname]["tagged"]
+                if sw[ifname]["untagged"]:
+                    iface["subinterfaces"][0]["untagged_vlan"] = \
+                        sw[ifname]["untagged"]
             interfaces += [iface]
             snmp_ifindex += 1
         v = self.cli("show network", cached=True)
