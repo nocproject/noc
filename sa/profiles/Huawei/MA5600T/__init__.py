@@ -3,7 +3,7 @@
 # Vendor: Huawei
 # OS:     MA5600T
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -44,7 +44,7 @@ class Profile(BaseProfile):
 
     rx_slots = re.compile("^\s*\d+", re.MULTILINE)
     rx_ports = re.compile(
-        "^\s*\d+\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE)\s+.+?"
+        "^\s*\d+\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE|GE-Optic|GE-Elec|FE-Elec)\s+.+?"
         "(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated)",
         re.MULTILINE)
 
@@ -68,7 +68,7 @@ class Profile(BaseProfile):
         for match in self.rx_ports.finditer(v):
             i += 1
             t = match.group("type")
-            s += [match.group("state") in ["Online", "online", "Activated"]]
+            s += [match.group("state").lower() in ["online", "activated"]]
         return {"n": i, "t": t, "s": s}
 
     def fill_ports(self, script):
