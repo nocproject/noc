@@ -1,13 +1,7 @@
 command:
-  {{noc_root}}/noc ctl status |grep mailsender:
+  {{noc_root}}/noc ctl status |grep mrt:
     exit-status: 0
     stdout:
-    - /mailsender:.+RUNNING/
+    - /mrt:.+RUNNING/
     stderr: []
     timeout: 10000
-{% if mailsender_smtp_server and mailsender_smtp_port %}
-addr:
-  tcp://{{ mailsender_smtp_server }}:{{ mailsender_smtp_port }}:
-    reachable: true
-    timeout: 5000
-{% endif %}
