@@ -467,6 +467,9 @@ class Script(BaseScript):
                 rd = v.get("rd")
                 if rd:
                     vrfs[v["name"]]["rd"] = rd
+                vpn_id = v.get("vpn_id")
+                if vpn_id:
+                    vrfs[v["name"]]["vpn_id"] = vpn_id
                 for i in v["interfaces"]:
                     imap[i] = v["name"]
         for i in interfaces:
