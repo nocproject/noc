@@ -5,12 +5,14 @@ command:
     - /syslogcollector-.+RUNNING/
     stderr: []
     timeout: 10000
+{% if goss_validate_fw | bool %}
   /sbin/iptables-save | grep "dport 514":
     exit-status: 0
     stdout:
     - /ACCEPT/
     stderr: []
     timeout: 10000
+{% endif %}
 port:
   udp:514:
     listening: true

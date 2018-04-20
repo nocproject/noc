@@ -11,6 +11,10 @@ forms:
       default: 0.3.5
       label: "Goss version"
       type: str
+    validate_fw:
+      default: True
+      label: Validate firewall
+      type: bool
 
 services:
   goss:
