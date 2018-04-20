@@ -51,35 +51,3 @@
     owner: "{{noc_user}}"
     mode: "0644"
   no_log: "{{tower_show_secrets}}"
-
-- name: remove services templates
-  file:
-    src: "etc/services/{{item}}"
-    dest: "{{noc_etc}}/services/{{item}}"
-    owner: "{{noc_user}}"
-    mode: "0644"
-    state: absent
-  with_items:
-    - activator.conf
-    - bi.conf
-    - card.conf
-    - chwriter.conf
-    - classifier.conf
-    - correlator.conf
-    - discovery.conf
-    - escalator.conf
-    - grafanads.conf
-    - login.conf
-    - mailsender.conf
-    - mrt.conf
-    - notebook.conf
-    - notifier.conf
-    - omap.conf
-    - ping.conf
-    - sae.conf
-    - scheduler.conf
-    - sync.conf
-    - syslogcollector.conf
-    - tgsender.conf
-    - trapcollector.conf
-    - web.conf
