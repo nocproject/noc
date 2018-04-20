@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="/static/apps/ip/ipam/css/vrf_index.css" />
 <script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
+<script TYPE="text/javascript" SRC="/ui/pkg/bootstrap/js/bootstrap.min.js"></script>
 {% endblock %}
 {% load tags %}
 {% block content %}
@@ -57,16 +58,22 @@
     <form method="POST" id="quickjump-form" action="{% url ip:ipam:quickjump vrf.id prefix.afi %}">{% csrf_token %}
         <input type="search"
                name="jump"
+               autofocus
                class="form-control position-static"
                placeholder="Quick Jump..." />
     </form>
 
-    <select class="form-control-sm position-static" onchange="return on_mynetworks(this);">
-        <option>---</option>
+    <div class="dropdown" style="display: inline-block">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Favorites
+      <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
         {% for p in bookmarks %}
-            <option value="../../../../{{p.vrf.id}}/{{p.afi}}/{{p.prefix}}/"{% if p.prefix == prefix.prefix%}selected{%endif%}>{{p.prefix}} {{p.short_description}}</option>
+            <li><a class="dropdown-item" href="../../../../{{p.vrf.id}}/{{p.afi}}/{{p.prefix}}/">{{p.prefix}} {{p.short_description}}</a></li>
         {% endfor %}
-    </select>
+      </ul>
+    </div>
 </div>
 <!-- end toolbar -->
 
