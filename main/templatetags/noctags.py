@@ -117,7 +117,7 @@ class NOCTableNode(template.Node):
                 if "=" in a:
                     k, v = [x.strip() for x in a.split("=", 1)]
                     if ((v[0] == "'" and v[-1] == "'") or
-                        (v[0] == '"' and v[-1] == '"')):
+                            (v[0] == '"' and v[-1] == '"')):
                         v = v[1:-1]
                 else:
                     k, v = a, None
@@ -147,7 +147,7 @@ class NOCTableNode(template.Node):
             return output
 
 
-def do_noctable(parser, token):
+def do_noctable(parser):
     nodelist = parser.parse(("endnoctable",))
     parser.delete_first_token()
     return NOCTableNode(nodelist)
