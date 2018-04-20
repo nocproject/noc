@@ -4,14 +4,18 @@
   become: "True"
   any_errors_fatal: "False"
   gather_facts: "True"
+  tags:
+    - consul-template
+    - external
   vars_files:
     - "../../vars/main.yml"
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: consul-template
-      tags:
-        - consul-template
-        - external
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: "consul-template"
   post_tasks:
     - name: set consul-template complete
       set_fact:

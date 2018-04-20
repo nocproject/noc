@@ -1,0 +1,22 @@
+file:
+  /etc/sudoers:
+    exists: true
+    mode: "0440"
+    contains:
+    - '!/$Defaults requiretty/'
+    - "/${{ ansible_user }}.+ALL=(ALL) NOPASSWD: ALL/"
+  /home/{{ ansible_user }}/.ssh/authorized_keys:
+    exists: true
+    mode: "0400"
+    owner: {{ ansible_user }}
+    group: {{ ansible_user }}
+    filetype: file
+    contains:
+    - "/ssh-rsa .+/"
+user:
+  {{ ansible_user }}:
+    exists: true
+    groups:
+    - wheel
+    home: /home/{{ ansible_user }}
+    shell: /bin/bash

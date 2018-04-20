@@ -1,0 +1,82 @@
+file:
+  /etc/mongod.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /etc/mongod/mongo.key:
+    exists: true
+    mode: "0400"
+    owner: mongod
+    group: root
+    filetype: file
+    contains: []
+  /var/lib/mongo:
+    exists: true
+    mode: "0755"
+    owner: mongod
+    group: mongod
+    filetype: directory
+    contains: []
+  /var/lib/mongo/index:
+    exists: true
+    mode: "0755"
+    owner: mongod
+    group: mongod
+    filetype: directory
+    contains: []
+  /var/lib/mongo/journal:
+    exists: true
+    mode: "0755"
+    owner: mongod
+    group: mongod
+    filetype: directory
+    contains: []
+port:
+  tcp:27017:
+    listening: true
+    ip:
+    - 0.0.0.0
+service:
+  mongod:
+    enabled: true
+    running: true
+user:
+  mongod:
+    exists: true
+    groups:
+    - mongod
+    home: /var/lib/mongo
+    shell: /bin/false
+group:
+  mongod:
+    exists: true
+process:
+  mongod:
+    running: true
+{% if noc_env_type == 'prod' %}
+mount:
+  /var/lib/mongo:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    source: /dev/mapper/vg00-mongo_data
+    filesystem: xfs
+  /var/lib/mongo/index:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    source: /dev/mapper/vg00-mongo_index
+    filesystem: xfs
+  /var/lib/mongo/journal:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    source: /dev/mapper/vg00-wal
+    filesystem: xfs
+{% endif %}

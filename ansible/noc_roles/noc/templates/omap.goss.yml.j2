@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep sae:
+    exit-status: 0
+    stdout:
+    - /sae:.+RUNNING/
+    stderr: []
+    timeout: 10000

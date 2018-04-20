@@ -12,6 +12,10 @@
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: postgres
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: postgres
   post_tasks:
     - name: set postgres complete
       set_fact:

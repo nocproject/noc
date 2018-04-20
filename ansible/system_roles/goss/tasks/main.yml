@@ -1,0 +1,16 @@
+---
+- block:
+  - name: "Include OS-specific tasks"
+    include_tasks: "os/{{ ansible_distribution }}/main.yml"
+
+  - name: "install Goss"
+    import_tasks: "install.yml"
+    when:
+      - ansible_distribution != 'FreeBSD'
+  when:
+    - goss_complete is not defined
+
+- name: "Include service"
+  import_tasks: service.yml
+  when:
+    - goss_service_name is defined

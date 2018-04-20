@@ -13,6 +13,10 @@
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: nginx
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: nginx
   post_tasks:
     - name: set nginx complete
       set_fact:

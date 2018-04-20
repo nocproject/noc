@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep grafanads:
+    exit-status: 0
+    stdout:
+    - /grafanads:.+RUNNING/
+    stderr: []
+    timeout: 10000

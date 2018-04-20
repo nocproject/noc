@@ -12,6 +12,10 @@
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: nsqd
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: nsqd
   post_tasks:
     - name: set nsqd complete
       set_fact:

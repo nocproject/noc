@@ -1,0 +1,62 @@
+file:
+  /etc/grafana/grafana.ini:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  {{ grafana_plugins_dir }}:
+    exists: true
+    mode: "0755"
+    owner: grafana
+    group: grafana
+    filetype: directory
+    contains: []
+  {{ grafana_provisioning_dir }}:
+    exists: true
+    mode: "0755"
+    owner: grafana
+    group: grafana
+    filetype: directory
+    contains: []
+  {{ grafana_provisioning_dir }}/datasources/NocDS.yml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+package:
+  grafana:
+    installed: true
+port:
+  tcp6:{{ grafana_http_port }}:
+    listening: true
+    ip:
+    - '::'
+service:
+  grafana-server:
+    enabled: true
+    running: true
+user:
+  grafana:
+    exists: true
+    groups:
+    - grafana
+    home: /usr/share/grafana
+    shell: /sbin/nologin
+group:
+  grafana:
+    exists: true
+process:
+  grafana-server:
+    running: true
+http:
+  http://127.0.0.1:{{ grafana_http_port }}/api/health:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body:
+      - '"database": "ok"'

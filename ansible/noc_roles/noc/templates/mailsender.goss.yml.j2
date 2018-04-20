@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep mrt:
+    exit-status: 0
+    stdout:
+    - /mrt:.+RUNNING/
+    stderr: []
+    timeout: 10000

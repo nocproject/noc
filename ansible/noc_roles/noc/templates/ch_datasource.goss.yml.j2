@@ -1,0 +1,13 @@
+addr:
+{% for node in groups['svc-clickhouse-exec'] %}
+  tcp://{{ node }}:8123:
+    reachable: true
+    timeout: 500
+{% endfor %}
+command:
+  {{noc_root}}/noc ctl status |grep ch_datasource:
+    exit-status: 0
+    stdout:
+    - /ch_datasource:.+RUNNING/
+    stderr: []
+    timeout: 10000

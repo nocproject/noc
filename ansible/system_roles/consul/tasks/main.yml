@@ -17,6 +17,7 @@
     group: "{{ consul_group }}"
     system: "True"
     home: "{{ consul_home }}"
+    shell: "/bin/sh"
 
 - name: "Include OS-specific tasks"
   include_tasks: "os/{{ ansible_distribution }}/main.yml"

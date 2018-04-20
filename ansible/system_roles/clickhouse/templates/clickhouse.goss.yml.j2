@@ -1,0 +1,154 @@
+file:
+  /etc/clickhouse-server/config.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /etc/clickhouse-server/dictionaries/administrativedomain.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/alarmclass.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/container.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/interfaceattributes.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/interfacedescription.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/interfaceprofile.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/managedobject.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/networksegment.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/platform.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/pool.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/profile.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/vendor.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/dictionaries/version.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: ['!/127.0.0.1:65535/']
+  /etc/clickhouse-server/noc.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /etc/clickhouse-server/users.xml:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /var/lib/clickhouse:
+    exists: true
+    mode: "0775"
+    owner: clickhouse
+    group: clickhouse
+    filetype: directory
+    contains: []
+package:
+  clickhouse-server:
+    installed: true
+service:
+  clickhouse-server:
+    enabled: true
+    running: true
+user:
+  clickhouse:
+    exists: true
+    groups:
+    - users
+    home: /home/clickhouse
+    shell: /bin/false
+group:
+  clickhouse:
+    exists: true
+{% if noc_env_type == 'prod' %}
+mount:
+  /var/lib/clickhouse:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    filesystem: xfs
+{% endif %}
+http:
+  http://127.0.0.1:8123:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body:
+    - Ok.

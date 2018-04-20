@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep correlator:
+    exit-status: 0
+    stdout:
+    - /correlator-.+RUNNING/
+    stderr: []
+    timeout: 10000

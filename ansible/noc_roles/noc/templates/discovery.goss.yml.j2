@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep discovery:
+    exit-status: 0
+    stdout:
+    - /discovery-.+RUNNING/
+    stderr: []
+    timeout: 10000

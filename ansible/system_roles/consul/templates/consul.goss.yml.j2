@@ -1,0 +1,96 @@
+file:
+  /etc/consul/config.json:
+    exists: true
+    mode: "0644"
+    owner: consul
+    group: bin
+    filetype: file
+    contains: []
+  /var/consul:
+    exists: true
+    mode: "0755"
+    owner: consul
+    group: bin
+    filetype: directory
+    contains: []
+port:
+  tcp:8300:
+    listening: true
+    ip:
+    - {{ ansible_host }}
+  tcp:8301:
+    listening: true
+    ip:
+    - {{ ansible_host }}
+  tcp:8302:
+    listening: true
+    ip:
+    - {{ ansible_host }}
+  tcp6:8500:
+    listening: true
+    ip:
+    - '::'
+  tcp6:8600:
+    listening: true
+    ip:
+    - '::'
+  udp:8301:
+    listening: true
+    ip:
+    - {{ ansible_host }}
+  udp:8302:
+    listening: true
+    ip:
+    - {{ ansible_host }}
+  udp6:8600:
+    listening: true
+    ip:
+    - '::'
+service:
+  consul:
+    enabled: true
+    running: true
+user:
+  consul:
+    exists: true
+    groups:
+    - bin
+    home: /home/consul
+    shell: /bin/bash
+command:
+  consul info:
+    exit-status: 0
+    stdout:
+    - version = {{ consul_version }}
+{% if consul_power == 'bootstrap' %}
+    - 'consul:'
+    - bootstrap = true
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
+    - /leader_addr = .+:8300/
+{% endif %}
+    stderr: []
+    timeout: 10000
+  consul validate /etc/consul:
+    exit-status: 0
+    stdout:
+    - Configuration is valid!
+    stderr: []
+    timeout: 10000
+  consul validate /etc/consul.d:
+    exit-status: 0
+    stdout:
+    - Configuration is valid!
+    stderr: []
+    timeout: 10000
+
+process:
+  consul:
+    running: true
+http:
+  http://127.0.0.1:8500:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body: []

@@ -19,3 +19,11 @@
         - groups['svc-mongod-exec'] | length == 1
   roles:
     - role: mongod
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: mongod
+  post_tasks:
+    - name: set mongod complete
+      set_fact:
+        mongod_complete: "True"

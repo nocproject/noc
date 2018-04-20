@@ -1,0 +1,115 @@
+file:
+  {{noc_root}}:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  {{noc_root}}/.env:
+    exists: true
+    mode: "0644"
+    owner: {{noc_user}}
+    group: root
+    filetype: file
+    contains:
+    - NOC_CONFIG="{{ config_order }}"
+  {{noc_root}}/etc/noc_services.conf:
+    exists: true
+    mode: "0640"
+    owner: {{noc_user}}
+    group: root
+    filetype: file
+    contains: []
+  {{noc_root}}/etc/supervisord.conf:
+    exists: true
+    mode: "0755"
+    owner: {{noc_user}}
+    group: root
+    filetype: file
+    contains: []
+  {{noc_root}}/etc/tower.yml:
+    exists: true
+    mode: "0755"
+    owner: {{noc_user}}
+    group: root
+    filetype: file
+    contains: []
+  {{noc_root}}/lib/python:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: directory
+    contains: []
+  {{noc_root}}/lib/python/site-packages/noc.pth:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains:
+    - import os; os.environ['DJANGO_SETTINGS_MODULE'] = 'noc.settings'
+    - {{noc_root}}
+{% if noc_custom_path is defined %}
+    - {{ noc_custom_path }}
+{% endif %}
+  {{noc_root}}/lib/python/site-packages/sitecustomize.py:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  {{noc_root}}/lib/python2.7:
+    exists: true
+    mode: "0777"
+    owner: root
+    group: root
+    linked-to: python
+    filetype: symlink
+    contains: []
+service:
+  noc:
+    enabled: true
+    running: true
+command:
+  {{noc_root}}/bin/pip freeze | grep raven:
+    exit-status: 0
+    stdout:
+    - raven==6.1.0
+    stderr: []
+    timeout: 10000
+  {{noc_root}}/bin/pip freeze | grep supervisor:
+    exit-status: 0
+    stdout:
+    - supervisor==3.3.1
+    - supervisor-serialrestart==0.1.1
+    - supervisor-wildcards==0.1.3
+    stderr: []
+    timeout: 10000
+  {{noc_root}}/bin/pip freeze | grep tornado:
+    exit-status: 0
+    stdout:
+    - tornado==4.5
+    stderr: []
+    timeout: 10000
+  {{noc_root}}/bin/python -c 'import sys;print sys.getdefaultencoding()':
+    exit-status: 0
+    stdout:
+    - utf-8
+    stderr: []
+    timeout: 10000
+  cd {{noc_root}}/; git status -sb:
+    exit-status: 0
+    stdout:
+    - '!/\?\?\\s/'
+    - '!/\\sM/'
+    stderr: []
+    timeout: 10000
+  consul catalog nodes -service=nsqd -near=_agent|sed -n 2p|cut -f1 -d " ":
+    exit-status: 0
+    stdout:
+    - {{ ansible_host }}
+    stderr: []
+    timeout: 10000

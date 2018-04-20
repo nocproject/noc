@@ -5,33 +5,391 @@
   strategy: "free"
   gather_facts: "True"
   tags:
-    - node
     - noc
   vars_files:
     - "../../vars/main.yml"
     - "../../vars/{{ ansible_distribution }}.yml"
-  pre_tasks:
-    - meta: flush_handlers
   roles:
     - role: noc
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: noc
+
+- name: Install NOC login
+  hosts: svc-login-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - login
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: login
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: login
+
+- name: Install NOC mrt
+  hosts: svc-mrt-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - mrt
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: mrt
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: mrt
+
+- name: Install NOC escalator
+  hosts: svc-escalator-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - escalator
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: escalator
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: escalator
+
+- name: Install NOC web
+  hosts: svc-web-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - web
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: web
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: web
+
+- name: Install NOC card
+  hosts: svc-card-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - card
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: card
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: card
+
+- name: Install NOC ch_datasource
+  hosts: svc-ch_datasource-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - ch_datasource
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: ch_datasource
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: ch_datasource
+
+- name: Install NOC omap
+  hosts: svc-omap-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - omap
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: omap
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: omap
+
+- name: Install NOC activator
+  hosts: svc-activator-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - activator
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: activator
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: activator
+
+- name: Install NOC grafanads
+  hosts: svc-grafanads-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - grafanads
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: grafanads
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: grafanads
+
+- name: Install NOC mailsender
+  hosts: svc-mailsender-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - mailsender
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: mailsender
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: mailsender
+
+- name: Install NOC tgsender
+  hosts: svc-tgsender-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - tgsender
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: tgsender
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: tgsender
+
+- name: Install NOC chwriter
+  hosts: svc-chwriter-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - chwriter
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: chwriter
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: chwriter
+
+- name: Install NOC classifier
+  hosts: svc-classifier-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - classifier
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: classifier
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: classifier
+
+- name: Install NOC correlator
+  hosts: svc-correlator-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - correlator
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: correlator
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: correlator
+
+- name: Install NOC syslogcollector
+  hosts: svc-syslogcollector-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - syslogcollector
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: syslogcollector
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: syslogcollector
+
+- name: Install NOC trapcollector
+  hosts: svc-trapcollector-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - trapcollector
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: trapcollector
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: trapcollector
+
+- name: Install NOC ping
+  hosts: svc-ping-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - ping
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: ping
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: ping
+
+- name: Install NOC sae
+  hosts: svc-sae-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - sae
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: sae
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: sae
+
+- name: Install NOC scheduler
+  hosts: svc-scheduler-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - scheduler
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: scheduler
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: scheduler
+
+- name: Install NOC discovery
+  hosts: svc-discovery-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - discovery
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: discovery
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: discovery
+
+- name: Install NOC bi
+  hosts: svc-bi-exec
+  become: "True"
+  strategy: "free"
+  gather_facts: "True"
+  tags:
+    - noc
+    - bi
+  vars_files:
+    - "../../vars/main.yml"
+    - "../../vars/{{ ansible_distribution }}.yml"
+  roles:
     - role: bi
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: bi

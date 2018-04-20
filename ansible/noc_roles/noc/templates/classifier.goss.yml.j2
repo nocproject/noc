@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep classifier:
+    exit-status: 0
+    stdout:
+    - /classifier-.+RUNNING/
+    stderr: []
+    timeout: 10000

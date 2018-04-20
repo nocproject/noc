@@ -12,6 +12,10 @@
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: grafana
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: grafana
   post_tasks:
     - name: set grafana complete
       set_fact:

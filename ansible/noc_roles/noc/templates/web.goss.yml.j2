@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep web:
+    exit-status: 0
+    stdout:
+    - /web:.+RUNNING/
+    stderr: []
+    timeout: 10000

@@ -1,0 +1,62 @@
+file:
+  {{ nsqd_config_dir }}/nsqd.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  {{ nsq_root }}/nsqd:
+    exists: true
+    mode: "0755"
+    size: 8465984
+    group: games
+    filetype: file
+    contains: []
+  {{ nsqd_db_dir }}:
+    exists: true
+    mode: "0770"
+    owner: nsq
+    group: nsq
+    filetype: directory
+    contains: []
+port:
+  tcp6:4150:
+    listening: true
+    ip:
+    - '::'
+  tcp6:4151:
+    listening: true
+    ip:
+    - '::'
+service:
+  nsqd:
+    enabled: true
+    running: true
+process:
+  nsqd:
+    running: true
+{% if noc_env_type == 'prod' %}
+mount:
+  {{ nsqd_db_dir }}:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    filesystem: xfs
+{% endif %}
+http:
+  http://127.0.0.1:4151/ping:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body:
+    - OK
+command:
+  'consul catalog nodes -service=nsqd -near=_agent|sed -n 2p|cut -f1 -d " "':
+    exit-status: 0
+    stdout:
+    - {{ansible_hostname}}
+    stderr: []
+    timeout: 10000

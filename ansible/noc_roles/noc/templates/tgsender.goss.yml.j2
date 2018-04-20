@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep tgsender:
+    exit-status: 0
+    stdout:
+    - /tgsender:.+RUNNING/
+    stderr: []
+    timeout: 10000

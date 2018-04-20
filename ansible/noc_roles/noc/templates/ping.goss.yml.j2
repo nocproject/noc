@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep ping:
+    exit-status: 0
+    stdout:
+    - /ping-.+RUNNING/
+    stderr: []
+    timeout: 10000

@@ -1,0 +1,15 @@
+command:
+  {{noc_root}}/noc ctl status |grep login:
+    exit-status: 0
+    stdout:
+    - /login:.+RUNNING/
+    stderr: []
+    timeout: 10000
+{% if 'ldap' in login_methods %}
+  {{noc_root}}/bin/pip freeze | grep ldap:
+    exit-status: 0
+    stdout:
+    - ldap3==1.2.2
+    stderr:[]
+    timeout: 10000
+{% endif %}

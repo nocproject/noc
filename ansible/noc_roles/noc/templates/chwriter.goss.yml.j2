@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep chwriter:
+    exit-status: 0
+    stdout:
+    - /chwriter:.+RUNNING/
+    stderr: []
+    timeout: 10000

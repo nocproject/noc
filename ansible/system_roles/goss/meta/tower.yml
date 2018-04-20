@@ -1,0 +1,18 @@
+---
+forms:
+  goss:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Server checker <br/>
+      <strong>Scale Recommendations</strong>: See docs<br/>
+      <strong>docs</strong>: <a href=https://github.com/aelsabbahy/goss/blob/master/docs/manual.md target=_blank>goss Manual</a> <br/>
+      <strong>Placement constraint</strong>: On every node. <br/>
+    version:
+      default: 0.3.5
+      label: "Goss version"
+      type: str
+
+services:
+  goss:
+    level: system
+    category: external

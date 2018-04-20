@@ -12,6 +12,10 @@
     - "../../vars/{{ ansible_distribution }}.yml"
   roles:
     - role: clickhouse
+    - role: goss
+      tags: [goss]
+      vars:
+        goss_service_name: clickhouse
   post_tasks:
     - name: set clickhouse complete
       set_fact:

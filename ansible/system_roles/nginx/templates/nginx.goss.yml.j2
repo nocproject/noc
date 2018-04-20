@@ -1,0 +1,63 @@
+file:
+  /etc/nginx/upstream.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  /etc/nginx/ssl/noc.crt:
+    exists: true
+    mode: "0400"
+    owner: nginx
+    group: root
+    filetype: file
+    contains:
+      - '-----BEGIN CERTIFICATE-----'
+  /etc/nginx/ssl/noc.key:
+    exists: true
+    mode: "0400"
+    owner: nginx
+    group: root
+    filetype: file
+    contains:
+      - '-----BEGIN PRIVATE KEY-----'
+package:
+  nginx:
+    installed: true
+port:
+{% if nginx_http_redirect_enabled | bool %}
+  tcp:80:
+    listening: true
+    ip:
+    - 0.0.0.0
+{% endif %}
+  tcp:443:
+    listening: true
+    ip:
+    - 0.0.0.0
+service:
+  nginx:
+    enabled: true
+    running: true
+user:
+  nginx:
+    exists: true
+    groups:
+    - nginx
+    home: /var/cache/nginx
+    shell: /sbin/nologin
+group:
+  nginx:
+    exists: true
+process:
+  nginx:
+    running: true
+command:
+  nginx -t:
+    exit-status: 0
+    stdout: []
+    stderr:
+    - 'nginx: the configuration file /etc/nginx/nginx.conf syntax is ok'
+    - 'nginx: configuration file /etc/nginx/nginx.conf test is successful'
+    timeout: 10000

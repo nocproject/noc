@@ -1,0 +1,18 @@
+command:
+  {{noc_root}}/noc ctl status |grep trapcollector:
+    exit-status: 0
+    stdout:
+    - /trapcollector-.+RUNNING/
+    stderr: []
+    timeout: 10000
+  /sbin/iptables-save | grep "dport 162":
+    exit-status: 0
+    stdout:
+    - /ACCEPT/
+    stderr: []
+    timeout: 10000
+port:
+  udp:162:
+    listening: true
+    ip:
+    - 0.0.0.0

@@ -1,0 +1,7 @@
+command:
+  {{noc_root}}/noc ctl status |grep card:
+    exit-status: 0
+    stdout:
+    - /card:.+RUNNING/
+    stderr: []
+    timeout: 10000

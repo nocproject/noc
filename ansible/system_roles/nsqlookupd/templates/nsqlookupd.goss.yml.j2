@@ -1,0 +1,38 @@
+file:
+  {{ nsqd_config_dir }}/nsqlookupd.conf:
+    exists: true
+    mode: "0644"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+  {{ nsq_root }}/nsqlookupd:
+    exists: true
+    mode: "0755"
+    size: 7495872
+    filetype: file
+    contains: []
+port:
+  tcp6:4160:
+    listening: true
+    ip:
+    - '::'
+  tcp6:4161:
+    listening: true
+    ip:
+    - '::'
+service:
+  nsqlookupd:
+    enabled: true
+    running: true
+process:
+  nsqlookupd:
+    running: true
+http:
+  http://127.0.0.1:4161/ping:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body:
+      - OK

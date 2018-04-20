@@ -1,0 +1,46 @@
+file:
+  {{ postgresql_conf_prefix }}/pg_hba.conf:
+    exists: true
+    mode: "0600"
+    owner: postgres
+    group: postgres
+    filetype: file
+    contains:
+    - /host\s+all\s+all\s+0.0.0.0/0\s+md5/
+  {{ postgresql_conf_prefix }}/postgresql.conf:
+    exists: true
+    mode: "0644"
+    owner: postgres
+    group: postgres
+    filetype: file
+    contains: []
+port:
+  tcp:5432:
+    listening: true
+service:
+  postgresql-{{ postgres_version }}:
+    enabled: true
+    running: false
+user:
+  postgres:
+    exists: true
+    groups:
+    - postgres
+    home: /var/lib/pgsql
+    shell: /bin/bash
+group:
+  postgres:
+    exists: true
+process:
+  postgres:
+    running: true
+{% if noc_env_type == 'prod' %}
+mount:
+  /var/lib/pgsql:
+    exists: true
+    opts:
+    - rw
+    - relatime
+    source: /dev/mapper/vg00-postgres_data
+    filesystem: xfs
+{% endif %}

@@ -1,0 +1,15 @@
+file:
+  {{ consul_template_config_dir }}/consul-template.cfg:
+    exists: true
+    mode: "0755"
+    owner: root
+    group: root
+    filetype: file
+    contains: []
+service:
+  consul-template:
+    enabled: true
+    running: true
+process:
+  consul-template:
+    running: true
