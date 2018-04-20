@@ -85,11 +85,6 @@
 <!-- end custom styles -->
 {% endif %}
 <script type="text/javascript">
-/* Jump to selected bookmark */
-function on_mynetworks(n)
-{
-    document.location=n.options[n.selectedIndex].value;
-}
 // Set current context
 document.currentVRF = {{ prefix.vrf.id }};
 document.currentAFI = {{ prefix.afi }};
