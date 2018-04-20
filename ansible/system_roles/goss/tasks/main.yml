@@ -7,6 +7,14 @@
     import_tasks: "install.yml"
     when:
       - ansible_distribution != 'FreeBSD'
+
+  - name: place main ckache file
+    copy:
+      content: |
+        ---
+        gossfile:
+          {{goss_conf_dir}}/*.yml: {}
+      dest: "{{goss_conf}}/goss.yaml"
   when:
     - goss_complete is not defined
 
