@@ -171,6 +171,8 @@ class PrefixCheck(DiscoveryCheck):
         :param prefix: DiscoveredPrefix instance
         :return:
         """
+        if self.is_ignored_prefix(prefix):
+            return
         vrf = VRF.get_by_rd(prefix.rd)
         self.ensure_afi(vrf, prefix)
         if not self.has_prefix_permission(vrf, prefix):
@@ -205,6 +207,8 @@ class PrefixCheck(DiscoveryCheck):
         :param discovered_prefix: DiscoveredPrefix instance
         :return:
         """
+        if self.is_ignored_prefix(discovered_prefix):
+            return
         if self.is_preferred(prefix.source, discovered_prefix.source):
             changes = []
             if prefix.source != discovered_prefix.source:
@@ -296,3 +300,15 @@ class PrefixCheck(DiscoveryCheck):
                 self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.rd)
                 vrf.afi_ipv4 = True
                 vrf.save()
+
+    def is_ignored_prefix(self, prefix):
+        """
+        Check prefix should be ignored
+        :param prefix: DiscoveredPrefix instance
+        :return: Boolean
+        """
+        return (
+            prefix.prefix.startswith("127.") or
+            prefix.prefix.startswith("169.254.") or
+            prefix.prefix.startswith("fe80:")
+        )

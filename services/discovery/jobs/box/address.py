@@ -276,6 +276,8 @@ class AddressCheck(DiscoveryCheck):
         :param address: DiscoveredAddress instance
         :return:
         """
+        if self.is_ignored_address(address):
+            return
         vrf = VRF.get_by_rd(address.rd)
         self.ensure_afi(vrf, address)
         if not self.has_address_permission(vrf, address):
@@ -314,6 +316,8 @@ class AddressCheck(DiscoveryCheck):
         :param discovered_address: DiscoveredAddress instance
         :return:
         """
+        if self.is_ignored_address(discovered_address):
+            return
         if self.is_preferred(address.source, discovered_address.source):
             changes = []
             if address.source != discovered_address.source:
@@ -460,3 +464,17 @@ class AddressCheck(DiscoveryCheck):
                 self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.rd)
                 vrf.afi_ipv4 = True
                 vrf.save()
+
+    def is_ignored_address(self, address):
+        """
+        Check address should be ignored
+        :param address: DiscoveredAddress instance
+        :return: boolean
+        """
+        return (
+            address.mac == "FF:FF:FF:FF:FF:FF" or
+            address.address.startswith("127.") or
+            address.address.startswith("169.254.") or
+            address.address == "::1" or
+            address.address.startswith("fe80:")
+        )
