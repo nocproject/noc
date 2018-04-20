@@ -152,12 +152,14 @@ def do_noctable(parser, token):
     parser.delete_first_token()
     return NOCTableNode(nodelist)
 
+
 register.tag("noctable", do_noctable)
 
 
 def object_name(value):
     o = ManagedObject.objects.get(id=int(value))
     return o.name
+
 
 register.filter("object_name", object_name)
 
@@ -169,5 +171,6 @@ def bool_icon(value):
         return SafeString("<img src='/media/admin/img/icon-yes.gif' alt='Yes' />")
     else:
         return SafeString("<img src='/media/admin/img/icon-no.gif' alt='No' />")
+
 
 register.filter("bool_icon", bool_icon)
