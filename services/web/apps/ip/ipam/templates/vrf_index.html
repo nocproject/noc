@@ -7,9 +7,11 @@
 <link rel="stylesheet" type="text/css" href="/ui/web/ip/ipam/css/vrf_index.css" />
 <script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
 <script TYPE="text/javascript" SRC="/ui/pkg/bootstrap/js/bootstrap.min.js"></script>
+<div class="container-fluid">
 {% endblock %}
 {% load tags %}
 {% block content %}
+<div class="row">
 <!-- breadcrumb -->
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
@@ -23,9 +25,12 @@
      <li class="breadcrumb-item active">{{prefix.prefix}}</li>
   </ol>
 </nav>
+</div>
+<div class="row">
+    <div style="display: flex;width: 100%;">
 <!-- toolbar -->
-<div class="pull-left">
 {% if can_change %}
+    <div style="display: flex;justify-content: flex-start;width: 50%;padding: 10px;">
     {% if can_ping %}
         <button type="button"
                 class="btn btn-primary"
@@ -55,9 +60,9 @@
             class="btn btn-danger"
             onclick="document.location = '{% url ip:ipam:delete_prefix vrf.id prefix.afi prefix.prefix %}'"><i class="fa fa-times"></i> Delete</button>
     {% endif %}
+    </div>
 {% endif %}
-</div>
-<div class="pull-right">
+    <div style="display: flex;justify-content: flex-end;width: 50%;padding: 10px;">
     <form method="POST" id="quickjump-form" action="{% url ip:ipam:quickjump vrf.id prefix.afi %}">{% csrf_token %}
         <input type="search"
                name="jump"
@@ -77,9 +82,10 @@
         {% endfor %}
       </ul>
     </div>
-</div>
+    </div>
+    </div>
 <!-- end toolbar -->
-
+</div>
 {% if styles %}
 <!-- custom styles -->
 <style>
@@ -95,21 +101,22 @@ document.currentPrefix = "{{ prefix.prefix }}";
 </script>
 <!-- long description -->
 {% if long_description %}
-    <div class="container-fluid description">
-        <pre>{{long_description}}</pre>
+    <div class="row" style="padding: 0 10px 0 10px;">
+        <div class="description">
+            <pre>{{long_description}}</pre>
+        </div>
     </div>
 {% endif %}
 <!-- end long description -->
 <!-- empty block message -->
 {% if display_empty_message %}
-    <div class="container-fluid">
+    <div class="row">
         <p><b>WARNING!!!</b><br/><i>This prefix is empty! Please add nested prefixes or addresses.</i></p>
     </div>
 {% endif %}
 <!-- end of empty block message -->
 <!-- prefixes -->
-<div class="container-fluid">
-    <div class="row">
+<div class="row">
         <div class="col-sm-12 col-lg-9">
 {% if prefixes %}
     <script type="text/javascript">
@@ -560,8 +567,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
     </table>
 </div>
     </div>
-    <!-- row -->
-    </div>
 <!-- container -->
 </div>
 {% endblock %}
+</div>
