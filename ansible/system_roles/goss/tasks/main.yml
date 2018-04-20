@@ -8,7 +8,7 @@
     when:
       - ansible_distribution != 'FreeBSD'
 
-  - name: place main ckache file
+  - name: place main check file
     copy:
       content: |
         ---
