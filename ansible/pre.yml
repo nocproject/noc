@@ -4,11 +4,11 @@
   become: "False"
   any_errors_fatal: "{{tower_run_checks}}"
   gather_facts: "True"
+  tags:
+    - pre
   vars_files:
     - "vars/main.yml"
     - "vars/{{ ansible_distribution }}.yml"
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
   pre_tasks:
     - name: Run pre installation checks
       include_tasks: "{{item}}"
@@ -19,8 +19,6 @@
 
   roles:
     - role: pre
-      tags:
-        - pre
 
   post_tasks:
     - name: set pre complete
