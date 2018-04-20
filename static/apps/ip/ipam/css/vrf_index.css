@@ -133,3 +133,7 @@ caption.module {
 .description {
     padding-top: 4px;
 }
+
+.favorite {
+    color:#f1c40f;
+}

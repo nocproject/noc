@@ -141,11 +141,15 @@ class IPAMApplication(ExtApplication):
         can_change_maintainers = user.is_superuser
         can_add_prefix = can_change
         can_add_address = can_change and len(prefixes) == 0
+        # Bookmarks
+        has_bookmark = prefix.has_bookmark(user)
+        bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
+        s_bookmarks = set(b.prefix for b in bookmarks)
         # Add free prefixes
         free_prefixes = list(
             IP.prefix(prefix.prefix).iter_free([pp.prefix for pp in prefixes]))
         l_prefixes = sorted(
-            ([(True, IP.prefix(pp.prefix), pp) for pp in prefixes] +
+            ([(True, IP.prefix(pp.prefix), pp, pp.prefix in s_bookmarks) for pp in prefixes] +
              [(False, pp) for pp in free_prefixes]), key=lambda x: x[1])
         # List of nested addresses
         # @todo: prefetch_related
@@ -191,9 +195,6 @@ class IPAMApplication(ExtApplication):
         for f in CustomField.table_fields("ip_prefix"):
             v = getattr(prefix, f.name)
             prefix_info += [(f.label, v if v is not None else "")]
-        # Bookmarks
-        has_bookmark = prefix.has_bookmark(user)
-        bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
         # Ranges
         ranges = []
         rs = []
@@ -292,23 +293,33 @@ class IPAMApplication(ExtApplication):
                 styles[a.profile.style.css_class_name] = a.profile.style.css
         styles = "\n".join(styles.values())
         # Render
-        return self.render(request, "vrf_index.html",
-                           vrf=vrf, afi=afi, prefix=prefix, path=path,
-                           short_description=short_description,
-                           long_description=long_description,
-                           prefixes=prefixes, addresses=addresses,
-                           ippools=ippools,
-                           prefix_info=prefix_info,
-                           display_empty_message=not addresses and not prefixes,
-                           can_view=can_view, can_change=can_change,
-                           can_bind_vc=can_bind_vc,
-                           can_change_maintainers=can_change_maintainers,
-                           can_add_prefix=can_add_prefix,
-                           can_add_address=can_add_address,
-                           has_bookmark=has_bookmark, bookmarks=bookmarks,
-                           spot=spot, can_ping=can_ping, styles=styles,
-                           ranges=ranges, max_slots=max_slots,
-                           l_prefixes=l_prefixes)
+        return self.render(
+            request, "vrf_index.html",
+            vrf=vrf,
+            prefix=prefix,
+            path=path,
+            short_description=short_description,
+            long_description=long_description,
+            prefixes=prefixes,
+            addresses=addresses,
+            ippools=ippools,
+            prefix_info=prefix_info,
+            display_empty_message=not addresses and not prefixes,
+            can_view=can_view,
+            can_change=can_change,
+            can_bind_vc=can_bind_vc,
+            can_change_maintainers=can_change_maintainers,
+            can_add_prefix=can_add_prefix,
+            can_add_address=can_add_address,
+            has_bookmark=has_bookmark,
+            bookmarks=bookmarks,
+            spot=spot,
+            can_ping=can_ping,
+            styles=styles,
+            ranges=ranges,
+            max_slots=max_slots,
+            l_prefixes=l_prefixes
+        )
 
     class QuickJumpForm(forms.Form):
         jump = forms.CharField()
