@@ -17,7 +17,7 @@
     owner: nsq
   with_items:
     - dir: "{{nsqd_db_dir}}"
-      mode: "u=rwx"
+      mode: "0770"
     - dir: "{{nsqd_config_dir}}"
       mode: "u=rwx,g=rx,o=rx"
     - dir: "{{nsq_root}}"
