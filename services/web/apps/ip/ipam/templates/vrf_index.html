@@ -14,7 +14,7 @@
   <ol class="breadcrumb">
       <li class="breadcrumb-item">IPAM</li>
       <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">VRF: {{vrf.name}}</a></li>
-      <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">IPv{{afi}}</a></li>
+      <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">IPv{{prefix.afi}}</a></li>
      {% for p in path %}
          <li class="breadcrumb-item>"><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{p.short_description}}">{{p.prefix}}</a></li>
      {% endfor %}
@@ -51,10 +51,10 @@
     {% if prefix.parent %}
     <button type="button"
             class="btn btn-danger"
-            onclick="document.location = '{% url ip:ipam:delete_prefix vrf.id afi prefix.prefix %}'"><i class="fa fa-times"></i> Delete</button>
+            onclick="document.location = '{% url ip:ipam:delete_prefix vrf.id prefix.afi prefix.prefix %}'"><i class="fa fa-times"></i> Delete</button>
     {% endif %}
 {% endif %}
-    <form method="POST" id="quickjump-form" action="{% url ip:ipam:quickjump vrf.id afi %}">{% csrf_token %}
+    <form method="POST" id="quickjump-form" action="{% url ip:ipam:quickjump vrf.id prefix.afi %}">{% csrf_token %}
         <input type="search"
                name="jump"
                class="form-control position-static"
@@ -67,14 +67,6 @@
             <option value="../../../../{{p.vrf.id}}/{{p.afi}}/{{p.prefix}}/"{% if p.prefix == prefix.prefix%}selected{%endif%}>{{p.prefix}} {{p.short_description}}</option>
         {% endfor %}
     </select>
-<!--
-    {% if has_bookmark %}
-        <i class="fa fa-star fa-2x" title="Remove Bookmark"></i>
-        <a class="deletelink" href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}">Remove bookmark</a>
-    {%else%}
-        <i class="fa fa-star fa-2x" title="Add Bookmark"></i>
-        <a class="addlink" href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}">Add bookmark</a>
-    {% endif %}-->
 </div>
 <!-- end toolbar -->
 
@@ -159,11 +151,11 @@ document.currentPrefix = "{{ prefix.prefix }}";
             </tr>
         </thead>
         <tr style="display:none" id="at-p-start"></tr>
-        {% for f, pp, p  in l_prefixes %}
+        {% for f, pp, p, is_bookmarked  in l_prefixes %}
             {% if f %}
                 <tr {% if p.style %}class="{{p.style.css_class_name}}"{% endif %}>
                     <td>
-                        <i class="fa fa-2x fa-star"></i>
+                        <a href="{% url ip:ipam:toggle_bookmark p.vrf.id p.afi p.prefix %}"><i class="fa fa-2x fa-star{% if is_bookmarked %} favorite{% endif %}" title="Toggle Bookmark"></i></a>
                     </td>
                     <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
                     <td title="{{ p.state.description|safe }}">{{ p.state.name }}</td>
@@ -190,7 +182,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                     <td>
                         {{ pp }}
                     </td>
-                    <td colspan="4">
+                    <td colspan="7">
                         {% if can_add_prefix %}
                             <button type="button"
                                 class="btn btn-primary"
@@ -346,7 +338,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
             function check_ping_task() {
                 if(!_in_pingtest) 
                     return;
-                $.get("{% url ip:ipam:ping_check vrf.id afi prefix.prefix %}"+_ping_task_id+"/",function(data,status,request) {
+                $.get("{% url ip:ipam:ping_check vrf.id prefix.afi prefix.prefix %}"+_ping_task_id+"/",function(data,status,request) {
                     if(data==null) {
                         if(_in_pingtest)
                             setTimeout(check_ping_task,5000);
@@ -360,9 +352,9 @@ document.currentPrefix = "{{ prefix.prefix }}";
             }
 
             function run_pingtest() {
-                $.get("{% url ip:ipam:ping_check vrf.id afi prefix.prefix %}",function(data,status,request){
+                $.get("{% url ip:ipam:ping_check vrf.id prefix.afi prefix.prefix %}",function(data,status,request){
                     _ping_task_id=data;
-                    $.get("{% url ip:ipam:ping_check vrf.id afi prefix.prefix %}"+_ping_task_id+"/",check_ping_task);
+                    $.get("{% url ip:ipam:ping_check vrf.id prefix.afi prefix.prefix %}"+_ping_task_id+"/",check_ping_task);
                 });
             }
         </script>
@@ -498,7 +490,13 @@ document.currentPrefix = "{{ prefix.prefix }}";
     <div class="col-sm-12 col-lg-3">
 <div class="module">
     <table class="table table-striped">
-        <caption class="module">{{prefix.prefix}} Info</caption>
+        <caption class="module">
+            {% if has_bookmark %}
+                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star favorite" title="Remove Bookmark"></i></a>
+            {% else %}
+                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star" title="Add Bookmark"></i></a>
+            {% endif %}
+            {{prefix.prefix}} Info</caption>
         <tbody>
         <!-- State -->
         <tr>
