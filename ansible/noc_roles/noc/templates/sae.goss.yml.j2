@@ -1,7 +1,7 @@
 command:
-  {{noc_root}}/noc ctl status |grep omap:
+  {{noc_root}}/noc ctl status |grep sae:
     exit-status: 0
     stdout:
-    - /omap:.+RUNNING/
+    - /sae:.+RUNNING/
     stderr: []
     timeout: 10000
