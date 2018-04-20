@@ -1,0 +1,21 @@
+{
+    "name": "MikroTik | RouterOS | Network | 802.11 | Disassociated (SYSLOG)",
+    "uuid": "ee9cb30b-013e-4ec9-bcdf-a961be613181",
+    "description": "wireless,info DD:AA:DD:00:66:CC@wlan1: disconnected, control frame timeout",
+    "event_class__name": "Network | 802.11 | Disassociated",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^MikroTik\\.RouterOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "wireless,info (?P<mac>\\S+)@(?P<interface>\\S+): disconnected, (?P<reason>.+)"
+        }
+    ]
+}

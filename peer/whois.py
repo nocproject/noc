@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Simple RIPE whois client
 # ---------------------------------------------------------------------
@@ -10,6 +11,19 @@
 import logging
 import socket
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Simple RIPE whois client
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+import socket
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.nbsocket import ConnectedTCPSocket
 from noc.lib.validators import is_fqdn
 

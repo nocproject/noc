@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Inserted #2 (SYSLOG)",
+    "uuid": "9b141a7e-c260-4b17-b418-754f0f950c34",
+    "description": "%OIR-SP-6-INSFAN: Fan 1 inserted",
+    "event_class__name": "Chassis | Fan | Fan Inserted",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OIR-SP-6-INSFAN: (?P<name>.+) inserted"
+        }
+    ]
+}

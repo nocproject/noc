@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Parse and load FIAS data
 # ---------------------------------------------------------------------
@@ -7,13 +8,29 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+=======
+##----------------------------------------------------------------------
+## Parse and load FIAS data
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import os
 from collections import namedtuple
 import re
 import csv
+<<<<<<< HEAD
 # Third-party modules
 import dbf
 # NOC modules
+=======
+## Third-party modules
+import dbf
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.street import Street
@@ -57,7 +74,11 @@ class FIASParser(AddressParser):
         if not os.path.isfile(os.path.join(self.prefix, "ADDROBJ.DBF")):
             self.error("FIAS database not found")
             self.error("Please download full DBF version")
+<<<<<<< HEAD
             self.error("from https://fias.nalog.ru/Updates.aspx")
+=======
+            self.error("from http://fias.nalog.ru/Public/DownloadPage.aspx")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             self.error("and unpack it to %s directory" % self.prefix)
             return False
         return True
@@ -231,7 +252,10 @@ class FIASParser(AddressParser):
         """
         Refine OKTMO by OKATO
         """
+<<<<<<< HEAD
         oktmo = oktmo.strip()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if (okato and len(oktmo) == 8 and len(okato) == 11 and
                 okato[-3:] != "000"):
             o = self.okato.get(okato)
@@ -257,12 +281,21 @@ class FIASParser(AddressParser):
             if not match:
                 print r
                 raise ValueError("Invalid number: '%s'" % s)
+<<<<<<< HEAD
             n, ll = match.groups()
             if not n:
                 n = None
             if not ll:
                 ll = None
             return n, ll
+=======
+            n, l = match.groups()
+            if not n:
+                n = None
+            if not l:
+                l = None
+            return n, l
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         def split_num2(s):
             s = nq(s)
@@ -280,10 +313,17 @@ class FIASParser(AddressParser):
                 n2 = n2[1:]  # strip /
             else:
                 n2 = None
+<<<<<<< HEAD
             ll = l1 or l2
             if not ll:
                 ll = None
             return n, n2, ll
+=======
+            l = l1 or l2
+            if not l:
+                l = None
+            return n, n2, l
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         houses = get_db()["noc.cache.fias.houses"]
         houses.drop()
@@ -429,6 +469,11 @@ class FIASParser(AddressParser):
         self.sync_buildings()
         self.update_levels()
 
+<<<<<<< HEAD
 
 #
 OKTMO = namedtuple("OKTMO", ["okato", "oktmo", "name", "parent"])
+=======
+##
+OKTMO = namedtuple("OKTMO", ["okato", "oktmo", "name", "parent"])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

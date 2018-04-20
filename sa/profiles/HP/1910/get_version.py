@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_version
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetversion import IGetVersion
 class Script(BaseScript):
     name = "HP.1910.get_version"
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "HP.1910.get_version"
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cache = True
 
     rx_version_3Com = re.compile(
@@ -38,7 +58,11 @@ class Script(BaseScript):
 
     def execute(self):
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1",
                                         cached=True)
@@ -55,9 +79,14 @@ class Script(BaseScript):
                 match = self.rx_platform_HP_snmp.search(platform)
                 if not match:
                     match = self.rx_platform_3Com.search(platform)
+<<<<<<< HEAD
                 if match:
                     platform = match.group("platform")
                     return {
+=======
+                platform = match.group("platform")
+                return {
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         "vendor": vendor,
                         "platform": platform.replace(' ', '_'),
                         "version": version,

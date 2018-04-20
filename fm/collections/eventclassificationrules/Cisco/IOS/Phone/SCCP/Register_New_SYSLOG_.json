@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Phone | SCCP | Register New (SYSLOG)",
+    "uuid": "2b44b2d2-4036-4f8d-b7e0-34bae90141ac",
+    "description": "1347642: 1347640: *Aug 15 15:29:07.706: %IPPHONE-6-REGISTER_NEW: ephone-1:SEP6C504DDA574D IP:192.168.161.34 Socket:1 DeviceType:Phone has registered.",
+    "event_class__name": "Phone | SCCP | Register New",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IPPHONE-6-REGISTER_NEW: (?P<name>\\S+?):(?P<sn>\\S+) IP:(?P<ip>\\S+) Socket:(?P<socket>\\d+) DeviceType:(?P<type>\\S+) has registered"
+        }
+    ]
+}

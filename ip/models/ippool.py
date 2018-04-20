@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # IPPool model
 # ---------------------------------------------------------------------
@@ -22,6 +23,29 @@ from .vrf import VRF
 
 class IPPool(models.Model):
     class Meta(object):
+=======
+##----------------------------------------------------------------------
+## IPPool model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+## NOC modules
+from vrf import VRF
+from afi import AFI_CHOICES
+from noc.sa.models.terminationgroup import TerminationGroup
+
+from noc.lib.fields import CIDRField, TextArrayField
+from noc.lib.validators import check_ipv4, check_ipv6
+
+
+class IPPool(models.Model):
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = _("IP Pool")
         verbose_name_plural = _("IP Pools")
         db_table = "ip_ippool"
@@ -56,6 +80,10 @@ class IPPool(models.Model):
         """
         Field validation
         """
+<<<<<<< HEAD
+=======
+        print "@@@ CLEAN"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         super(IPPool, self).clean()
         # Check prefix is of AFI type
         if self.afi == "4":
@@ -65,4 +93,8 @@ class IPPool(models.Model):
             check_ipv6(self.from_address)
             check_ipv6(self.to_address)
         # @todo: from_address<=to_address
+<<<<<<< HEAD
         # @todo: Overlaps
+=======
+        # @todo: Overlaps
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

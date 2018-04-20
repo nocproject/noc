@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Vendor model
@@ -31,12 +32,31 @@ id_lock = threading.Lock()
     ("inv.Firmware", "vendor"),
     ("sa.ManagedObject", "vendor")
 ])
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Vendor model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, BooleanField, URLField,
+                                UUIDField)
+## NOC modules
+from noc.lib.prettyjson import to_json
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class Vendor(Document):
     """
     Equipment vendor
     """
     meta = {
         "collection": "noc.vendors",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "json_collection": "inv.vendors",
@@ -55,10 +75,21 @@ class Vendor(Document):
     _bi_id_cache = cachetools.TTLCache(1000, ttl=60)
     _code_cache = cachetools.TTLCache(1000, ttl=60)
     _ensure_cache = cachetools.TTLCache(1000, ttl=60)
+=======
+        "allow_inheritance": False,
+        "json_collection": "inv.vendors"
+    }
+
+    name = StringField(unique=True)
+    code = StringField()
+    site = URLField(required=False)
+    uuid = UUIDField(binary=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.name
 
+<<<<<<< HEAD
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
                              lock=lambda _: id_lock)
@@ -90,12 +121,15 @@ class Vendor(Document):
     def get_by_code(cls, code):
         return cls._get_by_code(code)
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def to_json(self):
         return to_json({
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "code": self.code,
             "site": self.site,
+<<<<<<< HEAD
             "uuid": self.uuid,
             "aliases": self.aliases
         }, order=["name", "uuid", "code", "site", "aliases"])
@@ -127,3 +161,10 @@ class Vendor(Document):
                 return vendor
             except NotUniqueError:
                 pass  # Already created by concurrent process, reread
+=======
+            "uuid": self.uuid
+        }, order=["name", "uuid", "code", "site"])
+
+    def get_json_path(self):
+        return "%s.json" % self.code
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2014 The NOC Project
 # See LICENSE for details
@@ -47,6 +48,48 @@ class Script(BaseScript):
             else:
                 return s
 
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+    rx_line = re.compile(
+        r"^(?:\*\s+)?(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+"
+        r"(?:\S+\s+){0,2}(?P<interfaces>.*)$")
+    rx_line2 = re.compile(
+        r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+"
+        r"(?P<interfaces>.*)$")  # Catalyst 3500XL
+    ignored_interfaces = (
+        "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop"
+    )
+
+    def is_ignored_interface(self, i):
+        if i.lower() in self.ignored_interfaces:
+            return True
+        if i.startswith("flood to vlan"):
+            return True
+        return False
+
+    def execute(self, interface=None, vlan=None, mac=None):
+        def qn(s):
+            s = s.strip()
+            if s.startswith("Eth VLAN "):
+                return s[4:]
+            else:
+                return s
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         cmd = "show mac address-table"
         if mac is not None:
             cmd += " address %s" % self.profile.convert_mac(mac)
@@ -64,6 +107,7 @@ class Script(BaseScript):
                 # Not supported at all
                 raise self.NotSupportedError()
         r = []
+<<<<<<< HEAD
         for line in macs.splitlines():
             if line.startswith("Multicast Entries"):
                 break  # Additional section on 4500
@@ -71,6 +115,15 @@ class Script(BaseScript):
             match = self.rx_line.match(line)
             if not match:
                 match = self.rx_line2.match(line)  # 3500XL variant
+=======
+        for l in macs.splitlines():
+            if l.startswith("Multicast Entries"):
+                break  # Additional section on 4500
+            l = l.strip()
+            match = self.rx_line.match(l)
+            if not match:
+                match = self.rx_line2.match(l)  # 3500XL variant
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if match:
                 mac = match.group("mac")
                 if mac.startswith("3333."):

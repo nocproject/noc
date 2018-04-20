@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1905.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -15,12 +16,34 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "HP.1905.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## HP.1905.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(NOCScript):
+    name = "HP.1905.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cached = True
 
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 vlan_oid = []
                 if mac is not None:

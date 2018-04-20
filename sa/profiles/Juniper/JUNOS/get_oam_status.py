@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_oam_status
 # ---------------------------------------------------------------------
@@ -16,11 +17,34 @@ from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
 class Script(BaseScript):
     name = "Juniper.JUNOS.get_oam_status"
     interface = IGetOAMStatus
+=======
+##----------------------------------------------------------------------
+## Juniper.JUNOS.get_oam_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetOAMStatus
+
+
+class Script(NOCScript):
+    name = "Juniper.JUNOS.get_oam_status"
+    implements = [IGetOAMStatus]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(r"^  Interface:\s+", re.MULTILINE)
     rx_interface = re.compile(r"^(?P<interface>\S+)", re.MULTILINE)
     rx_mac = re.compile(
+<<<<<<< HEAD
         r"^\s+(Peer address: )?(?P<mac>[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:"
+=======
+        r"^\s+(?P<mac>[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r"[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2})", re.MULTILINE)
     rx_capsU = re.compile(
         r"Unidirection mode: (?P<caps_U>supported|unsupported)",
@@ -37,9 +61,16 @@ class Script(BaseScript):
 
     def execute(self, **kwargs):
         r = []
+<<<<<<< HEAD
         if not self.profile.command_exist(self, "oam"):
             return []
         v = self.cli("show oam ethernet link-fault-management detail")
+=======
+        try:
+            v = self.cli("show oam ethernet link-fault-management detail")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for s in self.rx_line.split(v)[1:]:
             match = self.rx_interface.search(s)
             if not match:

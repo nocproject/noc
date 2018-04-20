@@ -1,0 +1,29 @@
+{
+    "name": "Network | Link | Full-Duplex",
+    "$collection": "fm.eventclasses",
+    "uuid": "cd1b636a-2fb8-48c1-91fa-157b46cbcfdf",
+    "description": "Link going into full-duplex state",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "interface name",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "link_event": true,
+    "subject_template": "Link going into full-duplex state: {{interface}}",
+    "body_template": "Link going into full-duplex state: {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Link | Half-Duplex"
+        }
+    ]
+}

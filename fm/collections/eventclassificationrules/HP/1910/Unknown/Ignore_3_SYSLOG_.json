@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Unknown | Ignore #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "70c786ab-a4bf-446e-8fa5-fa526f2c89b6",
+    "description": "Oct  2 19:08:00 2000 3Com Baseline Switch %%10MSTP/1/PFWD(t): hwPortMstiStateForwarding: Instance 0's Port 0.9437185 has been set to forwarding state!",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10MSTP/1/PFWD\\(t\\):\\s+hwPortMstiStateForwarding: Instance 0's Port \\S+ has been set to forwarding state!$"
+        }
+    ]
+}

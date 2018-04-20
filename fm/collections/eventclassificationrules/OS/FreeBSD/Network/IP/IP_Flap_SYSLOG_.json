@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Network | IP | IP Flap (SYSLOG)",
+    "uuid": "a83b82b0-bd3d-41b4-b0d9-9be52c58f7c4",
+    "description": "kernel: arp: 193.34.20.5 is on em0 but got reply from 00:e0:81:b8:62:db on em1",
+    "event_class__name": "Network | IP | IP Flap",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "kernel: arp: (?P<ip>\\S+) is on (?P<from_interface>\\S+) but got reply from (?P<mac>\\S+) on (?P<to_interface>\\S+)$"
+        }
+    ]
+}

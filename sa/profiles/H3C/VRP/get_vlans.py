@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # H3C.VRP.get_vlans
 # ---------------------------------------------------------------------
@@ -17,12 +18,36 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 class Script(BaseScript):
     name = "H3C.VRP.get_vlans"
     interface = IGetVlans
+=======
+##----------------------------------------------------------------------
+## H3C.VRP.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC Modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(NOCScript):
+    name = "H3C.VRP.get_vlans"
+    implements = [IGetVlans]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_vlan_line_vrp3 = re.compile(
         r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?Name:\s+(?P<name>.*?)\n.*?"
         r"(\n\n|$)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
 
+<<<<<<< HEAD
     @BaseScript.match()
+=======
+    @NOCScript.match()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_vrp3(self):
         vlans = self.cli("display vlan all")
         return [{

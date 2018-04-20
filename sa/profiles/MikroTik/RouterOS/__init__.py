@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: MikroTik
 # OS:     RouterOS
@@ -18,6 +19,27 @@ class Profile(BaseProfile):
     name = "MikroTik.RouterOS"
     command_submit = "\r"
     command_exit = "quit"
+=======
+##----------------------------------------------------------------------
+## Vendor: MikroTik
+## OS:     RouterOS
+## Compatible: 3.14 and above
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.profiles import Profile as NOCProfile
+
+
+class Profile(NOCProfile):
+    name = "MikroTik.RouterOS"
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    command_submit = "\r"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     pattern_prompt = r"\[(?P<prompt>[^\]@]+@.+?)\] > "
     pattern_more = [
         ("Please press \"Enter\" to continue!", "\n"),
@@ -27,9 +49,12 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
+<<<<<<< HEAD
     rogue_chars = ["\r", "\x00"]
 
     # telnet_naws = "\x00\xfa\x00\xfa"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def setup_script(self, script):
         """
@@ -38,6 +63,7 @@ class Profile(BaseProfile):
         :param script:
         :return:
         """
+<<<<<<< HEAD
         if script.parent is None:
             user = script.credentials.get("user", "")
             if not user.endswith("+ct255w255h"):
@@ -48,6 +74,13 @@ class Profile(BaseProfile):
         # MikroTik Remove duplicates prompt
         script.cli("\n")
 
+=======
+        if (script.parent is None and
+                not script.access_profile.user.endswith("+ct")):
+            script.access_profile.user += "+ct"
+        self.add_script_method(script, "cli_detail", self.cli_detail)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def cli_detail(self, script, cmd, cached=False):
         """
         Parse RouterOS .... print detail output
@@ -56,7 +89,11 @@ class Profile(BaseProfile):
         :param cached:
         :return:
         """
+<<<<<<< HEAD
         if cached:
+=======
+        if cached == True:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return self.parse_detail(script.cli(cmd, cached=True))
         else:
             return self.parse_detail(script.cli(cmd))
@@ -66,6 +103,10 @@ class Profile(BaseProfile):
 
     def parse_detail(self, s):
         """
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         :param s:
         :return:
         """
@@ -92,9 +133,12 @@ class Profile(BaseProfile):
                 ns[-1] += " %s" % l.strip()
         # Parse
         f = "".join(flags)
+<<<<<<< HEAD
         # Some commands do not show flags
         if not f:
             f = "X"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         rx = re.compile(
             r"^\s*(?P<line>\d+)\s+"
             r"(?P<flags>[%s]+(?:\s+[%s]+)*\s+)?"

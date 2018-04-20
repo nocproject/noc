@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Chassis | Fan | Fan Recovered (SYSLOG)",
+    "uuid": "ccd660a4-cc38-45ff-9895-1421e598f03a",
+    "description": "%Environment-I-FAN-STAT-CHNG: FAN# 1 status changed - operational.",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:Environment|Box)-I-FAN-STAT-CHNG: (?P<name>FAN# \\d) status (?:is|changed) - operational.$"
+        }
+    ]
+}

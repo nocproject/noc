@@ -1,3 +1,4 @@
+<<<<<<< HEAD
     /*
 Based on the jQuery plugin found at http://www.kunalbabre.com/projects/TableCSVExport.php
 Re-worked by ZachWick for LectureTools Inc. Sept. 2011
@@ -22,21 +23,33 @@ jQuery.fn.TableCSVExport = function (options) {
         showHiddenRows: false,
 	    rowFilter: "",
 	    filename: "download.csv"
+=======
+jQuery.fn.table2CSV = function(options) {
+    var options = jQuery.extend({
+        separator: ',',
+        header: [],
+        delivery: 'popup' // popup, value
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     },
     options);
 
     var csvData = [];
     var headerArr = [];
     var el = this;
+<<<<<<< HEAD
     var basic = options.columns.length == 0 ? true : false;
     var columnNumbers = [];
     var columnCounter = 0;
     var insertBeforeNum = null;
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     //header
     var numCols = options.header.length;
     var tmpRow = []; // construct header avalible array
 
     if (numCols > 0) {
+<<<<<<< HEAD
         if (basic) {
             for (var i = 0; i < numCols; i++) {
                 if (options.header[i] == options.insertBefore) {
@@ -63,12 +76,21 @@ jQuery.fn.TableCSVExport = function (options) {
     } else {
         getAvailableElements(el).find('th').each(function () {
             if (jQuery(this).css('display') != 'none' || options.showHiddenRows) tmpRow[tmpRow.length] = formatData(jQuery(this).html());
+=======
+        for (var i = 0; i < numCols; i++) {
+            tmpRow[tmpRow.length] = formatData(options.header[i]);
+        }
+    } else {
+        $(el).filter(':visible').find('th').each(function() {
+            if ($(this).css('display') != 'none') tmpRow[tmpRow.length] = formatData($(this).html());
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         });
     }
 
     row2CSV(tmpRow);
 
     // actual data
+<<<<<<< HEAD
     if (basic) {
         var trCounter = 0;
         getAvailableRows(el).each(function () {
@@ -127,6 +149,20 @@ jQuery.fn.TableCSVExport = function (options) {
     if ((options.delivery == 'popup') || (options.delivery == 'download')) {
         return popup(mydata);
     } else {
+=======
+    $(el).find('tr').each(function() {
+        var tmpRow = [];
+        $(this).filter(':visible').find('td').each(function() {
+            if ($(this).css('display') != 'none') tmpRow[tmpRow.length] = formatData($(this).html());
+        });
+        row2CSV(tmpRow);
+    });
+    if (options.delivery == 'popup') {
+        var mydata = csvData.join('\n');
+        return popup(mydata);
+    } else {
+        var mydata = csvData.join('\n');
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return mydata;
     }
 
@@ -135,6 +171,7 @@ jQuery.fn.TableCSVExport = function (options) {
         // alert(tmp);
         if (tmpRow.length > 0 && tmp != '') {
             var mystr = tmpRow.join(options.separator);
+<<<<<<< HEAD
             csvData[csvData.length] = jQuery.trim(mystr);
         }
     }
@@ -149,10 +186,23 @@ jQuery.fn.TableCSVExport = function (options) {
         if(!( output != null && typeof output === 'object')) output = "<span>"+output+"</span>"; // to be able to use jquery
         output = $(output).text().trim();
 
+=======
+            csvData[csvData.length] = mystr;
+        }
+    }
+    function formatData(input) {
+        // replace " with “
+        var regexp = new RegExp(/["]/g);
+        var output = input.replace(regexp, "“");
+        //HTML
+        var regexp = new RegExp(/\<[^\<]+\>/g);
+        var output = output.replace(regexp, "");
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if (output == "") return '';
         return '"' + output + '"';
     }
     function popup(data) {
+<<<<<<< HEAD
         if (options.delivery == 'download') {
 	        var blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
 	        if (navigator.msSaveBlob) { // IE 10+
@@ -184,3 +234,16 @@ jQuery.fn.TableCSVExport = function (options) {
         }
     }
 };
+=======
+        var generator = window.open('', 'csv', 'height=400,width=600');
+        generator.document.write('<html><head><title>CSV</title>');
+        generator.document.write('</head><body >');
+        generator.document.write('<textArea cols=70 rows=15 wrap="off" >');
+        generator.document.write(data);
+        generator.document.write('</textArea>');
+        generator.document.write('</body></html>');
+        generator.document.close();
+        return true;
+    }
+};
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

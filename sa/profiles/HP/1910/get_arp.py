@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_arp
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetarp import IGetARP
 class Script(BaseScript):
     name = "HP.1910.get_arp"
     interface = IGetARP
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_arp
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IGetARP
+
+
+class Script(noc.sa.script.Script):
+    name = "HP.1910.get_arp"
+    implements = [IGetARP]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cache = True
 
     rx_line = re.compile(
@@ -27,7 +47,11 @@ class Script(BaseScript):
         # Try SNMP first
         """
         # working but give vlan interface instead port name
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 for v in self.snmp.get_tables(
                     ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2",

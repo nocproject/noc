@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "Qtech.QSW.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(noc.sa.script.Script):
+    name = "Qtech.QSW.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\S+)\s+(?P<type>\S+)",
@@ -29,7 +49,11 @@ class Script(BaseScript):
         # Try SNMP first
         """
         # SNMP not working!!!
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 vlan_oid = []
                 if mac is not None:
@@ -82,6 +106,7 @@ class Script(BaseScript):
 
         # Fallback to CLI
         cmd = "show mac"
+<<<<<<< HEAD
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
         if interface is not None and mac is None:
@@ -119,15 +144,47 @@ class Script(BaseScript):
             interfaces = match.group("interfaces")
             if interfaces == '0' \
                     or interfaces.lower() == 'cpu':
+=======
+        cmd1 = "show mac-address-table"
+        if mac is not None:
+            cmd += " %s" % self.profile.convert_mac(mac)
+            cmd1 += " %s" % self.profile.convert_mac(mac)
+        if interface is not None and mac is None:
+            interface = interface[1:]
+            cmd += " interface ethernet %s" % interface
+            cmd1 += " interface ethernet %s" % interface
+        if vlan is not None:
+            cmd += " vlan %s" % vlan
+            cmd1 += " vlan %s" % vlan
+        try:
+            v = self.cli(cmd)
+            rx_iter = self.rx_line
+        except:
+            v = self.cli(cmd1)
+            rx_iter = self.rx_line1
+        for match in rx_iter.finditer(v):
+            interfaces = match.group("interfaces")
+            if interfaces == '0' \
+            or interfaces.lower() == 'cpu':
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             r.append({
                 "vlan_id": match.group("vlan_id"),
                 "mac": match.group("mac"),
+<<<<<<< HEAD
                 "interfaces": [interfaces],
                 "type": {
                     "dynamic": "D",
                     "static": "S",
                     "secured": "S",
+=======
+                "interfaces": [
+                    self.profile.convert_interface_name(interfaces)
+                ],
+                "type": {
+                    "dynamic": "D",
+                    "static": "S",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     "permanent": "S",
                     "self": "S"
                 }[match.group("type").lower()],

@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | BFD | Session Down (SYSLOG)",
+    "uuid": "dc8df3ca-3363-4671-a908-2713d0afc7a0",
+    "description": "Jul 25 00:19:47 bfdd[1278]: BFDD_TRAP_SHOP_STATE_DOWN: local discriminator: 1, new state: down, interface: em1.0, peer addr: 10.99.2.1",
+    "event_class__name": "Network | BFD | Session Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "BFDD_TRAP_SHOP_STATE_DOWN: local discriminator: \\d+, new state: down, interface: (?P<interface>\\S+), peer addr: (?P<peer>\\S+)$"
+        }
+    ]
+}

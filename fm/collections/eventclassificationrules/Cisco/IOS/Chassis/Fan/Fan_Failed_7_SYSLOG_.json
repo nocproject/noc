@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #7 (SYSLOG)",
+    "uuid": "f91e12f0-b380-49af-a71a-e59ef3ca508b",
+    "description": "%ENVMON-4-FAN_LOW_RPM: Fan 2 service recommended",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ENVMON-4-FAN_LOW_RPM: (?P<name>.+) service recommended"
+        }
+    ]
+}

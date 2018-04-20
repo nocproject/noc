@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # CloneClassificationRule management
 # ---------------------------------------------------------------------
@@ -12,6 +13,21 @@ import os
 from mongoengine.document import Document
 from mongoengine import fields
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## CloneClassificationRule management
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine import fields
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 
@@ -22,8 +38,12 @@ class CloneClassificationRule(Document):
     """
     meta = {
         "collection": "noc.cloneclassificationrules",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "json_collection": "fm.cloneclassificationrules",
         "json_depends_on": [
             "fm.eventclassificationrules"

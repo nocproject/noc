@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Peer module models
 # ---------------------------------------------------------------------
@@ -15,14 +16,36 @@ from mongoengine.fields import (StringField, IntField,
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
 from .peeringpoint import PeeringPoint
+=======
+##----------------------------------------------------------------------
+## Peer module models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, IntField,
+                                ListField, EmbeddedDocumentField, DateTimeField)
+## NOC modules
+from peeringpoint import PeeringPoint
+from noc.lib.nosql import ForeignKeyField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class PrefixListCachePrefix(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
     }
 
+=======
+        "allow_inheritance": False
+    }
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     prefix = StringField(required=True)
     min = IntField(required=True)
     max = IntField(required=True)
@@ -38,10 +61,16 @@ class PrefixListCache(Document):
     """
     meta = {
         "collection": "noc.prefix_list_cache",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
     }
 
+=======
+        "allow_inheritance": False
+    }
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     peering_point = ForeignKeyField(PeeringPoint)
     name = StringField()
     prefixes = ListField(EmbeddedDocumentField(PrefixListCachePrefix))

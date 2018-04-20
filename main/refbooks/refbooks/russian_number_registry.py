@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Russian Number Plan (E.164 +7 zone)
 # ---------------------------------------------------------------------
@@ -10,6 +11,19 @@ from noc.main.refbooks.refbooks import RefBook,Field
 #
 # Russian Number Plan
 #
+=======
+##----------------------------------------------------------------------
+## Russian Number Plan (E.164 +7 zone)
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from noc.main.refbooks.refbooks import RefBook,Field
+
+##
+## Russian Number Plan
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class RussianNumberPlan(RefBook):
     name="Выписка из реестра Российской системы нумерации"
     description="Выписка из реестра Российской системы нумерации (коды ABC/DEF)"

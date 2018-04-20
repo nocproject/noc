@@ -1,0 +1,7 @@
+{
+    "name": "Interface | Invalid Description",
+    "uuid": "40f29d82-c855-4156-b0c3-77fb1e3e147e",
+    "description": "Invalid description",
+    "subject_template": "Interface {{obj}} has invalid description",
+    "body_template": "Interface {{obj}} has invalid description"
+}

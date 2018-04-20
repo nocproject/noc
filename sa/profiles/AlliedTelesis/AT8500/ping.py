@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8500.ping
 # ---------------------------------------------------------------------
@@ -18,6 +19,26 @@ class Script(BaseScript):
     interface = IPing
     rx_result = re.compile(
         r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$",
+=======
+##----------------------------------------------------------------------
+## AlliedTelesis.AT8500.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## coded by azhur
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IPing
+import re
+
+
+class Script(NOCScript):
+    name = "AlliedTelesis.AT8500.ping"
+    implements = [IPing]
+    rx_result = re.compile(r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE | re.DOTALL)
 
     def execute(self, address, size=None, count=None, timeout=None):

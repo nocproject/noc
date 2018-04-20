@@ -1,0 +1,10 @@
+{% extends "template.html" %}
+{% block title%}Success: {{subject}}{% endblock %}
+{% block content %}
+<H1>Success: {{subject}}</H1>
+{%if text %}
+{{text}}
+{%else%}
+Operation completed successfully!!!
+{%endif%}
+{% endblock %}

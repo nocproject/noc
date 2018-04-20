@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.CER.get_vlans
 # ---------------------------------------------------------------------
@@ -14,11 +15,32 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Brocade.CER.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Brocade.CER.get_vlans
     """
     name = 'Brocade.CER.get_vlans'
+<<<<<<< HEAD
     interface = IGetVlans
+=======
+    implements = [IGetVlans]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_vlan_line = re.compile(
         '^\\S+\\s(?P<vlan_id>\\d+)\\,\\sName\\s(?P<name>[A-z0-9\\-\\_]+?),.+$')
 

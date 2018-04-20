@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_switchport
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "DLink.DGS3100.get_switchport"
     interface = IGetSwitchport
+=======
+##----------------------------------------------------------------------
+## DLink.DGS3100.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "DLink.DGS3100.get_switchport"
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_vlan = re.compile(
         r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+"
@@ -51,7 +71,11 @@ class Script(BaseScript):
             pass
 
         # Try snmp first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             def hex2bin(ports):
                 bin = [
                     '0000', '0001', '0010', '0011',
@@ -110,10 +134,16 @@ class Script(BaseScript):
 
                 # Get switchport description
                 port_descr = {}
+<<<<<<< HEAD
                 for i, iface, description in self.snmp.join([
                     "1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.31.1.1.1.18"
                 ]):
+=======
+                for iface, description in self.snmp.join_tables(
+                        "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
+                        bulk=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     port_descr.update({iface: description})
 
                 # Get switchport data and overall result

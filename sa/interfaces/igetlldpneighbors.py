@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # IGetLLDPNeighbors
 # ---------------------------------------------------------------------
@@ -44,6 +45,51 @@ from base import (ListOfParameter, DictParameter, StringParameter, IntParameter,
 # For local(7) - convert to integer and return untouched
 #
 class IGetLLDPNeighbors(BaseInterface):
+=======
+##----------------------------------------------------------------------
+## IGetLLDPNeighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from base import *
+
+
+##
+## LLDP neighbor information
+##
+## Rules:
+## local_inteface must be filled with interface name (will be cleaned automatically)
+##
+## local_interface_id depens upon how the box advertises own interfaces:
+##
+## If interfaces advertised with macAddress(3) LldpPortIdSubtype,
+## local_interface_id must be set to interface MAC address
+## (will be cleaned automatically)
+##
+## If interface advertised with networkAddress(4) LldpPortIdSubtype,
+## local_interface_id must be set to interface IP address
+##
+## If interfaces advertised with interfaceName(5) LldpPortIdSubtype,
+## local_interface_id must be left empty or ommited.
+##
+## If interfaces advertised with local(7) LldpPortIdSubtype,
+## local_interface_id must be set to local identifier
+##
+## Remote port handling solely depends upon remote_port_subtype:
+##
+## For macAddress(3) - convert to common normalized form
+##
+## For networkAddress(4) - return as IP address
+##
+## For interfaceName(5) - return untouched
+##
+## For local(7) - convert to integer and return untouched
+##
+class IGetLLDPNeighbors(Interface):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     returns = ListOfParameter(element=DictParameter(attrs={
         "local_interface": InterfaceNameParameter(),
         # Should be set when platform advertises not LldpPortIdSubtype==5
@@ -56,9 +102,13 @@ class IGetLLDPNeighbors(BaseInterface):
             # LldpPortIdSubtype TC, interfaceName(5)
             "remote_port_subtype": IntParameter(default=5),
             "remote_port": MACAddressParameter(accept_bin=False) | IPv4Parameter() | StringParameter(),
+<<<<<<< HEAD
             "remote_port_description": StringParameter(required=False),
             "remote_system_name": StringParameter(required=False),
             "remote_system_description": StringParameter(required=False),
+=======
+            "remote_system_name": StringParameter(required=False),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # LldpSystemCapabilitiesMap TC bitmask
             "remote_capabilities": IntParameter(default=0),
         }))

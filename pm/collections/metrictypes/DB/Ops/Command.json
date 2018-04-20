@@ -1,0 +1,6 @@
+{
+    "name": "DB | Ops | Command",
+    "uuid": "c123516c-a0d0-4889-9f38-1ad07458c5ab",
+    "description": "Database management commands",
+    "measure": "ops/sec"
+}

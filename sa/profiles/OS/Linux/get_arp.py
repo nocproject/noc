@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # OS.Linux.get_arp
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetarp import IGetARP
 class Script(BaseScript):
     name = "OS.Linux.get_arp"
     interface = IGetARP
+=======
+##----------------------------------------------------------------------
+## OS.Linux.get_arp
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetARP
+
+
+class Script(NOCScript):
+    name = "OS.Linux.get_arp"
+    implements = [IGetARP]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_arp = re.compile(
         r"^\S+\s+\((?P<ip>\S+)\)\s+\S+\s+(?P<mac>\S+)\s+\S+\s+on+\s+(?P<interface>\S+)",

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # CustomField model
 # ---------------------------------------------------------------------
@@ -19,6 +20,25 @@ import mongoengine.signals
 # NOC modules
 from noc.lib.validators import is_int
 from .customfieldenumgroup import CustomFieldEnumGroup
+=======
+##----------------------------------------------------------------------
+## CustomField model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## Django modules
+from django.db import models, connection
+## Third-party modules
+from mongoengine.base.common import _document_registry
+from mongoengine import fields
+## NOC modules
+from customfieldenumgroup import CustomFieldEnumGroup
+from noc.lib.validators import is_int
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
@@ -66,8 +86,11 @@ class CustomField(models.Model):
     enum_group = models.ForeignKey(CustomFieldEnumGroup,
                                    verbose_name="Enum Group",
                                    null=True, blank=True)
+<<<<<<< HEAD
     _cfields = {}
     _installed = set()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return u"%s.%s" % (self.table, self.name)
@@ -107,12 +130,20 @@ class CustomField(models.Model):
         name = str(self.name)
         if self.is_table:
             if self.type == "str":
+<<<<<<< HEAD
                 max_length = self.max_length if self.max_length else 256
+=======
+                l = self.max_length if self.max_length else 256
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 return models.CharField(
                     name=name,
                     db_column=self.db_column,
                     null=True, blank=True,
+<<<<<<< HEAD
                     max_length=max_length, choices=self.get_enums())
+=======
+                    max_length=l, choices=self.get_enums())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             elif self.type == "int":
                 return models.IntegerField(
                     name=name,
@@ -185,37 +216,65 @@ class CustomField(models.Model):
         return "ALTER TABLE %s DROP COLUMN \"%s\"" % (
             self.table, self.db_column)
 
+<<<<<<< HEAD
     def execute(self, sql):
         logger.debug("Execute: %s", sql)
         c = connection.cursor()
         c.execute(sql)
+=======
+    def exec_commit(self, sql):
+        logger.debug("Execute: %s", sql)
+        c = connection.cursor()
+        c.execute(sql)
+        c.execute("COMMIT")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def activate_field(self):
         logger.info("Activating field %s.%s", self.table, self.name)
         if self.is_table:
+<<<<<<< HEAD
             self.execute(self.db_create_statement)
+=======
+            self.exec_commit(self.db_create_statement)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def deactivate_field(self):
         logger.info("Deactivating field %s.%s", self.table, self.name)
         if self.is_table:
+<<<<<<< HEAD
             self.execute(self.db_drop_statement)
+=======
+            self.exec_commit(self.db_drop_statement)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def create_index(self):
         logger.info("Creating index %s", self.index_name)
         if self.is_table:
+<<<<<<< HEAD
             self.execute("CREATE INDEX %s ON %s(%s)" % (
+=======
+            self.exec_commit("CREATE INDEX %s ON %s(%s)" % (
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 self.index_name, self.table, self.db_column))
 
     def drop_index(self):
         logger.info("Dropping index %s", self.index_name)
         if self.is_table:
+<<<<<<< HEAD
             self.execute("DROP INDEX %s" % self.index_name)
+=======
+            self.exec_commit("DROP INDEX %s" % self.index_name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def rename(self, old_name):
         logger.info("Renaming custom field %s.%s to %s.%s",
                     old_name.table, old_name.name, self.table, self.name)
         if self.is_table:
+<<<<<<< HEAD
             self.execute("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
+=======
+            self.exec_commit("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 self.table, old_name, self.db_column
             ))
 
@@ -249,10 +308,17 @@ class CustomField(models.Model):
             else:
                 self.drop_index()
 
+<<<<<<< HEAD
     def delete(self, using=None):
         if self.is_active:
             self.deactivate_field()
         super(CustomField, self).delete(using=using)
+=======
+    def delete(self):
+        if self.is_active:
+            self.deactivate_field()
+        super(CustomField, self).delete()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def model_class(self):
         """
@@ -281,6 +347,7 @@ class CustomField(models.Model):
         Must be called after all models are initialized
         """
         for f in cls.objects.filter(is_active=True).order_by("table"):
+<<<<<<< HEAD
             if f.table not in cls._cfields:
                 if f.is_table:
                     django_signals.class_prepared.connect(
@@ -333,6 +400,27 @@ class CustomField(models.Model):
             m._db_field_map[fn] = mf.db_field
             m._reverse_db_field_map[mf.db_field] = fn
             m._fields_ordered = m._fields_ordered + (fn,)
+=======
+            fn = str(f.name)
+            logger.info("Installing custom field %s.%s", f.table, f.name)
+            if f.is_table:
+                # Get model
+                m = f.model_class()
+                # Install field
+                mf = f.get_field()
+                mf.contribute_to_class(m, fn)
+            else:
+                # Get Document
+                m = f.document_class()
+                # Install field
+                mf = f.get_field()
+                setattr(m, fn, mf)
+                mf.name = fn
+                m._fields[fn] = mf
+                m._db_field_map[fn] = mf.db_field
+                m._reverse_db_field_map[mf.db_field] = fn
+                m._fields_ordered = m._fields_ordered + (fn,)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @property
     def ext_model_field(self):
@@ -430,17 +518,23 @@ class CustomField(models.Model):
     @classmethod
     def table_search_Q(cls, table, query):
         q = []
+<<<<<<< HEAD
         for f in CustomField.objects.filter(
             is_active=True,
             table=table,
             is_searchable=True
         ):
+=======
+        for f in CustomField.objects.filter(is_active=True,
+            table=table, is_searchable=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if f.type == "str":
                 q += [{"%s__icontains" % f.name: query}]
             elif f.type == "int":
                 if is_int(query):
                     q += [{f.name: int(query)}]
         if q:
+<<<<<<< HEAD
             return reduce(
                 lambda x, y: x | models.Q(**y),
                 q,
@@ -458,3 +552,9 @@ class CustomField(models.Model):
     def on_new_document(cls, sender, *args, **kwargs):
         for f in cls._cfields.get(sender._meta.get("collection"), []):
             f.install_field()
+=======
+            return reduce(lambda x, y: x | models.Q(**y), q,
+                models.Q(**q[0]))
+        else:
+            return None
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

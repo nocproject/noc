@@ -2,10 +2,17 @@
 
 from south.db import db
 from django.db import models
+<<<<<<< HEAD
 from django.db import models
 
 class Migration:
 
+=======
+from noc.main.models import *
+
+class Migration:
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def forwards(self):
         # Create Any time pattern if not exists
         if db.execute("SELECT COUNT(*) FROM main_timepattern WHERE name=%s",["Any"])[0][0]==0:
@@ -23,6 +30,10 @@ class Migration:
                     [profile_id,"mail",time_pattern_id,email])[0][0]==0:
                 db.execute("INSERT INTO main_userprofilecontact(user_profile_id,time_pattern_id,notification_method,params) VALUES(%s,%s,%s,%s)",
                     [profile_id,time_pattern_id,"mail",email])
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         "Write your backwards migration here"

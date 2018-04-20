@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlarmSeverity model
 # ---------------------------------------------------------------------
@@ -15,13 +16,30 @@ from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, UUIDField)
 import cachetools
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## AlarmSeverity model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, IntField, UUIDField)
+import cachetools
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.main.models.style import Style
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 
+<<<<<<< HEAD
 id_lock = Lock()
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 class AlarmSeverity(Document):
     """
@@ -29,8 +47,12 @@ class AlarmSeverity(Document):
     """
     meta = {
         "collection": "noc.alarmseverities",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["severity"],
         "json_collection": "fm.alarmseverities"
     }
@@ -39,6 +61,7 @@ class AlarmSeverity(Document):
     description = StringField(required=False)
     severity = IntField(required=True)
     style = ForeignKeyField(Style)
+<<<<<<< HEAD
     # Minimal alarm weight to reach severity
     min_weight = IntField(required=False)
     sound = StringField(default="alarm")
@@ -47,11 +70,14 @@ class AlarmSeverity(Document):
     _id_cache = cachetools.TTLCache(maxsize=50, ttl=60)
     _order_cache = {}
     _weight_cache = {}
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.name
 
     @classmethod
+<<<<<<< HEAD
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return AlarmSeverity.objects.filter(id=id).first()
@@ -82,13 +108,21 @@ class AlarmSeverity(Document):
         return severities, weights, alpha
 
     @classmethod
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_severity(cls, severity):
         """
         Returns Alarm Severity instance corresponding to numeric value
         """
+<<<<<<< HEAD
         for s in reversed(cls.get_ordered()):
             if severity >= s.severity:
                 return s
+=======
+        s = cls.objects.filter(severity__lte=severity).order_by("-severity").first()
+        if not s:
+            s = cls.objects.order_by("severity").first()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return s
 
     @classmethod
@@ -109,6 +143,7 @@ class AlarmSeverity(Document):
             "style__name": self.style.name
         }, order=["name", "$collection", "uuid",
                   "description", "severity", "style"])
+<<<<<<< HEAD
 
     @classmethod
     def severity_for_weight(cls, w):
@@ -126,3 +161,5 @@ class AlarmSeverity(Document):
         severities, weights, alpha = cls.get_weights()
         i = find(weights, w)
         return severities[i] + int(alpha[i] * (w - weights[i]))
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

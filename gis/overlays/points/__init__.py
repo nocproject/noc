@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Points overlay -
 # Displays points on map
@@ -10,6 +11,19 @@
 # NOC modules
 from noc.gis.overlays.base import *
 from noc.lib.nosql import get_db
+=======
+##----------------------------------------------------------------------
+## Points overlay -
+## Displays points on map
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.gis.overlays.base import *
+from noc.lib.nosql import *
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class PointsOverlay(OverlayHandler):

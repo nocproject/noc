@@ -1,5 +1,6 @@
 
 from south.db import db
+<<<<<<< HEAD
 from django.db import models
 from noc.core.model.fields import PickledField
 
@@ -8,6 +9,16 @@ class Migration:
 
     def forwards(self):
 
+=======
+from noc.main.models import *
+from noc.lib.fields import PickledField
+
+
+class Migration:
+    
+    def forwards(self):
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model 'Language'
         db.create_table('main_changesquarantine', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -16,7 +27,11 @@ class Migration:
             ('subject', models.CharField("Subject",max_length=256)),
             ('data', PickledField("Data")),
         ))
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         db.create_table('main_changesquarantinerule', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('name', models.CharField("Name",max_length=64,unique=True)),
@@ -26,9 +41,15 @@ class Migration:
             ('action', models.CharField("Action",max_length=1,choices=[("I","Ignore"),("A","Accept"),("Q","Quarantine")])),
             ('description', models.TextField("Description",null=True,blank=True)),
         ))
+<<<<<<< HEAD
 
         db.send_create_signal('main', ['ChangesQuarantine','ChangesQuarantineRule'])
 
+=======
+        
+        db.send_create_signal('main', ['ChangesQuarantine','ChangesQuarantineRule'])
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         db.delete_table('main_changesquarantine')
         db.delete_table('main_changesquarantinerule')

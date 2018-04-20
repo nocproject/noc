@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # H3C.VRP.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -26,12 +27,45 @@ class Script(BaseScript):
         r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?:\S+)\s+(?:\S+)\s+"
         r"(?P<interfaces>\S+)\s+(?P<type>dynamic|static)\s+"
     )
+=======
+##----------------------------------------------------------------------
+## H3C.VRP.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable, IGetVersion
+
+rx_vrp3line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>Learned|Config static)\s+(?P<interfaces>[^ ]+)\s{2,}")
+rx_vrp5line = re.compile(r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?:\S+)\s+(?:\S+)\s+(?P<interfaces>\S+)\s+(?P<type>dynamic|static)\s+")
+
+
+class Script(NOCScript):
+    name = "H3C.VRP.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+    requires = [("get_version", IGetVersion)]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "display mac-address"
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
+<<<<<<< HEAD
         rx_line = self.rx_vrp3line
+=======
+        version = self.scripts.get_version()["version"].split(".")[0]
+        rx_line = rx_vrp3line
+#        if version=="3":
+#            rx_line=rx_vrp3line
+#        elif version=="5":
+#            rx_line=rx_vrp5line
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r = []
         for l in self.cli(cmd).splitlines():
             match = rx_line.match(l.strip())
@@ -45,10 +79,17 @@ class Script(BaseScript):
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
                     "type": {
+<<<<<<< HEAD
                         "dynamic": "D",
                         "static": "S",
                         "learned": "D",
                         "Config static": "S"
+=======
+                        "dynamic":"D",
+                        "static":"S",
+                        "learned":"D",
+                        "Config static":"S"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     }[match.group("type").lower()]
                 }]
         return r

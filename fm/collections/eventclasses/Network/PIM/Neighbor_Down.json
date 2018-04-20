@@ -1,0 +1,46 @@
+{
+    "name": "Network | PIM | Neighbor Down",
+    "$collection": "fm.eventclasses",
+    "uuid": "bb0a5d88-8970-4a54-826c-7d750afd10c6",
+    "description": "PIM Neighbor down",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "neighbor",
+            "description": "Neighbor's IP",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "vrf",
+            "description": "VRF",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}",
+    "body_template": "PIM neighbor {{neighbor}} DOWN on {{interface}}.{% if vrf %} VRF {{vrf}}.{% endif %}{% if reason %} Reason: {{reason}}.{% endif %}",
+    "symptoms": "Multicast flows lost",
+    "probable_causes": "PIM protocol configuration problem or link failure",
+    "recommended_actions": "Check links and local and neighbor's router configuration",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | PIM | Neighbor Down"
+        }
+    ]
+}

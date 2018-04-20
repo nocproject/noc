@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ObjectModel model
@@ -11,17 +12,37 @@ import os
 from threading import Lock
 import operator
 # Third-party modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ObjectModel model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 ObjectIdField)
 from mongoengine import signals
+<<<<<<< HEAD
 import cachetools
 # NOC modules
+=======
+from mongoengine.queryset import Q
+import cachetools
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from connectiontype import ConnectionType
 from connectionrule import ConnectionRule
 from unknownmodel import UnknownModel
 from vendor import Vendor
+<<<<<<< HEAD
 from noc.main.models.doccategory import category
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
@@ -29,12 +50,22 @@ from noc.lib.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
+=======
+from noc.main.models.doccategory import DocCategory
+from noc.lib.nosql import PlainReferenceField
+from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ObjectModelConnection(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = StringField()
     description = StringField()
@@ -88,19 +119,26 @@ class ObjectModelConnection(EmbeddedDocument):
         return r
 
 
+<<<<<<< HEAD
 @category
 @on_delete_check(check=[
     ("inv.ModelMapping", "model"),
     ("inv.Object", "model")
 ])
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class ObjectModel(Document):
     """
     Equipment vendor
     """
     meta = {
         "collection": "noc.objectmodels",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [
             ("vendor", "data.asset.part_no"),
             ("vendor", "data.asset.order_part_no")
@@ -124,25 +162,36 @@ class ObjectModel(Document):
     plugins = ListField(StringField(), required=False)
     category = ObjectIdField()
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+=======
+    om_cache = {}
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.name
 
+<<<<<<< HEAD
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return ObjectModel.objects.filter(id=id).first()
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_data(self, interface, key):
         v = self.data.get(interface, {})
         return v.get(key)
 
     def save(self, *args, **kwargs):
+<<<<<<< HEAD
         try:
             super(ObjectModel, self).save(*args, **kwargs)
         except Exception as e:
             raise ValueError("%s: %s" % (e.__doc__, e.message))
+=======
+        super(ObjectModel, self).save(*args, **kwargs)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Update connection cache
         # @todo: Move to signal
         s = ObjectModel.objects.filter(id=self.id).first()
@@ -294,8 +343,12 @@ class ObjectModel(Document):
 class ModelConnectionsCache(Document):
     meta = {
         "collection": "noc.inv.objectconnectionscache",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["model", ("type", "gender")]
     }
     # Connection type
@@ -339,3 +392,7 @@ def clear_unknown_models(sender, document, **kwargs):
 
 
 signals.post_save.connect(clear_unknown_models, sender=ObjectModel)
+<<<<<<< HEAD
+=======
+DocCategory.register(ObjectModel)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

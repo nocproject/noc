@@ -1,0 +1,25 @@
+<table border="1">
+    <tr>
+        <th rowspan="2">Metric</th>
+        <th colspan="4">Thresholds</th>
+        <th rowspan="2">Description</th>
+    </tr>
+    <tr>
+        <th>Low. Error</th>
+        <th>Low. Warn</th>
+        <th>High. Warn</th>
+        <th>High. Error</th>
+    </tr>
+    {{#each this}}
+    <tr>
+        <td>{{metric_type_name}}</td>
+        <td style="text-align: right">{{low_error}}</td>
+        <td style="text-align: right">{{low_warn}}</td>
+        <td style="text-align: right">{{high_warn}}</td>
+        <td style="text-align: right">{{high_error}}</td>
+        <td>{{description}}</td>
+    </tr>
+    {{else}}
+    <tr colspan="6">No effective metrics</tr>
+    {{/each}}
+</table>

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Network | LAG | Bundle (SYSLOG)",
+    "uuid": "f92437e3-8991-4a2e-9833-98c1cf78baae",
+    "description": "%TRUNK-I-PORTADDED: Port 1:11 added to ch3",
+    "event_class__name": "Network | LAG | Bundle",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%TRUNK-I-PORTADDED: Port (?P<interface>\\S+) added to (?P<lag_interface>\\S+)"
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.get_local_users
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.sa.interfaces.igetlocalusers import IGetLocalUsers
 class Script(BaseScript):
     name = "Linksys.SPS2xx.get_local_users"
     interface = IGetLocalUsers
+=======
+##----------------------------------------------------------------------
+## Linksys.SPS2xx.get_local_users
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+import datetime
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLocalUsers
+
+
+class Script(NOCScript):
+    name = "Linksys.SPS2xx.get_local_users"
+    implements = [IGetLocalUsers]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_name = re.compile(
         r"^username\s+(?P<username>\S+)\s+password .* level (?P<privilege>\d+) encrypted$")

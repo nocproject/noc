@@ -1,0 +1,21 @@
+{
+    "name": "AlliedTelesis | AT9400 | System | Started (SYSLOG)",
+    "uuid": "b3e38d9c-93fc-4cb9-bdf7-59ef0a60999f",
+    "description": "system: System initialization complete",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^AlliedTelesis\\.AT9400$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "system: System initialization complete$"
+        }
+    ]
+}

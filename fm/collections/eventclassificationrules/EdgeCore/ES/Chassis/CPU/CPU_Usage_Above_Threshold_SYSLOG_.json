@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | Chassis | CPU | CPU Usage Above Threshold (SYSLOG)",
+    "uuid": "5d626d5a-01c0-4c02-919b-89649e21fff8",
+    "description": "Sep 19 14:58:42 Rybatsk-17-1 snmp CPU rising trap.",
+    "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "CPU rising trap\\.$"
+        }
+    ]
+}

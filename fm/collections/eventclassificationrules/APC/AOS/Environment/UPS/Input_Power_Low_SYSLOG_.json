@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Environment | UPS | Input Power Low (SYSLOG)",
+    "uuid": "bd4c999b-4f36-4907-81c1-25a075a82224",
+    "description": "UPS: Compensating for a low input voltage. 0x010B",
+    "event_class__name": "Environment | UPS | Input Power Low",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: Compensating for a low input voltage. 0x010B"
+        }
+    ]
+}

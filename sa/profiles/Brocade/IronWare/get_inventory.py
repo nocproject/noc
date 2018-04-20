@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_inventory
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 class Script(BaseScript):
     name = "Brocade.IronWare.get_inventory"
     interface = IGetInventory
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+
+
+class Script(NOCScript):
+    name = "Brocade.IronWare.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_item_ch = re.compile(
         r"SL\s*(?P<slot>\d+):\s*(?P<part_no>\S+)\s+"
@@ -94,13 +114,21 @@ class Script(BaseScript):
         if "Turbo" in match.group("platform"):
             match1 = self.rx_item_ti.search(v)
             objects[0].update({"serial": match1.group("serial")})
+<<<<<<< HEAD
             self.logger.debug(media)
+=======
+            self.debug(media)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             for match2 in media.splitlines():
                 nodata = ""
                 if "Port" in match2:
                     partno = ""
                     l = match2.split()
+<<<<<<< HEAD
                     self.logger.debug(l)
+=======
+                    self.debug(l)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if l[4] == "EMPTY":
                         port = ""
                     elif "M-TX" in match2:
@@ -115,13 +143,22 @@ class Script(BaseScript):
                         serial = "None"
                     else:
                         port = l[1][:-1]
+<<<<<<< HEAD
                         self.logger.debug(l[4])
                         self.logger.debug(port)
+=======
+                        self.debug(l[4])
+                        self.debug(port)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         trans = " ".join(l[4:])
                         serial = ""
                 elif "Vendor" in match2:
                     l = match2.split()
+<<<<<<< HEAD
                     self.logger.debug(l)
+=======
+                    self.debug(l)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     descr = l[1]
                 elif "Serial" in match2:
                     l = match2.split()
@@ -132,7 +169,11 @@ class Script(BaseScript):
                         serial = "SNUNKNOWN"
                     partno = l[2]
                 # if match2[0].split("/")[0]==match1[0] and match2[1]!="EMPTY":
+<<<<<<< HEAD
                 # self.logger.debug(match2)
+=======
+                # self.debug(match2)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if nodata:
                     partno = self.TRANS_MAP[trans]
                 if serial:
@@ -178,26 +219,47 @@ class Script(BaseScript):
                     "vendor": "BROCADE"
                 }]
                 media = self.cli("show media slot %s" % match1[0])
+<<<<<<< HEAD
                 self.logger.debug(media)
                 for match2 in media.splitlines():
                     if "Port" in match2:
                         l = match2.split()
                         self.logger.debug(l)
+=======
+                self.debug(media)
+                for match2 in media.splitlines():
+                    if "Port" in match2:
+                        l = match2.split()
+                        self.debug(l)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         if l[4] == "EMPTY":
                             port = ""
                         else:
                             port = l[1][:-1].split("/")[1]
+<<<<<<< HEAD
                             self.logger.debug(l[4])
                             self.logger.debug(port)
+=======
+                            self.debug(l[4])
+                            self.debug(port)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                             trans = " ".join(l[4:])
                             serial = ""
                     elif "Vendor" in match2:
                         l = match2.split()
+<<<<<<< HEAD
                         self.logger.debug(l)
                         descr = l[1]
                     elif "Serial" in match2:
                         l = match2.split()
                         self.logger.debug(l)
+=======
+                        self.debug(l)
+                        descr = l[1]
+                    elif "Serial" in match2:
+                        l = match2.split()
+                        self.debug(l)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         #			descr=l[2]
                         if l[4]:
                             serial = l[4]

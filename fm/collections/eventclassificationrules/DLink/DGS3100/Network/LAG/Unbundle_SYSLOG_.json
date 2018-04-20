@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Network | LAG | Unbundle (SYSLOG)",
+    "uuid": "aa8bf93b-9af2-4881-a498-f57af525c894",
+    "description": "%TRUNK-W-PORTREMOVED: Port 1:11 removed from ch3",
+    "event_class__name": "Network | LAG | Unbundle",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%TRUNK-W-PORTREMOVED: Port (?P<interface>\\S+) removed from (?P<lag_interface>\\S+)"
+        }
+    ]
+}

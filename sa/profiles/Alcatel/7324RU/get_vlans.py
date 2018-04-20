@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_vlans
 # ----------------------------------------------------------------------
@@ -20,6 +21,29 @@ class Script(BaseScript):
         r"\s*(?P<vid>\d+)"
         r"\s*(?P<vname>[A-Za-z0-9\-\.]+)\n"
         r"(([ 0-9]+)\n)?[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
+=======
+##----------------------------------------------------------------------
+## Alcatel.7324RU.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(NOCScript):
+    name = "Alcatel.7324RU.get_vlans"
+    implements = [IGetVlans]
+    rx_vlan = re.compile(
+        r"\s*(?P<vid>\d+)"
+        r"\s*(?P<vname>[A-Za-z0-9\-\.]+)\n"
+        r"([ 0-9]+)\n[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r"([ \-xnf]+)\n[ ]+(?P<portmask>[\-tu]+)\s*"
         r"(?P<uplinkmask>[\-tu]*)", re.MULTILINE | re.IGNORECASE)
 

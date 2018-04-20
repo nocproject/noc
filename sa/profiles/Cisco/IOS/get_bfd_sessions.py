@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_bfd_sessions
 # ---------------------------------------------------------------------
@@ -16,15 +17,36 @@ from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
 class Script(BaseScript):
     name = "Cisco.IOS.get_bfd_sessions"
     interface = IGetBFDSessions
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_bfd_sessions
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_bfd_sessions"
+    implements = [IGetBFDSessions]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_session_sep = re.compile(
         r"^OurAddr\s+NeighAddr\s+LD/RD\s+RH/RS\s+Holdown\(mult\)\s+State\s+Int\n",
         re.MULTILINE | re.IGNORECASE)
 
+<<<<<<< HEAD
     rx_session_sep2 = re.compile(
         r"^NeighAddr\s+LD/RD\s+RH/RS\s+State\s+Int\n",
         re.MULTILINE | re.IGNORECASE)
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_session = re.compile(
         r"(?P<local_address>\S+)\s+"
         r"(?P<remote_address>\S+)\s+"
@@ -40,6 +62,7 @@ class Script(BaseScript):
         r"Your\sDiscr\.:\s(?P<remote_discriminator>\d+)\n",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
+<<<<<<< HEAD
     rx_session2 = re.compile(
         r"(?P<remote_address>\S+)\s+"
         r"(?P<local_discriminator>\d+)/(?P<remote_discriminator>\d+)\s+"
@@ -53,6 +76,8 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_nl = re.compile("\n+", re.MULTILINE)
 
     # IOS to interface client type mappings
@@ -63,6 +88,7 @@ class Script(BaseScript):
         "EIGRP": "EIGRP"
     }
 
+<<<<<<< HEAD
     client_ignored = ["CEF"]
 
     def execute(self):
@@ -83,14 +109,26 @@ class Script(BaseScript):
             if not ss:
                 continue
             match = self.re_search(matcher, ss)
+=======
+    def execute(self):
+        r = []
+        s = self.cli("show bfd neighbors details")
+        s = self.rx_nl.sub("\n", s)
+        for ss in self.rx_session_sep.split(s)[1:]:
+            match = self.re_search(self.rx_session, ss)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             r += [{
                 "remote_address": match.group("remote_address"),
                 "local_interface": match.group("local_interface"),
                 "local_discriminator": int(match.group("local_discriminator")),
                 "remote_discriminator": int(match.group("remote_discriminator")),
                 "state": match.group("state").upper(),
+<<<<<<< HEAD
                 "clients": [self.client_map[c] for c in match.group("protocols").split()
                             if c not in self.client_ignored],
+=======
+                "clients": [self.client_map[c] for c in match.group("protocols").split()],
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "tx_interval": int(match.group("tx_interval")),
                 "multiplier": int(match.group("mult")),
                 "detect_time": int(match.group("holdown")) * 1000

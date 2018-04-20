@@ -1,5 +1,6 @@
 
 from south.db import db
+<<<<<<< HEAD
 from django.db import models
 
 class Migration:
@@ -10,6 +11,18 @@ class Migration:
         # Mock Models
         User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
 
+=======
+from noc.main.models import *
+
+class Migration:
+    
+    def forwards(self):
+        
+        
+        # Mock Models
+        User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model 'AuditTrail'
         db.create_table('main_audittrail', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -21,9 +34,18 @@ class Migration:
             ('subject', models.CharField("Subject",max_length=256)),
             ('body', models.TextField("Body"))
         ))
+<<<<<<< HEAD
 
         db.send_create_signal('main', ['AuditTrail'])
 
     def backwards(self):
         db.delete_table('main_audittrail')
 
+=======
+        
+        db.send_create_signal('main', ['AuditTrail'])
+    
+    def backwards(self):
+        db.delete_table('main_audittrail')
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

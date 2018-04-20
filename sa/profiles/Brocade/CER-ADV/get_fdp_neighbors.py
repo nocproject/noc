@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.CER-ADV.get_fdp_neighbors
 # ---------------------------------------------------------------------
@@ -14,11 +15,32 @@ from noc.sa.interfaces.igetfdpneighbors import IGetFDPNeighbors
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Brocade.CER-ADV.get_fdp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetFDPNeighbors
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Brocade.CER-ADV.get_fdp_neighbors
     """
     name = 'Brocade.CER-ADV.get_fdp_neighbors'
+<<<<<<< HEAD
     interface = IGetFDPNeighbors
+=======
+    implements = [IGetFDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_entry = re.compile('Device ID: (?P<device_id>\\S+).+?Interface:\\s(?P<local_interface>\\S+)\\s+Port ID \\(outgoing port\\): (?P<remote_interface>\\S+)', re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):

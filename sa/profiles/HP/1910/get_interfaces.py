@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_interfaces.py
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ from noc.core.ip import IPv4
 from noc.core.ip import IPv6
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_interfaces.py
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+from noc.lib.ip import IPv6
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     HP.1910.get_interfaces
     @todo: VRF support
@@ -26,6 +45,7 @@ class Script(BaseScript):
     """
 
     name = "HP.1910.get_interfaces"
+<<<<<<< HEAD
     interface = IGetInterfaces
     TIMEOUT = 120
 
@@ -39,6 +59,16 @@ class Script(BaseScript):
     rx_iface = re.compile(
         r"^\s*(?P<iface>(\S+Ethernet|\S+Aggregation)\S+) current state:\s+"
         r"(?P<status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*$")
+=======
+    implements = [IGetInterfaces]
+    TIMEOUT = 120
+
+    rx_sh_svi = re.compile(
+        r"^\s*(?P<interface>\S+) current state: (?P<admin_status>(UP|DOWN|Administratively DOWN))\s*.Line protocol current state: (?P<oper_status>\S+).Description: (?P<description>(\S+ \S+ \S+ \S+|\S+ \S+ \S+|\S+ \S+|\S+)).The Maximum Transmit Unit is \d+.Internet Address is (?P<ip>\S+)/(?P<mask>\d+)( Primary|, acquired via DHCP).IP Packet Frame Type: \S+,  Hardware Address: (?P<mac>\S+)",
+        re.DOTALL | re.MULTILINE)
+    rx_iface = re.compile(
+        r"^\s*(?P<iface>(\S+Ethernet|\S+Aggregation)\S+) current state:\s+(?P<status>(UP|DOWN|Administratively DOWN))\s*$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_mac = re.compile(
         r"^\s*IP Packet Frame Type: \S+, Hardware Address:\s+(?P<mac>\S+)$")
     rx_description = re.compile(
@@ -141,7 +171,11 @@ class Script(BaseScript):
                 else:
                     ifname = ifname.replace('GigabitEthernet', 'Gi ')
                 o_stat = match.group("status") == 'UP'
+<<<<<<< HEAD
                 a_stat = match.group("status") not in ['Administratively DOWN', 'DOWN ( Administratively )']
+=======
+                a_stat = match.group("status") != 'Administratively DOWN'
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
                 i += 1
                 match = self.rx_mac.search(ifaces[i])
@@ -189,7 +223,14 @@ class Script(BaseScript):
                         match = self.rx_tagged.search(ifaces[i])
                         tagged = match.group("tagged")
                         tagged = tagged.replace('(default vlan)', '')
+<<<<<<< HEAD
                         iface["subinterfaces"][0]["tagged_vlans"] = self.expand_rangelist(tagged)
+=======
+                        tagged_ = []
+                        for j in tagged.split(', '):
+                            tagged_.append(int(j))
+                        iface["subinterfaces"][0]["tagged_vlans"] = tagged_
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     else:
                         match = self.rx_tag.search(ifaces[i])
                         tagged = match.group("tagged")

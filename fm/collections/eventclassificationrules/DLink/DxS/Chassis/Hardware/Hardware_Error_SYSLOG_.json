@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Chassis | Hardware | Hardware Error (SYSLOG)",
+    "uuid": "8adabf6f-c863-46fb-8954-d98b7d13fb3b",
+    "description": "EMER(0) Unit 1 System re-start reason: CPU exception",
+    "event_class__name": "Chassis | Hardware | Hardware Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "CPU exception"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Force10 | FTOS | Network | Link | Link Down (SYSLOG)",
+    "uuid": "801c4021-f76b-454b-8763-671976e69cac",
+    "description": "%IFMGR-5-OSTATE_DN: Changed interface state to down: Gi 0/19",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IFMGR-5-OSTATE_DN: Changed interface state to down: (?P<interface>.+)$"
+        }
+    ]
+}

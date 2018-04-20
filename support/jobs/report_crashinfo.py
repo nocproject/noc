@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Obsolete data cleanup and system maintenance
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Obsolete data cleanup and system maintainance
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.scheduler.autointervaljob import AutoIntervalJob
 from noc.support.models.crashinfo import Crashinfo
 from noc.support.cp import CPClient

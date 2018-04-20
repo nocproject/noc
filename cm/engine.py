@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Validation engine
 # ---------------------------------------------------------------------
@@ -7,10 +8,21 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+=======
+##----------------------------------------------------------------------
+## Validation engine
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import logging
 from collections import defaultdict
 import datetime
 import uuid
+<<<<<<< HEAD
 import threading
 # Third-party modules
 import six
@@ -26,6 +38,22 @@ from noc.inv.models.interface import Interface as InvInterface
 from noc.inv.models.subinterface import SubInterface as InvSubInterface
 from noc.core.debug import error_report
 from noc.core.handler import get_handler
+=======
+import re
+import threading
+## Third-party modules
+import clips
+from pymongo.errors import BulkWriteError
+## NOC modules
+from noc.cm.facts.error import Error
+from noc.cm.facts.role import Role
+from noc.lib.log import PrefixLoggerAdapter
+from noc.cm.models.validationpolicysettings import ValidationPolicySettings
+from noc.inv.models.interface import Interface as InvInterface
+from noc.inv.models.subinterface import SubInterface as InvSubInterface
+from noc.lib.debug import error_report
+from noc.lib.solutions import get_solution
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.models.objectfact import ObjectFact
 from noc.lib.clipsenv import CLIPSEnv
 
@@ -71,16 +99,28 @@ class Engine(object):
         for k, v in fact.iter_factitems():
             if v is None or v == [] or v == tuple():
                 continue
+<<<<<<< HEAD
             if isinstance(v, six.string_types):
+=======
+            if isinstance(v, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 v = v.replace("\n", "\\n")
             f.Slots[k] = v
         try:
             f.Assert()
+<<<<<<< HEAD
         except clips.ClipsError as e:
             self.logger.error("Could not assert: %s", f.PPForm())
             self.logger.error(
                 "CLIPS Error: %s\n%s",
                 e,
+=======
+        except clips.ClipsError, why:
+            self.logger.error("Could not assert: %s", f.PPForm())
+            self.logger.error(
+                "CLIPS Error: %s\n%s",
+                why,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 clips.ErrorStream.Read()
             )
             return
@@ -186,10 +226,17 @@ class Engine(object):
                 try:
                     cfg = r.get_config()
                     r.prepare(**cfg)
+<<<<<<< HEAD
                 except clips.ClipsError as e:
                     self.logger.error(
                         "CLIPS Error: %s\n%s",
                         e,
+=======
+                except clips.ClipsError, why:
+                    self.logger.error(
+                        "CLIPS Error: %s\n%s",
+                        why,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         clips.ErrorStream.Read()
                     )
                     continue
@@ -230,7 +277,11 @@ class Engine(object):
                     continue
                 rule = ri.rule
                 if rule.is_active and rule.is_applicable_for(self.object):
+<<<<<<< HEAD
                     vc = get_handler(rule.handler)
+=======
+                    vc = get_solution(rule.handler)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if vc and bool(vc.SCOPE & scope):
                         r += [(vc, rule)]
         return r
@@ -331,7 +382,11 @@ class Engine(object):
         e_facts = {}  # uuid -> fact
         try:
             f = self.env.InitialFact()
+<<<<<<< HEAD
         except clips.ClipsError:
+=======
+        except clips.ClipsError, w:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return  # No facts
         while f:
             if f.Template and f.Template.Name in self.templates:
@@ -348,8 +403,14 @@ class Engine(object):
         # Get facts from database
         now = datetime.datetime.now()
         collection = ObjectFact._get_collection()
+<<<<<<< HEAD
         bulk = []
         new_facts = set(e_facts)
+=======
+        bulk = collection.initialize_unordered_bulk_op()
+        new_facts = set(e_facts)
+        changed = False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for f in collection.find({"object": self.object.id}):
             if f["_id"] in e_facts:
                 fact = e_facts[f["_id"]]
@@ -359,26 +420,44 @@ class Engine(object):
                     self.logger.debug(
                         "Fact %s has been changed: %s -> %s",
                         f["_id"], f["attrs"], f_attrs)
+<<<<<<< HEAD
                     bulk += [UpdateOne({
                         "_id": f["_id"]
                     }, {
+=======
+                    bulk.find({"_id": f["_id"]}).update({
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         "$set": {
                             "attrs": f_attrs,
                             "changed": now,
                             "label": unicode(fact)
                         }
+<<<<<<< HEAD
                     })]
+=======
+                    })
+                    changed = True
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 new_facts.remove(f["_id"])
             else:
                 # Removed fact
                 self.logger.debug("Fact %s has been removed", f["_id"])
+<<<<<<< HEAD
                 bulk += [DeleteOne({"_id": f["_id"]})]
+=======
+                bulk.find({"_id": f["_id"]}).remove()
+                changed = True
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # New facts
         for f in new_facts:
             fact = e_facts[f]
             f_attrs = self.get_fact_attrs(fact)
             self.logger.debug("Creating fact %s: %s", f, f_attrs)
+<<<<<<< HEAD
             bulk += [InsertOne({
+=======
+            bulk.insert({
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "_id": f,
                 "object": self.object.id,
                 "cls": fact.cls,
@@ -386,6 +465,7 @@ class Engine(object):
                 "attrs": f_attrs,
                 "introduced": now,
                 "changed": now
+<<<<<<< HEAD
             })]
         if bulk:
             self.logger.debug("Commiting changes to database")
@@ -394,6 +474,18 @@ class Engine(object):
                 self.logger.debug("Database has been synced")
             except BulkWriteError as e:
                 self.logger.error("Bulk write error: '%s'", e.details)
+=======
+            })
+        if new_facts:
+            changed = True
+        if changed:
+            self.logger.debug("Commiting changes to database")
+            try:
+                bulk.execute()
+                self.logger.debug("Database has been synced")
+            except BulkWriteError, bwe:
+                self.logger.error("Bulk write error: '%s'", bwe.details)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 self.logger.error("Stopping check")
         else:
             self.logger.debug("Nothing changed")
@@ -444,7 +536,11 @@ class Engine(object):
                     severity=2000  # WARNING
                 )
             # Alarm is already exists
+<<<<<<< HEAD
             alarm.log_message("%d errors has been found" % n_errors)
+=======
+            alarm.log_message("%d errors has been found", n_errors)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         elif alarm:
             # Clear alarm
             self.logger.info("Clear alarm")

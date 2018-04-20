@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Arista.EOS.get_switchport
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "Arista.EOS.get_switchport"
     interface = IGetSwitchport
+=======
+##----------------------------------------------------------------------
+## Arista.EOS.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+import re
+## Python modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "Arista.EOS.get_switchport"
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(
         r"^(?P<port>\S\S\d+)\s+"

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Juniper.JUNOSe.get_config
 # ---------------------------------------------------------------------
@@ -21,6 +22,30 @@ class Script(BaseScript):
     interface = IGetConfig
     rx_service = re.compile("^(?P<service>\w+\.mac)", re.MULTILINE)
 
+=======
+##----------------------------------------------------------------------
+## Juniper.JUNOSe.get_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetConfig
+
+
+class Script(NOCScript):
+    """
+    Junos.JUNOSe.get_config
+    """
+    name = "Juniper.JUNOSe.get_config"
+    implements = [IGetConfig]
+    rx_service = re.compile("^(?P<service>\w+\.mac)", re.MULTILINE)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute(self):
         # Get configuration
         try:

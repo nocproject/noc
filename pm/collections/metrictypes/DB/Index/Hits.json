@@ -1,0 +1,6 @@
+{
+    "name": "DB | Index | Hits",
+    "uuid": "aaab0f0f-35d3-4a42-9c1c-486f90a5bbbe",
+    "description": "Database index hits",
+    "measure": "ops/sec"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "NOC | Managed Object | Ping OK",
+    "uuid": "5b9c4d81-b82b-47cc-9a32-8a1537baf25a",
+    "description": "Ping OK",
+    "event_class__name": "NOC | Managed Object | Ping OK",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^probe$",
+            "value_re": "^ping$"
+        },
+        {
+            "key_re": "^result$",
+            "value_re": "^success$"
+        }
+    ]
+}

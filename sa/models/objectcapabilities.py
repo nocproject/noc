@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Object Capabilities
 # ----------------------------------------------------------------------
@@ -21,29 +22,62 @@ from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
 
 logger = logging.getLogger(__name__)
+=======
+##----------------------------------------------------------------------
+## Object Capabilities
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (ListField, StringField, ReferenceField,
+                                DynamicField, EmbeddedDocumentField)
+import mongoengine.signals
+## NOC modules
+from managedobject import ManagedObject
+from noc.inv.models.capability import Capability
+from noc.lib.nosql import ForeignKeyField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class CapsItem(EmbeddedDocument):
     capability = ReferenceField(Capability)
+<<<<<<< HEAD
     value = DynamicField()
     # Source name like "caps", "interface", "manual"
     source = StringField()
+=======
+    discovered_value = DynamicField()
+    local_value = DynamicField(default=None)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.capability.name
 
 
+<<<<<<< HEAD
 @on_save
 class ObjectCapabilities(Document):
     meta = {
         "collection": "noc.sa.objectcapabilities"
     }
     object = ForeignKeyField(ManagedObject, primary_key=True)
+=======
+class ObjectCapabilities(Document):
+    meta = {
+        "collection": "noc.sa.objectcapabilities",
+        "indexes": ["object"]
+    }
+    object = ForeignKeyField(ManagedObject)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     caps = ListField(EmbeddedDocumentField(CapsItem))
 
     def __unicode__(self):
         return "%s caps" % self.object.name
 
+<<<<<<< HEAD
     def on_save(self):
         cache.delete("cred-%s" % self.object.id)
 
@@ -153,3 +187,11 @@ class ObjectCapabilities(Document):
             if cn:
                 caps[cn.name] = ci.get("value")
         return caps
+=======
+##
+from noc.pm.models.probeconfig import ProbeConfig
+mongoengine.signals.post_save.connect(
+    ProbeConfig.on_change_object_caps,
+    sender=ObjectCapabilities
+)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

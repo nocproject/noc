@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # CustomerPortal client
 # ---------------------------------------------------------------------
@@ -15,6 +16,26 @@ import ujson
 import os
 import ConfigParser
 from noc.core.version import version
+=======
+##----------------------------------------------------------------------
+## CustomerPortal client
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## Third-party modules
+import requests
+## Python modules
+import os
+import ConfigParser
+from noc.lib.serialize import json_encode
+from noc.lib.version import (get_branch, get_tip,
+                             get_os_brand, get_os_version,
+                             get_versions, get_solutions)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
@@ -122,7 +143,11 @@ class CPClient(object):
         auth = None
         if self.account_name and self.account_password:
             auth = (self.account_name, self.account_password)
+<<<<<<< HEAD
         r = ujson.dumps(r)
+=======
+        r = json_encode(r)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         logger.debug("JSON-RPC REQUEST: %s", r)
         try:
             req = requests.post(
@@ -204,9 +229,15 @@ class CPClient(object):
         self.account_password = password
         try:
             self.account_uuid = self.account_info()["uuid"]
+<<<<<<< HEAD
         except CPClient.Error as e:
             logging.error("Error attaching account: %s", e)
             raise self.Error(e)
+=======
+        except CPClient.Error, why:
+            logging.error("Error attaching account: %s", why)
+            raise self.Error(why)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         self.write_config()
         logger.info("Account %s has been attached", name)
 
@@ -255,9 +286,15 @@ class CPClient(object):
             raise self.Error("System is not registred")
         return self.call(self.UPGRADE_SERVICE, "upgrade",
                          self.system_uuid,
+<<<<<<< HEAD
                          version.os_brand, version.os_version,
                          version.branch, version.changeset,
                          version.package_versions, [], status, log)
+=======
+                         get_os_brand(), get_os_version(),
+                         get_branch(), get_tip(),
+                         get_versions(), get_solutions(), status, log)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def report_crashinfo(self, crashinfo):
         if not self.has_system():
@@ -270,4 +307,8 @@ class CPClient(object):
         if not self.has_system():
             raise self.Error("System is not registred")
         return self.call(self.PASTE_SERVICE, "create",
+<<<<<<< HEAD
                          subject, data, syntax, ttl, public)
+=======
+                         subject, data, syntax, ttl, public)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

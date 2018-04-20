@@ -1,0 +1,7 @@
+<b>Date:</b> {{ts}}
+<table border="1">
+    <tr><th>TimePattern</th><th>Result</th></tr>
+    {{#each result}}
+        <tr><td>{{name}}</td><td>{{#if result}}+{{else}}-{{/if}}</td></tr>
+    {{/each}}
+</table>

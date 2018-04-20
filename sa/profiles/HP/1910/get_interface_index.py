@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_interface_index
 # ---------------------------------------------------------------------
@@ -14,13 +15,34 @@ import re
 class Script(BaseScript):
     name = "HP.1910.get_interface_index"
     interface = IGetIfIndex
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_interface_index
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetIfIndex
+import re
+
+
+class Script(NOCScript):
+    name = "HP.1910.get_interface_index"
+    implements = [IGetIfIndex]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(
         r"Interface = \S+, Ifindex = (?P<index>\d+)")
 
     def execute(self, interface):
 
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 interface = interface.replace('Gi ', 'GigabitEthernet')
                 interface = interface.replace('Vl ', 'Vlan-interface')

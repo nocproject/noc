@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # TimePatternTerm database model
 # ---------------------------------------------------------------------
@@ -15,6 +16,23 @@ from .timepattern import TimePattern
 from noc.lib.timepattern import TimePattern as TP
 
 
+=======
+##----------------------------------------------------------------------
+## TimePatternTerm database model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from timepattern import TimePattern
+from noc.lib.timepattern import TimePattern as TP
+
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class TimePatternTerm(models.Model):
     """
     Time pattern terms

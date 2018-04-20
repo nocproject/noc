@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | PSU | PSU Recovered #3 (SYSLOG)",
+    "uuid": "6b41369b-7d01-43a4-8f6f-c3edc9059b5d",
+    "description": "UPS: A power supply unit (PSU) fault no longer exists. 0x0A08",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>A power supply unit \\(PSU\\)) fault no longer exists. 0x0A08"
+        }
+    ]
+}

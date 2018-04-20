@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.SCOS.get_inventory
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 class Script(BaseScript):
     name = "Cisco.SCOS.get_inventory"
     interface = IGetInventory
+=======
+##----------------------------------------------------------------------
+## Cisco.SCOS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+
+
+class Script(NOCScript):
+    name = "Cisco.SCOS.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
@@ -50,6 +70,10 @@ class Script(BaseScript):
                         part_no = pid
 
             if not part_no:
+<<<<<<< HEAD
+=======
+                print "!!! UNKNOWN: ", match.groupdict()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             else:
                 if not vendor:
@@ -137,4 +161,8 @@ class Script(BaseScript):
             # Fan module
             return "FAN", name.split()[-1], pid
         # Unknown
+<<<<<<< HEAD
         return None, None, None
+=======
+        return None, None, None
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

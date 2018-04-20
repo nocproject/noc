@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.ping
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "Linksys.SPS2xx.ping"
     interface = IPing
+=======
+##----------------------------------------------------------------------
+## Linksys.SPS2xx.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IPing
+
+
+class Script(NOCScript):
+    name = "Linksys.SPS2xx.ping"
+    implements = [IPing]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received), \d+% packet loss$",

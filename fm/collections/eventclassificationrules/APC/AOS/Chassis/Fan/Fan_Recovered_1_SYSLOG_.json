@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | Fan | Fan Recovered #1 (SYSLOG)",
+    "uuid": "d17d6053-fe3d-44b3-80d4-604bb169bbe3",
+    "description": "UPS: A base module fan fault no longer exists. 0x013A",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>A base module fan) fault no longer exists. 0x013A"
+        }
+    ]
+}

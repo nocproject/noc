@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Enumeration model
 # ---------------------------------------------------------------------
@@ -10,6 +11,19 @@
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, UUIDField
 # Python modules
+=======
+##----------------------------------------------------------------------
+## Enumeration model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DictField, UUIDField
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 
@@ -17,8 +31,12 @@ from noc.lib.prettyjson import to_json
 class Enumeration(Document):
     meta = {
         "collection": "noc.enumerations",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "json_collection": "fm.enumerations"
     }
 

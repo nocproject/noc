@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # OS.Linux.get_version
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ class Script(BaseScript):
     name = "OS.Linux.get_version"
     cache = True
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## OS.Linux.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "OS.Linux.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_distrib = re.compile(r"^NAME=+(?P<distrib>.+)$", re.MULTILINE)
     rx_release = re.compile(
@@ -172,4 +193,8 @@ class Script(BaseScript):
                 r["attributes"].update({"Serial Number": serial})
         except NameError:
             pass
+<<<<<<< HEAD
         return r
+=======
+        return r
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

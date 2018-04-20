@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Form widgets
 # ---------------------------------------------------------------------
@@ -33,6 +34,63 @@ class AutoCompleteTags(Input):
         initial = ujson.dumps(initial)
         html = super(AutoCompleteTags, self).render(name, value, attrs)
         js = """<script type="text/javascript">
+=======
+##----------------------------------------------------------------------
+## Form widgets
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django import forms
+from django.forms.widgets import Input, PasswordInput
+from django.http import HttpResponse
+from django.utils.safestring import mark_safe
+from django.utils.html import escape
+from django.core.validators import EMPTY_VALUES
+# NOC modules
+from lib.nosql import Document, ObjectId
+from noc.lib.serialize import json_encode
+
+##
+##
+##
+class LabelWidget(Input):
+    def render(self, name, value, attrs=None):
+        return value
+    
+
+class PasswordWidget(PasswordInput):
+    class Media:
+        js = ["/static/js/toggle_password.js"]
+    
+    def render(self, name, value, attrs=None):
+        r= mark_safe("<span>") + super(PasswordWidget, self).render(name, value, attrs)
+        return r + mark_safe(u""" <input type="checkbox" onclick="toggle_password('id_%s',this.checked);"> Show password </span>""" % name)
+
+##
+## Autocomplete Tags
+##
+class AutoCompleteTags(Input):
+    input_type="text"
+    class Media:
+        css={
+            "all": ["/static/css/jquery.tokeninput.css"]
+        }
+        js=["/static/js/jquery.tokeninput.js"]
+
+    def render(self,name,value=None,attrs=None):
+        initial=[]
+        if value:
+            for v in value:
+                v=v.strip()
+                if v:
+                    initial+=[{"id":v,"name":v}]
+        initial=json_encode(initial)
+        html=super(AutoCompleteTags,self).render(name,value,attrs)
+        js="""<script type="text/javascript">
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         $(document).ready(function() {
             $("#%s").tokenInput("%s",{
                 prePopulate: %s,
@@ -53,6 +111,7 @@ class AutoCompleteTags(Input):
                 });
             });
         </script>
+<<<<<<< HEAD
         """ % (attrs["id"], "/main/tag/ac_lookup/", initial)
         return mark_safe("\n".join([html, js]))
 
@@ -66,8 +125,35 @@ def lookup(request, func):
     return HttpResponse("\n".join(result), mimetype='text/plain')
 
 
+=======
+        """%(attrs["id"], "/main/tag/ac_lookup/", initial)
+        return mark_safe("\n".join([html,js]))
+
+
+##
+## Autocomplete lookup function:
+## 
+def lookup(request,func):
+    result=[]
+    if request.GET and "q" in request.GET:
+        q=request.GET["q"]
+        if len(q)>2: # Ignore requests shorter than 3 letters
+            result=list(func(q))
+    return HttpResponse("\n".join(result), mimetype='text/plain')
+
+
+##
+## Render tag list for an object
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 def tags_list(o):
     tags = o.tags or []
     s = (["<ul class='tags-list'>"] +
          ["<li>%s</li>" % t for t in tags] + ["</ul>"])
     return "".join(s)
+<<<<<<< HEAD
+=======
+
+## Load at the end to prevent circular dependencies
+from noc.lib.app.site import site
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

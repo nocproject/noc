@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Chassis | CPU | CPU Usage Above Threshold (SYSLOG)",
+    "uuid": "962e74ad-2140-4316-940d-f5c1cd4620ac",
+    "description": "Jul 19 2012 18:11:45 kie-bro-smp-r3-t4-asw0 %%01VOSCPU/4/CPU_USAGE_HIGH(l)[1009]:The CPU is overloaded, and the tasks with top three CPU occupancy are CFM (51%), INFO(11%), tCOUNTER.0(10%). (CpuUsage=99%, Threshold=95%)",
+    "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "CPU_USAGE_HIGH"
+        }
+    ]
+}

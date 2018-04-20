@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Unknown | Ignore #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6eeec66a-49a2-469c-8b26-e50705816e7b",
+    "description": "Oct  2 19:08:00 2000 3Com Baseline Switch %%10MSTP/2/PFWD(l): Instance 0's GigabitEthernet1/0/2 has been set to forwarding state!",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10MSTP/2/PFWD\\(l\\):\\s+Instance 0's .+ has been set to forwarding state!$"
+        }
+    ]
+}

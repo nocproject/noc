@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_copper_tdr_diag
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
 class Script(BaseScript):
     name = "Cisco.IOS.get_copper_tdr_diag"
     interface = IGetCopperTDRDiag
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_copper_tdr_diag
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+import time
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetCopperTDRDiag
+
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_copper_tdr_diag"
+    implements = [IGetCopperTDRDiag]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_link = re.compile(r"^(?P<interface>\S+)\s+(auto|10M|100M|1000M)\s+Pair (?P<pair>A|B|C|D)\s+(?P<length>\d+)\s+\+/\- (?P<variance>\d+)\s+meters (?:Pair (?:A|B|C|D)|N/A)\s+(?P<status>Normal|Open|Short)")
     rx_pair = re.compile(r"^\s+Pair (?P<pair>A|B|C|D)\s+(?P<length>\d+)\s+\+/\- (?P<variance>\d+)\s+meters (?:Pair (?:A|B|C|D)|N/A)\s+(?P<status>Normal|Open|Short)")
     rx_link_nc = re.compile(r"^(?P<interface>\S+)\s+(auto|10M|100M|1000M)\s+Pair (?P<pair>A|B|C|D)\s+N/A\s+N/A\s+(?P<status>Not Completed)")

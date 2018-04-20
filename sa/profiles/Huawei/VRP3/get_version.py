@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Huawei.VRP3.get_version
 # sergey.sadovnikov@gmail.com
@@ -17,6 +18,26 @@ class Script(BaseScript):
     name = "Huawei.VRP3.get_version"
     cache = True
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## Huawei.VRP3.get_version
+## sergey.sadovnikov@gmail.com
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+import re
+
+
+class Script(NOCScript):
+    name = "Huawei.VRP3.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_ver = re.compile(r"\S+\s+(?P<version>\S+)\((?P<platform>\S+)\) Version , RELEASE SOFTWARE")
     rx_bios = re.compile(r"\s+BIOS Version is\s+(?P<bios>\S+)")
 

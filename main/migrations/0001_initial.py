@@ -20,7 +20,11 @@ class Migration:
             INSERT INTO auth_user(username,first_name,last_name,email,password,is_staff,is_active,is_superuser,last_login,date_joined)
             VALUES(%s,%s,%s,%s,%s,%s,%s,%s,'now','now')""",
             ["admin","NOC","Admin","test@example.com","sha1$235c1$e8e4d9aaa945e1fae62a965ee87fbf7b4a185e3f",True,True,True])
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         pass
 

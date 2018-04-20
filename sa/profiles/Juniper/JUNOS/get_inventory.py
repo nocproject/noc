@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_inventory
 # ---------------------------------------------------------------------
@@ -10,13 +11,32 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
+=======
+##----------------------------------------------------------------------
+## Juniper.JUNOS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.validators import is_int
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Juniper.JUNOS.get_inventory"
     interface = IGetInventory
+=======
+class Script(NOCScript):
+    name = "Juniper.JUNOS.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     UNKNOWN_XCVR = "NoName | Transceiver | Unknown"
 
@@ -50,8 +70,11 @@ class Script(BaseScript):
 
     IGNORED = {
         "RE": set([
+<<<<<<< HEAD
             "750-026468",  # EX2200-24T-4G
             "750-026331",  # EX2200-48P-4G, POE
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "750-033065",  # EX4200-24T, 8 POE
             "750-021258",  # EX4200-24F
             "750-034594",  # RE-SRX210HE
@@ -67,6 +90,7 @@ class Script(BaseScript):
         Parse "show chassis hardware"
         and yeld name, revision, part_no, serial, description
         """
+<<<<<<< HEAD
         for line in v.splitlines():
             line = line.strip()
             if not line:
@@ -79,6 +103,20 @@ class Script(BaseScript):
                 yield match.groups()
             else:
                 match = self.rx_chassis.search(line)
+=======
+        for l in v.splitlines():
+            l = l.strip()
+            if not l:
+                continue
+            if l.startswith("node"):
+                self.chassis_no = l.strip()[4:-1]
+                continue
+            match = self.rx_part.search(l)
+            if match:
+                yield match.groups()
+            else:
+                match = self.rx_chassis.search(l)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if match:
                     rev = match.group("revision")
                     yield ("Chassis", rev, None,
@@ -89,8 +127,12 @@ class Script(BaseScript):
         v = self.cli("show chassis hardware")
         objects = []
         chassis_sn = set()
+<<<<<<< HEAD
         p_hardware = self.parse_hardware(v)
         for name, revision, part_no, serial, description in p_hardware:
+=======
+        for name, revision, part_no, serial, description in self.parse_hardware(v):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             builtin = False
             # Detect type
             t, number = self.get_type(name)
@@ -126,10 +168,14 @@ class Script(BaseScript):
             elif serial == "BUILTIN" or serial in chassis_sn:
                 builtin = True
                 part_no = []
+<<<<<<< HEAD
             if (
                 t == "CHASSIS" and number is None and
                 self.chassis_no is not None
             ):
+=======
+            if t == "CHASSIS" and number is None and self.chassis_no is not None:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 number = self.chassis_no
             # Submit object
             objects += [{
@@ -169,7 +215,11 @@ class Script(BaseScript):
             # SFP+-10G-LR
             t, s, m = n
         else:
+<<<<<<< HEAD
             self.logger.error("Cannot detect transceiver type: '%s'",
                               description)
+=======
+            self.error("Cannot detect transceiver type: '%s'" % description)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return self.UNKNOWN_XCVR
         return "NoName | Transceiver | %s | %s %s" % (s, t, m)

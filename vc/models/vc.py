@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VC model
 # ---------------------------------------------------------------------
@@ -39,6 +40,34 @@ id_lock = Lock()
     ("ip.Prefix", "vc")
 ])
 @full_text_search
+=======
+##----------------------------------------------------------------------
+## VC model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## Django modules
+from django.db import models
+## Third-party modules
+from mongoengine.queryset import Q as MEQ
+## NOC modules
+from error import InvalidLabelException, MissedLabelException
+from vcdomain import VCDomain
+from noc.main.models import ResourceState, Style
+from noc.project.models.project import Project
+from noc.lib.fields import TagsField
+from noc.lib.app.site import site
+
+## Regular expressions
+rx_vc_underline = re.compile("\s+")
+rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VC(models.Model):
     """
     Virtual circuit
@@ -67,8 +96,11 @@ class VC(models.Model):
                               null=True)
     tags = TagsField("Tags", null=True, blank=True)
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def __unicode__(self):
         s = u"%s %d" % (self.vc_domain, self.l1)
         if self.l2:
@@ -76,6 +108,7 @@ class VC(models.Model):
         s += u": %s" % self.name
         return s
 
+<<<<<<< HEAD
     @classmethod
     @cachedmethod(operator.attrgetter("_id_cache"),
                   key="vc-id-%s",
@@ -87,6 +120,8 @@ class VC(models.Model):
         else:
             return None
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_absolute_url(self):
         return site.reverse("vc:vc:change", self.id)
 

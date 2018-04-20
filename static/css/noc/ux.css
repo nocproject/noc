@@ -27,7 +27,10 @@
 
 .noc-label-required {
     font-weight: bold !important;
+<<<<<<< HEAD
     color: #c0392b;
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 }
 
 .noc-const {
@@ -71,6 +74,7 @@
     display: inline-block;
     position: relative;
     zoom:1; /* IE */
+<<<<<<< HEAD
     -moz-border-radius: 7px;
     -webkit-border-radius: 7px;
     border-radius: 7px;
@@ -95,3 +99,16 @@
 .x-summary {
     color: #7f8c8d;
 }
+=======
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    o-border-radius: 5px;
+    khtml-border-radius: 5px;
+    border: 1px solid #CAD8F3;
+    padding: 0px 2px 0px 2px !important;
+    margin: 0px 1px 0px 0px;
+    background-color: #DEE7F8;
+    cursor: default;
+}
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

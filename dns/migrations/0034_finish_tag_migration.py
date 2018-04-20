@@ -16,4 +16,8 @@ class Migration:
             db.execute("CREATE INDEX x_%s_tags ON \"%s\" USING GIN(\"tags\")" % (m, m))
 
     def backwards(self):
+<<<<<<< HEAD
         pass
+=======
+        pass
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

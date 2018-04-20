@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Supertel.K2X.set_switchport
 # ---------------------------------------------------------------------
@@ -15,6 +16,26 @@ from noc.lib.text import list_to_ranges
 class Script(BaseScript):
     name = "Supertel.K2X.set_switchport"
     interface = ISetSwitchport
+=======
+##----------------------------------------------------------------------
+## Supertel.K2X.set_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import ISetSwitchport
+from noc.lib.text import list_to_ranges
+
+
+class Script(NOCScript):
+    name = "Supertel.K2X.set_switchport"
+    implements = [ISetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, configs, protect_switchport=True, protect_type=True,
                 debug=False):

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # SubInterface model
@@ -9,6 +10,19 @@
 # NOC modules
 from noc.lib.nosql import (Document, PlainReferenceField,
                            ForeignKeyField, StringField,
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## SubInterface model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.nosql import (Document, PlainReferenceField,
+                           ForeignKeyField, StringField, BooleanField,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                            ListField, IntField)
 from forwardinginstance import ForwardingInstance
 from interface import Interface
@@ -42,18 +56,26 @@ TUNNEL_TYPES = (
 class SubInterface(Document):
     meta = {
         "collection": "noc.subinterfaces",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [
             ("managed_object", "ifindex"),
             ("managed_object", "vlan_ids"),
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
+<<<<<<< HEAD
             "enabled_afi",
             {
                 "fields": ["ipv4_addresses"],
                 "sparse": True
             }
+=======
+            "enabled_afi"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
     }
     interface = PlainReferenceField(Interface)

@@ -1,0 +1,13 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Run Map/Reduce Task</h1>
+<div class="module">
+<FORM METHOD="POST">
+    <TABLE WIDTH="100%">
+        <caption>Task parameters</caption>
+        {{form.as_table}}
+    </TABLE>
+    <INPUT TYPE="submit" VALUE="Run">
+</FORM>
+</div>
+{% endblock %}

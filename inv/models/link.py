@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Link model
@@ -18,6 +19,25 @@ from noc.core.model.decorator import on_delete, on_save
 
 @on_delete
 @on_save
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Link model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from collections import defaultdict
+## Third-party modules
+from mongoengine import signals
+## NOC modules
+from noc.lib.nosql import Document, PlainReferenceListField, StringField
+from interface import Interface
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class Link(Document):
     """
     Network links.
@@ -28,6 +48,7 @@ class Link(Document):
     """
     meta = {
         "collection": "noc.links",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [
@@ -80,6 +101,17 @@ class Link(Document):
         self.linked_objects = sorted(set(i.managed_object.id for i in self.interfaces))
         self.linked_segments = sorted(set(i.managed_object.segment.id for i in self.interfaces))
         self.type = self.get_type()
+=======
+        "allow_inheritance": False,
+        "indexes": ["interfaces"]
+    }
+
+    interfaces = PlainReferenceListField(Interface)
+    discovery_method = StringField()
+
+    def __unicode__(self):
+        return u"(%s)" % ", ".join([unicode(i) for i in self.interfaces])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def contains(self, iface):
         """
@@ -94,7 +126,11 @@ class Link(Document):
         Check link is point-to-point link
         :return:
         """
+<<<<<<< HEAD
         return self.type == "p" or self.type == "a"
+=======
+        return len(self.interfaces) == 2
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @property
     def is_lag(self):
@@ -102,7 +138,19 @@ class Link(Document):
         Check link is unresolved LAG
         :return:
         """
+<<<<<<< HEAD
         return self.type == "p" or self.type == "a"
+=======
+        if self.is_ptp:
+            return True
+        d = defaultdict(int)  # object -> count
+        for i in self.interfaces:
+            d[i.managed_object.id] += 1
+        if len(d) != 2:
+            return False
+        k = d.keys()
+        return d[k[0]] == d[k[1]]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @property
     def is_broadcast(self):
@@ -118,6 +166,7 @@ class Link(Document):
         Check link is looping to same object
         :return:
         """
+<<<<<<< HEAD
         return len(self.linked_objects) == 1
 
     @property
@@ -132,6 +181,12 @@ class Link(Document):
             return i
 
         return [q(iface) for iface in self._data.get("interfaces", [])]
+=======
+        if not self.is_ptp:
+            return False
+        i1, i2 = self.interfaces
+        return i1.managed_object == i2.managed_object
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def other(self, interface):
         """
@@ -149,6 +204,7 @@ class Link(Document):
         """
         return self.other(interface)[0]
 
+<<<<<<< HEAD
     def touch(self, method=None):
         """
         Touch last_seen
@@ -227,3 +283,33 @@ class Link(Document):
             else:
                 return "M"
         return "u"
+=======
+    @classmethod
+    def object_links(cls, object):
+        ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
+        return cls.objects.filter(interfaces__in=ifaces)
+
+    @classmethod
+    def object_links_count(cls, object):
+        ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
+        return cls.objects.filter(interfaces__in=ifaces).count()
+
+    @classmethod
+    def _update_pop_links(cls, sender, document, target=None, **kwargs):
+        for i in document.interfaces:
+            for o in Object.get_managed(i.managed_object):
+                pop = o.get_pop()
+                if pop:
+                    refresh_schedule(
+                        "main.jobs", "inv.update_pop_links",
+                        key=pop.id, delta=5)
+
+
+signals.pre_delete.connect(Link._update_pop_links, sender=Link)
+signals.post_save.connect(Link._update_pop_links, sender=Link)
+
+
+##
+from object import Object
+from noc.lib.scheduler.utils import refresh_schedule
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

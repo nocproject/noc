@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_cdp_neighbors
 # ---------------------------------------------------------------------
@@ -20,11 +21,32 @@ class Script(BaseScript):
         r"Interface: (?P<local_interface>\S+),\s+Port ID \(outgoing port\): "
         r"(?P<remote_interface>\S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     oid_cdp = "1.3.6.1.4.1.9.9.23.1.2.1.1"
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_cdp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetCDPNeighbors
+import re
+
+
+class Script(noc.sa.script.Script):
+    name = "Cisco.IOS.get_cdp_neighbors"
+    implements = [IGetCDPNeighbors]
+    rx_entry = re.compile(r"Device ID: (?P<device_id>\S+).+?"
+        r"Interface: (?P<local_interface>\S+),\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         device_id = self.scripts.get_fqdn()
         # Get neighbors
         neighbors = []
+<<<<<<< HEAD
         if self.has_snmp():
             try:
                 # Get interface status
@@ -53,12 +75,18 @@ class Script(BaseScript):
                     }
             except self.snmp.TimeOutError:
                 pass
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for match in self.rx_entry.finditer(self.cli("show cdp neighbors detail")):
             neighbors += [{
                 "device_id": match.group("device_id"),
                 "local_interface": match.group("local_interface"),
+<<<<<<< HEAD
                 "remote_interface": match.group("remote_interface"),
                 "remote_ip": match.group("remote_ip")
+=======
+                "remote_interface": match.group("remote_interface")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }]
         return {
             "device_id": device_id,

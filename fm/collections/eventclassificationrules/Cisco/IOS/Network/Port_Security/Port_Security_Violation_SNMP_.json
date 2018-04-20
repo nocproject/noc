@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Network | Port Security | Port Security Violation (SNMP)",
+    "uuid": "f339bc93-abfe-437e-9578-9f12d61d47d5",
+    "description": "CISCO-PORT-SECURITY-MIB::cpsSecureMacAddrViolation",
+    "event_class__name": "Network | Port Security | Port Security Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-PORT-SECURITY-MIB::cpsIfSecureLastMacAddress\\.\\d+$",
+            "value_re": "^(?P<mac__bin_to_mac>\\S+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifName\\.\\d+$",
+            "value_re": "^(?P<interface>\\S+)$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-PORT-SECURITY-MIB::cpsSecureMacAddrViolation$"
+        }
+    ]
+}

@@ -9,6 +9,7 @@
 # ---------------------------------------------------------------------
 """
 """
+<<<<<<< HEAD
 from noc.core.profile.base import BaseProfile
 
 
@@ -47,3 +48,18 @@ class Profile(BaseProfile):
     @classmethod
     def get_interface_type(cls, name):
         return cls.INTERFACE_TYPES.get(name[0])
+=======
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
+
+class Profile(noc.sa.profiles.Profile):
+    name = "Cisco.ASA"
+    supported_schemes = [TELNET, SSH]
+    pattern_more = "^<--- More --->"
+    pattern_unpriveleged_prompt = r"^\S+?>"
+    command_super = "enable"
+    pattern_prompt = r"^\S+?#"
+    command_more = " "
+    command_disable_pager = "terminal pager 0"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

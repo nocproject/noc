@@ -1,0 +1,16 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Delete prefix {{prefix.prefix}}?</h1>
+
+Yo're trying to delete prefix {{prefix.prefix}} ({{prefix.description}})<br/>
+<b>Warning!</b> This action cannot be undone!<br/><br/>
+<form method="POST" action="" >{% csrf_token %}
+    <div>
+        <input type="radio" name="scope" value="p" checked /> Delete prefix and save and relink the nested prefixes and addresses?<br/>
+        <input type="radio" name="scope" value="r" /> Delete prefix and all nested prefixes, addresses and permissions?<br/>
+        
+        <input type="submit" value="Delete" />
+        <input type="button" value="Cancel" onclick="document.location='{% url ip:ipam:vrf_index prefix.vrf.id prefix.afi prefix.prefix %}';"/>
+    </div>
+</form>
+{% endblock %}

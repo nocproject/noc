@@ -1,0 +1,35 @@
+{
+    "name": "Network | UDLD | UDLD Protocol Error Detected",
+    "$collection": "fm.alarmclasses",
+    "uuid": "f5da2fd6-f712-43f1-b788-16812f844239",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+            }
+        }
+    ],
+    "vars": [
+        {
+            "name": "interface",
+            "description": "interface"
+        },
+        {
+            "name": "description",
+            "description": "Interface description",
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "subject_template": "UDLD Protocol Error Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "UDLD Protocol Error Detected on {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

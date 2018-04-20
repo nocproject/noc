@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------
 # Huawei.VRP.get_oam_status
 # ---------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.sa.interfaces.base import MACAddressParameter
 class Script(BaseScript):
     name = "Huawei.VRP.get_oam_status"
     interface = IGetOAMStatus
+=======
+##----------------------------------------------------------------
+## Huawei.VRP.get_oam_status
+##----------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetOAMStatus
+from noc.sa.interfaces.base import MACAddressParameter
+
+
+class Script(NOCScript):
+    name = "Huawei.VRP.get_oam_status"
+    implements = [IGetOAMStatus]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(r"""
     \s+Interface:\s+(?P<interface>.+?)\n
@@ -34,7 +55,11 @@ class Script(BaseScript):
             raise self.NotSupportedError
         oams = re.findall(self.oam_splitter, v)
         if not oams:
+<<<<<<< HEAD
             return []
+=======
+            raise self.NotSupportedError
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for l in oams:
             match = self.rx_line.match(l)
             if match:
@@ -49,4 +74,8 @@ class Script(BaseScript):
                     "remote_mac": mac,
                     "caps": ["L"]
                 }]
+<<<<<<< HEAD
         return r
+=======
+        return r
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

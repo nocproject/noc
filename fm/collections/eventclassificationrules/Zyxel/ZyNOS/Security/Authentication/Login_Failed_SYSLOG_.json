@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "27aa9b73-9303-496d-8ca9-a0ab0c082799",
+    "description": "Login failed",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "auth(entication)?: \\S+ authentication failure \\[username: (?P<user>.*)\\]$"
+        }
+    ]
+}

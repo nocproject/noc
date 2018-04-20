@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_oam_status
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
 class Script(BaseScript):
     name = "Cisco.IOSXR.get_oam_status"
     interface = IGetOAMStatus
+=======
+##----------------------------------------------------------------------
+## Cisco.IOSXR.get_oam_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetOAMStatus
+
+
+class Script(NOCScript):
+    name = "Cisco.IOSXR.get_oam_status"
+    implements = [IGetOAMStatus]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(
         r"^\s*(?P<interface>\S+)\s+"

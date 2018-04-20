@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 
 # Third-party modules
 from pymongo.errors import BulkWriteError
 from pymongo import UpdateOne
 # NOC modules
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.nosql import get_db
 
 
@@ -18,6 +21,7 @@ class Migration:
                 parent = ".".join(m["name"].split(".")[:-1])
                 has_children[parent] = True
         if has_children:
+<<<<<<< HEAD
             bulk = []
             for name in has_children:
                 bulk += [UpdateOne({"name": name}, {
@@ -36,3 +40,16 @@ class Migration:
 
     def backwards(self):
         pass
+=======
+            bulk = metrics.initialize_unordered_bulk_op()
+            for name in has_children:
+                bulk.find({"name": name}).update({
+                    "$set": {
+                        "has_children": has_children[name]
+                    }
+                })
+            bulk.execute()
+
+    def backwards(self):
+        pass
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_switchport
 # ---------------------------------------------------------------------
@@ -20,12 +21,37 @@ class Script(BaseScript):
         r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
         r"(?P<mode>ACCESS|TRUNK)\s+(?P<access_vlan>\d+)\s+"
         r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)?\n", re.MULTILINE)
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Cisco_CLI.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+import re
+
+
+class Script(NOCScript):
+    name = "DLink.DxS_Cisco_CLI.get_switchport"
+    implements = [IGetSwitchport]
+    rx_line = re.compile(
+        r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
+        r"(?P<mode>ACCESS|TRUNK)\s+(?P<access_vlan>\d+)\s+"
+        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\d+\S+)?\n", re.MULTILINE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []
         c = self.cli("show interfaces switchport")
+<<<<<<< HEAD
         c = self.rx_cont.sub("," , c)  # Unwind continuation lines
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for match in self.rx_line.finditer(c):
             trunk = match.group("mode") == "TRUNK"
             pvid = None

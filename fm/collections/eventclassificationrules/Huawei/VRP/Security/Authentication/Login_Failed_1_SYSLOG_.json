@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Security | Authentication | Login Failed #1 (SYSLOG)",
+    "uuid": "32b8da21-ae96-40ba-8a62-b6dcb49df6bb",
+    "description": "Feb  3 2012 09:30:30 switch-test %%01SHELL/4/TELNETFAILED(l)[419]:Failed to login through telnet. (Ip=192.168.220.252, UserName=test, Times=1)",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Failed to login through telnet\\. \\([Ii][Pp]=(?P<ip>\\S+), UserName=(?P<user>.*), Times=\\d+(\\)|,)"
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlarmRootCauseCondition model
 # ---------------------------------------------------------------------
@@ -7,17 +8,35 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## AlarmRootCauseCondition model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import noc.lib.nosql as nosql
 
 
 class AlarmRootCauseCondition(nosql.EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
     }
 
     name = nosql.StringField(required=True)
     root = nosql.PlainReferenceField("fm.AlarmClass")
+=======
+        "allow_inheritance": False
+    }
+
+    name = nosql.StringField(required=True)
+    root = nosql.PlainReferenceField("AlarmClass")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     window = nosql.IntField(required=True)
     condition = nosql.StringField(default="True")
     match_condition = nosql.DictField(required=True)

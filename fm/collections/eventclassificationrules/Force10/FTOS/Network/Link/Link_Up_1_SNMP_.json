@@ -1,0 +1,25 @@
+{
+    "name": "Force10 | FTOS | Network | Link | Link Up #1 (SNMP)",
+    "uuid": "07f364b8-89b5-4f40-928b-80696b9ee2f7",
+    "description": "Link Up",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^F10-CHASSIS-MIB::chAlarmVarString$",
+            "value_re": "^OSTATE_UP: Changed interface state to up:\\s+(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^SNMPv2-MIB::snmpTraps$"
+        }
+    ]
+}

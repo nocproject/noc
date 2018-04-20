@@ -1,4 +1,5 @@
 #!./bin/python
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Rebuild inter-pop links
 # ----------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Rebuild inter-pop links
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##---------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.inv.models.link import Link

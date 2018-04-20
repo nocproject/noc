@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | STP | STP Port State Changed (SYSLOG)",
+    "uuid": "c9563172-74f5-4982-ba75-8b7f6f1f17a3",
+    "description": "NOTICE: Spanning Tree port status change (Instance:0, Port:14) Discarding->Learning",
+    "event_class__name": "Network | STP | STP Port State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Spanning Tree port status change \\(Instance:\\d+, Port:(?P<interface>\\d+)\\) \\S+->(?P<state__enum__stp_state>\\S+)$"
+        }
+    ]
+}

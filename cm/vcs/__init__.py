@@ -16,6 +16,7 @@ from noc.config import config
 
 
 class VCSRegistry(Registry):
+<<<<<<< HEAD
     """
     Registry for VCS
     """
@@ -30,6 +31,18 @@ class VCSRegistry(Registry):
 vcs_registry = VCSRegistry()
 
 
+=======
+    name="VCSRegistry"
+    subdir="vcs"
+    classname="VCS"
+    exclude_daemons = ["debug-script"]
+    def get(self,repo):
+        return self[config.get("cm","vcs_type")](repo)
+vcs_registry=VCSRegistry()
+##
+##
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class Revision(object):
     def __init__(self, revision, date):
         self.revision = revision
@@ -65,7 +78,10 @@ class VCS(object):
     def check_repository(self):
         if not os.path.exists(self.repo):
             os.makedirs(self.repo)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     # Add file to repository
     def add(self, path):
         self.cmd(["add", path])
@@ -98,12 +114,20 @@ class VCS(object):
                               cwd=self.repo)
 
     # Returns an output of cmd
+<<<<<<< HEAD
     def cmd_out(self, cmd, check=True):
         if check:
             self.check_repository()
         p = subprocess.Popen([config.get("cm", "vcs_path")] + cmd,
                              stdout=subprocess.PIPE, cwd=self.repo)
         d = p.stdout.read()
+=======
+    def cmd_out(self,cmd,check=True):
+        if check:
+            self.check_repository()
+        p=subprocess.Popen([config.get("cm","vcs_path")]+cmd,stdout=subprocess.PIPE,cwd=self.repo)
+        d=p.stdout.read()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return d
 
     # Returns a list of Revision
@@ -115,6 +139,7 @@ class VCS(object):
         raise Exception("Not supported")
 
     # Returns revision of the file
+<<<<<<< HEAD
     def get_revision(self, path, revision=None):
         raise Exception("Not supported")
 
@@ -124,6 +149,15 @@ class VCS(object):
 
     # Returns current revision
     def get_current_revision(self, path):
+=======
+    def get_revision(self,path,revision=None):
+        raise Exception("Not supported")
+    # Annotatea file. Retuns a list of (revision,line)
+    def annotate(self,path):
+        raise Exception("Not supported")
+    # Returns current revision
+    def get_current_revision(self,path):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         raise Exception("Not supported")
 
     #

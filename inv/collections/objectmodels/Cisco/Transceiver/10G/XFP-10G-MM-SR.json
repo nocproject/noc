@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 10G | XFP-10G-MM-SR",
+    "$collection": "inv.objectmodels",
+    "uuid": "a954da85-8793-4a85-9ceb-529ffdd6bee2",
+    "vendor__code": "CISCO",
+    "description": "10GBASE-SR XFP module for MMF",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["XFP-10G-MM-SR"]
+        }
+    }
+}

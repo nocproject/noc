@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EventLog model
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## EventLog model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine import document, fields
 
 EVENT_STATE_CHOICES = [
@@ -19,8 +30,12 @@ EVENT_STATE_CHOICES = [
 
 class EventLog(document.EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     timestamp = fields.DateTimeField()
     from_status = fields.StringField(

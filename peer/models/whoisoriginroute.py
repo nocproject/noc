@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # WhoisOriginRoute model
 # ---------------------------------------------------------------------
@@ -8,6 +9,17 @@
 
 # Python modules
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## WhoisOriginRoute model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 
@@ -18,11 +30,18 @@ class WhoisOriginRoute(Document):
     """
     meta = {
         "collection": "noc.whois.origin.route",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
     }
 
     origin = StringField(primary_key=True)
+=======
+        "allow_inheritance": False
+    }
+
+    origin = StringField(primary_key=True, unique=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     routes = ListField(StringField())
 
     def __unicode__(self):

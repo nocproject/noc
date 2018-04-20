@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Datasource interface
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 import os
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Datasource interface
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.settings import INSTALLED_APPS
 
 
@@ -35,7 +48,11 @@ class DataSource(object):
         return self._data is None
 
 
+<<<<<<< HEAD
 # Load datasources
+=======
+## Load datasources
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 for app in INSTALLED_APPS:
     if app.startswith("noc."):
         if os.path.exists(os.path.join(app[4:], "datasources.py")):

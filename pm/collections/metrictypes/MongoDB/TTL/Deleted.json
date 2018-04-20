@@ -1,0 +1,6 @@
+{
+    "name": "MongoDB | TTL | Deleted",
+    "uuid": "01802e37-61da-4053-a68b-a96e348f85f0",
+    "description": "Documents deleted by TTL index",
+    "measure": "recs/s"
+}

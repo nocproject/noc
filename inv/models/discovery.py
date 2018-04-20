@@ -1,7 +1,11 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 __author__ = 'boris'
+<<<<<<< HEAD
 # NOC modules
+=======
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.nosql import (Document, StringField, ListField,
                            ForeignKeyField, DictField, DateTimeField,
                            IntField, FloatField)
@@ -11,8 +15,12 @@ from noc.sa.models.managedobject import ManagedObject
 class Discovery(Document):
     meta = {
         "collection": "noc.schedules.inv.discovery",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     job_class = StringField(db_field='jcls')

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.ping
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.ping"
     interface = IPing
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Cisco_CLI.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IPing
+import re
+
+
+class Script(NOCScript):
+    name = "DLink.DxS_Cisco_CLI.ping"
+    implements = [IPing]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_result = re.compile(
         r"^Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\)"
         r"(, round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)"

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Supertel.K2X.get_resolver_config
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetresolverconfig import IGetResolverConfig
 class Script(BaseScript):
     name = "Supertel.K2X.get_resolver_config"
     interface = IGetResolverConfig
+=======
+##----------------------------------------------------------------------
+## Supertel.K2X.get_resolver_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetResolverConfig
+
+
+class Script(NOCScript):
+    name = "Supertel.K2X.get_resolver_config"
+    implements = [IGetResolverConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_search = re.compile(r"^Default domain:\s+(?P<search>\S+)\s*$",
                            re.MULTILINE)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_switchport
 # ---------------------------------------------------------------------
@@ -14,13 +15,35 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## EdgeCore.ES.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+# Python modules
+import re
+# NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     EdgeCore.ES.get_switchport
     @todo: ES4626 support
     @todo: QinQ
     """
     name = "EdgeCore.ES.get_switchport"
+<<<<<<< HEAD
     interface = IGetSwitchport
+=======
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cache = True
 
     rx_interface_3526 = re.compile(r"Information of (?P<interface>[^\n]+?)\n",
@@ -34,7 +57,10 @@ class Script(BaseScript):
     rx_interface_swport_4626 = re.compile(
         r"(?P<interface>[^\n]+)\n.*?Mode\s+:(?P<mode>\S+).*?Port VID\s+:(?P<pvid>\d+).*?",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
+<<<<<<< HEAD
     rx_member = re.compile(r"Member port of trunk \d+")
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []
@@ -53,6 +79,7 @@ class Script(BaseScript):
            self.match_version(platform__contains="3528") or
            self.match_version(platform__contains="3552") or
            self.match_version(platform__contains="4612") or
+<<<<<<< HEAD
            self.match_version(platform__contains="ECS4210") or
            self.match_version(platform__contains="ECS4100")):
             cmd = self.cli("show interface switchport")
@@ -60,6 +87,12 @@ class Script(BaseScript):
                 matchint = self.rx_interface_3526.search(block)
                 if not matchint:
                     continue
+=======
+           self.match_version(platform__contains="ECS4210")):
+            cmd = self.cli("show interface switchport")
+            for block in cmd.rstrip("\n\n").split("\n\n"):
+                matchint = self.rx_interface_3526.search(block)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 name = matchint.group("interface")
                 swport = {
                     "interface": name,
@@ -69,12 +102,20 @@ class Script(BaseScript):
                     "tagged": "",
                     "status": interface_status.get(name, False)
                 }
+<<<<<<< HEAD
                 if self.rx_member.search(block):
+=======
+                if re.search(r"Member port of trunk \d+", block):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     # skip portchannel members
                     r += [swport]
                     continue
                 match = self.rx_interface_swport_3526.search(block)
+<<<<<<< HEAD
                 if match and match.group("mode").lower() in ["hybrid", "trunk"]:
+=======
+                if match.group("mode").lower() in ["hybrid", "trunk"]:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     swport["802.1Q Enabled"] = "True"
                 # QinQ
                 mqinq = self.rx_interface_qinq_3526.search(block)
@@ -110,7 +151,11 @@ class Script(BaseScript):
                           "tagged": "",
                           "status": interface_status.get(name, False)}
                 if re.search(r"Type :Aggregation member", block):
+<<<<<<< HEAD
                     # skip portchannel members
+=======
+                # skip portchannel members
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     r += [swport]
                     continue
                 if match.group("mode").lower() == "trunk":

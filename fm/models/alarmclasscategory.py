@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # FM module database models
 # ---------------------------------------------------------------------
@@ -7,14 +8,28 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## FM module database models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import noc.lib.nosql as nosql
 
 
 class AlarmClassCategory(nosql.Document):
     meta = {
         "collection": "noc.alartmclasscategories",  # @todo: Fix bug
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = nosql.StringField()
     parent = nosql.ObjectIdField(required=False)

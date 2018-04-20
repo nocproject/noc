@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Interface model
@@ -20,14 +21,35 @@ from pymongo import ReadPreference
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Interface model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC Modules
+from noc.lib.nosql import (Document, ForeignKeyField, StringField,
+    IntField, BooleanField, PlainReferenceField, ListField)
+from interfaceprofile import InterfaceProfile
+from coverage import Coverage
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.interfaces import MACAddressParameter
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
+<<<<<<< HEAD
 from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
+=======
+from noc.lib.solutions import get_probe_config
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -39,16 +61,20 @@ INTERFACE_PROTOCOLS = (IGetInterfaces.returns
                        .element.choices)
 
 
+<<<<<<< HEAD
 logger = logging.getLogger(__name__)
 
 
 @on_delete
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class Interface(Document):
     """
     Interfaces
     """
     meta = {
         "collection": "noc.interfaces",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [
@@ -57,6 +83,13 @@ class Interface(Document):
             ("managed_object", "ifindex"),
             "service",
             "aggregated_interface"
+=======
+        "allow_inheritance": False,
+        "indexes": [
+            ("managed_object", "name"),
+            "mac",
+            ("managed_object", "ifindex")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
     }
     managed_object = ForeignKeyField(ManagedObject)
@@ -69,14 +102,21 @@ class Interface(Document):
     enabled_protocols = ListField(StringField(
         choices=[(x, x) for x in INTERFACE_PROTOCOLS]
     ), default=[])
+<<<<<<< HEAD
     profile = PlainReferenceField(InterfaceProfile,
                                   default=InterfaceProfile.get_default_profile)
+=======
+    # @todo: admin status + oper status
+    profile = PlainReferenceField(InterfaceProfile,
+        default=InterfaceProfile.get_default_profile)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     # profile locked on manual user change
     profile_locked = BooleanField(required=False, default=False)
     #
     project = ForeignKeyField(Project)
     state = ForeignKeyField(ResourceState)
     vc_domain = ForeignKeyField(VCDomain)
+<<<<<<< HEAD
     # Current status
     admin_status = BooleanField(required=False)
     oper_status = BooleanField(required=False)
@@ -93,6 +133,11 @@ class Interface(Document):
     nri_name = StringField()
     #
     service = ReferenceField(Service)
+=======
+    # Coverage
+    coverage = PlainReferenceField(Coverage)
+    technologies = ListField(StringField())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     PROFILE_LINK = "profile"
 
@@ -100,6 +145,7 @@ class Interface(Document):
         return u"%s: %s" % (self.managed_object.name, self.name)
 
     def save(self, *args, **kwargs):
+<<<<<<< HEAD
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
             self.name = self.managed_object.get_profile().convert_interface_name(self.name)
         if (not hasattr(self, "_changed_fields") or "mac" in self._changed_fields) and self.mac:
@@ -112,6 +158,14 @@ class Interface(Document):
             ServiceSummary.refresh_object(self.managed_object)
 
     def on_delete(self):
+=======
+        self.name = self.managed_object.profile.convert_interface_name(self.name)
+        if self.mac:
+            self.mac = MACAddressParameter().clean(self.mac)
+        super(Interface, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Remove all subinterfaces
         for si in self.subinterface_set.all():
             si.delete()
@@ -121,6 +175,11 @@ class Interface(Document):
             self.unlink()
         # Flush MACDB
         MACDB.objects.filter(interface=self.id).delete()
+<<<<<<< HEAD
+=======
+        # Remove interface
+        super(Interface, self).delete(*args, **kwargs)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @property
     def link(self):
@@ -128,6 +187,7 @@ class Interface(Document):
         Return Link instance or None
         :return:
         """
+<<<<<<< HEAD
         if self.type == "aggregated":
             q = {
                 "interfaces__in": [self.id] + [i.id for i in self.lag_members]
@@ -137,6 +197,9 @@ class Interface(Document):
                 "interfaces": self.id
             }
         return Link.objects.filter(**q).first()
+=======
+        return Link.objects.filter(interfaces=self.id).first()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @property
     def is_linked(self):
@@ -144,6 +207,7 @@ class Interface(Document):
         Check interface is linked
         :returns: True if interface is linked, False otherwise
         """
+<<<<<<< HEAD
         if self.type == "aggregated":
             q = {
                 "interfaces": {
@@ -155,6 +219,9 @@ class Interface(Document):
         return bool(Link._get_collection().with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED
         ).find_one(q))
+=======
+        return bool(Link.objects.filter(interfaces=self.id).limit(1).count())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def unlink(self):
         """
@@ -164,7 +231,11 @@ class Interface(Document):
         link = self.link
         if link is None:
             raise ValueError("Interface is not linked")
+<<<<<<< HEAD
         if link.is_ptp or link.is_lag:
+=======
+        if link.is_ptp:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             link.delete()
         else:
             raise ValueError("Cannot unlink non p-t-p link")
@@ -173,6 +244,7 @@ class Interface(Document):
         """
         Create p-t-p link with other interface
         Raise ValueError if either of interface already connected.
+<<<<<<< HEAD
         :param other: Other Iface for link
         :param method: Linking method
         :type other: Interface
@@ -195,6 +267,11 @@ class Interface(Document):
             link.save()
             return link
 
+=======
+        :type other: Interface
+        :returns: Link instance
+        """
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Try to check existing LAG
         el = Link.objects.filter(interfaces=self.id).first()
         if el and other not in el.interfaces:
@@ -214,6 +291,7 @@ class Interface(Document):
                     else:
                         el.delete()
                 #
+<<<<<<< HEAD
                 link = Link(
                     interfaces=[self, other],
                     discovery_method=method
@@ -222,6 +300,12 @@ class Interface(Document):
                 return link
             elif other.type == "aggregated" and other.profile.allow_lag_mismatch:
                 return link_mismatched_lag(other, self)
+=======
+                link = Link(interfaces=[self, other],
+                    discovery_method=method)
+                link.save()
+                return link
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             else:
                 raise ValueError("Cannot connect %s interface to %s" % (
                     self.type, other.type))
@@ -236,16 +320,24 @@ class Interface(Document):
                     raise ValueError("LAG size mismatch")
                 # Create link
                 if l_members:
+<<<<<<< HEAD
                     link = Link(
                         interfaces=l_members + r_members,
                         discovery_method=method
                     )
+=======
+                    link = Link(interfaces=l_members + r_members,
+                        discovery_method=method)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     link.save()
                     return link
                 else:
                     return
+<<<<<<< HEAD
             elif self.profile.allow_lag_mismatch:
                 return link_mismatched_lag(self, other)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             else:
                 raise ValueError("Cannot connect %s interface to %s" % (
                     self.type, other.type))
@@ -266,15 +358,25 @@ class Interface(Document):
         except ManagedObject.DoesNotExist:
             raise ValueError("Invalid manged object: %s" % o)
         # Normalize interface name
+<<<<<<< HEAD
         i = mo.get_profile().convert_interface_name(i)
         # Look for interface
         iface = Interface.objects.filter(managed_object=mo.id,
                                          name=i).first()
+=======
+        i = mo.profile.convert_interface_name(i)
+        # Look for interface
+        iface = Interface.objects.filter(managed_object=mo.id,
+            name=i).first()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return iface
 
     @property
     def subinterface_set(self):
+<<<<<<< HEAD
         from .subinterface import SubInterface
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return SubInterface.objects.filter(interface=self.id)
 
     @property
@@ -293,6 +395,7 @@ class Interface(Document):
             return self.managed_object.vc_domain
         return VCDomain.get_default()
 
+<<<<<<< HEAD
     @property
     def status(self):
         """
@@ -381,3 +484,31 @@ class Interface(Document):
 from noc.sa.models.servicesummary import ServiceSummary
 from .link import Link
 from .macdb import MACDB
+=======
+    def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        # Fallback
+        if config == "interface__name":
+            return self.name
+        elif config == "interface__ifindex":
+            if self.ifindex is None:
+                raise ValueError("No ifindex for %s" % self)
+            else:
+                return self.ifindex
+        try:
+            return self.managed_object.get_probe_config(config)
+        except ValueError:
+            pass
+        # Fallback to interface profile
+        return self.profile.get_probe_config(config)
+
+
+## Avoid circular references
+from subinterface import SubInterface
+from link import Link
+from macdb import MACDB
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

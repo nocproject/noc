@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "41f0f728-96ff-46ca-9ded-f554a7871574",
+    "description": "%AAA-W-REJECT: New telnet connection for user admin, source 10.8.4.19 destination 10.8.22.13 REJECTED",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-W-REJECT: New (ssh|telnet|http) connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+  ?REJECTED"
+        }
+    ]
+}

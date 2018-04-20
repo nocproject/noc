@@ -1,15 +1,25 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2014 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Smart.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 from __future__ import with_statement
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
@@ -18,6 +28,16 @@ from noc.core.ip import IPv4
 class Script(BaseScript):
     name = "DLink.DxS_Smart.get_interfaces"
     interface = IGetInterfaces
+=======
+import noc.sa.script
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+
+
+class Script(noc.sa.script.Script):
+    name = "DLink.DxS_Smart.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_ipif = re.compile(r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n"
     r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n",
@@ -37,11 +57,19 @@ class Script(BaseScript):
         #        for m in pc["members"]:
         #            portchannel_members[m] = (i, t)
         admin_status = {}
+<<<<<<< HEAD
         if self.has_snmp():
             try:
                 for n, s in self.snmp.join_tables(
                         "1.3.6.1.2.1.31.1.1.1.1",
                         "1.3.6.1.2.1.2.2.1.7"):  # IF-MIB
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                for n, s in self.snmp.join_tables(
+                        "1.3.6.1.2.1.31.1.1.1.1",
+                        "1.3.6.1.2.1.2.2.1.7", bulk=True):  # IF-MIB
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if n[:3] == 'Aux' or n[:4] == 'Vlan' \
                     or n[:11] == 'InLoopBack':
                         continue

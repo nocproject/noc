@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Chassis | Fan | Fan Recovered (SYSLOG)",
+    "uuid": "ce29ef15-8094-4bc3-9ae1-fe0c77da7644",
+    "description": "INFO: Unit 1, Back Fan recovered",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) recovered$"
+        }
+    ]
+}

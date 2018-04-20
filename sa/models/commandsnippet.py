@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # CommandSnippet model
 # ----------------------------------------------------------------------
@@ -18,6 +19,26 @@ from django.template import Template, Context
 from noc.main.models.permission import Permission
 from .managedobjectselector import ManagedObjectSelector
 from noc.core.model.fields import TagsField
+=======
+##----------------------------------------------------------------------
+## CommandSnippet model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+import shlex
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+from django.template import Template, Context
+## NOC modules
+from noc.main.models import Permission
+from managedobjectselector import ManagedObjectSelector
+from noc.lib.fields import TagsField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.app.site import site
 
 

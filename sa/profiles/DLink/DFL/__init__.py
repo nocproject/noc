@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: D-Link
 # OS:     DFL
@@ -14,6 +15,28 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DFL"
+=======
+##----------------------------------------------------------------------
+## Vendor: D-Link
+## OS:     DFL
+## Compatible:
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.profiles import Profile as NOCProfile
+
+
+class Profile(NOCProfile):
+    name = "DLink.DFL"
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
+    pattern_password = "[Pp]ass[Ww]ord:"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     pattern_syntax_error = r"Error: Unknown command:"
     pattern_prompt = r"^(?P<hostname>\S+(:\S+)*):/> "
     command_more = "a"

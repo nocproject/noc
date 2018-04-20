@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_cdp_neighbors
 # ----------------------------------------------------------------------
@@ -22,11 +23,34 @@ class Script(BaseScript):
         r"Port ID\s*\(outgoing port\):\s*(?P<remote_interface>\S+).+?"
         r"IP (?P<remote_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
         re.MULTILINE | re.DOTALL)
+=======
+##----------------------------------------------------------------------
+## Cisco.SMB.get_cdp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetCDPNeighbors
+
+
+class Script(NOCScript):
+    name = "Cisco.SMB.get_cdp_neighbors"
+    implements = [IGetCDPNeighbors]
+    rx_entry = re.compile(r"Device-ID:\s*(?P<device_id>\S+).+?"
+        r"Interface: (?P<local_interface>\S+),\s+Port ID\s*\(outgoing port\):\s*(?P<remote_interface>\S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         device_id = self.scripts.get_fqdn()
         # Get neighbors
         neighbors = []
+<<<<<<< HEAD
         c = self.cli("show cdp neighbors detail")
         for match in self.rx_entry.finditer(c):
             neighbors += [{
@@ -34,6 +58,13 @@ class Script(BaseScript):
                 "local_interface": match.group("local_interface"),
                 "remote_interface": match.group("remote_interface"),
                 "remote_ip": match.group("remote_ip")
+=======
+        for match in self.rx_entry.finditer(self.cli("show cdp neighbors detail")):
+            neighbors += [{
+                "device_id": match.group("device_id"),
+                "local_interface": match.group("local_interface"),
+                "remote_interface": match.group("remote_interface")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }]
         return {
             "device_id": device_id,

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## DLink.DxS.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.profiles.DLink.DxS import DES3200
 from noc.sa.profiles.DLink.DxS import DES3500
 from noc.sa.profiles.DLink.DxS import DGS3120
@@ -19,16 +32,23 @@ from noc.sa.profiles.DLink.DxS import DGS3620
 import re
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "DLink.DxS.get_mac_address_table"
     interface = IGetMACAddressTable
 
+=======
+class Script(NOCScript):
+    name = "DLink.DxS.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(\S+\s+)?"
         r"(?P<mac>[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-[0-9A-F]{2}-"
         r"[0-9A-F]{2}-[0-9A-F]{2})\s+"
         r"(?P<interfaces>\S+)\s+(?P<type>\S+)\s*(\S*\s*)?$", re.MULTILINE)
 
+<<<<<<< HEAD
     def execute_snmp(self, interface=None, vlan=None, mac=None):
         if mac is not None:
             mac = mac.lower()
@@ -73,12 +93,16 @@ class Script(BaseScript):
         return r
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
+=======
+    def execute(self, interface=None, vlan=None, mac=None):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         cmd = "show fdb"
         if mac is not None:
             cmd += " mac_address %s" % mac
         if interface is not None:
             cmd += " port %s" % interface
         if vlan is not None:
+<<<<<<< HEAD
             if (
                 self.match_version(DES3200, version__gte="1.33") or
                 self.match_version(DGS3120, version__gte="1.00.00") or
@@ -87,6 +111,14 @@ class Script(BaseScript):
                 self.match_version(DGS3600, version__gte="2.52") or
                 self.match_version(DGS3620, version__gte="1.00.00")
             ):
+=======
+            if self.match_version(DES3200, version__gte="1.33") \
+            or self.match_version(DGS3120, version__gte="1.00.00") \
+            or self.match_version(DGS3400, version__gte="2.70") \
+            or self.match_version(DGS3420, version__gte="1.00.00") \
+            or self.match_version(DGS3600, version__gte="2.52") \
+            or self.match_version(DGS3620, version__gte="1.00.00"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 cmd += " vlanid %d" % vlan
             else:
                 if self.match_version(DES3500, version__gte="6.00"):
@@ -104,6 +136,7 @@ class Script(BaseScript):
                 "mac": match.group("mac"),
                 "interfaces": [match.group("interfaces")],
                 "type": {
+<<<<<<< HEAD
                     "dynamic": "D",
                     "static": "S",
                     "self": "C",
@@ -117,5 +150,16 @@ class Script(BaseScript):
                     "del_on_reset": "D",
                     "blockbyaddrbind": "D",
                     "unblockbyaddrbind": "D"}[mactype]
+=======
+                    "dynamic":"D",
+                    "static":"S",
+                    "self":"S",
+                    "permanent":"S",
+                    "deleteontimeout":"D",
+                    "del_on_timeout":"D",
+                    "deleteonreset":"D",
+                    "del_on_reset":"D",
+                    "blockbyaddrbind":"D"}[mactype]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }]
         return r

@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Cisco.IOSXR.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -19,11 +29,23 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "Cisco.IOSXR.get_interfaces"
     interface = IGetInterfaces
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
+
+
+class Script(NOCScript):
+    name = "Cisco.IOSXR.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     types = {
         "packet over sonet/sdh": "physical",
         "gigabitethernet/ieee 802.3 interface(s)": "physical",
+<<<<<<< HEAD
         "fortygige": "physical",
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "tengige": "physical",
         "gigabitethernet": "physical",
         "management ethernet": "management",
@@ -48,9 +70,12 @@ class Script(BaseScript):
     rx_bundle_member = re.compile(r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$",
         re.IGNORECASE)
 
+<<<<<<< HEAD
     rx_ifindex = re.compile(r"^ifName : (?P<name>\S+)\s+ifIndex : (?P<ifindex>\d+)")
 
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute(self):
         ifaces = {}
         ifindex = self.get_ifindex_map()
@@ -94,7 +119,11 @@ class Script(BaseScript):
                 hw = match.group("hw").lower()
                 t = self.types.get(hw, "unknown")
                 if t == "unknown":
+<<<<<<< HEAD
                     self.logger.error("Unknown hardware type: %s" % hw)
+=======
+                    self.error("Unknown hardware type: %s" % hw)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 ifaces[current]["type"] = t
                 mac = match.group("mac")
                 if mac:
@@ -205,6 +234,7 @@ class Script(BaseScript):
         Retrieve name -> ifindex map
         """
         m = {}
+<<<<<<< HEAD
         if self.has_snmp():
             try:
                 # IF-MIB::ifDescr
@@ -223,4 +253,14 @@ class Script(BaseScript):
                     if match.group("name").startswith("ControlEthernet"):
                         continue
                     m[self.profile.convert_interface_name(match.group("name"))] = match.group("ifindex")
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                # IF-MIB::ifDescr
+                t = self.snmp.get_table("1.3.6.1.2.1.2.2.1.2", bulk=True)
+                for i in t:
+                    m[self.profile.convert_interface_name(t[i])] = i
+            except self.snmp.TimeOutError:
+                pass
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return m

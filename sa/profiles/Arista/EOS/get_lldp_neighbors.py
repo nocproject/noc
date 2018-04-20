@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Arista.EOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 class Script(BaseScript):
     name = "Arista.EOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## Arista.EOS.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+
+
+class Script(NOCScript):
+    name = "Arista.EOS.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_isep = re.compile(r"^Interface\s+", re.MULTILINE)
     rx_nsep = re.compile(r"^\s+Neighbor\s+", re.MULTILINE)

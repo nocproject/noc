@@ -6,7 +6,11 @@
 //----------------------------------------------------------------------
 
 // NOC namespace
+<<<<<<< HEAD
 Ext.namespace("NOC", "NOC.render", "NOC.msg");
+=======
+Ext.namespace("NOC", "NOC.render");
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 //
 // Custom column renderers
@@ -58,6 +62,7 @@ Ext.apply(NOC.render, {
         };
     },
 
+<<<<<<< HEAD
     Tooltip: function(fmt) {
         var tpl = new Ext.XTemplate(fmt);
         return function(value, meta, record) {
@@ -81,6 +86,8 @@ Ext.apply(NOC.render, {
         }
     },
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     Clickable: function(value) {
         return "<a href='#' class='noc-clickable-cell'>" + value + "</a>";
     },
@@ -158,10 +165,13 @@ Ext.apply(NOC.render, {
         if(isNaN(val)) {
             return "";
         }
+<<<<<<< HEAD
         if (val < 1) {
             // Msec
             return "" + val*1000 + "ms";
         }
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if(val < 60) {
             // XXs
             return "" + val + "s";
@@ -184,7 +194,11 @@ Ext.apply(NOC.render, {
         if (v === null || v === undefined) {
             return "";
         }
+<<<<<<< HEAD
         if(v >= 10000000) {
+=======
+        if(v > 10000000) {
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return Math.round(v / 1000000) + "M";
         }
         if(v > 1000) {
@@ -200,8 +214,12 @@ Ext.apply(NOC.render, {
     },
 
     htmlEncode: function(v) {
+<<<<<<< HEAD
         if(v) return Ext.util.Format.htmlEncode(v);
         return "NULL";
+=======
+        return Ext.util.Format.htmlEncode(v);
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     },
 
     //
@@ -238,6 +256,7 @@ Ext.apply(NOC.render, {
         header = header.join("");
         return function(value) {
             var r = [header];
+<<<<<<< HEAD
             if(value) {
                 for(var i = 0; i < value.length; i++) {
                     var row = value[i];
@@ -252,6 +271,17 @@ Ext.apply(NOC.render, {
             }
             else {
                 r.push("<tr><td></td></tr>");
+=======
+            for(var i = 0; i < value.length; i++) {
+                var row = value[i];
+                r.push("<tr>");
+                for(var j = 0; j < fields.length; j++) {
+                    r.push("<td>");
+                    r.push(renderers[j](row[fields[j]]));
+                    r.push("</td>");
+                }
+                r.push("</tr>");
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }
             r.push("</table>");
             return r.join("");
@@ -260,6 +290,7 @@ Ext.apply(NOC.render, {
 
     JSON: function(v) {
         return Ext.encode(v);
+<<<<<<< HEAD
     },
 
     Badge: function(v) {
@@ -368,6 +399,8 @@ Ext.apply(NOC.msg, {
             paddingY: 0,
             border: false
         });
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 });
 
@@ -389,11 +422,29 @@ NOC.mrt = function(options) {
 };
 //
 NOC.error = function(msg) {
+<<<<<<< HEAD
     NOC.msg.failed.apply(this, arguments);
 };
 //
 NOC.info = function(msg) {
     NOC.msg.info.apply(this, arguments);
+=======
+    Ext.MessageBox.show({
+        title: "Error!",
+        msg: Ext.String.format.apply(this, arguments),
+        buttons: Ext.MessageBox.OK,
+        icon: Ext.MessageBox.ERROR
+    });
+};
+//
+NOC.info = function(msg) {
+    Ext.MessageBox.show({
+        title: "Info",
+        msg: Ext.String.format.apply(this, arguments),
+        buttons: Ext.MessageBox.OK,
+        icon: Ext.MessageBox.INFO
+    });
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 };
 //
 NOC.hasPermission = function(perm) {
@@ -436,11 +487,27 @@ NOC.listToRanges = function(lst) {
 //validate function def
 //
 NOC.is_vlanid = function(value) {
+<<<<<<< HEAD
     return (value >= 1 && value <= 4095)
 };
 //
 NOC.is_asn = function(value) {
     return (value > 0)
+=======
+    if (value >= 1 && value <= 4095) {
+        return true;
+    } else {
+        return false;
+    }
+};
+//
+NOC.is_asn = function(value) {
+    if (value > 0) {
+        return true;
+    } else {
+        return false;
+    }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 };
 //
 NOC.is_ipv4 = function(value) {
@@ -483,9 +550,13 @@ Ext.form.Field.prototype.msgTarget = 'side';
 //
 // Custom VTypes
 //
+<<<<<<< HEAD
 Ext.define("NOC.form.field.VTypes", {
     override: "Ext.form.field.VTypes",
 
+=======
+Ext.apply(Ext.form.field.VTypes, {
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     // VLAN ID checking
     VlanID: function(val, field) {
         try {
@@ -536,25 +607,43 @@ Ext.define("NOC.form.field.VTypes", {
     FQDN: function(val, field){
         var me = this;
         try {
+<<<<<<< HEAD
             return me.FQDNRe.test(val);
+=======
+            return me.FQDNMask.test(val);
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         } catch(e) {
             return false;
         }
     },
+<<<<<<< HEAD
     FQDNRe: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
     FQDNText: "Not valid FQDN",
+=======
+    FQDNText: "Not valid FQDN",
+    FQDNMask: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     // AS-set check
     ASSET: function(val, field){
         var me = this;
         try {
+<<<<<<< HEAD
             return me.ASSETRe.test(val);
+=======
+            return me.ASSETMask.test(val);
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         } catch(e) {
             return false;
         }
     },   
+<<<<<<< HEAD
     ASSETRe: /^AS(-\w+)+$/i,
     ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
+=======
+    ASSETText: "Not valid ASSET, must be in form AS-SET or AS-MEGA-SET",
+    ASSETMask: /^AS(-\w+)+$/i,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     // AS/AS-set check
     ASorASSET: function(val, field){
@@ -566,16 +655,26 @@ Ext.define("NOC.form.field.VTypes", {
     // Color check
     color: function(val, field) {
         var me = this;
+<<<<<<< HEAD
         return me.colorRe.test(val);
     },
     colorRe: /^[0-9a-f]{6}$/i,
+=======
+        return me.colorMask.test(val);
+    },
+    colorMask: /^[0-9a-f]{6}$/i,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     colorText: "Invalid color, must be 6 hexadecimals",
 
     password: function(val, field) {
         if(field.peerField) {
             var form = field.up("form"),
                 peer = form.getForm().findField(field.peerField);
+<<<<<<< HEAD
             return (val === peer.getValue());
+=======
+            return (val == peer.getValue());
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         }
         return true;
     },
@@ -590,6 +689,7 @@ Ext.define("NOC.form.field.VTypes", {
             return false;
         }
     },
+<<<<<<< HEAD
     jsonText: "Invalid JSON",
 
     // Color check
@@ -599,6 +699,88 @@ Ext.define("NOC.form.field.VTypes", {
     },
     handlerRe: /^noc(\.[a-zA-Z_][a-zA-Z0-9_]*)+$/,
     handlerText: "Invalid handler format"
+=======
+    jsonText: "Invalid JSON"
+});
+
+//
+// Handlebars helpers
+//
+Handlebars.registerHelper("debug", function(opt) {
+  console.log("Current context: ", this);
+
+  if (arguments.length > 1) {
+    console.log("Value:", opt);
+  }
+});
+
+Handlebars.registerHelper("join", function(context, block) {
+    return context.map(function(v) {
+        return block.fn(v);
+    }).join(", ");
+});
+
+Handlebars.registerHelper("formatDuration", NOC.render.Duration);
+
+Handlebars.registerHelper("grid", function(val) {
+    var r = [],
+        xset = {},
+        yset = {},
+        values = {},
+        i, j, y, v,
+        xv = [],
+        yv = [];
+    // Get all unique x and y
+    for(i in val) {
+        v = val[i];
+        if(!xset[v.x]) {
+            xset[v.x] = true;
+            xv.push(v.x);
+        }
+        if(!yset[v.y]) {
+            yset[v.y] = true;
+            yv.push(v.y);
+        }
+        if(!values[v.x]) {
+            values[v.x] = {};
+        }
+        values[v.x][v.y] = v.v;
+    }
+    xv = xv.sort();
+    yv = yv.sort();
+    //
+    // Build table
+    //
+    r.push("<table border='1'>");
+    // Push header
+    r.push("<tr><td></td>");
+    for(i in xv) {
+        r.push("<th>");
+        r.push(Handlebars.Utils.escapeExpression(xv[i]));
+        r.push("</th>");
+    }
+    r.push("</tr>");
+    // Push rows
+    for(i in yv) {
+        y = yv[i];
+        r.push("<tr>");
+        r.push("<th>");
+        r.push(Handlebars.Utils.escapeExpression(y));
+        r.push("</th>");
+        for(j in xv) {
+            v = xv[j];
+            r.push("<td>");
+            if(values[v] && values[v][y] !== undefined) {
+                r.push(Handlebars.Utils.escapeExpression(values[v][y]));
+            }
+            r.push("</td>");
+        }
+        r.push("</tr>");
+    }
+    r.push("</table>");
+    // return r.join("");
+    return new Handlebars.SafeString(r.join(""));
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 });
 
 //

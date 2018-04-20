@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Unknown | Ignore FIB refresh (SYSLOG)",
+    "uuid": "6e62dee4-2f54-416a-9681-1aac9e2d7afa",
+    "description": "Jul 20 2012 12:51:42 od-agg-1-port %%01FIB/3/REFRESH_START(l): FIB refreshing start, the refresh group map is 4294967295!",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "FIB/\\d+/REFRESH_\\w+\\(l\\): FIB refreshing \\w+, the refresh group map is \\d+"
+        }
+    ]
+}

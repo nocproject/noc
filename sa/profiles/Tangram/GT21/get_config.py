@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Tangram.GT21.get_config
 # ---------------------------------------------------------------------
@@ -36,3 +37,18 @@ class Script(BaseScript):
             return parsing.toprettyxml()
 
         return self.cleaned_config(config)
+=======
+__author__ = 'boris'
+import noc.sa.script
+from noc.sa.interfaces import IGetConfig
+from xml.dom.minidom import *
+
+class Script(noc.sa.script.Script):
+    name = "Tangram.GT21.get_config"
+    implements = [IGetConfig]
+
+    def execute(self):
+        config = self.http.get("/um/backup.binc")
+        parsing = parseString(config)        
+        return parsing.toprettyxml()     
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

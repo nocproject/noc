@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #8 (SYSLOG)",
+    "uuid": "aded488a-11d1-4ecf-bb28-e9ca7f994f9e",
+    "description": "%C6KENV-SP-4-PSFANFAILED: the fan in power supply 1 has failed",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C6KENV-SP-4-PSFANFAILED: the (?P<name>fan in power supply \\d+) has failed"
+        }
+    ]
+}

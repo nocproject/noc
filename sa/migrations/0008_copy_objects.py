@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
@@ -9,6 +10,18 @@ import os
 # Django modules
 from django.db import models
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Django modules
+from django.db import models
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from south.db import db
 
 
@@ -54,7 +67,11 @@ class Migration:
         # Migrate ObjectNotify
         ObjectGroup = db.mock_model(model_name='ObjectGroup', db_table='sa_objectgroup', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         AdministrativeDomain = db.mock_model(model_name='AdministrativeDomain', db_table='sa_administrativedomain', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         db.add_column("cm_objectnotify","administrative_domain",models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain",blank=True,null=True))
         db.add_column("cm_objectnotify","group",models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True))
         for id,category_id,location_id in db.execute("SELECT id,category_id,location_id FROM cm_objectnotify"):

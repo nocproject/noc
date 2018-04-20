@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
@@ -17,6 +18,21 @@ class Migration(object):
 
 
 SQL = """CREATE OR REPLACE
+=======
+
+from south.db import db
+from noc.ip.models import *
+
+class Migration:
+    
+    def forwards(self):
+        db.execute(SQL)
+    
+    def backwards(self):
+        db.execute("DROP FUNCTION free_ip(INTEGER,CIDR)")
+
+SQL="""CREATE OR REPLACE
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 FUNCTION free_ip(INTEGER,CIDR)
 RETURNS INET
 AS
@@ -28,7 +44,11 @@ DECLARE
     prev_ip  INET;
 BEGIN
     prev_ip=host(network(p_prefix))::inet;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     FOR r IN
         SELECT ip
         FROM ip_ipv4address

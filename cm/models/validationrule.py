@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Validation Rule
 # ---------------------------------------------------------------------
@@ -9,15 +10,35 @@
 # Python modules
 import logging
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## Validation Rule
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, DictField,
                                 ListField, EmbeddedDocumentField)
 from mongoengine.signals import pre_delete
+<<<<<<< HEAD
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.nosql import ForeignKeyField
 from noc.core.handler import get_handler
+=======
+## NOC modules
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.lib.nosql import ForeignKeyField
+from noc.lib.solutions import get_solution
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +71,13 @@ class ObjectItem(EmbeddedDocument):
 
 class ValidationRule(Document):
     meta = {
+<<<<<<< HEAD
         "collection": "noc.validationrules",
         "strict": False,
         "auto_create_index": False
+=======
+        "collection": "noc.validationrules"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     name = StringField(unique=True)
@@ -88,7 +113,11 @@ class ValidationRule(Document):
 
     def get_handler(self):
         if self.handler:
+<<<<<<< HEAD
             return get_handler(self.handler)
+=======
+            return get_solution(self.handler)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         else:
             return None
 

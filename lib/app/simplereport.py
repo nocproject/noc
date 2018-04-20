@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # SimpleReport implementation
 # ---------------------------------------------------------------------
@@ -21,6 +22,27 @@ from noc.config import config
 from noc.lib.widgets import tags_list
 from .reportapplication import ReportApplication
 
+=======
+##----------------------------------------------------------------------
+## SimpleReport implementation
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import cStringIO
+import csv
+import decimal
+import types
+import pprint
+## Django modules
+from django.utils.dateformat import DateFormat
+## NOC modules
+from reportapplication import *
+from noc import settings
+from noc.lib.widgets import tags_list
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 INDENT = "    "
 
@@ -78,7 +100,11 @@ class ReportNode(object):
         """
         return ""
 
+<<<<<<< HEAD
     def to_csv(self, delimiter=","):
+=======
+    def to_csv(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Return CSV presentation of Node
         """
@@ -98,11 +124,18 @@ class Report(ReportNode):
     def append_section(self, s):
         self.sections += [s]
 
+<<<<<<< HEAD
     def to_xml(self):
         """
         Return XML code for report
         :return:
         """
+=======
+    ##
+    ## Return XML code for report
+    ##
+    def to_xml(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         s = [self.format_opening_xml_tag(name=self.name)]
         s += [self.indent("<sections>")]
         s += [self.indent(x.to_xml(), 2) for x in self.sections]
@@ -110,6 +143,7 @@ class Report(ReportNode):
         s += [self.format_closing_xml_tag()]
         return "\n".join(s)
 
+<<<<<<< HEAD
     def to_html(self):
         """
         Return HTML code for report
@@ -123,6 +157,19 @@ class Report(ReportNode):
         :return:
         """
         return "\n".join([x for x in [s.to_csv(delimiter=delimiter) for s in self.sections] if x])
+=======
+    ##
+    ## Return HTML code for report
+    ##
+    def to_html(self):
+        return "\n".join([s.to_html() for s in self.sections])
+
+    ##
+    ## Return CSV for report
+    ##
+    def to_csv(self):
+        return "\n".join([x for x in [s.to_csv() for s in self.sections] if x])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ReportSection(ReportNode):
@@ -152,7 +199,11 @@ class TextSection(ReportSection):
         """
         if not self.text:
             return []
+<<<<<<< HEAD
         if isinstance(self.text, six.string_types):
+=======
+        if isinstance(self.text, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return [self.text]
         else:
             return self.text
@@ -178,6 +229,7 @@ class TextSection(ReportSection):
         return "\n".join(s)
 
 
+<<<<<<< HEAD
 #
 # Precomputed size multipliers
 # List of (limit, divider, suffix)
@@ -187,6 +239,17 @@ dec = decimal.Decimal(1024)
 for suffix in ["KB", "MB", "GB", "TB", "PB"]:
     SIZE_DATA += [(dec * 1024, dec, suffix)]
     dec *= 1024
+=======
+##
+## Precomputed size multipliers
+## List of (limit, divider, suffix)
+##
+SIZE_DATA = []
+l = decimal.Decimal(1024)
+for suffix in ["KB", "MB", "GB", "TB", "PB"]:
+    SIZE_DATA += [(l * 1024, l, suffix)]
+    l *= 1024
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class SafeString(unicode):
@@ -209,21 +272,34 @@ class TableColumn(ReportNode):
 
     def __init__(self, name, title=None, align=None, format=None, total=None,
                  total_label=None):
+<<<<<<< HEAD
         super(TableColumn, self).__init__(name=name)
         # self.name = name
+=======
+        self.name = name
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         self.title = title if title else name
         self.align = {"l": self.ALIGN_LEFT, "left": self.ALIGN_LEFT,
                       "r": self.ALIGN_RIGHT, "right": self.ALIGN_RIGHT,
                       "c": self.ALIGN_CENTER, "center": self.ALIGN_CENTER}[
+<<<<<<< HEAD
             align.lower()] if align else None
         self.format = getattr(self, "f_%s" % format) if isinstance(format,
                                                                    six.string_types) else format
         self.total = getattr(self, "ft_%s" % total) if isinstance(total,
                                                                   six.string_types) else total
+=======
+        align.lower()] if align else None
+        self.format = getattr(self, "f_%s" % format) if isinstance(format,
+                                                        basestring) else format
+        self.total = getattr(self, "ft_%s" % total) if isinstance(total,
+                                                        basestring) else total
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         self.total_label = total_label
         self.total_data = []
         self.subtotal_data = []
 
+<<<<<<< HEAD
     @property
     def has_total(self):
         """
@@ -254,6 +330,32 @@ class TableColumn(ReportNode):
         :param s:
         :return:
         """
+=======
+    ##
+    ## Check column has total
+    ##
+    @property
+    def has_total(self):
+        return self.total
+
+    ##
+    ## Reset sub-totals
+    ##
+    def start_section(self):
+        self.subtotal_data = []
+
+    ##
+    ## Contribute data to totals
+    ##
+    def contribute_data(self, s):
+        if self.total:
+            self.total_data += [s]
+
+    ##
+    ## Return formatted cell
+    ##
+    def format_data(self, s):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if s is None or s == "":
             return ""
         elif not self.format:
@@ -261,6 +363,7 @@ class TableColumn(ReportNode):
         else:
             return self.format(s)
 
+<<<<<<< HEAD
     def to_xml(self):
         """
         Return XML representation of column
@@ -278,6 +381,20 @@ class TableColumn(ReportNode):
         Return quoted HTML TD attributes
         :return:
         """
+=======
+    ##
+    ## Return XML representation of column
+    ##
+    def to_xml(self):
+        return self.format_opening_xml_tag(name=self.name,
+                                           align=self.align) + self.quote(
+            self.title) + self.format_closing_xml_tag()
+
+    ##
+    ## Return quoted HTML TD attributes
+    ##
+    def html_td_attrs(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         attrs = {}
         if self.align:
             if self.align & self.H_ALIGN_MASK == self.ALIGN_LEFT:
@@ -289,22 +406,36 @@ class TableColumn(ReportNode):
         return " " + " ".join(
             ["%s='%s'" % (k, self.quote(v)) for k, v in attrs.items()])
 
+<<<<<<< HEAD
     def format_html(self, s):
         """
         Render single cell
         :param s:
         :return:
         """
+=======
+    ##
+    ## Render single cell
+    ##
+    def format_html(self, s):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         d = self.format_data(s)
         if type(d) != SafeString:
             d = self.quote(d)
         return "<td%s>%s</td>" % (self.html_td_attrs(), d)
 
+<<<<<<< HEAD
     def format_html_total(self):
         """
         Render totals
         :return:
         """
+=======
+    ##
+    ## Render totals
+    ##
+    def format_html_total(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if self.total:
             total = self.format_data(self.total(self.total_data))
         elif self.total_label:
@@ -313,12 +444,19 @@ class TableColumn(ReportNode):
             total = ""
         return "<td%s><b>%s</b></td>" % (self.html_td_attrs(), total)
 
+<<<<<<< HEAD
     def format_html_subtotal(self, d):
         """
         Render subtotals
         :param d:
         :return:
         """
+=======
+    ##
+    ## Render subtotals
+    ##
+    def format_html_subtotal(self, d):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if self.total:
             total = self.format_data(self.total(d))
         elif self.total_label:
@@ -327,6 +465,7 @@ class TableColumn(ReportNode):
             total = ""
         return "<td%s><b>%s</b></td>" % (self.html_td_attrs(), total)
 
+<<<<<<< HEAD
     def f_date(self, f):
         """
         Display date according to settings
@@ -357,6 +496,30 @@ class TableColumn(ReportNode):
         :param f:
         :return:
         """
+=======
+    ##
+    ## Display date according to settings
+    ##
+    def f_date(self, f):
+        return DateFormat(f).format(settings.DATE_FORMAT)
+
+    ##
+    ## Display time according to settings
+    ##
+    def f_time(self, f):
+        return DateFormat(f).format(settings.TIME_FORMAT)
+
+    ##
+    ## Display date and time according to settings
+    ##
+    def f_datetime(self, f):
+        return DateFormat(f).format(settings.DATETIME_FORMAT)
+
+    ##
+    ## Display pretty size
+    ##
+    def f_size(self, f):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         f = decimal.Decimal(f)
         for limit, divider, suffix in SIZE_DATA:
             if f < limit:
@@ -364,6 +527,7 @@ class TableColumn(ReportNode):
         limit, divider, suffix = SIZE_DATA[-1]
         return ("%8.2%s" % (f / divider, suffix)).strip()
 
+<<<<<<< HEAD
     def f_numeric(self, f):
         """
         Display pretty numeric
@@ -373,6 +537,15 @@ class TableColumn(ReportNode):
         if not f:
             return "0"
         if isinstance(f, float):
+=======
+    ##
+    ## Display pretty numeric
+    ##
+    def f_numeric(self, f):
+        if not f:
+            return "0"
+        if type(f) == types.FloatType:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             f = str(f)
         try:
             f = decimal.Decimal(f)
@@ -380,7 +553,11 @@ class TableColumn(ReportNode):
             return "-"
         sign, digits, exp = f.as_tuple()
         if exp:
+<<<<<<< HEAD
             r = "." + "".join(map(str, digits[exp:]))
+=======
+            r = "." + "".join(map(str, digits[-exp:]))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if r == ".0":
                 r = ""
             digits = digits[:exp]
@@ -399,6 +576,7 @@ class TableColumn(ReportNode):
         Display boolean field
         """
         if f:
+<<<<<<< HEAD
             return SafeString("<i class='fa fa-check' style='color:#2ecc71'></i>")
         else:
             return SafeString("<i class='fa fa-times' style='color:#c0392b'></i>")
@@ -408,6 +586,11 @@ class TableColumn(ReportNode):
         Display url field
         """
         return SafeString("<a href=\"%s\", target=\"_blank\">Link</a>" % url)
+=======
+            return SafeString("<img src='/static/pkg/famfamfam-silk/tick.png' />")
+        else:
+            return SafeString("<img src='/static/pkg/famfamfam-silk/cross.png' />")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def f_integer(self, f):
         """
@@ -433,7 +616,11 @@ class TableColumn(ReportNode):
         """
         try:
             return SafeString(tags_list(f))
+<<<<<<< HEAD
         except Exception:
+=======
+        except:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return ""
 
     def ft_sum(self, l):
@@ -441,7 +628,11 @@ class TableColumn(ReportNode):
         Returns a sum of not-null elements
         """
         return reduce(lambda x, y: x + y,
+<<<<<<< HEAD
                       [decimal.Decimal(str(z)) for z in l if z], 0)
+=======
+            [decimal.Decimal(str(z)) for z in l if z], 0)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def ft_count(self, l):
         """
@@ -468,10 +659,17 @@ class SectionRow(object):
                 self.data[column] = [d]
 
 
+<<<<<<< HEAD
 #
 # Section containing table
 #
 #
+=======
+##
+## Section containing table
+##
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class TableSection(ReportSection):
     tag = "table"
 
@@ -479,14 +677,22 @@ class TableSection(ReportSection):
         super(ReportSection, self).__init__(name=name)
         self.columns = []
         for c in columns:
+<<<<<<< HEAD
             if isinstance(c, six.string_types) or hasattr(c, "__unicode__"):
+=======
+            if isinstance(c, basestring) or hasattr(c, "__unicode__"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 self.columns += [TableColumn(unicode(c))]
             else:
                 self.columns += [c]
         self.data = data
         self.enumerate = enumerate
         self.has_total = reduce(lambda x, y: x or y,
+<<<<<<< HEAD
                                 [c.has_total for c in self.columns],
+=======
+            [c.has_total for c in self.columns],
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                                 False)  # Check wrether table has totals
 
     def to_xml(self):
@@ -500,11 +706,18 @@ class TableSection(ReportSection):
         s += [self.format_closing_xml_tag()]
         return "\n".join(s)
 
+<<<<<<< HEAD
     def to_html(self):
         """
         Return HTML representation of table
         :return:
         """
+=======
+    ##
+    ## Return HTML representation of table
+    ##
+    def to_html(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         def render_subtotals():
             if not current_section.data:
                 return []
@@ -516,6 +729,7 @@ class TableSection(ReportSection):
             s += ["</tr>"]
             return s
 
+<<<<<<< HEAD
         s = [
             "<script type='text/javascript' src='/static/js/jquery.table2CSV.js'></script>",
             "<form id='report' action='/main/desktop/dlproxy/' method='POST'>",
@@ -549,6 +763,12 @@ class TableSection(ReportSection):
             "});",
             "</script>",
             "<table class='report-table' summary='%s'>" % self.quote(self.name)
+=======
+        t_id = "reporttable-%d" % id(self)
+        s = [
+            "<script type='text/javascript' src='/static/js/jquery.table2CSV.js'></script>",
+            "<table  id='%s' class='report-table' summary='%s'>" % (t_id, self.quote(self.name))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
         # Render header
         s += ["<thead>"]
@@ -570,6 +790,7 @@ class TableSection(ReportSection):
                 if type(row) == SectionRow:
                     # Display section row
                     if (current_section and self.has_total and
+<<<<<<< HEAD
                             current_section.subtotal):
                         # Display totals from previous sections
                         s += render_subtotals()
@@ -579,6 +800,13 @@ class TableSection(ReportSection):
                                   "font-weight:bold",
                                   "background: #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x",
                                   "color:white;'>"]),
+=======
+                        current_section.subtotal):
+                        # Display totals from previous sections
+                        s += render_subtotals()
+                    s += [
+                        "<tr><td colspan=%d style='margin: 0;padding: 2px 5px 3px 5px;font-size: 11px;text-align:left;font-weight:bold;background: #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x;color:white;'>" % s_span,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         self.quote(row.title), "</td></tr>"]
                     current_section = row
                     continue
@@ -594,7 +822,11 @@ class TableSection(ReportSection):
                 s += ["</tr>"]
                 # Render las subtotal
             if (current_section and self.has_total and
+<<<<<<< HEAD
                     current_section.subtotal):
+=======
+                current_section.subtotal):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Display totals from previous sections
                 s += render_subtotals()
             # Render totals
@@ -607,6 +839,7 @@ class TableSection(ReportSection):
             s += ["</tr>"]
         s += ["</tbody>"]
         s += ["</table>"]
+<<<<<<< HEAD
         return "\n".join(s)
 
     def to_csv(self, delimiter=","):
@@ -616,6 +849,28 @@ class TableSection(ReportSection):
         """
         f = six.StringIO()
         writer = csv.writer(f, delimiter=delimiter)
+=======
+        s += ["<form action='/main/desktop/dlproxy/' method='POST'>"]
+        s += ["<input type='hidden' name='content_type' value='text/csv; charset=utf8'>"]
+        s += ["<input type='hidden' name='filename' value='report.csv'>"]
+        s += ["<input type='hidden' name='data' id='csv_data'>"]
+        s += ["<input type='submit' value='CSV' onclick='getCSVData(\"%s\");'>" % t_id]
+        s += ["</form>"]
+        s += ["<script>"]
+        s += ["function getCSVData(t) {"]
+        s += ["var v = $('#' + t).table2CSV({delivery: 'value', separator: ';'});"]
+        s += ["$('#csv_data').val(v);"]
+        s += ["}"]
+        s += ["</script>"]
+        return "\n".join(s)
+
+    ##
+    ## Return CSV representation of table
+    ##
+    def to_csv(self):
+        f = cStringIO.StringIO()
+        writer = csv.writer(f)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if self.enumerate:
             writer.writerow(["#"] + [c.title for c in self.columns])
         else:
@@ -625,18 +880,25 @@ class TableSection(ReportSection):
                 n = 1
                 for row in self.data:
                     if type(row) == SectionRow:
+<<<<<<< HEAD
                         writer.writerow([row.name])
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         continue
                     writer.writerow([n] + list(row))
                     n += 1
             else:
                 for row in self.data:
                     if type(row) == SectionRow:
+<<<<<<< HEAD
                         writer.writerow([row.name])
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         continue
                     writer.writerow(row)
         return f.getvalue()
 
+<<<<<<< HEAD
     def to_ssv2(self, delimiter=";", mrf="center", date=None):
         """
         Return CSV representation of table
@@ -685,6 +947,19 @@ class MatrixSection(ReportSection):
     def __init__(self, name, data=None, enumerate=False):
         super(ReportSection, self).__init__(name=name)
         self.data = data or []
+=======
+
+##
+##
+##
+class MatrixSection(ReportSection):
+    ##
+    ## Data is a list of (row,column,data)
+    ##
+    def __init__(self, name, data=[], enumerate=False):
+        super(ReportSection, self).__init__(name=name)
+        self.data = data
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         self.enumerate = enumerate
 
     def to_html(self):
@@ -723,10 +998,14 @@ class MatrixSection(ReportSection):
 
 
 class SimpleReport(ReportApplication):
+<<<<<<< HEAD
     # List of PredefinedReport instances
     predefined_reports = {}
 
     def get_data(self, request, **kwargs):
+=======
+    def get_data(self, **kwargs):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Returns Report object
         """
@@ -761,6 +1040,7 @@ class SimpleReport(ReportApplication):
         return self.from_dataset(title=title, columns=columns,
                                  data=self.execute(query, params),
                                  enumerate=enumerate)
+<<<<<<< HEAD
 
     def get_predefined_args(self, variant):
         return self.predefined_reports[variant].args
@@ -770,3 +1050,5 @@ class PredefinedReport(object):
     def __init__(self, title=None, args=None):
         self.title = title
         self.args = args or {}
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

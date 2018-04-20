@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | ACL | ACL Deny #4 (SYSLOG)",
+    "uuid": "9166e77d-6971-4364-a39d-35867560b912",
+    "description": "%SEC-6-IPACCESSLOGNP: list acl-manage-nets denied 0 109.161.33.19 -> 0.0.0.0, 1 packet",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC-6-IPACCESSLOG[NRD]P: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+), (?P<count>\\d+) packets?$"
+        }
+    ]
+}

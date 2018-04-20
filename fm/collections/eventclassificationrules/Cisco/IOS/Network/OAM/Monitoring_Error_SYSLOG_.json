@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | OAM | Monitoring Error (SYSLOG)",
+    "uuid": "ff60f237-4ff5-4350-b9fb-08a8874c9da7",
+    "description": "%ETHERNET_OAM-5-LINK_MONITOR: 121507 rx CRC errors detected over the last 180 seconds on interface Fa0/24",
+    "event_class__name": "Network | OAM | Monitoring Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ETHERNET_OAM-5-LINK_MONITOR: (?P<error>.+) errors detected over the last .+ on interface (?P<interface>\\S+)"
+        }
+    ]
+}

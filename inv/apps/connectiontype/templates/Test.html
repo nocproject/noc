@@ -1,0 +1,15 @@
+<h1>Possible connections for type {{name}}</h1>
+<table border="1">
+{{#each data}}
+    <tr><th colspan="4">Gender '{{gender}}' can be connected to:</th></tr>
+    <tr><th>Gender</th><th>Connection Type</th><th>Reason</th><th>Description</th></tr>
+    {{#each records}}
+        <tr>
+            <td>{{gender}}</td>
+            <td>{{name}}</td>
+            <td>{{reason}}</td>
+            <td>{{description}}</td>
+        </tr>
+    {{/each}}
+{{/each}}
+</table>

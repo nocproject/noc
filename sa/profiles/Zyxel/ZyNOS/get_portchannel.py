@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_portchannel
 # ---------------------------------------------------------------------
@@ -17,13 +18,37 @@ from noc.sa.interfaces.igetportchannel import IGetPortchannel
 class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_portchannel"
     interface = IGetPortchannel
+=======
+##----------------------------------------------------------------------
+## Zyxel.ZyNOS.get_portchannel
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetPortchannel
+
+
+class Script(NOCScript):
+    name = "Zyxel.ZyNOS.get_portchannel"
+    implements = [IGetPortchannel]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     ##
     ## 3.70 firmware
     ##
     rx_trunk_370 = re.compile(r"^Group ID\s+(?P<trunk>\d+):\s+active\s*.\s*Member number:\s+\d+\s+Member:(?P<ports>(\d+\s+)*)$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
+<<<<<<< HEAD
     @BaseScript.match(version__startswith="3.70")
+=======
+    @NOCScript.match(version__startswith="3.70")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_370(self):
         r = []
         for match in self.rx_trunk_370.finditer(self.cli("show trunk")):
@@ -37,6 +62,7 @@ class Script(BaseScript):
     ##
     ## other versions
     ##
+<<<<<<< HEAD
     rx_trunk = re.compile(
         r"^Group ID\s+T?(?P<trunk>\d+):\s+active\s*\n"
         r"(^\s*Criteria\s+:\s+\S+\s*\n)?"
@@ -45,6 +71,11 @@ class Script(BaseScript):
         re.IGNORECASE | re.MULTILINE)
 
     @BaseScript.match()
+=======
+    rx_trunk = re.compile(r"^Group ID\s+(?P<trunk>\d+):\s+active\s*.\s*Status:\s+(?P<lacp>(Static|LACP))\s*.\s*Member number:\s+\d+\s+Member:(?P<ports>(\d+\s+)*)$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
+    @NOCScript.match()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_other(self):
         r = []
         for match in self.rx_trunk.finditer(self.cli("show trunk")):

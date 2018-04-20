@@ -1,0 +1,17 @@
+{
+    "name": "Security | Authentication | Authentication Failed (SNMP)",
+    "uuid": "cc2a3ca2-bfd6-471d-9ae9-51a20a2d0bad",
+    "description": "SNMPv2-MIB::authenticationFailure",
+    "event_class__name": "Security | Authentication | Authentication Failed",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^SNMPv2-MIB::authenticationFailure$"
+        }
+    ]
+}

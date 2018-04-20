@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Person models
 # ---------------------------------------------------------------------
@@ -20,6 +21,27 @@ from .rir import RIR
 @on_save
 class Person(models.Model):
     class Meta(object):
+=======
+##----------------------------------------------------------------------
+## Person models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+## NOC modules
+from rir import RIR
+from noc.lib.gridvcs.manager import GridVCSField
+from noc.lib.rpsl import rpsl_format, rpsl_multiple
+
+
+class Person(models.Model):
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = "Person"
         verbose_name_plural = "Persons"
         db_table = "peer_person"
@@ -27,6 +49,7 @@ class Person(models.Model):
 
     nic_hdl = models.CharField("nic-hdl", max_length=64, unique=True)
     person = models.CharField("person", max_length=128)
+<<<<<<< HEAD
     type = models.CharField(
         "type", max_length=1, default="P",
         choices=[
@@ -34,6 +57,10 @@ class Person(models.Model):
             ("R", "Role")
         ]
     )
+=======
+    type = models.CharField("type", max_length=1, default="P",
+        choices=[("P", "Person"), ("R", "Role")])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     address = models.TextField("address")
     phone = models.TextField("phone")
     fax_no = models.TextField("fax-no", blank=True, null=True)
@@ -68,5 +95,15 @@ class Person(models.Model):
         self.rpsl.write(n_rpsl)
         # todo: sliding job
 
+<<<<<<< HEAD
     def on_save(self):
         self.touch()
+=======
+
+##
+## Signal handlers
+##
+@receiver(post_save, sender=Person)
+def on_save(sender, instance, created, **kwargs):
+    instance.touch()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #9 (SYSLOG)",
+    "uuid": "d4489978-5261-46b9-8564-ce789473a5c5",
+    "description": "%POWER_SUPPLIES-3-PWR_FAIL: Power supply 2 is not functioning",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%POWER_SUPPLIES-3-PWR_FAIL: (?P<name>Power supply \\d+) is not functioning"
+        }
+    ]
+}

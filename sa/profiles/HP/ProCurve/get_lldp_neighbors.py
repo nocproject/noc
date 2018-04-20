@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "HP.ProCurve.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+from noc.lib.text import parse_table
+
+
+class Script(NOCScript):
+    name = "HP.ProCurve.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_localport = re.compile(r"^\s*(\S+)\s*\|\s*local\s+(\d+)\s+.+?$", re.MULTILINE)
     rx_split = re.compile(r"^\s*----.+?\n", re.MULTILINE | re.DOTALL)
@@ -26,8 +48,11 @@ class Script(BaseScript):
     rx_chassis_id = re.compile(r"ChassisType\s*:\s*(\S+).+?ChassisId\s*:\s*([a-zA-Z0-9\.\- ]+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_port_id = re.compile(r"^\s*PortId\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_sys_name = re.compile(r"^\s*SysName\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+<<<<<<< HEAD
     rx_sys_descr = re.compile(r"^\s*System Descr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_port_descr = re.compile(r"^\s*PortDescr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_cap = re.compile(r"^\s*System Capabilities Enabled\s*:(.*?)$", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
@@ -58,7 +83,10 @@ class Script(BaseScript):
                 continue
             remote_chassis_id_subtype = {
                 "mac-address": 4,
+<<<<<<< HEAD
                 "network-address": 5,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "local": 7,  # @todo: check
             }[match.group(1)]
             remote_chassis_id = match.group(2).strip().replace(" ", "")
@@ -80,6 +108,7 @@ class Script(BaseScript):
             match = self.rx_sys_name.search(v)
             if match:
                 n["remote_system_name"] = match.group(1)
+<<<<<<< HEAD
             # Get remote system description
             match = self.rx_sys_descr.search(v)
             if match:
@@ -88,6 +117,8 @@ class Script(BaseScript):
             match = self.rx_port_descr.search(v)
             if match:
                 n["remote_port_description"] = match.group(1)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Get capabilities
             caps = 0
             match = self.rx_cap.search(v)
@@ -98,7 +129,11 @@ class Script(BaseScript):
                     caps |= {
                         "other": 1, "repeater": 2, "bridge": 4,
                         "wlanaccesspoint": 8, "router": 16, "telephone": 32,
+<<<<<<< HEAD
                         "docsis": 64, "station": 128, "station-only": 128
+=======
+                        "docsis": 64, "station": 128
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     }[c.lower()]
             n["remote_capabilities"] = caps
             i["neighbors"] += [n]

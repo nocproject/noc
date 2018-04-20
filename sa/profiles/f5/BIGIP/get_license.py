@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # f5.BIGIP.get_license
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ class Script(BaseScript):
     name = "f5.BIGIP.get_license"
     cache = True
     interface = IGetLicense
+=======
+##----------------------------------------------------------------------
+## f5.BIGIP.get_license
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modiles
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLicense
+
+
+class Script(NOCScript):
+    name = "f5.BIGIP.get_license"
+    cache = True
+    implements = [IGetLicense]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_lic = re.compile(r"^(.+?)\s+(\d+)$")
 

@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_chassis_id
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Zyxel.ZyNOS.get_chassis_id
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 
@@ -17,6 +27,16 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_chassis_id"
     cache = True
     interface = IGetChassisID
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetChassisID
+
+
+class Script(NOCScript):
+    name = "Zyxel.ZyNOS.get_chassis_id"
+    cache = True
+    implements = [IGetChassisID]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_chassis_id = re.compile(r"Ethernet Address\s+:\s*(?P<id>\S+)",
                             re.IGNORECASE | re.MULTILINE)

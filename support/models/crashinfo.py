@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Crashinfo
 # ---------------------------------------------------------------------
@@ -11,12 +12,31 @@ import os
 import logging
 import uuid
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## Crashinfo
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import logging
+import uuid
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document
 from mongoengine.fields import (UUIDField, DateTimeField, StringField)
 import mongoengine.signals
 import dateutil.parser
+<<<<<<< HEAD
 import ujson
 # NOC modules
+=======
+## NOC modules
+from noc.lib.serialize import json_decode
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.support.cp import CPClient
 
 logger = logging.getLogger(__name__)
@@ -25,11 +45,17 @@ logger = logging.getLogger(__name__)
 class Crashinfo(Document):
     meta = {
         "collection": "noc.crashinfo",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [("status", "timestamp")]
     }
     uuid = UUIDField(primary_key=True)
+=======
+        "indexes": [("status", "timestamp")]
+    }
+    uuid = UUIDField(unique=True, primary_key=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     timestamp = DateTimeField(required=True)
     status = StringField(
         choices=[
@@ -80,7 +106,11 @@ class Crashinfo(Document):
             logger.info("New crashinfo found: %s", u)
             try:
                 with open(os.path.join(cls.NEW_ROOT, f)) as f:
+<<<<<<< HEAD
                     ci = ujson.loads(f.read())
+=======
+                    ci = json_decode(f.read())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             except Exception, why:
                 logger.error(
                     "Unable to load and decode crashinfo %s: %s",
@@ -107,7 +137,11 @@ class Crashinfo(Document):
         if os.path.exists(path):
             try:
                 with open(path) as f:
+<<<<<<< HEAD
                     return ujson.loads(f.read())
+=======
+                    return json_decode(f.read())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             except Exception, why:
                 logger.error(
                     "Unable to load and decode crashinfo %s: %s",
@@ -147,7 +181,11 @@ class Crashinfo(Document):
         self.status = "R"
         self.save()
 
+<<<<<<< HEAD
 #
+=======
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 mongoengine.signals.pre_delete.connect(
     Crashinfo.on_delete,
     sender=Crashinfo

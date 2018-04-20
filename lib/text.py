@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Various text-processing utilities
 # ---------------------------------------------------------------------
@@ -38,10 +39,39 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     :type footer: string
     :param n_row_delim: Append delimiter to next cell line
     :type n_row_delim: string
+=======
+##----------------------------------------------------------------------
+## Various text-processing utilities
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+import re
+
+##
+## Parse string containing table an return a list of table rows.
+## Each row is a list of cells.
+## Columns are determined by a sequences of ---- or ==== which are
+## determines rows bounds.
+## Examples:
+## First Second Third
+## ----- ------ -----
+## a     b       c
+## ddd   eee     fff
+## Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
+##
+rx_header_start = re.compile(r"^\s*[-=]+\s+[-=]+")
+rx_col = re.compile(r"^(\s*)([\-]+|[=]+)")
+
+
+def parse_table(s, allow_wrap=False):
+    """
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
     >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
     [['a', '', 'c'], ['ddd', 'eee', 'fff']]
+<<<<<<< HEAD
     >>> parse_table("VLAN Status  Name                             Ports\\n---- ------- -------------------------------- ---------------------------------\\n4090 Static  VLAN4090                         f0/5, f0/6, f0/7, f0/8, g0/9\\n                                              g0/10\\n", allow_wrap=True, n_row_delim=", ")
     [['4090', 'Static', 'VLAN4090', 'f0/5, f0/6, f0/7, f0/8, g0/9, g0/10']]
     """
@@ -63,11 +93,27 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
             c = 0
             while line:
                 match = rx_col.match(line)
+=======
+    """
+    r = []
+    columns = []
+    for l in s.splitlines():
+        if not l.strip():
+            columns = []
+            continue
+        if rx_header_start.match(l):
+            # Column delimiters found. try to determine column's width
+            columns = []
+            x = 0
+            while l:
+                match = rx_col.match(l)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if not match:
                     break
                 columns.append((x + len(match.group(1)),
                                 x + len(match.group(1)) + len(
                                     match.group(2))))
+<<<<<<< HEAD
                 if allow_extend:
                     # calculate spaces between column
                     column_spaces.append((c, x + len(match.group(1))))
@@ -114,20 +160,52 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
 #
 # Convert HTML to plain text
 #
+=======
+                x += match.end()
+                l = l[match.end():]
+        elif columns:  # Fetch cells
+            if allow_wrap:
+                row = [l[f:t] for f, t in columns]
+                if row[0].startswith(" ") and r:
+                    for i, x in enumerate(row):
+                        r[-1][i] += x
+                else:
+                    r += [row]
+            else:
+                r += [[l[f:t].strip() for f, t in columns]]
+    if allow_wrap:
+        return [[x.strip() for x in row] for row in r]
+    else:
+        return r
+
+##
+## Convert HTML to plain text
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 rx_html_tags = re.compile("</?[^>+]+>", re.MULTILINE | re.DOTALL)
 
 
 def strip_html_tags(s):
     t = rx_html_tags.sub("", s)
     for k, v in [("&nbsp;", " "), ("&lt;", "<"), ("&gt;", ">"),
+<<<<<<< HEAD
                  ("&amp;", "&")]:
+=======
+        ("&amp;", "&")]:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         t = t.replace(k, v)
     return t
 
 
+<<<<<<< HEAD
 #
 # Convert XML to list of elements
 #
+=======
+##
+## Convert XML to list of elements
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 def xml_to_table(s, root, row):
     """
     >>> xml_to_table('<?xml version="1.0" encoding="UTF-8" ?><response><action><row><a>1</a><b>2</b></row><row><a>3</a><b>4</b></row></action></response>','action','row')
@@ -135,14 +213,24 @@ def xml_to_table(s, root, row):
     """
     # Detect root element
     match = re.search(r"<%s>(.*)</%s>" % (root, root), s,
+<<<<<<< HEAD
                       re.DOTALL | re.IGNORECASE)
+=======
+        re.DOTALL | re.IGNORECASE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     if not match:
         return []
     s = match.group(1)
     row_re = re.compile(r"<%s>(.*?)</%s>" % (row, row),
+<<<<<<< HEAD
                         re.DOTALL | re.IGNORECASE)
     item_re = re.compile(r"<([^\]+])>(.*?)</\1>",
                          re.DOTALL | re.IGNORECASE)
+=======
+        re.DOTALL | re.IGNORECASE)
+    item_re = re.compile(r"<([^\]+])>(.*?)</\1>",
+        re.DOTALL | re.IGNORECASE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     r = []
     for m in [x for x in row_re.split(s) if x]:
         data = item_re.findall(m)
@@ -151,9 +239,15 @@ def xml_to_table(s, root, row):
     return r
 
 
+<<<<<<< HEAD
 #
 # Convert list of values to string of ranges
 #
+=======
+##
+## Convert list of values to string of ranges
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 def list_to_ranges(s):
     """
     >>> list_to_ranges([])
@@ -193,6 +287,7 @@ def list_to_ranges(s):
         r += [f()]
     return ",".join(r)
 
+<<<<<<< HEAD
 
 #
 # Convert range string to a list of integers
@@ -201,6 +296,15 @@ rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 
 
 def ranges_to_list(s, splitter=","):
+=======
+##
+## Convert range string to a list of integers
+##
+rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")
+
+
+def ranges_to_list(s):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     >>> ranges_to_list("1")
     [1]
@@ -212,14 +316,22 @@ def ranges_to_list(s, splitter=","):
     [1, 10, 11, 12, 15, 17, 18, 19]
     """
     r = []
+<<<<<<< HEAD
     if "to" in s:
         s = s.replace(" to ", "-")
     for p in s.split(splitter):
+=======
+    for p in s.split(","):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         p = p.strip()
         try:
             r += [int(p)]
             continue
+<<<<<<< HEAD
         except ValueError:
+=======
+        except:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             pass
         match = rx_range.match(p)
         if not match:
@@ -232,9 +344,15 @@ def ranges_to_list(s, splitter=","):
     return sorted(r)
 
 
+<<<<<<< HEAD
 #
 # Replace regular expression group with pattern
 #
+=======
+##
+## Replace regular expression group with pattern
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 def replace_re_group(expr, group, pattern):
     """
     >>> replace_re_group("nothing","(?P<groupname>","groupvalue")
@@ -277,10 +395,17 @@ def replace_re_group(expr, group, pattern):
 def indent(text, n=4):
     """
     Indent each line of text with spaces
+<<<<<<< HEAD
 
     :param text: text
     :param n: amount of spaces to ident
 
+=======
+    
+    :param text: text
+    :param n: amount of spaces to ident
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     >>> indent("")
     ''
     >>> indent("the quick brown fox\\njumped over an lazy dog\\nend")
@@ -326,7 +451,10 @@ def split_alnum(s):
             r[-1] += c
     return [convert(x) for x in r]
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 rx_notspace = re.compile(r"^\S+")
 
 
@@ -387,7 +515,10 @@ def str_dict(d):
     """
     return ", ".join("%s=%s" % (k, d[k]) for k in d)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 rx_safe_path = re.compile("[^a-z0-9\-\+]+", re.IGNORECASE)
 
 
@@ -421,6 +552,7 @@ def to_seconds(v):
     except ValueError:
         raise "Invalid time: %s" % v
     return v * m
+<<<<<<< HEAD
 
 
 def format_table(widths, data, sep=" ", hsep=" "):
@@ -500,3 +632,5 @@ rx_escape = re.compile("|".join(ESC_REPLACEMENTS))
 
 def tsv_escape(text):
     return rx_escape.sub(lambda match: ESC_REPLACEMENTS[re.escape(match.group(0))], text)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

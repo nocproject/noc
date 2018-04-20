@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | LBD | Vlan Loop Detected #1 (SYSLOG)",
+    "uuid": "c394f45d-2fcd-4a70-aab2-e5df8598d76a",
+    "description": "LDT/4/Porttrap: OID 1.3.6.1.4.1.2011.5.25.174.3.3Loopback does exist on interface(12)Ethernet0/0/8 ( VLAN 3064 ) , loopback detect status: 3.(1:normal; 2:block; 3:shutdown; 4:trap; 5:nolearn)",
+    "event_class__name": "Network | LBD | Vlan Loop Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Loopback does exist on interface\\(\\d+\\)(?P<interface>\\S+) \\(\\s*VLAN (?P<vlan>\\d+)\\s*\\)\\s*, loopback detect status: (2|3|4|5)\\.\\s*\\(1:normal; 2:block; 3:shutdown; 4:trap; 5:nolearn\\)"
+        }
+    ]
+}

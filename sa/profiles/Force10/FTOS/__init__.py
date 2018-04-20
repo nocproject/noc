@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: Force10
 # OS:     FTOS
@@ -15,6 +16,25 @@ class Profile(BaseProfile):
     name = "Force10.FTOS"
     pattern_more = "^ ?--More--"
     pattern_unprivileged_prompt = r"^\S+?>"
+=======
+##----------------------------------------------------------------------
+## Vendor: Force10
+## OS:     FTOS
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.profiles import Profile as NOCProfile
+
+
+class Profile(NOCProfile):
+    name = "Force10.FTOS"
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    pattern_more = "^ ?--More--"
+    pattern_unpriveleged_prompt = r"^\S+?>"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     pattern_syntax_error = r"% Error: Invalid input at"
     pattern_operation_error = r"% Error: "
     command_disable_pager = "terminal length 0"
@@ -24,6 +44,7 @@ class Profile(BaseProfile):
     command_save_config = "write memory"
     pattern_prompt = r"^\S+?#"
     command_submit = "\r"
+<<<<<<< HEAD
     convert_interface_name = BaseProfile.convert_interface_name_cisco
 
     matchers = {
@@ -43,6 +64,9 @@ class Profile(BaseProfile):
             }
         }
     }
+=======
+    convert_interface_name = NOCProfile.convert_interface_name_cisco
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def generate_prefix_list(self, name, pl):
         """
@@ -87,3 +111,24 @@ class Profile(BaseProfile):
             if r != 0:
                 return r
         return 0
+<<<<<<< HEAD
+=======
+
+
+##
+## Platform matching helpers
+##
+def SSeries(v):
+    """S-series matching heler"""
+    return v["platform"].startswith("S")
+
+
+def CSeries(v):
+    """C-series matching helper"""
+    return v["platform"].startswith("C")
+
+
+def ESeries(v):
+    """E-series matching helper"""
+    return v["platform"].startswith("E")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

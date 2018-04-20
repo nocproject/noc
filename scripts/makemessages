@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ $# -gt 0 ]; then
+    OPTS="-l $1"
+else
+    OPTS="-a"
+fi
+
+python manage.py makemessages $OPTS -i 'contrib/*' -i 'static/*' -i 'local/*' -i 'share/*' 

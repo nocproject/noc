@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Eltex.MES.ping
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "Eltex.MES.ping"
     interface = IPing
+=======
+##----------------------------------------------------------------------
+## Eltex.MES.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IPing
+
+
+class Script(noc.sa.script.Script):
+    name = "Eltex.MES.ping"
+    implements = [IPing]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received), \d+% packet loss$",

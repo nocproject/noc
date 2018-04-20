@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 #  Alcatel.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
@@ -6,10 +7,16 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+=======
+##----------------------------------------------------------------------
+## Alcatel.TIMOS.get_interfaces
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.validators import is_int, is_ipv6
@@ -162,6 +169,14 @@ class Script(BaseScript):
         (?P<admin_status>.+?)\s+
         (?P<oper_status>.+?)\s+
         """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+
+class Script(NOCScript):
+    name = "Alcatel.TIMOS.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @staticmethod
     def fix_protocols(protocols):
@@ -175,19 +190,27 @@ class Script(BaseScript):
             proto += ["OSPF"]
         if 'OSPFv3' in protocols:
             proto += ["OSPFv3"]
+<<<<<<< HEAD
         if 'PIM' in protocols:
             proto += ["PIM"]
         if 'IGMP' in protocols:
             proto += ["IGMP"]
         if 'RSVP' in protocols:
             proto += ["RSVP"]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return proto
 
     @staticmethod
     def fix_status(status):
         return "up" in status.lower()
 
+<<<<<<< HEAD
     def fix_ip_addr(self, ipaddr_section):
+=======
+    @staticmethod
+    def fix_ip_addr(ipaddr_section):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         :rtype : dict
         """
@@ -196,16 +219,30 @@ class Script(BaseScript):
             'ipv6_addresses': [],
             'enabled_afi': [],
         }
+<<<<<<< HEAD
         if "Unnumbered If" in ipaddr_section:
             return result
         for line in ipaddr_section.splitlines():
             match_obj = self.re_ipaddr.search(line)
+=======
+        re_ipaddr = re.compile(r"""(IPv6\sAddr|IP\sAddr/mask)\s.*?:\s
+                                   (?P<ipaddress>.+?)(\s|$)""",
+                               re.VERBOSE | re.MULTILINE | re.DOTALL)
+        if "Unnumbered If" in ipaddr_section:
+            return result
+        for line in ipaddr_section.splitlines():
+            match_obj = re.search(re_ipaddr, line)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if match_obj:
                 afi = match_obj.group(1)
                 ip = match_obj.group(2)
                 if afi == 'IP Addr/mask' and 'Not' not in ip:
                     result['ipv4_addresses'] += [ip]
+<<<<<<< HEAD
                 elif afi == 'IPv6 Addr' and is_ipv6(ip):
+=======
+                elif afi == 'IPv6 Addr':
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     result['ipv6_addresses'] += [ip]
         if result['ipv4_addresses']:
             result['enabled_afi'] += ['IPv4']
@@ -213,14 +250,72 @@ class Script(BaseScript):
             result['enabled_afi'] += ['IPv6']
         return result
 
+<<<<<<< HEAD
     def parse_interfaces(self, data, vrf):
         ifaces = self.re_int.split(data)
+=======
+    def parse_interfaces(self, data):
+        re_int = re.compile(r'-{79}\nInterface\n-{79}', re.MULTILINE)
+        re_int_desc_vprn = re.compile(r"""
+            If\sName\s*?:\s(?P<name>.*?)\n
+            .*?
+            Admin\sState\s*?:\s(?P<admin_status>.*?)\s+?
+            Oper\s\(v4/v6\)\s*?:\s(?P<oper_status>.*?)\n
+            (Down\sReason\sCode\s:\s.*?\n)*
+            Protocols\s*?:\s(?P<protocols>.*?)\n
+            (?P<ipaddr_section>(IP\sAddr/mask|IPv6\sAddr).*?)-{79}\n
+            Details\n
+            -{79}\n
+            Description\s*?:\s(?P<description>.*?)\n
+            .*?
+            (SAP\sId|Port\sId|SDP\sId)\s+?:\s(?P<subinterfaces>.+?)\n
+            .*?
+            MAC\sAddress\s*?:\s(?P<mac>.*?)\s
+            .*?
+            IP\sOper\sMTU\s*?:\s(?P<mtu>.*?)\s
+            .*?""", re.VERBOSE | re.MULTILINE | re.DOTALL)
+
+        re_int_desc_subs = re.compile(r"""
+            ^If\sName\s*?:\s(?P<name>.*?)\n
+            .*?
+            Admin\sState\s*?:\s(?P<admin_status>.*?)\s+?
+            Oper\s\(v4/v6\)\s*?:\s(?P<oper_status>.*?)\n
+            (Down\sReason\sCode\s:\s.*?\n)*
+            Protocols\s*?:\s(?P<protocols>.*?)\n
+            (?P<ipaddr_section>(IP\sAddr/mask|IPv6\sAddr|Unnumbered\sIf).*?)
+            -{79}\n
+            Details\n
+            -{79}\n
+            Description\s*?:\s(?P<description>.*?)\n
+            """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        re_int_desc_group = re.compile(r"""
+            ^If\sName\s*?:\s(?P<name>.*?)\n
+            Sub\sIf\sName\s*?:\s(?P<ip_unnumbered_subinterface>.+?)\s+?\n
+            .*?
+            Admin\sState\s*?:\s(?P<admin_status>.*?)\s+?
+            Oper\s\(v4/v6\)\s*?:\s(?P<oper_status>.*?)\n
+            (Down\sReason\sCode\s:\s.*?\n)*
+            Protocols\s*?:\s(?P<protocols>.*?)\n-{79}\n
+            Details\n
+            -{79}\n
+            Description\s*?:\s(?P<description>.*?)\n
+            .*?
+            Srrp\sEn\sRtng\s*?:\s(?P<srrp>.*?)\s
+            .*?
+            MAC\sAddress\s*?:\s(?P<mac>.*?)\s
+            .*?
+            IP\sOper\sMTU\s*?:\s(?P<mtu>.*?)\s
+            .*?
+        """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        ifaces = re.split(re_int, data)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         result = []
         iftypeVPRN = ': VPRN'
         iftypeNetwork = ': Network'
         iftypeSubsc = ': VPRN Sub'
         iftypeGroup = ': VPRN Grp'
         iftypeRed = ': VPRN Red'
+<<<<<<< HEAD
         iftypeIES = ': IES'
 
         for iface in ifaces[1:]:
@@ -228,13 +323,24 @@ class Script(BaseScript):
             my_dict = {}
             if iftypeGroup in iface:
                 match_obj = self.re_int_desc_group.search(iface)
+=======
+
+        for iface in ifaces[1:]:
+            my_dict = {}
+            if iftypeGroup in iface:
+                match_obj = re.search(re_int_desc_group, iface)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if match_obj:
                     my_dict = match_obj.groupdict()
                     my_dict['type'] = 'other'
                     my_dict['subinterfaces'] = []
 
             elif iftypeSubsc in iface:
+<<<<<<< HEAD
                 match_obj = self.re_int_desc_subs.search(iface)
+=======
+                match_obj = re.search(re_int_desc_subs, iface)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 my_dict = match_obj.groupdict()
                 my_dict['subinterfaces'] = [{}]
                 my_dict['type'] = 'loopback'
@@ -256,7 +362,11 @@ class Script(BaseScript):
                 my_dict['subinterfaces'][0].update(my_sub)
 
             elif iftypeRed in iface:
+<<<<<<< HEAD
                 match_obj = self.re_int_desc_vprn.search(iface)
+=======
+                match_obj = re.search(re_int_desc_vprn, iface)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 my_dict = match_obj.groupdict()
                 if 'subinterfaces' in my_dict:
                     my_dict['subinterfaces'] = [
@@ -267,12 +377,17 @@ class Script(BaseScript):
                     ]
                 my_dict['type'] = 'tunnel'
 
+<<<<<<< HEAD
             elif (
                 iftypeNetwork in iface or
                 iftypeVPRN in iface or
                 iftypeIES in iface
             ):
                 match_obj = self.re_int_desc_vprn.search(iface)
+=======
+            elif iftypeNetwork in iface or iftypeVPRN in iface:
+                match_obj = re.search(re_int_desc_vprn, iface)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if match_obj:
                     my_dict = match_obj.groupdict()
                     if 'subinterfaces' in my_dict:
@@ -280,6 +395,7 @@ class Script(BaseScript):
                             my_dict['type'] = 'tunnel'
                         elif my_dict['subinterfaces'].startswith('loopback'):
                             my_dict['type'] = 'loopback'
+<<<<<<< HEAD
                         match = self.re_iface.search(my_dict['subinterfaces'])
                         if match:
                             parent_iface = match.group("iface")
@@ -293,17 +409,38 @@ class Script(BaseScript):
                                     my_dict['vlan_ids'] = []
                                 else:
                                     my_dict['vlan_ids'] = [int(vlans)]
+=======
+                        if my_dict['subinterfaces'].startswith('lag-'):
+                            vlans = my_dict['subinterfaces'].split(":")[1]
+                            if "." in vlans and "*" not in vlans:
+                                up_tag, down_tag = vlans.split(".")
+
+                                my_dict['vlan_ids'] = [int(up_tag), int(down_tag)]
+                            elif "*" in vlans:
+                                my_dict['vlan_ids'] = []
+                            else:
+                                my_dict['vlan_ids'] = [int(vlans)]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
                         my_dict['subinterfaces'] = [
                             {
                                 'name': my_dict['name']
                             }
                         ]
+<<<<<<< HEAD
+=======
+                else:
+                    print iface
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             else:
                 continue
             if my_dict['description'] == '(Not Specified)':
                 my_dict.pop('description')
+<<<<<<< HEAD
             proto = my_dict['protocols']
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             my_dict['protocols'] = self.fix_protocols(my_dict['protocols'])
             if 'srrp' in my_dict:
                 my_dict['protocols'] += ['SRRP']
@@ -314,16 +451,27 @@ class Script(BaseScript):
             if 'ipaddr_section' in my_dict:
                 my_dict.update(self.fix_ip_addr(my_dict['ipaddr_section']))
                 my_dict.pop('ipaddr_section')
+<<<<<<< HEAD
             if 'subinterfaces' in my_dict:
                 if not isinstance(my_dict["subinterfaces"], (list, dict)):
+=======
+
+            if 'subinterfaces' in my_dict:
+                if type(my_dict['subinterfaces']) != list and \
+                                type(my_dict['subinterfaces']) != dict:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     my_dict['subinterfaces'] = [my_dict['subinterfaces']]
                 if len(my_dict['subinterfaces']) == 1:
                     my_sub = {
                         'oper_status': my_dict['oper_status'],
                         'admin_status': my_dict['admin_status'],
+<<<<<<< HEAD
                         'protocols': my_dict['protocols']
                     }
                     my_dict.pop('protocols')
+=======
+                    }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if 'enabled_afi' in my_dict:
                         my_sub['enabled_afi'] = my_dict['enabled_afi']
                         my_dict.pop('enabled_afi')
@@ -336,6 +484,7 @@ class Script(BaseScript):
                     if 'vlan_ids' in my_dict:
                         my_sub['vlan_ids'] = my_dict['vlan_ids']
                         my_dict.pop('vlan_ids')
+<<<<<<< HEAD
                     if 'MPLS' in proto:
                         if 'enabled_afi' in my_sub:
                             my_sub['enabled_afi'] += ['MPLS']
@@ -357,11 +506,18 @@ class Script(BaseScript):
                                 break
                         if found:
                             continue
+=======
+                    my_dict['subinterfaces'][0].update(my_sub)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
             if 'type' not in my_dict:
                 my_dict['type'] = 'unknown'
 
+<<<<<<< HEAD
             result += [my_dict]
+=======
+            result.append(my_dict)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return result
 
     @staticmethod
@@ -374,10 +530,28 @@ class Script(BaseScript):
             fitype = "Unsupported"
         return fitype
 
+<<<<<<< HEAD
     def fix_vpls_saps(self, sap_section):
         result = {'interfaces': []}
         for line in sap_section.splitlines():
             match_obj = self.re_saps.match(line)
+=======
+
+    def fix_vpls_saps(self, sap_section):
+        result = {'interfaces': []}
+        re_saps = re.compile(r"""
+                    sap:(?P<interface>.+?):
+                    (?P<uptag>(\d+?|\*))\.
+                    (?P<downtag>(\d+?|\*))\s+
+                    (?P<sap_type>.+?)\s+
+                    (?P<admin_mtu>.+?)\s+
+                    (?P<mtu>.+?)\s+
+                    (?P<admin_status>.+?)\s+
+                    (?P<oper_status>.+)""",
+                             re.MULTILINE | re.DOTALL | re.VERBOSE)
+        for line in sap_section.splitlines():
+            match_obj = re.match(re_saps, line)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if match_obj:
                 raw_sap = match_obj.groupdict()
                 sap = {
@@ -407,8 +581,25 @@ class Script(BaseScript):
             'forwarding_instance': vpls_id,
             'type': 'VPLS'
         }
+<<<<<<< HEAD
         vpls = self.cli('show service id %s base' % vpls_id)
         match_obj = self.re_vpls.search(vpls)
+=======
+        re_vpls = re.compile(r"""
+                Service\sId\s+:\s(?P<id>.+?)\s
+                .*?
+                Name\s+?:\s(?P<forwarding_instance>.+?)\n
+                .+?
+                Admin\sState\s+?:\s(?P<admin_status>.+?)\s
+                .+?
+                Oper\sState\s+?:\s(?P<oper_status>.+?)\n
+                MTU\s+?:\s(?P<mtu>.+?)\s
+                .+?
+                Identifier.+?-{79}\n(?P<sap_section>.+?)={79}
+        """, re.MULTILINE | re.DOTALL | re.VERBOSE)
+        vpls = self.cli('show service id %s base' % vpls_id)
+        match_obj = re.search(re_vpls, vpls)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if match_obj:
             result = match_obj.groupdict()
 
@@ -430,11 +621,25 @@ class Script(BaseScript):
 
         return result
 
+<<<<<<< HEAD
     def get_forwarding_instance(self):
         result = []
         o = self.cli("show service service-using")
         for line in o.splitlines():
             mo1 = self.re_forwarding_instance.search(line)
+=======
+
+    def get_forwarding_instance(self):
+        forwarding_instance = re.compile(
+            r'^(?P<forwarding_instance>\d+)\s+(?P<type>\S+)\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)',
+            re.MULTILINE)
+        rd = re.compile(r'^Route Dist.\s+:\s(?P<rd>.+?)\s', re.MULTILINE)
+
+        result = []
+        o = self.cli("show service service-using")
+        for line in o.splitlines():
+            mo1 = re.search(forwarding_instance, line)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if mo1:
                 fi = mo1.groupdict()
                 fi['type'] = self.fix_fi_type(fi['type'])
@@ -444,6 +649,7 @@ class Script(BaseScript):
                 if fi['type'] == 'ip' or fi['type'] == 'VRF':
                     r = self.cli('show service id %s base | match invert-match "sap:"' %
                                  fi["forwarding_instance"])
+<<<<<<< HEAD
                     mo2 = self.re_rd.search(r)
                     fi["rd"] = mo2.group('rd')
                     if fi["rd"] == 'None':
@@ -452,6 +658,19 @@ class Script(BaseScript):
                     intf = self.cli('show router %s interface detail' % fi["forwarding_instance"])
                     fi['interfaces'] = self.parse_interfaces(intf, '')
 
+=======
+                    mo2 = re.search(rd, r)
+                    fi["rd"] = mo2.group('rd')
+                    if fi["rd"] == 'None':
+                        fi.pop('rd')
+                    if fi["forwarding_instance"] != "333100":
+                        intf = self.cli('show router %s interface detail' % fi["forwarding_instance"])
+                        fi['interfaces'] = self.parse_interfaces(intf)
+                    if fi["forwarding_instance"] in ["100", "120"]:
+                        fi["forwarding_instance"] = "default"
+                    else:
+                        fi['interfaces'] = []
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 elif fi["type"] == 'bridge':
                     fi.update(self.get_vpls(fi['forwarding_instance']))
                     fi.pop('id')
@@ -462,9 +681,23 @@ class Script(BaseScript):
         return result
 
     def get_managment_router(self):
+<<<<<<< HEAD
         fi = {'forwarding_instance': 'management', 'type': 'ip', 'interfaces': []}
         card_detail = self.cli('show card detail')
         cards = self.re_cards_detail.findall(card_detail)
+=======
+        re_cards_detail = re.compile(r"""
+            -{79}\n
+            (?P<name>[A-B])\s+?sfm\d*-\d*\s+
+            (?P<admin_status>.*?)\s+
+            (?P<oper_status>.*?/.*?)\s
+            .+?
+            Base\sMAC\saddress\s*?:\s(?P<mac>.*?)\n
+        """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        fi = {'forwarding_instance': 'management', 'type': 'ip', 'interfaces': []}
+        card_detail = self.cli('show card detail')
+        cards = re.findall(re_cards_detail, card_detail)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         for card in cards:
             sub_iface = self.cli('show router "management" interface detail')
@@ -475,14 +708,76 @@ class Script(BaseScript):
                 'protocols': [],
                 'mac': card[3],
                 'type': 'physical',
+<<<<<<< HEAD
                 'subinterfaces': self.parse_interfaces(sub_iface, ''),
+=======
+                'subinterfaces': self.parse_interfaces(sub_iface),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             })
 
         return fi
 
     def get_base_router(self):
+<<<<<<< HEAD
         fi = {
             'forwarding_instance': 'default',
+=======
+        re_port_info = re.compile("""
+            ^(?P<name>\d+/\d+/\d+)\s+
+            (?P<admin_status>\S*)\s+
+            (?P<bad_stat>\S*)\s+
+            (?P<oper_status>\S*)\s+
+            (?P<mtu>\d*)\s+
+            (?P<oper_mtu>\d*)\s+
+            (?P<aggregated_interface>\d*)\s
+            """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        re_port_detail_info = re.compile("""
+            Description\s*?:\s(?P<description>.*?)\n
+            Interface\s*?:\s(?P<name>\d*/\d*/\S*)\s*
+            .*?
+            Admin\sState\s*?:\s(?P<admin_status>.*?)\s
+            .*?
+            Oper\sState\s*?:\s(?P<oper_status>.*?)\s
+            .*?
+            MTU\s*?:\s(?P<mtu>.*?)\s
+            .*?
+            IfIndex\s*?:\s(?P<snmp_ifindex>\d*)\s
+            .*?
+            Configured\sAddress\s*?:\s(?P<mac>.*?)\s
+        """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        re_lag_detail = re.compile("""
+            Description\s*?:\s(?P<description>.+?)\n-{79}
+            .*?
+            Detail
+            .*?
+            Lag-id\s*?:\s(?P<name>.*?)\s
+            .*?
+            Adm\s*?:\s(?P<admin_status>.*?)\s
+            Opr\s*?:\s(?P<oper_status>.*?)\s
+            .*?
+            Configured\sAddress\s*?:\s(?P<mac>.*?)\s
+            .*?
+            Lag-IfIndex\s+:\s(?P<snmp_ifindex>.*?)\s
+            .*?
+            LACP\s*?:\s(?P<protocols>.*?)\s
+            """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        re_lag_split = re.compile(r"""
+                -{79}\n
+                (?P<lag>LAG\s\d+.+?)
+                Port-id\s+Adm""", re.VERBOSE | re.MULTILINE | re.DOTALL)
+        re_lag_subs = re.compile(r"""(?P<physname>.+?):
+            (?P<sapname>.+?)\s+
+            (?P<svcid>.+?)\s+
+            (?P<igq>.+?)\s+
+            (?P<ingfil>.+?)\s+
+            (?P<eggq>.+?)\s+
+            (?P<eggfil>.+?)\s+
+            (?P<admin_status>.+?)\s+
+            (?P<oper_status>.+?)\s+
+            """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        fi = {
+            'forwarding_instance': 'base',
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             'type': 'ip',
             'interfaces': []
         }
@@ -490,6 +785,7 @@ class Script(BaseScript):
         port_info = self.cli('show port')
 
         for line in port_info.splitlines():
+<<<<<<< HEAD
             match = self.re_port_info.search(line)
             if match:
                 port_detail = self.cli('show port %s detail' % match.group('name'))
@@ -505,14 +801,34 @@ class Script(BaseScript):
                 my_dict['subinterfaces'] = []
                 my_dict.pop('bad_stat')
                 my_dict['description'] = my_dict['description'].replace("\n", "")
+=======
+            match = re.search(re_port_info, line)
+            if match:
+                port_detail = self.cli('show port %s detail' % match.group('name'))
+                match_detail = re.search(re_port_detail_info, port_detail)
+                my_dict = match.groupdict()
+                my_dict.update(match_detail.groupdict())
+                if 'aggregated_interface' in my_dict:
+                    my_dict['aggregated_interface'] = "-".join(["lag", my_dict['aggregated_interface']])
+                my_dict['type'] = 'physical'
+                my_dict['subinterfaces'] = []
+                my_dict.pop('bad_stat')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 fi['interfaces'].append(my_dict)
 
         lag_info = self.cli('show lag detail')
 
+<<<<<<< HEAD
         lags = self.re_lag_split.split(lag_info)
 
         for lag in lags[1:]:
             match = self.re_lag_detail.search(lag)
+=======
+        lags = re.split(re_lag_split, lag_info)
+
+        for lag in lags[1:]:
+            match = re.search(re_lag_detail, lag)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if match:
                 my_dict = match.groupdict()
                 my_dict['type'] = 'aggregated'
@@ -521,6 +837,7 @@ class Script(BaseScript):
                 my_dict['subinterfaces'] = []
                 saps = self.cli('show service sap-using sap %s | match invert-match [' % my_dict['name'])
                 for sapline in saps.splitlines():
+<<<<<<< HEAD
                     sap = self.re_lag_subs.match(sapline)
                     if sap:
                         if sap.group('physname'):
@@ -550,10 +867,29 @@ class Script(BaseScript):
         intf = self.cli('show router "Base" interface detail')
         fi['interfaces'] += self.parse_interfaces(intf, fi['interfaces'])
 
+=======
+                    sap = re.match(re_lag_subs, sapline)
+                    if sap:
+                        if sap.group('physname'):
+                            my_dict['subinterfaces'].append({
+                                'name': ":".join([sap.group('physname'), sap.group('sapname')]),
+                                'admin_status': self.fix_status(sap.group('admin_status')),
+                                'oper_status': self.fix_status(sap.group('admin_status')),
+                            })
+                my_dict['oper_status'] = self.fix_status(my_dict['oper_status'])
+                my_dict['admin_status'] = self.fix_status(my_dict['admin_status'])
+                if my_dict['protocols'] == 'Enabled':
+                    my_dict['protocols'] = ['LACP']
+                else:
+                    my_dict['protocols'] = []
+                fi['interfaces'].append(my_dict)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return fi
 
     def execute(self):
         result = []
+<<<<<<< HEAD
 
         fi = self.get_forwarding_instance()
         for forw_instance in fi:
@@ -564,5 +900,15 @@ class Script(BaseScript):
 
         fi = self.get_base_router()
         result += [fi]
+=======
+        fi = self.get_forwarding_instance()
+        for forw_instance in fi:
+            result.append(forw_instance)
+
+        fi = self.get_managment_router()
+        result.append(fi)
+        fi = self.get_base_router()
+        result.append(fi)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         return result

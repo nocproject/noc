@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS_Cisco_CLI | Network | BGP | Peer Down (SYSLOG)",
+    "uuid": "95c0c468-4162-4344-9ca8-d818836e2dcd",
+    "description": "%BGP-5-ADJCHANGE: Neighbor 10.110.0.110 Down BGP Notification CEASE.",
+    "event_class__name": "Network | BGP | Peer Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS_Cisco_CLI$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%BGP-5-ADJCHANGE: Neighbor (?P<peer>\\S+) Down"
+        }
+    ]
+}

@@ -12,10 +12,17 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Generic.has_vlan"
     interface = IHasVlan
     requires = ["get_vlans"]
+=======
+class Script(noc.sa.script.Script):
+    name = "Generic.has_vlan"
+    implements = [IHasVlan]
+    requires = [("get_vlans", IGetVlans)]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, vlan_id):
         for v in self.scripts.get_vlans():

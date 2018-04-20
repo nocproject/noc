@@ -1,5 +1,6 @@
 
 from south.db import db
+<<<<<<< HEAD
 
 
 class Migration:
@@ -7,6 +8,15 @@ class Migration:
     def forwards(self):
         db.execute(PROC)
 
+=======
+from noc.fm.models import *
+
+class Migration:
+    
+    def forwards(self):
+        db.execute(PROC)
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         pass
 
@@ -28,12 +38,20 @@ BEGIN
     DELETE FROM fm_eventdata
     WHERE event_id=p_event_id
         AND "type" IN ('R','V');
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     FOR i IN array_lower(p_vars,1) .. array_upper(p_vars,1) LOOP
         INSERT INTO fm_eventdata(event_id,"type",key,value)
         VALUES(p_event_id,p_vars[i][1],p_vars[i][2],p_vars[i][3]);
     END LOOP;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     UPDATE fm_event
     SET
         event_class_id=p_event_class_id,
@@ -45,4 +63,8 @@ BEGIN
     WHERE id=p_event_id;
 END;
 $$ LANGUAGE plpgsql;
+<<<<<<< HEAD
 """
+=======
+"""
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

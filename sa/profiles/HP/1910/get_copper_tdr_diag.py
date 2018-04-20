@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_copper_tdr_diag
 # ---------------------------------------------------------------------
@@ -16,6 +17,26 @@ from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
 class Script(BaseScript):
     name = "HP.1910.get_copper_tdr_diag"
     interface = IGetCopperTDRDiag
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_copper_tdr_diag
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetCopperTDRDiag
+
+
+class Script(NOCScript):
+    name = "HP.1910.get_copper_tdr_diag"
+    implements = [IGetCopperTDRDiag]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     TIMEOUT = 600
 
     rx_diag = re.compile(

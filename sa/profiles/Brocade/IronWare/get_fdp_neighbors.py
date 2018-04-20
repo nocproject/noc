@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_fdp_neighbors
 # ---------------------------------------------------------------------
@@ -14,15 +15,39 @@ from noc.sa.interfaces.igetfdpneighbors import IGetFDPNeighbors
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Brocade.IronWare.get_fdp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetFDPNeighbors
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Brocade.IronWare.get_fdp_neighbors
     """
     name = "Brocade.IronWare.get_fdp_neighbors"
+<<<<<<< HEAD
     interface = IGetFDPNeighbors
 
     rx_entry = re.compile(r"Device ID: (?P<device_id>\S+).+?"
                           "Interface:\s(?P<local_interface>\S+)\s+"
                           "Port ID \(outgoing port\): (?P<remote_interface>\S+)",
+=======
+    implements = [IGetFDPNeighbors]
+
+    rx_entry = re.compile(r"Device ID: (?P<device_id>\S+).+?"
+                          "Interface:\s(?P<local_interface>\S+)\s+Port ID \(outgoing port\): (?P<remote_interface>\S+)",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                           re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):
@@ -30,7 +55,11 @@ class Script(BaseScript):
         # Get neighbors
         neighbors = []
         for match in self.rx_entry.finditer(
+<<<<<<< HEAD
                 self.cli("show fdp neighbors detail")):
+=======
+            self.cli("show fdp neighbors detail")):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             neighbors += [{
                 "device_id": match.group("device_id"),
                 "local_interface": match.group("local_interface"),

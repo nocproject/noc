@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VRFGroup model
 # ---------------------------------------------------------------------
@@ -18,6 +19,23 @@ from noc.core.model.decorator import on_delete_check
 @on_delete_check(check=[
     ("ip.VRF", "vrf_group")
 ])
+=======
+##----------------------------------------------------------------------
+## VRFGroup model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+## NOC modules
+from noc.lib.fields import TagsField
+from noc.lib.app import site
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VRFGroup(models.Model):
     """
     Group of VRFs with common properties

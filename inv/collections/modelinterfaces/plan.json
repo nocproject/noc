@@ -1,0 +1,28 @@
+{
+    "name": "plan",
+    "uuid": "15c0da42-dd46-4a3b-b420-1798c8014517",
+    "description": "Plan position",
+    "attrs": [
+        {
+            "name": "x",
+            "type": "float",
+            "description": "x coordinate, in local units",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "y",
+            "type": "float",
+            "description": "y coordinate, in local units",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "bearing",
+            "type": "float",
+            "description": "Rotation angle, in degrees",
+            "required": false,
+            "is_const": false
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # OS.Linux.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "OS.Linux.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## OS.Linux.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(noc.sa.script.Script):
+    name = "OS.Linux.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_vlan = re.compile(
         r"^(?P<interface>\S+)\s+\|+\s+(?P<vlan>\d+)\s+\|+\s+\S+$",
@@ -53,10 +73,17 @@ class Script(BaseScript):
                     i = i + 1
                     match = self.rx_bridge_int.search(br[i])
 
+<<<<<<< HEAD
 ## This will work only when name of bridge looks like: "'br'+vlan_id"
 ## We need found more universal way for bind VLAN to bridge, but how???
 ## Configuration file for vlans is in difirent place in eche
 ## Linux distribution. Also I don't find any commands or records in /proc...
+=======
+### This will work only when name of bridge looks like: "'br'+vlan_id"
+### We need found more universal way for bind VLAN to bridge, but how???
+### Configuration file for vlans is in difirent place in eche
+### Linux distribution. Also I don't find any commands or records in /proc...
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r = []
         if mac is not None:
             mac = mac.lower()

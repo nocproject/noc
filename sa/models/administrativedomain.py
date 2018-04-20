@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # AdministrativeDomain
 # ----------------------------------------------------------------------
@@ -34,6 +35,20 @@ id_lock = Lock()
     ("sa.UserAccess", "administrative_domain"),
     ("sa.AdministrativeDomain", "parent")
 ])
+=======
+##----------------------------------------------------------------------
+## AdministrativeDomain
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class AdministrativeDomain(models.Model):
     """
     Administrative Domain
@@ -45,6 +60,7 @@ class AdministrativeDomain(models.Model):
         app_label = "sa"
         ordering = ["name"]
 
+<<<<<<< HEAD
     name = models.CharField(_("Name"), max_length=255, unique=True)
     parent = models.ForeignKey("self", verbose_name="Parent", null=True, blank=True)
     description = models.TextField(
@@ -142,3 +158,12 @@ class AdministrativeDomain(models.Model):
     @property
     def has_children(self):
         return True if AdministrativeDomain.objects.filter(parent=self.id) else False
+=======
+    name = models.CharField(_("Name"), max_length=32, unique=True)
+    description = models.TextField(
+        _("Description"),
+        null=True, blank=True)
+
+    def __unicode__(self):
+        return self.name
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

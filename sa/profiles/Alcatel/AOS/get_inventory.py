@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.AOS.get_inventory
 # ----------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 class Script(BaseScript):
     name = "Alcatel.AOS.get_inventory"
     interface = IGetInventory
+=======
+##----------------------------------------------------------------------
+## Alcatel.AOS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+
+
+class Script(NOCScript):
+    name = "Alcatel.AOS.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_ni = re.compile(
     r"^\s+GBIC\s+(?P<int_number>\d+)\n"
     r"\s+Manufacturer Name:\s+(?P<vendor>\S+)(|\s+),\n"
@@ -26,19 +46,31 @@ class Script(BaseScript):
                                                     
     def execute(self):
         objects = []
+<<<<<<< HEAD
         # Chassis info
+=======
+        #Chassis info
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         p = self.scripts.get_version()
         objects += [{
             "type": "CHASSIS",
             "number": None,
             "vendor": "ALU",
             "serial": p["attributes"].get("Serial Number"),
+<<<<<<< HEAD
             "description": "%s %s" % (p["vendor"], p["platform"]),
+=======
+            "description": p["vendor"] + " " + p["platform"],
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "part_no": p["platform"],
             "revision": p["attributes"].get("HW version"),
             "builtin": False
         }]
+<<<<<<< HEAD
         # Transiver Detected
+=======
+        #Transiver Detected
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         iface = self.cli("show ni")
         for match in self.rx_ni.finditer(iface):
             number = match.group("int_number")
@@ -57,6 +89,10 @@ class Script(BaseScript):
                 part = "NoName | Transceiver | 1G | SFP LH"
             elif "GLC-BX" in part_no:
                 part = "Cisco | Transceiver | 1G | GLC-BX-D"
+<<<<<<< HEAD
+=======
+                vendor = "Cisco"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             else:
                 part = "NoName | Transceiver | 1G | SFP SX"
             objects += [{
@@ -68,5 +104,10 @@ class Script(BaseScript):
                 "part_no": [part],
                 "revision": hw_rev,
                 "builtin": False
+<<<<<<< HEAD
             }]
+=======
+                }]
+                                                                                                                                                                                                                                                                                                
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return objects

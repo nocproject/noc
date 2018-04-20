@@ -1,0 +1,20 @@
+{
+    "name": "Chassis | Fan | Fan Removed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "cb604666-2f9d-4ba3-8906-bfc7a1f587f3",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Fan Name"
+        }
+    ],
+    "subject_template": "Fan Removed: {{name}}",
+    "body_template": "Fan Removed: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

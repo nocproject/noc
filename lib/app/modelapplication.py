@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ModelApplication implementation
 # ---------------------------------------------------------------------
@@ -10,6 +11,16 @@
 from __future__ import absolute_import
 from functools import reduce
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## ModelApplication implementation
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from django.utils.translation import ugettext as _
 from django.contrib import admin as django_admin
 from django.utils.encoding import smart_unicode
@@ -18,10 +29,17 @@ from django.views.static import serve as serve_static
 from django.db.models.fields import CharField
 from django.db.models import Q
 from django.db import IntegrityError
+<<<<<<< HEAD
 # NOC modules
 from noc.lib.widgets import tags_list
 from .access import HasPerm
 from .application import Application, view
+=======
+## NOC modules
+from access import HasPerm
+from application import Application, view
+from noc.lib.widgets import tags_list
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ModelApplication(Application):
@@ -31,11 +49,23 @@ class ModelApplication(Application):
     model = None        # subclass of Model
     model_admin = None  # subclass of ModelAdmin
     menu = None         # Menu Title
+<<<<<<< HEAD
 
     def __init__(self, site):
         super(ModelApplication, self).__init__(site)
         # Check the model has tags and add "tags" column
         self.has_tags = hasattr(self.model, "tags")
+=======
+    
+    def __init__(self, site):
+        super(ModelApplication,self).__init__(site)
+        ## Check the model has tags and add "tags" column
+        try:
+            self.model.tags
+            self.has_tags = True
+        except:
+            self.has_tags = False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if self.has_tags:
             self.model_admin.list_display += [self.display_tags]
         #
@@ -46,6 +76,7 @@ class ModelApplication(Application):
         self.admin.change_form_template = (
             self.get_template_path("change_form.html") +
             ["admin/change_form.html"]
+<<<<<<< HEAD
         )
         self.admin.change_list_template = (
             self.get_template_path("change_list.html") +
@@ -53,11 +84,19 @@ class ModelApplication(Application):
         )
         # Override messaging framework
         self.admin.message_user = self.message_user
+=======
+            )
+        self.admin.change_list_template = (
+            self.get_template_path("change_list.html") +
+            ["admin/change_list.html"]
+            )
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Set up permissions
         self.granular_access = hasattr(self.model, "user_objects")
         self.admin.has_change_permission = self.has_change_permission
         self.admin.has_add_permission = self.has_add_permission
         self.admin.has_delete_permission = self.has_delete_permission
+<<<<<<< HEAD
         # Set up row-based access
         self.admin.queryset = self.queryset
         if not self.query_fields:
@@ -66,18 +105,33 @@ class ModelApplication(Application):
                 for f in self.model._meta.fields
                 if f.unique and isinstance(f, CharField)
             ]
+=======
+        ## Set up row-based access
+        self.admin.queryset = self.queryset
+        if not self.query_fields:
+            self.query_fields = ["%s__%s" % (f.name, self.query_condition)
+                                 for f in self.model._meta.fields
+                                 if f.unique and isinstance(f, CharField)]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def display_tags(self, o):
         """Render neat tags list"""
         return tags_list(o)
+<<<<<<< HEAD
     display_tags.short_description = "Tags"
     display_tags.allow_tags = True
 
+=======
+    display_tags.short_description="Tags"
+    display_tags.allow_tags=True
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def queryset(self, request):
         if self.granular_access:
             return self.model.user_objects(request.user)
         else:
             return self.model.objects
+<<<<<<< HEAD
 
     def has_change_permission(self, request, obj=None):
         r = self.view_changelist.access.check(self, request.user, obj)
@@ -94,6 +148,24 @@ class ModelApplication(Application):
             return self.queryset(request).filter(id=obj.id).exists()  # Check obj in queryset
         return r
 
+=======
+    
+    def has_change_permission(self, request, obj=None):
+        r=self.view_changelist.access.check(self,request.user,obj)
+        if r and obj and self.granular_access:
+            return self.queryset(request).filter(id=obj.id).exists()  # Check obj in queryset
+        return r
+    
+    def has_add_permission(self, request):
+        return self.view_add.access.check(self, request.user)
+    
+    def has_delete_permission(self, request, obj=None):
+        r=self.view_delete.access.check(self,request.user,obj)
+        if r and obj and self.granular_access:
+            return self.queryset(request).filter(id=obj.id).exists()  # Check obj in queryset
+        return r
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def user_access_list(self, user):
         if hasattr(self.model, "user_access_list"):
             return self.model.user_access_list(user)
@@ -105,23 +177,40 @@ class ModelApplication(Application):
             return self.model.group_access_list(group)
         else:
             return []
+<<<<<<< HEAD
 
     def user_access_change_url(self, user):
+=======
+    
+    def user_access_change_url(self,user):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if hasattr(self.model, "user_access_change_url"):
             return self.model.user_access_change_url(user)
         else:
             return None
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def group_access_change_url(self, group):
         if hasattr(self.model, "group_access_change_url"):
             return self.model.group_access_change_url(group)
         else:
             return []
+<<<<<<< HEAD
 
     def get_menu(self):
         """Get menu item name for application"""
         return self.menu
 
+=======
+    
+    def get_menu(self):
+        """Get menu item name for application"""
+        return self.menu
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_context(self, extra_context):
         """
         Populate template context with additional variables
@@ -130,6 +219,7 @@ class ModelApplication(Application):
             extra_context = {}
         extra_context["app"] = self
         return extra_context
+<<<<<<< HEAD
 
     def content_type(self):
         """Model's content type"""
@@ -138,13 +228,25 @@ class ModelApplication(Application):
             self.model._meta.object_name.lower()
         )
 
+=======
+    
+    def content_type(self):
+        """Model's content type"""
+        return "%s.%s" % (self.model._meta.app_label, 
+                          self.model._meta.object_name.lower())
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @view(url=r"^$", url_name="admin:%s_%s_changelist", access=HasPerm("change"),
           menu=get_menu)
     def view_changelist(self, request, extra_context=None):
         """Display changelist"""
         return self.admin.changelist_view(request,
                                           self.get_context(extra_context))
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @view(url=r"^add/$", url_name="admin:%s_%s_add", access=HasPerm("add"))
     def view_add(self, request, form_url="", extra_context=None):
         """Display add form"""
@@ -155,20 +257,34 @@ class ModelApplication(Application):
 
     @view(url=r"^(\d+)/history/$", url_name="history",
           access=HasPerm("change"))
+<<<<<<< HEAD
     def view_history(self, request, object_id, extra_context=None):
         """Display object's history"""
         return self.admin.history_view(request, object_id, extra_context)
 
+=======
+    def view_history(self,request,object_id,extra_context=None):
+        """Display object's history"""
+        return self.admin.history_view(request, object_id, extra_context)
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @view(url=r"^(\d+)/delete/$", url_name="delete", access=HasPerm("delete"))
     def view_delete(self, request, object_id, extra_context=None):
         """Delete object"""
         try:
             return self.admin.delete_view(request, object_id,
                                           self.get_context(extra_context))
+<<<<<<< HEAD
         except IntegrityError as e:
             self.message_user(request, "Integrity Error: %s" % e)
             return self.response_redirect("..")
 
+=======
+        except IntegrityError, why:
+            self.message_user(request, "Integrity Error: %s" % why)
+            return self.response_redirect("..")
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @view(url=r"^(\d+)/$", url_name="change", access=HasPerm("change"))
     def view_change(self, request, object_id, extra_context=None):
         """Display change form"""
@@ -177,7 +293,13 @@ class ModelApplication(Application):
             object_id,
             extra_context=self.get_context(extra_context))
 
+<<<<<<< HEAD
     # Backport from ExtApplication/ExtModelApplication for lookup support
+=======
+    ##
+    ## Backport from ExtApplication/ExtModelApplication for lookup support
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     ignored_params = ["_dc"]
     page_param = "__page"
     start_param = "__start"
@@ -199,7 +321,11 @@ class ModelApplication(Application):
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
         return self.list_data(request, self.instance_to_lookup)
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def instance_to_lookup(self, o):
         return {
             "id": o.id,
@@ -234,7 +360,11 @@ class ModelApplication(Application):
         """
         q = dict(request.GET.items())
         limit = q.get(self.limit_param)
+<<<<<<< HEAD
         # page = q.get(self.page_param)
+=======
+        page = q.get(self.page_param)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         start = q.get(self.start_param)
         format = q.get(self.format_param)
         query = q.get(self.query_param)
@@ -276,6 +406,7 @@ class ModelApplication(Application):
                 np, lt = p, None
             # Skip ignored params
             if np in self.ignored_params or p in (
+<<<<<<< HEAD
                 self.limit_param,
                 self.page_param,
                 self.start_param,
@@ -283,6 +414,10 @@ class ModelApplication(Application):
                 self.sort_param,
                 self.query_param
             ):
+=======
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             v = q[p]
             # Pass through interface cleaners
@@ -308,6 +443,18 @@ class ModelApplication(Application):
             nq[p] = v
         return nq
 
+<<<<<<< HEAD
+=======
+    def l_queryset(self, request, query=None):
+        """
+        Filter records for lookup
+        """
+        if query and self.query_fields:
+            return self.model.objects.filter(self.get_Q(request, query))
+        else:
+            return self.model.objects.all()
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 class ExistingListFilter(SimpleListFilter):
     """
@@ -315,14 +462,22 @@ class ExistingListFilter(SimpleListFilter):
     """
     def choices(self, cl):
         yield {
+<<<<<<< HEAD
             "selected": self.lookup_val is None,
             "query_string": cl.get_query_string({}, [self.lookup_kwarg]),
             "display": _("All")}
 
+=======
+            "selected"    : self.lookup_val is None,
+            "query_string": cl.get_query_string({}, [self.lookup_kwarg]),
+            "display"     : _("All")}
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         used = set(self.field.model.objects.distinct().values_list(self.field.name, flat=True))
         for k, v in self.field.flatchoices:
             if k in used:
                 yield {
+<<<<<<< HEAD
                     "selected": smart_unicode(k) == self.lookup_val,
                     "query_string": cl.get_query_string({self.lookup_kwarg: k}),
                     "display": v
@@ -330,6 +485,14 @@ class ExistingListFilter(SimpleListFilter):
 
 
 # Install specific filters to all models
+=======
+                    "selected"     : smart_unicode(k) == self.lookup_val,
+                    "query_string" : cl.get_query_string({self.lookup_kwarg: k}),
+                    "display"      : v
+                    }
+
+## Install specific filters to all models
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 FieldListFilter.register(
     lambda f: getattr(f, "existing_choices_filter", False),
     ExistingListFilter

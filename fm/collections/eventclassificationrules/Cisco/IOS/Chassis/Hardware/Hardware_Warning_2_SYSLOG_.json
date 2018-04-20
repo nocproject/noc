@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Hardware Warning #2 (SYSLOG)",
+    "uuid": "de8e2343-8228-4f88-9783-a7f2de143bc2",
+    "description": "%SNMP-5-CHASSISALARM: Chassis Alarm Trap: tmpAlarm(OFF), minorAlarm(ON), and/or majorAlarm(OFF)",
+    "event_class__name": "Chassis | Hardware | Hardware Warning",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SNMP-5-CHASSISALARM: Chassis Alarm Trap: tmpAlarm\\(\\S+\\), minorAlarm\\(\\S+\\), and/or majorAlarm\\(\\S+\\)"
+        }
+    ]
+}

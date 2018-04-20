@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Network | BGP | Peer State Changed (SNMP)",
+    "uuid": "881bd81a-4a2c-4131-ad43-9914f2a06b47",
+    "description": "CISCO-BGP4-MIB::cbgpFsmStateChange",
+    "event_class__name": "Network | BGP | Peer State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^BGP4-MIB::bgpPeerState\\.(?P<peer>\\S+)$",
+            "value_re": "^(?P<to_state__enum__bgp_state>\\S+)$"
+        },
+        {
+            "key_re": "^CISCO-BGP4-MIB::cbgpPeerPrevState\\.\\S+$",
+            "value_re": "^(?P<from_state__enum__bgp_state>\\S+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-BGP4-MIB::cbgpFsmStateChange$"
+        }
+    ]
+}

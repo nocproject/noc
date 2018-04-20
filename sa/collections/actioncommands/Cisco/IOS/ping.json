@@ -1,0 +1,12 @@
+{
+    "name": "Cisco | IOS | ping",
+    "uuid": "5cbc49be-9bde-440a-a909-95c92411101d",
+    "action__name": "ping",
+    "description": "",
+    "profile": "Cisco.IOS",
+    "config_mode": false,
+    "preference": 1000,
+    "match": [],
+    "commands": "{% ifequal address.afi \"4\" %}\nping {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% else %}\nping6 {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% endifequal %}",
+    "timeout": 60
+}

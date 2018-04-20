@@ -1,0 +1,29 @@
+//
+// Performance management data collector protocol
+//
+package pm;
+
+message PMMessage {
+    enum PMResultCode {
+        PR_OK   = 0;
+        PR_WARN = 1;
+        PR_FAIL = 2;
+    }
+    message PMResult {
+        required string       probe_name = 1;
+        required string       probe_type = 2;
+        required int32        timestamp  = 3;
+        required string       service    = 4;
+        required PMResultCode result     = 5;
+        required string       message    = 6;
+    }
+    message PMData {
+        required string  name      = 1;
+        required int32   timestamp = 2;
+        required bool    is_null   = 3;
+        required double  value     = 4;
+    }
+    repeated PMResult result   = 1;
+    repeated PMData   data     = 2;
+    required string   checksum = 3;  // See lib/pmhash.py for details
+}

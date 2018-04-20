@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Style model model
@@ -37,6 +38,12 @@ id_lock = Lock()
         ("phone.PhoneRangeProfile", "style")
     ]
 )
+=======
+## Django modules
+from django.db import models
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class Style(models.Model):
     """
     CSS Style
@@ -57,6 +64,7 @@ class Style(models.Model):
     is_active = models.BooleanField("Is Active", default=True)
     description = models.TextField("Description", null=True, blank=True)
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
@@ -71,6 +79,11 @@ class Style(models.Model):
         except Style.DoesNotExist:
             return None
 
+=======
+    def __unicode__(self):
+        return self.name
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @property
     def css_class_name(self):
         """

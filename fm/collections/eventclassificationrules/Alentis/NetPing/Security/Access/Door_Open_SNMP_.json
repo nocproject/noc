@@ -1,0 +1,33 @@
+{
+    "name": "Alentis | NetPing | Security | Access | Door Open (SNMP)",
+    "uuid": "a81ac448-9ed1-44cb-95e4-752ecbd176c7",
+    "description": "Sensor Opened Door",
+    "event_class__name": "Security | Access | Door Open",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Alentis\\.LC-SM$"
+        },
+        {
+            "key_re": "^DKSF-50-8-1-A-X::npIoLevelIn\\.1$",
+            "value_re": "^0$"
+        },
+        {
+            "key_re": "^DKSF-50-8-1-A-X::npIoLineN\\.1$",
+            "value_re": "^1$"
+        },
+        {
+            "key_re": "^DKSF-50-8-1-A-X::npIoMemo\\.1$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^DKSF-50-8-1-A-X::npIoEntry$"
+        }
+    ]
+}

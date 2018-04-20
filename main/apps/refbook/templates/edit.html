@@ -1,0 +1,14 @@
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li>{{rb.name}}</li>{% endblock %}
+{% block content %}
+<h1>Edit record</h1>
+<form method="POST" id="edit-form">
+<table border="0">
+    {%for f,v in record.items%}
+    <tr class="{%cycle 'row1' 'row2'%}"><td><b>{{f.name}}</b></td>
+        <td><input type="text" name="field_{{forloop.counter0}}" value="{{v}}"/></td></tr>
+    {%endfor%}
+</table>
+<input type="submit" value="save"/>
+</form>
+{% endblock %}

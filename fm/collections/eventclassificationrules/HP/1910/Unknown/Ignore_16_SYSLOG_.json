@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Unknown | Ignore #16 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ed27c647-043f-4cef-a411-6efc35f9673c",
+    "description": "May  9 05:45:12 2000 3com2952 %%10SC/6/SC_AAA_LAUNCH(l): -AAAType=AUTHEN-AAAScheme= local-Service=login-UserName=admin@system; AAA launched.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10SC/\\d+/SC_AAA_(LAUNCH|SUCCESS)\\(l\\): -AAAType=(AUTHEN|ACCOUNT|AUTHOR)-AAAScheme= local-Service=login-UserName=\\S+@system; AAA (launched|is successful)\\.$"
+        }
+    ]
+}

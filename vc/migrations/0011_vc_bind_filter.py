@@ -2,7 +2,11 @@
 
 from south.db import db
 from django.db import models
+<<<<<<< HEAD
 from noc.core.model.fields import CIDRField
+=======
+from noc.lib.fields import CIDRField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Migration:
@@ -22,10 +26,17 @@ class Migration:
             ('vc_filter', models.ForeignKey(VCFilter,verbose_name="VC Filter")),
         ))
         db.send_create_signal('vc', ['VCBindFilter'])
+<<<<<<< HEAD
 
         # Adding field 'VCDomain.enable_vc_bind_filter'
         db.add_column('vc_vcdomain', 'enable_vc_bind_filter', models.BooleanField("Enable VC Bind filter",default=False))
 
+=======
+        
+        # Adding field 'VCDomain.enable_vc_bind_filter'
+        db.add_column('vc_vcdomain', 'enable_vc_bind_filter', models.BooleanField("Enable VC Bind filter",default=False))
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         # Deleting model 'VCBindFilter'
         db.delete_table('vc_vcbindfilter')

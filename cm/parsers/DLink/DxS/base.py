@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Basic DLink parser
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
 from noc.lib.validators import is_ipv4, is_int
+=======
+##----------------------------------------------------------------------
+## Basic DLink parser
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from collections import defaultdict
+## Third-party modules
+from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
+    Literal, delimitedList
+## NOC modules
+from noc.cm.parsers.base import BaseParser
+from noc.lib.ip import IPv4
+from noc.lib.validators import is_ipv4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class BaseDLinkParser(BaseParser):
@@ -53,8 +72,11 @@ class BaseDLinkParser(BaseParser):
                 self.parse_config_snmp(ll)
             elif l.startswith("config port_security ports "):
                 self.parse_port_security(ll)
+<<<<<<< HEAD
             elif l.startswith("config traffic control "):
                 self.parse_traffic_control(ll)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             elif len(ll) > 1 and ll[0] in ("enable", "disable"):
                 if ll[1] in self.STATUSES:
                     self.statuses[ll[1]] = ll[0] == "enable"
@@ -155,15 +177,22 @@ class BaseDLinkParser(BaseParser):
     def parse_create_vlan(self, tokens):
         """
         create vlan 306 tag 306
+<<<<<<< HEAD
         create vlan tag tag 306
         """
         tag = self.next_item(tokens, "tag")
         if tag and is_int(tag):
+=======
+        """
+        tag = self.next_item(tokens, "tag")
+        if tag:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             name = self.next_item(tokens, "vlan")
             vid = int(tag)
             self.get_vlan_fact(vid).name = name
             self.vlan_ids[tag] = vid
             self.vlan_ids[name] = vid
+<<<<<<< HEAD
         else:
             if len(tokens) == 5 and tokens[3] == "tag" and is_int(tokens[4]):
                 name = self.next_item(tokens, "vlan")
@@ -171,6 +200,8 @@ class BaseDLinkParser(BaseParser):
                 self.get_vlan_fact(vid).name = name
                 self.vlan_ids[tag] = vid
                 self.vlan_ids[name] = vid
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def parse_config_vlan_vlanid(self, tokens):
         """
@@ -287,6 +318,7 @@ class BaseDLinkParser(BaseParser):
             if ps_max is not None:
                 si.port_security_max = ps_max
 
+<<<<<<< HEAD
     def parse_traffic_control(self, tokens):
         """
         config traffic control 1 broadcast enable multicast enable unicast enable action drop threshold 64 countdown 0 time_interval 5 
@@ -305,6 +337,8 @@ class BaseDLinkParser(BaseParser):
             if unicast == "enable":
                 si.traffic_control_unicast = True
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Port expression parser
 DIGITS = Word(nums)

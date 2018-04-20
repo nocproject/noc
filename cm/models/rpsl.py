@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # RPSL Object
 # ---------------------------------------------------------------------
@@ -12,12 +13,30 @@ import os
 import logging
 # NOC modules
 from .object import Object
+=======
+##----------------------------------------------------------------------
+## RPSL Object
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import logging
+## NOC modules
+from object import Object
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
 
 class RPSL(Object):
+<<<<<<< HEAD
     class Meta(object):
+=======
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         app_label = "cm"
         db_table = "cm_rpsl"
         verbose_name = "RPSL Object"
@@ -46,10 +65,15 @@ class RPSL(Object):
             for o in objects.values():
                 o.delete()
 
+<<<<<<< HEAD
         from noc.peer.models.asn import AS
         from noc.peer.models.asset import ASSet
         from noc.peer.models.peeringpoint import PeeringPoint
         from noc.dns.models.dnszone import DNSZone
+=======
+        from noc.peer.models import AS, ASSet, PeeringPoint
+        from noc.dns.models import DNSZone
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         logger.debug("RPSL.global_pull(): building RPSL")
         global_pull_class("inet-rtr", PeeringPoint,

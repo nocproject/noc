@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_version
 # ---------------------------------------------------------------------
@@ -34,6 +35,39 @@ class Script(BaseScript):
     def execute(self):
         v = None
         if self.has_snmp():
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "HP.ProCurve.get_version"
+    cache = True
+    implements = [IGetVersion]
+
+    rx_ver = re.compile(r"ProCurve\s+\S+\s+(Switch\s+)?(?P<platform>\S+).*?,"
+                        "\s*revision\s+(?P<version>\S+),",
+                        re.IGNORECASE)
+    rx_ver_new = re.compile(r"HP\s+\S+\s+(?P<platform>\S+)\s+Switch,"
+                            "\s+revision\s+(?P<version>\S+),",
+                            re.IGNORECASE)
+
+    def execute(self):
+        v = None
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
             except self.snmp.TimeOutError:
@@ -43,11 +77,15 @@ class Script(BaseScript):
         try:
             match = self.re_search(self.rx_ver, v.strip())
         except self.UnexpectedResultError:
+<<<<<<< HEAD
         #Added for 3500yl
             try:
                 match = self.re_search(self.rx_ver_new, v.strip())
             except self.UnexpectedResultError:
                 match = self.re_search(self.rx_ver_3500yl, v.strip())
+=======
+            match = self.re_search(self.rx_ver_new, v.strip())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         platform = match.group("platform").split('-')[0]
         return {
             "vendor": "HP",

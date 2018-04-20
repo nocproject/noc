@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Various database utilities
 # ---------------------------------------------------------------------
@@ -12,12 +13,29 @@ import logging
 #
 from psycopg2.extensions import adapt
 # Django modules
+=======
+##----------------------------------------------------------------------
+## Various database utilities
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import subprocess
+##
+from psycopg2.extensions import adapt
+## Django modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from django.utils import tree
 from django.db.models import Q
 from django.db import connection
 
+<<<<<<< HEAD
 logger = logging.getLogger(__name__)
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 class SQLExpression(object):
     def __init__(self, sql):
@@ -58,7 +76,11 @@ class TagsExpression(object):
 
     def as_sql(self, qn, connection):
         t = ",".join(str(adapt(x)) for x in self.tags)
+<<<<<<< HEAD
         return "ARRAY[%s] <@ \"%s\".%s" % (t, self.table, qn("tags")), []
+=======
+        return "ARRAY[%s] <@ %s.%s" % (t, self.table, qn("tags")), []
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class TagsNode(tree.Node):
@@ -157,15 +179,26 @@ def vacuum(table, analyze=False):
     :param analyze: Issue ANALYZE command
     :return:
     """
+<<<<<<< HEAD
     pc = connection.cursor()
     c = connection.connection
     level = c.isolation_level
     c.set_isolation_level(0)
     cursor = c.cursor()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     if analyze:
         cmd = "VACUUM ANALYZE %s" % table
     else:
         cmd = "VACUUM %s" % table
+<<<<<<< HEAD
     logger.info(cmd)
     cursor.execute(cmd)
     c.set_isolation_level(level)
+=======
+    c = connection.cursor()
+    # Close current transaction
+    # before running VACUUM
+    c.execute("COMMIT")
+    c.execute(cmd)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

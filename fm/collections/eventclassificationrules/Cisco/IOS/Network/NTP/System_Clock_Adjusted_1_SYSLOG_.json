@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | NTP | System Clock Adjusted #1 (SYSLOG)",
+    "uuid": "d966de3b-1979-45b0-ac98-4a3c28b5cd32",
+    "description": "%SYS-6-CLOCKUPDATE: System clock has been updated from 07:16:14 MSK Mon Oct 31 2011 to 07:16:16 MSK Mon Oct 31 2011, configured from NTP by 192.168.100.253",
+    "event_class__name": "Network | NTP | System Clock Adjusted",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-6-CLOCKUPDATE: System clock has been updated from .+ to .+, configured from NTP by (?P<server_address>\\S+).$"
+        }
+    ]
+}

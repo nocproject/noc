@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 10G | XFP10GLR-192SR-L",
+    "$collection": "inv.objectmodels",
+    "uuid": "2fbddc6c-6203-436a-8047-df922b53b8b0",
+    "vendor__code": "CISCO",
+    "description": "Cisco Multirate 10GBASE-LR/-LW and OC-192/STM-64 SR-1 XFP Module for SMF, low power (1.5W)",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["XFP10GLR-192SR-L"]
+        }
+    }
+}

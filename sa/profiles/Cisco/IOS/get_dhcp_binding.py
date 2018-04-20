@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_dhcp_binding
 # ---------------------------------------------------------------------
@@ -9,13 +10,31 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_dhcp_binding
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetDHCPBinding
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import re
 import datetime
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Cisco.IOS.get_dhcp_binding"
     interface = IGetDHCPBinding
+=======
+class Script(noc.sa.script.Script):
+    name = "Cisco.IOS.get_dhcp_binding"
+    implements = [IGetDHCPBinding]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)\s+(?P<expire>.+?)\s+(?P<type>Automatic|Manual)$", re.IGNORECASE)
 
     def execute(self):

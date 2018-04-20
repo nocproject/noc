@@ -1,0 +1,15 @@
+{
+    "name": "reset_interface",
+    "uuid": "35413a19-da97-4a14-b841-a85aef06e228",
+    "label": "Reset interface",
+    "description": "Reset interface",
+    "access_level": 15,
+    "params": [
+        {
+            "description": "Interface name",
+            "is_required": true,
+            "name": "interface",
+            "type": "interface"
+        }
+    ]
+}

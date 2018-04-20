@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_arp
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "Cisco.NXOS.get_arp"
     interface = IGetARP
+=======
+##----------------------------------------------------------------------
+## Cisco.NXOS.get_arp
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetARP
+import re
+
+
+class Script(noc.sa.script.Script):
+    name = "Cisco.NXOS.get_arp"
+    implements = [IGetARP]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(r"(?P<ip>([0-9]{1,3}\.){3}[0-9]{1,3})\s+\S+\s+(?P<mac>\S+)\s+(?P<interface>\S+)")
 
     def execute(self, vrf=None):

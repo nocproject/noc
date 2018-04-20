@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | Chassis | Fan | Fan Failed (SYSLOG)",
+    "uuid": "740661e7-f7f0-4b64-872e-3919cf7464a3",
+    "description": "Aug  5 10: 9:26 switch-name system: FAN2 RPM value 2746 is lower than its limit RPM value",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?P<name>\\S+) RPM value \\d+ is lower than its limit RPM value$"
+        }
+    ]
+}

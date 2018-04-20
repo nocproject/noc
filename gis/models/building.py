@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Building object
 # ---------------------------------------------------------------------
@@ -9,10 +10,21 @@
 # Python modules
 from __future__ import absolute_import
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## Building object
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, EmbeddedDocumentField,
                                 DictField, DateTimeField)
+<<<<<<< HEAD
 # NOC modules
 from noc.lib.nosql import PlainReferenceField
 from .entrance import Entrance
@@ -26,6 +38,19 @@ class Building(Document):
         "collection": "noc.buildings",
         "strict": False,
         "auto_create_index": False,
+=======
+from mongoengine import signals
+## NOC modules
+from noc.lib.nosql import PlainReferenceField
+from entrance import Entrance
+from division import Division
+
+
+class Building(Document):
+    meta = {
+        "collection": "noc.buildings",
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["adm_division", "data", "sort_order"]
     }
     # Administrative division
@@ -40,9 +65,15 @@ class Building(Document):
             ("D", "DEMOLISHED")
         ],
         default="R")
+<<<<<<< HEAD
     # Total homes
     homes = IntField()
     # Maximal amount of floors
+=======
+    ## Total homes
+    homes = IntField()
+    ## Maximal amount of floors
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     floors = IntField()
     #
     entrances = ListField(EmbeddedDocumentField(Entrance))
@@ -63,10 +94,21 @@ class Building(Document):
     # Filled by primary address trigger
     sort_order = StringField()
 
+<<<<<<< HEAD
     @property
     def primary_address(self):
         from .address import Address
 
+=======
+    @classmethod
+    def update_floors(cls, sender, document, **kwargs):
+        """
+        Update floors
+        """
+
+    @property
+    def primary_address(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Try primary address first
         pa = Address.objects.filter(building=self.id, is_primary=True).first()
         if pa:
@@ -90,3 +132,12 @@ class Building(Document):
             ]
             e_home += homes_per_entrance
         self.save()
+<<<<<<< HEAD
+=======
+
+## Setup signals
+signals.pre_save.connect(Building.update_floors, sender=Building)
+
+## Avoid circular references
+from address import Address
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

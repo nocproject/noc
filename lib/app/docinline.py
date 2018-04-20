@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ModelInline
 # ---------------------------------------------------------------------
@@ -8,6 +9,17 @@
 
 # NOC modules
 from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
+=======
+##----------------------------------------------------------------------
+## ModelInline
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.interfaces import (BooleanParameter, IntParameter,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
                                NoneParameter, InterfaceTypeError,
@@ -122,7 +134,11 @@ class DocInline(object):
         :type field: Field
         :return:
         """
+<<<<<<< HEAD
         from noc.core.model.fields import AutoCompleteTagsField
+=======
+        from noc.lib.fields import AutoCompleteTagsField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         if isinstance(field, BooleanField):
             return BooleanParameter()

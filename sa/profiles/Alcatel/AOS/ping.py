@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.AOS.ping
 # ----------------------------------------------------------------------
@@ -14,6 +15,24 @@ import re
 class Script(BaseScript):
     name = "Alcatel.AOS.ping"
     interface = IPing
+=======
+##----------------------------------------------------------------------
+## Alcatel.AOS.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IPing
+import re
+
+
+class Script(noc.sa.script.Script):
+    name = "Alcatel.AOS.ping"
+    implements = [IPing]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_result = re.compile(
         r"^(?P<success>\d+)\s+packets transmitted,\s+(?P<count>\d+)\s+"
         r"packets received,\s+\d+%\s+packet loss?\nround-trip \(ms\)\s+"
@@ -36,6 +55,7 @@ class Script(BaseScript):
             cmd += " df-bit"
         pr = self.cli(cmd)
         match = self.rx_result.search(pr)
+<<<<<<< HEAD
         if match:
             return {
                 "success": match.group("success"),
@@ -49,3 +69,12 @@ class Script(BaseScript):
                 "success": 0,
                 "count": count or 5
             }
+=======
+        return {
+            "success": match.group("success"),
+            "count": match.group("count"),
+            "min": match.group("min"),
+            "avg": match.group("avg"),
+            "max": match.group("max")
+        }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

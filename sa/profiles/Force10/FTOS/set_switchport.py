@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.FTOS.set_switchport
 # ---------------------------------------------------------------------
@@ -16,6 +17,26 @@ from noc.sa.interfaces.isetswitchport import ISetSwitchport
 class Script(BaseScript):
     name = "Force10.FTOS.set_switchport"
     interface = ISetSwitchport
+=======
+##----------------------------------------------------------------------
+## Force10.FTOS.set_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+from collections import defaultdict
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import ISetSwitchport
+
+
+class Script(NOCScript):
+    name = "Force10.FTOS.set_switchport"
+    implements = [ISetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, configs, protect_switchport=True, protect_type=True,
                 debug=False):
@@ -104,6 +125,11 @@ class Script(BaseScript):
             add_untagged.keys() + add_tagged.keys() +
             remove_untagged.keys() + remove_tagged.keys()
         ))
+<<<<<<< HEAD
+=======
+        print "@@@@@ U REMOVE", remove_untagged, "ADD", add_untagged
+        print "@@@@@ T REMOVE", remove_tagged, "ADD", add_tagged
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Remove interfaces
         for v in vlans:
             vc = []

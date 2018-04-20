@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_interfaces
 # ---------------------------------------------------------------------
@@ -7,10 +8,21 @@
 # ---------------------------------------------------------------------
 
 
+=======
+##----------------------------------------------------------------------
+## Huawei.VRP.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
+<<<<<<< HEAD
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -68,6 +80,46 @@ class Script(BaseScript):
         "FastEthernet": "physical",
         "Ethernet": "physical",
         "Cascade": "physical",
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+    name = "Huawei.VRP.get_interfaces"
+    implements = [IGetInterfaces]
+
+    rx_iface_sep = re.compile(r"^(\S+) current state\s*:\s+",
+                              re.MULTILINE)
+    rx_line_proto = re.compile(
+        r"Line protocol current state : (?P<o_state>UP|DOWN)",
+        re.IGNORECASE
+    )
+    rx_mac = re.compile(
+        "Hardware address is (?P<mac>[0-9af]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
+    )
+    rx_ipv4 = re.compile(
+        r"Internet Address is (?P<ip>\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1,2}/\d{1,2})",
+        re.IGNORECASE
+    )
+
+    rx_iftype = re.compile(r"^(\S+?)\d+.*$")
+
+    rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s+:\s+(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
+
+    rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
+
+    rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
+
+    types = {
+        "Aux": "physical",
+        "Eth-Trunk": "aggregated",
+        "Ip-Trunk": "aggregated",
+        "XGigabitEthernet": "physical",
+        "GigabitEthernet": "physical",
+        "FastEthernet": "physical",
+        "Ethernet": "physical",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "Logic-Channel": "tunnel",
         "LoopBack": "loopback",
         "MEth": "management",
@@ -76,6 +128,7 @@ class Script(BaseScript):
         "Ring-if": "physical",
         "Tunnel": "tunnel",
         "Virtual-Ethernet": None,
+<<<<<<< HEAD
         "Virtual-Template": "template",
         "Bridge-Template": "template",
         "Bridge-template": "template",
@@ -87,6 +140,10 @@ class Script(BaseScript):
         "100GE": "physical",
         "Serial": None,
         "Pos": None
+=======
+        "Virtual-Template": None,
+        "Vlanif": "SVI"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     def get_ospfint(self):
@@ -101,6 +158,7 @@ class Script(BaseScript):
                 ospfs += [match.group("name")]
         return ospfs
 
+<<<<<<< HEAD
     def get_ndpint(self):
         try:
             v = self.cli("display ndp")
@@ -147,6 +205,9 @@ class Script(BaseScript):
         return lldp
 
     def execute_cli(self):
+=======
+    def execute(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = {}
         for sp in self.scripts.get_switchport():
@@ -182,6 +243,7 @@ class Script(BaseScript):
         interfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
+<<<<<<< HEAD
         # Get NDP interfaces
         ndps = self.get_ndpint()
         # Get ifindexes
@@ -190,6 +252,8 @@ class Script(BaseScript):
         stps = self.get_stpint()
         # Get LLDP interfaces
         lldps = self.get_lldpint()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         v = self.cli("display interface")
         il = self.rx_iface_sep.split(v)[1:]
@@ -197,10 +261,13 @@ class Script(BaseScript):
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname.startswith("NULL"):
                 continue
+<<<<<<< HEAD
             # I do not known, what are these
             if ifname.startswith("DCN-Serial") \
             or ifname.startswith("Cpos-Trunk"):
                 continue
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             sub = {
                 "name": ifname,
                 "admin_status": True,
@@ -227,15 +294,21 @@ class Script(BaseScript):
             if ifname.lower().startswith("vlanif"):
                 # SVI
                 sub["vlan_ids"] = [int(ifname[6:].strip())]
+<<<<<<< HEAD
             if ifname.lower().startswith("vlan-interface"):
                 # SVI
                 sub["vlan_ids"] = [int(ifname[14:].strip())]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Parse data
             a_stat, data = data.split("\n", 1)
             a_stat = a_stat.lower().endswith("up")
             o_stat = None
             for l in data.splitlines():
+<<<<<<< HEAD
                 l = l.strip()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Oper. status
                 if o_stat is None:
                     match = self.rx_line_proto.search(l)
@@ -248,6 +321,7 @@ class Script(BaseScript):
                     if d != "---":
                         sub["description"] = d
                     continue
+<<<<<<< HEAD
                 # Process description
                 if l.startswith("Description :"):
                     d = l[13:].strip()
@@ -266,11 +340,21 @@ class Script(BaseScript):
                     sub["untagged_vlan"] = int(match.group("pvid"))
                     continue
                 # Static vlans
+=======
+                # MAC
+                if not sub.get("mac"):
+                    match = self.rx_mac.search(l)
+                    if match:
+                        sub["mac"] = match.group("mac")
+                        continue
+                # Static vlans
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if l.startswith("Encapsulation "):
                     enc = l[14:]
                     if enc.startswith("802.1Q"):
                         sub["vlan_ids"] = [enc.split(",")[2].split()[2]]
                     continue
+<<<<<<< HEAD
                 # MTU
                 match = self.rx_mtu.search(l)
                 if match:
@@ -282,6 +366,8 @@ class Script(BaseScript):
                     sub["ip_unnumbered_subinterface"] = match.group("iface")
                     sub["enabled_afi"] = ['IPv4']
                     continue
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if "." not in ifname:
                 if o_stat is None:
                     o_stat = False
@@ -297,12 +383,16 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }
+<<<<<<< HEAD
                 if ifname in ifindexes:
                     iface["snmp_ifindex"] = int(ifindexes[ifname], 16)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if "mac" in sub:
                     iface["mac"] = sub["mac"]
                 if "description" in sub:
                     iface["description"] = sub["description"]
+<<<<<<< HEAD
                 if ifname in ndps:
                     # NDP
                     iface["enabled_protocols"] += ["NDP"]
@@ -313,6 +403,8 @@ class Script(BaseScript):
                     # LLDP
                     iface["enabled_protocols"] += ["LLDP"]
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Portchannel member
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
@@ -322,8 +414,11 @@ class Script(BaseScript):
                         iface["enabled_protocols"] += ["LACP"]
                 interfaces += [iface]
             else:
+<<<<<<< HEAD
                 iface, vlan_id = ifname.split(".")
                 sub["vlan_ids"] = [vlan_id]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 interfaces[-1]["subinterfaces"] += [sub]
         # Process VRFs
         vrfs = {

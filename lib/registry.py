@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Abstract module loader/registry
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+=======
+##----------------------------------------------------------------------
+## Abstract module loader/registry
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import os
 import logging
 import sys
@@ -34,6 +45,10 @@ class Registry(object):
         #
         self.is_registered = self.daemon_name in self.exclude_daemons
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def register(self, name, module):
         """
         Should be called within metaclass' __new__ method
@@ -56,7 +71,11 @@ class Registry(object):
             apps = self.apps
         for l in ["", "local"]:  # Look in the local/ directory too
             for app in apps:
+<<<<<<< HEAD
                 pd = os.path.join("services", "web", "apps", l, app[4:], self.subdir)
+=======
+                pd = os.path.join(l, app[4:], self.subdir)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if not os.path.isdir(pd):
                     continue
                 for dirpath, dirnames, filenames in os.walk(pd):
@@ -73,7 +92,11 @@ class Registry(object):
                             if not os.path.exists(i_path):
                                 open(i_path, "w").close()  # Create file
                     else:
+<<<<<<< HEAD
                         mb = "services" + "." + ".".join(dirpath.split(os.sep)[1:])
+=======
+                        mb = app + "." + ".".join(dirpath.split(os.sep)[1:])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     for f in [f for f in filenames if not f.startswith(".") and f.endswith(".py")]:
                         if f == "__init__.py":
                             f = ""

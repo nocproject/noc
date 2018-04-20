@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Template helper utilities
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 import os
 # Django modules
+=======
+##----------------------------------------------------------------------
+## Template helper utilities
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Django modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from django.template import Template, Context
 
 
@@ -70,4 +83,8 @@ def render_message(name, context=None):
         return None, "\n".join(l)
 
 
+<<<<<<< HEAD
 _tpl_cache = {}  # name -> template instance
+=======
+_tpl_cache = {}  # name -> template instance
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

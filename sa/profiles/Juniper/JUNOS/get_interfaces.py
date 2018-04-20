@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_interfaces
 # ---------------------------------------------------------------------
@@ -15,6 +16,23 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Juniper.JUNOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# Python modules
+import re
+# NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Juniper.JUNOS.get_interfaces
 
@@ -23,6 +41,7 @@ class Script(BaseScript):
     @todo: vlan ids of the units
     """
     name = "Juniper.JUNOS.get_interfaces"
+<<<<<<< HEAD
     interface = IGetInterfaces
     TIMEOUT = 240
 
@@ -92,15 +111,70 @@ class Script(BaseScript):
             if name.startswith("lo"):
                 iftype = "loopback"
             elif name.startswith("fxp") or name.startswith("me"):
+=======
+    implements = [IGetInterfaces]
+
+    rx_phy_split = re.compile(r"^Physical interface:\s+", re.MULTILINE)
+    rx_phy_name = re.compile(r"^(?P<ifname>\S+)( \(\S+, \S+\))?, (?P<admin>Enabled|Disabled|Administratively down), Physical link is (?P<oper>Up|Down)",
+                             re.MULTILINE | re.IGNORECASE)
+    rx_phy_description = re.compile(r"^\s+Description:\s+(?P<description>.+?)\s*$",
+                                    re.MULTILINE)
+    rx_phy_ifindex = re.compile(r"SNMP ifIndex: (?P<ifindex>\d+)",
+                                re.MULTILINE | re.IGNORECASE)
+    rx_phy_mac = re.compile(r"^\s+Current address: (?P<mac>\S+),", re.MULTILINE)
+    rx_log_split = re.compile(r"^\s+Logical interface\s+", re.MULTILINE)
+    rx_log_name = re.compile(r"^(?P<name>\S+).+?SNMP ifIndex (?P<ifindex>\d+)",
+                             re.IGNORECASE)
+    rx_log_protocol = re.compile(r"^\s+Protocol\s+", re.MULTILINE)
+    rx_log_pname = re.compile(r"^(?P<proto>[a-zA-Z0-9\-]+)")
+    rx_log_address = re.compile(r"^\s+Local:\s+(?P<address>\S+)", re.MULTILINE)
+    rx_log_netaddress = re.compile(r"^\s+Destination: (?P<dest>\S+?),\s+Local: (?P<local>\S+?)(?:,|$)",
+        re.MULTILINE)
+    rx_log_netaddress6 = re.compile(r"^\s+Destination: (?P<dest>\S+?),[ \r\n]+Local: (?P<local>\S+?)$",
+        re.MULTILINE)
+    rx_log_ae = re.compile(r"AE bundle: (?P<bundle>\S+?)\.\d+", re.MULTILINE)
+    rx_flags_vlan = re.compile(r"^\s+Flags:.+VLAN-Tag \[\s*0x\d+\.(?P<vlan>\d+)\s*\]",
+        re.IGNORECASE | re.MULTILINE)
+
+    internal_interfaces = re.compile(r"^(lc-|cbp|demux|dsc|em|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|bme|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep)")
+    internal_interfaces_olive = re.compile(r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip)")
+
+    def execute(self):
+        untagged = {}
+        tagged = {}
+        vlans_requested = False
+        interfaces = []
+        version = self.scripts.get_version()
+        if version["platform"] == "olive":
+            internal = self.internal_interfaces_olive
+        else:
+            internal = self.internal_interfaces
+        v = self.cli("show interfaces")
+        for I in self.rx_phy_split.split(v)[1:]:
+            L = self.rx_log_split.split(I)
+            phy = L.pop(0)
+            match = self.re_search(self.rx_phy_name, phy)
+            name = match.group("ifname")
+            # Skip internal interfaces
+            if internal.search(name):
+                continue
+            # Detect interface type
+            if name.startswith("lo"):
+                iftype = "loopback"
+            elif name.startswith("fxp"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 iftype = "management"
             elif name.startswith("ae") or name.startswith("reth"):
                 iftype = "aggregated"
             elif name.startswith("vlan"):
                 iftype = "SVI"
+<<<<<<< HEAD
             elif name.startswith("vme"):
                 iftype = "SVI"
             elif name.startswith("irb"):
                 iftype = "SVI"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             else:
                 iftype = "physical"
             # Get interface parameters
@@ -109,6 +183,7 @@ class Script(BaseScript):
                 "admin_status": match.group("admin").lower() == "enabled",
                 "oper_status": match.group("oper").lower() == "up",
                 "type": iftype,
+<<<<<<< HEAD
             }
             def_si = {
                 "name": name,
@@ -118,6 +193,12 @@ class Script(BaseScript):
             # Get description
             match = self.rx_phy_description.search(phy)
             if match and match.group("description") != "-=unused=-":
+=======
+                }
+            # Get description
+            match = self.rx_phy_description.search(phy)
+            if match:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 iface["description"] = match.group("description")
             # Get ifindex
             match = self.rx_phy_ifindex.search(phy)
@@ -129,6 +210,7 @@ class Script(BaseScript):
             if match:
                 mac = match.group("mac")
                 iface["mac"] = mac
+<<<<<<< HEAD
                 def_si["mac"] = mac
             match = self.rx_mtu.search(phy)
             if match:
@@ -140,6 +222,13 @@ class Script(BaseScript):
                 sname = match.group("name")
                 if not self.profile.valid_interface_name(self, sname):
                     continue
+=======
+            # Process subinterfaeces
+            subs = []
+            for s in L:
+                match = self.re_search(self.rx_log_name, s)
+                sname = match.group("name")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 si = {
                     "name": sname,
                     "snmp_ifindex": match.group("ifindex"),
@@ -149,10 +238,13 @@ class Script(BaseScript):
                 }
                 if mac:
                     si["mac"] = mac
+<<<<<<< HEAD
                 # Get MTU
                 match = self.rx_mtu.search(s)
                 if match:
                     si["mtu"] = match.group("mtu")
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Get description
                 match = self.rx_phy_description.search(s)
                 if match:
@@ -162,11 +254,17 @@ class Script(BaseScript):
                 match = self.rx_flags_vlan.search(s)
                 if match:
                     vlan_ids = [int(match.group("vlan"))]
+<<<<<<< HEAD
                     if match.group("vlan2"):
                         vlan_ids += [int(match.group("vlan2"))]
                 # Process protocols
                 for p in self.rx_log_protocol.split(s)[1:]:
                     match = self.rx_log_pname.search(p)
+=======
+                # Process protocols
+                for p in self.rx_log_protocol.split(s)[1:]:
+                    match = self.re_search(self.rx_log_pname, p)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     proto = match.group("proto")
                     local_addresses = self.rx_log_address.findall(p)
                     if proto == "iso":
@@ -199,6 +297,7 @@ class Script(BaseScript):
                             si["ipv6_addresses"] += ["%s/%s" % (addr, m)]
                     elif proto == "aenet":
                         # Aggregated
+<<<<<<< HEAD
                         match = self.rx_log_ae.search(p)
                         bundle = match.group("bundle")
                         iface["aggregated_interface"] = bundle
@@ -213,6 +312,15 @@ class Script(BaseScript):
                                 v = self.cli("show vlans detail")
                                 untagged, tagged, l3_ids = \
                                     self.get_vlan_port_mapping(v)
+=======
+                        match = self.re_search(self.rx_log_ae, p)
+                        bundle = match.group("bundle")
+                        iface["aggregated_interface"] = bundle
+                    elif proto.lower() == "eth-switch":
+                        if not vlans_requested:
+                            # Request vlans port mapping
+                            untagged, tagged = self.get_vlan_port_mapping()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                             vlans_requested = True
                         # Set untagged
                         try:
@@ -224,6 +332,7 @@ class Script(BaseScript):
                             si["tagged_vlans"] = sorted(tagged[si["name"]])
                         except KeyError:
                             pass
+<<<<<<< HEAD
                         # Set vlan_ids for EX series
                         try:
                             si["vlan_ids"] = [l3_ids[si["name"]]]
@@ -256,6 +365,21 @@ class Script(BaseScript):
             iface["subinterfaces"] = subs
             interfaces += [iface]
             time.sleep(1)
+=======
+                        # x = untagged.get(si["name"])
+                        # if x:
+                        #     si["untagged_vlans"]
+                    # Set vlan_ids
+                    if vlan_ids and (
+                        "IPv4" in si["enabled_afi"] or
+                        "IPv6" in si["enabled_afi"]):
+                        si["vlan_ids"] = vlan_ids
+                # Append to subinterfaces list
+                subs += [si]
+            # Append to collected interfaces
+            iface["subinterfaces"] = subs
+            interfaces += [iface]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Process VRFs
         vrfs = {
             "default": {
@@ -265,7 +389,14 @@ class Script(BaseScript):
             }
         }
         imap = {}  # interface -> VRF
+<<<<<<< HEAD
         r = self.scripts.get_mpls_vpn()
+=======
+        try:
+            r = self.scripts.get_mpls_vpn()
+        except self.CLISyntaxError:
+            r = []
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for v in r:
             if v["type"] == "VRF":
                 vrfs[v["name"]] = {
@@ -280,6 +411,7 @@ class Script(BaseScript):
             subs = i["subinterfaces"]
             for vrf in set(imap.get(si["name"], "default") for si in subs):
                 c = i.copy()
+<<<<<<< HEAD
                 c["subinterfaces"] = [
                     si for si in subs  # noqa
                     if imap.get(si["name"], "default") == vrf
@@ -287,10 +419,19 @@ class Script(BaseScript):
                 vrfs[vrf]["interfaces"] += [c]
         return vrfs.values()
 
+=======
+                c["subinterfaces"] = [si for si in subs
+                                      if imap.get(si["name"], "default") == vrf]
+                vrfs[vrf]["interfaces"] += [c]
+        return vrfs.values()
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_vlan_sep = re.compile(r"^VLAN:", re.MULTILINE)
     rx_802_1Q_tag = re.compile(r"802.1Q\s+Tag:\s+(?P<tag>\d+)",
                                re.IGNORECASE | re.MULTILINE)
     rx_vlan_untagged = re.compile(r"\s+Untagged interfaces:\s*(.+)",
+<<<<<<< HEAD
                                   re.MULTILINE | re.DOTALL)
     rx_vlan_tagged = re.compile(r"\s+Tagged interfaces:\s*(.+)",
                                 re.MULTILINE | re.DOTALL)
@@ -305,6 +446,13 @@ class Script(BaseScript):
     )
 
     def get_vlan_port_mapping(self, v):
+=======
+                                  re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_vlan_tagged = re.compile(r"\s+Tagged interfaces:\s*(.+)",
+                                re.MULTILINE | re.DOTALL | re.IGNORECASE)
+
+    def get_vlan_port_mapping(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Get Vlan to port mappings for Juniper EX series.
         Returns two dicts: port -> untagged vlan, port -> tagged vlans
@@ -317,6 +465,10 @@ class Script(BaseScript):
             :param s: Interface name
             :returns: Cleaned interface name
             """
+<<<<<<< HEAD
+=======
+            o = s
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             s = s.strip()
             if s.endswith("*"):
                 s = s[:-1]
@@ -326,6 +478,7 @@ class Script(BaseScript):
 
         untagged = {}  # port -> vlan id
         tagged = {}  # port -> [vlan_id, ...]
+<<<<<<< HEAD
         l3_ids = {}  # port -> vlan_id
         # v = self.cli("show vlans detail")
         found = False
@@ -333,6 +486,12 @@ class Script(BaseScript):
             match = self.rx_802_1Q_tag.search(vdata)
             if match:
                 found = True
+=======
+        v = self.cli("show vlans detail")
+        for vdata in self.rx_vlan_sep.split(v):
+            match = self.rx_802_1Q_tag.search(vdata)
+            if match:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # 802.1Q VLAN
                 tag = int(match.group("tag"))
                 # Process tagged interfaces
@@ -353,6 +512,7 @@ class Script(BaseScript):
                         if i:
                             untagged[i] = tag
                 continue
+<<<<<<< HEAD
         if found:
             # self.logger.debug("VLANS: %s %s" % (untagged, tagged))
             return untagged, tagged, l3_ids
@@ -380,3 +540,8 @@ class Script(BaseScript):
         # self.logger.debug("VLANS: %s %s %s" % (untagged, tagged, l3_ids))
         # @todo: Q-in-Q handling
         return untagged, tagged, l3_ids
+=======
+            # @todo: Q-in-Q handling
+        self.debug("VLANS: %s %s" % (untagged, tagged))
+        return untagged, tagged
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

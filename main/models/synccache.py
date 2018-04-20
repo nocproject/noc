@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # SyncCache model
@@ -7,18 +8,39 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## SyncCache model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import datetime
 import random
 import logging
 import uuid
+<<<<<<< HEAD
 # Django modules
 from django.db.models import get_model
 # Third-party modules
+=======
+## Django modules
+from django.db.models import get_model
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField,
                                 DateTimeField, DictField)
 from mongoengine.base import _document_registry
+<<<<<<< HEAD
 # NOC Modules
+=======
+## NOC Modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc import settings
 
 logger = logging.getLogger(__name__)
@@ -30,8 +52,12 @@ class SyncCache(Document):
     """
     meta = {
         "collection": "noc.synccaches",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [("model_id", "object_id"),
                     ("sync_id", "instance_id"),
                     ("sync_id", "instance_id", "expire"),
@@ -54,8 +80,13 @@ class SyncCache(Document):
 
     DELETE_DATE = datetime.datetime(2030, 1, 1)
 
+<<<<<<< HEAD
     TTL = 60
     TTL_JITTER = 10
+=======
+    TTL = settings.config.getint("sync", "config_ttl")
+    TTL_JITTER = settings.config.getfloat("sync", "config_ttl_jitter")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     TJL = int(TTL - TTL_JITTER * TTL)
     TJH = int(TTL + TTL_JITTER * TTL)
 
@@ -84,7 +115,11 @@ class SyncCache(Document):
 
     @classmethod
     def delete_object(cls, object):
+<<<<<<< HEAD
         cls._get_collection().update_many({
+=======
+        cls._get_collection().update({
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "model_id": cls.get_model_id(object),
                 "object_id": str(object.id)
             }, {
@@ -92,7 +127,12 @@ class SyncCache(Document):
                     "changed": cls.DELETE_DATE,
                     "expire": cls.DELETE_DATE
                 }
+<<<<<<< HEAD
             }
+=======
+            },
+            multi=True
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         )
 
     @classmethod
@@ -100,7 +140,11 @@ class SyncCache(Document):
         now = datetime.datetime.now()
         c = cls._get_collection()
         model_id = cls.get_model_id(object)
+<<<<<<< HEAD
         c.update_many({
+=======
+        c.update({
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "model_id": model_id,
                 "object_id": str(object.id)
             }, {
@@ -108,7 +152,12 @@ class SyncCache(Document):
                     "changed": now,
                     "expire": now
                 }
+<<<<<<< HEAD
             }
+=======
+            },
+            multi=True
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         )
 
     @classmethod
@@ -213,4 +262,8 @@ class SyncCache(Document):
             logger.debug("Deleting missed object %s", self.uuid)
             self.changed = self.DELETE_DATE
             self.expire = self.DELETE_DATE
+<<<<<<< HEAD
         self.save()
+=======
+        self.save()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

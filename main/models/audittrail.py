@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AuditTrail model
 # ---------------------------------------------------------------------
@@ -20,14 +21,42 @@ from mongoengine.fields import (StringField, DateTimeField,
 from noc.config import config
 from noc.core.middleware.tls import get_user
 from noc.lib.utils import get_model_id
+=======
+##----------------------------------------------------------------------
+## AuditTrail model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+import datetime
+## Django modules
+from django.db.models import signals as django_signals
+from django.utils.encoding import smart_unicode
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, DateTimeField,
+                                ListField, EmbeddedDocumentField)
+## NOC modules
+from noc.lib.middleware import get_user
+from noc import settings
+from noc.lib.utils import get_model_id
+from noc.lib.text import to_seconds
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
 
 class FieldChange(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     field = StringField()
     old = StringField(required=False)
@@ -40,8 +69,12 @@ class FieldChange(EmbeddedDocument):
 class AuditTrail(Document):
     meta = {
         "collection": "noc.audittrail",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [
             "timestamp",
             ("model_id", "object"),
@@ -75,7 +108,11 @@ class AuditTrail(Document):
         "sa.reducetask",
     ])
 
+<<<<<<< HEAD
     DEFAULT_TTL = config.audit.db_ttl
+=======
+    DEFAULT_TTL = to_seconds(settings.config.get("audit", "ttl.db"))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     _model_ttls = {}
 
     @classmethod
@@ -163,7 +200,18 @@ class AuditTrail(Document):
 
     @classmethod
     def get_model_ttl(cls, model_id):
+<<<<<<< HEAD
         return datetime.timedelta(seconds=cls.DEFAULT_TTL)
+=======
+        m = model_id.split(".")[0]
+        if settings.config.has_option("audit", "ttl.db.%s" % model_id):
+            v = to_seconds(settings.config.get("audit", "ttl.db.%s" % model_id))
+        elif settings.config.has_option("audit", "ttl.db.%s" % m):
+            v = to_seconds(settings.config.get("audit", "ttl.db.%s" % m))
+        else:
+            v = cls.DEFAULT_TTL
+        return datetime.timedelta(seconds=v)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def on_new_model(cls, sender, **kwargs):
@@ -186,4 +234,9 @@ class AuditTrail(Document):
         """
         Install signal handlers
         """
+<<<<<<< HEAD
         django_signals.class_prepared.connect(cls.on_new_model)
+=======
+        if settings.IS_WEB:
+            django_signals.class_prepared.connect(cls.on_new_model)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

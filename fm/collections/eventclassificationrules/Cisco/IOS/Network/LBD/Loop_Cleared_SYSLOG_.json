@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | LBD | Loop Cleared (SYSLOG)",
+    "uuid": "c3a7ce71-35c3-4a44-85c7-cae435b109be",
+    "description": "%PM-4-ERR_RECOVER: Attempting to recover from loopback err-disable state on Fa0/24",
+    "event_class__name": "Network | LBD | Loop Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM(-SP)?-4-ERR_RECOVER: Attempting to recover from loopback err-disable state on (?P<interface>\\S+)"
+        }
+    ]
+}

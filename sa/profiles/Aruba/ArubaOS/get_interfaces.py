@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Aruba.ArubaOS.get_interfaces
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "Aruba.ArubaOS.get_interfaces"
     interface = IGetInterfaces
+=======
+##----------------------------------------------------------------------
+## Aruba.ArubaOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+    name = "Aruba.ArubaOS.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     type_map = {
         "et": "physical",

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.ping
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "HP.1910.ping"
     interface = IPing
+=======
+##----------------------------------------------------------------------
+## HP.1910.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IPing
+
+
+class Script(noc.sa.script.Script):
+    name = "HP.1910.ping"
+    implements = [IPing]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_result = re.compile(
         r"\s+(?P<count>\d+) packet\(s\) transmitted.\s+(?P<success>\d+) packet\(s\) received.\s+\S+% packet loss.\s+round-trip min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+) ms",

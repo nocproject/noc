@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | System | Reboot (SYSLOG)",
+    "uuid": "a9a68938-a022-4f41-8994-5afa0ca78954",
+    "description": "Jul 22 14:15:56 shutdown: reboot by noc:",
+    "event_class__name": "System | Reboot",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "shutdown: reboot by (?P<user>.+?):"
+        }
+    ]
+}

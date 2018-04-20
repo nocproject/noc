@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ConnectionRule model
@@ -16,12 +17,35 @@ from mongoengine.fields import (StringField, UUIDField,
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ConnectionRule model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, UUIDField,
+                                ListField, EmbeddedDocumentField)
+## NOC modules
+from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Context(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     type = StringField()
     scope = StringField()
@@ -49,8 +73,12 @@ class Context(EmbeddedDocument):
 
 class Rule(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     match_type = StringField()
     match_connection = StringField()
@@ -87,17 +115,24 @@ class Rule(EmbeddedDocument):
         }
 
 
+<<<<<<< HEAD
 @on_delete_check(check=[
     ("inv.ObjectModel", "connection_rule")
 ])
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class ConnectionRule(Document):
     """
     Equipment vendor
     """
     meta = {
         "collection": "noc.connectionrules",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [],
         "json_collection": "inv.connectionrules"
     }

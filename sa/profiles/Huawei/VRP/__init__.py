@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: Huawei
 # OS:     VRP
@@ -18,6 +19,25 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Huawei.VRP"
+=======
+##----------------------------------------------------------------------
+## Vendor: Huawei
+## OS:     VRP
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.profiles
+from noc.sa.profiles import Profile as NOCProfile
+import re
+
+
+class Profile(NOCProfile):
+    name = "Huawei.VRP"
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     pattern_more = [
         (r"^  ---- More ----", " "),
         (r"[Cc]ontinue?\S+", "y\n\r"),
@@ -26,6 +46,7 @@ class Profile(BaseProfile):
         (r"^Delete flash:", "y\n\r"),
         (r"^Squeeze flash:", "y\n\r")
     ]
+<<<<<<< HEAD
     pattern_prompt = \
         r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,=]+)" \
         r"(?:-[a-zA-Z0-9/\_]+)*[>#\]\)]"
@@ -39,6 +60,10 @@ class Profile(BaseProfile):
         r"Error:\s*Wrong parameter found at|" \
         r"Error:\s*Incomplete command found at)"
 
+=======
+    pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
+    pattern_syntax_error = r"^Error: "
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "screen-length 0 temporary"
@@ -46,26 +71,39 @@ class Profile(BaseProfile):
     command_leave_config = "return"
     command_save_config = "save"
     command_exit = "quit"
+<<<<<<< HEAD
     rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def generate_prefix_list(self, name, pl, strict=True):
         p = "ip ip-prefix %s permit %%s" % name
         if not strict:
             p += " le 32"
+<<<<<<< HEAD
         return "undo ip ip-prefix %s\n" % name + "\n".join(
             [p % x.replace("/", " ") for x in pl])
 
     rx_interface_name = re.compile(
         r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)"
         r"(?P<number>[\d/]+(\.\d+)?)$")
+=======
+        return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
+
+    rx_interface_name = re.compile(
+        r"^(?P<type>XGE|GE|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("XGE2/0/0")
         'XGigabitEthernet2/0/0'
+<<<<<<< HEAD
         >>> Profile().convert_interface_name("Ten-GigabitEthernet2/0/0")
         'XGigabitEthernet2/0/0'
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         >>> Profile().convert_interface_name("GE2/0/0")
         'GigabitEthernet2/0/0'
         >>> Profile().convert_interface_name("Eth2/0/0")
@@ -73,18 +111,27 @@ class Profile(BaseProfile):
         >>> Profile().convert_interface_name("MEth2/0/0")
         'M-Ethernet2/0/0'
         """
+<<<<<<< HEAD
         s = str(s)  # avoid `expected string or buffer` error
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         match = self.rx_interface_name.match(s)
         if not match:
             return s
         return "%s%s" % ({
+<<<<<<< HEAD
             "Loop": "LoopBack",
             "Ten-GigabitEthernet": "XGigabitEthernet",
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "XGE": "XGigabitEthernet",
             "GE": "GigabitEthernet",
             "Eth": "Ethernet",
             "MEth": "M-Ethernet",
+<<<<<<< HEAD
             "VE": "Virtual-Ethernet"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # "Vlanif": "Vlan-interface" - need testing
         }[match.group("type")], match.group("number"))
 
@@ -94,6 +141,7 @@ class Profile(BaseProfile):
         """
         v = mac.replace(":", "").lower()
         return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
+<<<<<<< HEAD
 
     spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
@@ -331,3 +379,5 @@ class Profile(BaseProfile):
                 pass
 
         return r
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

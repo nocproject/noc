@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS.get_copper_tdr_diag
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ from noc.sa.profiles.DLink.DxS import DES3200
 class Script(BaseScript):
     name = "DLink.DxS.get_copper_tdr_diag"
     interface = IGetCopperTDRDiag
+=======
+##----------------------------------------------------------------------
+## DLink.DxS.get_copper_tdr_diag
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetCopperTDRDiag
+from noc.sa.profiles.DLink.DxS import DES3200
+
+
+class Script(NOCScript):
+    name = "DLink.DxS.get_copper_tdr_diag"
+    implements = [IGetCopperTDRDiag]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_link_ok = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+(?:Link Up\s+OK|Link Down\s+ShutDown)\s+(?P<length>\d+)", re.IGNORECASE)
     rx_link_nc = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Down\s+(?:No Cable)(\s+\-)?", re.IGNORECASE)
     rx_link_pr = re.compile(r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link (?:Up|Down)\s+Pair\s*(?P<num>\d+)\s+(?P<status>OK|Open|Short)\s+at\s+(?P<length>\d+)\s*M\s+-", re.IGNORECASE)

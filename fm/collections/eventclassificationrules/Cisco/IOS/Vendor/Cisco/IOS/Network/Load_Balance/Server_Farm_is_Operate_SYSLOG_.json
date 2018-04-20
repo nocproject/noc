@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate (SYSLOG)",
+    "uuid": "ad0d008c-c235-4340-92b0-246dc8599b21",
+    "description": "%SLB-6-REAL: Real 10.117.0.9 (VPNFARM) has changed state to OPERATIONAL",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SLB-6-REAL: Real (?P<real>\\S+) \\((?P<farm>.+)\\) has changed state to (?P<state>OPERATIONAL)$"
+        }
+    ]
+}

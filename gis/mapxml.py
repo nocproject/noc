@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Generate Mapnik XML for Map object
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 from xml.dom.minidom import Document
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Generate Mapnik XML for Map object
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from xml.dom.minidom import Document
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.gis.models import Style, FontSet
 from noc.settings import config
 

@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Database File Storage (PostgreSQL only)
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Database File Storage (PostgreSQL only)
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from django.core.files.storage import Storage
 from django.core.files.base import File,ContentFile
 from django.conf import settings
 import psycopg2
+<<<<<<< HEAD
 #
 # Database File Storage (PostgreSQL)
 # Stores files in database table.
@@ -25,6 +35,24 @@ import psycopg2
 #   size field
 #   mtime_field
 #
+=======
+##
+## Database File Storage (PostgreSQL)
+## Stores files in database table.
+## Table must have at least following columns:
+##   File Name (Character Type) - contains full virtual path
+##   Binary Data (BYTEA) - File content
+##   Size (Integer Type) - File size (in octets)
+##   Modification Time (Timestamp) - Last modification time
+## Table name and field names must be set up via
+## "option" variable. "option" is a hash with following keys:
+##   db_table
+##   name_field
+##   data_field
+##   size field
+##   mtime_field
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class DatabaseStorage(Storage):
     def __init__(self,option):
         self.db_table    = option["db_table"]

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DNSServer model
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from noc.core.model.fields import INETField, DocumentReferenceField
+=======
+##----------------------------------------------------------------------
+## DNSServer model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+## NOC modules
+from noc.lib.fields import INETField, DocumentReferenceField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.main.models.sync import Sync
 
 

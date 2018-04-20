@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DateTime utilities
 # ---------------------------------------------------------------------
@@ -11,6 +12,19 @@ import datetime
 import bisect
 # NOC modules
 from noc.core.translation import ugettext as _
+=======
+##----------------------------------------------------------------------
+## DateTime utilities
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## Django modules
+from django.utils.translation import ugettext as _
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 def humanize_timedelta(delta):
@@ -76,6 +90,7 @@ def total_seconds(td):
     """
     return (td.microseconds +
             (td.seconds + td.days * 86400) * 1000000) / 1000000.0
+<<<<<<< HEAD
 
 
 def hits_in_range(timestamps, start, stop):
@@ -89,3 +104,5 @@ def hits_in_range(timestamps, start, stop):
     s = bisect.bisect_left(timestamps, start)
     e = bisect.bisect_right(timestamps, stop, s)
     return sum(1 for ts in timestamps[s:e] if start <= ts <= stop)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

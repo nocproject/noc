@@ -1,0 +1,11 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Select Model</h1>
+<form method="POST">
+    <table border="0">
+        {{ form.as_table }}
+    </table>
+    <input type="submit" name="action" value="Export" />
+    <input type="submit" name="action" value="Import" />
+</form>
+{% endblock%}

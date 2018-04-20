@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # IGetSpanningTree
 # ---------------------------------------------------------------------
@@ -14,6 +15,20 @@ from base import (DictParameter, ListOfParameter,
 
 
 class IGetSpanningTree(BaseInterface):
+=======
+##----------------------------------------------------------------------
+## IGetSpanningTree
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from base import *
+
+
+class IGetSpanningTree(Interface):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     returns = DictParameter(attrs={
         # Spanning-tree mode. Must be one of:
         #    None        - Spanning-tree is disabled
@@ -63,7 +78,11 @@ class IGetSpanningTree(BaseInterface):
                 # Interface state
                 "state": StringParameter(choices=[
                     "disabled", "discarding", "learning", "forwarding",
+<<<<<<< HEAD
                     "broken", "listen", "unknown", "loopback", "blocking"]),
+=======
+                    "broken", "listen", "unknown", "loopback"]),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Interface role
                 "role": StringParameter(choices=[
                     "disabled", "alternate", "backup", "root",

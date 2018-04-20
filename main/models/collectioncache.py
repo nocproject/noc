@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # CollectionCache model
@@ -7,14 +8,29 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## CollectionCache model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.nosql import (Document, StringField, UUIDField)
 
 
 class CollectionCache(Document):
     meta = {
         "collection": "noc.collectioncache",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["collection"]
     }
 

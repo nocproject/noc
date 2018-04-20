@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1905.get_config
 # ---------------------------------------------------------------------
@@ -14,6 +15,23 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 class Script(BaseScript):
     name = "HP.1905.get_config"
     interface = IGetConfig
+=======
+##----------------------------------------------------------------------
+## HP.1905.get_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetConfig
+
+
+class Script(NOCScript):
+    name = "HP.1905.get_config"
+    implements = [IGetConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, TFTP_root='', TFTP_IP='', file_name=''):
         # Try snmp first

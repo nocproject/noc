@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | TTY - Login (SYSLOG)",
+    "uuid": "d3886f58-9b8f-40f6-971e-9818233813bd",
+    "description": "login: login on ttyv1 as root",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "login: login on tty\\S+ as (?P<user>.+?)"
+        }
+    ]
+}

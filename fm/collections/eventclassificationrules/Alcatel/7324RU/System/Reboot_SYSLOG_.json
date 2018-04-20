@@ -1,0 +1,21 @@
+{
+    "name": "Alcatel | 7324RU | System | Reboot (SYSLOG)",
+    "uuid": "5289a949-5ef8-4633-a4f9-150add393935",
+    "description": "INFO,+REBOOT:System reboots",
+    "event_class__name": "System | Reboot",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Alcatel\\.7324RU$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "INFO,\\+REBOOT:System reboots"
+        }
+    ]
+}

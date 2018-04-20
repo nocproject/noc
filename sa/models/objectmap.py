@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Object Mappings
 # ---------------------------------------------------------------------
@@ -19,10 +20,22 @@ from noc.core.defer import call_later
 
 
 logger = logging.getLogger(__name__)
+=======
+##----------------------------------------------------------------------
+## Object Mapping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.nosql import Document, IntField, ListField, StringField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ObjectMap(Document):
     meta = {
+<<<<<<< HEAD
         "collection": "noc.cache.object_map"
     }
 
@@ -140,10 +153,41 @@ class ObjectMap(Document):
                 "trap_sources": trap_sources,
                 "ping_sources": ping_sources,
                 "updated": datetime.datetime.now()
+=======
+        "collection": "noc.cache.object_map",
+        "allow_inheritance": False,
+        "indexes": ["object", "collector"]
+    }
+    # Object id
+    object = IntField(required=True, unique=True)
+    #
+    collector = IntField(required=True)
+    #
+    sources = ListField(StringField())
+
+    def __unicode__(self):
+        return u"%s: %s" % (self.object, self.sources)
+
+    @classmethod
+    def update_map(cls, object, collector, sources):
+        if hasattr(object, "id"):
+            object = object.id
+        if hasattr(collector, "id"):
+            collector = collector.id
+        if not isinstance(sources, (list, tuple)):
+            sources = [sources]
+        cls._get_collection().update({
+            "object": object
+        }, {
+            "$set": {
+                "collector": collector,
+                "sources": sources
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }
         }, upsert=True)
 
     @classmethod
+<<<<<<< HEAD
     def get_object_mappings(cls, pool):
         """
         Returns object mappings for pool
@@ -203,3 +247,18 @@ def invalidate(pool_name):
     if not pool:
         return
     ObjectMap.rebuild_pool(pool)
+=======
+    def delete_map(cls, object):
+        if hasattr(object, "id"):
+            object = object.id
+        cls._get_collection().remove({
+            "object": object
+        })
+
+    @classmethod
+    def get_map(cls, collector):
+        c = cls._get_collection()
+        return list(
+            c.find({"collector": collector}, {"object": 1, "sources": 1, "_id": 0})
+        )
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

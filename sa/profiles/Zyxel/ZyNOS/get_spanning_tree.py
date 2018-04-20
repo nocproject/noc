@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_spanning_tree
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Zyxel.ZyNOS.get_spanning_tree
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 
@@ -16,6 +26,15 @@ from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_spanning_tree"
     interface = IGetSpanningTree
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSpanningTree
+
+
+class Script(NOCScript):
+    name = "Zyxel.ZyNOS.get_spanning_tree"
+    implements = [IGetSpanningTree]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_config = re.compile(r"Configuration Name:\s+(?P<region>\S+)$\s+"
             r"Reve?ision Number:\s+(?P<revision>\d+)",

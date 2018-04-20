@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.NXOS.get_inventory
 # ---------------------------------------------------------------------
@@ -20,6 +21,30 @@ class Script(BaseScript):
     rx_item = re.compile(
         r"^NAME: \"(?P<name>[^\"]+)\",\s+DESCR: \"(?P<descr>[^\"]+)\"\s*\n"
         r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*,\s+SN: (?P<serial>\S+)",
+=======
+##----------------------------------------------------------------------
+## Cisco.NXOS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.sa.interfaces.base import InterfaceTypeError
+
+
+class Script(NOCScript):
+    name = "Cisco.NXOS.get_inventory"
+    implements = [IGetInventory]
+
+    rx_item = re.compile(
+        r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
+        r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE | re.DOTALL
     )
 
@@ -45,6 +70,7 @@ class Script(BaseScript):
         v = self.cli("show inventory | no-more")
         s = self.cli("sh int transceiver | no-more")
 
+<<<<<<< HEAD
         # Get transceivers
         for match in self.rx_sfp.finditer(s):
             if match.group("number").startswith("Ethernet"):
@@ -57,6 +83,18 @@ class Script(BaseScript):
                     elif "BASE" in match.group("partno").upper():
                         parts = [match.group("type")]
                     else:
+=======
+        #get transceivers
+        for match in self.rx_sfp.finditer(s):
+            if match.group("number").startswith("Ethernet"):
+                if match.group("type"):
+                    if ("Fabric" in match.group("type") or
+                        "BASE" in match.group("type").upper()):
+                        parts = [match.group("partno")]
+                    elif "BASE" in match.group("partno").upper():
+                        parts = [match.group("type")]
+                    else:    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         parts = [match.group("partno"), match.group("type")]
                 else:
                     parts = [match.group("partno")]
@@ -80,6 +118,10 @@ class Script(BaseScript):
             serial = [match.group("serial"), None]["N/A" in match.group("serial")]
             rev = [match.group("vid"), None]["N/A" in match.group("vid")]
             if not part_no:
+<<<<<<< HEAD
+=======
+                print "!!! UNKNOWN: ", match.groupdict()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"
@@ -94,7 +136,11 @@ class Script(BaseScript):
                     "builtin": builtin
                 }]
                 # Add transceivers
+<<<<<<< HEAD
                 if (objects[-1]["type"] == "SUP" or
+=======
+                if (objects[-1]["type"] == "SUP" or 
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     (objects[-1]["type"] == "GEM" and
                      objects[-1]["part_no"][0] not in self.gem_w_o_sfp)):
 
@@ -126,10 +172,17 @@ class Script(BaseScript):
         if "CHASSIS" in name.upper():
             try:
                 number = int(name.split()[1])
+<<<<<<< HEAD
             except IndexError:
                 number = None
             return "CHASSIS", number, pid
         elif "GEM" in descr or "Ethernet Module" in descr:
+=======
+            except:
+                number = None
+            return "CHASSIS", number, pid
+        elif "GEM" in descr:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             number = name.split()[-1]
             return "GEM", number, pid
         elif "Superv" in descr:

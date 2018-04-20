@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 from south.db import db
@@ -18,8 +25,16 @@ class Migration:
             models.ForeignKey(NotificationGroup, blank=True, null=True))
         db.add_column("dns_dnszone", "notification_group",
             models.ForeignKey(NotificationGroup, blank=True, null=True))
+<<<<<<< HEAD
 
     def backwards(self):
         db.delete_column("dns_dnszoneprofile", "notification_group_id")
         db.delete_column("dns_dnszone", "notification_group_id")
 
+=======
+    
+    def backwards(self):
+        db.delete_column("dns_dnszoneprofile", "notification_group_id")
+        db.delete_column("dns_dnszone", "notification_group_id")
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

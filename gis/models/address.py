@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Address object
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, DictField, BooleanField
 from mongoengine.signals import post_save
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Address object
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, IntField, DictField, BooleanField
+from mongoengine.signals import post_save
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from street import Street
 from building import Building
 from noc.lib.nosql import PlainReferenceField
@@ -19,8 +34,12 @@ from noc.lib.nosql import PlainReferenceField
 class Address(Document):
     meta = {
         "collection": "noc.addresses",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["building", "street"]
     }
     #
@@ -64,7 +83,13 @@ class Address(Document):
             # Reset other primary addresses
             Address._get_collection().update({
                 "building": document.building.id,
+<<<<<<< HEAD
                 "id": {"$ne": document.id}
+=======
+                "$ne": {
+                    "id": document.id
+                }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }, {
                 "$set": {
                     "is_primary": False
@@ -161,8 +186,15 @@ class Address(Document):
 
     # @todo: cmp_addr
 
+<<<<<<< HEAD
 #
 RU_SHORT_AFTER = set([u"б-р", u"проезд", u"пер", u"ш"])
 
 # Signals
+=======
+##
+RU_SHORT_AFTER = set([u"б-р", u"проезд", u"пер", u"ш"])
+
+## Signals
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 post_save.connect(Address.update_primary, sender=Address)

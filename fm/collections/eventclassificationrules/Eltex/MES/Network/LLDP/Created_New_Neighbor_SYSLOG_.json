@@ -1,0 +1,22 @@
+{
+    "name": "Eltex | MES | Network | LLDP | Created New Neighbor (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "7611459f-affe-48b0-be7f-fee590cc5ed6",
+    "description": "%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex gi1/0/11.",
+    "event_class__name": "Network | LLDP | Created New Neighbor",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%NT_LLDP-N-LLDP_TRAP: LLDP status: entry inserted on ifindex (?P<interfaces>\\S+)\\.$"
+        }
+    ]
+}

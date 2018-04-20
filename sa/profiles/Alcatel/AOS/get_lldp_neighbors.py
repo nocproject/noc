@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.AOS.get_lldp_neighbors
 # ----------------------------------------------------------------------
@@ -8,14 +9,33 @@
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## Alcatel.AOS.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 import re
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Alcatel.AOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+class Script(NOCScript):
+    name = "Alcatel.AOS.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(r"\w*Remote LLDP Agents on Local Slot/Port\s+",
         re.MULTILINE)
@@ -59,16 +79,31 @@ class Script(BaseScript):
             # remote_chassis_id_subtype
             match = self.rx_remote_chassis_id_subtype.search(s)
             if not match:
+<<<<<<< HEAD
+=======
+                # Debug string
+                print "\n\n\n\n\nremote_chassis_id_subtype\n\n\n\n\n"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             remote_chassis_id_subtype = match.group("subtype").strip()
                 # remote_chassis_id
             match = self.rx_remote_chassis_id.search(s)
             if not match:
+<<<<<<< HEAD
+=======
+                # Debug string
+                print "\n\n\n\n\nremote_chassis_id\n\n\n\n\n"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             n["remote_chassis_id"] = match.group("id").strip()
                 # remote_port_subtype
             match = self.rx_remote_port_id_subtype.search(s)
             if not match:
+<<<<<<< HEAD
+=======
+                # Debug string
+                print "\n\n\n\n\nremote_port_id_subtype\n\n\n\n\n"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             remote_port_subtype = match.group("subtype").strip()
             # TODO: Find other subtypes
@@ -98,12 +133,22 @@ class Script(BaseScript):
                 # remote_port
             match = self.rx_remote_port_id.search(s)
             if not match:
+<<<<<<< HEAD
+=======
+                # Debug string
+                print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             n["remote_port"] = match.group("port").strip()
             if n["remote_port_subtype"] == 7 \
             and n["remote_port"].lower().startswith("rmon port"):
                 match = self.rx_remote_port_id2.search(n["remote_port"])
                 if not match:
+<<<<<<< HEAD
+=======
+                    # Debug string
+                    print "\n\n\n\n\nInvalid remote_port_id\n\n\n\n\n"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     continue
                 n["remote_port"] = match.group("port")
                 # remote_system_name

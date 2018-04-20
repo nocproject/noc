@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -9,14 +10,32 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## Force10.FTOS.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetMACAddressTable
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import re
 
 rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<interfaces>\S+\s+\S+).*$")
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Force10.FTOS.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+class Script(noc.sa.script.Script):
+    name = "Force10.FTOS.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-address-table"

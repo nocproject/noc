@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Discovery id
@@ -28,12 +29,34 @@ from noc.core.mac import MAC
 from noc.core.model.decorator import on_delete
 
 mac_lock = Lock()
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Discovery id
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.queryset import DoesNotExist
+## NOC modules
+from noc.lib.nosql import (Document, EmbeddedDocument,
+                           StringField, ListField,
+                           ForeignKeyField, EmbeddedDocumentField)
+from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.interface import Interface
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class MACRange(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     first_mac = StringField()
     last_mac = StringField()
@@ -42,35 +65,47 @@ class MACRange(EmbeddedDocument):
         return u"%s - %s" % (self.first_mac, self.last_mac)
 
 
+<<<<<<< HEAD
 @on_delete
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class DiscoveryID(Document):
     """
     Managed Object's discovery identity
     """
     meta = {
         "collection": "noc.inv.discovery_id",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [
             "object", "hostname", "udld_id", "macs"
         ]
+=======
+        "allow_inheritance": False,
+        "indexes": ["object", "hostname", "udld_id"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     object = ForeignKeyField(ManagedObject)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))
     hostname = StringField()
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
+<<<<<<< HEAD
     #
     macs = ListField(LongField())
 
     _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
     _udld_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.object.name
 
     @classmethod
     def submit(cls, object, chassis_mac=None,
+<<<<<<< HEAD
                hostname=None, router_id=None, additional_macs=None):
         chassis_mac = chassis_mac or []
         if additional_macs:
@@ -108,11 +143,15 @@ class DiscoveryID(Document):
                         "first_chassis_mac": MAC(first),
                         "last_chassis_mac": MAC(last)
                     }]
+=======
+               hostname=None, router_id=None):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if chassis_mac:
             chassis_mac = [
                 MACRange(
                     first_mac=r["first_chassis_mac"],
                     last_mac=r["last_chassis_mac"]
+<<<<<<< HEAD
                 ) for r in chassis_mac if r
             ]
         else:
@@ -133,12 +172,22 @@ class DiscoveryID(Document):
                 last = MAC(r.last_mac)
                 macs += [m for m in range(int(first), int(last) + 1)]
             o.macs = macs
+=======
+                ) for r in chassis_mac
+            ]
+        o = cls.objects.filter(object=object.id).first()
+        if o:
+            o.chassis_mac = chassis_mac
+            o.hostname = hostname
+            o.router_id = router_id
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             o.save()
         else:
             cls(object=object, chassis_mac=chassis_mac,
                 hostname=hostname, router_id=router_id).save()
 
     @classmethod
+<<<<<<< HEAD
     @cachedmethod(operator.attrgetter("_mac_cache"),
                   key="discoveryid-mac-%s",
                   lock=lambda _: mac_lock)
@@ -205,6 +254,37 @@ class DiscoveryID(Document):
                 metrics["discoveryid_ip_interface"] += 1
                 return ManagedObject.get_by_id(list(o)[0])
             metrics["discoveryid_ip_failed"] += 1
+=======
+    def find_object(cls, mac=None):
+        """
+        Find managed object
+        :param cls:
+        :return: Managed object instance or None
+        """
+        c = cls._get_collection()
+        # Find by mac
+        if mac:
+            r = c.find_one({
+                "chassis_mac": {
+                    "$elemMatch": {
+                        "first_mac": {
+                            "$lte": mac
+                        },
+                        "last_mac": {
+                            "$gte": mac
+                        }
+                    }
+                }
+            })
+            if r:
+                return ManagedObject.objects.get(id=r["object"])
+        # Fallback to interface search
+        o = set()
+        for i in Interface.objects.filter(mac=mac):
+            o.add(i.managed_object)
+        if len(o) == 1:
+            return o.pop()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return None
 
     @classmethod
@@ -215,6 +295,7 @@ class DiscoveryID(Document):
         :param object:
         :return: list of (fist_mac, last_mac)
         """
+<<<<<<< HEAD
         # Get discovered chassis id range
         o = DiscoveryID.objects.filter(object=object.id).first()
         if o and o.chassis_mac:
@@ -332,3 +413,22 @@ class DiscoveryID(Document):
         DiscoveryID._get_collection().update_one(
             {"object": object.id},
             {"$set": {"udld_id": local_id}}, upsert=True)
+=======
+        try:
+            o = cls.objects.get(object=object.id)
+        except DoesNotExist:
+            return []
+        if not o or not o.chassis_mac:
+            return None
+        # Discovered chassis id range
+        c_macs = [(r.first_mac, r.last_mac) for r in o.chassis_mac]
+        # Other interface macs
+        i_macs = set()
+        for i in Interface.objects.filter(
+                managed_object=object.id, mac__exists=False):
+            if i.mac:
+                if not any(1 for f, t in c_macs if f <= i.mac <= t):
+                    # Not in range
+                    i_macs.add(i.mac)
+        return c_macs + [(m, m) for m in i_macs]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

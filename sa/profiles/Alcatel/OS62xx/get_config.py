@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
-# See LICENSE for details
-# ----------------------------------------------------------------------
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetConfig
 
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetconfig import IGetConfig
 
-
-class Script(BaseScript):
+class Script(noc.sa.script.Script):
     name = "Alcatel.OS62xx.get_config"
-    interface = IGetConfig
+    implements = [IGetConfig]
 
     def execute(self):
         config = self.cli("show running-config")

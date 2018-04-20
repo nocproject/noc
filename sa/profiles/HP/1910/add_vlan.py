@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.add_vlan
 # ---------------------------------------------------------------------
@@ -14,6 +15,25 @@ from noc.sa.interfaces.iaddvlan import IAddVlan
 class Script(BaseScript):
     name = "HP.1910.add_vlan"
     interface = IAddVlan
+=======
+##----------------------------------------------------------------------
+## HP.1910.add_vlan
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IAddVlan
+
+
+class Script(noc.sa.script.Script):
+    name = "HP.1910.add_vlan"
+    implements = [IAddVlan]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, vlan_id, name, tagged_ports):
         a = ''

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # lib/dateutils tests
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 import datetime
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## lib/dateutils tests
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.test import NOCTestCase
 from noc.lib.dateutils import *
 

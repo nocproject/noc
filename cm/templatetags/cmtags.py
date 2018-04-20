@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Template tags
 # ---------------------------------------------------------------------
@@ -10,6 +11,19 @@ from django.template.defaulttags import URLNode,register
 # Act as django's standard {%url%} node.
 # Add <module>:<app>: to view name when missed
 #
+=======
+##----------------------------------------------------------------------
+## Template tags
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from django.template.defaulttags import URLNode,register
+##
+## Act as django's standard {%url%} node.
+## Add <module>:<app>: to view name when missed
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class CMURLNode(URLNode):
     def render(self,context):
         if ":" not in self.view_name:
@@ -43,4 +57,8 @@ def cm_url(parser,token):
                     elif arg:
                         args.append(parser.compile_filter(arg))
     return CMURLNode(viewname, args, kwargs, asvar)
+<<<<<<< HEAD
 cm_url=register.tag(cm_url)
+=======
+cm_url=register.tag(cm_url)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Parse OSM XML and return address to coodinates bindings
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 from xml.parsers.expat import ParserCreate
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Parse OSM XML and return address to coodinates bindings
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from xml.parsers.expat import ParserCreate
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import GeocodingParser
 
 

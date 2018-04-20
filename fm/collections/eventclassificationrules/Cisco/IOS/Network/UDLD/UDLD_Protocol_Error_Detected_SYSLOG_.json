@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | UDLD | UDLD Protocol Error Detected (SYSLOG)",
+    "uuid": "8e22d0a4-18f6-4809-8f70-442a9fcd7434",
+    "description": "%PM-SP-4-ERR_DISABLE: udld error detected on Gi4/1, putting Gi4/1 in err-disable state",
+    "event_class__name": "Network | UDLD | UDLD Protocol Error Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM(-SP)?-4-ERR_DISABLE: udld error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
+        }
+    ]
+}

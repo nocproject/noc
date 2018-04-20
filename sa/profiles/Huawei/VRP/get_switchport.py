@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_switchport
 # ---------------------------------------------------------------------
@@ -44,11 +45,45 @@ class Script(BaseScript):
 
         for match in rx_descr.finditer(v):
             interface = self.profile.convert_interface_name(match.group("interface"))
+=======
+##----------------------------------------------------------------------
+## Huawei.VRP.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+import re
+
+
+class Script(NOCScript):
+    name = "Huawei.VRP.get_switchport"
+    implements = [IGetSwitchport]
+    rx_line = re.compile(
+        r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
+    rx_descr = re.compile(
+        r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
+
+    def execute(self):
+
+        # Get descriptions
+        descriptions = {}
+        v = self.cli("display interface description")
+        for match in self.rx_descr.finditer(v):
+            interface = match.group("interface")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             description = match.group("description").strip()
             if description.startswith("HUAWEI"):
                 description = ""
             if match.group("interface") != "Interface":
                 descriptions[interface] = description
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get interafces status
         interface_status = {}
         for s in self.scripts.get_interface_status():
@@ -63,6 +98,7 @@ class Script(BaseScript):
 
         # Get ports in vlans
         r = []
+<<<<<<< HEAD
         version = self.profile.fix_version(self.scripts.get_version())
         if version.startswith("5.3"):
             v = self.cli("display port allow-vlan")
@@ -89,11 +125,20 @@ class Script(BaseScript):
                 )
 
         for match in rx_line.finditer(v):
+=======
+        if self.match_version(version__startswith="5.3"):
+            v = self.cli("display port allow-vlan")
+        else:
+            v = self.cli("display port vlan")
+
+        for match in self.rx_line.finditer(v):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             port = {}
             tagged = []
             trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
             if trunk:
                 vlans = match.group("vlans").strip()
+<<<<<<< HEAD
                 if vlans and (vlans not in ["-", "none"]) \
                   and is_int(vlans[0]):
                     vlans = self.rx_vlan_comment.sub("", vlans)
@@ -101,6 +146,13 @@ class Script(BaseScript):
                     tagged = self.expand_rangelist(vlans)
                     # For VRP version 5.3
                     if r and r[-1]["interface"] == match.group("interface"):
+=======
+                if vlans != "-":
+                    vlans = vlans.replace(" ", ",")
+                    tagged = self.expand_rangelist(vlans)
+                    # For VRP version 5.3
+                    if r and r[-1]["interface"] == match.group("interface"): 
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
                         continue
             members = []

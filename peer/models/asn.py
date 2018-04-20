@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AS model
 # ---------------------------------------------------------------------
@@ -30,6 +31,31 @@ from .rir import RIR
 ])
 class AS(models.Model):
     class Meta(object):
+=======
+##----------------------------------------------------------------------
+## AS model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from noc.project.models.project import Project
+from person import Person
+from organisation import Organisation
+from maintainer import Maintainer
+from rir import RIR
+from noc.settings import config
+from noc.lib.rpsl import rpsl_format
+from noc.lib.fields import TagsField
+from noc.lib.app.site import site
+
+
+class AS(models.Model):
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = "AS"
         verbose_name_plural = "ASes"
         db_table = "peer_as"
@@ -71,7 +97,11 @@ class AS(models.Model):
     )
     # remarks: will be prepended automatically
     header_remarks = models.TextField("Header Remarks", null=True, blank=True)
+<<<<<<< HEAD
     # remarks: will be prepended automatically
+=======
+     # remarks: will be prepended automatically
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
     rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
     tags = TagsField("Tags", null=True, blank=True)
@@ -123,12 +153,19 @@ class AS(models.Model):
             e_export_med = peer.effective_export_med
             for R in pg[peer.peer_group][peer.remote_asn][peer.peering_point]:
                 p_import, p_export, localpref, import_med, export_med, remark = R
+<<<<<<< HEAD
                 if (
                     peer.import_filter == p_import and
                     peer.export_filter == p_export and
                     e_import_med == import_med and
                     e_export_med == export_med
                 ):
+=======
+                if (peer.import_filter == p_import and
+                    peer.export_filter == p_export and
+                    e_import_med == import_med and
+                    e_export_med == export_med):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     to_skip = True
                     break
             if not to_skip:
@@ -147,7 +184,12 @@ class AS(models.Model):
                 add_at = len(pg[peer_group][asn]) != 1
                 for pp in pg[peer_group][asn]:
                     for R in pg[peer_group][asn][pp]:
+<<<<<<< HEAD
                         import_filter, export_filter, localpref, import_med, export_med, remark = R
+=======
+                        import_filter, export_filter, localpref, import_med,\
+                        export_med, remark = R
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         # Prepend import and export with remark when given
                         if remark:
                             s += ["remarks: # %s" % remark]
@@ -191,7 +233,11 @@ class AS(models.Model):
 
     @property
     def dot(self):
+<<<<<<< HEAD
         from .peer import Peer
+=======
+        from noc.peer.models import Peer
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         s = ["graph {"]
         all_peers = Peer.objects.filter(local_asn__exact=self)

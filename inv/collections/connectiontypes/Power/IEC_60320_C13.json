@@ -1,0 +1,7 @@
+{
+    "name": "Power | IEC 60320 C13",
+    "uuid": "63150a91-1180-4f20-b5d7-67bdcf3a47d3",
+    "description": "Common computer/peripherials connector",
+    "c_group": ["power_c13"],
+    "genders": "m"
+}

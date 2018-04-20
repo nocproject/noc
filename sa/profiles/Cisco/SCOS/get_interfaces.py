@@ -1,26 +1,48 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.SCOS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2014 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Cisco.SCOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces, MACAddressParameter
 
 
 class Script(BaseScript):
+=======
+from noc.lib.ip import IPv4
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces, MACAddressParameter
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Cisco.SCOS.get_interfaces
 
     """
     name = "Cisco.SCOS.get_interfaces"
+<<<<<<< HEAD
     interface = IGetInterfaces
+=======
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_int = re.compile(r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n"
         r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n",

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # TimePattern database model
 # ---------------------------------------------------------------------
@@ -29,11 +30,29 @@ id_lock = Lock()
     ("maintenance.Maintenance", "time_pattern"),
     ("sa.ManagedObject", "time_pattern")
 ])
+=======
+##----------------------------------------------------------------------
+## TimePattern database model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+from noc.lib.timepattern import TimePattern as TP
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class TimePattern(models.Model):
     """
     Time Patterns
     """
+<<<<<<< HEAD
     class Meta(object):
+=======
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = "Time Pattern"
         verbose_name_plural = "Time Patterns"
         db_table = "main_timepattern"
@@ -42,6 +61,7 @@ class TimePattern(models.Model):
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", null=True, blank=True)
 
+<<<<<<< HEAD
     _code_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
@@ -65,6 +85,11 @@ class TimePattern(models.Model):
         else:
             return None
 
+=======
+    def __unicode__(self):
+        return self.name
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @property
     def time_pattern(self):
         """
@@ -77,8 +102,11 @@ class TimePattern(models.Model):
         Matches DateTime objects against time pattern
         """
         return self.time_pattern.match(d)
+<<<<<<< HEAD
 
 
 # Avoid circular references
 # No delete, fixed 'TimePattern' object has no attribute 'timepatternterm_set'
 from .timepatternterm import TimePatternTerm  # noqa
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

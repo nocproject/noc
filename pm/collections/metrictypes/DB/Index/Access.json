@@ -1,0 +1,6 @@
+{
+    "name": "DB | Index | Access",
+    "uuid": "1824c192-d256-4c08-b69c-a8674c8c9fae",
+    "description": "Database index accesses",
+    "measure": "ops/sec"
+}

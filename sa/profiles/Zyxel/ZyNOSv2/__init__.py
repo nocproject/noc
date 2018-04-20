@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Vendor: Zyxel
-# OS:     ZyNOSv2
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
-# See LICENSE for details
-# ---------------------------------------------------------------------
+##----------------------------------------------------------------------
+## Vendor: Zyxel
+## OS:     ZyNOSv2
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 """
 """
-from noc.core.profile.base import BaseProfile
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET
 
 
-class Profile(BaseProfile):
+class Profile(noc.sa.profiles.Profile):
     name = "Zyxel.ZyNOSv2"
+    supported_schemes = [TELNET]
     pattern_prompt = r"^\S+?>"
     command_more = " "
-    enable_cli_session = False

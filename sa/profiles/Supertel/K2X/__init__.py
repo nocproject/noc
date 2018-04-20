@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: Supertel
 # OS:     K2X
@@ -18,6 +19,30 @@ class Profile(BaseProfile):
         (r"\[Yes/press any key for no\]", "Y")
     ]
     pattern_unprivileged_prompt = r"^\S+> "
+=======
+##----------------------------------------------------------------------
+## Vendor: Supertel
+## OS:     K2X
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.profiles import Profile as NOCProfile
+
+
+class Profile(NOCProfile):
+    name = "Supertel.K2X"
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    pattern_username = r"^User Name:"
+    pattern_password = r"^Password:"
+    pattern_more = [
+        (r"^More: <space>,  Quit: q, One line: <return>$", " "),
+        (r"\[Yes/press any key for no\]", "Y")
+        ]
+    pattern_unpriveleged_prompt = r"^\S+> "
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     pattern_syntax_error = r"^%\s+(Unrecognized command|Incomplete command|\
 missing mandatory parameter|bad parameter value|\
 Wrong number of parameters or invalid range, size or characters entered)$"

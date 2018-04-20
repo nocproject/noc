@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | Link | DOM | Alarm: Out of Threshold Recovered (SYSLOG)",
+    "uuid": "7d3716a8-1960-482d-84bd-05043f22ccf2",
+    "description": "DDM Port 9 optic module RX power recovered from the low alarm threshold",
+    "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(DDM )?Port (?P<interface>\\S+) (?:optic module|SFP) (?P<sensor>.+) recovered from the (?P<threshold>low|high) alarm threshold"
+        }
+    ]
+}

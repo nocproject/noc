@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.ping
 # ---------------------------------------------------------------------
@@ -20,6 +21,26 @@ class Script(BaseScript):
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
         r"received, \d+% packet loss\nround-trip \(ms\) min/avg/max = "
         r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE)
+=======
+##----------------------------------------------------------------------
+## AlliedTelesis.AT8000S.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## coded by azhur
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IPing
+import re
+
+
+class Script(NOCScript):
+    name = "AlliedTelesis.AT8000S.ping"
+    implements = [IPing]
+    rx_result = re.compile(r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\nround-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE | re.DOTALL)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, address, size=None, count=None, timeout=None):
         cmd = "ping %s" % address

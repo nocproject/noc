@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Ericsson.SEOS.get_inventory
 # ---------------------------------------------------------------------
@@ -10,13 +11,32 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
+=======
+##----------------------------------------------------------------------
+## Ericsson.SEOS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Ericsson.SEOS.get_inventory"
     interface = IGetInventory
+=======
+class Script(NOCScript):
+    name = "Ericsson.SEOS.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_trans = re.compile(
         r"Port\s*:\s*(\S+)\s*XFP\s*\S+\s*Media\s*"

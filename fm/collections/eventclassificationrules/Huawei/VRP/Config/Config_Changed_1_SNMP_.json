@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Config | Config Changed #1 (SNMP)",
+    "uuid": "1fdf6411-0e9a-4b08-9473-7e846d4c2dda",
+    "description": "HUAWEI-DATASYNC-MIB::hwCfgChgNotify",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-DATASYNC-MIB::hwCfgChgNotify$"
+        }
+    ]
+}

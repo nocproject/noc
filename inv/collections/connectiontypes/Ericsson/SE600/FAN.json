@@ -1,0 +1,7 @@
+{
+    "name": "Ericsson | SE600 | FAN",
+    "uuid": "55fcad3d-76c1-4ab1-bb2b-5b526e11bf9c",
+    "description": "FANTRAY connector in SE600",
+    "c_group": [],
+    "genders": "mf"
+}

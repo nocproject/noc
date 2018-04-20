@@ -1,0 +1,6 @@
+{
+    "name": "DB | Network | In",
+    "uuid": "19142098-faf2-4009-a79a-80ddf2413aac",
+    "description": "Database network input",
+    "measure": "bit/s"
+}

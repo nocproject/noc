@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -51,6 +52,34 @@ class Script(BaseScript):
         "MAC address (3)": 3,
         "ifName (5)": 5
     }
+=======
+##----------------------------------------------------------------------
+## Extreme.XOS.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.lib.validators import is_int, is_ipv4
+##
+## @todo: SNMP Support
+##
+
+
+class Script(NOCScript):
+    name = "Extreme.XOS.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+
+    rx_lldp_nei = re.compile(r"^(?P<interface>\d+)\s+(?P<chassis_id>\S+)\s+(?P<port_id>\S+)\s+\d+\s+\d+",  re.DOTALL|re.MULTILINE)
+    rx_edp_nei = re.compile(r"^(?P<interface>\d+)\s+(?P<name>\S+)\s+[0-9a-f]{2}:[0-9a-f]{2}:(?P<chassis_id>\S+)\s+\d:(?P<port_id>\d+)\s+\d+\s+\d+",  re.DOTALL|re.MULTILINE)
+    rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []
@@ -72,14 +101,24 @@ class Script(BaseScript):
             cap = 4
             # Get remote port subtype
             remote_port_subtype = 5
+<<<<<<< HEAD
             if is_ipv4(remote_port):
                 # Actually networkAddress(4)
                 remote_port_subtype = 4
             elif is_mac(remote_port):
+=======
+            if self.rx_mac.match(remote_port):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
                 remote_port_subtype = 3
+<<<<<<< HEAD
+=======
+            elif is_ipv4(remote_port):
+                # Actually networkAddress(4)
+                remote_port_subtype = 4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = 7
@@ -89,6 +128,7 @@ class Script(BaseScript):
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
+<<<<<<< HEAD
                 "remote_port_subtype": remote_port_subtype
             }
             if is_ipv4(n["remote_chassis_id"]) \
@@ -130,6 +170,12 @@ class Script(BaseScript):
                     ]
             except self.CLISyntaxError:
                 pass
+=======
+                "remote_port_subtype": remote_port_subtype,
+                }
+            # TODO:
+            n["remote_chassis_id_subtype"] = 4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
             i["neighbors"].append(n)
             r.append(i)
@@ -149,14 +195,24 @@ class Script(BaseScript):
             cap = 4
             # Get remote port subtype
             remote_port_subtype = 5
+<<<<<<< HEAD
             if is_ipv4(remote_port):
                 # Actually networkAddress(4)
                 remote_port_subtype = 4
             elif is_mac(remote_port):
+=======
+            if self.rx_mac.match(remote_port):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
                 remote_port_subtype = 3
+<<<<<<< HEAD
+=======
+            elif is_ipv4(remote_port):
+                # Actually networkAddress(4)
+                remote_port_subtype = 4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = 7
@@ -166,6 +222,7 @@ class Script(BaseScript):
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
                 "remote_capabilities": cap,
+<<<<<<< HEAD
                 "remote_port_subtype": remote_port_subtype
             }
             if remote_system_name:
@@ -175,6 +232,14 @@ class Script(BaseScript):
                 n["remote_chassis_id_subtype"] = 5
             else:
                 n["remote_chassis_id_subtype"] = 4
+=======
+                "remote_port_subtype": remote_port_subtype,
+                }
+            if remote_system_name:
+                n["remote_system_name"] = remote_system_name
+            # TODO:
+            n["remote_chassis_id_subtype"] = 4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
             i["neighbors"].append(n)
             r.append(i)

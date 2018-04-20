@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | System | Reboot (SYSLOG)",
+    "uuid": "d451507e-84f7-4ca2-9b07-dcd5180e87d6",
+    "description": "Jan  2  1:54:38 sw-name system: System reboot",
+    "event_class__name": "System | Reboot",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "system: System reboot$"
+        }
+    ]
+}

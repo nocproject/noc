@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li><a href="{% url main:refbook:view rb.id %}">{{rb.name}}</a></li>{% endblock %}
+{% block content %}
+<table border="0">
+    {%for f,v in record.items%}
+    <tr class="{%cycle 'row1' 'row2'%}"><td><b>{{f.name}}</b></td><td>{{v}}</td></tr>
+    {%endfor%}
+</table>
+{% if can_edit %}
+<script type="text/javascript">
+function on_delete() {
+    if(confirm("Delete Record?")){
+        document.location="{% url main:refbook:delete rb.id record.id%}";
+    }
+}
+</script>
+<a href="{% url main:refbook:edit rb.id record.id %}" class="changelink">Change</a>
+<a href="#" class="deletelink" onclick="on_delete();">Delete</a>
+{% endif %}
+{% endblock %}

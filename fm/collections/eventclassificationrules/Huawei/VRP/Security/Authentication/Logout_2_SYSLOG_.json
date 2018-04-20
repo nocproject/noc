@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Security | Authentication | Logout #2 (SYSLOG)",
+    "uuid": "f6a5d9e5-ebdf-4f9a-bc6c-6be586103663",
+    "description": "Jul 20 2012 11:37:35 od-agg-1-dobrovolskogo126 %%01SHELL/5/LOGOUT(l):  amt logout from 212.40.34.7.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "LOGOUT\\(l\\):\\s+(?P<user>\\S+) logout from (?P<ip>\\S+)\\.$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Config | Config Sync Failed (SYSLOG)",
+    "uuid": "8643099c-7af3-45b0-b227-c0271c6b32d3",
+    "description": "%SNMP-W-UNITUPDFAIL: Configuration update of unit 2 failed. Reason:",
+    "event_class__name": "Config | Config Sync Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SNMP-W-UNITUPDFAIL: Configuration update of (?P<config>.+) failed. Reason:"
+        }
+    ]
+}

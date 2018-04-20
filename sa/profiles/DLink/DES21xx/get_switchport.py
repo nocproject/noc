@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DES21xx.get_switchport
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "DLink.DES21xx.get_switchport"
     interface = IGetSwitchport
+=======
+##----------------------------------------------------------------------
+## DLink.DES21xx.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "DLink.DES21xx.get_switchport"
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_vlan_ports = re.compile(
         r"VLAN_ID:(?P<vid>\d+).+?TAG PORT:(?P<tagged>[0-9 ]*).+?"
         r"UNTAG PORT:(?P<untagged>[0-9 ]*)\s*", re.MULTILINE | re.DOTALL)

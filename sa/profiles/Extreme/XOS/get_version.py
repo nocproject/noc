@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Extreme.XOS.get_version
 # ---------------------------------------------------------------------
@@ -33,6 +34,35 @@ class Script(BaseScript):
             v = self.cli("debug hal show version slot %s" % slot)
         platform = self.rx_platform.search(v).group("platform")
         version = self.rx_version.search(v).group("version")
+=======
+##----------------------------------------------------------------------
+## Extreme.XOS.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetVersion
+import re
+
+rx_platform = re.compile(r"Card type:\s+(?P<platform>\S+)",
+    re.MULTILINE | re.DOTALL)
+rx_version = re.compile(r"EXOS version:\s+(?P<version>\S+)",
+    re.MULTILINE | re.DOTALL)
+
+
+class Script(noc.sa.script.Script):
+    name = "Extreme.XOS.get_version"
+    cache = True
+    implements = [IGetVersion]
+
+    def execute(self):
+        v = self.cli("debug hal show version")
+        platform = rx_platform.search(v).group("platform")
+        version = rx_version.search(v).group("version")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return {
             "vendor": "Extreme",
             "platform": platform,

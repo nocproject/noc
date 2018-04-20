@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
@@ -57,6 +58,23 @@ class Script(BaseScript):
                     config = self.get_config(c["URL"])
                     complete_config += "!{0}{1}{2}\n{3}\n".format("=" * 40, c["ContextName"], "=" * 40, config)
                 return complete_config
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetconfig import IGetConfig
+
+
+class Script(NOCScript):
+    name = "Cisco.ASA.get_config"
+    implements = [IGetConfig]
+
+    def execute(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         config = self.cli("more system:running-config")
         config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)

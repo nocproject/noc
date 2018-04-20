@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_switchport
 # ---------------------------------------------------------------------
@@ -66,6 +67,41 @@ class Script(BaseScript):
             r += [iface]
         return r
 
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_switchport"
+    cache = True
+    implements = [IGetSwitchport]
+
+    rx_cont = re.compile(r",\s*$\s+", re.MULTILINE)
+    rx_line = re.compile(r"\n+Name:\s+", re.MULTILINE)
+    rx_body = re.compile(r"^(?P<interface>\S+).+"
+                         "^Administrative Mode: (?P<amode>.+).+"
+                         "^Operational Mode: (?P<omode>.+).+"
+                         "^Administrative Trunking Encapsulation:.+"
+                         "^Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
+                         "^Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
+                         "^Trunking VLANs Enabled: (?P<vlans>.+?)$",
+                         #"Pruning VLANs Enabled:",
+                         re.MULTILINE | re.DOTALL)
+
+    rx_descr_if = re.compile(r"^(?P<interface>\S+)\s+(?:up|down|admin down|deleted)\s+(?:up|down)\s+(?P<description>.+)")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_description(self):
         r = []
@@ -85,9 +121,13 @@ class Script(BaseScript):
         try:
             v = self.cli("show interfaces switchport")
         except self.CLISyntaxError:
+<<<<<<< HEAD
             # Cisco Catalist 3500 XL do not have this command
             #raise self.NotSupportedError()
             return self.parse_config()
+=======
+            raise self.NotSupportedError()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         v = "\n" + v
         v = self.rx_cont.sub(",", v)  # Unwind continuation lines
         # Get portchannel members
@@ -118,6 +158,7 @@ class Script(BaseScript):
                     tagged = range(1, 4095)
                 elif vlans.upper() == "NONE":
                     tagged = []
+<<<<<<< HEAD
                 #
                 # Cisco hides info like this
                 # 3460,3463-3467,3469-3507,3512,3514,3516-3519,3528,(more)
@@ -131,6 +172,8 @@ class Script(BaseScript):
                     except self.CLISyntaxError:
                         # Return anything
                         tagged = self.expand_rangelist(vlans[:-7])
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 else:
                     tagged = self.expand_rangelist(vlans)
                 if untagged in tagged:

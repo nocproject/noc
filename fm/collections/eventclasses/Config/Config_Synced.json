@@ -1,0 +1,15 @@
+{
+    "name": "Config | Config Synced",
+    "$collection": "fm.eventclasses",
+    "uuid": "ccad1e6b-d655-40ec-a098-ad2b709f1739",
+    "description": "Configuration has been synchronized with redundant module",
+    "action": "L",
+    "vars": [
+
+    ],
+    "subject_template": "Configuration has been synced",
+    "body_template": "Device configuration has been synced with redundand module",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Device configuration been proparated to redundant module",
+    "recommended_actions": "No specific action needed"
+}

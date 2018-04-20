@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Covered Objects
@@ -10,6 +11,20 @@
 from mongoengine.document import Document
 from mongoengine.fields import (IntField)
 # NOC modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Covered Objects
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (IntField)
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from coverage import Coverage
 from noc.inv.models.object import Object
 from noc.lib.nosql import PlainReferenceField
@@ -18,8 +33,12 @@ from noc.lib.nosql import PlainReferenceField
 class CoveredObject(Document):
     meta = {
         "collection": "noc.coveredobjects",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["coverage", "object"]
     }
     coverage = PlainReferenceField(Coverage)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VRF, Prefix, Address .project field
 # ---------------------------------------------------------------------
@@ -11,6 +12,22 @@ from south.db import db
 
 
 class Migration(object):
+=======
+##----------------------------------------------------------------------
+## VRF, Prefix, Address .project field
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from south.db import db
+## NOC modules
+from noc.ip.models import *
+
+
+class Migration:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def migrate_project(self, table):
         r = db.execute("""
             SELECT COUNT(*)
@@ -38,4 +55,8 @@ class Migration(object):
         self.migrate_project("ip_address")
 
     def backwards(self):
+<<<<<<< HEAD
         pass
+=======
+        pass
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

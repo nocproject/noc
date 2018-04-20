@@ -1,0 +1,6 @@
+{
+    "name": "DB | Ops | Insert",
+    "uuid": "06cb01db-c5cf-4954-83cd-f31b8154be3a",
+    "description": "Database inserts",
+    "measure": "ops/sec"
+}

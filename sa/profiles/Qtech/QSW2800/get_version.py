@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
@@ -81,6 +82,37 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         ver = self.cli("show version", cached=True)
         match = self.rx_ver.search(ver)
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "Qtech.QSW2800.get_version"
+    implements = [IGetVersion]
+    cache = True
+
+    rx_ver = re.compile(r"^\s*(?P<platform>\S+) Device.+"
+        r"\s*SoftWare Version (?P<version>\S+)."
+        r"\s*BootRom Version (?P<bootprom>\S+).+"
+        r"\s*HardWare Version (?P<hardware>\S+).+"
+        r"\s*(?:Device serial number |Serial No.:)(?P<serial>\S+).",
+        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
+    def execute(self):
+        ver = self.cli("show version", cached=True)
+        match = self.rx_ver.match(ver)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if match:
             platform = match.group("platform")
             version = match.group("version")
@@ -89,6 +121,7 @@ class Script(BaseScript):
             serial = match.group("serial")
 
             return {
+<<<<<<< HEAD
                 "vendor": "Qtech",
                 "platform": platform,
                 "version": version,
@@ -101,6 +134,20 @@ class Script(BaseScript):
         else:
             return {
                 "vendor": "Qtech",
+=======
+                    "vendor": "Qtech",
+                    "platform": platform,
+                    "version": version,
+                    "attributes": {
+                        "Boot PROM": bootprom,
+                        "HW version": hardware,
+                        "Serial Number": serial
+                    }
+            }
+        else:
+            return {
+                "vendor": "Unknown",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "platform": "Unknown",
                 "version": "Unknown"
             }

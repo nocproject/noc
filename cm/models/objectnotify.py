@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Object notifications
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Django modules
 from django.db import models
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Object notifications
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_interfaces
 # ---------------------------------------------------------------------
@@ -31,10 +32,43 @@ class Script(BaseScript):
         r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<direction>\S+)\s+.+$",
         re.MULTILINE)
+=======
+##----------------------------------------------------------------------
+## Zyxel.ZyNOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# Python modules
+from __future__ import with_statement
+import re
+# NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+
+
+class Script(NOCScript):
+    name = "Zyxel.ZyNOS.get_interfaces"
+    implements = [IGetInterfaces]
+
+    rx_admin_status = re.compile(r"Port No\s+:(?P<interface>\d+).\s*"
+                                r"Active\s+:(?P<admin>(Yes|No)).*$",
+                                re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ospf_status = re.compile(r"^\s+Internet Address (?P<ifaddr>"
+                                r"\d+\.\d+\.\d+\.\d+\/\d+).+$",
+                                re.MULTILINE)
+    rx_rip_status = re.compile(r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
+                               r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+"
+                               r"(?P<direction>\S+)\s+.+$",
+                               re.MULTILINE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_ipif = re.compile(
         r"^\s+IP\[(?P<ip>\d+\.\d+\.\d+\.\d+)\],\s+"
         r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
         r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
+<<<<<<< HEAD
     rx_ctp = re.compile(
         r"^\s+(?P<interface>\d+)\s+\S+\s+Enable\s+\d+"
         r"\s+\d+\s+\d+\s+.+$",
@@ -44,11 +78,26 @@ class Script(BaseScript):
         re.MULTILINE)
 
     # @todo: vlan trunking, STP, LLDP (fw >= 3.90)
+=======
+
+    # @todo: vlan trunking, STP, CTP aka LBD
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_admin_status(self, iface):
         """
         Returns admin status of the interface
         """
+<<<<<<< HEAD
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                # IF-MIB::ifAdminStatus
+                s = self.snmp.get("1.3.6.1.2.1.2.2.1.7.%d" % int(iface))
+                return int(s) == 1
+            except self.snmp.TimeOutError:
+                pass  # Fallback to CLI
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         s = self.cli("show interface config %s" % iface)
         match = self.rx_admin_status.search(s)
         return match.group("admin").lower() == "yes"
@@ -63,9 +112,14 @@ class Script(BaseScript):
             v = self.cli("show ip ospf interface", cached=True)
         except self.CLISyntaxError:
             return set()
+<<<<<<< HEAD
         return set(
             match.group("ifaddr") for match in self.rx_ospf_status.finditer(v)
         )
+=======
+        return set(match.group("ifaddr") for
+            match in self.rx_ospf_status.finditer(v))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_rip_addresses(self):
         """
@@ -77,11 +131,17 @@ class Script(BaseScript):
             v = self.cli("show router rip", cached=True)
         except self.CLISyntaxError:
             return set()
+<<<<<<< HEAD
         return set(
             IPv4(match.group("ip"), netmask=match.group("mask")).prefix
             for match in self.rx_rip_status.finditer(v)
             if match.group("direction").lower() != "none"
         )
+=======
+        return set(IPv4(match.group("ip"), netmask=match.group("mask")).prefix
+            for match in self.rx_rip_status.finditer(v)
+            if match.group("direction").lower() != "none")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         interfaces = []
@@ -113,6 +173,7 @@ class Script(BaseScript):
                 iface["enabled_protocols"] = ["LACP"]
             interfaces += [iface]
 
+<<<<<<< HEAD
         # Get loopguard
         ctp = []
         try:
@@ -130,6 +191,8 @@ class Script(BaseScript):
             for match in self.rx_gvrp.finditer(cmd):
                 gvrp += [match.group("interface")]
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get mac
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]
 
@@ -146,17 +209,30 @@ class Script(BaseScript):
             name = swp["interface"]
             iface = {
                 "name": name,
+<<<<<<< HEAD
                 "type": "aggregated" if len(swp["members"]) > 0 else "physical",
                 "admin_status": admin,
                 "oper_status": swp["status"],
                 "mac": mac,
                 "enabled_protocols": [],
+=======
+                "type": "aggregated" if len(swp["members"]) > 0
+                    else "physical",
+                "admin_status": admin,
+                "oper_status": swp["status"],
+                "mac": mac,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "subinterfaces": [{
                     "name": name,
                     "admin_status": admin,
                     "oper_status": swp["status"],
                     "enabled_afi": ["BRIDGE"],
+<<<<<<< HEAD
                     "mac": mac
+=======
+                    "mac": mac,
+                    #"snmp_ifindex": self.scripts.get_ifindex(interface=name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 }]
             }
             if swp["tagged"]:
@@ -165,6 +241,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["untagged_vlan"] = swp["untagged"]
             except KeyError:
                 pass
+<<<<<<< HEAD
             if "description" in swp.keys():
                 iface["description"] = swp["description"]
                 iface["subinterfaces"][0]["description"] = swp["description"]
@@ -172,6 +249,11 @@ class Script(BaseScript):
                 iface["enabled_protocols"] += ["CTP"]
             if name in gvrp:
                 iface["enabled_protocols"] += ["GVRP"]
+=======
+            if swp["description"]:
+                iface["description"] = swp["description"]
+                iface["subinterfaces"][0]["description"] = swp["description"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             interfaces += [iface]
 
         # Get SVIs

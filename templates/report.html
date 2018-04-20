@@ -1,4 +1,5 @@
 {% extends "template.html" %}
+<<<<<<< HEAD
 {% block extrahead %}{{ block.super }}
     <script TYPE="text/javascript"
             SRC="/ui/pkg/pdfmake/pdfmake.min.js"></script>
@@ -51,4 +52,8 @@
             }).download();
         }
     </script>
+=======
+{% block content %}
+{{data|safe}}
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 {% endblock %}

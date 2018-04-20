@@ -1,0 +1,45 @@
+{% extends "template.html" %}
+{% load tags %}
+{% block title%}Knowledge Base: KB{{e.id}}{% endblock %}
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet" href="/static/css/rack.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/highlight.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/tablesorter.css" />
+    <script type="text/javascript" src="/static/js/jquery.tablesorter.js"></SCRIPT>
+    {% for css in  e.parser.css %}
+        <link rel="stylesheet" type="text/css" href="/static/apps/kb/view/{{css}}" />
+    {% endfor %}
+{% endblock %}
+{% block breadcrumbs %}{{block.super}}<li>KB{{e.id}}</li>{% endblock %}
+{% block content %}
+<ul class="object-tools">
+    {% if has_bookmark %}
+        <LI><A HREF="{% url kb:view:bookmark e.id 'unset' %}" class="addlink">Unset Bookmark</A></LI>
+    {% else %}
+        <LI><A HREF="{% url kb:view:bookmark e.id 'set' %}" class="addlink">Set Bookmark</A></LI>
+    {% endif %}
+    <LI><A HREF="{% url kb:kbentry:add %}" class="addlink">Add KB Entry</A></LI>
+    <LI><A HREF="{% url kb:kbentry:change e.id %}" class="addlink">Edit</A></LI>
+</ul>
+<h1>KB{{e.id}}: {{e.subject}}</h1>
+{{e.html|safe}}
+
+{% if e.has_visible_attachments %}
+<H2>Attachments</H2>
+<TABLE BORDER="0">
+    <TR><TH>Name</TH><TH>Description</TH><TH>Size</TH><TH>Last Changed</TH></TR>
+    {% for a in e.visible_attachments %}
+        <TR>
+            <TD><A HREF="{% url kb:view:attachment e.id a.name %}">{{a.name}}</A></TD>
+            <TD>{{a.description}}</TD>
+            <TD>{{a.size|filesizeformat}}</TD>
+            <TD>{{a.mtime|date}} {{a.mtime|time}}</TD>
+        </TR>
+    {% endfor %}
+</TABLE>
+{% endif %}
+{% tags e %}
+<hr/>
+Posted at {{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}} by {{e.last_history.user}}
+{% endblock %}

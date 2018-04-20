@@ -1,0 +1,44 @@
+{
+    "name": "NOC | SA | Join Activator Pool ",
+    "uuid": "e077e236-d7ea-4489-8a41-40ffa358f7eb",
+    "event_class__name": "NOC | SA | Join Activator Pool",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^pool_sessions$",
+            "value_re": "^(?P<pool_sessions>\\d+)$"
+        },
+        {
+            "key_re": "^min_sessions$",
+            "value_re": "^(?P<min_sessions>\\d+)$"
+        },
+        {
+            "key_re": "^name$",
+            "value_re": "^(?P<name>.+)$"
+        },
+        {
+            "key_re": "^instance$",
+            "value_re": "^(?P<instance>.+)$"
+        },
+        {
+            "key_re": "^sessions$",
+            "value_re": "^(?P<sessions>\\d+)$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^event$",
+            "value_re": "^activator_join$"
+        },
+        {
+            "key_re": "^pool_members$",
+            "value_re": "^(?P<pool_members>\\d+)$"
+        },
+        {
+            "key_re": "^min_members$",
+            "value_re": "^(?P<min_members>\\d+)$"
+        }
+    ]
+}

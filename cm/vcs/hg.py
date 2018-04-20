@@ -29,7 +29,11 @@ class VCS(noc.cm.vcs.VCS):
                 date,r=date.split("-",1)
             revs+=[noc.cm.vcs.Revision(rev,datetime.datetime.fromtimestamp(float(date)))]
         return revs
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_current_revision(self,path):
         l=self.cmd_out(["log","-l","1","--template","{rev} {date}",path])
         if not l:
@@ -38,7 +42,11 @@ class VCS(noc.cm.vcs.VCS):
         if "-" in date:
             date,r=date.split("-",1)
         return noc.cm.vcs.Revision(rev,datetime.datetime.fromtimestamp(float(date)))
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def diff(self,path,rev1,rev2):
         return self.cmd_out(["diff","-r%s:%s"%(rev1.revision,rev2.revision),path])
     def get_revision(self,path,rev=None):
@@ -69,4 +77,8 @@ class VCS(noc.cm.vcs.VCS):
                 r=rev
             data+=[(r,t)]
         return data
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

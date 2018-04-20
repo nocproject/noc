@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Recovered #8 (SYSLOG)",
+    "uuid": "661f5ab8-eee7-45bf-aee3-8c73a6615a1c",
+    "description": "%C6KENV-SP-4-PSFANOK: the fan in power supply 1 is OK",
+    "event_class__name": "Chassis | Fan | Fan Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C6KENV-SP-4-PSFANOK: the (?P<name>fan in power supply \\d+) is OK"
+        }
+    ]
+}

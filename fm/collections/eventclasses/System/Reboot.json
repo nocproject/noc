@@ -1,0 +1,33 @@
+{
+    "name": "System | Reboot",
+    "$collection": "fm.eventclasses",
+    "uuid": "757ec9c1-68cb-40d4-8cce-1524c971e51f",
+    "description": "System rebooting",
+    "action": "A",
+    "vars": [
+        {
+            "name": "user",
+            "description": "Username",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_reboot",
+
+        "noc.fm.handlers.event.discovery.schedule_discovery"
+    ],
+    "subject_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "System | Reboot"
+        }
+    ]
+}

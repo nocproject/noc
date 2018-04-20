@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ArchivedEvent model
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ from mongoengine import document, fields
 # Django modules
 from django.template import Template, Context
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## ArchivedEvent model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine import document, fields
+## Django modules
+from django.template import Template, Context
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from eventlog import EventLog
 from eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
@@ -23,8 +38,12 @@ class ArchivedEvent(document.Document):
     """
     meta = {
         "collection": "noc.events.archive",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": True,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["timestamp", "alarms"]
     }
     status = "S"

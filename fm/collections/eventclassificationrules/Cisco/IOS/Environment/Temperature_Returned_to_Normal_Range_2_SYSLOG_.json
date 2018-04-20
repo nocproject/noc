@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #2 (SYSLOG)",
+    "uuid": "72983933-ef88-466e-ab6f-a98de5390039",
+    "description": "%SYS-0-SUP_TEMPMAJORRECOVER: Supervisor in slot 5 EARL major temperature threshold recovered",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-0-SUP_TEMP(?:MINOR|MAJOR)RECOVER:\\s*(?P<name>Supervisor in slot \\d+) \\S+ (?P<threshold>minor|major) temperature threshold recovered"
+        }
+    ]
+}

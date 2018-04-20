@@ -1,0 +1,20 @@
+{
+    "name": "Network | IP | Route Limit Exceeded",
+    "$collection": "fm.eventclasses",
+    "uuid": "64654abe-bea8-47e2-822f-2d57614f5c9a",
+    "description": "Route Limit Exceeded",
+    "action": "L",
+    "vars": [
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "IP routing table limit exceeded{% if reason %} - {{reason}}{% endif %}",
+    "body_template": "IP routing table limit exceeded{% if reason %} - {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

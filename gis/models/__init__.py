@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # GIS module database models
 # ---------------------------------------------------------------------
@@ -19,6 +20,24 @@ class FontSet(nosql.Document):
         "collection": "noc.gis.fontsets",
         "strict": False,
         "auto_create_index": False
+=======
+##----------------------------------------------------------------------
+## GIS module database models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import inspect
+## NOC modules
+from noc.lib import nosql
+
+class FontSet(nosql.Document):
+    meta = {
+        "collection": "noc.gis.fontsets",
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
@@ -31,8 +50,12 @@ class FontSet(nosql.Document):
 
 class Rule(nosql.EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     minscale_zoom = nosql.IntField(required=False)
     maxscale_zoom = nosql.IntField(required=False)
@@ -48,14 +71,22 @@ class Rule(nosql.EmbeddedDocument):
             self.maxscale_zoom == other.maxscale_zoom and
             self.rule_filter == other.rule_filter and
             self.symbolizers == other.symbolizers
+<<<<<<< HEAD
         )
+=======
+            )
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Style(nosql.Document):
     meta = {
         "collection": "noc.gis.styles",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
@@ -65,16 +96,27 @@ class Style(nosql.Document):
         return self.name
 
 
+<<<<<<< HEAD
 class _Layer(nosql.Document):
     meta = {
         "collection": "noc.gis.layers",
         "strict": False,
         "auto_create_index": False
+=======
+class Layer(nosql.Document):
+    meta = {
+        "collection": "noc.gis.layers",
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
     is_active = nosql.BooleanField(default=True)
+<<<<<<< HEAD
     # srs = nosql.ForeignKeyField(SRS)
+=======
+    #srs = nosql.ForeignKeyField(SRS)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     styles = nosql.ListField(nosql.StringField())
     datasource = nosql.DictField()
 
@@ -85,8 +127,12 @@ class _Layer(nosql.Document):
 class Map(nosql.Document):
     meta = {
         "collection": "noc.gis.maps",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
@@ -113,8 +159,12 @@ class Map(nosql.Document):
 
 class Area(nosql.Document):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "collection": "noc.gis.areas"
     }
 
@@ -134,8 +184,12 @@ class Area(nosql.Document):
 class TileCache(nosql.Document):
     meta = {
         "collection": "noc.gis.tilecache",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [("map", "zoom", "x", "y")]
     }
 
@@ -154,8 +208,12 @@ class TileCache(nosql.Document):
 class Overlay(nosql.Document):
     meta = {
         "collection": "noc.gis.overlays",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     name = nosql.StringField(required=True)
@@ -176,10 +234,15 @@ class Overlay(nosql.Document):
             m = __import__("noc.gis.overlays.%s" % self.overlay, {}, {}, "*")
             for n in dir(m):
                 o = getattr(m, n)
+<<<<<<< HEAD
                 if (
                     inspect.isclass(o) and o != OverlayHandler and
                     issubclass(o, OverlayHandler)
                 ):
+=======
+                if (inspect.isclass(o) and o != OverlayHandler and
+                    issubclass(o, OverlayHandler)):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     self._overlay_cache[self.overlay] = o
                     break
         h = self._overlay_cache[self.overlay]

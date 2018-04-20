@@ -1,0 +1,25 @@
+{
+    "name": "NOC | Periodic | Probe Ok",
+    "uuid": "6b1f98ea-87e3-4846-912d-189a9b600243",
+    "description": "NOC probe ok",
+    "event_class__name": "NOC | Periodic | Periodic OK",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NOC\\.SAE$"
+        },
+        {
+            "key_re": "^type$",
+            "value_re": "^(?P<task>pm probe)$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^OK$"
+        }
+    ]
+}

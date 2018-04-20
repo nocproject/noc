@@ -1,0 +1,40 @@
+{
+    "name": "ping",
+    "uuid": "ae01718b-f91e-4a6e-8b04-fd1b5b052967",
+    "label": "Ping",
+    "description": "Ping address",
+    "access_level": 1,
+    "params": [
+        {
+            "description": "Interface toping",
+            "is_required": false,
+            "name": "interface",
+            "type": "interface"
+        },
+        {
+            "description": "Source address",
+            "is_required": false,
+            "name": "source",
+            "type": "ip"
+        },
+        {
+            "default": "5",
+            "description": "Number of packets to send",
+            "is_required": false,
+            "name": "count",
+            "type": "int"
+        },
+        {
+            "description": "VRF to ping",
+            "is_required": false,
+            "name": "vrf",
+            "type": "vrf"
+        },
+        {
+            "description": "IP address to ping",
+            "is_required": true,
+            "name": "address",
+            "type": "ip"
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "name": "PoP | International",
+    "uuid": "265c6560-3f46-4250-848b-e5465491dce4",
+    "description": "International level points of presence",
+    "code": "pop_international",
+    "default_zoom": 12,
+    "fill_color": 16711680,
+    "max_zoom": 19,
+    "min_zoom": 0,
+    "point_radius": 5,
+    "show_labels": true,
+    "stroke_color": 16711680,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 600
+}

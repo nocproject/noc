@@ -1,31 +1,55 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vyatta.Vyatta.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Vyatta.Vyatta.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Vyatta.Vyatta.get_interfaces
     """
     name = "Vyatta.Vyatta.get_interfaces"
+<<<<<<< HEAD
     interface = IGetInterfaces
+=======
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_int = re.compile(r"^(?P<name>.+?):\s+<.+?> mtu \d+ .+state")
     rx_descr = re.compile(r"^\s+Description:\s+(?P<descr>.+?)\s*$")
     rx_inet = re.compile(r"^\s+inet\s+(?P<inet>\S+)")
     rx_inet6 = re.compile(r"^\s+inet6\s+(?P<inet6>\S+)")
+<<<<<<< HEAD
     rx_mac = re.compile(r"\s+link/ether\s+(?P<mac>\S+)")
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         ifaces = {}
@@ -57,11 +81,14 @@ class Script(BaseScript):
             if match:
                 ifaces[last_if]["description"] = match.group("descr")
                 continue
+<<<<<<< HEAD
             # mac
             match = self.rx_mac.search(l)
             if match:
                 ifaces[last_if]["mac"] = match.group("mac")
                 continue
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # inet
             match = self.rx_inet.search(l)
             if match:
@@ -99,11 +126,14 @@ class Script(BaseScript):
             else:
                 continue  # Already processed
             r += [i]
+<<<<<<< HEAD
         # Set MAC addresses
         for i in r:
             macs = set(si.get("mac") for si in i.get("subinterfaces", []))
             if len(macs) == 1 and None not in macs:
                 i["mac"] = macs.pop()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return [{"interfaces": r}]
 
     def get_si(self, si):

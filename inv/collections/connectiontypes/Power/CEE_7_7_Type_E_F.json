@@ -1,0 +1,7 @@
+{
+    "name": "Power | CEE 7/7 Type E/F",
+    "uuid": "17e99e2a-70e8-4add-a8b2-29ada405695d",
+    "description": "French/German Hybrid",
+    "c_group": ["power_cee_7_4", "power_cee_7_5"],
+    "genders": "mf"
+}

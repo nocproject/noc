@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Alentis.NetPing.get_config
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 class Script(BaseScript):
     name = "Alentis.NetPing.get_config"
     interface = IGetConfig
+=======
+##----------------------------------------------------------------------
+## Alentis.NetPing.get_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import json
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetConfig
+
+
+class Script(NOCScript):
+    name = "Alentis.NetPing.get_config"
+    implements = [IGetConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = ''

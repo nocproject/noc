@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_bfd_sessions
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.lib.text import find_indented
 class Script(BaseScript):
     name = "Juniper.JUNOS.get_bfd_sessions"
     interface = IGetBFDSessions
+=======
+##----------------------------------------------------------------------
+## Juniper.JUNOS.get_bfd_sessions
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetBFDSessions
+from noc.lib.text import find_indented
+
+
+class Script(NOCScript):
+    name = "Juniper.JUNOS.get_bfd_sessions"
+    implements = [IGetBFDSessions]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     # JUNOS to interface client type mappings
     client_map = {
@@ -51,6 +72,7 @@ class Script(BaseScript):
                     # "local_address": IPParameter(),
                     "remote_address": match.group("remote_address"),
                     "local_interface": match.group("local_interface"),
+<<<<<<< HEAD
                     "local_discriminator": int(
                         match.group("local_discriminator")
                     ),
@@ -60,6 +82,12 @@ class Script(BaseScript):
                     "state": match.group("state").upper(),
                     "clients": [self.client_map[c] for c in match.group(
                         "client").split()],
+=======
+                    "local_discriminator": int(match.group("local_discriminator")),
+                    "remote_discriminator": int(match.group("remote_discriminator")),
+                    "state": match.group("state").upper(),
+                    "clients": [self.client_map[c] for c in match.group("client").split()],
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     # Transmit interval, microseconds
                     "tx_interval": float(match.group("transmit")) * 1000000,
                     "multiplier": int(match.group("multiplier")),

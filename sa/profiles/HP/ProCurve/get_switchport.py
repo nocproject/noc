@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_switchport
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ class Script(BaseScript):
     name = "HP.ProCurve.get_switchport"
     cache = True
     interface = IGetSwitchport
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "HP.ProCurve.get_switchport"
+    cache = True
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     objstr = {"ifName": "interface",
               "ifDescr": "description",

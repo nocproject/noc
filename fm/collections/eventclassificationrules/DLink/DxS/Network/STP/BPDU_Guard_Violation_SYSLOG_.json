@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | STP | BPDU Guard Violation (SYSLOG)",
+    "uuid": "9df3cf39-3b09-431d-892b-082b22dbf545",
+    "description": "INFO(6) Port <2>  enter BPDU under attacking state (mode: drop)",
+    "event_class__name": "Network | STP | BPDU Guard Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Port <?(?P<interface>\\S*\\d+)>?\\s+enter BPDU under (?:attacking|protection) state \\(mode: \\S+\\)"
+        }
+    ]
+}

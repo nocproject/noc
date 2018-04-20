@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Exiting Configuration Mode #2 (SYSLOG)",
+    "uuid": "5839b528-e664-421a-8c3e-6a8b579440eb",
+    "description": "%SYS-5-CONFIG_I: Configured from console by noc-sa on vty0 (10.10.10.10)",
+    "event_class__name": "Config | Exiting Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-5-CONFIG_I: Configured from console by (?P<user>.+) on"
+        }
+    ]
+}

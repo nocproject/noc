@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve9xxx.get_vlans
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_vlans"
     interface = IGetVlans
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve9xxx.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(NOCScript):
+    name = "HP.ProCurve9xxx.get_vlans"
+    implements = [IGetVlans]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_vlan_line = re.compile(
         r"^\S+\s(?P<vlan_id>\d+)\,\sName\s(?P<name>[A-z0-9\-\_]+?),.+$")

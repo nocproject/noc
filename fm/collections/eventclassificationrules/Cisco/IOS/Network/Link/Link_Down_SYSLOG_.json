@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Link | Link Down (SYSLOG)",
+    "uuid": "d76f13f0-f153-4aa4-b68d-3460f5013bcf",
+    "description": "%LINK-3-UPDOWN: Interface GigabitEthernet4/0/45, changed state to down",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:LINK-(?:SP-|.FC.-)?3|UBR\\d+00-5)-(?:UPDOWN|CHANGED): Interface (?P<interface>.+), changed state to(.+)? down$"
+        }
+    ]
+}

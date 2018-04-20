@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Environment | Temperature Out of Range (SYSLOG)",
+    "uuid": "4de1591f-c910-4e7b-8dd2-a21418761a5c",
+    "description": "%PLATFORM-ENVMON-2-TEMP : Hotpoint temp sensor(slot 19) temperature has reached MINOR level at 66(C)",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PLATFORM-ENVMON-2-TEMP : Hotpoint temp sensor\\((?P<name>.+)\\) temperature has reached (?P<threshold>\\S+) level at (?P<measure>\\d+)\\(C\\)"
+        }
+    ]
+}

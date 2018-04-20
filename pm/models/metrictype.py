@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # MetricType model
@@ -83,6 +84,41 @@ class MetricType(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## MetricType model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (Document, StringField, BooleanField,
+                                UUIDField, ObjectIdField)
+## NOC Modules
+from noc.main.models.doccategory import DocCategory
+from noc.lib.text import quote_safe_path
+from noc.lib.prettyjson import to_json
+
+
+class MetricType(Document):
+    meta = {
+        "collection": "noc.pm.metrictypes",
+        "json_collection": "pm.metrictypes"
+    }
+
+    name = StringField(unique=True)
+    uuid = UUIDField(binary=True)
+    description = StringField(required=False)
+    is_vector = BooleanField(default=False)
+    measure = StringField(default="")
+    category = ObjectIdField()
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def __unicode__(self):
         return self.name
 
@@ -92,6 +128,7 @@ class MetricType(Document):
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
+<<<<<<< HEAD
             "scope__name": self.scope.name,
             "field_name": self.field_name,
             "field_type": self.field_type,
@@ -109,11 +146,27 @@ class MetricType(Document):
                 "name", "$collection",
                 "uuid", "scope__name", "field_name", "field_type",
                 "description", "measure", "vector_tag"])
+=======
+            "description": self.description
+        }
+        if self.is_vector:
+            r["is_vector"] = self.is_vector
+        if self.measure:
+            r["measure"] = self.measure
+        return r
+
+    def to_json(self):
+        return to_json(self.json_data,
+                       order=["name", "$collection",
+                              "uuid", "description",
+                              "is_vector", "measure"])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
+<<<<<<< HEAD
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
@@ -225,3 +278,6 @@ class MetricType(Document):
     @staticmethod
     def clean_String(value):
         return str(value)
+=======
+DocCategory.register(MetricType)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # BRASGroup
 # ----------------------------------------------------------------------
@@ -23,6 +24,20 @@ from noc.core.bi.decorator import bi_sync
     ("sa.ManagedObjectSelector", "filter_termination_group"),
     ("sa.ManagedObjectSelector", "filter_service_terminator")
 ])
+=======
+##----------------------------------------------------------------------
+## BRASGroup
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class TerminationGroup(models.Model):
     """
     Termination Group
@@ -42,6 +57,7 @@ class TerminationGroup(models.Model):
     # -10  -- Reserve 10%
     # dynamic_oversub = models.IntegerField("Dynamic Oversub", default=0)
 
+<<<<<<< HEAD
     # Integration with external NRI systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem,
@@ -53,6 +69,8 @@ class TerminationGroup(models.Model):
 
     tags = TagsField("Tags", null=True, blank=True)
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def __unicode__(self):
         return self.name
 
@@ -66,7 +84,11 @@ class TerminationGroup(models.Model):
         """
         Increase dynamic pool usage
         """
+<<<<<<< HEAD
         # Avoid circular references
+=======
+        ## Avoid circular references
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         from noc.ip.models.vrf import VRF
         from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
 
@@ -80,7 +102,11 @@ class TerminationGroup(models.Model):
         """
         Decrease dynamic pool usage
         """
+<<<<<<< HEAD
         # Avoid circular references
+=======
+        ## Avoid circular references
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         from noc.ip.models.vrf import VRF
         from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
 
@@ -94,8 +120,13 @@ class TerminationGroup(models.Model):
         """
         Retuns dict of dynamic pool name -> technology -> usage counter
         """
+<<<<<<< HEAD
         # Avoid circular references
         from noc.ip.models.vrf import VRF  # noqa
+=======
+        ## Avoid circular references
+        from noc.ip.models.vrf import VRF
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         from noc.ip.models.dynamicippoolusage import DynamicIPPoolUsage
 
         usage = {}

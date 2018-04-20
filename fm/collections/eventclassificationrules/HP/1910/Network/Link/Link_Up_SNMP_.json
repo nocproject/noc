@@ -1,0 +1,34 @@
+{
+    "name": "HP | 1910 | Network | Link | Link Up (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6ba4884b-2e43-4830-8e33-04a3967474e9",
+    "description": "IF-MIB::linkUp",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
+            "value_re": "^up$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+            "value_re": "^up$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^IF-MIB::linkUp$"
+        }
+    ]
+}

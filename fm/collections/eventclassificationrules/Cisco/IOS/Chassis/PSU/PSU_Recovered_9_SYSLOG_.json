@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #9 (SYSLOG)",
+    "uuid": "77ba242c-79c1-4305-9c6d-6260369cd78a",
+    "description": "%POWER_SUPPLIES-5-PWR_OK: Power supply 2 is functioning",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%POWER_SUPPLIES-5-PWR_OK: (?P<name>Power supply \\d+) is functioning"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{% extends "template.html" %}
+{% block breadcrumbs %}{{block.super}}<li><a href="{% url kb:index:categories %}">Categories</a></li><li>{{category.name}}</li>{% endblock %}
+{% block content %}
+<ul class="object-tools">
+    <LI><A HREF="{% url kb:kbentry:add %}" class="addlink">Add KB Entry</A></LI>
+</ul>
+
+<TABLE BORDER="0">
+    <TR><TH>#</TH><TH>Subject</TH><TH>Views</TH><TH>Modified</TH><TH>Modified by</TH></TR>
+    {% for e in entries %}
+    <TR CLASS="{% cycle 'row1' 'row2' %}">
+        <TD ALIGN="right"><A HREF="{% url kb:view:view e.id %}">KB{{e.id}}</A></TD>
+        <TD>{{e.subject}}</TD>
+        <TD>{{e.preview_count}}</TD>
+        <TD>{{e.last_history.timestamp|date}} {{e.last_history.timestamp|time}}</TD>
+        <TD>{{e.last_history.user}}</TD>
+    </TR>
+    {% endfor %}
+</TABLE>
+{% endblock %}

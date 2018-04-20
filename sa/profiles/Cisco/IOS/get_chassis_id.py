@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_chassis_id
 # ---------------------------------------------------------------------
@@ -34,6 +35,38 @@ class Script(BaseScript):
     )
 
     @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY|E|WC")
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_chassis_id
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetChassisID
+from noc.lib.mac import MAC
+
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_chassis_id"
+    cache = True
+    implements = [IGetChassisID]
+
+    ##
+    ## Catalyst 2960/3560/3750/3120 on IOS SE
+    ## Catalyst 2950 on IOS EA
+    ## Single chassis mac
+    ##
+    rx_small_cat = re.compile(
+        r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
+        re.IGNORECASE | re.MULTILINE)
+
+    @NOCScript.match(version__regex=r"SE|EA|EZ")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
@@ -43,6 +76,7 @@ class Script(BaseScript):
             "last_chassis_mac": base
         }]
 
+<<<<<<< HEAD
     #
     # Cisco Catalyst 4000/4500/4500e Series
     #
@@ -52,6 +86,15 @@ class Script(BaseScript):
     )
 
     @BaseScript.match(version__regex=r"SG|\d\d\.\d\d\.\d\d\.E|EWA")
+=======
+    ##
+    ## Cisco Catalyst 4000/4500 Series
+    ##
+    rx_cat4000 = re.compile(r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+
+    @NOCScript.match(version__regex=r"SG")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_cat4000(self):
         try:
             v = self.cli("show idprom chassis")
@@ -65,6 +108,7 @@ class Script(BaseScript):
             "last_chassis_mac": MAC(base).shift(count - 1)
         }]
 
+<<<<<<< HEAD
     #
     # Cisco Catalyst 6500 Series or Cisco router 7600 Series
     #
@@ -75,6 +119,16 @@ class Script(BaseScript):
     )
 
     @BaseScript.match(version__regex=r"S[YXR]")
+=======
+    ##
+    ## Cisco Catalyst 6500 Series or Cisco router 7600 Series
+    ##
+    rx_cat6000 = re.compile(
+        r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+(?P<to_id>\S+)",
+        re.IGNORECASE | re.MULTILINE)
+
+    @NOCScript.match(version__regex=r"S[YXR]")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_cat6000(self):
         v = self.cli("show catalyst6000 chassis-mac-addresses")
         match = self.re_search(self.rx_cat6000, v)
@@ -83,6 +137,7 @@ class Script(BaseScript):
             "last_chassis_mac": match.group("to_id")
         }]
 
+<<<<<<< HEAD
     #
     # IOS XE
     #
@@ -171,5 +226,11 @@ class Script(BaseScript):
     # Other
     #
     @BaseScript.match()
+=======
+    ##
+    ## Other
+    ##
+    @NOCScript.match()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_not_supported(self):
         raise self.NotSupportedError()

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.iLO2.get_config
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
+=======
+##----------------------------------------------------------------------
+## HP.iLO2.get_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetConfig
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 EXCLUDE_TARGETS = set([
     "/map1/firmware1",
@@ -16,9 +29,15 @@ EXCLUDE_TARGETS = set([
 ])
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "HP.iLO2.get_config"
     interface = IGetConfig
+=======
+class Script(noc.sa.script.Script):
+    name = "HP.iLO2.get_config"
+    implements = [IGetConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def walk(self, dir):
         r = self.cli("show %s" % dir).split("\n")

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: InfiNet
 # OS:     WANFlexX
@@ -20,3 +21,26 @@ class Profile(BaseProfile):
     password_submit = "\r"
     command_exit = "exit"
     pattern_syntax_error = r"Unknown command\. Use \? for help"
+=======
+##----------------------------------------------------------------------
+## Vendor: InfiNet
+## OS:     WANFlexX
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET
+
+
+class Profile(noc.sa.profiles.Profile):
+    name = "InfiNet.WANFlexX"
+    supported_schemes = [TELNET]
+    pattern_more = "^-- more --"
+    pattern_prompt = r"\S+?#\d+>"
+    command_submit = "\r"
+    command_more = " "
+    command_exit = "exit"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

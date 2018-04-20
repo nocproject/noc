@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # CustomFieldEnumValue model
 # ---------------------------------------------------------------------
@@ -12,6 +13,19 @@ from __future__ import absolute_import
 from django.db import models
 # NOC modules
 from .customfieldenumgroup import CustomFieldEnumGroup
+=======
+##----------------------------------------------------------------------
+## CustomFieldEnumValue model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from customfieldenumgroup import CustomFieldEnumGroup
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class CustomFieldEnumValue(models.Model):
@@ -28,8 +42,12 @@ class CustomFieldEnumValue(models.Model):
     enum_group = models.ForeignKey(
         CustomFieldEnumGroup,
         verbose_name="Enum Group",
+<<<<<<< HEAD
         related_name="enumvalue_set"
     )
+=======
+        related_name="enumvalue_set")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     is_active = models.BooleanField("Is Active", default=True)
     key = models.CharField("Key", max_length=256)
     value = models.CharField("Value", max_length=256)

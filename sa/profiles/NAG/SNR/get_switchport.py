@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # NAG.SNR.get_switchport
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "NAG.SNR.get_switchport"
     interface = IGetSwitchport
+=======
+##----------------------------------------------------------------------
+## NAG.SNR.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import time
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "NAG.SNR.get_switchport"
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
 
@@ -46,14 +66,23 @@ class Script(BaseScript):
 #            pass
 
         # Try snmp first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 # Make a list of tags for each interface or portchannel
                 port_vlans = {}
                 for v in self.snmp.get_tables(
                     ["1.3.6.1.2.1.17.7.1.4.2.1.3",
+<<<<<<< HEAD
                         "1.3.6.1.2.1.17.7.1.4.2.1.4",
                         "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+=======
+                    "1.3.6.1.2.1.17.7.1.4.2.1.4",
+                    "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     tagged = v[2]
                     untagged = v[3]
 
@@ -90,7 +119,12 @@ class Script(BaseScript):
                 # Get switchport description
                 port_descr = {}
                 for iface, description in self.snmp.join_tables(
+<<<<<<< HEAD
                     "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
+=======
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
+                    bulk=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     port_descr.update({iface: description})
             except self.snmp.TimeOutError:
                     raise Exception("Not implemented")

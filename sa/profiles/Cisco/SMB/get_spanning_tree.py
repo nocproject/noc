@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_spanning_tree
 # ----------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "Cisco.SMB.get_spanning_tree"
     interface = IGetSpanningTree
+=======
+##----------------------------------------------------------------------
+## Cisco.SMB.get_spanning_tree
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSpanningTree
+from noc.lib.text import parse_table
+
+
+class Script(NOCScript):
+    name = "Cisco.SMB.get_spanning_tree"
+    implements = [IGetSpanningTree]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_ports_attrs(self, cli_stp, instance_sep):
         """
@@ -29,7 +50,11 @@ class Script(BaseScript):
         ports = {}  # instance -> port -> attributes
         for I in cli_stp.split(instance_sep)[1:]:
             instance_id = I.split(" ", 1)[0]
+<<<<<<< HEAD
             if not instance_id:  # STP/RSTP
+=======
+            if not instance_id: # STP/RSTP
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 instance_id = 0
             instance_id = int(instance_id)
             ports[instance_id] = {}
@@ -69,9 +94,15 @@ class Script(BaseScript):
                 }
         return ports
 
+<<<<<<< HEAD
     #
     # PVST+/rapid-PVST+ Parsing
     #
+=======
+    ##
+    ## PVST+/rapid-PVST+ Parsing
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_pvst_bridge = re.compile(
         r"(CST )?Root ID\s+Priority\s+(?P<root_priority>\d+).+Address\s+(?P<root_id>\S+).+(Bridge ID\s+Priority\s+(?P<bridge_priority>\d+).+Address\s+(?P<bridge_id>\S+))?",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
@@ -103,7 +134,11 @@ class Script(BaseScript):
             "root_priority": match.group("root_priority"),
             "bridge_id": match.group("bridge_id") if match.group("bridge_id") else match.group("root_id"),
             "bridge_priority": match.group("bridge_priority") if match.group("bridge_priority") else match.group("root_priority"),
+<<<<<<< HEAD
         }]
+=======
+            }]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for match in self.rx_pvst_interfaces.finditer(spanning_tree_detail):
             interface = self.profile.convert_interface_name(match.group("interface"))
             port_attrs = ports[instance_id][interface]
@@ -112,20 +147,34 @@ class Script(BaseScript):
                 "port_id": match.group("port_id"),
                 "state": port_attrs["state"],
                 "role": port_attrs["role"],
+<<<<<<< HEAD
                 "priority": match.group("port_id").split(".", 1)[0],
+=======
+                "priority": match.group("port_id").split(".",1)[0],
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "designated_bridge_id": match.group("designated_bridge_id"),
                 "designated_bridge_priority": match.group("designated_bridge_priority"),
                 "designated_port_id": match.group("designated_port_id"),
                 "point_to_point": port_attrs["point_to_point"],
                 "edge": port_attrs["edge"],
+<<<<<<< HEAD
             }]
+=======
+                }]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for INST in reply["instances"]:
             INST["interfaces"] = interfaces[INST["id"]]
         return reply
 
+<<<<<<< HEAD
     #
     # MSTP Parsing
     #
+=======
+    ##
+    ## MSTP Parsing
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_mstp_region = re.compile(
         r"Name:\s+(?P<region>\S+).+Revision:\s+(?P<revision>\d+)",
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
@@ -155,7 +204,11 @@ class Script(BaseScript):
                 "MSTP": {
                     "region": match.group("region"),
                     "revision": match.group("revision"),
+<<<<<<< HEAD
                 }
+=======
+                    }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }
         }
         iv = {}  # instance -> vlans
@@ -168,12 +221,20 @@ class Script(BaseScript):
             if instance_id not in interfaces:
                 interfaces[instance_id] = []
             match = self.rx_mstp_bridge.search(INS)
+<<<<<<< HEAD
             root_id = match.group("root_id")
             root_priority = match.group("root_priority")
             bridge_id = match.group("bridge_id")
             bridge_priority = match.group("bridge_priority")
             # we are the root bridge for instance
             if not bridge_id and not bridge_priority:
+=======
+            root_id =  match.group("root_id")
+            root_priority = match.group("root_priority")
+            bridge_id = match.group("bridge_id")
+            bridge_priority = match.group("bridge_priority")
+            if not bridge_id and not bridge_priority: # we are the root bridge for instance
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 bridge_id = root_id
                 bridge_priority = root_priority
             reply["instances"] += [{
@@ -183,12 +244,20 @@ class Script(BaseScript):
                 "root_priority": root_priority,
                 "bridge_id": bridge_id,
                 "bridge_priority": bridge_priority,
+<<<<<<< HEAD
             }]
+=======
+                }]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             for match in self.rx_mstp_interfaces.finditer(INS):
                 interface = self.profile.convert_interface_name(match.group("interface"))
                 port_attrs = ports[instance_id][interface]
                 port_id = match.group("port_id")
+<<<<<<< HEAD
                 priority = port_id.split(".", 1)[0]
+=======
+                priority = port_id.split(".",1)[0]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 interfaces[instance_id] += [{
                     "interface": interface,
                     "port_id": port_id,
@@ -200,7 +269,11 @@ class Script(BaseScript):
                     "designated_port_id": match.group("designated_port_id"),
                     "point_to_point": port_attrs["point_to_point"],
                     "edge": port_attrs["edge"],
+<<<<<<< HEAD
                 }]
+=======
+                    }]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for INST in reply["instances"]:
             INST["interfaces"] = interfaces[INST["id"]]
         return reply
@@ -213,7 +286,12 @@ class Script(BaseScript):
             return self.process_pvst(v, proto="RSTP")
         elif "Spanning tree enabled mode MSTP" in v:
             return self.process_mstp(v)
+<<<<<<< HEAD
         # elif "No spanning tree instance exists" in v \
         # or "No spanning tree instances exist" in v:
+=======
+        #elif "No spanning tree instance exists" in v \
+        #or "No spanning tree instances exist" in v:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         else:
             return {"mode": "None", "instances": []}

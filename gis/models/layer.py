@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Map Layer
 # ---------------------------------------------------------------------
@@ -21,12 +22,35 @@ from noc.lib.text import quote_safe_path
 
 id_lock = Lock()
 
+=======
+##----------------------------------------------------------------------
+## Map Layer
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, UUIDField, IntField,
+                                BooleanField)
+## NOC modules
+from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 class Layer(Document):
     meta = {
         "collection": "noc.layers",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "json_collection": "gis.layers"
     }
     name = StringField(unique=True)
@@ -58,6 +82,7 @@ class Layer(Document):
     # Text symbolizers
     show_labels = BooleanField(default=True)
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
@@ -80,6 +105,11 @@ class Layer(Document):
         except Layer.DoesNotExist:
             return None
 
+=======
+    def __unicode__(self):
+        return self.name
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @property
     def json_data(self):
         r = {

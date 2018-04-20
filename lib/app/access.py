@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Access control
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 from django.db.models import Q
 from noc.main.models.permission import Permission as DBPermission
+=======
+##----------------------------------------------------------------------
+## Access control
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from django.db.models import Q
+import noc.main.models
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class PermissionDenied(Exception):
@@ -145,4 +156,9 @@ class HasPerm(Permission):
             return "%s:%s:%s" % (app.module, app.app, self.perm)
 
     def check(self, app, user, obj=None):
+<<<<<<< HEAD
         return DBPermission.has_perm(user, self.get_permission(app))
+=======
+        return noc.main.models.Permission.has_perm(user,
+                                                   self.get_permission(app))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

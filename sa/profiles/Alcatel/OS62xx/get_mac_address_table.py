@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.OS62xx.get_mac_address_table
 # ----------------------------------------------------------------------
@@ -8,13 +9,31 @@
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## Alcatel.OS62xx.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetMACAddressTable
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.text import parse_table
 import re
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Alcatel.OS62xx.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+class Script(noc.sa.script.Script):
+    name = "Alcatel.OS62xx.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show bridge address-table"

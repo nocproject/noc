@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_switchport
 # ---------------------------------------------------------------------
@@ -19,10 +20,33 @@ class Script(BaseScript):
 
     rx_interface = re.compile(
         r"^\s*(?:Fast|Gigabit)?\s*Ethernet\s+(?P<interface>\S+)\s+(?:is|current state:)\s+(enabled|disabled),\s+port\s+link\s+is\s+(up|down)")
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "Qtech.QSW.get_switchport"
+    implements = [IGetSwitchport]
+
+    rx_interface = re.compile(
+        r"^\s*Ethernet\s+(?P<interface>\S+)\s+is\s+(enabled|disabled),\s+port\s+link\s+is\s+(up|down)")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_mode = re.compile(r"^\s*Port\s+mode\s*:\s*(?P<mode>\S+)$")
     rx_vlan_t = re.compile(r"^\s*Vlan\s+allowed\s*:\s*(?P<vlans>\S+)$")
     rx_vlan_at = re.compile(r"^\s*Tagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
     rx_vlan_au = re.compile(r"^\s*Untagged\s+VLAN\s+ID\s*:\s*(?P<vlans>\S+)$")
+<<<<<<< HEAD
     rx_description = re.compile(r"^\s*(?P<interface>e\S+)(?P<description>.*)\n", re.MULTILINE)
 
     """
@@ -37,6 +61,27 @@ class Script(BaseScript):
         portchannel_members = []
         # for p in portchannels:
         #    portchannel_members += p["members"]
+=======
+
+    rx_description = re.compile(
+        r"^\s*(?P<interface>e\S+)\s+((?P<description>(\S+ \S+|\S+))|)$",
+        re.MULTILINE)
+#    rx_channel_description = re.compile(
+#        r"^(?P<interface>Po\d+)\s+((?P<description>\S+)|)$", re.MULTILINE)
+#    rx_vlan_stack = re.compile(
+#        r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TODO
+
+
+    def execute(self):
+
+        #TODO
+        # Get portchannels
+#        portchannels = self.scripts.get_portchannel()
+        portchannels = []
+        portchannel_members = []
+#        for p in portchannels:
+#            portchannel_members += p["members"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         # Get interafces status
         interface_status = {}
@@ -44,7 +89,11 @@ class Script(BaseScript):
         for s in self.scripts.get_interface_status():
             interface_status[s["interface"]] = s["status"]
 
+<<<<<<< HEAD
         # TODO
+=======
+        #TODO
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get 802.1ad status if supported
         vlan_stack_status = {}
         """
@@ -59,7 +108,11 @@ class Script(BaseScript):
         # Try snmp first
         """
         # SNMP not working!
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             def hex2bin(ports):
                 bin = [
                     '0000', '0001', '0010', '0011',
@@ -116,7 +169,12 @@ class Script(BaseScript):
                 # Get switchport description
                 port_descr = {}
                 for iface, description in self.snmp.join_tables(
+<<<<<<< HEAD
                     "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
+=======
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
+                    bulk=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     port_descr.update({iface: description})
 
                 # Get switchport data and overall result
@@ -180,10 +238,17 @@ class Script(BaseScript):
         port_vlans = {}
         port_channels = portchannels
 
+<<<<<<< HEAD
         iface_conf = self.cli("show interface")
         # Correct Qtech BUG:
         iface_conf = iface_conf.replace(
             "\n\n                                                                          ", "\n")
+=======
+
+        iface_conf = self.cli("show interface")
+        # Correct Qtech BUG:
+        iface_conf = iface_conf.replace("\n\n                                                                          ", "\n")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         iface_conf = iface_conf.splitlines()
         i = 0
         L = len(iface_conf) - 2
@@ -203,10 +268,17 @@ class Script(BaseScript):
                         break
             if interface not in port_vlans:
                 port_vlans.update({interface: {
+<<<<<<< HEAD
                     "tagged": [],
                     "untagged": '',
                 }
                 })
+=======
+                                        "tagged": [],
+                                        "untagged": '',
+                                        }
+                                })
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
             i += 1
             match_mod = self.rx_mode.match(iface_conf[i])
@@ -220,8 +292,11 @@ class Script(BaseScript):
                 match = self.rx_vlan_t.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
+<<<<<<< HEAD
                     if vlans == "all":
                         vlans = "1-4096"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
@@ -229,24 +304,37 @@ class Script(BaseScript):
                 match = self.rx_vlan_at.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")
+<<<<<<< HEAD
                     if vlans == "all":
                         vlans = "1-4096"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
                 i += 1
                 match = self.rx_vlan_au.match(iface_conf[i])
                 if match:
+<<<<<<< HEAD
                     vl = match.group("vlans")
                     vlans = vl.split(',')[0]
                     if "-" in vlans:
                         vlans = vlans.split("-")[0]
                     port_vlans[interface]["untagged"] = vlans
+=======
+                    vlans = match.group("vlans")
+                    port_vlans[interface]["untagged"] = vlans.split(',')[0]
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         iface_conf = []
         # Why portchannels=[] ???????
         # Get portchannels onse more!!!
+<<<<<<< HEAD
         #        portchannels = self.scripts.get_portchannel()
+=======
+#        portchannels = self.scripts.get_portchannel()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         portchannels = []
         # Get switchport data and overall result
         r = []
@@ -287,6 +375,7 @@ class Script(BaseScript):
                 members = []
                 write = True
             if write:
+<<<<<<< HEAD
                 if name not in port_vlans:
                     tagged = []
                 else:
@@ -302,6 +391,18 @@ class Script(BaseScript):
                     if port_vlans[name]["untagged"]:
                         swp["untagged"] = port_vlans[name]["untagged"]
                 swp["interface"] = name
+=======
+                swp = {
+                        "status": status,
+                        "description": description,
+                        "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
+                        "802.1ad Tunnel": vlan_stack_status.get(name, False),
+                        "tagged": port_vlans[name]["tagged"],
+                        }
+                if port_vlans[name]["untagged"]:
+                    swp["untagged"] = port_vlans[name]["untagged"]
+                swp["interface"] = self.profile.convert_interface_name(name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 swp["members"] = members
                 r.append(swp)
                 write = False

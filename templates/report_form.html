@@ -1,4 +1,5 @@
 {% extends "template.html" %}
+<<<<<<< HEAD
 {% block extrastyle %}
 <link rel="stylesheet" type="text/css" href="/media/admin/css/base.css" />
 <link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" />
@@ -33,11 +34,17 @@ django = {
 </script>
 <script type="text/javascript" src="/media/admin/js/core.js"></script>
 {% endblock %}
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 {% block content %}
 <h1>{{app.title}}</h1>
 <form action="" method="POST">
 <table border="0">
     {{form.as_table}}
 </table>
+<<<<<<< HEAD
 <input id="generate-report" type="submit" value="Generate Report" onclick="buttonAnimation()" style="width: 140px;"/>
+=======
+<input type="submit" value="Generate Report"/>
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 {% endblock %}

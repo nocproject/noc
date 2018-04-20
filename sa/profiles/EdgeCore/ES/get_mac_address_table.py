@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "EdgeCore.ES.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## EdgeCore.ES.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(NOCScript):
+    name = "EdgeCore.ES.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     # ES3526 mac-address-table
     rx_line1 = re.compile(r"^\s*(?P<interface>(Eth\s*\d+/\s*\S+)|(Trunk\s*\d+))\s+"
@@ -47,7 +68,10 @@ class Script(BaseScript):
         "dynamic": "D",
         "static": "S",
         "learn": "D",
+<<<<<<< HEAD
         "security": "D",
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "cpu": "S"
     }
 

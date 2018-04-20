@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ModelInterface model
@@ -16,6 +17,23 @@ from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, UUIDField)
 import cachetools
 # NOC modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ModelInterface model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, BooleanField, ListField,
+                                EmbeddedDocumentField, UUIDField)
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from error import ModelDataError
 from noc.lib.utils import deep_copy
 from noc.lib.escape import json_escape as q
@@ -23,9 +41,12 @@ from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
                                     FloatParameter, IntParameter,
                                     StringListParameter)
 
+<<<<<<< HEAD
 id_lock = Lock()
 
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 T_MAP = {
     "str": StringParameter(),
     "int": IntParameter(),
@@ -39,8 +60,12 @@ A_TYPE = ["str", "int", "float", "bool", "objectid", "ref", "strlist"]
 
 class ModelInterfaceAttr(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = StringField()
     type = StringField(choices=[(t, t) for t in A_TYPE])
@@ -94,8 +119,12 @@ class ModelInterface(Document):
     """
     meta = {
         "collection": "noc.modelinterfaces",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "json_collection": "inv.modelinterfaces"
     }
 
@@ -104,8 +133,11 @@ class ModelInterface(Document):
     attrs = ListField(EmbeddedDocumentField(ModelInterfaceAttr))
     uuid = UUIDField(binary=True)
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(1000, 10)
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def __unicode__(self):
         return self.name
 
@@ -166,6 +198,7 @@ class ModelInterface(Document):
                         vv = [x.strip() for x in sorted(r) if x.strip()]
                     v[a.name] = T_MAP[a.type].clean(vv)
         return d
+<<<<<<< HEAD
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -178,3 +211,5 @@ class ModelInterface(Document):
             raise ModelDataError("Invalid attribute '%s.%s'" % (
                 interface, key))
         return attr
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

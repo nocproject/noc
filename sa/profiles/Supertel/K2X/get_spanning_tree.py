@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Supertel.K2X.get_spanning_tree
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "Supertel.K2X.get_spanning_tree"
     interface = IGetSpanningTree
+=======
+##----------------------------------------------------------------------
+## Supertel.K2X.get_spanning_tree
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSpanningTree
+from noc.lib.text import parse_table
+
+
+class Script(NOCScript):
+    name = "Supertel.K2X.get_spanning_tree"
+    implements = [IGetSpanningTree]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     TIMEOUT = 240
 

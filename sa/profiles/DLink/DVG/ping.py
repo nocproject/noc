@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DVG.ping
 # ---------------------------------------------------------------------
@@ -20,6 +21,28 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) "
         r"(packets received|received), \d+% packet loss$",
+=======
+##----------------------------------------------------------------------
+## DLink.DVG.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IPing
+
+
+class Script(noc.sa.script.Script):
+    name = "DLink.DVG.ping"
+    implements = [IPing]
+
+    rx_result = re.compile(
+        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received), \d+% packet loss$",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE)
     rx_stat = re.compile(
         r"^round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+) ms$",
@@ -41,7 +64,11 @@ class Script(BaseScript):
         if result:
             r = {
                 "success": result.group("success"),
+<<<<<<< HEAD
                 "count": result.group("count")
+=======
+                "count": result.group("count"),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 }
         else:
             raise self.NotSupportedError()
@@ -50,6 +77,10 @@ class Script(BaseScript):
             r.update({
                 "min": stat.group("min"),
                 "avg": stat.group("avg"),
+<<<<<<< HEAD
                 "max": stat.group("max")
+=======
+                "max": stat.group("max"),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 })
         return r

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # OS.FreeBSD.get_interfaces
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ import re
 class Script(BaseScript):
     name = "OS.FreeBSD.get_interfaces"
     interface = IGetInterfaces
+=======
+##----------------------------------------------------------------------
+## OS.FreeBSD.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+import re
+
+
+class Script(NOCScript):
+    name = "OS.FreeBSD.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_if_name = re.compile(
         r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?"
         r" mtu (?P<mtu>\d+)$")
@@ -28,7 +48,11 @@ class Script(BaseScript):
     rx_if_status = re.compile(
         r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
     rx_if_vlan = re.compile(
+<<<<<<< HEAD
         r"^\tvlan: (?P<vlan>[1-9]\d*).+parent interface: (?P<parent>\S+)$")
+=======
+        r"^\tvlan: (?P<vlan>[1-9]\d*) parent interface: (?P<parent>\S+)$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_if_wlan = re.compile(r"^\tssid .+$")
     rx_if_bridge = re.compile(r"^\tgroups:.+?bridge.*?$")
     rx_if_bridge_m = re.compile(r"^\tmember: (?P<ifname>\S+) flags=\d+<.+>$")

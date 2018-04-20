@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_version
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_version"
     cache = True
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Cisco_CLI.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+import re
+
+
+class Script(NOCScript):
+    name = "DLink.DxS_Cisco_CLI.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_ver = re.compile(
         r"System description\s+:\s+(?P<platform>\S+).+System hardware version"
         r"\s+:\s+(?P<hversion>\S+?),?\s+System software version"

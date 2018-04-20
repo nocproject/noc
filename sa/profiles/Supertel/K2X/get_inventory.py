@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Supertel.K2X.get_inventory
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 class Script(BaseScript):
     name = "Supertel.K2X.get_inventory"
     interface = IGetInventory
+=======
+##----------------------------------------------------------------------
+## Supertel.K2X.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInventory
+
+
+class Script(NOCScript):
+    name = "Supertel.K2X.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cache = True
 
     rx_description = re.compile(
@@ -29,7 +49,11 @@ class Script(BaseScript):
 
     def execute(self):
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
                 platform = self.profile.platforms[platform.split('.')[8]]

@@ -1,0 +1,33 @@
+{
+    "name": "Juniper | ScreenOS | Network | BGP | Established (SNMP)",
+    "uuid": "5887db02-82c9-4305-b82c-b5f10fe88c8e",
+    "description": "NETSCREEN-BGP4-MIB::nsBgpEstablished, bgp-established",
+    "event_class__name": "Network | BGP | Established",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.ScreenOS$"
+        },
+        {
+            "key_re": "^NETSCREEN-TRAP-MIB::netscreenTrapType\\.0$",
+            "value_re": "^bgp-established$"
+        },
+        {
+            "key_re": "^NETSCREEN-VR-BGP4-MIB::nsVrBgpPeerIdentifier$",
+            "value_re": "^(?P<peer__int_to_ip>\\S+)$"
+        },
+        {
+            "key_re": "^NETSCREEN-VR-BGP4-MIB::nsVrBgpPeerState$",
+            "value_re": "^established$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^NETSCREEN-BGP4-MIB::nsBgpEstablished$"
+        }
+    ]
+}

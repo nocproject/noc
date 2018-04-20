@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
@@ -11,6 +12,21 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 class Script(BaseScript):
     name = "Alcatel.OS62xx.get_vlans"
     interface = IGetVlans
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(noc.sa.script.Script):
+    name = "Alcatel.OS62xx.get_vlans"
+    implements = [IGetVlans]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         vlans = self.cli("show vlan")

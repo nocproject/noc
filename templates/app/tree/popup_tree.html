@@ -1,0 +1,79 @@
+{% extends "popup.html" %}
+{% block extrahead %}
+      <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
+      {% if css_url %}
+      <link rel="stylesheet" type="text/css" href="{{css_url}}" />
+      {% endif %}
+{% endblock %}
+{% block content %}
+<div id="popup-tree">Foobar</div>
+<script>
+      $(document).ready(function() {
+            $("#popup-tree")
+            .jstree({
+                  "core": {
+                        /*"initially_open": ["root"]*/
+                        "animation": 0,
+                        "html_titles": true,
+                  },
+                  "plugins": ["themes", "json_data",
+                              "types"],
+                  "themes": {
+                        "url": "/static/themes/jstree/default/style.css"
+                  },
+                  "types": {
+                        "valid_children": ["root"],
+                        "types": {
+                              "default": {
+                                    "valid_children": "none",
+                                    "icon" : {
+                                          "image": "/static/themes/jstree/default/file.png"
+                                    }
+                              },
+                              "folder": {
+                                    "valid_children": ["default", "folder"],
+                                    "icon" : {
+                                          "image": "/static/themes/jstree/default/folder.png"
+                                    },
+                                    "select_node" : function () {return false;}
+                              },
+                              "root": {
+                                    "valid_children": ["default", "folder"],
+                                    "icon": {
+                                          "image": "/static/themes/jstree/default/root.png"
+                                    },
+                                    "hover_node": false,
+                                    "select_node" : function () {return false;}
+                              }
+
+                        }
+                  },
+                  "json_data": {
+                        "progressive_render": true,
+                        "ajax": {
+                              "url": "{{lookup_url}}",
+                              "data": function(n) {
+                                    return {
+                                          "node": n.attr ? n.attr("id").replace("node_", "") : "root"
+                                    };
+                              }
+                        }
+                  }
+            });
+            {% if choose_id %}
+                  $("#popup-tree a").live("click", function(e) {
+                        var rx = /\/([0-9a-f]+)\/$/
+                        var text;
+                        if(e.srcElement)
+                              text = e.srcElement.innerText;
+                        else
+                              text = e.currentTarget.textContent.replace(/^ +/, "");
+                        console.log(e);
+                        return parent.hide_popup_and_choose("{{choose_id}}",
+                              text,
+                              e.currentTarget.href.match(rx)[1]);
+                  });
+            {% endif %}
+      });
+</script>
+{% endblock %}

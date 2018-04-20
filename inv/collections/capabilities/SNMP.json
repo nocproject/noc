@@ -1,0 +1,6 @@
+{
+    "name": "SNMP",
+    "uuid": "24ce2f73-c23b-4f7b-b3d9-fc02d2d9a3d0",
+    "description": "Basic SNMP support",
+    "type": "bool"
+}

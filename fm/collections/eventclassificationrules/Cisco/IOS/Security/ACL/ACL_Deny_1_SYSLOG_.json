@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | ACL | ACL Deny #1 (SYSLOG)",
+    "uuid": "86e135e5-d92b-45cf-bcb9-e810646c93af",
+    "description": "%SEC-6-IPACCESSLOGP: list aclBorder denied tcp 118.84.26.135(46365) (Vlan51 0015.c726.6100) -> 124.218.199.108(22), 1 packet",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) \\((?P<src_interface>.+?) (?P<src_mac>\\S+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
+        }
+    ]
+}

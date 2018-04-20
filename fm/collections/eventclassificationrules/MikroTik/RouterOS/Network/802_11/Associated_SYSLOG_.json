@@ -1,0 +1,21 @@
+{
+    "name": "MikroTik | RouterOS | Network | 802.11 | Associated (SYSLOG)",
+    "uuid": "1ff6b80f-6846-4387-8ca1-4b5a6e115260",
+    "description": "wireless,info DD:AA:DD:00:66:CC@wlan1: connected",
+    "event_class__name": "Network | 802.11 | Associated",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^MikroTik\\.RouterOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "wireless,info (?P<mac>\\S+)@(?P<interface>\\S+): connected"
+        }
+    ]
+}

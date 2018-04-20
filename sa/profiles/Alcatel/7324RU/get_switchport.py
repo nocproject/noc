@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_switchport
 # ----------------------------------------------------------------------
@@ -20,6 +21,29 @@ class Script(BaseScript):
     rx_vlan = re.compile(
         r"[ ]*(?P<vid>\d+)[ ]*(?P<vname>[A-Za-z0-9\-\.]+)\n"
         r"(([ 0-9]+)\n)?[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
+=======
+##----------------------------------------------------------------------
+## Alcatel.7324RU.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+from noc.lib.text import *
+from collections import defaultdict
+
+class Script(NOCScript):
+    name = "Alcatel.7324RU.get_switchport"
+    implements = [IGetSwitchport]
+    rx_vlan = re.compile(
+        r"[ ]*(?P<vid>\d+)[ ]*(?P<vname>[A-Za-z0-9\-\.]+)\n"
+        r"([ 0-9]+)\n[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r"([ \-xnf]+)\n[ ]+(?P<portmask>[\-tu]+)"
         r"[ ]*(?P<uplinkmask>[\-tu]*)",
         re.MULTILINE | re.IGNORECASE)
@@ -55,4 +79,8 @@ class Script(BaseScript):
                 "tagged": tagged[i+1],
                 "members": []
             }]
+<<<<<<< HEAD
         return r
+=======
+        return r
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

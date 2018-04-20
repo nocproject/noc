@@ -1,0 +1,25 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Import connected networks</h1>
+
+New prefixes are found in the connected networks of routers:
+
+<form method="POST" action="{% url ip:routeimport:submit %}">{% csrf_token %}
+    <table border="0">
+        <thead>
+            <tr><th>#</th><th>Prefix</th><th>Description</th><th>Seen at objects</th><th>Delete</th></tr>
+        </thead>
+        {% for form in formset.forms %}
+            <tr>
+                <td align="right">{{forloop.counter}}</td>
+                <td>{{form.prefix}}</td>
+                <td>{{form.description}}</td>
+                <td>{{form.objects}}</td>
+                <td>{{form.DELETE}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {{formset.management_form}}
+    <input type="submit" value="Import Prefixes" />
+</form>
+{%endblock%}

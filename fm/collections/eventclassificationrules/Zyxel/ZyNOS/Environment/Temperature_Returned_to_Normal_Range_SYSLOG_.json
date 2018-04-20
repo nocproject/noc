@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | Environment | Temperature Returned to Normal Range (SYSLOG)",
+    "uuid": "a5a80a95-c5b7-4402-9262-9842b4541314",
+    "description": "system temperature has recovered to normal state",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(?P<name>\\S+) temperature has recovered to normal state"
+        }
+    ]
+}

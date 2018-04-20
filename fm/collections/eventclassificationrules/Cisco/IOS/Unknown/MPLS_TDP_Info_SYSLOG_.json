@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | MPLS TDP Info (SYSLOG)",
+    "uuid": "7718c09b-c437-4c94-9d2b-7156f0c18b67",
+    "description": "%TDP-5-INFO: Default-IP-Routing-Table: TDP ID removed",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%TDP-5-INFO:.+"
+        }
+    ]
+}

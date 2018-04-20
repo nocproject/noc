@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_inventory
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 class Script(BaseScript):
     name = "EdgeCore.ES.get_inventory"
     interface = IGetInventory
+=======
+##----------------------------------------------------------------------
+## EdgeCore.ES.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+
+
+class Script(NOCScript):
+    name = "EdgeCore.ES.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_trans_no = re.compile(
         r"\s+(?P<number>\d/\d+)\n")
@@ -83,6 +103,10 @@ class Script(BaseScript):
                                 pid = self.get_transceiver_pid(
                                     i.group("type").upper())
                             if not pid:
+<<<<<<< HEAD
+=======
+                                print "!!! UNKNOWN SFP: Eth", number
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                                 continue
                             else:
                                 if "\\x" in repr(vendor).strip("'"):
@@ -104,8 +128,15 @@ class Script(BaseScript):
                                 }]
 
                 except self.CLISyntaxError:
+<<<<<<< HEAD
                     pid = self.get_transceiver_pid(i.group("type").upper())
                     if not pid:
+=======
+                    print "show transceiver command not supported"
+                    pid = self.get_transceiver_pid(i.group("type").upper())
+                    if not pid:
+                        print "!!! UNKNOWN SFP: ", i.group("int")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         continue
                     else:
                         # Add transceiver

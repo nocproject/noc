@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # CLIPS rule-based validator
 # ---------------------------------------------------------------------
@@ -12,6 +13,20 @@ import re
 # Django modules
 from django.template import Template, Context
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## CLIPS rule-based validator
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## Django modules
+from django.template import Template, Context
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseValidator
 
 logger = logging.getLogger(__name__)
@@ -21,11 +36,14 @@ class CLIPSValidator(BaseValidator):
     # String or list of strings containing CLIPS defrule statements
     RULES = None
 
+<<<<<<< HEAD
     rx_assert_error = re.compile(
         r"\(assert\s+\(error\s+\(",
         re.MULTILINE | re.DOTALL
     )
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_context(self):
         """
         Returns context for template expansion
@@ -38,8 +56,12 @@ class CLIPSValidator(BaseValidator):
         r = self.get_config()
         r.update({
             "RULENUM": num,
+<<<<<<< HEAD
             "RULENAME": name,
             "RULEID": self.rule_id
+=======
+            "RULENAME": name
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         })
         return r
 
@@ -51,11 +73,14 @@ class CLIPSValidator(BaseValidator):
             if isinstance(v, basestring):
                 v = v.replace("\\", "\\\\").replace("\"", "\\\"")
                 ctx[n] = v
+<<<<<<< HEAD
         # Insert rule number to (assert (error ..))
         match = self.rx_assert_error.search(rule)
         if match:
             mr = match.group(0) + "rule \"{{RULEID}}\") ("
             rule = rule[:match.start()] + mr + rule[match.end():]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         #
         t = Template(rule).render(Context(ctx))
         logger.debug("ADD RULE: %s", t)

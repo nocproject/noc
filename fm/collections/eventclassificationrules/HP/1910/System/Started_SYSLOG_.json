@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | System | Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5992a995-b3e5-493f-8280-e996c534531b",
+    "description": "Apr 26 12:00:03 2000 Teh %%10IC/6/SYS_RESTART: System restarted -- HP Platform Software.",
+    "event_class__name": "System | Reboot",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10IC/6/SYS_RESTART: System restarted -- HP Platform Software\\.$"
+        }
+    ]
+}

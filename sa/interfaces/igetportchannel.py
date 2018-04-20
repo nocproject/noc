@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # IGetPortchannel
 # ---------------------------------------------------------------------
@@ -12,6 +13,20 @@ from base import ListOfParameter, DictParameter, InterfaceNameParameter, StringP
 
 
 class IGetPortchannel(BaseInterface):
+=======
+##----------------------------------------------------------------------
+## IGetPortchannel
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from base import *
+
+
+class IGetPortchannel(Interface):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Get port-channel information
     """
@@ -22,4 +37,7 @@ class IGetPortchannel(BaseInterface):
         "type": StringParameter()
         # choices=["S","L"]. S - for static, L for LACP
     }))
+<<<<<<< HEAD
     preview = "NOC.sa.managedobject.scripts.ShowPortChannel"
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

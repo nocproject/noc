@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
@@ -30,11 +31,35 @@ from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 
 ALARM_CLOSE_RETRIES = config.fm.alarm_close_retries
+=======
+##----------------------------------------------------------------------
+## ActiveAlarm model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## Django modules
+from django.template import Template, Context
+## NOC modules
+import noc.lib.nosql as nosql
+from alarmlog import AlarmLog
+from alarmclass import AlarmClass
+from noc.main.models import User
+from noc.main.models.style import Style
+from noc.main.models.notification import Notification
+from noc.sa.models.managedobject import ManagedObject
+from alarmseverity import AlarmSeverity
+from noc.lib.scheduler.utils import submit_job
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ActiveAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.active",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [
@@ -48,6 +73,13 @@ class ActiveAlarm(nosql.Document):
             "segment_path",
             "container_path",
             "uplinks"
+=======
+        "allow_inheritance": False,
+        "indexes": [
+            "timestamp", "discriminator", "root", "-severity",
+            "alarm_class",
+            ("timestamp", "managed_object")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
     }
     status = "A"
@@ -78,6 +110,7 @@ class ActiveAlarm(nosql.Document):
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
+<<<<<<< HEAD
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
@@ -108,10 +141,13 @@ class ActiveAlarm(nosql.Document):
     container_path = nosql.ListField(nosql.ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = nosql.ListField(nosql.IntField())
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return u"%s" % self.id
 
+<<<<<<< HEAD
     def clean(self):
         super(ActiveAlarm, self).clean()
         if not self.last_update:
@@ -140,6 +176,27 @@ class ActiveAlarm(nosql.Document):
             self.save()
 
     def change_severity(self, user="", delta=None, severity=None, to_save=True):
+=======
+    def save(self, *args, **kwargs):
+        if not self.last_update:
+            self.last_update = self.timestamp
+        return super(ActiveAlarm, self).save(*args, **kwargs)
+
+    def _change_root_severity(self):
+        """
+        Change root severity, when necessary
+        """
+        if not self.root:
+            return
+        root = get_alarm(self.root)
+        if root and root.severity < self.severity:
+            root.change_severity(self.severity)
+            root.log_message(
+                "Severity has been increased by child alarm %s" % self.id
+            )
+
+    def change_severity(self, user="", delta=None, severity=None):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Change alarm severity
         """
@@ -156,6 +213,7 @@ class ActiveAlarm(nosql.Document):
                     "%s has decreased alarm severity by %s" % (
                         user, delta))
         elif severity:
+<<<<<<< HEAD
             if type(severity) in (int, long, float):
                 self.severity = int(severity)
                 self.log_message(
@@ -166,12 +224,20 @@ class ActiveAlarm(nosql.Document):
                     "%s has changed severity to %s" % (user, severity.name))
         if to_save:
             self.safe_save()
+=======
+            self.severity = severity.severity
+            self.log_message(
+                "%s has changed severity to %s" % (user, severity.name))
+        self._change_root_severity()
+        self.save()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def log_message(self, message, to_save=True):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
                      from_status=self.status, to_status=self.status,
                      message=message)]
         if to_save:
+<<<<<<< HEAD
             self.safe_save()
 
     def clear_alarm(self, message, ts=None, force=False):
@@ -231,10 +297,55 @@ class ActiveAlarm(nosql.Document):
             container_path=self.container_path,
             uplinks=self.uplinks
         )
+=======
+            self.save()
+
+    def contribute_event(self, e, open=False, close=False):
+        # Set opening event when necessary
+        if open:
+            self.opening_event = e.id
+        # Set closing event when necessary
+        if close:
+            self.closing_event = e.id
+        # Update timestamp
+        if e.timestamp < self.timestamp:
+            self.timestamp = e.timestamp
+        else:
+            self.last_update = max(self.last_update, e.timestamp)
+        self.save()
+        # Update event's list of alarms
+        if self.id not in e.alarms:
+            e.alarms.append(self.id)
+            e.save()
+
+    def clear_alarm(self, message):
+        ts = datetime.datetime.now()
+        log = self.log + [AlarmLog(timestamp=ts, from_status="A",
+                                   to_status="C", message=message)]
+        a = ArchivedAlarm(id=self.id,
+                          timestamp=self.timestamp,
+                          clear_timestamp=ts,
+                          managed_object=self.managed_object,
+                          alarm_class=self.alarm_class,
+                          severity=self.severity,
+                          vars=self.vars,
+                          log=log,
+                          root=self.root,
+                          opening_event=self.opening_event,
+                          closing_event=self.closing_event,
+                          discriminator=self.discriminator,
+                          reopens=self.reopens
+                          )
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         a.save()
+<<<<<<< HEAD
+=======
+        # @todo: Clear related correlator jobs
+        self.delete()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Send notifications
         if not a.root and not self.reopens:
             a.managed_object.event(a.managed_object.EV_ALARM_CLEARED, {
@@ -246,6 +357,7 @@ class ActiveAlarm(nosql.Document):
                 "probable_causes": a.alarm_class.probable_causes
             })
         elif ct:
+<<<<<<< HEAD
             pass
         if a.escalation_tt or self.clear_template:
             if self.clear_template:
@@ -291,6 +403,11 @@ class ActiveAlarm(nosql.Document):
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
+=======
+            # Schedule delayed job
+            submit_job("fm.correlator", "control_notify",
+                       key=a.id, ts=a.control_time)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return a
 
     def get_template_vars(self):
@@ -303,11 +420,16 @@ class ActiveAlarm(nosql.Document):
 
     @property
     def subject(self):
+<<<<<<< HEAD
         if self.custom_subject:
             s = self.custom_subject
         else:
             ctx = Context(self.get_template_vars())
             s = DjangoTemplate(self.alarm_class.subject_template).render(ctx)
+=======
+        ctx = Context(self.get_template_vars())
+        s = Template(self.alarm_class.subject_template).render(ctx)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
@@ -315,7 +437,11 @@ class ActiveAlarm(nosql.Document):
     @property
     def body(self):
         ctx = Context(self.get_template_vars())
+<<<<<<< HEAD
         s = DjangoTemplate(self.alarm_class.body_template).render(ctx)
+=======
+        s = Template(self.alarm_class.body_template).render(ctx)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return s
 
     def change_owner(self, user):
@@ -381,6 +507,7 @@ class ActiveAlarm(nosql.Document):
         else:
             return AlarmSeverity.get_severity(self.severity).style
 
+<<<<<<< HEAD
     def get_root(self):
         """
         Get top-level root alarm
@@ -434,6 +561,8 @@ class ActiveAlarm(nosql.Document):
                 self.change_severity(severity=ns, to_save=False)
             self.safe_save()
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def set_root(self, root_alarm):
         """
         Set root cause
@@ -456,6 +585,7 @@ class ActiveAlarm(nosql.Document):
         # self.save()  Saved by log_message
         root_alarm.log_message(
             "Alarm %s has been marked as child" % self.id)
+<<<<<<< HEAD
         root_alarm.update_summary()
         # Clear pending notifications
         # Notification.purge_delayed("alarm:%s" % self.id)
@@ -542,3 +672,16 @@ class ActiveAlarm(nosql.Document):
 from .archivedalarm import ArchivedAlarm
 from .utils import get_alarm
 from .alarmdiagnosticconfig import AlarmDiagnosticConfig
+=======
+        self._change_root_severity()
+        # Clear pending notifications
+        Notification.purge_delayed("alarm:%s" % self.id)
+
+    @classmethod
+    def enable_caching(cls, ttl=600):
+        cls._fields["alarm_class"].set_cache(ttl)
+
+## Avoid circular references
+from archivedalarm import ArchivedAlarm
+from utils import get_alarm
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

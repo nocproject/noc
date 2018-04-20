@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # IGetInventory
 # ---------------------------------------------------------------------
@@ -13,6 +14,20 @@ from base import (DictListParameter, StringParameter, BooleanParameter, FloatPar
 
 
 class IGetInventory(BaseInterface):
+=======
+##----------------------------------------------------------------------
+## IGetInventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from base import *
+
+
+class IGetInventory(Interface):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     returns = DictListParameter(attrs={
         # Object type, used in ConnectionRule
         "type": StringParameter(required=False),
@@ -33,9 +48,12 @@ class IGetInventory(BaseInterface):
         "revision": StringParameter(required=False),
         # Serial number
         "serial": StringParameter(required=False),
+<<<<<<< HEAD
         #
         "mfg_date": REStringParameter(r"^\d{4}-\d{2}-\d{2}$",
                                       required=False),
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Optional description
         "description": StringParameter(required=False),
         # Optional internal crossing

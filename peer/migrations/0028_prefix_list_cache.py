@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+<<<<<<< HEAD
 # Third-party modules
 from south.db import db
 from noc.core.model.fields import *
@@ -9,6 +10,19 @@ class Migration(object):
     def forwards(self):
         # Adding model 'PrefixListCache'
         PeeringPoint = db.mock_model(model_name="PeeringPoint", db_table="peer_peeringpoint")
+=======
+from south.db import db
+from django.db import models
+from noc.peer.models import *
+from noc.lib.fields import *
+
+class Migration:
+    
+    def forwards(self):
+        
+        # Adding model 'PrefixListCache'
+        PeeringPoint=db.mock_model(model_name="PeeringPoint",db_table="peer_peeringpoint")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         db.create_table('peer_prefixlistcache', (
             ('id', models.AutoField(primary_key=True)),
             ('peering_point', models.ForeignKey(PeeringPoint, verbose_name="Peering Point")),
@@ -19,7 +33,13 @@ class Migration(object):
             ('pushed', models.DateTimeField("Pushed", null=True, blank=True)),
         ))
         db.send_create_signal('peer', ['PrefixListCache'])
+<<<<<<< HEAD
 
+=======
+        
+    
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         # Deleting model 'PrefixListCache'
         db.delete_table('peer_prefixlistcache')

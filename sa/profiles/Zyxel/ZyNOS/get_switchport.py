@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS.get_switchport
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2015 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Zyxel.ZyNOS.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
@@ -32,6 +42,28 @@ class Script(BaseScript):
             r"Untagged\s+:(?P<untagged>[0-9,\-]*)."
             r"\s+Tagged\s+:(?P<tagged>[0-9,\-]*)",
             re.MULTILINE | re.DOTALL)
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "Zyxel.ZyNOS.get_switchport"
+    implements = [IGetSwitchport]
+
+    rx_portinfo = re.compile(r"Port No\s+:(?P<interface>\d+).\s*Active\s+:"
+                                r"(?P<admin>\S+).\s*Name\s+:(?P<description>"
+                                r"[A-Za-z0-9\-_/\.]*).\s*PVID\s+:"
+                                r"(?P<untag>\d+)\s+Flow Control\s+:\S+$",
+                                re.MULTILINE | re.DOTALL)
+    rx_vlan_stack = re.compile(r"^(?P<interface>\d+)\s+(?P<role>\S+).+$",
+                                re.MULTILINE)
+    rx_vlan_stack_global = re.compile(r"^Operation:\s+(?P<status>active)$")
+    rx_vlan_ports = re.compile(r"\s+\d+\s+(?P<vid>\d+)\s+\S+\s+\S+\s+"
+                                r"Untagged\s+:(?P<untagged>(?:[0-9,\-])*)."
+                                r"\s+Tagged\s+:(?P<tagged>(?:[0-9,\-])*)",
+                                re.MULTILINE | re.DOTALL)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         # Get portchannels
@@ -57,6 +89,135 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             pass
 
+<<<<<<< HEAD
+=======
+        # Try snmp first
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                # Make a list of tags for each interface
+                port_vlans = {}
+                # Join dot1qVlanFdbId, dot1qVlanCurrentEgressPorts
+                # and dot1qVlanCurrentUntaggedPorts from QBridgeMib
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.17.7.1.4.2.1.3",
+                     "1.3.6.1.2.1.17.7.1.4.2.1.4",
+                     "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+                    tagged = v[2]
+                    untagged = v[3]
+
+                    s = self.hex_to_bin(untagged)
+                    un = []
+                    for i in range(len(s)):
+                        if s[i] == '1':
+                            oid = "1.3.6.1.2.1.31.1.1.1.1.%d" % (i + 1)
+                            iface = self.snmp.get(oid, cached=True)
+                            # swpXX - regular port, enet0 - outband management
+                            if 'swp' in iface:
+                                # swp00 = 1st port etc...
+                                iface = str(int(iface.split('swp')[1]) + 1)
+                                if iface not in port_vlans:
+                                    port_vlans.update({
+                                        iface: {
+                                            "tagged": [],
+                                            "untagged": '',
+                                        }
+                                    })
+                                port_vlans[iface]["untagged"] = v[1]
+                                un += [str(i + 1)]
+
+                    s = self.hex_to_bin(tagged)
+                    for i in range(len(s)):
+                        if s[i] == '1' and str(i + 1) not in un:
+                            oid = "1.3.6.1.2.1.31.1.1.1.1.%d" % (i + 1)
+                            iface = self.snmp.get(oid, cached=True)
+                            if 'swp' in iface:
+                                iface = str(int(iface.split('swp')[1]) + 1)
+                                if iface not in port_vlans:
+                                    port_vlans.update({
+                                        iface: {
+                                            "tagged": [],
+                                            "untagged": '',
+                                        }
+                                    })
+                                port_vlans[iface]["tagged"].append(v[1])
+
+                # Get switchports' description
+                port_descr = {}
+                for iface, description in self.snmp.join_tables(
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
+                    bulk=True):
+                    if 'swp' in iface:
+                        iface = str(int(iface.split('swp')[1]) + 1)
+                    port_descr.update({iface: description})
+
+                # Get switchports' data and overall result
+                r = []
+                swp = {}
+                write = False
+                for name in interface_status:
+                    if name == "enet0":  # skip Outband management
+                        continue         # 'cause it's not a switchport
+                    if name in portchannel_members:
+                        for p in portchannels:
+                            if name in p["members"]:
+                                description = port_descr[name]
+                                if not description:
+                                    description = ''
+                                t = port_vlans[name]["tagged"]
+                                u = port_vlans[name]["untagged"]
+                                tun = vlan_stack_status.get(int(name), False)
+                                name = p["interface"]
+                                port_vlans[name] = {
+                                    "tagged": t,
+                                    "untagged": u
+                                }
+                                vlan_stack_status[name] = tun
+                                status = False
+                                for interface in p["members"]:
+                                    if interface_status.get(interface):
+                                        status = True
+                                        break
+                                members = p["members"]
+                                portchannels.remove(p)
+                                write = True
+                                break
+                    else:
+                        if interface_status.get(name):
+                            status = True
+                        else:
+                            status = False
+                        description = port_descr[name]
+                        if not description:
+                            description = ''
+                        members = []
+                        write = True
+                    if write:
+                        if name not in port_vlans:
+                            tagged = []
+                        else:
+                            tagged = port_vlans[name]["tagged"]
+                        swp = {
+                            "status": status,
+                            "description": description,
+                            "802.1Q Enabled": len(port_vlans.get(name,
+                                              '')) > 0,
+                            "802.1ad Tunnel": vlan_stack_status.get(name,
+                                              False),
+                            "tagged": tagged,
+                            }
+                        if name in port_vlans:
+                            if port_vlans[name]["untagged"]:
+                                swp["untagged"] = port_vlans[name]["untagged"]
+                        swp["interface"] = name
+                        swp["members"] = members
+                        r.append(swp)
+                        write = False
+                return r
+            except self.snmp.TimeOutError:
+                pass
+
+        # Fallback to CLI
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get ports in vlans
         vlan_ports = []
         for match in self.rx_vlan_ports.finditer(self.cli("show vlan")):
@@ -81,17 +242,29 @@ class Script(BaseScript):
         # Get switchport data and overall result
         r = []
         swp = {}
+<<<<<<< HEAD
         for match in self.rx_portinfo.finditer(
             self.cli("show interface config *")):
             name = match.group("interface")
             swp = {
                 "status": interface_status.get(name, False),
+=======
+        for match in self.rx_portinfo.finditer(self.cli("show interface " \
+                                                        "config *")):
+            name = match.group("interface")
+            swp = {
+                "status": interface_status.get(name, False),
+                "description": match.group("description"),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "802.1Q Enabled": len(port_tags[name].get("tags", None)) > 0,
                 "802.1ad Tunnel": vlan_stack_status.get(int(name), False),
                 "tagged": port_tags[name]["tags"],
             }
+<<<<<<< HEAD
             if match.group("description"):
                 swp["description"] = match.group("description")
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if port_tags[name]["untag"]:
                 swp["untagged"] = port_tags[name]["untag"]
             if name not in portchannel_members:

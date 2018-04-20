@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VLAN
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## VLAN
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseFact
 
 
@@ -28,7 +39,11 @@ class VLAN(BaseFact):
     @property
     def id(self):
         return self._id
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @id.setter
     def id(self, value):
         if value:
@@ -38,7 +53,11 @@ class VLAN(BaseFact):
     @property
     def name(self):
         return self._name
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @name.setter
     def name(self, value):
         self._name = value or None

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Inventory module datasources
 # ---------------------------------------------------------------------
@@ -13,6 +14,19 @@ from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.subinterface import SubInterface
 from noc.sa.interfaces.base import MACAddressParameter
+=======
+##----------------------------------------------------------------------
+## Inventory module datasources
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.datasource import DataSource
+from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class InterfaceDS(DataSource):
@@ -26,7 +40,11 @@ class InterfaceDS(DataSource):
             "managed_object": managed_object.id
         }
         if interface:
+<<<<<<< HEAD
             q["name"] = managed_object.get_profile().convert_interface_name(interface)
+=======
+            q["name"] = managed_object.profile.convert_interface_name(interface)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if ifindex:
             q["ifindex"] = int(ifindex)
         self._description = None
@@ -59,6 +77,7 @@ class InterfaceDS(DataSource):
             return str(link.id)
         else:
             return None
+<<<<<<< HEAD
 
 
 class ChassisDS(DataSource):
@@ -81,3 +100,5 @@ class ChassisDS(DataSource):
             return self._object
         else:
             return None
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

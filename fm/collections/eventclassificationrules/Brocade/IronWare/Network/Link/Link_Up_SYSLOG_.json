@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | IronWare | Network | Link | Link Up (SYSLOG)",
+    "uuid": "c9f0fff4-dcfb-4f0d-9002-0fbffea0f3b4",
+    "description": "Aug 8 21:34:39 Foudry-Core System: Interface ethernet 7/3, state up",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Brocade\\.IronWare$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* System: Interface (?P<interface>\\S+ \\d+/\\d+), state up$"
+        }
+    ]
+}

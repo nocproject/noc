@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AddressRange model
 # ---------------------------------------------------------------------
@@ -25,6 +26,33 @@ from .address import Address
 class AddressRange(models.Model):
     class Meta(object):
         verbose_name = _("Address Range")
+=======
+##----------------------------------------------------------------------
+## AddressRange model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+from django.template import Template, Context
+## NOC modules
+from vrf import VRF
+from address import Address
+from afi import AFI_CHOICES
+from noc.lib.fields import TagsField, CIDRField
+from noc.lib.app import site
+from noc.lib.ip import IP
+from noc.lib.validators import check_ipv4, check_ipv6
+
+
+class AddressRange(models.Model):
+    class Meta:
+        verbose_name = _("Address Range")
+        verbose_name = _("Address Ranges")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         db_table = "ip_addressrange"
         app_label = "ip"
         unique_together = [("vrf", "afi", "from_address", "to_address")]
@@ -74,11 +102,15 @@ class AddressRange(models.Model):
 
     def __unicode__(self):
         return u"%s (IPv%s): %s -- %s" % (
+<<<<<<< HEAD
             self.vrf.name,
             self.afi,
             self.from_address,
             self.to_address
         )
+=======
+        self.vrf.name, self.afi, self.from_address, self.to_address)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def clean(self):
         """
@@ -96,6 +128,12 @@ class AddressRange(models.Model):
     def get_absolute_url(self):
         return site.reverse("ip:addressrange:change", self.id)
 
+<<<<<<< HEAD
+=======
+    ##
+    ## Save instance
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def save(self, **kwargs):
         def generate_fqdns():
             # Prepare FQDN template
@@ -163,11 +201,17 @@ class AddressRange(models.Model):
                 if IP.prefix(old.to_address) > IP.prefix(self.to_address):
                     # Upper boundary is lowered. Clean up addressess falled out of range
                     Address.objects.filter(
+<<<<<<< HEAD
                         vrf=self.vrf,
                         afi=self.afi,
                         address__gt=self.to_address,
                         address__lte=old.to_address
                     ).delete()
+=======
+                        vrf=self.vrf, afi=self.afi,
+                                           address__gt=self.to_address,
+                                           address__lte=old.to_address).delete()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     # Finally recheck FQDNs
                 generate_fqdns()
 
@@ -189,6 +233,7 @@ class AddressRange(models.Model):
         return IP.prefix(self.from_address).iter_address(
             until=IP.prefix(self.to_address))
 
+<<<<<<< HEAD
     @classmethod
     def get_overlapping_ranges(cls, vrf, afi, from_address, to_address):
         """
@@ -199,6 +244,13 @@ class AddressRange(models.Model):
         :param to_address:
         :return:
         """
+=======
+    ##
+    ## Returns a list of overlapping ranges
+    ##
+    @classmethod
+    def get_overlapping_ranges(cls, vrf, afi, from_address, to_address):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return AddressRange.objects.raw("""
             SELECT *
             FROM ip_addressrange
@@ -219,12 +271,20 @@ class AddressRange(models.Model):
             "to_address": to_address
         })
 
+<<<<<<< HEAD
     @property
     def overlapping_ranges(self):
         """
         Returns a queryset with overlapped ranges
         :return:
         """
+=======
+    ##
+    ## Returns a queryset with overlapped ranges
+    ##
+    @property
+    def overlapping_ranges(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return self.get_overlapping_ranges(
             self.vrf, self.afi, self.from_address, self.to_address)
 

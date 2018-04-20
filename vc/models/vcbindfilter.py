@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VCBindFilter model
 # ---------------------------------------------------------------------
@@ -9,11 +10,27 @@
 # Django modules
 from django.db import models, connection
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## VCBindFilter model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models, connection
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from vcdomain import VCDomain
 from vcfilter import VCFilter
 from vc import VC
 from noc.ip.models.afi import AFI_CHOICES
+<<<<<<< HEAD
 from noc.core.model.fields import CIDRField
+=======
+from noc.lib.fields import CIDRField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class VCBindFilter(models.Model):

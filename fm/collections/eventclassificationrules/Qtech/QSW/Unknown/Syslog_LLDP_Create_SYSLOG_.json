@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Syslog LLDP Create (SYSLOG)",
+    "uuid": "934973b2-16d5-4191-ab6b-0eac0974c53c",
+    "description": "0000002808: Jan 11 14:54:24: torgovaja_4: %LLDP-4-lldpLinkNeignborEntry: 917677:32: Create neignbor entry 1 of port 25",
+    "event_class__name": "Unknown | Syslog",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LLDP-4-lldpLinkNeignborEntry: \\d+:\\d+: Create neignbor entry \\d+ of port \\d+$"
+        }
+    ]
+}

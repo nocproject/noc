@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Config | Invalid Config #1 (SYSLOG)",
+    "uuid": "1327a49e-0084-43d6-86c7-a4d836fb0944",
+    "description": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Node id misconfiguration detected, disabling IG 1.",
+    "event_class__name": "Config | Invalid Config",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%L2-BM-5-MLACP_ITEM_LOCAL_MISCONFIGURATION : Node id misconfiguration detected"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | ACL | ACL Permit #1 (SYSLOG)",
+    "uuid": "6bcfe11a-40df-4130-a9ca-3f1b530250bf",
+    "description": "%SEC-6-IPACCESSLOGP: list aclIN permitted tcp 211.114.211.230(36995) -> 211.12.61.191(22), 8 packets",
+    "event_class__name": "Security | ACL | ACL Permit",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC-6-IPACCESSLOGP: list (?P<name>\\S+) permitted (?P<proto>\\S+) (?P<src_ip>\\S+)\\((?P<src_port>\\d+)\\) -> (?P<dst_ip>\\S+)\\((?P<dst_port>\\d+)\\), (?P<count>\\d+) packets?$"
+        }
+    ]
+}

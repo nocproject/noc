@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # RepoInline
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## RepoInline
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class RepoInline(object):
@@ -58,5 +67,9 @@ class RepoInline(object):
         return self.get_field(parent).get_revision(revision)
 
     def api_get_diff(self, request, parent, rev1, rev2):
+<<<<<<< HEAD
         c = self.get_field(parent).diff(rev1, rev2)
         return c if c else "IS EQUAL"
+=======
+        return self.get_field(parent).diff(rev1, rev2)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

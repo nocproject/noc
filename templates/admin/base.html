@@ -5,6 +5,7 @@
 {% if setup.favicon_mime %}
     <link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />
 {% endif %}
+<<<<<<< HEAD
 <META NAME="Copyright" CONTENT="2007-2016, nocproject.org" />
 <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
@@ -15,6 +16,17 @@
 <link rel="stylesheet" type="text/css" href="/static/css/noc/colors.css" />
 <link rel="stylesheet" type="text/css" href="/static/css/noc/print.css" />
 <script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
+=======
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="/static/css/main.css" />
+<link rel="stylesheet" type="text/css" href="/static/pkg/font-awesome/css/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/noc/colors.css" />
+<META NAME="Copyright" CONTENT="2007-2011, nocproject.org" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
+<META HTTP-EQUIV="Expires" CONTENT="0" />
+<SCRIPT TYPE="text/javascript" SRC="{% static "admin/js/jquery.js" %}"></SCRIPT>
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 {% block extrastyle %}{% endblock %}
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% load adminmedia %}/media/admin/css/ie.css{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}/media/admin/css/rtl.css{% endblock %}" />{% endif %}
@@ -27,6 +39,7 @@
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
         onmousemove="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();"
         onkeydown="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();">
+<<<<<<< HEAD
 {% if messages %}
     <script>
         {% for message in messages %}
@@ -34,6 +47,8 @@
         {% endfor %}
     </script>
 {% endif %}
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 <!-- Container -->
 <div id="container">
     {% if not is_popup %}
@@ -41,6 +56,17 @@
     <div class="breadcrumbs"><ul>{% block breadcrumbs %}<li>{% trans 'Home' %}</li>{% endblock %}</ul></div>
     <!-- END Breadcrumbs -->
     {% endif %}
+<<<<<<< HEAD
+=======
+    {% if messages %}
+    <ul class="messagelist">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     <!-- Content -->
     <div id="content" class="{% block coltype %}colM{% endblock %}">
         {% block pretitle %}{% endblock %}

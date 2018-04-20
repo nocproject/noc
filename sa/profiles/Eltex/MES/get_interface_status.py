@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Eltex.MES.get_interface_status
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 class Script(BaseScript):
     name = "Eltex.MES.get_interface_status"
     interface = IGetInterfaceStatus
+=======
+##----------------------------------------------------------------------
+## Eltex.MES.get_interface_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IGetInterfaceStatus
+
+
+class Script(noc.sa.script.Script):
+    name = "Eltex.MES.get_interface_status"
+    implements = [IGetInterfaceStatus]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_interface_status = re.compile(
         r"^(?P<interface>\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<status>Up|Down)\s+\S+\s+\S.*$",
@@ -24,10 +44,17 @@ class Script(BaseScript):
     def execute(self, interface=None):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
             try:
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
                     "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
+                    "1.3.6.1.2.1.2.2.1.8", bulk=True):  # IF-MIB
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if n[:2] == 'fa' or n[:2] == 'gi' or n[:2] == 'te':
                         if interface:
                             if n == interface:

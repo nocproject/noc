@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ASSet model
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ from django.db import models
 # NOC module
 from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
+=======
+##----------------------------------------------------------------------
+## ASSet model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC module
+from noc.project.models.project import Project
+from noc.lib.fields import TagsField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.app.site import site
 from noc.lib.rpsl import rpsl_format
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ConnectionType model
@@ -20,14 +21,41 @@ from noc.main.models.doccategory import category
 
 
 @category
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ConnectionType model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, BooleanField, DictField,
+                                ListField, UUIDField, ObjectIdField)
+## NOC modules
+from noc.lib.nosql import PlainReferenceField
+from noc.lib.prettyjson import to_json
+from noc.lib.text import quote_safe_path
+from noc.main.models.doccategory import DocCategory
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class ConnectionType(Document):
     """
     Equipment vendor
     """
     meta = {
         "collection": "noc.connectiontypes",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["extend", "data", "c_group"],
         "json_collection": "inv.connectiontypes"
     }
@@ -161,3 +189,9 @@ class ConnectionType(Document):
                 if og in c.genders:
                     r += [c.id]
         return r
+<<<<<<< HEAD
+=======
+
+##
+DocCategory.register(ConnectionType)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

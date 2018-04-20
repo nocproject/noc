@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_resolver_config
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "Cisco.IOS.get_resolver_config"
     interface = IGetResolverConfig
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_resolver_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetResolverConfig
+import re
+
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_resolver_config"
+    implements = [IGetResolverConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_domain = re.compile(r"^ip domain(?:\-|\s)name\s+(?P<domain>\S+)")
     rx_search = re.compile(r"^ip domain(?:\-|\s)list\s+(?P<search>.+)")
     rx_nameserver = re.compile(r"^ip name(?:\-|\s)server\s+(?P<server>\S+)")

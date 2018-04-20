@@ -1,0 +1,7 @@
+<b>IP:</b> {{ip}}
+<table border="1">
+    <tr><th>Prefix Table</th><th>Result</th></tr>
+    {{#each result}}
+        <tr><td>{{name}}</td><td>{{#if result}}+{{else}}-{{/if}}</td></tr>
+    {{/each}}
+</table>

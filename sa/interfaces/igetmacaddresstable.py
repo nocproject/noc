@@ -10,7 +10,11 @@ from base import (InterfaceNameParameter, ListOfParameter, StringParameter,
                   VLANIDParameter, MACAddressParameter, DictParameter)
 
 
+<<<<<<< HEAD
 class IGetMACAddressTable(BaseInterface):
+=======
+class IGetMACAddressTable(Interface):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     interface = InterfaceNameParameter(required=False)
     vlan = VLANIDParameter(required=False)
     mac = MACAddressParameter(required=False)

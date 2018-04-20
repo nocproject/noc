@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
@@ -10,6 +11,19 @@ from south.db import db
 
 class Migration:
 
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from south.db import db
+from noc.fm.models import *
+
+class Migration:
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     CREATE_CLASSIFY_EVENT="""
     CREATE OR REPLACE
     FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])
@@ -48,6 +62,7 @@ class Migration:
     END
     $$ LANGUAGE plpgsql;
     """
+<<<<<<< HEAD
 
     DROP_CLASSIFY_EVENT="DROP FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])"
 
@@ -57,3 +72,14 @@ class Migration:
     def backwards(self):
         db.execute(self.DROP_CLASSIFY_EVENT)
 
+=======
+    
+    DROP_CLASSIFY_EVENT="DROP FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])"
+    
+    def forwards(self):
+        db.execute(self.CREATE_CLASSIFY_EVENT)
+    
+    def backwards(self):
+        db.execute(self.DROP_CLASSIFY_EVENT)
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

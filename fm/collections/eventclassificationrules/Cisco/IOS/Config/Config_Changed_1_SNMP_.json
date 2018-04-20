@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Config Changed #1 (SNMP)",
+    "uuid": "64560eba-61cb-46fb-8d63-cec15961c009",
+    "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManMIBNotificationPrefix trap",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-CONFIG-MAN-MIB::ciscoConfigManMIBNotificationPrefix$"
+        }
+    ]
+}

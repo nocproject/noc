@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # MAC Database
@@ -9,14 +10,33 @@
 # Python modules
 import datetime
 # NOC modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## MAC Database
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.nosql import (Document, StringField, ForeignKeyField,
                            PlainReferenceField, DateTimeField,
                            IntField)
 from interface import Interface
 from noc.sa.models.managedobject import ManagedObject
+<<<<<<< HEAD
 from noc.vc.models.vcdomain import VCDomain
 from maclog import MACLog
 from noc.core.mac import MAC
+=======
+from noc.vc.models import VCDomain
+from maclog import MACLog
+from noc.lib.mac import MAC
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class MACDB(Document):
@@ -25,8 +45,12 @@ class MACDB(Document):
     """
     meta = {
         "collection": "noc.macs",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["mac", "interface"]
     }
     # Todo: Add Validation
@@ -44,10 +68,14 @@ class MACDB(Document):
         self.mac = MAC(self.mac)
         if not self.last_changed:
             self.last_changed = datetime.datetime.now()
+<<<<<<< HEAD
         try:
             super(MACDB, self).save()
         except Exception as e:
             raise ValueError("%s: %s" % (e.__doc__, e.message))
+=======
+        super(MACDB, self).save()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def submit(cls, mac, vc_domain, vlan, interface, timestamp=None):
@@ -68,7 +96,11 @@ class MACDB(Document):
         m = MACDB.objects.filter(mac=mac, vc_domain=vcd).first()
         if m:
             if (managed_object != m.managed_object or
+<<<<<<< HEAD
                     interface != m.interface or vlan != m.vlan):
+=======
+                interface != m.interface or vlan != m.vlan):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Database change, write history
                 MACLog(
                     timestamp=m.last_changed,

@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Opticin.OS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Opticin.OS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 # Python modules
 import re
+<<<<<<< HEAD
 # NOC modules
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
@@ -19,10 +29,22 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "Opticin.OS.get_interfaces"
     interface = IGetInterfaces
+=======
+from collections import defaultdict
+# NOC modules
+from noc.lib.ip import IPv4
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError, MACAddressParameter
+
+class Script(NOCScript):
+    name = "Opticin.OS.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     cache = True
 
     rx_svi_name = re.compile(r"^system management vlan:\s+(?P<vl_id>\d)$",
+<<<<<<< HEAD
                              re.MULTILINE | re.IGNORECASE | re.DOTALL)
 
     rx_ip_if = re.compile(r"^System IP:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$",
@@ -37,6 +59,26 @@ class Script(BaseScript):
     def execute(self):
         ifaces = {}
         mac_svi = ""
+=======
+                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
+    rx_ip_if = re.compile(r"^System IP:\s+(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$",
+                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
+    rx_ip_mask = re.compile(r"^System Mask:\s+(?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(|\s+)$",                           
+                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
+    rx_ip_mac = re.compile(r"System MAC[^:]*?:\s*(?P<mac>\S+)$",
+                                     re.MULTILINE | re.IGNORECASE | re.DOTALL)
+
+    def execute(self):
+        ifaces = {}
+        current = None
+        is_bundle = False
+        is_svi = False
+        vlan_ids = []
+        mac_svi = ""        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         name_ = {}
         mac_ = {}
         snmp_ifindex_ = {}
@@ -44,6 +86,10 @@ class Script(BaseScript):
         stat_ = {}
         tagged_ = {}
         untagged_ = {}
+<<<<<<< HEAD
+=======
+        end_if = False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         # Get interface status
         for p in self.scripts.get_interface_status():
@@ -78,15 +124,23 @@ class Script(BaseScript):
             match = self.rx_ip_mask.search(ls)
             if match:
                 mask = match.group("mask")
+<<<<<<< HEAD
                 ip_addr += [IPv4(ip, netmask=mask).prefix]
             match = self.rx_ip_mac.search(ls)
             if match:
                 mac_svi = MACAddressParameter().clean(match.group("mac"))
+=======
+                ip_addr += [IPv4(ip, netmask = mask).prefix]
+            match = self.rx_ip_mac.search(ls)
+            if match:
+                mac_svi = MACAddressParameter().clean(match.group("mac"))             
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         type = "SVI"
         stat = "up"
         vlan_ids = [int(namesviif[5:])]
         enabled_afi = ["IPv4"]
         sub = {
+<<<<<<< HEAD
             "name": namesviif,
             "admin_status": stat == "up",
             "oper_status": stat == "up",
@@ -109,6 +163,30 @@ class Script(BaseScript):
         for current in name_:
             ifaces[current] = {
                 "name": current
+=======
+              "name": namesviif,
+              "admin_status": stat == "up",
+              "oper_status": stat == "up",
+              "is_ipv4": True,
+              "enabled_afi": enabled_afi,
+              "ipv4_addresses": ip_addr,
+              "vlan_ids": vlan_ids,
+              "mac": mac_svi,
+        }
+        ifaces[namesviif] = {
+              "name": namesviif,
+              "admin_status": stat == "up",
+              "oper_status": stat == "up",
+              "type": type,
+              "mac": mac_svi,
+              "subinterfaces": [sub],
+        }
+
+        # set name ifaces         
+        for current in name_:
+            ifaces[current] = {
+               "name": current
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }
         # other
         for current in ifaces:
@@ -123,6 +201,7 @@ class Script(BaseScript):
             ifaces[current]["enabled_protocols"] = []
             enabled_afi = ["BRIDGE"]
             sub = {
+<<<<<<< HEAD
                 "name": current,
                 "admin_status": stat_[current],
                 "oper_status": stat_[current],
@@ -141,11 +220,36 @@ class Script(BaseScript):
 
         # Get VRFs and "default" VRF interfaces
         r = []
+=======
+               "name": current,
+               "admin_status": stat_[current],
+               "oper_status": stat_[current],
+               "is_bridge": True,
+               "enabled_afi": enabled_afi,
+            }
+            if current in mac_:
+               sub["mac"] = mac_[current]
+            if current in tagged_:
+               sub["tagged_vlans"] = tagged_[current]
+            if current in untagged_:
+               sub["untagged_vlan"] = untagged_[current] 
+            if current in snmp_ifindex_:
+               sub["snmp_ifindex"] = snmp_ifindex_[current]
+            ifaces[current]["subinterfaces"] = [sub]
+            
+        # Get VRFs and "default" VRF interfaces
+        r = []
+        seen = set()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         vpns = [{
             "name": "default",
             "type": "ip",
             "interfaces": []
+<<<<<<< HEAD
         }]
+=======
+            }]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for fi in vpns:
             # Forwarding instance
             rr = {
@@ -157,7 +261,11 @@ class Script(BaseScript):
             if rd:
                 rr["rd"] = rd
             # create ifaces
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             rr["interfaces"] = ifaces.values()
         r += [rr]
         # Return result

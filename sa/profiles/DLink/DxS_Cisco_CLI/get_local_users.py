@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_local_users
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_local_users"
     interface = IGetLocalUsers
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Cisco_CLI.get_local_users
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLocalUsers
+import re
+
+
+class Script(NOCScript):
+    name = "DLink.DxS_Cisco_CLI.get_local_users"
+    implements = [IGetLocalUsers]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(
         r"^username (?P<username>\S+) password( \d)? \S+\nusername \S+ "
         r"privilege (?P<privilege>\d+)$", re.MULTILINE)

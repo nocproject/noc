@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | IP | Route Limit Exceeded (SYSLOG)",
+    "uuid": "0eb6eb1e-9d3a-4f50-be3e-861121926306",
+    "description": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - 1010:6699, 0.0.0.0/0",
+    "event_class__name": "Network | IP | Route Limit Exceeded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IPRT-3-ROUTELIMITEXCEEDED: IP routing table limit exceeded - (?P<reason>\\.+)$"
+        }
+    ]
+}

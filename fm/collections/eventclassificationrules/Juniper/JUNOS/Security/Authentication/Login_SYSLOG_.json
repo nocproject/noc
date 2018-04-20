@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Security | Authentication | Login (SYSLOG)",
+    "uuid": "d45ae618-6c83-4670-8f91-ad926e64319a",
+    "description": "UI_LOGIN_EVENT: User 'admin' login, class 'j-super-user' [59120], ssh-connection '212.44.12.198 64797 217.128.15.26 22', client-mode 'cli'",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UI_LOGIN_EVENT: User '(?P<user>.+?)' login, class '.+?' \\[\\d+\\], \\S+ '(?P<ip>\\S+) \\d"
+        }
+    ]
+}

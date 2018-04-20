@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # NAG.SNR.add_vlan
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ from noc.sa.interfaces.iaddvlan import IAddVlan
 class Script(BaseScript):
     name = "NAG.SNR.add_vlan"
     interface = IAddVlan
+=======
+##----------------------------------------------------------------------
+## NAG.SNR.add_vlan
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IAddVlan
+
+
+class Script(NOCScript):
+    name = "NAG.SNR.add_vlan"
+    implements = [IAddVlan]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, vlan_id, name, tagged_ports=[]):
         a = ''

@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | PSU | PSU Failed #2 (SYSLOG)",
+    "uuid": "f019eac5-70dc-4a62-ab44-7be6c4591855",
+    "description": "UPS: A logic power supply fault exists. 0x0169",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>A logic power supply) fault exists. 0x0169"
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS.get_copper_tdr_diag
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ from noc.sa.profiles.DLink.DGS3100 import DGS3100
 class Script(BaseScript):
     name = "DLink.DGS3100.get_copper_tdr_diag"
     interface = IGetCopperTDRDiag
+=======
+##----------------------------------------------------------------------
+## DLink.DxS.get_copper_tdr_diag
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetCopperTDRDiag
+from noc.sa.profiles.DLink.DGS3100 import DGS3100
+
+
+class Script(NOCScript):
+    name = "DLink.DGS3100.get_copper_tdr_diag"
+    implements = [IGetCopperTDRDiag]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_link_ok = re.compile(
         r"^\s*(?P<interface>\d+([\/:]\d+)?)\s+"
         r"(FE|GE|10GE|1000BASE\-T|10GBASE-R)\s+Link Up\s+"

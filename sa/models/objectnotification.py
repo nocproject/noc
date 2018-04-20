@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # ObjectNotification
 # ----------------------------------------------------------------------
@@ -12,6 +13,20 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 # NOC modules
 from .managedobjectselector import ManagedObjectSelector
+=======
+##----------------------------------------------------------------------
+## ObjectNotification
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+## NOC modules
+from managedobjectselector import ManagedObjectSelector
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.lib.template import render_message
 
@@ -19,6 +34,10 @@ from noc.lib.template import render_message
 class ObjectNotification(models.Model):
     class Meta:
         verbose_name = _("Managed Object Notification")
+<<<<<<< HEAD
+=======
+        verbose_name = _("Managed Object Notifications")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         db_table = "sa_objectnotification"
         app_label = "sa"
 

@@ -5,7 +5,10 @@
 //
 Ext.namespace("NOC");
 NOC.glyph = {
+<<<<<<< HEAD
     "500px": 0xf26e,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "adjust": 0xf042,
     "adn": 0xf170,
     "align-center": 0xf037,
@@ -16,7 +19,10 @@ NOC.glyph = {
     "align_justify": 0xf039,
     "align_left": 0xf036,
     "align_right": 0xf038,
+<<<<<<< HEAD
     "amazon": 0xf270,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "ambulance": 0xf0f9,
     "anchor": 0xf13d,
     "android": 0xf17b,
@@ -76,8 +82,11 @@ NOC.glyph = {
     "at": 0xf1fa,
     "automobile": 0xf1b9,
     "backward": 0xf04a,
+<<<<<<< HEAD
     "balance-scale": 0xf24e,
     "balance_scale": 0xf24e,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "ban": 0xf05e,
     "bank": 0xf19c,
     "bar-chart": 0xf080,
@@ -86,6 +95,7 @@ NOC.glyph = {
     "bar_chart_o": 0xf080,
     "barcode": 0xf02a,
     "bars": 0xf0c9,
+<<<<<<< HEAD
     "battery-0": 0xf244,
     "battery-1": 0xf243,
     "battery-2": 0xf242,
@@ -107,6 +117,8 @@ NOC.glyph = {
     "battery_quarter": 0xf243,
     "battery_three_quarters": 0xf241,
     "bed": 0xf236,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "beer": 0xf0fc,
     "behance": 0xf1b4,
     "behance-square": 0xf1b5,
@@ -126,11 +138,14 @@ NOC.glyph = {
     "bitbucket-square": 0xf172,
     "bitbucket_square": 0xf172,
     "bitcoin": 0xf15a,
+<<<<<<< HEAD
     "black-tie": 0xf27e,
     "black_tie": 0xf27e,
     "bluetooth": 0xf293,
     "bluetooth-b": 0xf294,
     "bluetooth_b": 0xf294,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "bold": 0xf032,
     "bolt": 0xf0e7,
     "bomb": 0xf1e2,
@@ -147,6 +162,7 @@ NOC.glyph = {
     "bullhorn": 0xf0a1,
     "bullseye": 0xf140,
     "bus": 0xf207,
+<<<<<<< HEAD
     "buysellads": 0xf20d,
     "cab": 0xf1ba,
     "calculator": 0xf1ec,
@@ -161,6 +177,13 @@ NOC.glyph = {
     "calendar_o": 0xf133,
     "calendar_plus_o": 0xf271,
     "calendar_times_o": 0xf273,
+=======
+    "cab": 0xf1ba,
+    "calculator": 0xf1ec,
+    "calendar": 0xf073,
+    "calendar-o": 0xf133,
+    "calendar_o": 0xf133,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "camera": 0xf030,
     "camera-retro": 0xf083,
     "camera_retro": 0xf083,
@@ -181,6 +204,7 @@ NOC.glyph = {
     "caret_square_o_right": 0xf152,
     "caret_square_o_up": 0xf151,
     "caret_up": 0xf0d8,
+<<<<<<< HEAD
     "cart-arrow-down": 0xf218,
     "cart-plus": 0xf217,
     "cart_arrow_down": 0xf218,
@@ -190,14 +214,23 @@ NOC.glyph = {
     "cc-diners-club": 0xf24c,
     "cc-discover": 0xf1f2,
     "cc-jcb": 0xf24b,
+=======
+    "cc": 0xf20a,
+    "cc-amex": 0xf1f3,
+    "cc-discover": 0xf1f2,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "cc-mastercard": 0xf1f1,
     "cc-paypal": 0xf1f4,
     "cc-stripe": 0xf1f5,
     "cc-visa": 0xf1f0,
     "cc_amex": 0xf1f3,
+<<<<<<< HEAD
     "cc_diners_club": 0xf24c,
     "cc_discover": 0xf1f2,
     "cc_jcb": 0xf24b,
+=======
+    "cc_discover": 0xf1f2,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "cc_mastercard": 0xf1f1,
     "cc_paypal": 0xf1f4,
     "cc_stripe": 0xf1f5,
@@ -232,7 +265,10 @@ NOC.glyph = {
     "chevron_right": 0xf054,
     "chevron_up": 0xf077,
     "child": 0xf1ae,
+<<<<<<< HEAD
     "chrome": 0xf268,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "circle": 0xf111,
     "circle-o": 0xf10c,
     "circle-o-notch": 0xf1ce,
@@ -243,7 +279,10 @@ NOC.glyph = {
     "clipboard": 0xf0ea,
     "clock-o": 0xf017,
     "clock_o": 0xf017,
+<<<<<<< HEAD
     "clone": 0xf24d,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "close": 0xf00d,
     "cloud": 0xf0c2,
     "cloud-download": 0xf0ed,
@@ -255,7 +294,10 @@ NOC.glyph = {
     "code-fork": 0xf126,
     "code_fork": 0xf126,
     "codepen": 0xf1cb,
+<<<<<<< HEAD
     "codiepie": 0xf284,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "coffee": 0xf0f4,
     "cog": 0xf013,
     "cogs": 0xf085,
@@ -263,14 +305,18 @@ NOC.glyph = {
     "comment": 0xf075,
     "comment-o": 0xf0e5,
     "comment_o": 0xf0e5,
+<<<<<<< HEAD
     "commenting": 0xf27a,
     "commenting-o": 0xf27b,
     "commenting_o": 0xf27b,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "comments": 0xf086,
     "comments-o": 0xf0e6,
     "comments_o": 0xf0e6,
     "compass": 0xf14e,
     "compress": 0xf066,
+<<<<<<< HEAD
     "connectdevelop": 0xf20e,
     "contao": 0xf26d,
     "copy": 0xf0c5,
@@ -281,6 +327,12 @@ NOC.glyph = {
     "credit-card-alt": 0xf283,
     "credit_card": 0xf09d,
     "credit_card_alt": 0xf283,
+=======
+    "copy": 0xf0c5,
+    "copyright": 0xf1f9,
+    "credit-card": 0xf09d,
+    "credit_card": 0xf09d,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "crop": 0xf125,
     "crosshairs": 0xf05b,
     "css3": 0xf13c,
@@ -289,13 +341,19 @@ NOC.glyph = {
     "cut": 0xf0c4,
     "cutlery": 0xf0f5,
     "dashboard": 0xf0e4,
+<<<<<<< HEAD
     "dashcube": 0xf210,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "database": 0xf1c0,
     "dedent": 0xf03b,
     "delicious": 0xf1a5,
     "desktop": 0xf108,
     "deviantart": 0xf1bd,
+<<<<<<< HEAD
     "diamond": 0xf219,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "digg": 0xf1a6,
     "dollar": 0xf155,
     "dot-circle-o": 0xf192,
@@ -304,7 +362,10 @@ NOC.glyph = {
     "dribbble": 0xf17d,
     "dropbox": 0xf16b,
     "drupal": 0xf1a9,
+<<<<<<< HEAD
     "edge": 0xf282,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "edit": 0xf044,
     "eject": 0xf052,
     "ellipsis-h": 0xf141,
@@ -327,7 +388,10 @@ NOC.glyph = {
     "exclamation_circle": 0xf06a,
     "exclamation_triangle": 0xf071,
     "expand": 0xf065,
+<<<<<<< HEAD
     "expeditedssl": 0xf23e,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "external-link": 0xf08e,
     "external-link-square": 0xf14c,
     "external_link": 0xf08e,
@@ -337,18 +401,25 @@ NOC.glyph = {
     "eye_slash": 0xf070,
     "eyedropper": 0xf1fb,
     "facebook": 0xf09a,
+<<<<<<< HEAD
     "facebook-f": 0xf09a,
     "facebook-official": 0xf230,
     "facebook-square": 0xf082,
     "facebook_f": 0xf09a,
     "facebook_official": 0xf230,
+=======
+    "facebook-square": 0xf082,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "facebook_square": 0xf082,
     "fast-backward": 0xf049,
     "fast-forward": 0xf050,
     "fast_backward": 0xf049,
     "fast_forward": 0xf050,
     "fax": 0xf1ac,
+<<<<<<< HEAD
     "feed": 0xf09e,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "female": 0xf182,
     "fighter-jet": 0xf0fb,
     "fighter_jet": 0xf0fb,
@@ -394,7 +465,10 @@ NOC.glyph = {
     "fire": 0xf06d,
     "fire-extinguisher": 0xf134,
     "fire_extinguisher": 0xf134,
+<<<<<<< HEAD
     "firefox": 0xf269,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "flag": 0xf024,
     "flag-checkered": 0xf11e,
     "flag-o": 0xf11d,
@@ -413,10 +487,13 @@ NOC.glyph = {
     "folder_open": 0xf07c,
     "folder_open_o": 0xf115,
     "font": 0xf031,
+<<<<<<< HEAD
     "fonticons": 0xf280,
     "fort-awesome": 0xf286,
     "fort_awesome": 0xf286,
     "forumbee": 0xf211,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "forward": 0xf04e,
     "foursquare": 0xf180,
     "frown-o": 0xf119,
@@ -429,12 +506,15 @@ NOC.glyph = {
     "ge": 0xf1d1,
     "gear": 0xf013,
     "gears": 0xf085,
+<<<<<<< HEAD
     "genderless": 0xf22d,
     "get-pocket": 0xf265,
     "get_pocket": 0xf265,
     "gg": 0xf260,
     "gg-circle": 0xf261,
     "gg_circle": 0xf261,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "gift": 0xf06b,
     "git": 0xf1d3,
     "git-square": 0xf1d2,
@@ -456,18 +536,25 @@ NOC.glyph = {
     "google_wallet": 0xf1ee,
     "graduation-cap": 0xf19d,
     "graduation_cap": 0xf19d,
+<<<<<<< HEAD
     "gratipay": 0xf184,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "group": 0xf0c0,
     "h-square": 0xf0fd,
     "h_square": 0xf0fd,
     "hacker-news": 0xf1d4,
     "hacker_news": 0xf1d4,
+<<<<<<< HEAD
     "hand-grab-o": 0xf255,
     "hand-lizard-o": 0xf258,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "hand-o-down": 0xf0a7,
     "hand-o-left": 0xf0a5,
     "hand-o-right": 0xf0a4,
     "hand-o-up": 0xf0a6,
+<<<<<<< HEAD
     "hand-paper-o": 0xf256,
     "hand-peace-o": 0xf25b,
     "hand-pointer-o": 0xf25a,
@@ -477,10 +564,13 @@ NOC.glyph = {
     "hand-stop-o": 0xf256,
     "hand_grab_o": 0xf255,
     "hand_lizard_o": 0xf258,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "hand_o_down": 0xf0a7,
     "hand_o_left": 0xf0a5,
     "hand_o_right": 0xf0a4,
     "hand_o_up": 0xf0a6,
+<<<<<<< HEAD
     "hand_paper_o": 0xf256,
     "hand_peace_o": 0xf25b,
     "hand_pointer_o": 0xf25a,
@@ -489,6 +579,8 @@ NOC.glyph = {
     "hand_spock_o": 0xf259,
     "hand_stop_o": 0xf256,
     "hashtag": 0xf292,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "hdd-o": 0xf0a0,
     "hdd_o": 0xf0a0,
     "header": 0xf1dc,
@@ -496,11 +588,15 @@ NOC.glyph = {
     "heart": 0xf004,
     "heart-o": 0xf08a,
     "heart_o": 0xf08a,
+<<<<<<< HEAD
     "heartbeat": 0xf21e,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "history": 0xf1da,
     "home": 0xf015,
     "hospital-o": 0xf0f8,
     "hospital_o": 0xf0f8,
+<<<<<<< HEAD
     "hotel": 0xf236,
     "hourglass": 0xf254,
     "hourglass-1": 0xf251,
@@ -521,20 +617,29 @@ NOC.glyph = {
     "html5": 0xf13b,
     "i-cursor": 0xf246,
     "i_cursor": 0xf246,
+=======
+    "html5": 0xf13b,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "ils": 0xf20b,
     "image": 0xf03e,
     "inbox": 0xf01c,
     "indent": 0xf03c,
+<<<<<<< HEAD
     "industry": 0xf275,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "info": 0xf129,
     "info-circle": 0xf05a,
     "info_circle": 0xf05a,
     "inr": 0xf156,
     "instagram": 0xf16d,
     "institution": 0xf19c,
+<<<<<<< HEAD
     "internet-explorer": 0xf26b,
     "internet_explorer": 0xf26b,
     "intersex": 0xf224,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "ioxhost": 0xf208,
     "italic": 0xf033,
     "joomla": 0xf1aa,
@@ -550,7 +655,10 @@ NOC.glyph = {
     "lastfm-square": 0xf203,
     "lastfm_square": 0xf203,
     "leaf": 0xf06c,
+<<<<<<< HEAD
     "leanpub": 0xf212,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "legal": 0xf0e3,
     "lemon-o": 0xf094,
     "lemon_o": 0xf094,
@@ -602,6 +710,7 @@ NOC.glyph = {
     "mail_reply": 0xf112,
     "mail_reply_all": 0xf122,
     "male": 0xf183,
+<<<<<<< HEAD
     "map": 0xf279,
     "map-marker": 0xf041,
     "map-o": 0xf278,
@@ -627,6 +736,15 @@ NOC.glyph = {
     "meh-o": 0xf11a,
     "meh_o": 0xf11a,
     "mercury": 0xf223,
+=======
+    "map-marker": 0xf041,
+    "map_marker": 0xf041,
+    "maxcdn": 0xf136,
+    "meanpath": 0xf20c,
+    "medkit": 0xf0fa,
+    "meh-o": 0xf11a,
+    "meh_o": 0xf11a,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "microphone": 0xf130,
     "microphone-slash": 0xf131,
     "microphone_slash": 0xf131,
@@ -637,16 +755,23 @@ NOC.glyph = {
     "minus_circle": 0xf056,
     "minus_square": 0xf146,
     "minus_square_o": 0xf147,
+<<<<<<< HEAD
     "mixcloud": 0xf289,
     "mobile": 0xf10b,
     "mobile-phone": 0xf10b,
     "mobile_phone": 0xf10b,
     "modx": 0xf285,
+=======
+    "mobile": 0xf10b,
+    "mobile-phone": 0xf10b,
+    "mobile_phone": 0xf10b,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "money": 0xf0d6,
     "moon-o": 0xf186,
     "moon_o": 0xf186,
     "mortar-board": 0xf19d,
     "mortar_board": 0xf19d,
+<<<<<<< HEAD
     "motorcycle": 0xf21c,
     "mouse-pointer": 0xf245,
     "mouse_pointer": 0xf245,
@@ -667,6 +792,13 @@ NOC.glyph = {
     "opera": 0xf26a,
     "optin-monster": 0xf23c,
     "optin_monster": 0xf23c,
+=======
+    "music": 0xf001,
+    "navicon": 0xf0c9,
+    "newspaper-o": 0xf1ea,
+    "newspaper_o": 0xf1ea,
+    "openid": 0xf19b,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "outdent": 0xf03b,
     "pagelines": 0xf18c,
     "paint-brush": 0xf1fc,
@@ -679,10 +811,13 @@ NOC.glyph = {
     "paragraph": 0xf1dd,
     "paste": 0xf0ea,
     "pause": 0xf04c,
+<<<<<<< HEAD
     "pause-circle": 0xf28b,
     "pause-circle-o": 0xf28c,
     "pause_circle": 0xf28b,
     "pause_circle_o": 0xf28c,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "paw": 0xf1b0,
     "paypal": 0xf1ed,
     "pencil": 0xf040,
@@ -690,7 +825,10 @@ NOC.glyph = {
     "pencil-square-o": 0xf044,
     "pencil_square": 0xf14b,
     "pencil_square_o": 0xf044,
+<<<<<<< HEAD
     "percent": 0xf295,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "phone": 0xf095,
     "phone-square": 0xf098,
     "phone_square": 0xf098,
@@ -704,9 +842,13 @@ NOC.glyph = {
     "pied_piper": 0xf1a7,
     "pied_piper_alt": 0xf1a8,
     "pinterest": 0xf0d2,
+<<<<<<< HEAD
     "pinterest-p": 0xf231,
     "pinterest-square": 0xf0d3,
     "pinterest_p": 0xf231,
+=======
+    "pinterest-square": 0xf0d3,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "pinterest_square": 0xf0d3,
     "plane": 0xf072,
     "play": 0xf04b,
@@ -725,8 +867,11 @@ NOC.glyph = {
     "power-off": 0xf011,
     "power_off": 0xf011,
     "print": 0xf02f,
+<<<<<<< HEAD
     "product-hunt": 0xf288,
     "product_hunt": 0xf288,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "puzzle-piece": 0xf12e,
     "puzzle_piece": 0xf12e,
     "qq": 0xf1d6,
@@ -743,12 +888,18 @@ NOC.glyph = {
     "rebel": 0xf1d0,
     "recycle": 0xf1b8,
     "reddit": 0xf1a1,
+<<<<<<< HEAD
     "reddit-alien": 0xf281,
     "reddit-square": 0xf1a2,
     "reddit_alien": 0xf281,
     "reddit_square": 0xf1a2,
     "refresh": 0xf021,
     "registered": 0xf25d,
+=======
+    "reddit-square": 0xf1a2,
+    "reddit_square": 0xf1a2,
+    "refresh": 0xf021,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "remove": 0xf00d,
     "renren": 0xf18b,
     "reorder": 0xf0c9,
@@ -771,20 +922,31 @@ NOC.glyph = {
     "rub": 0xf158,
     "ruble": 0xf158,
     "rupee": 0xf156,
+<<<<<<< HEAD
     "safari": 0xf267,
     "save": 0xf0c7,
     "scissors": 0xf0c4,
     "scribd": 0xf28a,
+=======
+    "save": 0xf0c7,
+    "scissors": 0xf0c4,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "search": 0xf002,
     "search-minus": 0xf010,
     "search-plus": 0xf00e,
     "search_minus": 0xf010,
     "search_plus": 0xf00e,
+<<<<<<< HEAD
     "sellsy": 0xf213,
     "send": 0xf1d8,
     "send-o": 0xf1d9,
     "send_o": 0xf1d9,
     "server": 0xf233,
+=======
+    "send": 0xf1d8,
+    "send-o": 0xf1d9,
+    "send_o": 0xf1d9,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "share": 0xf064,
     "share-alt": 0xf1e0,
     "share-alt-square": 0xf1e1,
@@ -797,6 +959,7 @@ NOC.glyph = {
     "shekel": 0xf20b,
     "sheqel": 0xf20b,
     "shield": 0xf132,
+<<<<<<< HEAD
     "ship": 0xf21a,
     "shirtsinbulk": 0xf214,
     "shopping-bag": 0xf290,
@@ -804,15 +967,22 @@ NOC.glyph = {
     "shopping-cart": 0xf07a,
     "shopping_bag": 0xf290,
     "shopping_basket": 0xf291,
+=======
+    "shopping-cart": 0xf07a,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "shopping_cart": 0xf07a,
     "sign-in": 0xf090,
     "sign-out": 0xf08b,
     "sign_in": 0xf090,
     "sign_out": 0xf08b,
     "signal": 0xf012,
+<<<<<<< HEAD
     "simplybuilt": 0xf215,
     "sitemap": 0xf0e8,
     "skyatlas": 0xf216,
+=======
+    "sitemap": 0xf0e8,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "skype": 0xf17e,
     "slack": 0xf198,
     "sliders": 0xf1de,
@@ -874,6 +1044,7 @@ NOC.glyph = {
     "step_backward": 0xf048,
     "step_forward": 0xf051,
     "stethoscope": 0xf0f1,
+<<<<<<< HEAD
     "sticky-note": 0xf249,
     "sticky-note-o": 0xf24a,
     "sticky_note": 0xf249,
@@ -885,12 +1056,18 @@ NOC.glyph = {
     "stop_circle_o": 0xf28e,
     "street-view": 0xf21d,
     "street_view": 0xf21d,
+=======
+    "stop": 0xf04d,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "strikethrough": 0xf0cc,
     "stumbleupon": 0xf1a4,
     "stumbleupon-circle": 0xf1a3,
     "stumbleupon_circle": 0xf1a3,
     "subscript": 0xf12c,
+<<<<<<< HEAD
     "subway": 0xf239,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "suitcase": 0xf0f2,
     "sun-o": 0xf185,
     "sun_o": 0xf185,
@@ -903,7 +1080,10 @@ NOC.glyph = {
     "tags": 0xf02c,
     "tasks": 0xf0ae,
     "taxi": 0xf1ba,
+<<<<<<< HEAD
     "television": 0xf26c,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "tencent-weibo": 0xf1d5,
     "tencent_weibo": 0xf1d5,
     "terminal": 0xf120,
@@ -945,17 +1125,23 @@ NOC.glyph = {
     "toggle_on": 0xf205,
     "toggle_right": 0xf152,
     "toggle_up": 0xf151,
+<<<<<<< HEAD
     "trademark": 0xf25c,
     "train": 0xf238,
     "transgender": 0xf224,
     "transgender-alt": 0xf225,
     "transgender_alt": 0xf225,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "trash": 0xf1f8,
     "trash-o": 0xf014,
     "trash_o": 0xf014,
     "tree": 0xf1bb,
     "trello": 0xf181,
+<<<<<<< HEAD
     "tripadvisor": 0xf262,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "trophy": 0xf091,
     "truck": 0xf0d1,
     "try": 0xf195,
@@ -965,7 +1151,10 @@ NOC.glyph = {
     "tumblr_square": 0xf174,
     "turkish-lira": 0xf195,
     "turkish_lira": 0xf195,
+<<<<<<< HEAD
     "tv": 0xf26c,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "twitch": 0xf1e8,
     "twitter": 0xf099,
     "twitter-square": 0xf081,
@@ -980,6 +1169,7 @@ NOC.glyph = {
     "unlock_alt": 0xf13e,
     "unsorted": 0xf0dc,
     "upload": 0xf093,
+<<<<<<< HEAD
     "usb": 0xf287,
     "usd": 0xf155,
     "user": 0xf007,
@@ -1001,6 +1191,15 @@ NOC.glyph = {
     "video-camera": 0xf03d,
     "video_camera": 0xf03d,
     "vimeo": 0xf27d,
+=======
+    "usd": 0xf155,
+    "user": 0xf007,
+    "user-md": 0xf0f0,
+    "user_md": 0xf0f0,
+    "users": 0xf0c0,
+    "video-camera": 0xf03d,
+    "video_camera": 0xf03d,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "vimeo-square": 0xf194,
     "vimeo_square": 0xf194,
     "vine": 0xf1ca,
@@ -1015,11 +1214,16 @@ NOC.glyph = {
     "wechat": 0xf1d7,
     "weibo": 0xf18a,
     "weixin": 0xf1d7,
+<<<<<<< HEAD
     "whatsapp": 0xf232,
     "wheelchair": 0xf193,
     "wifi": 0xf1eb,
     "wikipedia-w": 0xf266,
     "wikipedia_w": 0xf266,
+=======
+    "wheelchair": 0xf193,
+    "wifi": 0xf1eb,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "windows": 0xf17a,
     "won": 0xf159,
     "wordpress": 0xf19a,
@@ -1027,6 +1231,7 @@ NOC.glyph = {
     "xing": 0xf168,
     "xing-square": 0xf169,
     "xing_square": 0xf169,
+<<<<<<< HEAD
     "y-combinator": 0xf23b,
     "y-combinator-square": 0xf1d4,
     "y_combinator": 0xf23b,
@@ -1035,6 +1240,9 @@ NOC.glyph = {
     "yc": 0xf23b,
     "yc-square": 0xf1d4,
     "yc_square": 0xf1d4,
+=======
+    "yahoo": 0xf19e,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "yelp": 0xf1e9,
     "yen": 0xf157,
     "youtube": 0xf167,

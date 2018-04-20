@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: Cisco
 # OS:     IOS
@@ -24,12 +25,38 @@ class Profile(BaseProfile):
     pattern_syntax_error = \
         r"% Invalid input detected at|% Ambiguous command:|" \
         r"% Incomplete command."
+=======
+##----------------------------------------------------------------------
+## Vendor: Cisco
+## OS:     IOS
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.profiles import Profile as NOCProfile
+
+
+class Profile(NOCProfile):
+    name = "Cisco.IOS"
+    supported_schemes = [NOCProfile.TELNET, NOCProfile.SSH]
+    pattern_more = [
+        (r"^ --More--", "\n"),
+        (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
+    ]
+    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
+<<<<<<< HEAD
     pattern_prompt = \
         r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" \
         r"(?:\(config[^\)]*\))?#"
@@ -53,6 +80,17 @@ class Profile(BaseProfile):
 
     def convert_interface_name(self, interface):
         interface = str(interface)
+=======
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    requires_netmask_conversion = True
+    convert_mac = NOCProfile.convert_mac_to_cisco
+    config_volatile = ["^ntp clock-period .*?^"]
+
+    rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
+    default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
+
+    def convert_interface_name(self, interface):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if " efp_id " in interface:
             l, r = interface.split(" efp_id ", 1)
             return "%s.SI.%d" % (
@@ -65,22 +103,31 @@ class Profile(BaseProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+<<<<<<< HEAD
         if " point-to-point" in interface:
             interface = interface.replace(" point-to-point", "")
         if ".ServiceInstance." in interface:
             interface = interface.replace(".ServiceInstance.", ".SI.")
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if ".SI." in interface:
             l, r = interface.split(".SI.", 1)
             return "%s.SI.%d" % (
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
+<<<<<<< HEAD
         if isinstance(interface, six.string_types):
             il = interface.lower()
         else:
             il = interface.name.lower()
         if il.startswith("nde_"):
             return "NDE_" + interface[4:]
+=======
+        if interface.startswith("NDE_"):
+            return interface
+        il = interface.lower()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if il.startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
         if il.startswith("bdi"):
@@ -106,6 +153,7 @@ class Profile(BaseProfile):
         if il.startswith("cable"):
             match = self.rx_cable_if.search(interface)
             if match:
+<<<<<<< HEAD
                 return "Ca %s/%s" % (
                     match.group('pr_if'), match.group('sub_if')
                 )
@@ -122,6 +170,11 @@ class Profile(BaseProfile):
         # @todo: Does it relates to CPP?
         if il == "control plane interface":
             return "Control Plane Interface"
+=======
+                return "Ca %s/%s" % (match.group('pr_if'), match.group('sub_if'))
+        if il.startswith("virtual-template"):
+            return "Vi %s" % il[16:].strip()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Fake name. Used only with FM
         if il == "all":
             return "all"
@@ -147,6 +200,7 @@ class Profile(BaseProfile):
         Process specific path parameters:
         cluster:id - switch to cluster member
         """
+<<<<<<< HEAD
         path = script.credentials.get("path")
         if path:
             cluster_member = None
@@ -159,6 +213,17 @@ class Profile(BaseProfile):
                 script.logger.debug(
                     "Switching to cluster member '%s'" % cluster_member)
                 script.cli("rc %s" % cluster_member)
+=======
+        cluster_member = None
+        # Parse path parameters
+        for p in script.access_profile.path.split("/"):
+            if p.startswith("cluster:"):
+                cluster_member = p[8:].strip()
+        # Switch to cluster member, if necessary
+        if cluster_member:
+            script.debug("Switching to cluster member '%s'" % cluster_member)
+            script.cli("rc %s" % cluster_member)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     INTERFACE_TYPES = {
         "As": "physical",  # Async
@@ -185,7 +250,10 @@ class Profile(BaseProfile):
         "MF": "aggregated",  # Multilink Frame Relay
         "Mf": "aggregated",  # Multilink Frame Relay
         "Mu": "aggregated",  # Multilink-group interface
+<<<<<<< HEAD
         "ND": "other",      # Netflow Data Exporter
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "PO": "physical",  # Packet OC-3 Port Adapter
         "Po": "aggregated",  # Port-channel/Portgroup
         "R": "aggregated",  # @todo: fix
@@ -196,7 +264,11 @@ class Profile(BaseProfile):
         "Te": "physical",  # TenGigabitEthernet
         "To": "physical",  # TokenRing
         "Tu": "tunnel",  # Tunnel
+<<<<<<< HEAD
         "Vi": "template",  # Virtual-Template
+=======
+        "Vi": "template", # Virtual-Template
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "VL": "SVI",  # VLAN, found on C3500XL
         "Vl": "SVI",  # Vlan
         "Vo": "physical",  # Voice

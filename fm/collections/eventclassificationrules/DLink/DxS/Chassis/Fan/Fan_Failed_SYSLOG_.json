@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Chassis | Fan | Fan Failed (SYSLOG)",
+    "uuid": "ca9fddd8-1ba6-4da9-bfc7-8898b950e985",
+    "description": "WARN: Unit 1, Back Fan failed",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "(Unit \\d+, )?(?P<name>\\S+\\s+Fan\\s*\\d*) failed$"
+        }
+    ]
+}

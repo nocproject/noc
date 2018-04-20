@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Security | Authentication | Logout #1 (SYSLOG)",
+    "uuid": "774cd4a0-4274-4e51-bcba-84d7bc889371",
+    "description": "%AAA-I-DISCONNECT: User CLI session for user admin over telnet , source 10.1.4.19 destination 10.8.25.150 TERMINATED. The Telnet/SSH session may still be connected.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%AAA-I-DISCONNECT: User CLI session for user (?P<user>\\S+) over (web|telnet|ssh)\\s*, source (?P<ip>\\S+) destination\\s+\\S+\\s+TERMINATED. The Telnet/SSH session may still be connected."
+        }
+    ]
+}

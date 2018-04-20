@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Gis-related utilities
 # ---------------------------------------------------------------------
@@ -20,6 +21,29 @@ ELLIPSOIDS["Krass"] = (6378.245, 6356.863019, 1 / 298.3000031662238)
 ELLIPSOIDS["PZ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
 
 ELLIPSOID = config.gis.ellipsoid
+=======
+##----------------------------------------------------------------------
+## Gis-related utilities
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import math
+## Third-party modules
+import geojson
+from geopy.point import Point as GPoint
+from geopy.distance import vincenty, great_circle, ELLIPSOIDS
+## NOC settings
+from noc.settings import config
+
+# major, minor, flattening=(major-minor)/major
+ELLIPSOIDS["Krass"] = (6378.245, 6356.863019, 1 / 298.3000031662238)
+ELLIPSOIDS["ПЗ-90"] = (6378.1365, 6356.751758, 1 / 298.2564151)
+
+ELLIPSOID = config.get("gis", "ellipsoid")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 def _get_point(p):
@@ -28,6 +52,7 @@ def _get_point(p):
     """
     if isinstance(p, GPoint):
         return p
+<<<<<<< HEAD
     elif isinstance(p, list):
         return GPoint(p[1], p[0])
     elif isinstance(p, geojson.Point):
@@ -36,6 +61,12 @@ def _get_point(p):
         return GPoint(p["coordinates"][1], p["coordinates"][0])
     elif isinstance(p, dict) and "geopoint" in p:
         return GPoint(p["geopoint"]["y"], p["geopoint"]["x"])
+=======
+    elif isinstance(p, geojson.Point):
+        return GPoint(p.coordinates[1], p.coordinates[1])
+    elif isinstance(p, dict) and "coordinates" in p:
+        return GPoint(p["coordinates"][1], p["coordinates"][1])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     else:
         return GPoint(p.y, p.x)
 

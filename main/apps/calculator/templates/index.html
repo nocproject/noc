@@ -1,0 +1,13 @@
+{% extends "template.html" %}
+{% block title%}Calculators{% endblock %}
+{% block content %}
+<h1>Calculators</h1>
+<DIV CLASS="module">
+    <table border="0">
+    {% for cn,title in calculators %}
+        <TR><TH SCOPE="row"><A HREF="{% url main:calculator:calculate cn%}">{{title}}</A></TH></TR>
+    {% endfor %}
+    </TABLE>
+</DIV>
+
+{% endblock %}

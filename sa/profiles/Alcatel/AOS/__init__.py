@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Vendor: Alcatel
 # OS:     AOS
@@ -40,3 +41,25 @@ class Profile(BaseProfile):
             return "Agg %s" % s.split()[3]
         else:
             return s
+=======
+##----------------------------------------------------------------------
+## Vendor: Alcatel
+## OS:     AOS
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
+
+class Profile(noc.sa.profiles.Profile):
+    name = "Alcatel.AOS"
+    supported_schemes = [TELNET, SSH]
+    pattern_username = "[Ll]ogin :"
+    pattern_password = "[Pp]assword :"
+    pattern_prompt = r"^(\S*->|(?P<hostname>\S+)# )"
+    command_save_config = "write memory\r\ncopy working certified"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

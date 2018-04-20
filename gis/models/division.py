@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Division object
 # ---------------------------------------------------------------------
@@ -10,14 +11,31 @@
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, BooleanField,
                                 DateTimeField, IntField, ListField)
+=======
+##----------------------------------------------------------------------
+## Division object
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, DictField, BooleanField,
+                                DateTimeField, IntField)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.nosql import PlainReferenceField
 
 
 class Division(Document):
     meta = {
         "collection": "noc.divisions",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["parent", "data", "name"]
     }
     # Division type
@@ -40,12 +58,19 @@ class Division(Document):
     #
     start_date = DateTimeField()
     end_date = DateTimeField()
+<<<<<<< HEAD
     #
     tags = ListField(StringField())
 
     def __unicode__(self):
         if self.short_name:
             return self.short_name
+=======
+
+    def __unicode__(self):
+        if self.short_name:
+            return "%s, %s" % (self.name, self.short_name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         else:
             return self.name
 
@@ -77,6 +102,11 @@ class Division(Document):
 
     @property
     def full_path(self):
+<<<<<<< HEAD
+=======
+        if not self.parent:
+            return ""
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r = [unicode(self)]
         p = self.parent
         while p:

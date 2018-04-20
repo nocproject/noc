@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ArchivedAlarm model
 # ---------------------------------------------------------------------
@@ -11,18 +12,37 @@ import datetime
 # Django modules
 from django.template import Template, Context
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## ArchivedAlarm model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## Django modules
+from django.template import Template, Context
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import noc.lib.nosql as nosql
 from noc.sa.models.managedobject import ManagedObject
 from alarmclass import AlarmClass
 from alarmlog import AlarmLog
 from alarmseverity import AlarmSeverity
+<<<<<<< HEAD
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.span import get_current_span
+=======
+from noc.lib.scheduler.utils import remove_job
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ArchivedAlarm(nosql.Document):
     meta = {
         "collection": "noc.alarms.archived",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [
@@ -32,6 +52,14 @@ class ArchivedAlarm(nosql.Document):
             ("managed_object", "discriminator", "control_time"),
             "escalation_tt",
             "escalation_ts"
+=======
+        "allow_inheritance": False,
+        "indexes": [
+            "root",
+            "control_time",
+            "timestamp",
+            "managed_object"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
     }
     status = "C"
@@ -56,6 +84,7 @@ class ArchivedAlarm(nosql.Document):
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
+<<<<<<< HEAD
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
@@ -80,6 +109,8 @@ class ArchivedAlarm(nosql.Document):
     container_path = nosql.ListField(nosql.ObjectIdField())
     # Uplinks, for topology_rca only
     uplinks = nosql.ListField(nosql.IntField())
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -95,7 +126,11 @@ class ArchivedAlarm(nosql.Document):
         Prepare template variables
         """
         vars = self.vars.copy()
+<<<<<<< HEAD
         vars.update({"alarm": self})
+=======
+        vars.update({"event": self})
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return vars
 
     @property
@@ -154,6 +189,7 @@ class ArchivedAlarm(nosql.Document):
             vars=self.vars,
             log=log,
             root=self.root,
+<<<<<<< HEAD
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
             escalation_error=self.escalation_error,
@@ -170,12 +206,21 @@ class ArchivedAlarm(nosql.Document):
             segment_path=self.segment_path,
             container_path=self.container_path,
             uplinks=self.uplinks
+=======
+            opening_event=self.opening_event,
+            discriminator=self.discriminator,
+            reopens=reopens + 1
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         )
         a.save()
         # @todo: Clear related correlator jobs
         self.delete()
         # Remove pending control_notify job
+<<<<<<< HEAD
         #remove_job("fm.correlator", "control_notify", key=a.id)
+=======
+        remove_job("fm.correlator", "control_notify", key=a.id)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Send notifications
         # Do not set notifications for child and for previously reopened
         # alarms
@@ -190,6 +235,7 @@ class ArchivedAlarm(nosql.Document):
             })
         return a
 
+<<<<<<< HEAD
     def iter_consequences(self):
         """
         Generator yielding all consequences alarm
@@ -243,3 +289,7 @@ class ArchivedAlarm(nosql.Document):
 # Avoid circular references
 from activealarm import ActiveAlarm
 
+=======
+## Avoid circular references
+from activealarm import ActiveAlarm
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

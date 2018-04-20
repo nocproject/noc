@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Populate Languiages table with ISO639-1 codes
 # ---------------------------------------------------------------------
@@ -8,6 +9,17 @@
 
 from south.db import db
 from django.db import models
+=======
+##----------------------------------------------------------------------
+## Populate Languiages table with ISO639-1 codes
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+from south.db import db
+from noc.main.models import *
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 LANGUAGES=[
     ("Afar",            "Afaraf"),
@@ -197,10 +209,18 @@ LANGUAGES=[
 ]
 
 class Migration:
+<<<<<<< HEAD
 
     def forwards(self):
         for lang,native in LANGUAGES:
             db.execute("INSERT INTO main_language(name,native_name,is_active) VALUES(%s,%s,%s)",[lang,native,lang=="English"])
 
+=======
+    
+    def forwards(self):
+        for lang,native in LANGUAGES:
+            db.execute("INSERT INTO main_language(name,native_name,is_active) VALUES(%s,%s,%s)",[lang,native,lang=="English"])
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         "Write your backwards migration here"

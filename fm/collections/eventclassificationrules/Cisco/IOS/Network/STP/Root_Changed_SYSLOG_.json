@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | STP | Root Changed (SYSLOG)",
+    "uuid": "2a889d00-1192-4f8e-b021-f3b6bbeee32c",
+    "description": "%SPANTREE-5-ROOTCHANGE: Root Changed for instance 1: New Root Port is GigabitEthernet0/48. New Root Mac Address is 0000.0032.0087",
+    "event_class__name": "Network | STP | Root Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SPANTREE-5-ROOTCHANGE: Root Changed for instance (?P<instance>\\d+): New Root Port is (?P<interface>\\S+)\\. New Root Mac Address is \\S+"
+        }
+    ]
+}

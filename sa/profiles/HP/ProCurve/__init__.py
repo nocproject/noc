@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: HP
 # OS:     ProCurve
@@ -19,6 +20,30 @@ class Profile(BaseProfile):
         ("Press any key to continue", "\n"),
         ("-- MORE --, next page: Space, next line: Enter, quit: Control-C", " ")
     ]
+=======
+##----------------------------------------------------------------------
+## Vendor: HP
+## OS:     ProCurve
+##----------------------------------------------------------------------
+## Copyright (C) 2007-10 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
+
+class Profile(noc.sa.profiles.Profile):
+    name = "HP.ProCurve"
+    supported_schemes = [TELNET, SSH]
+    pattern_prompt = r"^[a-zA-Z0-9- _]+?(\(\S+\))?# "
+    pattern_unpriveleged_prompt = r"^[a-zA-Z0-9- _]+?> "
+    pattern_more = [
+        ("Press any key to continue", "\n"),
+        ("-- MORE --, next page: Space, next line: Enter, quit: Control-C", " ")
+        ]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     pattern_syntax_error = r"Invalid input: "
     command_disable_pager = "terminal length 1000"
     command_super = "enable"
@@ -27,11 +52,19 @@ class Profile(BaseProfile):
     command_save_config = "write memory\n"
     command_exit = "exit"
 
+<<<<<<< HEAD
     #
     # Compare versions
     #
     # Version format is <letter>.<major>.<minor>
     #
+=======
+    ##
+    ## Compare versions
+    ##
+    ## Version format is <letter>.<major>.<minor>
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @classmethod
     def cmp_version(cls, v1, v2):
         l1, mj1, mn1 = v1.split(".")

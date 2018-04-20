@@ -1,0 +1,16 @@
+{
+    "name": "PoP | National",
+    "uuid": "0b728824-2159-4fae-8419-f9b94e93c9d8",
+    "description": "National level points of presence",
+    "code": "pop_national",
+    "default_zoom": 12,
+    "fill_color": 13369344,
+    "max_zoom": 19,
+    "min_zoom": 2,
+    "point_radius": 5,
+    "show_labels": true,
+    "stroke_color": 16711680,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 500
+}

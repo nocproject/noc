@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #6 (SYSLOG)",
+    "uuid": "96e71c96-e609-4a93-9a99-366f5356a260",
+    "description": "%SYS-2-MOD_TEMPOK: Module 2 temperature OK",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-MOD_TEMPOK:\\s*(?P<name>Module \\d+) temperature OK"
+        }
+    ]
+}

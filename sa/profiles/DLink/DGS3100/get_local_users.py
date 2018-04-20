@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_local_users
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "DLink.DGS3100.get_local_users"
     interface = IGetLocalUsers
+=======
+##----------------------------------------------------------------------
+## DLink.DGS3100.get_local_users
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetLocalUsers
+import re
+
+
+class Script(noc.sa.script.Script):
+    name = "DLink.DGS3100.get_local_users"
+    implements = [IGetLocalUsers]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(
         r"^\s*(?P<username>\S+)\s+"
         r"(?P<privilege>Admin|Operator|User|Power_User)\s*$",

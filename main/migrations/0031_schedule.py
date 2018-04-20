@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
@@ -7,6 +8,16 @@
 # Django modules
 from django.db import models
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from south.db import db
 
 
@@ -32,7 +43,14 @@ class Migration:
             ("last_status", models.BooleanField("Last Status", default=True))
         ))
         db.send_create_signal("main", ["Schedule"])
+<<<<<<< HEAD
 
     def backwards(self):
         db.delete_table("main_schedule")
 
+=======
+    
+    def backwards(self):
+        db.delete_table("main_schedule")
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

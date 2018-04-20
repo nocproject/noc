@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## Force10.FTOS.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 rx_sep = re.compile(r"^===+\n", re.MULTILINE)
@@ -35,9 +50,15 @@ rx_remote_capabilities = re.compile(
     re.IGNORECASE | re.MULTILINE)
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Force10.FTOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+class Script(NOCScript):
+    name = "Force10.FTOS.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []

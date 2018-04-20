@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Prefix-list-optimizing tree
 #
@@ -15,6 +16,24 @@
 
 # NOC modules
 from noc.core.ip import IP, IPv4
+=======
+##----------------------------------------------------------------------
+## Prefix-list-optimizing tree
+##
+## Tree is a binary tree containing prefixes.
+## Each prefix is represented as sequence of the bits.
+## All prefixes start with root.
+## Zero bit on apropriative position in prefix means
+## the prefix will be directed left from current node.
+## The set bit means right direction.
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# NOC modules
+from noc.lib.ip import *
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Node(object):
@@ -22,9 +41,15 @@ class Node(object):
     Optimizing prefix tree.
     @todo: Merge with PrefixDB
     """
+<<<<<<< HEAD
     def __init__(self, parent=None, prefix=None, n=0, prefixes=None):
         self.parent = parent
         self.prefix = prefix or []
+=======
+    def __init__(self, parent=None, prefix=[], n=0, prefixes=None):
+        self.parent = parent
+        self.prefix = prefix
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         self.children = [None, None]
         self.is_final = False
         self.n = 0
@@ -66,7 +91,11 @@ class Node(object):
                 # with siblings
                 n = self.parent
                 while n:
+<<<<<<< HEAD
                     if sum(c for c in n.children if c and c.is_final) == 2:
+=======
+                    if len([c for c in n.children if c and c.is_final]) == 2:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         n.release_children()
                         n = n.parent
                     else:

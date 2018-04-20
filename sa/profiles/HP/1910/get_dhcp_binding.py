@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_dhcp_binding
 # ---------------------------------------------------------------------
@@ -17,6 +18,26 @@ from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
 class Script(BaseScript):
     name = "HP.1910.get_dhcp_binding"
     interface = IGetDHCPBinding
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_dhcp_binding
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IGetDHCPBinding
+
+
+class Script(noc.sa.script.Script):
+    name = "HP.1910.get_dhcp_binding"
+    implements = [IGetDHCPBinding]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     rx_line = re.compile(

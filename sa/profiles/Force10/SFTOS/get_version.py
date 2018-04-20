@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.SFTOS.get_version
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetversion import IGetVersion
 class Script(BaseScript):
     name = "Force10.SFTOS.get_version"
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## Force10.SFTOS.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "Force10.SFTOS.get_version"
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_ver = re.compile(
         r"^Catalog Number\.+\s+(?P<platform>\S+).+?"

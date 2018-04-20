@@ -1,0 +1,7 @@
+{
+    "name": "Interface | Admin Status Up",
+    "uuid": "bace145e-ce70-41b9-a7a0-8ecdcc83727f",
+    "description": "Interface must be shut down",
+    "subject_template": "Interface {{obj}} must be administratively disabled",
+    "body_template": "Interface {{obj}} must be administratively disabled"
+}

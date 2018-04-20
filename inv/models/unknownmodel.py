@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # UnknownModel model
@@ -7,6 +8,17 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## UnknownModel model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, URLField
 
@@ -17,8 +29,12 @@ class UnknownModel(Document):
     """
     meta = {
         "collection": "noc.unknown_models",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [("vendor", "managed_object", "part_no")]
     }
 
@@ -38,7 +54,11 @@ class UnknownModel(Document):
         cls._get_collection().find_and_modify({
             "vendor": vendor,
             "managed_object": managed_object.name,
+<<<<<<< HEAD
             "platform": managed_object.platform.name if managed_object.platform else "",
+=======
+            "platform": managed_object.platform,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "part_no": part_no
         }, update={
             # "$setOnInsert": {

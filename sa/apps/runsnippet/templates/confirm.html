@@ -1,0 +1,31 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Run command snippet: {{snippet.name}}.</h1>
+<style>
+.obj {
+    font-weight: bold;
+    border-bottom: 1px solid black;
+}
+
+.code {
+    border-left: 5px solid #DDDDDD;
+    margin-left: 10px;
+    padding-left: 10px;
+}
+</style>
+<form method="POST" id="form">
+    {% for o, cs in data %}
+        <div class="obj">
+            <input type="checkbox" checked
+                name="CFM:{{o.id}}" id="CFM:{{o.id}}"/>
+            <label for="CFM:{{o.id}}">{{o.name}}</label>
+        </div>
+        <div class="code"><pre>{{cs}}</pre></td></div>
+    {% endfor %}
+    {% for k, v in vars %}
+        <input type="hidden" name="{{k}}" value="{{v}}" />
+    {% endfor %}
+    <input type="hidden" name="__confirmed" value="True" />
+    <input type="submit" value="Run">
+</form>
+{% endblock %}

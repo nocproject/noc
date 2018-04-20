@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Parse and load address data
 # ---------------------------------------------------------------------
@@ -13,6 +14,22 @@ import os
 # Third-party modules
 import requests
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Parse and load address data
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+import gzip
+import os
+## Third-party modules
+import requests
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.gis.models.division import Division
 
 

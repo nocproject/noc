@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | System | Process Started (SYSLOG) #2",
+    "uuid": "adacf242-d225-4c28-8f09-98df378aa4e8",
+    "description": "%SSH-5-ENABLED: SSH 2.0 has been enabled",
+    "event_class__name": "System | Process Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SSH-5-ENABLED: (?P<name>SSH 2\\.0) has been enabled$"
+        }
+    ]
+}

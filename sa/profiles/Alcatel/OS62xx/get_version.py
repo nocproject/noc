@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.OS62xx.get_version
 # ----------------------------------------------------------------------
@@ -17,6 +18,26 @@ class Script(BaseScript):
     name = "Alcatel.OS62xx.get_version"
     cache = True
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## Alcatel.OS62xx.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "Alcatel.OS62xx.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_sys = re.compile(r"System Description:\s+(?P<platform>.+?)$",
                         re.MULTILINE | re.DOTALL)
@@ -24,7 +45,11 @@ class Script(BaseScript):
                         re.MULTILINE | re.DOTALL)
 
     def execute(self):
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.7.68420352",
                                          cached=True)  # Platform

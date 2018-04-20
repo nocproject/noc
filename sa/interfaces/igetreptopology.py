@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # IGetREPTopology
 # ---------------------------------------------------------------------
@@ -13,6 +14,20 @@ from base import (DictListParameter, MACAddressParameter,
 
 
 class IGetREPTopology(BaseInterface):
+=======
+##----------------------------------------------------------------------
+## IGetREPTopology
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from base import *
+
+
+class IGetREPTopology(Interface):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Get REP topology information
     """

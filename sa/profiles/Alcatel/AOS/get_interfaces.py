@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.AOS.get_interfaces
 # ----------------------------------------------------------------------
@@ -13,6 +14,23 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4, IPv6
+=======
+##----------------------------------------------------------------------
+## Alcatel.AOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+# Python modules
+import re
+from collections import defaultdict
+# NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
+from noc.lib.ip import IPv4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 def ranges_to_list_str(s):
@@ -40,10 +58,16 @@ def ranges_to_list_str(s):
     return (r)
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Alcatel.AOS.get_interfaces"
     interface = IGetInterfaces
     TIMEOUT = 300
+=======
+class Script(NOCScript):
+    name = "Alcatel.AOS.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(r"\w*Slot/Port", re.MULTILINE)
     rx_name = re.compile(r"\s+(?P<name>.\S+)\s+:", re.MULTILINE)
@@ -168,6 +192,7 @@ class Script(BaseScript):
 
         lldp = []
         try:
+<<<<<<< HEAD
             lldp_enable = self.has_capability("Network | LLDP")
         except:
             lldp_enable = bool("Network | LLDP" in self.scripts.get_capabilities())
@@ -203,6 +228,33 @@ class Script(BaseScript):
                     c = ""
                 for match in self.rx_udld.finditer(c):
                     udld += [match.group("port")]
+=======
+            c = self.cli("show lldp local-system")
+        except self.CLISyntaxError:
+            c = ""
+        lldp_enable = self.rx_lldp_gs.search(c) is not None
+        if lldp_enable:
+            try:
+                c = self.cli("show lldp config")
+            except self.CLISyntaxError:
+                c = ""
+            for match in self.rx_lldp.finditer(c):
+                lldp += [match.group("port")]
+
+        udld = []
+        try:
+            c = self.cli("show udld configuration")
+        except self.CLISyntaxError:
+            c = ""
+        udld_enable = self.rx_udld_gs.search(c) is not None
+        if udld_enable:
+            try:
+                c = self.cli("show udld status port")
+            except self.CLISyntaxError:
+                c = ""
+            for match in self.rx_udld.finditer(c):
+                udld += [match.group("port")]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         r = []
         try:
@@ -224,7 +276,13 @@ class Script(BaseScript):
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
+<<<<<<< HEAD
             t = pc["type"] == "L"
+=======
+            print i
+            t = pc["type"] == "L"
+            print t
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
             n = {}
@@ -233,7 +291,10 @@ class Script(BaseScript):
             n["admin_status"] = True
             n["oper_status"] = True
             n["description"] = ""
+<<<<<<< HEAD
             n["snmp_ifindex"] = 40000000 + int(i)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             n["subinterfaces"] = [{
                 "name": iface,
                 "admin_status": True,
@@ -257,8 +318,15 @@ class Script(BaseScript):
                 continue
             n["name"] = match.group("name")
             iface = n["name"]
+<<<<<<< HEAD
             slot_n, port_n = iface.split("/")
             n["snmp_ifindex"] = int(slot_n) * 1000 + int(port_n)
+=======
+            data1 = self.cli(
+                "show lldp %s local-port" % iface)
+            for match1 in self.rx_ifindex.finditer(data1):
+                ifindex = match1.group("ifindex")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if iface not in portchannel_members:
                 match = self.rx_mac_local.search(s)
                 if not match:
@@ -276,16 +344,26 @@ class Script(BaseScript):
                     "oper_status": True,
                     "enabled_afi": ["BRIDGE"],
                     "mac": n["mac"],
+<<<<<<< HEAD
                     "snmp_ifindex": n["snmp_ifindex"],
+=======
+                    "snmp_ifindex": ifindex,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     "description": ""
                 }]
                 if switchports[iface][1]:
                     n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
                 if switchports[iface][0]:
                     n["subinterfaces"][0]["untagged_vlan"] = switchports[iface][0]
+<<<<<<< HEAD
                 if lldp_enable and iface in lldp:
                     enabled_protocols += ["LLDP"]
                 if udld_enable and iface in udld:
+=======
+                if lldp_enable  and iface in lldp:
+                    enabled_protocols += ["LLDP"]
+                if udld_enable  and iface in udld:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     enabled_protocols += ["UDLD"]
                 n["enabled_protocols"] = enabled_protocols
                 n["type"] = "physical"
@@ -311,7 +389,11 @@ class Script(BaseScript):
                     "oper_status": True,
                     "enabled_afi": ["BRIDGE"],
                     "mac": n["mac"],
+<<<<<<< HEAD
                     "snmp_ifindex": n["snmp_ifindex"],
+=======
+                    "snmp_ifindex": ifindex,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     "description": ""
                 }]
                 n["type"] = "physical"
@@ -334,6 +416,10 @@ class Script(BaseScript):
                 ip_list = [ip]
             vlan = match.group("vlan")
             a_stat = "UP"
+<<<<<<< HEAD
+=======
+            print ifname
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if ospf_enable and ifname in ospf:
                 enabled_protocols += ["OSPF"]
             if ospf3_enable and ifname in ospf3:
@@ -348,6 +434,10 @@ class Script(BaseScript):
                 enabled_protocols += ["ISIS"]
             if bgp_enable and ifname in bgp:
                 enabled_protocols += ["BGP"]
+<<<<<<< HEAD
+=======
+            print ifname
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             iface = {
                 "name": ifname,
                 "type": "SVI",

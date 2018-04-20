@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.CER-ADV.get_mpls_vpn
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 class Script(BaseScript):
     name = 'Brocade.CER-ADV.get_mpls_vpn'
     interface = IGetMPLSVPN
+=======
+##----------------------------------------------------------------------
+## Brocade.CER-ADV.get_mpls_vpn
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMPLSVPN
+
+
+class Script(NOCScript):
+    name = 'Brocade.CER-ADV.get_mpls_vpn'
+    implements = [IGetMPLSVPN]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile('^(?P<vrf>.+?)\\s+(?P<rd>\\S+:\\S+|<not set>)\\s+[AI]\\s+\\|\\s+[AI]\\s*\\|\\s+[AI]\\s+(?P<iface>.*)$', re.IGNORECASE)
 
     def execute(self, **kwargs):

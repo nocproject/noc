@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | Fan | Fan Failed #3 (SYSLOG)",
+    "uuid": "628e2b60-bfa7-4c3d-a3be-c2210fd8e0f4",
+    "description": "UPS: System level fan fault exists. 0x021D",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>System level fan) fault exists. 0x021D"
+        }
+    ]
+}

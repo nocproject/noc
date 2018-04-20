@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_vlans
 # ---------------------------------------------------------------------
@@ -21,6 +22,30 @@ class Script(BaseScript):
     def execute(self):
         r = []
         if self.has_snmp():
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Smart.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+import logging
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(NOCScript):
+    name = "DLink.DxS_Smart.get_vlans"
+    implements = [IGetVlans]
+
+    def execute(self):
+        r = []
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 pmib = self.profile.get_pmib(self.scripts.get_version())
                 if pmib is None:

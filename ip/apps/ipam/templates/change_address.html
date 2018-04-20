@@ -1,0 +1,19 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>{% if address %}Change{%else%}Add{%endif%} IPv{{afi}} Address</h1>
+<div id="content-main">
+    <form method="POST" action="" >{% csrf_token %}
+        <div>
+            {% include "includes/noc_fieldset.html" %}
+            <div class="submit-row" >
+                <input type="submit" value="Save" class="default" name="_save" />
+                {% if address %}
+                    <p class="deletelink-box"><a href="{% url ip:ipam:delete_address address.vrf.id address.afi address.address %}" onclick="return confirm('Delete address {{address.address}}?\nThis operation cannot be undone!');" class="deletelink">Delete</a></p>
+                {% endif %}
+                <input type="submit" value="Save and add another" name="_addanother"  />
+                <input type="submit" value="Save and continue editing" name="_continue" />
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

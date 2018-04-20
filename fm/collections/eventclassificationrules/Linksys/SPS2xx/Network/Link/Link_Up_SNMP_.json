@@ -1,0 +1,25 @@
+{
+    "name": "Linksys | SPS2xx | Network | Link | Link Up (SNMP)",
+    "uuid": "955060e3-52e4-4f89-9071-e76baa88f207",
+    "description": "IF-MIB::linkUp interface has turned into UP state",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^IF-MIB::linkUp$"
+        }
+    ]
+}

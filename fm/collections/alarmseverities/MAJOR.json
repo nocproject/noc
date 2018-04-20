@@ -1,0 +1,7 @@
+{
+    "name": "MAJOR",
+    "uuid": "33c33881-5a54-4b6a-b7be-f0f124c3a348",
+    "description": "Significant services are affected. Overal impact on network operation is serious",
+    "severity": 4000,
+    "style__name": "FM MAJOR"
+}

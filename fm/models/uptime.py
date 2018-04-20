@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Uptime report
 # ---------------------------------------------------------------------
@@ -13,6 +14,20 @@ import logging
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField, FloatField
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Uptime report
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+import logging
+## NOC modules
+from noc.lib.nosql import (Document, IntField, DateTimeField, FloatField)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from reboot import Reboot
 from noc.lib.dateutils import total_seconds
 
@@ -58,10 +73,16 @@ class Uptime(Document):
         Register uptime
         :param managed_object: Managed object reference
         :param uptime: Registered uptime in seconds
+<<<<<<< HEAD
         :returns: False, if object has been rebooted, True otherwise
         """
         if not uptime:
             return True
+=======
+        """
+        if not uptime:
+            return
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         oid = managed_object.id
         now = datetime.datetime.now()
         delta = datetime.timedelta(seconds=uptime)
@@ -73,9 +94,15 @@ class Uptime(Document):
             "object": oid,
             "stop": None
         })
+<<<<<<< HEAD
         is_rebooted = False
         if d:
             # Check for reboot
+=======
+        if d:
+            # Check for reboot
+            is_rebooted = False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if d["last_value"] > uptime:
                 # Check for counter wrapping
                 # Get wrapped delta
@@ -140,4 +167,7 @@ class Uptime(Document):
                 "last": now,
                 "last_value": uptime
             })
+<<<<<<< HEAD
         return not is_rebooted
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

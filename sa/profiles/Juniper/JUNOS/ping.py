@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Juniper.JUNOS..ping
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "Juniper.JUNOS.ping"
     interface = IPing
+=======
+##----------------------------------------------------------------------
+## Juniper.JUNOS..ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IPing
+import re
+
+
+class Script(NOCScript):
+    name = "Juniper.JUNOS.ping"
+    implements = [IPing]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_result = re.compile(
         r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
         r"received, (\d+\.)?\d+% packet loss\nround-trip min/avg/max/stddev "
@@ -25,9 +44,14 @@ class Script(BaseScript):
         r"received, (\d+\.)?\d+% packet loss\n",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
+<<<<<<< HEAD
     def execute(
         self, address, count=None, source_address=None, size=None, df=None, vrf=None
     ):
+=======
+    def execute(self, address, count=None, source_address=None, size=None,
+    df=None, vrf=None):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         cmd = "ping no-resolve"
         if count:
             cmd += " count %d" % int(count)

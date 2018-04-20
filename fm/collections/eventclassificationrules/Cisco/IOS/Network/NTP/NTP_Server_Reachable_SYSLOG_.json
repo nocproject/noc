@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | NTP | NTP Server Reachable (SYSLOG)",
+    "uuid": "7cd0e4c9-7b3c-4742-97d6-8c2b73799892",
+    "description": "%NTP-6-PEERREACH: Peer 192.168.100.253 is reachable",
+    "event_class__name": "Network | NTP | NTP Server Reachable",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%NTP-6-PEERREACH: Peer (?P<server_address>\\S+) is reachable$"
+        }
+    ]
+}

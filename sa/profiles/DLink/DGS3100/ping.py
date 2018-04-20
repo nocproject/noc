@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DGS3100.ping
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "DLink.DGS3100.ping"
     interface = IPing
+=======
+##----------------------------------------------------------------------
+## DLink.DGS3100.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IPing
+import re
+
+
+class Script(NOCScript):
+    name = "DLink.DGS3100.ping"
+    implements = [IPing]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_result = re.compile(r"^\s*Packets: Sent =\s*(?P<count>\d+), Received =\s*(?P<success>\d+), Lost =\s*\d+", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_dgs3100 = re.compile(r"^\s*(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\nround-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_dgs3100_nr = re.compile(r"^\s*(?P<count>\d+) packets transmitted, 0 packets received, 100% packet loss", re.MULTILINE | re.DOTALL | re.IGNORECASE)

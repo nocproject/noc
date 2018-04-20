@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Copyright (c) 2007-2015, The NOC Project (http://nocproject.org)
+=======
+Copyright (c) 2007-2012, The NOC Project (http://nocproject.org)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 Все права сохранены
 
 Разрешается повторное распространение и использование как в виде исходного кода,

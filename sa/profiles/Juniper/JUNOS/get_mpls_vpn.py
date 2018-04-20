@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_mpls_vpn
 # ---------------------------------------------------------------------
@@ -26,6 +27,33 @@ class Script(BaseScript):
         r"  Interfaces:\n"
         r"(?P<ifaces>(?:    \S+\n)*)"
         r"  Route-distinguisher: (?P<rd>\S+)",
+=======
+##----------------------------------------------------------------------
+## Juniper.JUNOS.get_mpls_vpn
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMPLSVPN
+
+
+class Script(NOCScript):
+    name = "Juniper.JUNOS.get_mpls_vpn"
+    implements = [IGetMPLSVPN]
+
+    rx_ri = re.compile(r"(?P<name>\S+?):\n"
+                       r"(?:  Description: (?P<description>.+?)\n)?"
+                       r"  Router ID: \S+\n"
+                       r"  Type: (?P<type>\S+)\s+\S*\s+State:\s+(?P<status>Active|Inactive)\s*\n"
+                       r"  Interfaces:\n"
+                       r"(?P<ifaces>(?:    \S+\n)*)"
+                       r"  Route-distinguisher: (?P<rd>\S+)",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE | re.IGNORECASE
     )
     type_map = {
@@ -33,6 +61,7 @@ class Script(BaseScript):
         "vpls": "VPLS",
         "l2vpn": "VLL"
     }
+<<<<<<< HEAD
 
     def execute(self, **kwargs):
         c = self.cli(
@@ -42,11 +71,15 @@ class Script(BaseScript):
         if "show route instance" not in c:
             return []
 
+=======
+    def execute(self, **kwargs):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         vpns = []
         v = self.cli("show route instance detail")
         for match in self.rx_ri.finditer(v):
             name = match.group("name")
             rt = match.group("type").lower()
+<<<<<<< HEAD
             if (
                 name == "master" or name.startswith("__") or
                 rt not in self.type_map
@@ -58,6 +91,15 @@ class Script(BaseScript):
             interfaces = [
                 x for x in interfaces if x and not x.startswith("lsi.")
             ]
+=======
+            if (name == "master" or name.startswith("__") or
+                rt not in self.type_map):
+                continue
+            interfaces = [x.strip()
+                          for x in match.group("ifaces").splitlines()]
+            interfaces = [x for x in interfaces
+                          if x and not x.startswith("lsi.")]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             vpn = {
                 "type": self.type_map[rt],
                 "status": match.group("status").lower() == "active",

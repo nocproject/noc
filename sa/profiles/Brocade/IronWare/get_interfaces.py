@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.IronWare.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2010 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Brocade.IronWare.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 # Python modules
 import re
 import string
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
@@ -19,6 +29,16 @@ from noc.core.ip import IPv4
 class Script(BaseScript):
     name = "Brocade.IronWare.get_interfaces"
     interface = IGetInterfaces
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+
+
+class Script(NOCScript):
+    name = "Brocade.IronWare.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)",
@@ -214,7 +234,11 @@ class Script(BaseScript):
                     ipa=ipa.strip()
                     if len(ipa)>1:
                         i['subinterfaces'][0].update({"enabled_afi":["IPv4"]})
+<<<<<<< HEAD
                         self.logger.debug("ip.split len:" + str(len(ipa.split())))
+=======
+                        self.debug("ip.split len:" + str(len(ipa.split())))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         if len(ipa.split())>3:
                             ip_address="%s/%s" % (ipa.split()[2],IPv4.netmask_to_len(ipa.split()[3]))
                         else:

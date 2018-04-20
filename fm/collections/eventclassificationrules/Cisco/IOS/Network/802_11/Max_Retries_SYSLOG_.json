@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | 802.11 | Max Retries (SYSLOG)",
+    "uuid": "24d30267-3b62-4105-9065-fe5258efdbd7",
+    "description": "24459: Aug 11 11:30:13.055 UTC: %DOT11-4-MAXRETRIES: Packet to client 1093.e94c.1255 reached max retries, removing the client",
+    "event_class__name": "Network | 802.11 | Max Retries",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DOT11-4-MAXRETRIES: Packet to client (?P<mac>\\S+) reached max retries, removing the client$"
+        }
+    ]
+}

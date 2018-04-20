@@ -1,0 +1,13 @@
+//---------------------------------------------------------------------
+// NOC.fm.ignoreeventrule.Lookup
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2012 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.fm.ignoreeventrule.LookupField");
+
+Ext.define("NOC.fm.ignoreeventrule.LookupField", {
+    extend: "NOC.core.LookupField",
+    alias: "widget.fm.ignoreeventrule.LookupField",
+    requires: ["NOC.fm.ignoreeventrule.Lookup"]
+});

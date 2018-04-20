@@ -13,12 +13,21 @@ rx_ver = re.compile(
     r"ProductCode (?P<version>\S+) build.*Hardware type: (?P<platform>\S+)",
     re.MULTILINE | re.DOTALL)
 
+<<<<<<< HEAD
 
 class Script(BaseScript):
     name = "Protei.MediaGateway.get_version"
     cache = True
     interface = IGetVersion
 
+=======
+
+class Script(noc.sa.script.Script):
+    name = "Protei.MediaGateway.get_version"
+    cache = True
+    implements = [IGetVersion]
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute(self):
         v = self.cli("_version full")
         match = rx_ver.search(v)

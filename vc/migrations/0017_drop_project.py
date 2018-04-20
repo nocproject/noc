@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Drop VC .project field
 # ---------------------------------------------------------------------
@@ -8,6 +9,19 @@
 
 # Third-party modules
 from south.db import db
+=======
+##----------------------------------------------------------------------
+## Drop VC .project field
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+from south.db import db
+## NOC modules
+from noc.ip.models import *
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Migration:

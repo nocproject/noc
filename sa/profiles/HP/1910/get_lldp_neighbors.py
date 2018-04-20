@@ -1,5 +1,6 @@
 
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -12,13 +13,33 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "HP.1910.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+class Script(NOCScript):
+    name = "HP.1910.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(
         r"^\s*LLDP neighbor-information of port \d+\[(?P<interface>\S+)\]:.\s+Neighbor index\s+:\s+\d+.\s+Update time\s+:\s+\d+ days,\d+ hours,\d+ minutes,\d+ seconds.\s+Chassis type\s+:\s+(?P<chassis_type>(\S+ \S+ \S+|\S+ \S+|\S+)).\s+Chassis ID\s+:\s+(?P<chassis_id>\S+).\s+Port ID type\s+:\s+(?P<port_type>(\S+ \S+ \S+|\S+ \S+|\S+)).\s+Port ID\s+:\s+(?P<port_id>\S+).\s+Port description\s+:\s+(\S+ \S+ \S+|\S+ \S+|\S+).\s+System name\s+:\s+(?P<name>\S+)",
@@ -33,7 +54,11 @@ class Script(BaseScript):
         r = []
         # Try SNMP first
         """
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
 
 # lldpRemLocalPortNum
@@ -94,14 +119,21 @@ class Script(BaseScript):
 
                 # Get remote chassis id subtype
                 chassis_type = match.group("chassis_type")
+<<<<<<< HEAD
+=======
+                print chassis_type
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if chassis_type == 'MAC address':
                     remote_chassis_id_subtype = 4
                 # Get remote port subtype
                 port_type = match.group("port_type")
                 if port_type == 'Interface name':
                     remote_port_subtype = 3
+<<<<<<< HEAD
                 if port_type == 'Locally assigned':
                     remote_port_subtype = 7
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
                 # Build neighbor data
                 # Get capability
@@ -114,7 +146,11 @@ class Script(BaseScript):
                     if c:
                         cap |= {
                             "O": 1, "Repeater": 2, "Bridge": 4,
+<<<<<<< HEAD
                             "W": 8, "Router": 16, "T": 32, "Telephone": 32,
+=======
+                            "W": 8, "Router": 16, "T": 32,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                             "C": 64, "S": 128, "D": 256,
                             "H": 512, "TP": 1024,
                         }[c]

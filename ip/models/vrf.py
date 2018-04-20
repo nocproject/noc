@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VRF model
 # ---------------------------------------------------------------------
@@ -44,11 +45,40 @@ id_lock = Lock()
     ("sa.ManagedObjectSelector", "filter_vrf"),
     ("vc.VCBindFilter", "vrf"),
 ])
+=======
+##----------------------------------------------------------------------
+## VRF model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import hashlib
+import struct
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+## NOC modules
+from noc.main.models import Style, ResourceState
+from noc.project.models.project import Project
+from noc.peer.models.asn import AS
+from vrfgroup import VRFGroup
+from noc.lib.validators import check_rd, is_rd
+from noc.lib.fields import TagsField
+from noc.lib.app import site
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VRF(models.Model):
     """
     VRF
     """
+<<<<<<< HEAD
     class Meta(object):
+=======
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = _("VRF")
         verbose_name_plural = _("VRFs")
         db_table = "ip_vrf"
@@ -60,7 +90,10 @@ class VRF(models.Model):
         unique=True,
         max_length=64,
         help_text=_("Unique VRF Name"))
+<<<<<<< HEAD
     profile = DocumentReferenceField(VPNProfile)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     vrf_group = models.ForeignKey(
         VRFGroup, verbose_name=_("VRF Group"))
     rd = models.CharField(
@@ -88,6 +121,14 @@ class VRF(models.Model):
         null=True,
         help_text=_("Ticket #"))
     tags = TagsField(_("Tags"), null=True, blank=True)
+<<<<<<< HEAD
+=======
+    style = models.ForeignKey(
+        Style,
+        verbose_name=_("Style"),
+        blank=True,
+        null=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     state = models.ForeignKey(
         ResourceState,
         verbose_name=_("State"),
@@ -98,16 +139,22 @@ class VRF(models.Model):
         blank=True,
         help_text=_("VRF temporary allocated till the date"))
 
+<<<<<<< HEAD
     GLOBAL_RD = "0:0"
     IPv4_ROOT = "0.0.0.0/0"
     IPv6_ROOT = "::/0"
 
     def __unicode__(self):
         if self.rd == self.GLOBAL_RD:
+=======
+    def __unicode__(self):
+        if self.rd == "0:0":
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return u"global"
         else:
             return self.name
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _rd_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
@@ -133,6 +180,8 @@ class VRF(models.Model):
         else:
             return None
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_absolute_url(self):
         return site.reverse("ip:vrf:change", self.id)
 
@@ -141,7 +190,11 @@ class VRF(models.Model):
         """
         Returns VRF 0:0
         """
+<<<<<<< HEAD
         return VRF.objects.get(rd=cls.GLOBAL_RD)
+=======
+        return VRF.objects.get(rd="0:0")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def generate_rd(cls, name):
@@ -158,6 +211,7 @@ class VRF(models.Model):
         # Generate unique rd, if empty
         if not self.rd:
             self.rd = self.generate_rd(self.name)
+<<<<<<< HEAD
         if self.initial_data["id"]:
             # Delete empty ipv4 root if AFI changed
             if self.initial_data.get("afi_ipv4") != self.afi_ipv4 and not self.afi_ipv4:
@@ -181,26 +235,42 @@ class VRF(models.Model):
                     else:
                         # Cannot change until emptied
                         self.afi_ipv6 = True
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Save VRF
         super(VRF, self).save(**kwargs)
         if self.afi_ipv4:
             # Create IPv4 root, if not exists
             Prefix.objects.get_or_create(
+<<<<<<< HEAD
                 vrf=self, afi="4", prefix=self.IPv4_ROOT,
                 defaults={
                     "asn": AS.default_as(),
                     "description": "IPv4 Root",
                     "profile": self.profile.default_prefix_profile
+=======
+                vrf=self, afi="4", prefix="0.0.0.0/0",
+                defaults={
+                    "asn": AS.default_as(),
+                    "description": "IPv4 Root"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 })
         if self.afi_ipv6:
             # Create IPv6 root, if not exists
             Prefix.objects.get_or_create(
+<<<<<<< HEAD
                 vrf=self, afi="6", prefix=self.IPv6_ROOT,
                 defaults={
                     "asn": AS.default_as(),
                     "description": "IPv6 Root",
                     "profile": self.profile.default_prefix_profile
                 })
+=======
+                vrf=self, afi="6", prefix="::/0",
+                defaults={
+                    "asn": AS.default_as(),
+                    "description": "IPv6 Root"})
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_index(self):
         """
@@ -225,5 +295,10 @@ class VRF(models.Model):
         return ("ip.vrf", "history", {"args": [self.id]})
 
 
+<<<<<<< HEAD
 # Avoid circular references
 from .prefix import Prefix
+=======
+## Avoid circular references
+from prefix import Prefix
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

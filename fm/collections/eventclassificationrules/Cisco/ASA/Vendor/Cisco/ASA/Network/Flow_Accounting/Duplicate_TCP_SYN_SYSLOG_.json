@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Duplicate TCP SYN (SYSLOG)",
+    "uuid": "c23ce6c0-8d04-4e00-976a-4a7d04faaefb",
+    "description": "Aug 09 2011 03:49:09: %PIX-4-419002: Duplicate TCP SYN from inside:192.168.11.103/53182 to inside:10.15.106.49/3283 with different initial sequence number",
+    "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Duplicate TCP SYN",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-4-419002: Duplicate TCP SYN from (?P<src_interface>\\S+):(?P<src_ip>\\S+)/(?P<src_port>\\d+) to (?P<dst_interface>\\S+):(?P<dst_ip>\\S+)/(?P<dst_port>\\d+) with different initial sequence number$"
+        }
+    ]
+}

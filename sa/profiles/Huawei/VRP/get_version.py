@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
@@ -69,18 +70,54 @@ class Script(BaseScript):
             self.rx_ver_snmp5
         ]
         if self.has_snmp():
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetversion import IGetVersion
+
+
+class Script(NOCScript):
+    name = "Huawei.VRP.get_version"
+    cache = True
+    implements = [IGetVersion]
+
+    rx_ver = re.compile(r"^VRP.+Software, Version (?P<version>[^ ,]+),? .*?\n\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+)?\S+)[^\n]+uptime", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver_snmp = re.compile(r"Versatile Routing Platform Software.*?Version (?P<version>[^ ,]+),? .*?\n\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+)?[^ \t\n\r\f\v\-]+)[^\n]+", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver_snmp2 = re.compile(r"(?P<platform>(?:\S+\s+)?S\d+(?:[A-Z]+-[A-Z]+)?(?:\d+\S+)?)\s+Huawei\sVersatile\sRouting\sPlatform\sSoftware.*Version\s(?P<version>\d+\.\d+)\s\(S\d+\s(?P<image>\S+)+\).*", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver_snmp3 = re.compile(r"^\s*VRP.+Software, Version (?P<version>\S+) \((?P<platform>S\S+|CX\d+) (?P<image>[^)]+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_ver_snmp4 = re.compile(
+        r"Huawei Versatile Routing Platform Software.*?"
+        r"Version (?P<version>\S+) .*?"
+        r"(?P<platform>MultiserviceEngine \S+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+
+    def execute(self):
+        v = ""
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Trying SNMP
             try:
                 # SNMPv2-MIB::sysDescr.0
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
             except self.snmp.TimeOutError:
                 pass
+<<<<<<< HEAD
         if v in self.BAD_PLATFORM:
+=======
+        if v == "":
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Trying CLI
             try:
                 v = self.cli("display version", cached=True)
             except self.CLISyntaxError:
                 raise self.NotSupportedError()
+<<<<<<< HEAD
         if "NetEngine" in v or "MultiserviceEngine" in v:
             # Use specified regex for this platform
             match_re_list.insert(0, self.rx_ver_snmp4_ne_me)
@@ -89,15 +126,27 @@ class Script(BaseScript):
         platform = match.group("platform")
         # Convert NetEngine to NE
         if platform.lower().startswith("netengine"):
+=======
+        rx = self.find_re([self.rx_ver, self.rx_ver_snmp,
+                           self.rx_ver_snmp2, self.rx_ver_snmp3,
+                           self.rx_ver_snmp4], v)
+        match = rx.search(v)
+        platform = match.group("platform")
+        # Convert NetEngine to NE
+        if platform.lower().startswith("netengine "):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             n, p = platform.split(" ", 1)
             platform = "NE%s" % p.strip().upper()
         elif platform.lower().startswith("multiserviceengine"):
             n, p = platform.split(" ", 1)
             platform = "ME%s" % p.strip().upper()
+<<<<<<< HEAD
         # Found in AR1220 and AR1220E
         elif platform.startswith("Huawei "):
             n, p = platform.split(" ", 1)
             platform = p.strip()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r = {
             "vendor": "Huawei",
             "platform": platform,

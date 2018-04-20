@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Huawei.VRP.get_mpls_vpn
 # ---------------------------------------------------------------------
@@ -16,11 +17,31 @@ from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 class Script(BaseScript):
     name = "Huawei.VRP.get_mpls_vpn"
     interface = IGetMPLSVPN
+=======
+##----------------------------------------------------------------------
+## Huawei.VRP.get_mpls_vpn
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMPLSVPN
+
+
+class Script(NOCScript):
+    name = "Huawei.VRP.get_mpls_vpn"
+    implements = [IGetMPLSVPN]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(r"^\s+VPN\-Instance Name and ID :\s+(?P<vrf>\S+?),", re.IGNORECASE)
     rx_rd = re.compile(r"^\s+Route Distinguisher :\s+(?P<rd>\S+:\S+|<not set>)\s*", re.IGNORECASE)
     rx_int = re.compile(r"^(?:\s{,4}Interfaces :\s+|\s{6,})(?P<iface>.+?),?\s*$", re.IGNORECASE)
     rx_desc = re.compile(r"^\s+Description :\s+(?P<desc>.*)\s*", re.IGNORECASE)
+<<<<<<< HEAD
     rx_vpn = re.compile(
         r"^VPN\-Instance :\s+(?P<vrf>\S+)\s*\n"
         r"^\s+(?P<description>.*)\n"
@@ -35,6 +56,12 @@ class Script(BaseScript):
             v = self.cli("display ip vpn-instance verbose")
         except self.CLISyntaxError:
             return []
+=======
+
+    def execute(self, **kwargs):
+        vpns = []
+        v = self.cli("display ip vpn-instance verbose")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for l in v.splitlines():
             match = self.rx_line.search(l)
             if match:
@@ -61,6 +88,7 @@ class Script(BaseScript):
                 if match_desc:
                     vpns[-1]["description"] = match_desc.group("desc").strip()
                     continue
+<<<<<<< HEAD
         if vpns:
             return vpns
         # Second attempt
@@ -75,4 +103,6 @@ class Script(BaseScript):
             if description != "No description":
                 vpn["description"] = description
             vpns += [vpn]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return vpns

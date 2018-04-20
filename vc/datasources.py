@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VC module datasources
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # NOC modules
 from noc.lib.datasource import DataSource
 from noc.vc.models.vc import VC
+=======
+##----------------------------------------------------------------------
+## VC module datasources
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.datasource import DataSource
+from noc.vc.models import VCDomain, VC
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class VCDS(DataSource):

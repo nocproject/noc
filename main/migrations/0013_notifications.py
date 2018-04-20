@@ -1,23 +1,40 @@
 
 from south.db import db
+<<<<<<< HEAD
 from django.db import models
 
 class Migration:
 
     def forwards(self):
 
+=======
+from noc.main.models import *
+
+class Migration:
+    
+    def forwards(self):
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model 'NotificationGroup'
         db.create_table('main_notificationgroup', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('name', models.CharField("Name",max_length=64,unique=True)),
             ('description', models.TextField("Description",null=True,blank=True))
         ))
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Mock Models
         NotificationGroup = db.mock_model(model_name='NotificationGroup', db_table='main_notificationgroup', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         TimePattern = db.mock_model(model_name='TimePattern', db_table='main_timepattern', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model 'NotificationGroupUser'
         db.create_table('main_notificationgroupuser', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -26,12 +43,21 @@ class Migration:
             ('user', models.ForeignKey(User,verbose_name=User))
         ))
         db.create_index('main_notificationgroupuser', ['notification_group_id','time_pattern_id','user_id'], unique=True, db_tablespace='')
+<<<<<<< HEAD
 
 
         # Mock Models
         NotificationGroup = db.mock_model(model_name='NotificationGroup', db_table='main_notificationgroup', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         TimePattern = db.mock_model(model_name='TimePattern', db_table='main_timepattern', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
 
+=======
+        
+        
+        # Mock Models
+        NotificationGroup = db.mock_model(model_name='NotificationGroup', db_table='main_notificationgroup', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        TimePattern = db.mock_model(model_name='TimePattern', db_table='main_timepattern', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model 'NotificationGroupOther'
         db.create_table('main_notificationgroupother', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -41,7 +67,11 @@ class Migration:
             ('params', models.CharField("Params",max_length=256))
         ))
         db.create_index('main_notificationgroupother', ['notification_group_id','time_pattern_id','notification_method','params'], unique=True, db_tablespace='')
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model 'Notification'
         db.create_table('main_notification', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -53,12 +83,22 @@ class Migration:
             ('next_try', models.DateTimeField("Next Try",null=True,blank=True)),
             ('actual_till', models.DateTimeField("Actual Till",null=True,blank=True))
         ))
+<<<<<<< HEAD
 
         db.send_create_signal('main', ['NotificationGroup','NotificationGroupUser','NotificationGroupOther','Notification'])
 
+=======
+        
+        db.send_create_signal('main', ['NotificationGroup','NotificationGroupUser','NotificationGroupOther','Notification'])
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         db.delete_table('main_notification')
         db.delete_table('main_notificationgroupother')
         db.delete_table('main_notificationgroupuser')
         db.delete_table('main_notificationgroup')
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

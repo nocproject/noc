@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # OSM Nominatim geocoder
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ import urllib
 # Third-party modules
 import requests
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## OSM Nominatim geocoder
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import urllib
+## Third-party modules
+import requests
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import Geocoder
 
 

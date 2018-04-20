@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Prefix Table models
@@ -19,6 +20,24 @@ from noc.core.model.decorator import on_delete_check
     # ("inv.InterfaceClassificationMatch", "prefix_table"),
     ("sa.ManagedObjectSelector", "filter_prefix")
 ])
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Prefix Table models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django Modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+## NOC Modules
+from noc.lib.ip import IP
+from noc.lib.fields import CIDRField
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class PrefixTable(models.Model):
     class Meta:
         verbose_name = _("Prefix Table")

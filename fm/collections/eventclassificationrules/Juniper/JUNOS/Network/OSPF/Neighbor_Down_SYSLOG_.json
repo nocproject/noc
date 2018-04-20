@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | OSPF | Neighbor Down (SYSLOG)",
+    "uuid": "b778afe1-adc6-44af-aa9e-84b2db416028",
+    "description": "Jul 21 15:21:20 rpd[968]: RPD_OSPF_NBRDOWN: OSPF neighbor 10.99.2.2 (realm ospf-v2 em1.0 area 0.0.0.0) state changed from Full to Down due to InActiveTimer (event reason: neighbor was inactive and declared dead)",
+    "event_class__name": "Network | OSPF | Neighbor Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "RPD_OSPF_NBRDOWN: OSPF neighbor (?P<neighbor>\\S+) \\(realm \\S+ (?P<interface>\\S+) area (?P<area>\\S+)\\) state changed from (?P<from_state>\\S+) to (?P<to_state>\\S+) due to .+ \\(event reason: (?P<reason>.*)\\)$"
+        }
+    ]
+}

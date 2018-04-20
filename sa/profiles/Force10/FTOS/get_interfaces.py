@@ -1,19 +1,36 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Force10.FTOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Force10.FTOS.get_interfaces
 
@@ -27,7 +44,11 @@ class Script(BaseScript):
     @todo: Q-in-Q
     """
     name = "Force10.FTOS.get_interfaces"
+<<<<<<< HEAD
     interface = IGetInterfaces
+=======
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     types = {
         "gi": "physical",

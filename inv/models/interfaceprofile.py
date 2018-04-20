@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Interface Profile models
@@ -84,14 +85,34 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     ("inv.SubInterface", "profile")
     # ("sa.ServiceProfile", "")
 ])
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Interface Profile models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
+from noc.main.models import Style
+from noc.lib.solutions import get_probe_config
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class InterfaceProfile(Document):
     """
     Interface SLA profile and settings
     """
     meta = {
         "collection": "noc.interface_profiles",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = StringField(unique=True)
     description = StringField()
@@ -107,6 +128,7 @@ class InterfaceProfile(Document):
         default="A"
     )
     # Discovery settings
+<<<<<<< HEAD
     discovery_policy = StringField(
         choices=[
             ("I", "Ignore"),
@@ -156,11 +178,19 @@ class InterfaceProfile(Document):
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     DEFAULT_PROFILE_NAME = "default"
+=======
+    mac_discovery = BooleanField(default=False)
+    # check_link alarm job interval settings
+    # Either None or T0,I0,T1,I1,...,Tn-1,In-1,,In
+    # See MultiIntervalJob settings for details
+    check_link_interval = StringField(default=",60")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.name
 
     @classmethod
+<<<<<<< HEAD
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return InterfaceProfile.objects.filter(id=id).first()
@@ -179,3 +209,19 @@ class InterfaceProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_default_cache"), lock=lambda _: id_lock)
     def get_default_profile(cls):
         return InterfaceProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
+=======
+    def get_default_profile(cls):
+        try:
+            return cls._default_profile
+        except AttributeError:
+            cls._default_profile = cls.objects.filter(
+                name="default").first()
+            return cls._default_profile
+
+    def get_probe_config(self, config):
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        raise ValueError("Invalid config '%s'" % config)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

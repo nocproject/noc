@@ -1,0 +1,40 @@
+{
+    "name": "Juniper | Transceiver | 10G | XFP-10G-SR",
+    "$collection": "inv.objectmodels",
+    "uuid": "8b4174d5-50ee-446a-b29e-6a375aac557b",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper XFP SR transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "XFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASESR"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASESR"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["XFP-10G-SR"],
+            "part_no": ["740-014289"]
+        }
+    }
+}

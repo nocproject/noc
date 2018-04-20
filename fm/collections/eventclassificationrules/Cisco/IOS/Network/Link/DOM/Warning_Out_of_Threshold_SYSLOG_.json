@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Link | DOM | Warning: Out of Threshold (SYSLOG)",
+    "uuid": "3b9f668e-53ca-4aff-9dcd-5b929e9b3cba",
+    "description": "%SFF8472-5-THRESHOLD_VIOLATION: Te1/8: Tx power high warning; Operating value:   0.5 dBm, Threshold value:   0.4 dBm.",
+    "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%.+-THRESHOLD_VIOLATION: (?P<interface>\\S+): (?P<sensor>.+) (?P<threshold>high|low) warning; Operating value: (?P<ovalue>.+), Threshold value: (?P<tvalue>.+)\\."
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Action
 # ----------------------------------------------------------------------
@@ -12,10 +13,26 @@ import re
 import threading
 import operator
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## Action
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+import time
+## Django modules
+from django.template import Template, Context
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField, ListField,
                                 EmbeddedDocumentField)
+<<<<<<< HEAD
 import six
 import jinja2
 import cachetools
@@ -25,6 +42,11 @@ from noc.lib.prettyjson import to_json
 from noc.core.ip import IP
 
 id_lock = threading.Lock()
+=======
+from noc.lib.text import quote_safe_path
+from noc.lib.prettyjson import to_json
+from noc.lib.ip import IP
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ActionParameter(EmbeddedDocument):
@@ -62,8 +84,11 @@ class ActionParameter(EmbeddedDocument):
 class Action(Document):
     meta = {
         "collection": "noc.actions",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "json_collection": "sa.actions"
     }
     uuid = UUIDField(unique=True)
@@ -76,6 +101,7 @@ class Action(Document):
     #
     params = ListField(EmbeddedDocumentField(ActionParameter))
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     
     def __unicode__(self):
@@ -87,6 +113,11 @@ class Action(Document):
     def get_by_id(cls, id):
         return Action.objects.filter(id=id).first()
 
+=======
+    def __unicode__(self):
+        return self.name
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_json_path(self):
         return "%s.json" % quote_safe_path(self.name)
 
@@ -118,15 +149,22 @@ class Action(Document):
         Returns ActionCommands instance or None
         :param obj: Managed Object
         """
+<<<<<<< HEAD
         from .actioncommands import ActionCommands
         for ac in ActionCommands.objects.filter(
                 action=self, profile=obj.profile.id
+=======
+        version = obj.version
+        for ac in ActionCommands.objects.filter(
+                action=self, profile=obj.profile_name
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ).order_by("preference"):
             if not ac.match:
                 return ac
             for m in ac.match:
                 if (
                     not m.platform_re or (
+<<<<<<< HEAD
                         obj.platform and
                         re.search(m.platform_re, obj.platform.name)
                     )
@@ -134,10 +172,20 @@ class Action(Document):
                     not m.version_re or (
                         obj.version and
                         re.search(m.version_re, obj.version.version))
+=======
+                        version.platform and
+                        re.search(m.platform_re, version.platform)
+                    )
+                ) and (
+                    not m.version_re or (
+                        version.version and
+                        re.search(m.version_re, version.version))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 ):
                     return ac
         return None
 
+<<<<<<< HEAD
     def expand(self, obj, **kwargs):
         ac = self.get_commands(obj)
         if not ac:
@@ -148,10 +196,13 @@ class Action(Document):
         template = env.get_template("tpl")
         return template.render(**self.clean_args(obj, **kwargs))
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute(self, obj, **kwargs):
         """
         Execute commands
         """
+<<<<<<< HEAD
         commands = self.expand(obj, **kwargs)
         if commands is None:
             return None
@@ -160,6 +211,31 @@ class Action(Document):
             return obj.scripts.configure(commands=commands)
         else:
             return obj.scripts.commands(commands=commands)
+=======
+        ac = self.get_commands(obj)
+        if not ac:
+            return None
+        ctx = Context(self.clean_args(obj, **kwargs))
+        commands = Template(ac.commands).render(ctx)
+        script = "configure" if ac.config_mode else "commands"
+        t = MapTask.create_task(obj, script, {
+            "commands": commands.splitlines()
+        }, timeout=ac.timeout)
+        while True:
+            t = MapTask.objects.get(id=t.id)
+            if t.status == "C":
+                # Success
+                t.delete()
+                result = t.script_result
+                if isinstance(result, list):
+                    result = "\n".join(result)
+                return result
+            elif t.status == "F":
+                # Failure
+                t.delete()
+                return t.script_result
+            time.sleep(1)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def clean_args(self, obj, **kwargs):
         args = {}
@@ -175,7 +251,11 @@ class Action(Document):
                 # Integer type
                 try:
                     v = int(v)
+<<<<<<< HEAD
                 except ValueError:
+=======
+                except ValueError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     raise ValueError(
                         "Invalid integer in parameter '%s': '%s'" % (
                             p.name, v)
@@ -184,7 +264,11 @@ class Action(Document):
                 # Float type
                 try:
                     v = float(v)
+<<<<<<< HEAD
                 except ValueError:
+=======
+                except ValueError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     raise ValueError(
                         "Invalid float in parameter '%s': '%s'" % (
                             p.name, v)
@@ -192,8 +276,13 @@ class Action(Document):
             elif p.type == "interface":
                 # Interface
                 try:
+<<<<<<< HEAD
                     v = obj.get_profile().convert_interface_name(v)
                 except Exception:
+=======
+                    v = obj.profile.convert_interface_name(v)
+                except Exception, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     raise ValueError(
                         "Invalid interface name in parameter '%s': '%s'" % (
                             p.name, v)
@@ -202,21 +291,33 @@ class Action(Document):
                 # IP address
                 try:
                     v = IP.prefix(v)
+<<<<<<< HEAD
                 except ValueError:
+=======
+                except ValueError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     raise ValueError(
                         "Invalid ip in parameter '%s': '%s'" % (p.name, v)
                     )
             elif p.type == "vrf":
                 if isinstance(v, VRF):
                     pass
+<<<<<<< HEAD
                 elif isinstance(v, six.integer_types):
+=======
+                elif isinstance(v, (int, long)):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     try:
                         v = VRF.objects.get(id=v)
                     except VRF.DoesNotExist:
                         raise ValueError(
                             "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
                         )
+<<<<<<< HEAD
                 elif isinstance(v, six.string_types):
+=======
+                elif isinstance(v, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     try:
                         v = VRF.objects.get(name=v)
                     except VRF.DoesNotExist:
@@ -231,5 +332,12 @@ class Action(Document):
         return args
 
 
+<<<<<<< HEAD
 #
 from noc.ip.models.vrf import VRF
+=======
+##
+from actioncommands import ActionCommands
+from maptask import MapTask
+from noc.ip.models.vrf import VRF
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

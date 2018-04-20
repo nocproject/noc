@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Clock | Clock Recovered #1 (SYSLOG)",
+    "uuid": "9f938a41-c1fb-46df-b8be-dd927023d815",
+    "description": "%SYS-2-REDUNDANTCLOCK_OK: Redundant clock recovered",
+    "event_class__name": "Chassis | Clock | Clock Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-REDUNDANTCLOCK_OK: (?P<name>Redundant clock) recovered$"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "name": "System | Process Crashed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "a4ecaee2-e7cb-4f80-928e-ccf92e374e85",
+    "is_unique": true,
+    "discriminator": ["name"],
+    "user_clearable": true,
+    "default_severity__name": "MINOR",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Process name"
+        },
+        {
+            "name": "pid",
+            "description": "Process PID"
+        },
+        {
+            "name": "status",
+            "description": "Exit status"
+        }
+    ],
+    "subject_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+    "body_template": "Process crashed: {{name}}{% if pid %}[{{pid}}]{% endif %}{% if status %}. Status={{status}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

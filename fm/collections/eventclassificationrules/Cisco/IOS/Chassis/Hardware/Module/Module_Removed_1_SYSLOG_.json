@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Removed #1 (SYSLOG)",
+    "uuid": "c36a9261-0125-4b97-bc1e-25f44cb6535e",
+    "description": "%OIR-SP-6-REMCARD: Card removed from slot 9, interfaces disabled",
+    "event_class__name": "Chassis | Hardware | Module | Module Removed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OIR-SP-6-REMCARD: Card removed from (?P<module>slot \\S+), interfaces disabled"
+        }
+    ]
+}

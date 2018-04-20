@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Audit | Command #1 (SYSLOG)",
+    "uuid": "bd1598fd-097f-44e3-94cc-82c5b9d2cc3b",
+    "description": "1079: Aug 22 17:08:11.347: %PARSER-5-CFGLOG_LOGGEDCMD: User:tech  logged command:!exec: enable",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PARSER-5-CFGLOG_LOGGEDCMD: User:(?P<user>.+?)\\s+logged command:(?P<command>.*)$"
+        }
+    ]
+}

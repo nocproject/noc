@@ -1,0 +1,25 @@
+{
+    "name": "EdgeCore | ES | Security | Authentication | Login Failed #2 (SNMP)",
+    "uuid": "f8b18d06-2ec2-4c97-b1bd-f36dd1394241",
+    "description": "ES3528MO-MIB::swAuthenticationFailure",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^ES3528MO-MIB::trapVar\\.11$",
+            "value_re": "^(?P<user>.+?)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^ES3528MO-MIB::swAuthenticationFailure$"
+        }
+    ]
+}

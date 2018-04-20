@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Basic config parser
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Basic config parser
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.facts.system import System
 from noc.cm.facts.interface import Interface
 from noc.cm.facts.subinterface import SubInterface
@@ -64,17 +75,29 @@ class BaseParser(object):
 
     def convert_interface_name(self, name):
         try:
+<<<<<<< HEAD
             return self.managed_object.get_profile().convert_interface_name(name)
         except Exception as e:
+=======
+            return self.managed_object.profile.convert_interface_name(name)
+        except:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return name
 
     def get_system_fact(self):
         if not self.system_fact:
             self.system_fact = System(
+<<<<<<< HEAD
                 profile=self.managed_object.profile.name,
                 vendor=self.managed_object.vendor.code if self.managed_object.vendor else None,
                 platform=self.managed_object.platform.name if self.managed_object.platform else None,
                 version=self.managed_object.version.version if self.managed_object.version else None,
+=======
+                profile=self.managed_object.profile_name,
+                vendor=self.managed_object.get_attr("vendor"),
+                platform=self.managed_object.get_attr("platform"),
+                version=self.managed_object.get_attr("version")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             )
             self.yield_fact(self.system_fact)
         return self.system_fact
@@ -203,4 +226,8 @@ class BaseParser(object):
     def get_static_route_fact(self, prefix):
         f = StaticRoute(prefix=prefix)
         self.yield_fact(f)
+<<<<<<< HEAD
         return f
+=======
+        return f
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

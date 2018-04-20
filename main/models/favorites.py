@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Favorites model
@@ -9,6 +10,19 @@
 # Python modules
 import logging
 # NOC modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Favorites model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
                            BooleanField, ListField)
 from noc.main.models import User
@@ -19,8 +33,12 @@ logger = logging.getLogger(__name__)
 class Favorites(Document):
     meta = {
         "collection": "noc.favorites",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["user", ("user", "app")]
     }
 
@@ -55,4 +73,8 @@ class Favorites(Document):
                         item, app_id, user.username)
             fi.remove(item)
             fv.favorites = fi
+<<<<<<< HEAD
             fv.save()
+=======
+            fv.save()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

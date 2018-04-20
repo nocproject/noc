@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Wipe managed object
 # ---------------------------------------------------------------------
@@ -11,13 +12,35 @@ import logging
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
+=======
+##----------------------------------------------------------------------
+## Wipe managed object
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## NOC modules
+from noc.lib.log import PrefixLoggerAdapter
+from noc.sa.models.managedobject import ManagedObjectAttribute
+from noc.sa.models.maptask import MapTask
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.link import Link
 from noc.inv.models.macdb import MACDB
+<<<<<<< HEAD
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.sa.models.objectcapabilities import ObjectCapabilities
+=======
+from noc.inv.models.pendinglinkcheck import PendingLinkCheck
+from noc.inv.models.discoveryid import DiscoveryID
+from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.fm.models.newevent import NewEvent
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
@@ -29,13 +52,19 @@ from noc.fm.models.uptime import Uptime
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.validationrule import ValidationRule
+<<<<<<< HEAD
 from noc.ip.models.address import Address
 from noc.core.scheduler.job import Job
+=======
+from noc.ip.models import Address
+from noc.lib.nosql import get_db
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
 
 def wipe(o):
+<<<<<<< HEAD
     if not hasattr(o, "id"):
         try:
             o = ManagedObject.objects.get(id=o)
@@ -53,6 +82,21 @@ def wipe(o):
         )
     # Wiping FM events
     log.debug("Wiping events")
+=======
+    if o.profile_name.startswith("NOC."):
+        return True
+    log = PrefixLoggerAdapter(logger, str(o.id))
+    # Delete active map tasks
+    log.debug("Wiping MAP tasks")
+    MapTask.objects.filter(managed_object=o).delete()
+    # Wiping discovery tasks
+    log.debug("Wiping discovery tasks")
+    db = get_db()
+    db.noc.schedules.inv.discovery.remove({"key": o.id})
+    # Wiping FM events
+    log.debug("Wiping events")
+    NewEvent.objects.filter(managed_object=o.id).delete()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     FailedEvent.objects.filter(managed_object=o.id).delete()
     ActiveEvent.objects.filter(managed_object=o.id).delete()
     ArchivedEvent.objects.filter(managed_object=o.id).delete()
@@ -71,6 +115,13 @@ def wipe(o):
     # Wiping MAC DB
     log.debug("Wiping MAC DB")
     MACDB._get_collection().remove({"managed_object": o.id})
+<<<<<<< HEAD
+=======
+    # Wiping pending link check
+    log.debug("Wiping pending link check")
+    PendingLinkCheck._get_collection().remove({"local_object": o.id})
+    PendingLinkCheck._get_collection().remove({"remote_object": o.id})
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     # Wiping discovery id cache
     log.debug("Wiping discovery id")
     DiscoveryID._get_collection().remove({"object": o.id})
@@ -124,3 +175,7 @@ def wipe(o):
     log.debug("Finally wiping object")
     o.delete()
     log.debug("Done")
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

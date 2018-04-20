@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT9400.get_version
 # ---------------------------------------------------------------------
@@ -30,6 +31,33 @@ class Script(BaseScript):
 
     def execute(self):
         if self.has_snmp():
+=======
+##----------------------------------------------------------------------
+## AlliedTelesis.AT9400.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "AlliedTelesis.AT9400.get_version"
+    cache = True
+    implements = [IGetVersion]
+    rx_platform = re.compile(r"Model Name \.+ (?P<platform>AT\S+)", re.MULTILINE | re.DOTALL)
+    rx_version = re.compile(r"^Application \.+ ATS63 v(?P<version>\S+(\s\S+)*)\s\s", re.MULTILINE | re.DOTALL)
+    rx_serial = re.compile(r"^Serial Number \.+ (?P<serial>\S+)", re.MULTILINE | re.DOTALL)
+    rx_bootprom = re.compile(r"^Bootloader \.+ ATS63_LOADER v(?P<bootprom>\d+\.\d+\.\d+)", re.MULTILINE | re.DOTALL)
+
+    def execute(self):
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 pl = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.6.1")
                 ver = self.snmp.get("1.3.6.1.4.1.207.8.17.1.3.1.5.1")

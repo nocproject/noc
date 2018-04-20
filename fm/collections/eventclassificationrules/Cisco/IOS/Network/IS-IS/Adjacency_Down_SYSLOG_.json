@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | IS-IS | Adjacency Down (SYSLOG)",
+    "uuid": "df270065-62a8-49ed-aa13-16fa629866b9",
+    "description": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (GigabitEthernet1/9) Down, hold time expired",
+    "event_class__name": "Network | IS-IS | Adjacency Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\sDown,\\s(?P<reason>.+)"
+        }
+    ]
+}

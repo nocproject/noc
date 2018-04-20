@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_vlans
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "DLink.DGS3100.get_vlans"
     interface = IGetVlans
+=======
+##----------------------------------------------------------------------
+## DLink.DGS3100.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+import re
+
+
+class Script(NOCScript):
+    name = "DLink.DGS3100.get_vlans"
+    implements = [IGetVlans]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_vlan = re.compile(
         r"^\s*VID\s+:\s+(?P<vlanid>\S+).+VLAN Name\s+:\s+(?P<vlanname>\S+)$",
         re.MULTILINE)

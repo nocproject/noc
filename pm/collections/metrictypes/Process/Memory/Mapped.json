@@ -1,0 +1,6 @@
+{
+    "name": "Process | Memory | Mapped",
+    "uuid": "ea9814ee-a9f1-41f4-9d36-606bf8cb77fc",
+    "description": "Process mapped memory",
+    "measure": "bytes"
+}

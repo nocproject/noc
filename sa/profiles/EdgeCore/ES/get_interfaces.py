@@ -1,15 +1,25 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2013 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## EdgeCore.ES.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
+<<<<<<< HEAD
 from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError, MACAddressParameter
@@ -19,6 +29,17 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "EdgeCore.ES.get_interfaces"
     interface = IGetInterfaces
+=======
+from noc.lib.ip import IPv4
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError, \
+    MACAddressParameter
+
+
+class Script(NOCScript):
+    name = "EdgeCore.ES.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     cache = True
     types = {

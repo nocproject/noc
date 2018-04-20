@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_version
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetversion import IGetVersion
 class Script(BaseScript):
     name = "Qtech.QSW.get_version"
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "Qtech.QSW.get_version"
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cache = True
 
     rx_plat_ver = re.compile(
@@ -35,13 +55,18 @@ class Script(BaseScript):
     rx_bootprom1 = re.compile(
         r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
     rx_hardware1 = re.compile(
+<<<<<<< HEAD
          r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE)
+=======
+        r"^\s+HardWare Version (?P<hardware>\d\S+)$", re.MULTILINE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_serial1 = re.compile(
         r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$",
         re.MULTILINE)
 
     def execute(self):
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
             try:
                 platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0",
@@ -50,6 +75,15 @@ class Script(BaseScript):
                     raise self.snmp.TimeOutError
                 if " " in platform:
                     platform = platform.split(' ')[1]
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0",
+                                        cached=True)
+                if platform == '':
+                    raise self.snmp.TimeOutError
+                platform = platform.split(' ')[1]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0",
                                         cached=True)
                 version = version.split(' ')[2]
@@ -84,19 +118,32 @@ class Script(BaseScript):
             hardware = self.re_search(self.rx_hardware, ver)
             serial = self.re_search(self.rx_serial, ver)
         else:
+<<<<<<< HEAD
             match = self.rx_plat1.search(ver)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             platform = self.re_search(self.rx_plat1, ver).group("platform")
             version = self.re_search(self.rx_soft1, ver).group("version")
             bootprom = self.re_search(self.rx_bootprom1, ver)
             hardware = self.re_search(self.rx_hardware1, ver)
             serial = self.re_search(self.rx_serial1, ver)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return {
                 "vendor": "Qtech",
                 "platform": platform,
                 "version": version,
                 "attributes": {
+<<<<<<< HEAD
                     "Boot PROM": bootprom.group("bootprom").strip(),
                     "HW version": hardware.group("hardware").strip(),
                     "Serial Number": serial.group("serial").strip()
+=======
+                    "Boot PROM": bootprom.group("bootprom"),
+                    "HW version": hardware.group("hardware"),
+                    "Serial Number": serial.group("serial")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     }
                 }

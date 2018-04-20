@@ -1,0 +1,90 @@
+{
+    "name": "Ericsson | SmartEdge",
+    "uuid": "a67b67ef-874a-463c-a982-ad06d241fd65",
+    "description": "SE600 connection rules",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "fan",
+            "type": "FAN"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "card",
+            "type": "CARD"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "alarm",
+            "type": "ALARM"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "mgmt",
+            "type": "MGMT"
+        },
+        {
+            "reset_scopes": ["mgmt", "line"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "FAN",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "ALRM",
+            "scope": "chassis",
+            "target_connection": "ALARM",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "card",
+            "target_connection": "sfp{N}",
+            "target_number": "",
+            "target_type": "CARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "card",
+            "target_connection": "xfp{N}",
+            "target_number": "",
+            "target_type": "CARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "card",
+            "target_connection": "sfpp{N}",
+            "target_number": "",
+            "target_type": "CARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MGMT",
+            "scope": "chassis",
+            "target_connection": "mgmt{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "CARD",
+            "scope": "chassis",
+            "target_connection": "card{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

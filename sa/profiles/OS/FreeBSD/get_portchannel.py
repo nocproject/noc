@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # OS.FreeBSD.get_portchannel
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "OS.FreeBSD.get_portchannel"
     interface = IGetPortchannel
+=======
+##----------------------------------------------------------------------
+## OS.FreeBSD.get_portchannel
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetPortchannel
+import re
+
+
+class Script(NOCScript):
+    name = "OS.FreeBSD.get_portchannel"
+    implements = [IGetPortchannel]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cache = True
     rx_if_name = re.compile(
         r"^(?P<ifname>\S+): flags=[0-9a-f]+<(?P<flags>\S+)>( metric \d+)?"

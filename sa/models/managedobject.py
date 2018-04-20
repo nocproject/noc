@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # ManagedObject
 # ----------------------------------------------------------------------
@@ -73,10 +74,63 @@ Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 
 id_lock = Lock()
+=======
+##----------------------------------------------------------------------
+## ManagedObject
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import re
+import difflib
+from collections import namedtuple
+import logging
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models
+from django.db.models import Q
+from django.db import IntegrityError
+from django.contrib.auth.models import User, Group
+## NOC modules
+from administrativedomain import AdministrativeDomain
+from authprofile import AuthProfile
+from managedobjectprofile import ManagedObjectProfile
+from activator import Activator
+from collector import Collector
+from objectstatus import ObjectStatus
+from objectmap import ObjectMap
+from terminationgroup import TerminationGroup
+from noc.main.models import PyRule
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.sa.profiles import profile_registry
+from noc.lib.fields import INETField, TagsField
+from noc.lib.app.site import site
+from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
+from noc.lib.stencil import stencil_registry
+from noc.lib.gridvcs.manager import GridVCSField
+from noc.main.models.fts_queue import FTSQueue
+from noc.settings import config
+from noc.lib.solutions import get_probe_config
+from noc.inv.discovery.utils import get_active_discovery_methods
+from noc.lib.solutions import get_solution
+from noc.lib.debug import error_report
+
+scheme_choices = [(TELNET, "telnet"), (SSH, "ssh"), (HTTP, "http")]
+
+CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
+Credentials = namedtuple("Credentials", [
+    "user", "password", "super_password", "snmp_ro", "snmp_rw"])
+Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
 
+<<<<<<< HEAD
 @full_text_search
 @bi_sync
 @on_init
@@ -100,10 +154,21 @@ class ManagedObject(Model):
     class Meta(object):
         verbose_name = "Managed Object"
         verbose_name_plural = "Managed Objects"
+=======
+class ManagedObject(models.Model):
+    """
+    Managed Object
+    """
+
+    class Meta:
+        verbose_name = _("Managed Object")
+        verbose_name_plural = _("Managed Objects")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         db_table = "sa_managedobject"
         app_label = "sa"
         ordering = ["name"]
 
+<<<<<<< HEAD
     name = CharField("Name", max_length=64, unique=True)
     is_managed = BooleanField("Is Managed?", default=True)
     container = DocumentReferenceField(
@@ -257,16 +322,73 @@ class ManagedObject(Model):
     # Name of service termination group (i.e. BRAS, SBC)
     termination_group = ForeignKey(
         TerminationGroup, verbose_name="Termination Group",
+=======
+    name = models.CharField(_("Name"), max_length=64, unique=True)
+    is_managed = models.BooleanField(_("Is Managed?"), default=True)
+    administrative_domain = models.ForeignKey(AdministrativeDomain,
+            verbose_name=_("Administrative Domain"))
+    activator = models.ForeignKey(Activator,
+            verbose_name=_("Activator"),
+            limit_choices_to={"is_active": True})
+    collector = models.ForeignKey(Collector,
+            verbose_name=_("Collector"),
+            limit_choices_to={"is_active": True}, null=True, blank=True)
+    profile_name = models.CharField(_("SA Profile"),
+            max_length=128, choices=profile_registry.choices)
+    object_profile = models.ForeignKey(ManagedObjectProfile,
+        verbose_name=_("Object Profile"))
+    description = models.CharField(_("Description"),
+            max_length=256, null=True, blank=True)
+    # Access
+    auth_profile = models.ForeignKey(
+        AuthProfile, verbose_name="Auth Profile", null=True, blank=True)
+    scheme = models.IntegerField(_("Scheme"), choices=scheme_choices)
+    address = models.CharField(_("Address"), max_length=64)
+    port = models.IntegerField(_("Port"), blank=True, null=True)
+    user = models.CharField(_("User"), max_length=32, blank=True, null=True)
+    password = models.CharField(_("Password"),
+            max_length=32, blank=True, null=True)
+    super_password = models.CharField(_("Super Password"),
+            max_length=32, blank=True, null=True)
+    remote_path = models.CharField(_("Path"),
+            max_length=256, blank=True, null=True)
+    trap_source_ip = INETField(_("Trap Source IP"), null=True,
+            blank=True, default=None)
+    trap_community = models.CharField(_("Trap Community"),
+            blank=True, null=True, max_length=64)
+    snmp_ro = models.CharField(_("RO Community"),
+            blank=True, null=True, max_length=64)
+    snmp_rw = models.CharField(_("RW Community"),
+            blank=True, null=True, max_length=64)
+    #
+    vc_domain = models.ForeignKey(
+        "vc.VCDomain", verbose_name="VC Domain", null=True, blank=True)
+    # CM
+    config = GridVCSField("config", mirror=CONFIG_MIRROR)
+    # Default VRF
+    vrf = models.ForeignKey("ip.VRF", verbose_name=_("VRF"),
+                            blank=True, null=True)
+    # For service terminators
+    # Name of service termination group (i.e. BRAS, SBC)
+    termination_group = models.ForeignKey(
+        TerminationGroup, verbose_name=_("Termination Group"),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         blank=True, null=True,
         related_name="termination_set"
     )
     # For access switches -- L3 terminator
+<<<<<<< HEAD
     service_terminator = ForeignKey(
         TerminationGroup, verbose_name="Service termination",
+=======
+    service_terminator = models.ForeignKey(
+        TerminationGroup, verbose_name=_("Service termination"),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         blank=True, null=True,
         related_name="access_set"
     )
     # Stencils
+<<<<<<< HEAD
     shape = CharField(
         "Shape", blank=True, null=True,
         choices=stencil_registry.choices, max_length=128
@@ -440,6 +562,37 @@ class ManagedObject(Model):
     )
     #
     tags = TagsField("Tags", null=True, blank=True)
+=======
+    shape = models.CharField(_("Shape"), blank=True, null=True,
+        choices=stencil_registry.choices, max_length=128)
+    # pyRules
+    config_filter_rule = models.ForeignKey(PyRule,
+            verbose_name="Config Filter pyRule",
+            limit_choices_to={"interface": "IConfigFilter"},
+            null=True, blank=True,
+            on_delete=models.SET_NULL,
+            related_name="managed_object_config_filter_rule_set")
+    config_diff_filter_rule = models.ForeignKey(PyRule,
+            verbose_name=_("Config Diff Filter Rule"),
+            limit_choices_to={"interface": "IConfigDiffFilter"},
+            null=True, blank=True,
+            on_delete=models.SET_NULL,
+            related_name="managed_object_config_diff_rule_set")
+    config_validation_rule = models.ForeignKey(PyRule,
+            verbose_name="Config Validation pyRule",
+            limit_choices_to={"interface": "IConfigValidator"},
+            null=True, blank=True,
+            on_delete=models.SET_NULL,
+            related_name="managed_object_config_validation_rule_set")
+    max_scripts = models.IntegerField(_("Max. Scripts"),
+            null=True, blank=True,
+            help_text=_("Concurrent script session limits"))
+    #
+    tags = TagsField(_("Tags"), null=True, blank=True)
+
+    # Use special filter for profile
+    profile_name.existing_choices_filter = True
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     # Event ids
     EV_CONFIG_CHANGED = "config_changed"  # Object's config changed
@@ -456,15 +609,75 @@ class ManagedObject(Model):
 
     PROFILE_LINK = "object_profile"
 
+<<<<<<< HEAD
     BOX_DISCOVERY_JOB = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+=======
+    ## object.scripts. ...
+    class ScriptsProxy(object):
+        class CallWrapper(object):
+            def __init__(self, obj, name):
+                self.name = name
+                self.object = obj
+
+            def __call__(self, **kwargs):
+                task = ReduceTask.create_task(
+                    [self.object],
+                    reduce_object_script, {},
+                    self.name, kwargs, None
+                )
+                return task.get_result(block=True)
+
+        def __init__(self, obj):
+            self._object = obj
+            self._cache = {}
+
+        def __getattr__(self, name):
+            if name in self._cache:
+                return self._cache[name]
+            if name not in self._object.profile.scripts:
+                raise AttributeError(name)
+            cw = ManagedObject.ScriptsProxy.CallWrapper(self._object, name)
+            self._cache[name] = cw
+            return cw
+
+    class ActionsProxy(object):
+        class CallWrapper(object):
+            def __init__(self, obj, name, action):
+                self.name = name
+                self.object = obj
+                self.action = action
+
+            def __call__(self, **kwargs):
+                return self.action.execute(self.object, **kwargs)
+
+        def __init__(self, obj):
+            self._object = obj
+            self._cache = {}
+
+        def __getattr__(self, name):
+            if name in self._cache:
+                return self._cache[name]
+            a = Action.objects.filter(name=name).first()
+            if not a:
+                raise AttributeError(name)
+            cw = ManagedObject.ActionsProxy.CallWrapper(self._object, name, a)
+            self._cache[name] = cw
+            return cw
+
+    def __init__(self, *args, **kwargs):
+        super(ManagedObject, self).__init__(*args, **kwargs)
+        self.scripts = ManagedObject.ScriptsProxy(self)
+        self.actions = ManagedObject.ActionsProxy(self)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.name
 
+<<<<<<< HEAD
     @classmethod
     @cachedmethod(operator.attrgetter("_id_cache"),
                   key="managedobject-id-%s",
@@ -514,6 +727,25 @@ class ManagedObject(Model):
 
     def get_absolute_url(self):
         return site.reverse("sa:managedobject:change", self.id)
+=======
+    def get_absolute_url(self):
+        return site.reverse("sa:managedobject:change", self.id)
+
+    @property
+    def profile(self):
+        """
+        Get object's profile instance. Instances are cached. Same profile's
+        instance will be returned for all .profile invocations for
+        given managed objet
+
+        :rtype: Profile instance
+        """
+        try:
+            return self._cached_profile
+        except AttributeError:
+            self._cached_profile = profile_registry[self.profile_name]()
+            return self._cached_profile
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def user_objects(cls, user):
@@ -560,6 +792,7 @@ class ManagedObject(Model):
                 if ManagedObject.objects.filter(GroupAccess.Q(g) &
                                                 Q(id=self.id)).exists()]
 
+<<<<<<< HEAD
     def on_save(self):
         # Invalidate caches
         deleted_cache_keys = [
@@ -691,6 +924,44 @@ class ManagedObject(Model):
         # Reset discovery cache
         from noc.inv.models.discoveryid import DiscoveryID
         DiscoveryID.clean_for_object(self)
+=======
+    def save(self):
+        """
+        Overload model's save()
+        """
+        # Get previous version
+        if self.id:
+            old = ManagedObject.objects.get(id=self.id)
+        else:
+            old = None
+        # Save
+        super(ManagedObject, self).save()
+        # IPAM sync
+        if self.object_profile.sync_ipam:
+            self.sync_ipam()
+        # Notify changes
+        if ((old is None and self.trap_source_ip) or
+            (old and self.trap_source_ip != old.trap_source_ip) or
+            (old and self.activator.id != old.activator.id)):
+            self.sae_refresh_event_filter()
+        # Notify new object
+        if old is None:
+            SelectorCache.rebuild_for_object(self)
+            self.event(self.EV_NEW, {"object": self})
+        if not self.collector or not self.trap_source_ip:
+            # Remove from object mappings
+            ObjectMap.delete_map(self)
+        else:
+            # Add to object mappings
+            ObjectMap.update_map(
+                self, self.collector, self.trap_source_ip)
+
+    def delete(self, *args, **kwargs):
+        # Deny to delete "SAE" object
+        if self.name == "SAE":
+            raise IntegrityError("Cannot delete SAE object")
+        super(ManagedObject, self).delete(*args, **kwargs)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def sync_ipam(self):
         """
@@ -714,11 +985,16 @@ class ManagedObject(Model):
             ).save()
             return
         # Update existing address
+<<<<<<< HEAD
         if (
             a.managed_object != self or
             a.address != self.address or
             a.fqdn != fqdn
         ):
+=======
+        if (a.managed_object != self or
+            a.address != self.address or a.fqdn != fqdn):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             a.managed_object = self
             a.address = self.address
             a.fqdn = fqdn
@@ -737,8 +1013,13 @@ class ManagedObject(Model):
             content += [self.trap_source_ip]
         platform = self.platform
         if platform:
+<<<<<<< HEAD
             content += [unicode(platform.name)]
             card += " [%s]" % platform.name
+=======
+            content += [platform]
+            card += " [%s]" % platform
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         version = self.get_attr("version")
         if version:
             content += [version]
@@ -747,6 +1028,7 @@ class ManagedObject(Model):
             content += [self.description]
         config = self.config.read()
         if config:
+<<<<<<< HEAD
             if len(config) > 10000000:
                 content += [config[:10000000]]
             else:
@@ -775,11 +1057,43 @@ class ManagedObject(Model):
         :param default:
         :return:
         """
+=======
+            content += [config]
+        r = {
+            "id": "sa.managedobject:%s" % self.id,
+            "title": self.name,
+            "content": "\n".join(content),
+            "card": card
+        }
+        if self.tags:
+            r["tags"] = self.tags
+        return r
+
+    def get_search_info(self, user):
+        if self.has_access(user):
+            return ("sa.managedobject", "history", {"args": [self.id]})
+        else:
+            return None
+
+    ##
+    ## Returns True if Managed Object presents in more than one networks
+    ## @todo: Rewrite
+    ##
+    @property
+    def is_router(self):
+        return self.address_set.count() > 1
+
+    ##
+    ## Return attribute as string
+    ##
+    def get_attr(self, name, default=None):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         try:
             return self.managedobjectattribute_set.get(key=name).value
         except ManagedObjectAttribute.DoesNotExist:
             return default
 
+<<<<<<< HEAD
     def get_attr_bool(self, name, default=False):
         """
         Return attribute as bool
@@ -787,6 +1101,12 @@ class ManagedObject(Model):
         :param default:
         :return:
         """
+=======
+    ##
+    ## Return attribute as bool
+    ##
+    def get_attr_bool(self, name, default=False):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         v = self.get_attr(name)
         if v is None:
             return default
@@ -795,6 +1115,7 @@ class ManagedObject(Model):
         else:
             return False
 
+<<<<<<< HEAD
     def get_attr_int(self, name, default=0):
         """
         Return attribute as integer
@@ -802,11 +1123,18 @@ class ManagedObject(Model):
         :param default:
         :return:
         """
+=======
+    ##
+    ## Return attribute as integer
+    ##
+    def get_attr_int(self, name, default=0):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         v = self.get_attr(name)
         if v is None:
             return default
         try:
             return int(v)
+<<<<<<< HEAD
         except:  # noqa
             return default
 
@@ -817,6 +1145,15 @@ class ManagedObject(Model):
         :param value:
         :return:
         """
+=======
+        except:
+            return default
+
+    ##
+    ## Set attribute
+    ##
+    def set_attr(self, name, value):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         value = unicode(value)
         try:
             v = self.managedobjectattribute_set.get(key=name)
@@ -826,6 +1163,7 @@ class ManagedObject(Model):
                                        key=name, value=value)
         v.save()
 
+<<<<<<< HEAD
     def update_attributes(self, attr):
         for k in attr:
             v = attr[k]
@@ -836,11 +1174,28 @@ class ManagedObject(Model):
 
     def is_ignored_interface(self, interface):
         interface = self.get_profile().convert_interface_name(interface)
+=======
+    @property
+    def platform(self):
+        """
+        Return "vendor model" string from attributes
+        """
+        x = [self.get_attr("vendor"), self.get_attr("platform")]
+        x = [a for a in x if a]
+        if x:
+            return " ".join(x)
+        else:
+            return None
+
+    def is_ignored_interface(self, interface):
+        interface = self.profile.convert_interface_name(interface)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         rx = self.get_attr("ignored_interfaces")
         if rx:
             return re.match(rx, interface) is not None
         return False
 
+<<<<<<< HEAD
     def get_status(self):
         return ObjectStatus.get_status(self)
 
@@ -855,6 +1210,32 @@ class ManagedObject(Model):
         :return: False if out-of-order update, True otherwise
         """
         return ObjectStatus.set_status(self, status, ts=ts)
+=======
+    def sae_refresh_event_filter(self):
+        """
+        Refresh event filters for all activators serving object
+        """
+        def reduce_notify(task):
+            mt = task.maptask_set.all()[0]
+            if mt.status == "C":
+                return mt.script_result
+            return False
+
+        ReduceTask.create_task(
+            "SAE",
+            reduce_notify, {},
+            "notify", {
+                "event": "refresh_event_filter",
+                "object_id": self.id},
+            1
+        )
+
+    def get_status(self):
+        return ObjectStatus.get_status(self)
+
+    def set_status(self, status):
+        ObjectStatus.set_status(self, status)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_inventory(self):
         """
@@ -866,6 +1247,7 @@ class ManagedObject(Model):
             data__management__managed_object=self.id))
 
     def run_discovery(self, delta=0):
+<<<<<<< HEAD
         """
         Schedule box discovery
         """
@@ -880,6 +1262,15 @@ class ManagedObject(Model):
             pool=self.pool.name,
             delta=delta or self.pool.get_delta()
         )
+=======
+        op = self.object_profile
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(op, cfg):
+                refresh_schedule(
+                    "inv.discovery", name, self.id, delta=delta)
+                delta += 1
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def event(self, event_id, data=None, delay=None, tag=None):
         """
@@ -894,9 +1285,14 @@ class ManagedObject(Model):
         # Find notification groups
         groups = set()
         for o in ObjectNotification.objects.filter(**{
+<<<<<<< HEAD
                 event_id: True,
                 "selector__in": selectors
         }):
+=======
+            event_id: True,
+            "selector__in": selectors}):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             groups.add(o.notification_group)
         if not groups:
             return  # Nothing to notify
@@ -913,14 +1309,20 @@ class ManagedObject(Model):
             groups, subject=subject, body=body, delay=delay, tag=tag)
         # Schedule FTS reindex
         if event_id in (
+<<<<<<< HEAD
             self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED
         ):
             TextIndex.update_index(ManagedObject, self)
+=======
+            self.EV_CONFIG_CHANGED, self.EV_VERSION_CHANGED):
+            FTSQueue.schedule_update(self)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def save_config(self, data):
         if isinstance(data, list):
             # Convert list to plain text
             r = []
+<<<<<<< HEAD
             for d in sorted(data, key=operator.attrgetter("name")):
                 r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
             data = "\n".join(r)
@@ -963,6 +1365,28 @@ class ManagedObject(Model):
                 self.logger.info(
                     "[%s] Invalid config_validation_handler \"%s\", ignoring",
                     self.config_validation_handler
+=======
+            for d in sorted(data, lambda x, y: cmp(x["name"], y["name"])):
+                r += ["==[ %s ]========================================\n%s" % (d["name"], d["config"])]
+            data = "\n".join(r)
+        # Pass data through config filter, if given
+        if self.config_filter_rule:
+            data = self.config_filter_rule(
+                managed_object=self, config=data)
+        # Pass data through the validation filter, if given
+        # @todo: Remove
+        if self.config_validation_rule:
+            warnings = self.config_validation_rule(
+                managed_object=self, config=data)
+            if warnings:
+                # There are some warnings. Notify responsible persons
+                self.event(
+                    self.EV_CONFIG_POLICY_VIOLATION,
+                    {
+                        "object": self,
+                        "warnings": warnings
+                    }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 )
         # Calculate diff
         old_data = self.config.read()
@@ -970,6 +1394,7 @@ class ManagedObject(Model):
         diff = None
         if not is_new:
             # Calculate diff
+<<<<<<< HEAD
             if self.config_diff_filter_handler:
                 handler = get_handler(self.config_diff_filter_handler)
                 if handler:
@@ -978,6 +1403,16 @@ class ManagedObject(Model):
                     new_data = handler(self, data)
                     if not old_data and not new_data:
                         logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
+=======
+            if self.config_diff_filter_rule:
+                # Pass through filters
+                old_data = self.config_diff_filter_rule(
+                    managed_object=self, config=old_data)
+                new_data = self.config_diff_filter_rule(
+                    managed_object=self, config=data)
+                if not old_data and not new_data:
+                    logger.error("[%s] broken config_diff_filter: Returns empty result", self.name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             else:
                 new_data = data
             if old_data == new_data:
@@ -1005,7 +1440,11 @@ class ManagedObject(Model):
         engine = Engine(self)
         try:
             engine.check()
+<<<<<<< HEAD
         except:  # noqa
+=======
+        except:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             logger.error("Failed to validate config for %s", self.name)
             error_report()
 
@@ -1042,6 +1481,33 @@ class ManagedObject(Model):
         else:
             return ol
 
+<<<<<<< HEAD
+=======
+    def get_probe_config(self, config):
+        # Get via solutions
+        try:
+            return get_probe_config(self, config)
+        except ValueError:
+            pass
+        if config == "address":
+            return self.address
+        elif config == "snmp__ro":
+            s = self.credentials.snmp_ro
+            if not s:
+                raise ValueError("No SNMP RO community")
+            else:
+                return s
+        elif config == "caps":
+            if not hasattr(self, "_caps"):
+                self._caps = self.get_caps()
+            return self._caps
+        elif config == "managed_object":
+            return self
+        elif config == "profile":
+            return self.profile_name
+        raise ValueError("Invalid config parameter '%s'" % config)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def iter_recursive_objects(self):
         """
         Generator yilding all recursive objects
@@ -1055,6 +1521,7 @@ class ManagedObject(Model):
         """
         Returns a dict of effective object capabilities
         """
+<<<<<<< HEAD
         return ObjectCapabilities.get_capabilities(self)
 
     def update_caps(self, caps, source):
@@ -1064,12 +1531,82 @@ class ManagedObject(Model):
         :param source: Source name
         """
         return ObjectCapabilities.update_capabilities(self, caps, source)
+=======
+        caps = ObjectCapabilities.objects.filter(object=self).first()
+        if not caps:
+            return {}
+        r = {}
+        for c in caps.caps:
+            v = c.local_value if c.local_value is not None else c.discovered_value
+            if v is None:
+                continue
+            r[c.capability.name] = v
+        return r
+
+    def update_caps(self, caps, local=False):
+        """
+        Update existing capabilities with a new ones.
+        :param caps: dict of caps name -> caps value
+        """
+        def get_cap(name):
+            if name in ccache:
+                return ccache[name]
+            c = Capability.objects.filter(name=name).first()
+            ccache[name] = c
+            return c
+
+        to_save = False
+        ocaps = ObjectCapabilities.objects.filter(object=self).first()
+        if not ocaps:
+            ocaps = ObjectCapabilities(object=self)
+            to_save = True
+        # Index existing capabilities
+        cn = {}
+        ccache = {}
+        for c in ocaps.caps:
+            cn[c.capability.name] = c
+        # Add missed capabilities
+        for mc in set(caps) - set(cn):
+            c = get_cap(mc)
+            if c:
+                cn[mc] = CapsItem(
+                    capability=c,
+                    discovered_value=None, local_value=None
+                )
+                to_save = True
+        nc = []
+        for c in sorted(cn):
+            cc = cn[c]
+            if c in caps:
+                if local:
+                    if cc.local_value != caps[c]:
+                        logger.info("[%s] Setting local capability %s = %s",
+                                    self.name, c, caps[c])
+                        cc.local_value = caps[c]
+                        to_save = True
+                else:
+                    if cc.discovered_value != caps[c]:
+                        logger.info("[%s] Setting discovered capability %s = %s",
+                                    self.name, c, caps[c])
+                        cc.discovered_value = caps[c]
+                        to_save = True
+            nc += [cc]
+        # Remove deleted capabilities
+        ocaps.caps = [
+            c for c in nc
+            if (c.discovered_value is not None or
+                c.local_value is not None)
+        ]
+        if to_save:
+            ocaps.save()  # forces probe rebuild
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def disable_discovery(self):
         """
         Disable all discovery methods related with managed object
         """
 
+<<<<<<< HEAD
     def get_profile(self):
         """
         Getting profile methods
@@ -1398,11 +1935,57 @@ class ManagedObjectAttribute(Model):
     class Meta(object):
         verbose_name = "Managed Object Attribute"
         verbose_name_plural = "Managed Object Attributes"
+=======
+    def apply_discovery(self):
+        """
+        Apply effective discovery settings
+        """
+        methods = []
+        for name in get_active_discovery_methods():
+            cfg = "enable_%s" % name
+            if getattr(self.object_profile, cfg):
+                methods += [cfg]
+        # @todo: Create tasks
+
+    @property
+    def version(self):
+        """
+        Returns filled Version object
+        """
+        if not hasattr(self, "_c_version"):
+            self._c_version = Version(
+                profile=self.profile_name,
+                vendor=self.get_attr("vendor"),
+                platform=self.get_attr("platform"),
+                version=self.get_attr("version")
+            )
+        return self._c_version
+
+    def get_parser(self):
+        """
+        Return parser instance or None.
+        Depends on version_discovery
+        """
+        v = self.version
+        cls = self.profile.get_parser(v.vendor, v.platform, v.version)
+        if cls:
+            return get_solution(cls)(self)
+        else:
+            return get_solution("noc.cm.parsers.base.BaseParser")(self)
+
+
+class ManagedObjectAttribute(models.Model):
+
+    class Meta:
+        verbose_name = _("Managed Object Attribute")
+        verbose_name_plural = _("Managed Object Attributes")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         db_table = "sa_managedobjectattribute"
         app_label = "sa"
         unique_together = [("managed_object", "key")]
         ordering = ["managed_object", "key"]
 
+<<<<<<< HEAD
     managed_object = ForeignKey(
         ManagedObject,
         verbose_name="Managed Object"
@@ -1412,10 +1995,18 @@ class ManagedObjectAttribute(Model):
         "Value", max_length=4096,
         blank=True, null=True
     )
+=======
+    managed_object = models.ForeignKey(ManagedObject,
+            verbose_name=_("Managed Object"))
+    key = models.CharField(_("Key"), max_length=64)
+    value = models.CharField(_("Value"), max_length=4096,
+            blank=True, null=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object, self.key)
 
+<<<<<<< HEAD
     def on_save(self):
         cache.delete("cred-%s" % self.managed_object.id)
 
@@ -1499,3 +2090,16 @@ from .action import Action
 from .selectorcache import SelectorCache
 from .objectcapabilities import ObjectCapabilities
 from noc.core.pm.utils import get_objects_metrics
+=======
+## Avoid circular references
+from reducetask import ReduceTask, reduce_object_script
+from useraccess import UserAccess
+from groupaccess import GroupAccess
+from noc.lib.scheduler.utils import refresh_schedule
+#from noc.vc.models.vcdomain import VCDomain
+from objectnotification import ObjectNotification
+from selectorcache import SelectorCache
+from objectcapabilities import ObjectCapabilities, CapsItem
+from noc.inv.models.capability import Capability
+from action import Action
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

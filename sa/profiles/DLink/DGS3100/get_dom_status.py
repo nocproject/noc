@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_interface_status
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "DLink.DGS3100.get_dom_status"
     interface = IGetDOMStatus
+=======
+##----------------------------------------------------------------------
+## DLink.DGS3100.get_interface_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetDOMStatus
+import re
+
+
+class Script(NOCScript):
+    name = "DLink.DGS3100.get_dom_status"
+    implements = [IGetDOMStatus]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(r"^\s+(?P<interface>\d+:\d+)\s+(?P<temp_c>\S+)\s+(?P<voltage_v>\S+)\s+(?P<current_ma>\S+)\s+(?P<optical_tx_dbm>\S+)\s+(?P<optical_rx_dbm>\S+)\s+\S+", re.IGNORECASE | re.MULTILINE)
 
     def execute(self, interface=None):

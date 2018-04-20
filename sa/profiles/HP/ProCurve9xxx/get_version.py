@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve9xxx.get_version
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_version"
     cache = True
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve9xxx.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "HP.ProCurve9xxx.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_sw_ver = re.compile(r"SW:\sVersion\s(?P<version>\S+)",
         re.MULTILINE | re.DOTALL)
@@ -26,7 +48,11 @@ class Script(BaseScript):
     rx_snmp_ver = re.compile(r"ProCurve\s+\S+\s+\S+\s(?P<platform>\S+)\,\s+\S+\s+Version\s+(?P<version>\S+).+$")
 
     def execute(self):
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0")  # sysDescr.0
                 match = self.re_search(self.rx_snmp_ver, v)

@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Config | Config Changed (SYSLOG)",
+    "uuid": "008c0929-838f-420e-808d-80f862de6ae1",
+    "description": "0000000014: Jan 26 21:57:24: %CMDLINE-6-COMMAND: (1) copy running-config startup-config",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CMDLINE-6-COMMAND: \\(1\\)( (?P<user>\\S+):|) copy running-config startup-config$"
+        }
+    ]
+}

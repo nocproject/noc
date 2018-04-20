@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Geo{graphic,metry} functions
 # ---------------------------------------------------------------------
@@ -11,6 +12,19 @@ import math
 from noc.config import config
 
 TS = config.gis.tile_size
+=======
+##----------------------------------------------------------------------
+## Geo{graphic,metry} functions
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python module
+import math
+
+TS = 256  # Tile size 256x256
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 MIN_ZOOM = 0
 MAX_ZOOM = 18
 PI = math.pi

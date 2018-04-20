@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_arp
 # ---------------------------------------------------------------------
@@ -23,6 +24,33 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_line1 = re.compile(
         r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<port>\S+)\s+(?P<flag>Dynamic|Static)\s+(?P<age>\d+)",
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_arp
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+import noc.sa.script
+from noc.sa.interfaces import IGetARP
+
+
+class Script(noc.sa.script.Script):
+    name = "Qtech.QSW.get_arp"
+    implements = [IGetARP]
+    cache = True
+
+    rx_line = re.compile(
+        r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)\s+(?P<type>\S+)\s+(?P<status>\S+)",
+        re.MULTILINE)
+
+    rx_line1 = re.compile(
+        r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<port>\S+)\s+(?P<flag>Dynamic|Static)\s+(?P<age>\d+)",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE)
 
     def execute(self):
@@ -31,7 +59,11 @@ class Script(BaseScript):
         """
         # Working but give interfase name "system"!!!
 
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 for v in self.snmp.get_tables(
                     ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2",
@@ -53,6 +85,7 @@ class Script(BaseScript):
         # Fallback to CLI
         try:
             v = self.cli("show arp all", cached=True)
+<<<<<<< HEAD
             for match in self.rx_line.finditer(v):
                 r += [{
                     "ip": match.group("ip"),
@@ -75,4 +108,25 @@ class Script(BaseScript):
                         "mac": match.group("mac"),
                         "interface": match.group("port")
                     }]
+=======
+            rx_iter = self.rx_line
+        except self.CLISyntaxError:
+            v = self.cli("show arp", cached=True)
+            rx_iter = self.rx_line1
+
+        for match in rx_iter.finditer(v):
+            mac = match.group("mac")
+            if mac.lower() == "incomplete":
+                r.append({
+                    "ip": match.group("ip"),
+                    "mac": None,
+                    "interface": None
+                    })
+            else:
+                r.append({
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("port")
+                    })
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return r

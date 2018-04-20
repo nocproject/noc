@@ -8,4 +8,8 @@ class Migration:
         db.execute("ALTER TABLE sa_activator ALTER prefix_table_id SET NOT NULL")
 
     def backwards(self):
+<<<<<<< HEAD
         pass
+=======
+        pass
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

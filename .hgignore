@@ -1,0 +1,33 @@
+##
+## Do not forget to sync with main/management/commands/build-manifest.py
+##
+syntax: glob
+*.pyc
+*.pyo
+*.swp
+*.orig
+dist/
+build/
+noc.egg-info/
+bin/*
+etc/*.conf
+etc/address/*.conf
+etc/certs/*
+etc/ssh/id_*
+include/*
+lib/python*
+lib64
+local/*
+static/doc/*
+contrib/lib/*
+contrib/bin/*
+contrib/share/*
+MANIFEST
+.*
+atlassian-ide-plugin.xml
+ext_*
+etc/requirements/local.txt
+static/pkg/
+share/
+static/test/
+pip-selfcheck.json

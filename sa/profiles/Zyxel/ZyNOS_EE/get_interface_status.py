@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS_EE.get_interface_status
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 class Script(BaseScript):
     name = "Zyxel.ZyNOS_EE.get_interface_status"
     interface = IGetInterfaceStatus
+=======
+##----------------------------------------------------------------------
+## Zyxel.ZyNOS_EE.get_interface_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaceStatus
+
+
+class Script(NOCScript):
+    name = "Zyxel.ZyNOS_EE.get_interface_status"
+    implements = [IGetInterfaceStatus]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_link = re.compile(
         r"^( |)(?P<interface>\d+)\s+\d+\s+(?P<status>\d)\s+\S+\s+\S+\s+\S+$",
@@ -25,12 +45,20 @@ class Script(BaseScript):
         r = []
 
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 if interface is None:
                     # Join # IF-MIB::ifIndex, IF-MIB::ifOperStatus
                     for n, s in self.snmp.join_tables("1.3.6.1.2.1.2.2.1.1",
                                                       "1.3.6.1.2.1.2.2.1.8",
+<<<<<<< HEAD
+=======
+                                                      bulk=True,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                                                       max_index=1023):
                         r.append({
                             "interface": n,

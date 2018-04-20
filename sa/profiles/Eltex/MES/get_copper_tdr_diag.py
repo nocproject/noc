@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Eltex.MES.get_copper_tdr_diag
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetcoppertdrdiag import IGetCopperTDRDiag
 class Script(BaseScript):
     name = "Eltex.MES.get_copper_tdr_diag"
     interface = IGetCopperTDRDiag
+=======
+##----------------------------------------------------------------------
+## Eltex.MES.get_copper_tdr_diag
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetCopperTDRDiag
+
+
+class Script(NOCScript):
+    name = "Eltex.MES.get_copper_tdr_diag"
+    implements = [IGetCopperTDRDiag]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_diag = re.compile(
         r"Cable on port\s+(?P<interface>\S+)\s+(?P<status>(is open|has short circuit))\s+at\s+(?P<length>\d+)\s+m",
         re.IGNORECASE)

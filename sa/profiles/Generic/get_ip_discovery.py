@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Generic.get_topology_data
 # ---------------------------------------------------------------------
@@ -12,12 +13,35 @@ from noc.sa.interfaces.igetipdiscovery import IGetIPDiscovery
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Generic.get_topology_data
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetIPDiscovery, IGetARP
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Retrieve data for IP discovery
     """
     name = "Generic.get_ip_discovery"
+<<<<<<< HEAD
     interface = IGetIPDiscovery
     requires = ["get_arp"]
+=======
+    implements = [IGetIPDiscovery]
+    requires = []
+    requires = [("get_arp", IGetARP)]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         # Prepare VRFs
@@ -27,7 +51,11 @@ class Script(BaseScript):
                 "addresses": []
             }
         }
+<<<<<<< HEAD
         if "get_mpls_vpn" in self.scripts:
+=======
+        if self.scripts.has_script("get_mpls_vpn"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 r = self.scripts.get_mpls_vpn()
             except self.CLISyntaxError:
@@ -42,7 +70,11 @@ class Script(BaseScript):
                         vrf["rd"] = v["rd"]
                     vrfs[v["name"]] = vrf
         # Get IPv6 neighbors (global?)
+<<<<<<< HEAD
         if "get_ipv6_neighbor" in self.scripts:
+=======
+        if self.scripts.has_script("get_ipv6_neighbor"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 r = self.scripts.get_ipv6_neighbor()
             except self.CLISyntaxError:

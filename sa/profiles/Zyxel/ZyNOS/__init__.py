@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Vendor: Zyxel
 # OS:     ZyNOS
@@ -18,6 +19,30 @@ class Profile(BaseProfile):
     name = "Zyxel.ZyNOS"
     pattern_unprivileged_prompt = r"^\S+?>"
     pattern_prompt = r"^\S+?\s*(\S+|)#"
+=======
+##----------------------------------------------------------------------
+## Vendor: Zyxel
+## OS:     ZyNOS
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import TELNET, SSH
+
+
+class Profile(noc.sa.profiles.Profile):
+    name = "Zyxel.ZyNOS"
+    supported_schemes = [TELNET, SSH]
+    pattern_username = "User name:"
+    pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_prompt = r"^\S+?#"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     pattern_more = r"^-- more --.*?$"
     pattern_zynos = r"^\S+?>"
     command_super = "enable"
@@ -29,7 +54,10 @@ class Profile(BaseProfile):
     command_enter_zynos = "mode zynos"
     command_exit_zynos = "sys cli newCLI"
     pattern_syntax_error = "Invalid (command|input)"
+<<<<<<< HEAD
     enable_cli_session = False
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     rx_ifname = re.compile(r"^swp(?P<number>\d+)$")
 
@@ -70,4 +98,9 @@ class ZyNOSContextManager(object):
         """Leaving zynos mode context"""
         if exc_type is None:
             self.script.pop_prompt_pattern()
+<<<<<<< HEAD
             self.script.cli(self.profile.command_exit_zynos)
+=======
+            self.script.cli_provider.set_state("START")
+            self.script.cli_provider.submit(self.profile.command_exit_zynos)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

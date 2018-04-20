@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | System | Process Exited (SYSLOG)",
+    "uuid": "cb061138-f0b9-415c-ac7e-f74c5699e0c6",
+    "description": "Jul 22 14:18:58 init: craft-control (PID 1413) exited with status=2",
+    "event_class__name": "System | Process Exited",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "init: (?P<name>\\S+) \\(PID (?P<pid>\\d+)\\) exited with status=(?P<status>\\d+)$"
+        }
+    ]
+}

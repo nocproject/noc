@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1910.get_portchannel
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetportchannel import IGetPortchannel
 class Script(BaseScript):
     name = "HP.1910.get_portchannel"
     interface = IGetPortchannel
+=======
+##----------------------------------------------------------------------
+## HP.1910.get_portchannel
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetPortchannel
+
+
+class Script(NOCScript):
+    name = "HP.1910.get_portchannel"
+    implements = [IGetPortchannel]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_po = re.compile(
         r"^Aggregation Interface: Bridge-Aggregation(?P<port>\d+)$",
@@ -32,7 +52,11 @@ class Script(BaseScript):
     def execute(self):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 for v in self.snmp.get_tables(
                     ["1.2.840.10006.300.43.1.1.1.1.6",

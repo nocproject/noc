@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Link | Connection Problem (SYSLOG)",
+    "uuid": "f231b9d3-f9e7-44af-9b35-bff75158d7eb",
+    "description": "%DEC21140-5-NOCARR: FastEthernet0/1 cable/connector problem?",
+    "event_class__name": "Network | Link | Connection Problem",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%.+-NOCARR: (?P<interface>\\S+) cable/connector problem?"
+        }
+    ]
+}

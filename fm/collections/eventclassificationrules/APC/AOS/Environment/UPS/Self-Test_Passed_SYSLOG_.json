@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Environment | UPS | Self-Test Passed (SYSLOG)",
+    "uuid": "fe154a46-b29c-453d-9799-e0e19cbecb0f",
+    "description": "UPS: Passed a self-test. 0x0105",
+    "event_class__name": "Environment | UPS | Self-Test Passed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: Passed a self-test. 0x0105"
+        }
+    ]
+}

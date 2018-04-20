@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.ASA.get_inventory
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetinventory import IGetInventory
 class Script(BaseScript):
     name = "Cisco.ASA.get_inventory"
     interface = IGetInventory
+=======
+##----------------------------------------------------------------------
+## Cisco.ASA.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+
+
+class Script(NOCScript):
+    name = "Cisco.ASA.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_item = re.compile(
         r"^Name:\s*\"(?P<name>[^\"]+)\", DESCR:\s*\"(?P<descr>[^\"]+)\"\n"
@@ -26,9 +46,12 @@ class Script(BaseScript):
 
     def execute(self):
         objects = []
+<<<<<<< HEAD
         if self.capabilities.get("Cisco | ASA | Security | Context | Mode"):
             if self.capabilities["Cisco | ASA | Security | Context | Mode"] == "multiple":
                 self.cli("changeto system")
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         v = self.cli("show inventory")
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
@@ -36,6 +59,10 @@ class Script(BaseScript):
                 match.group("descr"), len(objects)
             )
             if not part_no:
+<<<<<<< HEAD
+=======
+                print "!!! UNKNOWN: ", match.groupdict()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"

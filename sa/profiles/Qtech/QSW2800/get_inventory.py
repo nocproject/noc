@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW2800.get_inventory
 # ---------------------------------------------------------------------
@@ -11,10 +12,24 @@ import re
 import datetime
 # NOC modules
 from noc.core.script.base import BaseScript
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW2800.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+ 
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.sa.interfaces.base import InterfaceTypeError
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_inventory"
     interface = IGetInventory
@@ -70,3 +85,19 @@ class Script(BaseScript):
                 r += [data]
 
         return r
+=======
+class Script(NOCScript):
+    name = "Qtech.QSW2800.get_inventory"
+    implements = [IGetInventory]
+
+    def execute(self):
+        v = self.scripts.get_version()
+        return [{
+            "type": "CHASSIS",
+            "number": "1",
+            "vendor": "QTECH",
+            "part_no": [v["platform"]],
+            "revision": v["attributes"]["HW version"],
+            "serial": v["attributes"]["Serial Number"]
+        }]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

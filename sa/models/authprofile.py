@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # AuthProfile
 # ----------------------------------------------------------------------
@@ -29,6 +30,21 @@ id_lock = Lock()
     ("sa.ManagedObject", "auth_profile"),
     ("sa.ManagedObjectProfile", "cpe_auth_profile")
 ])
+=======
+##----------------------------------------------------------------------
+## AuthProfile
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+from django.db.models.signals import post_save
+## NOC modules
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class AuthProfile(models.Model):
     class Meta:
         verbose_name = "Auth Profile"
@@ -43,8 +59,12 @@ class AuthProfile(models.Model):
         ("G", "Local Group"),
         ("R", "RADIUS"),
         ("T", "TACACS+"),
+<<<<<<< HEAD
         ("L", "LDAP"),
         ("S", "Suggest")
+=======
+        ("L", "LDAP")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     ])
     user = models.CharField(
         "User", max_length=32, blank=True, null=True)
@@ -56,6 +76,7 @@ class AuthProfile(models.Model):
         "RO Community", blank=True, null=True, max_length=64)
     snmp_rw = models.CharField(
         "RW Community", blank=True, null=True, max_length=64)
+<<<<<<< HEAD
     # Integration with external NRI systems
     # Reference to remote system object has been imported from
     remote_system = DocumentReferenceField(RemoteSystem,
@@ -68,10 +89,13 @@ class AuthProfile(models.Model):
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.name
 
+<<<<<<< HEAD
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
@@ -144,3 +168,8 @@ class AuthProfileSuggestCLI(models.Model):
 
     def __unicode__(self):
         return self.auth_profile.name
+=======
+##
+from noc.pm.models.probeconfig import ProbeConfig
+post_save.connect(ProbeConfig.on_change_auth_profile, sender=AuthProfile)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

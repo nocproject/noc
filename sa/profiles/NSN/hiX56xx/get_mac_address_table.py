@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # NSN.hiX56xx.get_mac_address_table
 # sergey.sadovnikov@gmail.com
@@ -16,6 +17,25 @@ import re
 class Script(BaseScript):
     name = "NSN.hiX56xx.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## NSN.hiX56xx.get_mac_address_table
+## sergey.sadovnikov@gmail.com
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+import re
+
+
+class Script(NOCScript):
+    name = "NSN.hiX56xx.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile("^(?P<interfaces>\d+/\d+(?:/\d+)?)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(\S+)\s+(?P<type>\S+)\s+", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):

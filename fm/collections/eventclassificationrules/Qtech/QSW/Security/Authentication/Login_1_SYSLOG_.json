@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Security | Authentication | Login #1 (SYSLOG)",
+    "uuid": "bbb41b36-5641-46c1-8d4c-a0ff89c73474",
+    "description": "0000000304: Jan  2 14:43:55: torgovaja_4: %CMDLINE-5-LOGIN: The remote client 192.168.1.26 (admin) has logged in at terminal 1.",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CMDLINE-5-LOGIN: The remote client (?P<ip>\\S+) \\((?P<user>\\S+)\\) has logged in at (terminal|web)( \\d|)\\.$"
+        }
+    ]
+}

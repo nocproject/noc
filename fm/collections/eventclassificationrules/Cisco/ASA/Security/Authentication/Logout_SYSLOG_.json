@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "5f8ef015-f1cf-46a6-954a-e11f68cc1171",
+    "description": "%ASA-6-315011: SSH session from 10.250.1.18 on interface management for user \"\" disconnected by SSH server, reason: \"TCP connection closed\" (0x03)",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-6-315011: SSH session from (?P<ip>\\S+) on interface management for user \\\"(?P<user>.*)\\\" disconnected by SSH server, reason: .+"
+        }
+    ]
+}

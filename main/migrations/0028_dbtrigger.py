@@ -24,7 +24,11 @@ class Migration:
                 related_name="dbtrigger_postdelete_set", limit_choices_to={"interface":"IDBPostDelete"},blank=True,null=True)),
         ))
         db.send_create_signal('main', ['DBTrigger'])
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def backwards(self):
         db.delete_table('main_dbtrigger')

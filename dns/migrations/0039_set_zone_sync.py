@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 #
 # ---------------------------------------------------------------------
@@ -10,6 +11,19 @@
 import uuid
 import datetime
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+##
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import uuid
+import datetime
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from south.db import db
 from noc.lib.nosql import get_db
 

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | 802.11 | Disassociated (SYSLOG)",
+    "uuid": "0d8935ed-2dc8-4625-9728-7ffdb1bc518d",
+    "description": "2399: Aug 11 08:26:29.852 UTC: %DOT11-6-DISASSOC: Interface Dot11Radio0, Deauthenticating Station dc2b.6101.bcf8 Reason: Sending station has left the BSS",
+    "event_class__name": "Network | 802.11 | Disassociated",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%DOT11-6-DISASSOC: Interface (?P<interface>\\S+), Deauthenticating Station (?P<mac>\\S+) Reason: (?P<reason>.+)$"
+        }
+    ]
+}

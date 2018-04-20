@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # peer.update_whois_cache periodic task
 # ---------------------------------------------------------------------
@@ -14,18 +15,43 @@ import socket
 from noc.lib.periodic import Task as NOCTask
 from noc.settings import config
 from noc.core.fileutils import urlopen
+=======
+##----------------------------------------------------------------------
+## peer.update_whois_cache periodic task
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from collections import defaultdict
+import urllib2
+import socket
+## NOC modules
+from noc.lib.periodic import Task as NOCTask
+from noc.settings import config
+from noc.lib.fileutils import urlopen
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Task(NOCTask):
     name = "peer.update_whois_cache"
     description = "Update whois cache"
     wait_for = ["cm.prefix_list_pull"]
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     RIPE_AS_SET_MEMBERS = "ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.as-set.gz"
     RIPE_ROUTE_ORIGIN = "ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz"
     ARIN = "ftp://ftp.arin.net/pub/rr/arin.db"
     RADB = "ftp://ftp.radb.net/radb/dbase/radb.db.gz"
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     to_cache = [ARIN, RADB]
 
     def parse_rpsl(self, f, fields=None):
@@ -96,12 +122,21 @@ class Task(NOCTask):
         n = 0
         try:
             f = self.urlopen(url)
+<<<<<<< HEAD
         except urllib2.URLError as e:
             self.error("Failed to download %s: %s" % (url, e))
             self.download_status = False
             return 0
         except socket.error as e:
             self.error("Failed to download %s: %s" % (url, e))
+=======
+        except urllib2.URLError, why:
+            self.error("Failed to download %s: %s" % (url, why))
+            self.download_status = False
+            return 0
+        except socket.error, why:
+            self.error("Failed to download %s: %s" % (url, why))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             self.download_status = False
             return 0
         for o in parser(f, [key_field, values_field]):

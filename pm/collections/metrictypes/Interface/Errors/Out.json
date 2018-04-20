@@ -1,0 +1,6 @@
+{
+    "name": "Interface | Errors | Out",
+    "uuid": "b457bc43-47ab-4794-9437-511352264fe0",
+    "description": "Output errors",
+    "measure": "error/sec"
+}

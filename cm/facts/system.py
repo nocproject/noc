@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Common system settings
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Common system settings
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseFact
 
 
@@ -38,11 +49,19 @@ class System(BaseFact):
     @property
     def hostname(self):
         return self._hostname
+<<<<<<< HEAD
 
     @hostname.setter
     def hostname(self, value):
         self._hostname = value or None
 
+=======
+    
+    @hostname.setter
+    def hostname(self, value):
+        self._hostname = value or None
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @property
     def domain_name(self):
         return self._domain_name
@@ -54,7 +73,11 @@ class System(BaseFact):
     @property
     def profile(self):
         return self._profile
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @profile.setter
     def profile(self, value):
         self._profile = value or None
@@ -62,7 +85,11 @@ class System(BaseFact):
     @property
     def vendor(self):
         return self._vendor
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @vendor.setter
     def vendor(self, value):
         self._vendor = value or None
@@ -70,7 +97,11 @@ class System(BaseFact):
     @property
     def platform(self):
         return self._platform
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @platform.setter
     def platform(self, value):
         self._platform = value or None
@@ -78,7 +109,11 @@ class System(BaseFact):
     @property
     def version(self):
         return self._version
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @version.setter
     def version(self, value):
         self._version = value or None
@@ -86,7 +121,11 @@ class System(BaseFact):
     @property
     def timezone(self):
         return self._timezone
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @timezone.setter
     def timezone(self, value):
         self._timezone = value or None

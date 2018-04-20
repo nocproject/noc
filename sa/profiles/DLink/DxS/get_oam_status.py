@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS.get_oam_status
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetoamstatus import IGetOAMStatus
 class Script(BaseScript):
     name = "DLink.DxS.get_oam_status"
     interface = IGetOAMStatus
+=======
+##----------------------------------------------------------------------
+## DLink.DxS.get_oam_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetOAMStatus
+
+
+class Script(NOCScript):
+    name = "DLink.DxS.get_oam_status"
+    implements = [IGetOAMStatus]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(r"Port\s+", re.MULTILINE)
     rx_line1 = re.compile(r"\nRemote Client", re.MULTILINE)

@@ -1,0 +1,6 @@
+{
+    "name": "DB | Connections | Current",
+    "uuid": "cca0e4b7-e2b1-4b9a-a033-9c89bd4ff7ee",
+    "description": "Current database connections",
+    "measure": "conns"
+}

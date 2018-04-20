@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Zyxel.ZyNOS_EE.get_arp
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.core.script.base import BaseScript
 class Script(BaseScript):
     name = "Zyxel.ZyNOS_EE.get_arp"
     interface = IGetARP
+=======
+##----------------------------------------------------------------------
+## Zyxel.ZyNOS_EE.get_arp
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.interfaces import IGetARP
+from noc.sa.script import Script as NOCScript
+
+
+class Script(NOCScript):
+    name = "Zyxel.ZyNOS_EE.get_arp"
+    implements = [IGetARP]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_arp = re.compile(
         r"^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+\S+\s+\d+\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)",
@@ -24,18 +44,32 @@ class Script(BaseScript):
     def execute(self):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
             try:
                 mac_ip = {}
                 for mac, ip in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.2",
                     "1.3.6.1.2.1.4.22.1.3", cached=True):  # IP-MIB
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                mac_ip = {}
+                for mac, ip in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.2",
+                    "1.3.6.1.2.1.4.22.1.3", bulk=True, cached=True):  # IP-MIB
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     mac = ":".join(["%02x" % ord(c) for c in mac])
                     ip = ["%02x" % ord(c) for c in ip]
                     mac_ip[mac] = ".".join(str(int(c, 16)) for c in ip)
                 for i, mac in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.1",
+<<<<<<< HEAD
                     "1.3.6.1.2.1.4.22.1.2", cached=True):  # IP-MIB
                     mac = ":".join(["%02x" % ord(c) for c in mac])
                     interface = self.snmp.get("1.3.6.1.2.1.2.2.1.1." + str(i),
+=======
+                    "1.3.6.1.2.1.4.22.1.2", bulk=True, cached=True):  # IP-MIB
+                    mac = ":".join(["%02x" % ord(c) for c in mac])
+                    interface = self.snmp.get("1.3.6.1.2.1.2.2.1.1." + i,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         cached=True)  # IF-MIB
                     try:
                         r.append({"ip": mac_ip[mac],

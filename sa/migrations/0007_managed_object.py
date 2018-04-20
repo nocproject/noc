@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
@@ -10,6 +11,21 @@ from django.db import models
 from south.db import db
 # NOC modules
 from noc.core.profile.loader import loader as profile_loader
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## Third-party modules
+from south.db import db
+## NOC modules
+from noc.sa.models import profile_registry
+from noc.sa.protocols.sae_pb2 import TELNET, SSH, HTTP
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 class Migration:
     def forwards(self):
@@ -54,8 +70,16 @@ class Migration:
                  verbose_name=AdministrativeDomain)),
             ('activator',
              models.ForeignKey(Activator, verbose_name=Activator)),
+<<<<<<< HEAD
             ('profile_name', models.CharField("Profile", max_length=128)),
             ('scheme', models.IntegerField("Scheme")),
+=======
+            ('profile_name', models.CharField("Profile", max_length=128,
+                choices=profile_registry.choices)),
+            ('scheme', models.IntegerField("Scheme",
+                choices=[(TELNET, "telnet"), (SSH, "ssh"),
+                    (HTTP, "http")])),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             ('address', models.CharField("Address", max_length=64)),
             ('port',
              models.PositiveIntegerField("Port", blank=True, null=True))

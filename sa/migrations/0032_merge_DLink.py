@@ -4,9 +4,16 @@ from south.db import db
 from django.db import models
 
 class Migration:
+<<<<<<< HEAD
 
     def forwards(self):
         db.execute("UPDATE sa_managedobject SET profile_name='DLink.DxS' WHERE profile_name LIKE 'DLink.D_S3xxx'")
 
+=======
+    
+    def forwards(self):
+        db.execute("UPDATE sa_managedobject SET profile_name='DLink.DxS' WHERE profile_name LIKE 'DLink.D_S3xxx'")
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         pass

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ObjectModel model
@@ -9,11 +10,28 @@
 # Python modules
 import datetime
 # Third-party modules
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ObjectModel model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ObjectIdField, FileField,
                                 DateTimeField, IntField)
 from mongoengine import signals
+<<<<<<< HEAD
 # NOC modules
+=======
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from object import Object
 
 
@@ -23,8 +41,12 @@ class ObjectFile(Document):
     """
     meta = {
         "collection": "noc.objectfiles",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["object"]
     }
 

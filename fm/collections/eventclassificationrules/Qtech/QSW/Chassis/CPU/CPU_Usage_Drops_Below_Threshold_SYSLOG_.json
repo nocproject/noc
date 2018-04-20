@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Chassis | CPU | CPU Usage Drops Below Threshold (SYSLOG)",
+    "uuid": "3284a391-12c8-4b12-ac76-9b15c827dca5",
+    "description": "0000000047: Aug  9 23:05:53: %OAM-5-CPU_UNBUSY: cpu is not busy.",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OAM-5-CPU_UNBUSY: cpu is not busy\\.$"
+        }
+    ]
+}

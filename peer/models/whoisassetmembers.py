@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # WhoisASSetMembers model
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 import logging
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## WhoisASSetMembers model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 
@@ -19,11 +32,18 @@ class WhoisASSetMembers(Document):
     """
     meta = {
         "collection": "noc.whois.asset.members",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
     }
 
     as_set = StringField(primary_key=True)
+=======
+        "allow_inheritance": False
+    }
+
+    as_set = StringField(primary_key=True, unique=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     members = ListField(StringField())
 
     def __unicode__(self):

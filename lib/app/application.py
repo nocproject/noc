@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Application class
 # ---------------------------------------------------------------------
@@ -8,10 +9,22 @@
 
 # Python modules
 from __future__ import absolute_import
+=======
+##----------------------------------------------------------------------
+## Application class
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import logging
 import os
 import datetime
 import functools
+<<<<<<< HEAD
 # Django modules
 from django.template import RequestContext
 from django.http import (HttpResponse, HttpResponseRedirect,
@@ -19,6 +32,17 @@ from django.http import (HttpResponse, HttpResponseRedirect,
 from django.shortcuts import render_to_response
 from django.db import connection
 from django.shortcuts import get_object_or_404
+=======
+import types
+## Django modules
+from django.template import RequestContext
+from django.http import HttpResponse, HttpResponseRedirect,\
+                        HttpResponseForbidden, HttpResponseNotFound
+from django.shortcuts import render_to_response
+from django.db import connection
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from django.utils.html import escape
 from django.template import loader
 from django import forms
@@ -26,6 +50,7 @@ from django.utils.datastructures import SortedDict
 from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
 from django.http import Http404
+<<<<<<< HEAD
 import ujson
 import six
 # NOC modules
@@ -35,6 +60,18 @@ from noc.sa.interfaces.base import DictParameter
 from noc.core.cache.base import cache
 from .access import HasPerm, Permit, Deny
 from .site import site
+=======
+## NOC modules
+from access import HasPerm, Permit, Deny
+from site import site
+from noc.lib.forms import NOCForm
+from noc import settings
+from noc.lib.serialize import json_encode, json_decode
+from noc.sa.interfaces import DictParameter
+from noc.lib.perf import MetricsHub
+from noc.lib.daemon.base import _daemon
+from noc.lib.fileutils import safe_append
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,
@@ -54,16 +91,26 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.url = url
         f.url_name = url_name
         # Process access
+<<<<<<< HEAD
         if isinstance(access, bool):
             f.access = Permit() if access else Deny()
         elif isinstance(access, six.string_types):
+=======
+        if type(access) == bool:
+            f.access = Permit() if access else Deny()
+        elif isinstance(access, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             f.access = HasPerm(access)
         else:
             f.access = access
         f.menu = menu
         f.method = method
         f.api = api
+<<<<<<< HEAD
         if isinstance(validate, dict):
+=======
+        if type(validate) == dict:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             f.validate = DictParameter(attrs=validate)
         else:
             f.validate = validate
@@ -87,7 +134,11 @@ class FormErrorsContext(object):
             for ve in exc_val:
                 for k in ve:
                     v = ve[k]
+<<<<<<< HEAD
                     if not isinstance(v, list):
+=======
+                    if type(v) != list:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         v = [v]
                     self.form._errors[k] = self.form.error_class(v)
             return True
@@ -99,6 +150,10 @@ class ApplicationBase(type):
     """
 
     def __new__(cls, name, bases, attrs):
+<<<<<<< HEAD
+=======
+        global site
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         m = type.__new__(cls, name, bases, attrs)
         for name in attrs:
             m.add_to_class(name, attrs[name])
@@ -110,7 +165,11 @@ class ApplicationBase(type):
 class Application(object):
     """
     Basic application class.
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     Application combined by set of methods, decorated with @view.
     Each method accepts requests and returns reply
     """
@@ -120,6 +179,7 @@ class Application(object):
     glyph = "file"
     extra_permissions = []  # List of additional permissions, not related with views
     implied_permissions = {}  # permission -> list of implied permissions
+<<<<<<< HEAD
     link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
@@ -144,6 +204,30 @@ class Application(object):
         self.app_id = "%s.%s" % (self.module, self.app)
         self.menu_url = None   # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
+=======
+
+    Form = NOCForm  # Shortcut for form class
+    config = settings.config
+
+    TZ = get_current_timezone()
+    METRICS = []
+
+    def __init__(self, site):
+        self.site = site
+        parts = self.__class__.__module__.split(".")
+        self.module = parts[1]
+        self.app = parts[3]
+        self.module_title = __import__("noc.%s" % self.module, {}, {},
+            ["MODULE_NAME"]).MODULE_NAME
+        self.app_id = "%s.%s" % (self.module, self.app)
+        self.menu_url = None   # Set by site.autodiscover()
+        self.logger = logging.getLogger(self.app_id)
+        metrics = []
+        self.metrics = MetricsHub(
+            (_daemon.metrics if _daemon else "noc.")+ "apps.%s." % self.app_id,
+            *(metrics + self.METRICS)
+        )
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def add_to_class(cls, name, value):
@@ -160,6 +244,7 @@ class Application(object):
                  menu=None, method=None, validate=None, api=False):
         # Decorate function to clear attributes
         f = functools.partial(func)
+<<<<<<< HEAD
         f.__self__ = func.__self__
         f.__name__ = func.__name__
         # Add to class
@@ -168,6 +253,15 @@ class Application(object):
                        menu=menu, method=method, validate=validate,
                        api=api)(f))
         site.add_contributor(cls, func.__self__)
+=======
+        f.im_self = func.im_self
+        f.__name__ = func.__name__
+        # Add to class
+        cls.add_to_class(name,
+            view(url=url, access=access, url_name=url_name, menu=menu,
+                method=method, validate=validate, api=api)(f))
+        site.add_contributor(cls, func.im_self)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @property
     def js_app_class(self):
@@ -177,6 +271,7 @@ class Application(object):
         """
         Return desktop launch information
         """
+<<<<<<< HEAD
         from noc.main.models.permission import Permission
 
         user = request.user
@@ -187,14 +282,31 @@ class Application(object):
         # Leave only application permissions
         # and strip <module>:<app>:
         app_perms = [p[lps:] for p in user_perms & self.get_permissions()]
+=======
+        from noc.main.models import Permission
+
+        user = request.user
+        ps = self.get_app_id().replace(".", ":") + ":"
+        lps = len(ps)
+        if "PERMISSIONS" in request.session:
+            perms = request.session["PERMISSIONS"]
+        else:
+            perms = Permission.get_effective_permissions(user)
+        perms = [p[lps:] for p in perms if p.startswith(ps)]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return {
             "class": self.js_app_class,
             "title": unicode(self.title),
             "params": {
                 "url": self.menu_url,
+<<<<<<< HEAD
                 "permissions": app_perms,
                 "app_id": self.app_id,
                 "link": self.link
+=======
+                "permissions": perms,
+                "app_id": self.app_id
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }
         }
 
@@ -204,10 +316,14 @@ class Application(object):
         Returns application id
         """
         parts = cls.__module__.split(".")
+<<<<<<< HEAD
         if parts[1] == "custom":
             return "%s.%s" % (parts[5], parts[6])
         else:
             return "%s.%s" % (parts[4], parts[5])
+=======
+        return "%s.%s" % (parts[1], parts[3])
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @property
     def base_url(self):
@@ -226,6 +342,7 @@ class Application(object):
         """
         Send a message to user
         """
+<<<<<<< HEAD
         if "noc_user" in request.COOKIES:
             session_id = request.COOKIES["noc_user"].rsplit("|", 1)[-1]
             key = "msg-%s" % session_id
@@ -235,25 +352,40 @@ class Application(object):
                 ttl=30,
                 version=1
             )
+=======
+        messages.info(request, unicode(message))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_template_path(self, template):
         """
         Return path to named template
         """
+<<<<<<< HEAD
         if isinstance(template, six.string_types):
+=======
+        if isinstance(template, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             template = [template]
         r = []
         for t in template:
             r += [
+<<<<<<< HEAD
                 os.path.join("services", "web", "apps", self.module,
                              self.app, "templates", t),
+=======
+                os.path.join(self.module, "apps", self.app, "templates", t),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 os.path.join(self.module, "templates", t),
                 os.path.join("templates", t)
             ]
         return r
 
+<<<<<<< HEAD
     @staticmethod
     def get_object_or_404(*args, **kwargs):
+=======
+    def get_object_or_404(self, *args, **kwargs):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Shortcut to get_object_or_404
         """
@@ -267,7 +399,11 @@ class Application(object):
             # Django model
             return get_object_or_404(*args, **kwargs)
 
+<<<<<<< HEAD
     def render(self, request, template, dict=None, **kwargs):
+=======
+    def render(self, request, template, dict={}, **kwargs):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Render template within context
         """
@@ -276,6 +412,7 @@ class Application(object):
                                   context_instance=RequestContext(request,
                                                                   {"app": self}))
 
+<<<<<<< HEAD
     def render_template(self, template, dict=None, **kwargs):
         """
         Render template to string
@@ -286,24 +423,46 @@ class Application(object):
 
     @staticmethod
     def render_response(data, content_type="text/plain"):
+=======
+    def render_template(self, template, dict={}, **kwargs):
+        """
+        Render template to string
+        """
+        tp = self.get_template_path(template)
+        return loader.render_to_string(tp, dict or kwargs)
+
+    def render_response(self, data, content_type="text/plain"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Render arbitrary Content-Type response
         """
         return HttpResponse(data, content_type=content_type)
 
+<<<<<<< HEAD
     @staticmethod
     def render_plain_text(text, mimetype="text/plain"):
+=======
+    def render_plain_text(self, text, mimetype="text/plain"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Render plain/text response
         """
         return HttpResponse(text, mimetype=mimetype)
 
+<<<<<<< HEAD
     @staticmethod
     def render_json(obj, status=200):
         """
         Create serialized JSON-encoded response
         """
         return HttpResponse(ujson.dumps(obj),
+=======
+    def render_json(self, obj, status=200):
+        """
+        Create serialized JSON-encoded response
+        """
+        return HttpResponse(json_encode(obj),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                             mimetype="text/json", status=status)
 
     def render_success(self, request, subject=None, text=None):
@@ -399,6 +558,12 @@ class Application(object):
         """
         return escape(s)
 
+<<<<<<< HEAD
+=======
+    ##
+    ## Logging
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def debug(self, message):
         self.logger.debug(message)
 
@@ -465,7 +630,11 @@ class Application(object):
             if "access" in c:
                 if isinstance(c["access"], HasPerm):
                     p.add(c["access"].get_permission(self))
+<<<<<<< HEAD
                 elif isinstance(c["access"], six.string_types):
+=======
+                elif isinstance(c["access"], basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     p.add("%s:%s" % (prefix, c["access"]))
         # extra_permissions
         if callable(self.extra_permissions):
@@ -505,7 +674,11 @@ class Application(object):
         Add custom fields to django form class
         """
         from noc.main.models import CustomField
+<<<<<<< HEAD
         fields = []
+=======
+        l = []
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for f in CustomField.table_fields(table):
             if f.is_hidden:
                 continue
@@ -536,8 +709,13 @@ class Application(object):
                 ff = forms.DateTimeField(required=False, label=f.label)
             else:
                 raise ValueError("Invalid field type: '%s'" % f.type)
+<<<<<<< HEAD
             fields += [(str(f.name), ff)]
         form.base_fields.update(SortedDict(fields))
+=======
+            l += [(str(f.name), ff)]
+        form.base_fields.update(SortedDict(l))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return form
 
     def apply_custom_fields(self, o, v, table):
@@ -594,6 +772,102 @@ class Application(object):
         else:
             raise Exception("Invalid to_json type")
 
+<<<<<<< HEAD
+=======
+    def check_mrt_access(self, request, name):
+        mc = self.mrt_config[name]
+        if "access" not in mc:
+            return True
+        access = mc["access"]
+        if type(access) == bool:
+            access = Permit() if access else Deny()
+        elif isinstance(access, basestring):
+            access = HasPerm(access)
+        else:
+            access = access
+        return access.check(self, request.user)
+
+    @view(url="^mrt/(?P<name>[^/]+)/$", method=["POST"],
+          access=True, api=True)
+    def api_run_mrt(self, request, name):
+        from noc.sa.models import ReduceTask, ManagedObjectSelector
+
+        # Check MRT configured
+        if name not in self.mrt_config:
+            return self.response_not_found("MRT %s is not found" % name)
+        # Check MRT access
+        if not self.check_mrt_access(request, name):
+            return self.response_forbidden("Forbidden")
+        #
+        data = json_decode(request.raw_post_data)
+        if "selector" not in data:
+            return self.response_bad_request("'selector' is missed")
+        # Run MRT
+        mc = self.mrt_config[name]
+        map_params = data.get("map_params", {})
+        map_params = dict((str(k), v) for k, v in map_params.iteritems())
+        objects = ManagedObjectSelector.resolve_expression(data["selector"])
+        task = ReduceTask.create_task(
+            objects,
+            "pyrule:mrt_result", {},
+            mc["map_script"], map_params,
+            mc.get("timeout", 0)
+        )
+        if mc["map_script"] == "commands" and settings.LOG_MRT_COMMAND:
+            # Log commands
+            now = datetime.datetime.now()
+            safe_append(
+                os.path.join(
+                    settings.LOG_MRT_COMMAND,
+                    "commands",
+                    "%04d" % now.year,
+                    "%02d" % now.month,
+                    "%02d.log" % now.day
+                ),
+                "%s\nDate: %s\nObjects: %s\nUser: %s\nCommands:\n%s\n" % (
+                    "-" * 72,
+                    now.isoformat(),
+                    ",".join(str(o) for o in objects),
+                    request.user.username,
+                    "    " + "\n".join(map_params["commands"]).replace("\n", "\n    ")
+                )
+            )
+        return task.id
+
+    @view(url="^mrt/(?P<name>[^/]+)/(?P<task>\d+)/$", method=["GET"],
+          access=True, api=True)
+    def api_get_mrt_result(self, request, name, task):
+        from noc.sa.models import ReduceTask, ManagedObjectSelector
+
+        # Check MRT configured
+        if name not in self.mrt_config:
+            return self.response_not_found("MRT %s is not found" % name)
+        # Check MRT access
+        if not self.check_mrt_access(request, name):
+            return self.response_forbidden("Forbidden")
+        #
+        t = self.get_object_or_404(ReduceTask, id=int(task))
+        try:
+            r = t.get_result(block=False)
+        except ReduceTask.NotReady:
+            # Not ready
+            completed = t.maptask_set.filter(status__in=("C", "F")).count()
+            total = t.maptask_set.count()
+            return {
+                "ready": False,
+                "progress": int(completed * 100 / total),
+                "max_timeout": (t.stop_time - datetime.datetime.now()).seconds,
+                "result": None
+            }
+        # Return result
+        return {
+            "ready": True,
+            "progress": 100,
+            "max_timeout": 0,
+            "result": r
+        }
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @view(url="^launch_info/$", method=["GET"],
           access="launch", api=True)
     def api_launch_info(self, request):

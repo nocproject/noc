@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.get_vlans
 # ---------------------------------------------------------------------
@@ -20,6 +21,29 @@ class Script(BaseScript):
 
     def execute(self):
         if self.has_snmp():
+=======
+##----------------------------------------------------------------------
+## AlliedTelesis.AT8000S.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## coded by azhur
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+import re
+
+
+class Script(NOCScript):
+    name = "AlliedTelesis.AT8000S.get_vlans"
+    implements = [IGetVlans]
+    rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s")
+
+    def execute(self):
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Try SNMP first
             try:
                 oids = {}

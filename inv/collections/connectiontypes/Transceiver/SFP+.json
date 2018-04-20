@@ -1,0 +1,7 @@
+{
+    "name": "Transceiver | SFP+",
+    "uuid": "6086d594-515d-400c-8351-aceff54e6d2b",
+    "description": "SFP+ transceiver slot",
+    "c_group": [],
+    "genders": "mf"
+}

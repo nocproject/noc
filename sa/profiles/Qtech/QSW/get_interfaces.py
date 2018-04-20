@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_interfaces
 # ---------------------------------------------------------------------
@@ -16,6 +17,27 @@ from noc.core.ip import IPv6
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+# Python modules
+from __future__ import with_statement
+import re
+from collections import defaultdict
+# NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+from noc.lib.ip import IPv6
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Qtech.QSW.get_interfaces
     @todo: VRF support
@@ -26,7 +48,11 @@ class Script(BaseScript):
     @todo: Q-in-Q
     """
     name = "Qtech.QSW.get_interfaces"
+<<<<<<< HEAD
     interface = IGetInterfaces
+=======
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_mac = re.compile(r"^The mac-address of interface is\s+(?P<mac>\S+)$",
         re.MULTILINE)
@@ -40,7 +66,11 @@ class Script(BaseScript):
         re.DOTALL|re.MULTILINE)
 
     rx_status = re.compile(
+<<<<<<< HEAD
         r"^\s*(?:Fast|Gigabit)?\s*Ethernet\s+(?P<interface>\S+)\s+(?:is|current state:)\s+(?P<admin_status>(enabled|disabled)),\s+port+\s+link+\s+is\s+(?P<oper_status>(up|down))",
+=======
+        r"^\s*Ethernet\s+(?P<interface>\S+)\s+is\s+(?P<admin_status>(enabled|disabled)),\s+port+\s+link+\s+is\s+(?P<oper_status>(up|down))",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE)
 
     types = {
@@ -80,7 +110,11 @@ class Script(BaseScript):
         """
         # SNMP working but without IP
         
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 # Get mac
                 mac = self.scripts.get_chassis_id()

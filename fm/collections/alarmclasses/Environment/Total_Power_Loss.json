@@ -1,0 +1,16 @@
+{
+    "name": "Environment | Total Power Loss",
+    "$collection": "fm.alarmclasses",
+    "uuid": "c818e3e4-24e4-43ce-b85f-10b89b41642b",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "CRITICAL",
+    "vars": [
+
+    ],
+    "subject_template": "Power Loss",
+    "body_template": "Total power loss on all PSUs",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

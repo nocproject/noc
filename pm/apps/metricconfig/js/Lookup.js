@@ -1,0 +1,12 @@
+//---------------------------------------------------------------------
+// NOC.pm.metricconfig.Lookup
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2014 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.pm.metricconfig.Lookup");
+
+Ext.define("NOC.pm.metricconfig.Lookup", {
+    extend: "NOC.core.Lookup",
+    url: "/pm/metricconfig/lookup/"
+});

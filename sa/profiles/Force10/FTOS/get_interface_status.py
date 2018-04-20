@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_interface_status
 # ---------------------------------------------------------------------
@@ -9,23 +10,48 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
+=======
+##----------------------------------------------------------------------
+## Force10.FTOS.get_interface_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetInterfaceStatus
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import re
 
 rx_interface_status = re.compile(r"^(?P<interface>\S+\s+\S+)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$", re.IGNORECASE)
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Force10.FTOS.get_interface_status"
     interface = IGetInterfaceStatus
 
     def execute(self, interface=None):
         if self.has_snmp():
+=======
+class Script(noc.sa.script.Script):
+    name = "Force10.FTOS.get_interface_status"
+    implements = [IGetInterfaceStatus]
+
+    def execute(self, interface=None):
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 # Get interface status
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
+<<<<<<< HEAD
                     "1.3.6.1.2.1.2.2.1.8"):
+=======
+                    "1.3.6.1.2.1.2.2.1.8", bulk=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     # ifOperStatus up(1)
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r

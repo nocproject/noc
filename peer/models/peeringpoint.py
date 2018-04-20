@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # PeeringPoint model
 # ---------------------------------------------------------------------
@@ -15,6 +16,21 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.profile import Profile
 from noc.core.model.fields import DocumentReferenceField
 from .asn import AS
+=======
+##----------------------------------------------------------------------
+## PeeringPoint model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from noc.main.models import NotificationGroup
+from asn import AS
+from noc.sa.models import profile_registry
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.rpsl import rpsl_format
 
 
@@ -32,7 +48,12 @@ class PeeringPoint(models.Model):
     local_as = models.ForeignKey(AS, verbose_name="Local AS")
     router_id = models.IPAddressField("Router-ID", unique=True)
     # @todo: Replace with managed object
+<<<<<<< HEAD
     profile = DocumentReferenceField(Profile, null=False, blank=False)
+=======
+    profile_name = models.CharField("Profile", max_length=128,
+                                    choices=profile_registry.choices)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     communities = models.CharField(
         "Import Communities", max_length=128,
         blank=True, null=True)
@@ -79,6 +100,13 @@ class PeeringPoint(models.Model):
         return pls.items()
 
     @property
+<<<<<<< HEAD
+=======
+    def profile(self):
+        return profile_registry[self.profile_name]()
+
+    @property
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def rpsl(self):
         ifaddrs = set()
         peers = {}

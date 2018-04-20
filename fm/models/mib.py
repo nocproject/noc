@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # MIB model
 # ---------------------------------------------------------------------
@@ -7,15 +8,32 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+=======
+##----------------------------------------------------------------------
+## MIB model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import subprocess
 import re
 import imp
 import datetime
 import os
+<<<<<<< HEAD
 # NOC modules
 import noc.lib.nosql as nosql
 from noc.config import config
 from noc.core.fileutils import temporary_file, safe_rewrite
+=======
+## NOC modules
+import noc.lib.nosql as nosql
+from noc.settings import config
+from noc.lib.fileutils import temporary_file, safe_rewrite
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from error import (MIBNotFoundException, MIBRequiredException,
                    OIDCollision)
 from mibpreference import MIBPreference
@@ -24,9 +42,15 @@ from syntaxalias import SyntaxAlias
 from oidalias import OIDAlias
 from noc.lib.validators import is_oid
 from noc.lib.escape import fm_unescape, fm_escape
+<<<<<<< HEAD
 from noc.core.snmp.util import render_tc
 
 # Regular expression patterns
+=======
+from noc.lib.snmputils import render_tc
+
+## Regular expression patterns
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 rx_module_not_found = re.compile(r"{module-not-found}.*`([^']+)'")
 rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 
@@ -34,8 +58,12 @@ rx_tailing_numbers = re.compile(r"^(\S+?)((?:\.\d+)*)$")
 class MIB(nosql.Document):
     meta = {
         "collection": "noc.mibs",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = nosql.StringField(required=True, unique=True)
     description = nosql.StringField(required=False)
@@ -47,8 +75,11 @@ class MIB(nosql.Document):
     version = nosql.IntField(required=False, default=0)
 
     MIBRequiredException = MIBRequiredException
+<<<<<<< HEAD
     MIB_PATH = ["var/mibs/local", "var/mibs/dist"]
     SMILINT_PATH = ["/usr/local/bin/"]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return self.name
@@ -58,7 +89,11 @@ class MIB(nosql.Document):
         Returns MIB text
         :return:
         """
+<<<<<<< HEAD
         for d in self.MIB_PATH:
+=======
+        for d in ["local/share/mibs", "share/mibs"]:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             path = os.path.join(d, self.name + ".mib")
             if os.path.isfile(path):
                 with open(path) as f:
@@ -116,11 +151,22 @@ class MIB(nosql.Document):
         """
         if not os.path.exists(path):
             raise ValueError("File not found: %s" % path)
+<<<<<<< HEAD
         # Pass MIB through smilint to detect missed modules
         f = subprocess.Popen(
             [config.path.smilint, "-m", path],
             stderr=subprocess.PIPE,
             env={"SMIPATH": ":".join(cls.MIB_PATH)}).stderr
+=======
+        # Build SMIPATH variable for smidump
+        # to exclude locally installed MIBs
+        smipath = ["share/mibs", "local/share/mibs"]
+        # Pass MIB through smilint to detect missed modules
+        f = subprocess.Popen(
+            [config.get("path", "smilint"), "-m", path],
+            stderr=subprocess.PIPE,
+            env={"SMIPATH": ":".join(smipath)}).stderr
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for l in f:
             match = rx_module_not_found.search(l.strip())
             if match:
@@ -129,9 +175,15 @@ class MIB(nosql.Document):
         # Convert MIB to python module and load
         with temporary_file() as p:
             subprocess.check_call(
+<<<<<<< HEAD
                 [config.path.smidump, "-k", "-q",
                  "-f", "python", "-o", p, path],
                 env={"SMIPATH": ":".join(cls.MIB_PATH)})
+=======
+                [config.get("path", "smidump"), "-k", "-q",
+                 "-f", "python", "-o", p, path],
+                env={"SMIPATH": ":".join(smipath)})
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Add coding string
             with open(p) as f:
                 data = unicode(f.read(), "ascii", "ignore").encode("ascii")
@@ -476,5 +528,10 @@ class MIB(nosql.Document):
         return r
 
 
+<<<<<<< HEAD
 # Avoid circular references
 from mibdata import MIBData
+=======
+## Avoid circular references
+from mibdata import MIBData
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

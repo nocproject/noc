@@ -1,10 +1,19 @@
 #!/bin/sh
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # NOC CLI
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## NOC CLI
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 cd `dirname $0`
 
@@ -13,6 +22,7 @@ error_exit ( ) {
     exit 1
 }
 
+<<<<<<< HEAD
 if [ -f "$PWD/.env" ]; then
     . "$PWD/.env"
 fi
@@ -39,10 +49,39 @@ if [ -f "./commands/$CMD.py" ]; then
 fi
 
 case "$1" in
+=======
+case "$1" in
+    "generate-ssh-keys")
+        exec ./scripts/generate-ssh-keys.py "$@"
+        ;;
+    "get-uuid")
+        exec ./scripts/get-uuid.py
+        ;;
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     "paste")
         shift
         exec ./scripts/paste.py "$@"
         ;;
+<<<<<<< HEAD
+=======
+    "runserver")
+        shift
+        if [ $# -ge 1 ]; then
+            exec ./scripts/noc-web.py -f start -l $1
+        else
+            exec ./scripts/noc-web.py -f start
+        fi
+        ;;
+    "upgrade")
+        exec ./scripts/upgrade
+        ;;
+    "notebook")
+        if [ ! -d ".ipython" ]; then
+            mkdir .ipython || error_exit "Cannot create .ipython directory"
+        fi
+        exec ./bin/ipython notebook --notebook-dir=.ipython
+        ;;
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     *)
         exec ./bin/python manage.py "$@"
         ;;

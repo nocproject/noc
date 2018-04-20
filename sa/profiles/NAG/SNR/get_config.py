@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # NAG.SNR.get_config
 # ---------------------------------------------------------------------
@@ -14,15 +15,39 @@ from noc.sa.interfaces.igetconfig import IGetConfig
 class Script(BaseScript):
     name = "NAG.SNR.get_config"
     interface = IGetConfig
+=======
+##----------------------------------------------------------------------
+## NAG.SNR.get_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetConfig
+
+
+class Script(NOCScript):
+    name = "NAG.SNR.get_config"
+    implements = [IGetConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, TFTP_root='', TFTP_IP='', file_name=''):
         # Try snmp first
         #
         #
         # See bug NOC-291: http://bt.nocproject.org/browse/NOC-291
+<<<<<<< HEAD
         #
         #
         """        if self.snmp and self.access_profile.snmp_rw and TFTP_IP and file_name:
+=======
+        raise Exception("Not implemented")
+        #
+        #
+        if self.snmp and self.access_profile.snmp_rw and TFTP_IP and file_name:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 # The ConfigCopyProtocol is set to TFTP
                 self.snmp.set('1.3.6.1.4.1.9.9.96.1.1.1.1.2.111', 1)
@@ -43,7 +68,13 @@ class Script(BaseScript):
                 return self.cleaned_config(config)
             except self.snmp.TimeOutError:
                 pass
+<<<<<<< HEAD
         """
         # Fallback to CLI
         config = self.cli("show running-config")
         return self.cleaned_config(config)
+=======
+
+        # Fallback to CLI
+        raise Exception("Not implemented")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

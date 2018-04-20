@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Cisco_CLI.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Cisco_CLI.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -27,6 +37,23 @@ class Script(BaseScript):
                               re.MULTILINE)
     rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")
     rx_name = re.compile(r"^(?P<name>\S+ \S+) is (?P<status>UP|DOWN)\s*,",
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
+
+
+class Script(NOCScript):
+    name = "DLink.DxS_Cisco_CLI.get_interfaces"
+    implements = [IGetInterfaces]
+
+    rx_line = re.compile(
+        r"\w*==========================\s+"
+        r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE)
+    rx_line_vlan = re.compile(r"\w*==========================\s+VLAN",
+                              re.MULTILINE)
+    rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")
+    rx_name = re.compile(r"^(?P<name>\S+.+) is (?P<status>.\S+)(|\s+),",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                          re.MULTILINE)
     rx_descr = re.compile(
         r"\s+interface's description:(\"\"|\"(?P<description>.+)\")",
@@ -43,6 +70,7 @@ class Script(BaseScript):
                        re.MULTILINE | re.IGNORECASE)
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
     rx_ospf = re.compile(r"^(?P<if_ospf>.+)\s+is up, line protocol is up",
+<<<<<<< HEAD
                          re.MULTILINE | re.IGNORECASE)
     rx_igmp = re.compile(
         r"^\s*Interface (?P<if_igmp>.+?)\s+\(Index \d+\)\s*\n IGMP Active",
@@ -53,6 +81,18 @@ class Script(BaseScript):
     rx_lldp_gs = re.compile(r"Global\s+status\s+of\s+LLDP\s+:\s+Enable")
     rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
                          re.MULTILINE | re.IGNORECASE)
+=======
+                         re.IGNORECASE)
+    rx_igmp = re.compile(
+        r"^Interface (?P<if_igmp>.+?)\s+\(Index \d+\)\s*\n IGMP Active",
+        re.MULTILINE | re.IGNORECASE)
+    rx_pim = re.compile(
+        r"^\d+\S+\s+(?P<if_pim>.+?)\s+\d+\s+v\S+\s+\d+\s+\d+",
+        re.MULTILINE | re.IGNORECASE)
+    rx_lldp_gs = re.compile(r"Global\s+status\s+of\s+LLDP\s+:\s+Enable")
+    rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
+                         re.IGNORECASE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     types = {
         "Gi": "physical",    # GigabitEthernet
         "Lo": "loopback",    # Loopback
@@ -93,7 +133,11 @@ class Script(BaseScript):
             for match in self.rx_ospf.finditer(c):
                 if_ospf = match.group("if_ospf")
                 iface_ospf = self.profile.convert_interface_name(if_ospf)
+<<<<<<< HEAD
                 ospf += [iface_ospf]
+=======
+                ospf += [if_ospf]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         igmp = []
         try:
@@ -103,7 +147,11 @@ class Script(BaseScript):
         for match in self.rx_igmp.finditer(c):
             if_igmp = match.group("if_igmp")
             iface_igmp = self.profile.convert_interface_name(if_igmp)
+<<<<<<< HEAD
             igmp += [iface_igmp]
+=======
+            igmp += [if_igmp]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         pim = []
         try:
@@ -113,7 +161,11 @@ class Script(BaseScript):
         for match in self.rx_pim.finditer(c):
             if_pim = match.group("if_pim")
             iface_pim = self.profile.convert_interface_name(if_pim)
+<<<<<<< HEAD
             pim += [iface_pim]
+=======
+            pim += [if_pim]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         r = []
         try:
@@ -195,7 +247,11 @@ class Script(BaseScript):
             match = self.rx_name.search(s)
             if not match:
                 continue
+<<<<<<< HEAD
             iface = self.profile.convert_interface_name(match.group("name"))
+=======
+            iface = match.group("name")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             status = match.group("status")
             match = self.rx_ip.search(s)
             ip = match.group("ip")
@@ -241,5 +297,8 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["description"] = description
             r += [iface]
 
+<<<<<<< HEAD
         #quit()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return [{"interfaces": r}]

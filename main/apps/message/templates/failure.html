@@ -1,0 +1,10 @@
+{% extends "template.html" %}
+{% block title%}Failure: {{subject}}{% endblock %}
+{% block content %}
+<H1>Failure: {{subject}}</H1>
+{%if text %}
+<pre>{{text}}</pre>
+{%else%}
+Operation failed!!!
+{%endif%}
+{% endblock %}

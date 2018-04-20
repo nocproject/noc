@@ -1,6 +1,10 @@
 
 from south.db import db
+<<<<<<< HEAD
 from django.db import models
+=======
+from noc.main.models import *
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 MIME_TYPES=[
     (".pdf"      , "application/pdf"),
@@ -75,10 +79,18 @@ MIME_TYPES=[
 ]
 
 class Migration:
+<<<<<<< HEAD
 
     def forwards(self):
         for ext,mime_type in MIME_TYPES:
             db.execute("INSERT INTO main_mimetype(extension,mime_type) VALUES(%s,%s)",[ext,mime_type])
 
+=======
+    
+    def forwards(self):
+        for ext,mime_type in MIME_TYPES:
+            db.execute("INSERT INTO main_mimetype(extension,mime_type) VALUES(%s,%s)",[ext,mime_type])
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         "Write your backwards migration here"

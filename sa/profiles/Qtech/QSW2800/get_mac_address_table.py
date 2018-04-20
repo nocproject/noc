@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -76,6 +77,32 @@ class Script(BaseScript):
         return r
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(NOCScript):
+    name = "Qtech.QSW2800.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+
+    rx_line = re.compile(
+        r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)\s+\S+\s+"
+        r"(?P<iface>\S+)",
+        re.MULTILINE)
+
+    def execute(self, interface=None, vlan=None, mac=None):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r = []
         cmd = "show mac-address-table"
         if mac is not None:
@@ -85,6 +112,7 @@ class Script(BaseScript):
         if vlan is not None:
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
+<<<<<<< HEAD
             iface = match.group("iface")
             # found on QSW-3470-10T-AC-POE fw 1.1.5.6
             if match.group("type").lower() == "unknown":
@@ -105,4 +133,20 @@ class Script(BaseScript):
             if iface == 'CPU':
                 m["type"] = "C"
             r += [m]
+=======
+                iface = match.group("iface")
+                if iface == 'CPU':
+                    continue
+                r.append({
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
+                    "interfaces": [iface],
+                    "type": {
+                        "dynamic": "D",
+                        "static": "S",
+                        "permanent": "S",
+                        "self": "S"
+                        }[match.group("type").lower()],
+                    })
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return r

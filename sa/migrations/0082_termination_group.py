@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2014 The NOC Project
 # See LICENSE for details
@@ -7,13 +8,29 @@
 # Django modules
 from django.db import models
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from south.db import db
 
 
 class Migration:
+<<<<<<< HEAD
 
     def forwards(self):
 
+=======
+    
+    def forwards(self):
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model "TerminationGroup"
         db.create_table("sa_terminationgroup", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
@@ -59,7 +76,11 @@ class Migration:
                 related_name="selector_service_terminator_set"
             )
         )
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         db.delete_column("sa_managedobjectselector", "filter_termination_group_id")
         db.delete_column("sa_managedobjectselector", "filter_service_terminator_id")

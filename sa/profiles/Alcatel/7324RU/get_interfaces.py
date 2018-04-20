@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.7324RU.get_interfaces
 # ----------------------------------------------------------------------
@@ -19,6 +20,28 @@ from collections import defaultdict
 class Script(BaseScript):
     name = "Alcatel.7324RU.get_interfaces"
     interface = IGetInterfaces
+=======
+##----------------------------------------------------------------------
+## Alcatel.7324RU.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.text import *
+from noc.lib.ip import *
+from collections import defaultdict
+
+
+class Script(NOCScript):
+    name = "Alcatel.7324RU.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_vlan = re.compile(
         r" *(?P<vid>\d+)[ ]*(?P<vname>\S+)\n[ 0-9\n]+"
         r" +(?P<vstatus>enabled|disabled)[ 0-9]+\n([ \-xnf]+)\n"
@@ -43,7 +66,11 @@ class Script(BaseScript):
             "admin_status": True,
             "enabled_protocols": [],
             "mac": mac,
+<<<<<<< HEAD
             "name": parse_table(ipif)[0][0],
+=======
+            "name": vl,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "oper_status": True,
             "subinterfaces": [{
                 "admin_status": True,
@@ -51,7 +78,11 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "ipv4_addresses": ip,
                 "mac": mac,
+<<<<<<< HEAD
                 "name": parse_table(ipif)[0][0],
+=======
+                "name": vl,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 "oper_status": True,
                 "vlan_ids": [vl]
             }],
@@ -59,7 +90,11 @@ class Script(BaseScript):
         }]
         # ADSL ports
         phy_ports = self.cli("adsl show")
+<<<<<<< HEAD
         oper_ports = self.cli("statistics adsl show")  # noqa
+=======
+        oper_ports = self.cli("statistics adsl show")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         sub_ports = self.cli("adsl pvc show")
         vlans = self.cli("switch vlan show *")
         phy_ports = phy_ports.split("Subscriber Info:")
@@ -76,10 +111,13 @@ class Script(BaseScript):
                 description = t1[1] + " " + t1[2]
             sub = []
             for s in parse_table(sub_ports):
+<<<<<<< HEAD
                 if s[3] == "*":
                     # Perhaps star - is default vlan
                     self.logger.info("Skipping star vlan")
                     continue
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if s[0] == phy[0]:
                     sub += [{
                         "name": s[0],

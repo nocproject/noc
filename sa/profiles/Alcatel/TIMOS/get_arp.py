@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Alcatel.TIMOS.get_arp
 # ----------------------------------------------------------------------
@@ -12,6 +13,21 @@ import re
 class Script(BaseScript):
     name = 'Alcatel.TIMOS.get_arp'
     interface = IGetARP
+=======
+##----------------------------------------------------------------------
+## Alcatel.TIMOS.get_arp
+##----------------------------------------------------------------------
+## Writen by Boba boba@boba.su
+
+import noc.sa.script
+from noc.sa.interfaces import IGetARP
+import re
+
+
+class Script(noc.sa.script.Script):
+    name = 'Alcatel.TIMOS.get_arp'
+    implements = [IGetARP]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(
         '^(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mac>\S+)'
         '\s+\d+\S+\s+\S+\s+(?P<iface>.+)$'
@@ -24,7 +40,11 @@ class Script(BaseScript):
         else:
             s = self.cli('show service service-using vprn')
             vrfs = self.rx_vrfs.findall(s)
+<<<<<<< HEAD
             s = self.cli('show router arp')
+=======
+            s = ''
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             for vrf in vrfs:
                 s += self.cli('show router %s arp' % vrf)
         r = []

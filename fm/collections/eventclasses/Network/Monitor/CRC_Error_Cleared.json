@@ -1,0 +1,27 @@
+{
+    "name": "Network | Monitor | CRC Error Cleared",
+    "$collection": "fm.eventclasses",
+    "uuid": "71654052-0cdc-4e5f-833d-7a744a41e99e",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "subject_template": "CRC error cleared on port {{interface}}",
+    "body_template": "CRC error cleared {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Monitor | CRC Error Detected"
+        }
+    ]
+}

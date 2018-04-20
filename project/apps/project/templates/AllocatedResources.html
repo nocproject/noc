@@ -1,0 +1,99 @@
+<table border="1" width="100%">
+    {{#if vc.length}}
+    <tr><th colspan="2"><b>VC</b></th></tr>
+    {{/if}}
+    {{#each vc}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if dnszone.length}}
+    <tr><th colspan="2"><b>DNS Zones</b></th></tr>
+    {{/if}}
+    {{#each dnszone}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if as.length}}
+    <tr><th colspan="2"><b>AS</b></th></tr>
+    {{/if}}
+    {{#each as}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if asset.length}}
+    <tr><th colspan="2"><b>as-set</b></th></tr>
+    {{/if}}
+    {{#each asset}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if vrf.length}}
+    <tr><th colspan="2"><b>VRF</b></th></tr>
+    {{/if}}
+    {{#each vrf}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if prefix.length}}
+    <tr><th colspan="2"><b>Prefix</b></th></tr>
+    {{/if}}
+    {{#each prefix}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if address.length}}
+    <tr><th colspan="2"><b>Address</b></th></tr>
+    {{/if}}
+    {{#each address}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+
+    {{#if peer.length}}
+    <tr><th colspan="2"><b>Peers</b></th></tr>
+    {{/if}}
+    {{#each peer}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+    {{#if interface.length}}
+    <tr><th colspan="2"><b>Interfaces</b></th></tr>
+    {{#each interface}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">{{state__label}}</td>
+    </tr>
+    {{/each}}
+    {{/if}}
+    {{#if subinterface.length}}
+    <tr><th colspan="2"><b>SubInterfaces</b></th></tr>
+    {{#each subinterface}}
+    <tr>
+        <td>{{label}}</td>
+        <td style="width: 100px">-</td>
+    </tr>
+    {{/each}}
+    {{/if}}
+</table>

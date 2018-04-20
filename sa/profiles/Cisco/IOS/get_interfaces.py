@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2010 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
+<<<<<<< HEAD
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -18,6 +28,14 @@ from noc.sa.profiles.Cisco.IOS import uBR
 
 
 class Script(BaseScript):
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces, InterfaceTypeError
+from noc.sa.profiles.Cisco.IOS import uBR
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Cisco.IOS.get_interfaces
     @todo: VRF support
@@ -28,6 +46,7 @@ class Script(BaseScript):
     @todo: Q-in-Q
     """
     name = "Cisco.IOS.get_interfaces"
+<<<<<<< HEAD
     interface = IGetInterfaces
 
     rx_sh_int = re.compile(
@@ -76,6 +95,29 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_oam = re.compile(
         r"^\s*(?P<iface>(?:Fa|Gi|Te)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
+=======
+    implements = [IGetInterfaces]
+
+    rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)\s(?:\((?:connected|notconnect|disabled|monitoring|err-disabled)\)\s*)?\n\s+Hardware is (?P<hardw>[^\n]+)\n(?:\s+Description:\s(?P<desc>[^\n]+)\n)?(?:\s+Internet address ((is\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}))|([^\d]+))\n)?[^\n]+\n[^\n]+\n\s+Encapsulation\s+(?P<encaps>[^\n]+)",
+       re.MULTILINE | re.IGNORECASE)
+    rx_sh_ip_int = re.compile(r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+",
+           re.IGNORECASE)
+    rx_mac = re.compile(r"address\sis\s(?P<mac>\w{4}\.\w{4}\.\w{4})",
+        re.MULTILINE | re.IGNORECASE)
+    rx_ip = re.compile(r"Internet address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
+    rx_sec_ip = re.compile(r"Secondary address (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
+    rx_ipv6 = re.compile(
+        r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)",
+        re.MULTILINE | re.IGNORECASE)
+    rx_vlan_line = re.compile(r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+(?P<status>active|suspend|act\/unsup)\s+(?P<ports>[\w\/\s\,\.]+)$", re.MULTILINE)
+    rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
+        re.MULTILINE)
+    rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
+    rx_cisco_interface_name = re.compile(r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$", re.IGNORECASE)
+    rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
+    rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
+        re.MULTILINE | re.DOTALL)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_lldp_interfaces(self):
         """
@@ -85,12 +127,18 @@ class Script(BaseScript):
         try:
             v = self.cli("show lldp interface")
         except self.CLISyntaxError:
+<<<<<<< HEAD
             return []
         r = []
+=======
+            return set()
+        ports = set()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         for s in v.strip().split("\n\n"):
             match = self.rx_lldp.search(s)
             if match:
                 if match.group("rx_state").lower() == "enabled":
+<<<<<<< HEAD
                     r += [self.profile.convert_interface_name(match.group("iface").strip())]
         return r
 
@@ -150,12 +198,17 @@ class Script(BaseScript):
             if match:
                 r += [self.profile.convert_interface_name(match.group("iface").strip())]
         return r
+=======
+                    ports.add(self.profile.convert_interface_name(match.group("iface")))
+        return ports
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_ospfint(self):
         try:
             v = self.cli("show ip ospf interface brief")
         except self.CLISyntaxError:
             return []
+<<<<<<< HEAD
         r = []
         for s in v.split("\n"):
             match = self.rx_ospf.search(s)
@@ -186,6 +239,14 @@ class Script(BaseScript):
             if match:
                 r += [self.profile.convert_interface_name(match.group("name").strip())]
         return r
+=======
+        ospfs = []
+        for s in v.split("\n"):
+            match = self.rx_ospf.search(s)
+            if match:
+                ospfs += [match.group("name")]
+        return ospfs
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_ifindex = re.compile(
         r"^(?P<interface>\S+): Ifindex = (?P<ifindex>\d+)")
@@ -220,7 +281,11 @@ class Script(BaseScript):
                     pvm[port] += ["%s" % vlan_id]
         return pvm
 
+<<<<<<< HEAD
     def execute_cli(self):
+=======
+    def execute(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get port-to-vlan mappings
         pvm = {}
         switchports = {}  # interface -> (untagged, tagged)
@@ -249,12 +314,15 @@ class Script(BaseScript):
                 portchannel_members[m] = (i, t)
         # Get LLDP interfaces
         lldp = self.get_lldp_interfaces()
+<<<<<<< HEAD
         # Get VTP interfaces
         vtp = self.get_vtp_interfaces()
         # Get OAM interfaces
         oam = self.get_oam_interfaces()
         # Get CDP interfaces
         cdp = self.get_cdp_interfaces()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
@@ -262,7 +330,11 @@ class Script(BaseScript):
             match = self.rx_sh_ip_int.search(l)
             if match:
                 c_iface = self.profile.convert_interface_name(
+<<<<<<< HEAD
                     match.group("interface").strip())
+=======
+                    match.group("interface"))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             # Primary ip
             match = self.rx_ip.search(l)
@@ -285,7 +357,11 @@ class Script(BaseScript):
             if match:
                 iface = match.group("interface")
                 try:
+<<<<<<< HEAD
                     c_iface = self.profile.convert_interface_name(iface).strip()
+=======
+                    c_iface = self.profile.convert_interface_name(iface)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 except InterfaceTypeError:
                     c_iface = None
                 continue
@@ -302,18 +378,27 @@ class Script(BaseScript):
         interfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
+<<<<<<< HEAD
         # Get PIM interfaces
         pims = self.get_pimint()
         # Get IGMP interfaces
         igmps = self.get_igmpint()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get interfaces SNMP ifIndex
         ifindex = self.get_ifindex()
 
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
+<<<<<<< HEAD
             full_ifname = match.group("interface").strip()
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co"]:
+=======
+            full_ifname = match.group("interface")
+            ifname = self.profile.convert_interface_name(full_ifname)
+            if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu"]:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             # NOC-378 - Dirty hack for interface like ATM0/IMA0
             if "/ima" in full_ifname.lower():
@@ -331,12 +416,15 @@ class Script(BaseScript):
                     }
                     if inm in lldp:
                         iface["enabled_protocols"] += ["LLDP"]
+<<<<<<< HEAD
                     if inm in vtp:
                         iface["enabled_protocols"] += ["VTP"]
                     if inm in oam:
                         iface["enabled_protocols"] += ["OAM"]
                     if inm in cdp:
                         iface["enabled_protocols"] += ["CDP"]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     interfaces += [iface]
             a_stat = match.group("admin_status").lower() == "up"
             o_stat = match.group("oper_status").lower() == "up"
@@ -367,7 +455,12 @@ class Script(BaseScript):
             if match.group("encaps"):
                 encaps = match.group("encaps")
                 if encaps[:6] == "802.1Q":
+<<<<<<< HEAD
                     sub["vlan_ids"] = [encaps.split(",")[1].split()[2].replace(".", "")]
+=======
+                    sub["vlan_ids"] = [encaps.split(",")[1].split()[2][:-1]]
+            # vtp
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # uBR ?
             if ifname in pvm:
                 sub["vlan_ids"] = pvm[ifname]
@@ -380,16 +473,22 @@ class Script(BaseScript):
                     sub["enabled_afi"] += ["IPv6"]
                     sub["ipv6_addresses"] = ipv6_interfaces[ifname]
             matchifn = self.rx_cisco_interface_name.match(ifname)
+<<<<<<< HEAD
             if not matchifn:
                 matchifn = self.rx_cisco_interface_sonet.match(ifname)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             shotn = (matchifn.group("type").capitalize() +
                      matchifn.group("number"))
             if shotn in ospfs:
                 sub["enabled_protocols"] += ["OSPF"]
+<<<<<<< HEAD
             if ifname in pims:
                 sub["enabled_protocols"] += ["PIM"]
             if ifname in igmps:
                 sub["enabled_protocols"] += ["IGMP"]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
             if full_ifname in ifindex:
                 sub["snmp_ifindex"] = ifindex[full_ifname]
@@ -398,7 +497,11 @@ class Script(BaseScript):
                 iftype = self.profile.get_interface_type(ifname)
                 if not iftype:
                     self.logger.info(
+<<<<<<< HEAD
                         "Ignoring unknown interface type for: %s", ifname
+=======
+                        "Ignoring unknown interface type: '%s", iftype
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     )
                     continue
                 iface = {
@@ -411,12 +514,15 @@ class Script(BaseScript):
                 }
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
+<<<<<<< HEAD
                 if ifname in vtp:
                     iface["enabled_protocols"] += ["VTP"]
                 if ifname in oam:
                     iface["enabled_protocols"] += ["OAM"]
                 if ifname in cdp:
                     iface["enabled_protocols"] += ["CDP"]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 match1 = self.rx_ctp.search(v)
                 if match1:
                     iface["enabled_protocols"] += ["CTP"]

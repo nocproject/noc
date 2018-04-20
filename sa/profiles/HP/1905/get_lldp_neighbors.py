@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.1905.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -9,18 +10,40 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## HP.1905.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "HP.1905.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+class Script(NOCScript):
+    name = "HP.1905.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
 
 # lldpRemLocalPortNum

@@ -1,0 +1,116 @@
+{% load noctags %}
+<style>
+.category {
+    font-weight: bold;
+    background: #c0c0c0;
+}
+
+.item {
+    
+}
+
+.offset {
+    padding-left: 32px;
+}
+
+UL.rules, UL.rules LI {
+    margin-left: 8pt;
+    padding-left: 0pt;
+    list-style-position: outside;
+}
+</style>
+<h2>Event Classes Hierarchy ({{ne}} classes, {{ncr}} rules)</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Action</th>
+            <th>Vars</th>
+            <th>Disposition</th>
+            <th>Rules</th>
+        </tr>
+    </thead>
+{% for level, c, rules in event_classes %}
+    {% if level != -1 %}
+    <tr class="category"><td colspan="6">{{c}}</td></tr>
+    {% else %}
+    <tr class="item {% cycle "row1" "row2" %}" >
+        <td>{{c.name}}</td>
+        <td>{{c.description}}</td>
+        <td>
+            {% if c.action == "D" %}Drop{% endif %}
+            {% if c.action == "L" %}Log{% endif %}
+            {% if c.action == "A" %}Log + Archive{% endif %}
+        </td>
+        <td>
+            {% for v in c.vars %}
+                {% if not v.required %}<i>{% endif %}
+                <b>{{v.name}} ({{v.type}}):</b> {{v.description}}<br/>
+                {% if not v.required %}</i>{% endif %}
+            {% endfor %}
+        </td>
+        <td>
+            {% for r in c.disposition %}
+                <b>{{r.name}}:</b><br/>if&nbsp;({{r.condition}}):<br/>then&nbsp;{{r.action}}
+                {% if r.action == "raise" or r.action == "clear"%}<a href="#">{{r.alarm_class.name}}</a>{% endif %}
+                <br/>
+            {% endfor %}
+        </td>
+        <td>
+            <ul class="rules">
+            {% for r in rules %}
+                <li>{{r.name}}</li>
+            {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    {% endif %}
+{% endfor %}
+</table>
+
+<h2>Alarm Classes Hierarchy ({{na}} total)</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Unique</th>
+            <th>Discr.</th>
+            <th>User clearable</th>
+            <th>Vars</th>
+            <th>Default severity</th>
+            <th>Root Cause</th>
+        </tr>
+    </thead>
+{% for level, a in alarm_classes %}
+    {% if level != -1 %}
+    <tr class="category"><td colspan="8">{{a}}</td></tr>
+    {% else %}
+    <tr>
+        <td>{{a.name}}</td>
+        <td>{{a.description}}</td>
+        <td>{{a.is_unique|bool_icon}}</td>
+        <td>{{a.discriminator|join:", "}}</td>
+        <td>{{a.user_clearable|bool_icon}}</td>
+        <td>
+            {% for v in a.vars %}
+            <b>{{v.name}}:</b> {{v.description}}<br/>{% if v.default %}default: {{v.default}}<br/>{% endif %}
+            {% endfor %}
+        </td>
+        <td>{{a.default_severity}}</td>
+        <td>
+            {% for rc in a.root_cause %}
+                <b>{{rc.name}}:</b><br/>
+                Root: {{rc.root.name}}<br/>
+                Window: {{rc.window}}<br/>
+                {% for k, v in rc.condition.items %}
+                    {{k}}&nbsp;==&nbsp;{{v}}<br/>
+                {% endfor %}
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+{% endfor %}
+</table>

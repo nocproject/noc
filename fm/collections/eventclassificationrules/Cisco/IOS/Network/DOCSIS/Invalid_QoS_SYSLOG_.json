@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | Invalid QoS (SYSLOG)",
+    "uuid": "e542bded-8f4a-47ec-a036-dc6a1205eb15",
+    "description": "%UBR7100-4-BAD_REGISTRATION: Cable modem 0000.cac9.4024 on interface Cable1/0 when online attempted re-registration with different QoS",
+    "event_class__name": "Network | DOCSIS | Invalid QoS",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-4-BAD_REGISTRATION: Cable modem (?P<mac>\\S+) on interface (?P<interface>.+) when online attempted re-registration with different QoS"
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ResourceState model
 # ---------------------------------------------------------------------
@@ -15,6 +16,19 @@ from noc.core.model.decorator import on_delete_check
     ("inv.Interface", "state"),
     ("vc.VC", "state")
 ])
+=======
+##----------------------------------------------------------------------
+## ResourceState model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class ResourceState(models.Model):
     class Meta:
         verbose_name = "Resource State"

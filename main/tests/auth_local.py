@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Unittests for local authentication method
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 from __future__ import with_statement
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Unittests for local authentication method
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.main.auth.backends.localbackend import NOCLocalBackend
 from noc.lib.test import NOCTestCase
 

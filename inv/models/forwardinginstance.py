@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Forwarding Instance model
@@ -11,6 +12,18 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField
 # NOC modules
 from noc.lib.nosql import ForeignKeyField
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Forwarding Instance model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.nosql import Document, ForeignKeyField, StringField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.models.managedobject import ManagedObject
 
 
@@ -20,8 +33,12 @@ class ForwardingInstance(Document):
     """
     meta = {
         "collection": "noc.forwardinginstances",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["managed_object"]
     }
     managed_object = ForeignKeyField(ManagedObject)
@@ -46,7 +63,15 @@ class ForwardingInstance(Document):
 
     @property
     def subinterface_set(self):
+<<<<<<< HEAD
         ## Avoid circular references
         from subinterface import SubInterface
 
         return SubInterface.objects.filter(forwarding_instance=self.id)
+=======
+        return SubInterface.objects.filter(forwarding_instance=self.id)
+
+## Avoid circular references
+import interface
+from subinterface import SubInterface
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

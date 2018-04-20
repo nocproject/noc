@@ -1,0 +1,93 @@
+{% extends "template.html" %}
+{% load tags %}
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="/media/admin/css/changelists.css" />
+{% endblock %}
+{% block content %}
+<h1>Select VRF</h1>
+<style>
+th[class=vrf] {
+    width: 150px;
+}
+
+th[class="addresses"] {
+    width: 50px;
+}
+
+th[class=state] {
+    width: 70px;
+}
+
+th[class=project] {
+    width: 70px;
+}
+
+th[class=rd] {
+    width: 50px;
+}
+
+</style>
+
+<script type="text/javascript">
+/* Jump to selected bookmark */
+function on_mynetworks(n)
+{
+    document.location=n.options[n.selectedIndex].value;
+}
+</script>
+
+<div class="module filtered" id="changelist">
+    <div id="toolbar">
+        <form id="changelist-search" action="" method="get">{% csrf_token %}
+            <div><!-- DIV needed for valid HTML -->
+                <label for="searchbar"><i class="fa fa-search"></i></label>
+                <input type="text" size="40" name="q" value="{{query}}" id="searchbar" />
+                <input type="submit" value="Search" />
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">document.getElementById("searchbar").focus();</script>
+</div>
+{% for g in groups %}
+    <DIV CLASS="module">
+        <TABLE SUMMARY="VRFs in {{g}} group" WIDTH="100%">
+            <CAPTION><A HREF="" CLASS="section">{{g.0.name}}</A></CAPTION>
+            <thead>
+                <tr>
+                    <th class="vrf">VRF</th>
+                    <th class="state">State</th>
+                    <th class="rd">RD</th>
+                    <th class="addresses">IPv4</th>
+                    <th class="addresses">IPv6</th>
+                    <th class="project">Project</th>
+                    <th class="description">Description</th>
+                    <th class="bookmarks">Bookmarks</th>
+                    <th class="tags">Tags</th>
+                </tr>
+            </thead>
+            {% for vrf in g.1 %}
+                <TR class="{%cycle 'row1' 'row2'%}">
+                    <td>{{vrf.name}}</td>
+                    <td>{{vrf.state}}</td>
+                    <td>{{vrf.rd}}</td>
+                    <td>{% if vrf.afi_ipv4 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '4' '0.0.0.0/0' %}">View</a>{% endif %}</td>
+                    <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '6' '::/0' %}">View</a>{% endif %}</td>
+                    <td>{% if vrf.project %}{{ vrf.project.code }}{% endif %}</td>
+                    <td>{% if vrf.description %}{{vrf.description}}{% endif %}</td>
+                    <td>
+                        {% if vrf.bookmarks %}
+                        <select onchange="return on_mynetworks(this);">
+                            <option>---</option>
+                            {% for p in vrf.bookmarks %}
+                                <option value="{% url ip:ipam:vrf_index p.vrf.id p.afi p.prefix %}">{{p.prefix}} {{p.short_description}}</option>
+                            {% endfor %}
+                        </select>
+                        {% endif %}
+                    </td>
+                    <td>{%tags vrf%}</td>
+                </TR>
+            {%endfor%}
+        </TABLE>
+    </DIV>
+{%endfor%}
+{%endblock%}

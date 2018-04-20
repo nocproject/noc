@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VCFilter model
 # ---------------------------------------------------------------------
@@ -25,6 +26,23 @@ id_lock = Lock()
     ("vc.VCBindFilter", "vc_filter"),
     ("vc.VCDomainProvisioningConfig", "vc_filter"),
 ])
+=======
+##----------------------------------------------------------------------
+## VCFilter model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## Django modules
+from django.db import models
+
+rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VCFilter(models.Model):
     """
     VC Filter
@@ -40,6 +58,7 @@ class VCFilter(models.Model):
     expression = models.CharField("Expression", max_length=256)
     description = models.TextField("Description", null=True, blank=True)
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     @classmethod
@@ -54,11 +73,21 @@ class VCFilter(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+=======
+    def __unicode__(self):
+        return self.name
+
+    def save(self):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Check expression before save
         """
         VCFilter.compile(self.expression)
+<<<<<<< HEAD
         super(VCFilter, self).save(*args, **kwargs)
+=======
+        super(VCFilter, self).save()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def compile(cls, expression):
@@ -102,7 +131,11 @@ class VCFilter(models.Model):
         :return: SQL WHERE part
         """
         s = []
+<<<<<<< HEAD
         if isinstance(name, six.string_types):
+=======
+        if isinstance(name, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             name = "\"%s\"" % name.replace("\"", "\"\"")
         elif type(name) in (int, long):
             name = "%d" % name

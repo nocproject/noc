@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VCDomain model
 # ---------------------------------------------------------------------
@@ -28,6 +29,23 @@ from noc.core.model.decorator import on_delete_check
     ("vc.VCBindFilter", "vc_domain"),
     ("vc.VCDomainProvisioningConfig", "vc_domain"),
 ])
+=======
+##----------------------------------------------------------------------
+## VCDomain model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from vctype import VCType
+from vcfilter import VCFilter
+from noc.main.models import Style
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VCDomain(models.Model):
     """
     Virtual circuit domain, allows to separate unique VC spaces
@@ -53,6 +71,7 @@ class VCDomain(models.Model):
     def __unicode__(self):
         return self.name
 
+<<<<<<< HEAD
     def on_save(self):
         # Rebuild selector cache
         SelectorCache.refresh()
@@ -61,6 +80,8 @@ class VCDomain(models.Model):
         # Rebuild selector cache
         SelectorCache.refresh()
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @classmethod
     def get_for_object(cls, managed_object):
         """
@@ -78,8 +99,11 @@ class VCDomain(models.Model):
         :returns: Free label or None
         :rtype: int or None
         """
+<<<<<<< HEAD
         from .vc import VC
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         l_min = self.type.label1_min
         l_max = self.type.label1_max
         # Get valid ranges
@@ -101,5 +125,10 @@ class VCDomain(models.Model):
         return VCDomain.objects.get(name="default")
 
 
+<<<<<<< HEAD
 # Avoid circular references
 from noc.sa.models.selectorcache import SelectorCache
+=======
+## Avoid circular references
+from vc import VC
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

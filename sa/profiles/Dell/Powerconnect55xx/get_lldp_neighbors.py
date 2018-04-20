@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Dell.Powerconnect55xx.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -10,14 +11,33 @@
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## Dell.Powerconnect55xx.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.base import MACAddressParameter
 # from noc.lib.validators import is_int, is_ipv4
 import re
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Dell.Powerconnect55xx.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+class Script(NOCScript):
+    name = "Dell.Powerconnect55xx.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(
         r"^(?P<interface>\S+)\s+(?P<chassis_id>\S+)\s+"

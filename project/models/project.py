@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Project models
 # ---------------------------------------------------------------------
@@ -33,6 +34,19 @@ id_lock = Lock()
     ("vc.VC", "project"),
     ("vc.VPN", "project")
 ])
+=======
+##----------------------------------------------------------------------
+## Project models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class Project(models.Model):
     """
     Projects are used to track investment projects expenses and profits
@@ -47,6 +61,7 @@ class Project(models.Model):
     name = models.CharField("Name", max_length=256)
     description = models.TextField("Description", null=True, blank=True)
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(100, ttl=60)
 
     def __unicode__(self):
@@ -59,3 +74,7 @@ class Project(models.Model):
             return Project.objects.get(id=id)
         except Project.DoesNotExist:
             return None
+=======
+    def __unicode__(self):
+        return self.code
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

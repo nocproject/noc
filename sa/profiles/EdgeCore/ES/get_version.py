@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_version
 # ---------------------------------------------------------------------
@@ -25,6 +26,34 @@ class Script(BaseScript):
     def execute(self):
         s = ""
         if self.has_snmp():
+=======
+##----------------------------------------------------------------------
+## EdgeCore.ES.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC Modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "EdgeCore.ES.get_version"
+    cache = True
+    implements = [IGetVersion]
+
+    ##
+    ## Main dispatcher
+    ##
+    def execute(self):
+        s = ""
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Trying SNMP
             try:
                 # SNMPv2-MIB::sysDescr.0
@@ -37,6 +66,7 @@ class Script(BaseScript):
                     oid = oid[1: -1].replace(", ", ".")
                 if oid[-3:] == "2.4":
                     # 3528M-SFP OID (v1.4.x.x)
+<<<<<<< HEAD
                     v = self.snmp.get(
                         oid[: -3] + "1.4.1.1.3.1.6.1",
                         cached=True
@@ -50,6 +80,13 @@ class Script(BaseScript):
                     else:
                         # 3526-Style OID
                         v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
+=======
+                    v = self.snmp.get(oid[: -3] + "1.4.1.1.3.1.6.1",
+                        cached=True)
+                else:
+                    # 3526-Style OID
+                    v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 if v == "":
                     # 4626-Style OID
                     v = self.snmp.get(oid + ".100.1.3.0", cached=True)
@@ -69,9 +106,15 @@ class Script(BaseScript):
                 return self.get_version_4xxx(None, None)
             return self.get_version_35xx(s, None)
 
+<<<<<<< HEAD
     #
     # 35xx
     #
+=======
+    ##
+    ## 35xx
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_sys_35 = re.compile(
         r"^\s*System description\s*:\s(?P<platform>.+?)\s*$",
         re.MULTILINE | re.IGNORECASE)
@@ -124,6 +167,7 @@ class Script(BaseScript):
             platform = "ES3528M"
         elif "ES3526S" in platform:
             pass
+<<<<<<< HEAD
         elif "ECS4100-28T" in platform:
             pass
         elif "ECS4100-52T" in platform:
@@ -132,6 +176,11 @@ class Script(BaseScript):
             vendor = "MRV"
         elif platform.lower() == "8 sfp ports + 4 gigabit combo ports " \
                                  "l2/l3/l4 managed standalone switch":
+=======
+        elif "MR2228N" in platform:
+            vendor = "MRV"
+        elif platform.lower() == "8 sfp ports + 4 gigabit combo ports l2/l3/l4 managed standalone switch":
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             platform = "ES4612"
         elif platform == "Managed 8G+4GSFP Switch":
             platform = "ECS4210-12T"
@@ -170,11 +219,18 @@ class Script(BaseScript):
             r["attributes"].update({"Serial Number": match.group("serial")})
         return r
 
+<<<<<<< HEAD
     #
     # ES4626
     #
     rx_sys_4 = re.compile(
         r"(?P<platform>ES.+?) Device, Compiled",
+=======
+    ##
+    ## ES4626
+    ##
+    rx_sys_4 = re.compile(r"(?P<platform>ES.+?) Device, Compiled",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ver_4 = re.compile(
         r"SoftWare (Package )?Version.*?(?:_|Vco\.)(?P<version>\d.+?)$",
@@ -212,3 +268,7 @@ class Script(BaseScript):
         if match:
             r["attributes"].update({"Serial Number": match.group("serial")})
         return r
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

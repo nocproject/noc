@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Phone | SCCP | Unregister Abnormal (SYSLOG)",
+    "uuid": "b9dcba07-2cd6-4b6e-a3e0-ab1534c7d057",
+    "description": "Aug 16 02:53:29.934: %IPPHONE-6-UNREGISTER_ABNORMAL: ephone-47:SEPC89C1DD55AD8 IP:192.168.79.69 Socket:26 DeviceType:Phone has unregistered abnormally.",
+    "event_class__name": "Phone | SCCP | Unregister Abnormal",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IPPHONE-6-UNREGISTER_ABNORMAL: (?P<name>\\S+?):(?P<sn>\\S+) IP:(?P<ip>\\S+) Socket:(?P<socket>\\d+) DeviceType:(?P<type>\\S+) has unregistered abnormally"
+        }
+    ]
+}

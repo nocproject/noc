@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Repo management application
 # ---------------------------------------------------------------------
@@ -10,14 +11,31 @@ from django.utils.html import escape
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import HasPerm
 from noc.lib.app.site import URL
+=======
+##----------------------------------------------------------------------
+## Repo management application
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+from django.shortcuts import get_object_or_404
+from django.utils.html import escape
+from noc.lib.app import ModelApplication,URL,HasPerm,view
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.models import Object
 from noc.lib.highlight import NOCHtmlFormatter
 from pygments.lexers import DiffLexer
 from pygments import highlight
 import difflib
+<<<<<<< HEAD
 #
 # Repository management application
 #
+=======
+##
+## Repository management application
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class RepoApplication(ModelApplication):
     repo=None
     ##

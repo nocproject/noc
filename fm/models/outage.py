@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Outage report
 # ---------------------------------------------------------------------
@@ -11,14 +12,33 @@ import datetime
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField
+=======
+##----------------------------------------------------------------------
+## Outage report
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## NOC modules
+from noc.lib.nosql import (Document, IntField, DateTimeField,
+                           BooleanField)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Outage(Document):
     meta = {
         "collection": "noc.fm.outages",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": ["object", ("object", "-start")]
+=======
+        "allow_inheritance": False,
+        "indexes": ["object", "start"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     object = IntField()
@@ -33,12 +53,17 @@ class Outage(Document):
         return self.stop is None
 
     @classmethod
+<<<<<<< HEAD
     def register_outage(cls, object, status, ts=None):
+=======
+    def register_outage(cls, object, status):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Change current outage status
         :param cls:
         :param object: Managed Object
         :param status: True - if object is down, False - otherwise
+<<<<<<< HEAD
         :param ts: Effective event timestamp. None for current time
         :return:
         """
@@ -69,3 +94,17 @@ class Outage(Document):
                 "start": ts,
                 "stop": None
             })
+=======
+        :return:
+        """
+        ts = datetime.datetime.now()
+        o = cls.objects.filter(object=object.id,
+            start__lte=datetime.datetime.now()).order_by("-start").first()
+        if o and o.is_active and not status:
+            # Close active outage
+            o.stop = ts
+            o.save()
+        elif status and ((o and not o.is_active) or not o):
+            # Create new outage
+            Outage(object=object.id, start=ts, stop=None).save()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

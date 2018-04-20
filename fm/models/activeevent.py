@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ActiveEvent model
 # ---------------------------------------------------------------------
@@ -30,11 +31,36 @@ id_lock = Lock()
 
 
 class ActiveEvent(Document):
+=======
+##----------------------------------------------------------------------
+## ActiveEvent model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## Django modules
+from django.template import Template, Context
+## Third-party modules
+from mongoengine import document, fields
+## NOC modules
+from eventlog import EventLog
+from eventclass import EventClass
+from noc.sa.models.managedobject import ManagedObject
+from noc.lib import nosql
+from noc.lib.dateutils import total_seconds
+
+
+class ActiveEvent(document.Document):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Event in the Active state
     """
     meta = {
         "collection": "noc.events.active",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [
@@ -44,10 +70,17 @@ class ActiveEvent(Document):
                 "fields": ["expires"],
                 "expireAfterSeconds": 0
             }
+=======
+        "allow_inheritance": False,
+        "indexes": [
+            "timestamp", "discriminator", "alarms",
+            ("timestamp", "event_class", "managed_object")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
     }
     status = "A"
     # Fields
+<<<<<<< HEAD
     timestamp = DateTimeField(required=True)
     managed_object = ForeignKeyField(ManagedObject, required=True)
     event_class = PlainReferenceField(EventClass, required=True)
@@ -61,10 +94,24 @@ class ActiveEvent(Document):
     discriminator = StringField(required=False)
     alarms = ListField(ObjectIdField())
     expires = DateTimeField(required=False)
+=======
+    timestamp = fields.DateTimeField(required=True)
+    managed_object = nosql.ForeignKeyField(ManagedObject, required=True)
+    event_class = nosql.PlainReferenceField(EventClass, required=True)
+    start_timestamp = fields.DateTimeField(required=True)
+    repeats = fields.IntField(required=True)
+    raw_vars = nosql.RawDictField()
+    resolved_vars = nosql.RawDictField()
+    vars = fields.DictField()
+    log = fields.ListField(fields.EmbeddedDocumentField(EventLog))
+    discriminator = fields.StringField(required=False)
+    alarms = fields.ListField(nosql.ObjectIdField())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return u"%s" % self.id
 
+<<<<<<< HEAD
     @classmethod
     @cachedmethod(
         key="activeevent-%s",
@@ -98,6 +145,24 @@ class ActiveEvent(Document):
         }
         nsq_pub("events.%s" % self.managed_object.pool.name, msg)
         self.delete()
+=======
+    def mark_as_new(self, message=None):
+        """
+        Move to new queue
+        """
+        if message is None:
+            message = "Reclassification requested"
+        log = self.log + [EventLog(timestamp=datetime.datetime.now(),
+                                   from_status="A", to_status="N",
+                                   message=message)]
+        e = NewEvent(id=self.id, timestamp=self.timestamp,
+                     managed_object=self.managed_object,
+                     raw_vars=self.raw_vars,
+                     log=log)
+        e.save()
+        self.delete()
+        return e
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def mark_as_failed(self, version, traceback):
         """
@@ -107,6 +172,7 @@ class ActiveEvent(Document):
         log = self.log + [EventLog(timestamp=datetime.datetime.now(),
                                    from_status="N", to_status="F",
                                    message=message)]
+<<<<<<< HEAD
         e = FailedEvent(
             id=self.id,
             timestamp=self.timestamp,
@@ -117,6 +183,12 @@ class ActiveEvent(Document):
             traceback=traceback,
             log=log
         )
+=======
+        e = FailedEvent(id=self.id, timestamp=self.timestamp,
+                        managed_object=self.managed_object,
+                        raw_vars=self.raw_vars, version=version,
+                        traceback=traceback, log=log)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         e.save()
         self.delete()
         return e
@@ -207,6 +279,7 @@ class ActiveEvent(Document):
         Hack to return managed_object.id without SQL lookup
         """
         o = self._data["managed_object"]
+<<<<<<< HEAD
         if hasattr(o, "id"):
             return o.id
         return o
@@ -246,3 +319,13 @@ class ActiveEvent(Document):
 # Avoid circular references
 from .failedevent import FailedEvent
 from .archivedevent import ArchivedEvent
+=======
+        if type(o) in (int, long):
+            return o
+        return o.id
+
+## Avoid circular references
+from newevent import NewEvent
+from failedevent import FailedEvent
+from archivedevent import ArchivedEvent
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

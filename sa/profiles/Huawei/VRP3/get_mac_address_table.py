@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Huawei.VRP3.get_mac_address_table
 # sergey.sadovnikov@gmail.com
@@ -17,6 +18,26 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "Huawei.VRP3.get_mac_address_table"
     interface = IGetMACAddressTable
+=======
+##----------------------------------------------------------------------
+## Huawei.VRP3.get_mac_address_table
+## sergey.sadovnikov@gmail.com
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from __future__ import with_statement
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+import re
+
+
+class Script(NOCScript):
+    name = "Huawei.VRP3.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(r"^\s*(?:\d+)\s+(?:\d+)\s+(?:\d+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>\d+/\d+)\s+(?P<mac>\S+)", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):

@@ -1,0 +1,43 @@
+{% extends "template.html" %}
+{% block extrahead %}
+<meta http-equiv="Refresh" content="{{timeout}}; {{url}}" />
+{% if progress >= 0 %}
+    <link href="/static/css/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <script src="/static/js/jquery-ui.min.js"></script>
+{% endif %}
+{% endblock %}
+{% block title%}Processing: {{subject}}{% endblock %}
+{% block content %}
+<H1>Processing: {{subject}}</H1>
+<style>
+#wait #animation {
+    vertical-align: middle;
+}
+
+#wait #message {
+    vertical-align: middle;
+    padding: 8px;
+    margin: 4px;
+}
+</style>
+<div id="wait">
+    <span id="animation">
+        <img src="/static/img/progress-circle.gif" id="animation">
+    </span>
+    <span id="message">
+{%if text %}
+{{text}}
+{%else%}
+Processing, Please wait!
+{%endif%}
+    </span>
+</div>
+{% if progress >= 0 %}
+    <script>
+    $(document).ready(function() {
+        $("#progressbar").progressbar({ value: {{progress}} });
+      });
+    </script>
+    <div id="progressbar"></div>
+{% endif %}
+{% endblock %}

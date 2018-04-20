@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-# ---------------------------------------------------------------------
-# Vendor: Raritan
-# OS:     DominionSX
-# ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
-# See LICENSE for details
-# ---------------------------------------------------------------------
+##----------------------------------------------------------------------
+## Vendor: Raritan
+## OS:     DominionSX
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 """
 """
-from noc.core.profile.base import BaseProfile
+import noc.sa.profiles
+from noc.sa.protocols.sae_pb2 import SSH
 
 
-class Profile(BaseProfile):
+class Profile(noc.sa.profiles.Profile):
     name = "Raritan.DominionSX"
+    supported_schemes = [SSH]
     pattern_prompt = r"^(\S+ > )+"
     pattern_more = "--More-- Press <ENTER> to continue."

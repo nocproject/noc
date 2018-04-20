@@ -5,19 +5,33 @@
 # ---------------------------------------------------------------------
 """
 """
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+=======
+import noc.sa.script
+from noc.sa.interfaces import IGetVersion
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.text import strip_html_tags
 import re
 
 rx_html_ver = re.compile(r"Firmware Version\s+\S+\s+(?P<version>\S+)")
 
+<<<<<<< HEAD
 
 class Script(BaseScript):
     name = "ZTE.ZXDSL531.get_version"
     cache = True
     interface = IGetVersion
 
+=======
+
+class Script(noc.sa.script.Script):
+    name = "ZTE.ZXDSL531.get_version"
+    cache = True
+    implements = [IGetVersion]
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute(self):
         if self.access_profile.scheme == self.TELNET:
             v = self.cli("swversion show")

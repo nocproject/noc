@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # StaticRoute fact
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## StaticRoute fact
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseFact
 
 
@@ -38,7 +49,11 @@ class StaticRoute(BaseFact):
     @property
     def prefix(self):
         return self._prefix
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @prefix.setter
     def prefix(self, value):
         self._prefix = value or None
@@ -50,7 +65,11 @@ class StaticRoute(BaseFact):
     @property
     def afi(self):
         return self._afi
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @afi.setter
     def afi(self, value):
         if value is None and self.prefix:
@@ -60,7 +79,11 @@ class StaticRoute(BaseFact):
     @property
     def vrf(self):
         return self._vrf
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @vrf.setter
     def vrf(self, value):
         self._vrf = value or None
@@ -68,7 +91,11 @@ class StaticRoute(BaseFact):
     @property
     def interface(self):
         return self._interface
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @interface.setter
     def interface(self, value):
         self._interface = value or None
@@ -76,7 +103,11 @@ class StaticRoute(BaseFact):
     @property
     def next_hop(self):
         return self._next_hop
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @next_hop.setter
     def next_hop(self, value):
         self._next_hop = value or None
@@ -84,7 +115,11 @@ class StaticRoute(BaseFact):
     @property
     def description(self):
         return self._description
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @description.setter
     def description(self, value):
         self._description = value or None
@@ -92,7 +127,11 @@ class StaticRoute(BaseFact):
     @property
     def tag(self):
         return self._tag
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @tag.setter
     def tag(self, value):
         self._tag = int(value) if value is not None else None
@@ -100,7 +139,11 @@ class StaticRoute(BaseFact):
     @property
     def distance(self):
         return self._distance
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @distance.setter
     def distance(self, value):
         self._distance = int(value) if value is not None else None
@@ -108,7 +151,11 @@ class StaticRoute(BaseFact):
     @property
     def discard(self):
         return self._discard
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @discard.setter
     def discard(self, value):
         self._discard = bool(value) if value is not None else None

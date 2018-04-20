@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Permission database model
 # ---------------------------------------------------------------------
@@ -19,6 +20,23 @@ perm_lock = Lock()
 
 
 class Permission(Model):
+=======
+##----------------------------------------------------------------------
+## Premission database model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+from django.contrib.auth.models import User, Group
+## NOC modules
+from noc.lib.middleware import get_request
+
+
+class Permission(models.Model):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Permissions.
 
@@ -32,6 +50,7 @@ class Permission(Model):
         app_label = "main"
 
     # module:app:permission
+<<<<<<< HEAD
     name = CharField("Name", max_length=128, unique=True)
     # comma-separated list of permissions
     implied = CharField(
@@ -43,6 +62,17 @@ class Permission(Model):
 
     _effective_perm_cache = cachetools.TTLCache(maxsize=100, ttl=3)
 
+=======
+    name = models.CharField("Name", max_length=128, unique=True)
+    # comma-separated list of permissions
+    implied = models.CharField(
+        "Implied", max_length=256, null=True, blank=True)
+    users = models.ManyToManyField(
+        User, related_name="noc_user_permissions")
+    groups = models.ManyToManyField(
+        Group, related_name="noc_group_permissions")
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def __unicode__(self):
         return self.name
 
@@ -61,7 +91,15 @@ class Permission(Model):
             return False
         if user.is_superuser:
             return True
+<<<<<<< HEAD
         return perm in cls.get_effective_permissions(user)
+=======
+        request = get_request()
+        if request and "PERMISSIONS" in request.session:
+            return perm in request.session["PERMISSIONS"]
+        else:
+            return perm in cls.get_effective_permissions(user)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def get_user_permissions(cls, user):
@@ -131,8 +169,11 @@ class Permission(Model):
             Permission.objects.get(name=p).groups.remove(group)
 
     @classmethod
+<<<<<<< HEAD
     @cachetools.cachedmethod(operator.attrgetter("_effective_perm_cache"),
                              lock=lambda _: perm_lock)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def get_effective_permissions(cls, user):
         """
         Returns a set of effective user permissions,
@@ -157,7 +198,11 @@ class Permission(Model):
 
     @classmethod
     def sync(cls):
+<<<<<<< HEAD
         from noc.lib.app.site import site
+=======
+        from noc.lib.app import site
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         def normalize(app, perm):
             if ":" in perm:
@@ -187,25 +232,41 @@ class Permission(Model):
                 raise ValueError("Implied permission '%s' is not found" % p)
             nf = [pp for pp in implied_permissions[p] if pp not in new_perms]
             if nf:
+<<<<<<< HEAD
                 raise ValueError("Invalid implied permissions: %s" % pp)
+=======
+                raise ValueError("Invalid implied permissions: %s" % ", ".join(pp))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         #
         old_perms = set(Permission.objects.values_list("name", flat=True))
         # New permissions
         for name in new_perms - old_perms:
             # @todo: add implied permissions
             Permission(name=name, implied=get_implied(name)).save()
+<<<<<<< HEAD
             print("+ %s" % name)
+=======
+            print "+ %s" % name
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Check impiled permissions match
         for name in old_perms.intersection(new_perms):
             implied = get_implied(name)
             p = Permission.objects.get(name=name)
             if p.implied != implied:
+<<<<<<< HEAD
                 print("~ %s" % name)
+=======
+                print "~ %s" % name
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 p.implied = implied
                 p.save()
         # Deleted permissions
         for name in old_perms - new_perms:
+<<<<<<< HEAD
             print("- %s" % name)
+=======
+            print "- %s" % name
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             Permission.objects.get(name=name).delete()
 
     @classmethod

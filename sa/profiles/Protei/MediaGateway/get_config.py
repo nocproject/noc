@@ -13,6 +13,14 @@ class Script(BaseScript):
     name = "Protei.MediaGateway.get_config"
     interface = IGetConfig
 
+<<<<<<< HEAD
+=======
+
+class Script(noc.sa.script.Script):
+    name = "Protei.MediaGateway.get_config"
+    implements = [IGetConfig]
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute(self):
         self.cli("cd /usr/protei/CLI/Client")
         self.cli("./clip")

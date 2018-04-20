@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VRF.state
 # Prefix.state
@@ -11,6 +12,20 @@
 # Django modules
 from django.db import models
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## VRF.state
+## Prefix.state
+## IP.state
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## Third-party modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from south.db import db
 
 

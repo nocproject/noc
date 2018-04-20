@@ -1,5 +1,6 @@
 
 from south.db import db
+<<<<<<< HEAD
 from noc.kb.models.kbentry import models
 
 class Migration:
@@ -10,6 +11,18 @@ class Migration:
         # Mock Models
         KBEntry = db.mock_model(model_name='KBEntry', db_table='kb_kbentry', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
 
+=======
+from noc.kb.models import *
+
+class Migration:
+    
+    def forwards(self):
+        
+        
+        # Mock Models
+        KBEntry = db.mock_model(model_name='KBEntry', db_table='kb_kbentry', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Model 'KBEntryAttachment'
         db.create_table('kb_kbentryattachment', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -20,9 +33,19 @@ class Migration:
             ('file', models.FileField("File"))
         ))
         db.create_index('kb_kbentryattachment', ['kb_entry_id','name'], unique=True, db_tablespace='')
+<<<<<<< HEAD
 
 
         db.send_create_signal('kb', ['KBEntryAttachment'])
 
     def backwards(self):
         db.delete_table('kb_kbentryattachment')
+=======
+        
+        
+        db.send_create_signal('kb', ['KBEntryAttachment'])
+    
+    def backwards(self):
+        db.delete_table('kb_kbentryattachment')
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

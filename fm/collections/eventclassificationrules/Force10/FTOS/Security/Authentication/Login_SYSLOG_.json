@@ -1,0 +1,21 @@
+{
+    "name": "Force10 | FTOS | Security | Authentication | Login (SYSLOG)",
+    "uuid": "e5626e4c-f2ea-4c71-a84c-45c12027715a",
+    "description": "%SEC-5-LOGIN_SUCCESS: Login successful for user noc-sa on line vty0 \\(10\\.10\\.114\\.17\\)",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC-5-LOGIN_SUCCESS: Login successful for user (?P<user>.+) on line \\S+ \\((?P<ip>\\S+)\\)$"
+        }
+    ]
+}

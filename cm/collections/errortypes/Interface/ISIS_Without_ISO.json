@@ -1,0 +1,7 @@
+{
+    "name": "Interface | ISIS Without ISO",
+    "uuid": "288c64c1-1e4a-424f-8be4-a29888330710",
+    "description": "ISIS interface with disabled ISO AFI",
+    "subject_template": "ISIS without ISO on {{name}}",
+    "body_template": "Interface {{name}} has ISIS protocol configured while ISO AFI is not enabled on interface. ISIS shall not be function correctly on this interface"
+}

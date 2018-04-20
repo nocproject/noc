@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Security | Authentication | Login #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "fac4b1e8-471a-45f5-9d47-5f2a4bc1b30a",
+    "description": "%AAA-I-CONNECT: User CLI session for user supertel over telnet , source 4.1.1.9 destination  192.168.1.1 ACCEPTED",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-I-CONNECT: User CLI session for user (?P<user>\\S+) over telnet , source (?P<ip>\\S+) destination\\s+\\S+\\s+ACCEPTED$"
+        }
+    ]
+}

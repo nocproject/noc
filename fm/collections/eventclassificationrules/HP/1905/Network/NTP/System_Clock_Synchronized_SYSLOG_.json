@@ -1,0 +1,21 @@
+{
+    "name": "HP | 1905 | Network | NTP | System Clock Synchronized (SYSLOG)",
+    "uuid": "745a04a7-f5d4-4c5d-b7c5-c9fcdd942f36",
+    "description": "Dec 25 17:30:32 2012 Office [NTP]/5/System clock modified by ntpclient",
+    "event_class__name": "Network | NTP | System Clock Synchronized",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1905$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "\\[NTP\\]/5/System clock modified by ntpclient$"
+        }
+    ]
+}

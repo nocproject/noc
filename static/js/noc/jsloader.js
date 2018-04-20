@@ -37,6 +37,7 @@ function load_scripts(urls, scope, callback) {
     // Begin loading
     load(urls.reverse(), callback);
 }
+<<<<<<< HEAD
 
 function new_load_scripts(urls, scope, callback) {
     var head = document.getElementsByTagName("head")[0],
@@ -72,3 +73,5 @@ function new_load_scripts(urls, scope, callback) {
         };
     load_chain(urls);
 }
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

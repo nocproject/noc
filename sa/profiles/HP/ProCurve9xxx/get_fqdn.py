@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve9xxx.get_fqdn
 # ---------------------------------------------------------------------
@@ -19,6 +20,28 @@ import re
 class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_fqdn"
     interface = IGetFQDN
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve9xxx.get_fqdn
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetFQDN
+import re
+
+
+##
+## Get switch FQDN
+## @todo: find more clean way
+##
+class Script(noc.sa.script.Script):
+    name = "HP.ProCurve9xxx.get_fqdn"
+    implements = [IGetFQDN]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_hostname = re.compile(r"^hostname\s+(?P<hostname>\S+)", re.MULTILINE)
     rx_domain_name = re.compile(r"^ip domain-name\s+(?P<domain>\S+)",

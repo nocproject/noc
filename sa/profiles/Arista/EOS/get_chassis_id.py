@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Arista.EOS.get_chassis_id
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ class Script(BaseScript):
     name = "Arista.EOS.get_chassis_id"
     cache = True
     interface = IGetChassisID
+=======
+##----------------------------------------------------------------------
+## Arista.EOS.get_chassis_id
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetChassisID
+
+
+class Script(NOCScript):
+    name = "Arista.EOS.get_chassis_id"
+    cache = True
+    implements = [IGetChassisID]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_mac = re.compile(
         r"System MAC address:\s+(?P<mac>\S+)",

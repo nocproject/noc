@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Security | Authentication | SNMP Authentication Failure (SYSLOG)",
+    "uuid": "0b2dcce3-1a32-4f82-bd0a-b0c392d0ba06",
+    "description": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004",
+    "event_class__name": "Security | Authentication | SNMP Authentication Failure",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "System: Detected an unauthorized user attempting to access the SNMP interface. 0x0004"
+        }
+    ]
+}

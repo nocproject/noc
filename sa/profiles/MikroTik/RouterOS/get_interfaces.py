@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_interfaces
 # ---------------------------------------------------------------------
@@ -17,6 +18,23 @@ from noc.lib.validators import is_int
 class Script(BaseScript):
     name = "MikroTik.RouterOS.get_interfaces"
     interface = IGetInterfaces
+=======
+##----------------------------------------------------------------------
+## MikroTik.RouterOS.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+    name = "MikroTik.RouterOS.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     type_map = {
         "ether": "physical",
@@ -33,6 +51,7 @@ class Script(BaseScript):
         "pptp-in": "tunnel",
         "ovpn-out": "tunnel",
         "ovpn-in": "tunnel",
+<<<<<<< HEAD
         "sstp-out": "tunnel",
         "sstp-in": "tunnel",
         "gre-tunnel": "tunnel",
@@ -47,18 +66,28 @@ class Script(BaseScript):
         "mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte",
         "cap", "vrrp", "vif"
     ])
+=======
+        "gre-tunnel": "tunnel",
+        "ipip-tunnel": "tunnel"
+    }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     si = {}
 
     def get_tunnel(self, tun_type, f, afi, ipif):
         self.si["tunnel"] = {}
         tun = self.si["tunnel"]
         tun["type"] = tun_type
+<<<<<<< HEAD
         if tun_type in ["PPP", "PPPOE", "L2TP", "PPTP", "OVPN", "SSTP"]:
+=======
+        if tun_type in ["PPP", "PPPOE", "L2TP", "PPTP", "OVPN"]:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if (f == "D" and afi == "IPv4"):
                 tun["local_address"] = ipif["address"].split("/", 1)[0].strip()
                 tun["remote_address"] = ipif["network"]
                 return
         iftype = tun_type.lower()
+<<<<<<< HEAD
         ifname = self.cli_detail("/interface %s print detail without-paging" % iftype, cached=True)
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
@@ -75,6 +104,15 @@ class Script(BaseScript):
             return int(r["actual-mtu"])
         return None
 
+=======
+        for n1, f1, r1 in self.cli_detail(
+            "/interface %s print detail without-paging" % iftype, cached=True):
+            if self.si["name"] == r1["name"]:
+                tun["local_address"] = r1["local-address"]
+                tun["remote_address"] = r1["remote-address"]
+                return
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute(self):
         ifaces = {}
         misc = {}
@@ -84,6 +122,7 @@ class Script(BaseScript):
                 "/interface print oid without-paging"
         ):
             n_ifindex[n] = int(r["name"].rsplit(".", 1)[-1])
+<<<<<<< HEAD
         time.sleep(1)
         # Fill interfaces
         a = self.cli_detail(
@@ -91,13 +130,21 @@ class Script(BaseScript):
         for n, f, r in a:
             if r["type"] in self.ignored_types:
                 continue
+=======
+        # Fill interfaces
+        for n, f, r in self.cli_detail(
+            "/interface print detail without-paging"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if not r["type"] in "vlan":  # TODO: Check other types
                 ifaces[r["name"]] = {
                     "name": r["name"],
                     "type": self.type_map[r["type"]],
                     "admin_status": "X" not in f,
                     "oper_status": "R" in f,
+<<<<<<< HEAD
                     "enabled_protocols": [],
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     "subinterfaces": []
                 }
                 misc[r["name"]] = {
@@ -105,6 +152,7 @@ class Script(BaseScript):
                 }
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
+<<<<<<< HEAD
                 if r["type"].startswith("ipip-") \
                 or r["type"].startswith("eoip-") \
                 or r["type"].startswith("gre-"):
@@ -125,11 +173,14 @@ class Script(BaseScript):
                         self.get_tunnel("GRE", "R", "IPv4", ifaces)
                     ifaces[r["name"]]["subinterfaces"] += [self.si]
         time.sleep(1)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Refine ethernet parameters
         for n, f, r in self.cli_detail(
             "/interface ethernet print detail without-paging"):
             iface = ifaces[r["name"]]
             ifaces[r["name"]]["mac"] = r["mac-address"]
+<<<<<<< HEAD
         # Attach `vlan` subinterfaces to parent
         for n, f, r in self.cli_detail(
             "/interface vlan print detail without-paging"):
@@ -207,6 +258,23 @@ class Script(BaseScript):
                         i["subinterfaces"] += [self.si]
         except self.CLISyntaxError:
             pass
+=======
+            # Attach `vlan` subinterfaces to physical parent
+            for n1, f1, r1 in self.cli_detail(
+                "/interface vlan print detail without-paging", cached=True):
+                if r["name"] == r1["interface"]:
+                    i = ifaces[r1["interface"]]
+                    self.si = {
+                        "name": r1["name"],
+                        "mac": r1["mac-address"],
+                        "mtu": r1["mtu"],
+                        "admin_status": "X" not in f1,
+                        "oper_status": "R" in f1,
+                        "enabled_afi": [],
+                        "tagged_vlans": [int(r1["vlan-id"])]
+                    }
+                    i["subinterfaces"] += [self.si]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Refine ip addresses
         for n, f, r in self.cli_detail(
             "/ip address print detail without-paging"):
@@ -222,6 +290,7 @@ class Script(BaseScript):
                         "enabled_afi": [],
                         # XXX Workaround
                         "admin_status": i["admin_status"],
+<<<<<<< HEAD
                         "oper_status": i["oper_status"],
                         "enabled_protocols": []
                     }
@@ -229,6 +298,13 @@ class Script(BaseScript):
                 else:
                     self.logger.debug('\nError: subinterfaces already exists in ' \
                         'interface \n%s\n' % i)
+=======
+                        "oper_status": i["oper_status"]
+                    }
+                    i["subinterfaces"] += [self.si]
+                else:
+                    self.debug('Error: subinterfaces already exists !!!')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     continue
             else:
                 for i in ifaces:
@@ -256,8 +332,11 @@ class Script(BaseScript):
                 a += [r["address"]]
                 self.si["ipv6_addresses"] = a
             # Tunnel types
+<<<<<<< HEAD
             # XXX /ip address print detail do not print tunnels !!!
             # Need reworks !!!
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if t["type"].startswith("ppp-"):
                 self.get_tunnel("PPP", f, afi, r)
             if t["type"].startswith("pppoe-"):
@@ -270,6 +349,7 @@ class Script(BaseScript):
                 self.get_tunnel("PPTP", f, afi, r)
             if t["type"].startswith("ovpn-"):
                 self.get_tunnel("PPP", f, afi, r)
+<<<<<<< HEAD
             if t["type"].startswith("sstp-"):
                 self.get_tunnel("SSTP", f, afi, r)
         # bridge
@@ -369,4 +449,10 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             pass
 
+=======
+            if t["type"].startswith("gre-"):
+                self.get_tunnel("GRE", f, afi, r)
+            if t["type"].startswith("ipip-"):
+                self.get_tunnel("IPIP", f, afi, r)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return [{"interfaces": ifaces.values()}]

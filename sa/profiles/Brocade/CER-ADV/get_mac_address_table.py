@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.CER-ADV.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -14,11 +15,32 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Brocade.CER-ADV.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Brocade.CER-ADV.get_mac_address_table
     """
     name = 'Brocade.CER-ADV.get_mac_address_table'
+<<<<<<< HEAD
     interface = IGetMACAddressTable
+=======
+    implements = [IGetMACAddressTable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     dataline = re.compile('^[0-9a-f]{4}\\.[0-9a-f]{4}\\.[0-9a-f]{4}')
 
     def parse_mac_table(self, s):

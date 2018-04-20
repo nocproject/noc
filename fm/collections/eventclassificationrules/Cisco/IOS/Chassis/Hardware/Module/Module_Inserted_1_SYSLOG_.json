@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Inserted #1 (SYSLOG)",
+    "uuid": "648c7cc3-f405-4a28-bd00-603ed795f08c",
+    "description": "%OIR-SP-6-INSCARD: Card inserted in slot 3, interfaces are now online",
+    "event_class__name": "Chassis | Hardware | Module | Module Inserted",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OIR-SP-6-INSCARD: Card inserted in (?P<module>slot \\S+), interfaces are now online"
+        }
+    ]
+}

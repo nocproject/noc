@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "90b874d9-52f7-4cc8-9cf3-8b3edc732aa0",
+    "description": "UI_LOGOUT_EVENT: User 'noc-sa' logout",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UI_LOGOUT_EVENT: User '(?P<user>.+?)' logout"
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "name": "Zebra | Zebra | Network | BGP | Established (SNMP)",
+    "uuid": "f16a7c17-a944-4867-91e5-ad22c8a1f621",
+    "description": "Quagga BGPd trap",
+    "event_class__name": "Network | BGP | Established",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zebra\\.Zebra$"
+        },
+        {
+            "key_re": "^BGP4-MIB::bgpPeerState\\.(?P<peer>\\S+)$",
+            "value_re": "^established$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^GNOME-PRODUCT-ZEBRA-MIB::bgpd$"
+        }
+    ]
+}

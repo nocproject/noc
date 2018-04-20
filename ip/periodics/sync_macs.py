@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ip.sync_macs periodic task
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## ip.sync_macs periodic task
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 import noc.lib.periodic
@@ -58,12 +67,20 @@ class Task(noc.lib.periodic.Task):
     name="ip.sync_macs"
     description=""
     TIMEOUT=60
+<<<<<<< HEAD
 
     def execute(self):
         from noc.sa.models.reducetask import ReduceTask
         from noc.sa.models.managedobject import ManagedObject
         from noc.ip.models.address import Address
 
+=======
+    
+    def execute(self):
+        from noc.sa.models import ReduceTask,ManagedObject
+        from noc.ip.models import Address
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Get a list of managed objects to fetch ARP cache
         objects=list(ManagedObject.objects.raw("""
             SELECT DISTINCT a.managed_object_id AS id
@@ -91,4 +108,8 @@ class Task(noc.lib.periodic.Task):
         # Wait for tasks completion
         ReduceTask.wait_for_tasks([task])
         return True
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

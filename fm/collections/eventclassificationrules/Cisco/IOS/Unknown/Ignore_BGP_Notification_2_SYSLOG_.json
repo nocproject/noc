@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore BGP Notification #2 (SYSLOG)",
+    "uuid": "2e49e12b-43e4-49be-9fe0-77b502f3a7d9",
+    "description": "%BGP-3-NOTIFICATION: received from neighbor 10.110.0.11 6/5 (cease) 0 bytes",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%BGP-3-NOTIFICATION: received from neighbor .+ \\(cease\\) \\d+ bytes"
+        }
+    ]
+}

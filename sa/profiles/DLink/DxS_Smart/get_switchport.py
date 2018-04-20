@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS_Smart.get_switchport
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "DLink.DxS_Smart.get_switchport"
     interface = IGetSwitchport
+=======
+##----------------------------------------------------------------------
+## DLink.DxS_Smart.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetSwitchport
+
+
+class Script(NOCScript):
+    name = "DLink.DxS_Smart.get_switchport"
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []
@@ -42,7 +62,11 @@ class Script(BaseScript):
 #            pass
 
         # Try snmp first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             def hex2bin(ports):
                 bin = [
                     '0000', '0001', '0010', '0011',
@@ -107,7 +131,12 @@ class Script(BaseScript):
                 # Get switchport description
                 port_descr = {}
                 for iface, description in self.snmp.join_tables(
+<<<<<<< HEAD
                     "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
+=======
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
+                        bulk=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if iface[:3] == 'Aux' or iface[:4] == 'Vlan' \
                     or iface[:11] == 'InLoopBack' \
                     or iface == 'System':

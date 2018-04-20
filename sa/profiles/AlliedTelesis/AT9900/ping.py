@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT9900.ping
 # ---------------------------------------------------------------------
@@ -19,6 +20,26 @@ class Script(BaseScript):
     rx_result = re.compile(
         r"Echo reply (?P<count>\d+) from [\d\.]+ time delay "
         r"(?P<resp>\d+.\d+) ms", re.MULTILINE | re.DOTALL)
+=======
+##----------------------------------------------------------------------
+## AlliedTelesis.AT9900.ping
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IPing
+
+
+class Script(NOCScript):
+    name = "AlliedTelesis.AT9900.ping"
+    implements = [IPing]
+    rx_result = re.compile("Echo reply (?P<count>\d+) from [\d\.]+ time delay (?P<resp>\d+.\d+) ms", re.MULTILINE | re.DOTALL)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, address, size=None, count=None, timeout=None):
         cmd = "ping %s" % address

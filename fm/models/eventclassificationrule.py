@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EventClassificationRule model
 # ---------------------------------------------------------------------
@@ -12,6 +13,21 @@ import os
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## EventClassificationRule model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## Third-party modules
+from mongoengine import fields
+from mongoengine.document import EmbeddedDocument, Document
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from eventclass import EventClass
 from datasource import DataSource
 from noc.lib.nosql import PlainReferenceField
@@ -21,7 +37,11 @@ from noc.lib.text import quote_safe_path
 
 class EventClassificationRuleVar(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = fields.StringField(required=True)
     value = fields.StringField(required=False)
@@ -37,8 +57,12 @@ class EventClassificationRuleVar(EmbeddedDocument):
 class EventClassificationRuleCategory(Document):
     meta = {
         "collection": "noc.eventclassificationrulecategories",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
@@ -61,7 +85,11 @@ class EventClassificationRuleCategory(Document):
 
 class EventClassificationPattern(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     key_re = fields.StringField(required=True)
     value_re = fields.StringField(required=True)
@@ -79,8 +107,12 @@ class EventClassificationRule(Document):
     """
     meta = {
         "collection": "noc.eventclassificationrules",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "json_collection": "fm.eventclassificationrules",
         "json_depends_on": [
             "fm.eventclasses"

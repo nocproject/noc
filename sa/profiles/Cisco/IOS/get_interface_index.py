@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_interface_index
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "Cisco.IOS.get_interface_index"
     interface = IGetIfIndex
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_interface_index
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetIfIndex
+import re
+
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_interface_index"
+    implements = [IGetIfIndex]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_line = re.compile(
         r"Interface = \S+, Ifindex = (?P<index>\d+)")
 

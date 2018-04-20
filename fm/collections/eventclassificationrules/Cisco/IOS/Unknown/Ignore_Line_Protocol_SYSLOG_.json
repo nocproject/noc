@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore Line Protocol (SYSLOG)",
+    "uuid": "126b387c-a299-40cc-831d-e7f721de2299",
+    "description": "%LINEPROTO-5-UPDOWN",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LINEPROTO-.*5-UPDOWN"
+        }
+    ]
+}

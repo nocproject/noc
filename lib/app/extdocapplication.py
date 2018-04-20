@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ExtDocApplication implementation
 # ---------------------------------------------------------------------
@@ -31,6 +32,35 @@ from noc.lib.validators import is_int, is_uuid
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
 from noc.main.models.tag import Tag
+=======
+##----------------------------------------------------------------------
+## ExtDocApplication implementation
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import uuid
+## Django modules
+from django.http import HttpResponse
+## Third-party modules
+from mongoengine.fields import (StringField, BooleanField, ListField,
+                                EmbeddedDocumentField, ReferenceField,
+                                BinaryField)
+## NOC modules
+from extapplication import ExtApplication, view
+from noc.lib.nosql import (GeoPointField, ForeignKeyField,
+                           PlainReferenceField, Q)
+from noc.sa.interfaces import (BooleanParameter, GeoPointParameter,
+                               ModelParameter, ListOfParameter,
+                               EmbeddedDocumentParameter, DictParameter,
+                               InterfaceTypeError, DocumentParameter)
+from noc.lib.validators import is_int, is_uuid
+from noc.lib.serialize import json_decode
+from noc.main.models.collectioncache import CollectionCache
+from noc.main.models.doccategory import DocCategory
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ExtDocApplication(ExtApplication):
@@ -39,11 +69,17 @@ class ExtDocApplication(ExtApplication):
     query_fields = []  # Use all unique fields by default
     query_condition = "startswith"
     int_query_fields = []  # Integer fields for exact match
+<<<<<<< HEAD
     clean_fields = {"id": ObjectIdParameter()}  # field name -> Parameter instance
     parent_field = None  # Tree lookup
     parent_model = None
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = set(["id", "bi_id"])
+=======
+    clean_fields = {}  # field name -> Parameter instance
+    parent_field = None  # Tree lookup
+    parent_model = None
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __init__(self, *args, **kwargs):
         super(ExtDocApplication, self).__init__(*args, **kwargs)
@@ -64,6 +100,7 @@ class ExtDocApplication(ExtApplication):
                     self.clean_fields[f.name] = ListOfParameter(
                         element=EmbeddedDocumentParameter(f.field.document_type))
             elif isinstance(f, ReferenceField):
+<<<<<<< HEAD
                 dt = f.document_type_obj
                 if dt == "self":
                     dt = self.model
@@ -71,6 +108,9 @@ class ExtDocApplication(ExtApplication):
                     dt,
                     required=f.required
                 )
+=======
+                self.clean_fields[f.name] = DocumentParameter(f.document_type_obj)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if f.primary_key:
                 self.pk = name
             if name == "uuid":
@@ -94,7 +134,11 @@ class ExtDocApplication(ExtApplication):
                 self._api_to_json,
                 url="^(?P<id>[0-9a-f]{24})/json/$",
                 method=["GET"], access="read", api=True)
+<<<<<<< HEAD
             if self.json_collection and config.web.install_collection:
+=======
+            if self.json_collection and self.config.getboolean("develop", "install_collection"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 self.add_view(
                     "api_install_json",
                     self._api_install_json,
@@ -144,7 +188,11 @@ class ExtDocApplication(ExtApplication):
 
         qfx = [get_q(f) for f in self.query_fields]
         qfx = [x for x in qfx if x]
+<<<<<<< HEAD
         q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
+=======
+        q = reduce(lambda x, y: x | Q(**{get_q(y):query}),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                    qfx[1:],
                    Q(**{qfx[0]: query}))
         if self.int_query_fields and is_int(query):
@@ -170,6 +218,7 @@ class ExtDocApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
+<<<<<<< HEAD
         # Strip ignored fields and convert empty strings to None
         data = dict(
             (str(k), data[k] if data[k] != "" else None)
@@ -180,25 +229,43 @@ class ExtDocApplication(ExtApplication):
             if f in data:
                 data[f] = self.clean_fields[f].clean(data[f])
         return data
+=======
+        if "id" in data:
+            del data["id"]
+        for f in data:
+            if f in self.clean_fields:
+                data[f] = self.clean_fields[f].clean(data[f])
+        return dict((str(k), data[k]) for k in data)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def cleaned_query(self, q):
         q = q.copy()
         for p in self.ignored_params:
             if p in q:
                 del q[p]
+<<<<<<< HEAD
         for p in (
             self.limit_param, self.page_param, self.start_param,
             self.format_param, self.sort_param, self.query_param,
             self.only_param
         ):
+=======
+        for p in (self.limit_param, self.page_param, self.start_param,
+            self.format_param, self.sort_param, self.query_param,
+            self.only_param):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if p in q:
                 del q[p]
         # Normalize parameters
         for p in q:
+<<<<<<< HEAD
             if p.endswith("__exists"):
                 v = BooleanParameter().clean(q[p])
                 q[p] = v
             elif p in self.clean_fields:
+=======
+            if p in self.clean_fields:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 q[p] = self.clean_fields[p].clean(q[p])
         # @todo: correct __ lookups
         if any(p for p in q if p.endswith("__referred")):
@@ -237,11 +304,14 @@ class ExtDocApplication(ExtApplication):
                         v = [self.instance_to_dict(vv, nocustom=True) for vv in v]
                 elif isinstance(f, BinaryField):
                     v = repr(v)
+<<<<<<< HEAD
                 elif isinstance(f, DateField):
                     if v:
                         v = v.strftime("%Y-%m-%d")
                     else:
                         v = None
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 elif type(v) not in (str, unicode, int, long, bool, dict):
                     if hasattr(v, "id"):
                         v = v.id
@@ -266,20 +336,32 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
+<<<<<<< HEAD
         try:
             return self.list_data(request, self.instance_to_lookup)
         except ValueError:
             return self.response(self.lookup_default, status=self.OK)
+=======
+        return self.list_data(request, self.instance_to_lookup)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @view(method=["GET"], url=r"^tree_lookup/$", access="lookup", api=True)
     def api_lookup_tree(self, request):
         def trim(s):
+<<<<<<< HEAD
             return unicode(o).rsplit(" | ")[-1]
+=======
+            return s.rsplit(" | ")[-1]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         if not self.parent_field:
             return None
         q = dict((str(k), v[0] if len(v) == 1 else v)
+<<<<<<< HEAD
                  for k, v in request.GET.lists())
+=======
+            for k, v in request.GET.lists())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         model = self.parent_model or self.model
         parent = q.get("parent")
         if not parent:
@@ -293,7 +375,11 @@ class ExtDocApplication(ExtApplication):
         if ordering:
             data = data.order_by(*ordering)
         count = data.count()
+<<<<<<< HEAD
         data = [{"id": str(o.id), "label": trim(o)} for o in data]
+=======
+        data = [{"id": str(o.id), "label": trim(unicode(o)).encode("utf8")} for o in data]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return {
             "total": count,
             "success": True,
@@ -302,11 +388,35 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
+<<<<<<< HEAD
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError as e:
             return self.response(str(e), status=self.BAD_REQUEST)
 
+=======
+        def _create_object(attrs):
+            o = self.model()
+            for k, v in attrs.items():
+                if k != self.pk and "__" not in k:
+                    setattr(o, k, v)
+            o.save()
+            # Reread result
+            o = self.model.objects.get(**{self.pk: o.pk})
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.CREATED)
+
+        try:
+            attrs = self.clean(self.deserialize(request.raw_post_data))
+        except ValueError, why:
+            return self.response(str(why), status=self.BAD_REQUEST)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if self.pk in attrs:
             del attrs[self.pk]
         if self.has_uuid and not attrs.get("uuid"):
@@ -318,6 +428,7 @@ class ExtDocApplication(ExtApplication):
             if q:
                 if self.queryset(request).filter(**q).first():
                     return self.response(status=self.CONFLICT)
+<<<<<<< HEAD
         o = self.model()
         for k, v in attrs.items():
             if k != self.pk and "__" not in k:
@@ -339,6 +450,11 @@ class ExtDocApplication(ExtApplication):
 
     @view(method=["GET"],
           url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+=======
+        return self.submit_slow_op(request, _create_object, attrs)
+
+    @view(method=["GET"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
           access="read", api=True)
     def api_read(self, request, id):
         """
@@ -352,21 +468,49 @@ class ExtDocApplication(ExtApplication):
         if only:
             only = only.split(",")
         return self.response(self.instance_to_dict(o, fields=only),
+<<<<<<< HEAD
                              status=self.OK)
+=======
+            status=self.OK)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @view(method=["PUT"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="update", api=True)
     def api_update(self, request, id):
+<<<<<<< HEAD
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
         except ValueError as e:
             return self.response(str(e), status=self.BAD_REQUEST)
+=======
+        def _update_object(o, attrs):
+            for k in attrs:
+                if k != self.pk and "__" not in k:
+                    setattr(o, k, attrs[k])
+            o.save()
+            # Reread result
+            o = self.model.objects.get(**{self.pk: id})
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.OK)
+
+        try:
+            attrs = self.clean(self.deserialize(request.raw_post_data))
+        except ValueError, why:
+            return self.response(str(why), status=self.BAD_REQUEST)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         try:
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
         if self.has_uuid and not attrs.get("uuid") and not o.uuid:
             attrs["uuid"] = uuid.uuid4()
+<<<<<<< HEAD
         if hasattr(o, "tags") and attrs.get("tags"):
             for t in set(getattr(o, "tags", [])) - (set(attrs.get("tags", []))):
                 Tag.unregister_tag(t, repr(self.model))
@@ -392,14 +536,26 @@ class ExtDocApplication(ExtApplication):
         else:
             r = self.instance_to_dict(o)
         return self.response(r, status=self.OK)
+=======
+        # @todo: Check for duplicates
+        return self.submit_slow_op(request, _update_object, o, attrs)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @view(method=["DELETE"], url="^(?P<id>[0-9a-f]{24}|\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/?$",
           access="delete", api=True)
     def api_delete(self, request, id):
+<<<<<<< HEAD
+=======
+        def _delete_object(o):
+            o.delete()
+            return HttpResponse(status=self.DELETED)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         try:
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+<<<<<<< HEAD
         try:
             o.delete()
         except ValueError as e:
@@ -409,6 +565,9 @@ class ExtDocApplication(ExtApplication):
                     "message": "ERROR: %s" % e
                 }, status=self.CONFLICT)
         return HttpResponse(status=self.DELETED)
+=======
+        return self.submit_slow_op(request, _delete_object, o)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def _api_to_json(self, request, id):
         """
@@ -421,9 +580,19 @@ class ExtDocApplication(ExtApplication):
         """
         Expose JSON collection item when available
         """
+<<<<<<< HEAD
         from noc.core.collection.base import Collection
         o = self.get_object_or_404(self.model, id=id)
         Collection.install(o.to_json())
+=======
+        from noc.lib.collection import Collection
+        o = self.get_object_or_404(self.model, id=id)
+        data = json_decode(o.to_json())
+        dc = Collection(self.json_collection)
+        dc.load()
+        dc.install_item(data)
+        dc.save()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return True
 
     def _field_is_builtin(self, o):
@@ -438,6 +607,7 @@ class ExtDocApplication(ExtApplication):
         validator = DictParameter(attrs={
             "ids": ListOfParameter(
                 element=DocumentParameter(self.model),
+<<<<<<< HEAD
                 convert=True
             )
         })
@@ -449,16 +619,37 @@ class ExtDocApplication(ExtApplication):
                 "status": False,
                 "message": "Bad request",
                 "traceback": str(e)
+=======
+                convert=True)
+            }
+        )
+        rv = self.deserialize(request.raw_post_data)
+        try:
+            v = validator.clean(rv)
+        except InterfaceTypeError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }, status=self.BAD_REQUEST)
         objects = v["ids"]
         del v["ids"]
         try:
             v = self.clean(v)
+<<<<<<< HEAD
         except ValueError as e:
             return self.render_json({
                 "status": False,
                 "message": "Bad request",
                 "traceback": str(e)
+=======
+        except ValueError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }, status=self.BAD_REQUEST)
         for o in objects:
             for p in v:

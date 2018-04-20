@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # MongoDB wrappers
@@ -47,6 +48,84 @@ for i in range(RETRIES):
             sys.exit(1)
 
 # Shortcut to ObjectId
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## MongoDB wrappers
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+import sys
+import time
+## Django modules
+from django.db.models import Model
+from django.db import IntegrityError
+import django.db.models.signals
+## Third-party modules
+import pymongo
+from mongoengine.base import *
+from mongoengine import *
+import mongoengine
+## NOC modules
+from noc import settings
+
+logger = logging.getLogger(__name__)
+
+##
+## Create database connection
+## @todo: Handle tests
+if settings.IS_TEST:
+    db_name = settings.NOSQL_DATABASE_TEST_NAME
+else:
+    db_name = settings.NOSQL_DATABASE_NAME
+connection_args = {
+    "db": db_name,
+    "username": settings.NOSQL_DATABASE_USER,
+    "password": settings.NOSQL_DATABASE_PASSWORD
+}
+if settings.NOSQL_DATABASE_HOST:
+    if "," in settings.NOSQL_DATABASE_HOST:
+        # Replica set connection
+        connection_args["host"] = "mongodb://%s" % settings.NOSQL_DATABASE_HOST
+        connection_args["replicaSet"] = True
+        connection_args["slave_okay"] = True
+    elif ":" in settings.NOSQL_DATABASE_HOST:
+        # host:port form
+        h, p = settings.NOSQL_DATABASE_HOST.rsplit(":", 1)
+        connection_args["host"] = h
+        connection_args["port"] = int(p)
+    else:
+        # Simple host settings
+        connection_args["host"] = settings.NOSQL_DATABASE_HOST
+if settings.NOSQL_DATABASE_PORT:
+    if "port" in connection_args:
+        logger.info("Port is already specified in host setting. Ignoring")
+    else:
+        logger.info("Using deprecated [nosql_database]/port option. Consider using host option")
+        connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
+if settings.NOSQL_DATABASE_REPLICA_SET:
+    connection_args["replicaSet"] = settings.NOSQL_DATABASE_REPLICA_SET
+elif "," in settings.NOSQL_DATABASE_HOST:
+    logger.error("[nosql_database]/replica_set must be set for replicaset connection")
+    sys.exit(1)
+
+## Connect to the database
+try:
+    ca = connection_args.copy()
+    if connection_args.get("password"):
+        ca["password"] = "********"
+    logger.info("Connecting to MongoDB %s", ca)
+    connect(**connection_args)
+except mongoengine.connection.ConnectionError, why:
+    logger.error("Cannot connect to mongodb: %s" % why)
+    sys.exit(1)
+
+## Shortcut to ObjectId
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 try:
     import pymongo.objectid
     ObjectId = pymongo.objectid.ObjectId
@@ -71,6 +150,7 @@ class PlainReferenceField(BaseField):
     dereferenced on access (lazily). Maps to plain ObjectId
     """
 
+<<<<<<< HEAD
     def __init__(self, document_type, *args, **kwargs):
         if not isinstance(document_type, six.string_types):
             if not issubclass(document_type, (Document, six.string_types)):
@@ -78,15 +158,32 @@ class PlainReferenceField(BaseField):
                                       "must be a document class or a string")
         self.document_type_obj = document_type
         self.has_get_by_id = None
+=======
+    _DEREF_CACHE = {}
+
+    def __init__(self, document_type, *args, **kwargs):
+        if not isinstance(document_type, basestring):
+            if not issubclass(document_type, (Document, basestring)):
+                raise ValidationError("Argument to PlainReferenceField constructor "
+                                      "must be a document class or a string")
+        self.document_type_obj = document_type
+        self.ttl = None
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         super(PlainReferenceField, self).__init__(*args, **kwargs)
 
     @property
     def document_type(self):
+<<<<<<< HEAD
         if isinstance(self.document_type_obj, six.string_types):
             if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
                 self.document_type_obj = self.owner_document
             elif isinstance(self.document_type_obj, six.string_types):
                 self.document_type_obj = get_model(self.document_type_obj)
+=======
+        if isinstance(self.document_type_obj, basestring):
+            if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
+                self.document_type_obj = self.owner_document
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             else:
                 self.document_type_obj = get_document(self.document_type_obj)
         return self.document_type_obj
@@ -99,6 +196,7 @@ class PlainReferenceField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         # Dereference DBRefs
+<<<<<<< HEAD
         if isinstance(value, ObjectId) or (isinstance(value, six.string_types) and len(value) == 24):
             if self.has_get_by_id is None:
                 self.has_get_by_id = hasattr(self.document_type, "get_by_id")
@@ -106,6 +204,19 @@ class PlainReferenceField(BaseField):
                 v = self.document_type.get_by_id(value)
             else:
                 v = self.document_type.objects.filter(pk=value).first()
+=======
+        if isinstance(value, ObjectId) or (isinstance(value, basestring) and len(value) == 24):
+            v = None
+            if self.ttl:
+                t = time.time()
+                expire, v = self._DEREF_CACHE.get(str(value), (0, None))
+                if expire < t:
+                    v = None
+            if v is None:
+                v = self.document_type.objects(id=value).first()
+                if v and self.ttl:
+                    self._DEREF_CACHE[str(value)] = (t + self.ttl, v)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if v is not None:
                 instance._data[self.name] = v
             else:
@@ -146,6 +257,7 @@ class PlainReferenceListField(PlainReferenceField):
         def convert(value):
             if isinstance(value, ObjectId):
                 # Dereference
+<<<<<<< HEAD
                 if hasattr(self.document_type, "get_by_id"):
                     return self.document_type.get_by_id(bson.ObjectId(value))
                 else:
@@ -154,6 +266,12 @@ class PlainReferenceListField(PlainReferenceField):
                     raise ValidationError(
                         "Unable to dereference %s:%s" % (
                             self.document_type, v))
+=======
+                v = self.document_type.objects(id=value).first()
+                if v is None:
+                    raise ValidationError("Unable to dereference %s:%s" % (
+                                        self.document_type, v))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 return v
             else:
                 return value
@@ -203,8 +321,35 @@ class ForeignKeyField(BaseField):
             raise ValidationError("Argument to ForeignKeyField constructor "
                                   "must be a Model class")
         self.document_type = model
+<<<<<<< HEAD
         self.has_get_by_id = hasattr(self.document_type, "get_by_id")
         super(ForeignKeyField, self).__init__(**kwargs)
+=======
+        super(ForeignKeyField, self).__init__(**kwargs)
+        if not settings.IS_TEST:
+            django.db.models.signals.pre_delete.connect(self.on_ref_delete,
+                                                        sender=model)
+
+    def on_ref_delete(self, sender, instance, **kwargs):
+        """
+        Check referenced object is not deleted
+        :param sender:
+        :param instance:
+        :param using:
+        :return:
+        """
+        if not self.name:
+            return
+        doc = self.owner_document
+        if hasattr(doc, "objects"):
+            if doc.objects.filter(**{self.name: instance.id}).first() is not None:
+                raise IntegrityError(
+                    "%r object is referenced from %r" % (instance,
+                                                         doc)
+                )
+        else:
+            pass  # Embedded Document
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -216,10 +361,14 @@ class ForeignKeyField(BaseField):
         value = instance._data.get(self.name)
         # Dereference
         if isinstance(value, int):
+<<<<<<< HEAD
             if self.has_get_by_id:
                 value = self.document_type.get_by_id(value)
             else:
                 value = self.document_type.objects.get(pk=value)
+=======
+            value = self.document_type.objects.get(pk=value)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if value is not None:
                 instance._data[self.name] = value
         return super(ForeignKeyField, self).__get__(instance, owner)
@@ -227,8 +376,11 @@ class ForeignKeyField(BaseField):
     def __set__(self, instance, value):
         if not value:
             value = None
+<<<<<<< HEAD
         elif isinstance(value, six.string_types):
             value = int(value)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         super(ForeignKeyField, self).__set__(instance, value)
 
     def to_mongo(self, document):
@@ -236,10 +388,15 @@ class ForeignKeyField(BaseField):
             # We need the id from the saved object to create the DBRef
             id_ = document.pk
             if id_ is None:
+<<<<<<< HEAD
                 raise ValidationError(
                     "You can only reference models once "
                     "they have been saved to the database"
                 )
+=======
+                raise ValidationError("You can only reference models once "
+                                      "they have been saved to the database")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         else:
             id_ = document
         return id_
@@ -253,6 +410,7 @@ class ForeignKeyField(BaseField):
         return self.to_mongo(value)
 
 
+<<<<<<< HEAD
 class DateField(DateTimeField):
     def to_mongo(self, value):
         v = super(DateField, self).to_mongo(value)
@@ -268,6 +426,8 @@ class DateField(DateTimeField):
             return value
 
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 ESC1 = "__"  # Escape for '.'
 ESC2 = "^^"  # Escape for '$'
 
@@ -279,9 +439,62 @@ class RawDictField(DictField):
                                   "RawDictField")
 
     def to_python(self, value):
+<<<<<<< HEAD
         return dict((k.replace(ESC1, ".").replace(ESC2, "$").replace(u"\uff0e", "."), v)
                     for k, v in value.items())
 
     def to_mongo(self, value):
         return dict((k.replace(".", ESC1).replace("$", ESC2), v)
                     for k, v in value.items())
+=======
+        return dict([(k.replace(ESC1, ".").replace(ESC2, "$").replace(u"\uff0e", "."), v)
+            for k, v in value.items()])
+
+    def to_mongo(self, value):
+        return dict([(k.replace(".", ESC1).replace("$", ESC2), v)
+            for k, v in value.items()])
+
+
+class Sequence(object):
+    """
+    Unique sequence number generator
+    """
+    def __init__(self, name, prefix, shard_id):
+        # Generate sequence template
+        self.format = "%s%d.%%d" % (prefix, shard_id)
+        self.name = name
+        self.sequences = get_db().noc.sequences["s%d" % shard_id]
+        self.sequences.insert({"_id": self.name, "value": 0L})
+
+    def next(self):
+        s = self.sequences.find_and_modify(
+            query={"_id": self.name},
+            update={"$inc": {"value": 1}},
+            new=True
+        )
+        return self.format % s["value"]
+
+
+class IntSequence(object):
+    FIELD = "v"
+    def __init__(self, name):
+        self.name = name
+        self.isequences = get_db().noc.isequences
+        self.isequences.insert({"_id": self.name, self.FIELD: 0L})
+
+    def next(self):
+        s = self.isequences.find_and_modify(
+            query={"_id": self.name},
+            update={"$inc": {self.FIELD: 1}},
+            new=True
+        )
+        return s[self.FIELD]
+
+
+def create_test_db(verbosity, autoclobber):
+    connect(**connection_args)
+
+    
+def destroy_test_db(verbosity):
+    get_connection().drop_database(settings.NOSQL_DATABASE_TEST_NAME)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

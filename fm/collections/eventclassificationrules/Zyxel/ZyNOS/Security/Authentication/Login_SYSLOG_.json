@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | Security | Authentication | Login (SYSLOG)",
+    "uuid": "9ce3c36c-b1b2-453f-8d2b-3d39ddbb46e1",
+    "description": "Login successful",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "auth(entication)?: (?:\\S+: )?User (?P<user>.*) login$"
+        }
+    ]
+}

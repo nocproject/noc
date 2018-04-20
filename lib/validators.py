@@ -11,11 +11,18 @@ try:
     from django.forms import ValidationError
 except:  # pragma: no cover
     pass
+<<<<<<< HEAD
 from noc.core.mac import MAC
 
 #
 # Regular expressions
 #
+=======
+
+##
+## Regular expressions
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 rx_fqdn = re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$", re.IGNORECASE)
 rx_asset = re.compile(r"^AS-[A-Z0-9\-]+$")
 rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
@@ -26,9 +33,15 @@ rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
 rx_objectid = re.compile(r"^[0-9a-f]{24}$")
 
 
+<<<<<<< HEAD
 #
 # Validators returning boolean
 #
+=======
+##
+## Validators returning boolean
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 def is_int(v):
     """
     Check for valid integer
@@ -47,6 +60,7 @@ def is_int(v):
     except ValueError:
         return False
     except TypeError:
+<<<<<<< HEAD
         return False
     return True
 
@@ -71,6 +85,8 @@ def is_float(v):
     except ValueError:
         return False
     except TypeError:
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return False
     return True
 
@@ -394,6 +410,7 @@ def is_vlan(v):
     except:
         return False
 
+<<<<<<< HEAD
 def is_mac(v):
     """
     >>> is_mac("1234.5678.9ABC")
@@ -432,6 +449,8 @@ def is_mac(v):
         return True
     except ValueError:
         return False
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 def is_email(v):
     """
@@ -523,9 +542,15 @@ def generic_validator(check, error_message):
         return value
     return inner_validator
 
+<<<<<<< HEAD
 #
 # Validators
 #
+=======
+##
+## Validators
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 check_asn = generic_validator(is_asn, "Invalid ASN")
 check_prefix = generic_validator(is_prefix, "Invalid prefix")
 check_ipv4 = generic_validator(is_ipv4, "Invalid IPv4")
@@ -537,6 +562,10 @@ check_rd = generic_validator(is_rd, "Invalid RD")
 check_fqdn = generic_validator(is_fqdn, "Invalid FQDN")
 check_re = generic_validator(is_re, "Invalid Regular Expression")
 check_as_set = generic_validator(is_as_set, "Invalid AS-SET")
+<<<<<<< HEAD
+=======
+check_re = generic_validator(is_re, "Invalid Regular Expression")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 check_vlan = generic_validator(is_vlan, "Invalid VLAN")
 check_email = generic_validator(is_email, "Invalid EMail")
 check_extension = generic_validator(is_extension, "Invalid extension")

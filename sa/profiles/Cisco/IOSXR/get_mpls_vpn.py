@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_mpls_vpn
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetmplsvpn import IGetMPLSVPN
 class Script(BaseScript):
     name = "Cisco.IOSXR.get_mpls_vpn"
     interface = IGetMPLSVPN
+=======
+##----------------------------------------------------------------------
+## Cisco.IOSXR.get_mpls_vpn
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMPLSVPN
+
+
+class Script(NOCScript):
+    name = "Cisco.IOSXR.get_mpls_vpn"
+    implements = [IGetMPLSVPN]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_vrf = re.compile(r"^VRF\s+(?P<name>[^;]+);\s+RD\s+(?P<rd>[^;]+);.+$")
 

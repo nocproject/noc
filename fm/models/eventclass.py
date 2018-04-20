@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # EventClass model
 # ---------------------------------------------------------------------
@@ -25,11 +26,35 @@ from .alarmclass import AlarmClass
 
 id_lock = Lock()
 handlers_lock = Lock()
+=======
+##----------------------------------------------------------------------
+## EventClass model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+import os
+## Third-party modules
+from mongoengine import fields
+from mongoengine.document import EmbeddedDocument, Document
+## NOC modules
+from noc.lib import nosql
+from alarmclass import AlarmClass
+from noc.lib.escape import json_escape as q
+from noc.lib.text import quote_safe_path
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class EventClassVar(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = fields.StringField(required=True)
     description = fields.StringField(required=False)
@@ -57,7 +82,11 @@ class EventClassVar(EmbeddedDocument):
 
 class EventDispositionRule(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     # Name, unique within event class
     name = fields.StringField(required=True, default="dispose")
@@ -111,7 +140,11 @@ class EventDispositionRule(EmbeddedDocument):
     combo_count = fields.IntField(required=False, default=0)
     # Applicable for sequence, all and any combo_condition
     combo_event_classes = fields.ListField(
+<<<<<<< HEAD
         nosql.PlainReferenceField("fm.EventClass"),
+=======
+        nosql.PlainReferenceField("EventClass"),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         required=False,
         default=[])
     # event var name -> alarm var name mappings
@@ -140,11 +173,19 @@ class EventDispositionRule(EmbeddedDocument):
 
 class EventSuppressionRule(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False
     }
     name = fields.StringField()
     condition = fields.StringField(required=True, default="True")
     event_class = nosql.PlainReferenceField("fm.EventClass", required=True)
+=======
+        "allow_inheritance": False
+    }
+    name = fields.StringField()
+    condition = fields.StringField(required=True, default="True")
+    event_class = nosql.PlainReferenceField("EventClass", required=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     match_condition = fields.DictField(required=True, default={})
     window = fields.IntField(required=True, default=3600)
     suppress = fields.BooleanField(required=True, default=True)
@@ -165,7 +206,11 @@ class EventSuppressionRule(EmbeddedDocument):
 
 class EventPlugin(EmbeddedDocument):
     meta = {
+<<<<<<< HEAD
         "strict": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     name = fields.StringField()
@@ -178,8 +223,12 @@ class EventPlugin(EmbeddedDocument):
 class EventClassCategory(nosql.Document):
     meta = {
         "collection": "noc.eventclasscategories",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = fields.StringField()
     parent = fields.ObjectIdField(required=False)
@@ -206,8 +255,12 @@ class EventClass(Document):
     """
     meta = {
         "collection": "noc.eventclasses",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "json_collection": "fm.eventclasses",
         "json_depends_on": [
             "fm.alarmclasses"
@@ -240,12 +293,15 @@ class EventClass(Document):
         fields.EmbeddedDocumentField(EventDispositionRule))
     repeat_suppression = fields.ListField(
         fields.EmbeddedDocumentField(EventSuppressionRule))
+<<<<<<< HEAD
     # Window to suppress duplicated events (in seconds)
     # 0 means no deduplication
     deduplication_window = fields.IntField(default=3)
     # Time to live in active window, unless not belonging to any alarm
     # (in seconds)
     ttl = fields.IntField(default=86400)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     # True if event processing is regulated by
     # Interface Profile.link_events setting
     link_event = fields.BooleanField(default=False)
@@ -256,6 +312,7 @@ class EventClass(Document):
     #
     category = fields.ObjectIdField()
 
+<<<<<<< HEAD
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _handlers_cache = {}
@@ -288,6 +345,11 @@ class EventClass(Document):
 
         return _get_handlers(self)
 
+=======
+    def __unicode__(self):
+        return self.name
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
         c = EventClassCategory.objects.filter(name=c_name).first()
@@ -305,6 +367,13 @@ class EventClass(Document):
             "A": "Log and Archive"
         }[self.action]
 
+<<<<<<< HEAD
+=======
+    @property
+    def conditional_pyrule_name(self):
+        return ("fm_dc_" + rulename_quote(self.name)).lower()
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def to_json(self):
         c = self
         r = ["{"]
@@ -329,8 +398,11 @@ class EventClass(Document):
         r += ["    ],"]
         if self.link_event:
             r += ["    \"link_event\": true,"]
+<<<<<<< HEAD
         r += ["    \"deduplication_window\": %d," % self.deduplication_window]
         r += ["    \"ttl\": %d," % self.ttl]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Handlers
         if self.handlers:
             hh = ["        \"%s\"" % h for h in self.handlers]
@@ -346,7 +418,11 @@ class EventClass(Document):
         # Disposition rules
         if c.disposition:
             r += ["    \"disposition\": ["]
+<<<<<<< HEAD
             disp = []
+=======
+            l = []
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             for d in c.disposition:
                 ll = ["        {"]
                 lll = ["            \"name\": \"%s\"" % q(d.name)]
@@ -358,6 +434,7 @@ class EventClass(Document):
                     lll += ["            \"managed_object\": \"%s\"" % q(d.managed_object)]
                 ll += [",\n".join(lll)]
                 ll += ["        }"]
+<<<<<<< HEAD
                 disp += ["\n".join(ll)]
             r += [",\n".join(disp)]
             r += ["    ]"]
@@ -367,6 +444,17 @@ class EventClass(Document):
         r += ["    \"repeat_suppression\": ["]
         if c.repeat_suppression:
             rep = []
+=======
+                l += ["\n".join(ll)]
+            r += [",\n".join(l)]
+            r += ["    ]"]
+        #
+        if c.repeat_suppression:
+            if not r[-1].endswith(","):
+                r[-1] += ","
+            r += ["    \"repeat_suppression\": ["]
+            l = []
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             for rs in c.repeat_suppression:
                 ll = ["        {"]
                 lll = ["            \"name\": \"%s\"," % q(rs.name)]
@@ -381,9 +469,15 @@ class EventClass(Document):
                 lll += ["            \"suppress\": %s" % ("true" if rs.suppress else "false")]
                 ll += ["\n".join(lll)]
                 ll += ["        }"]
+<<<<<<< HEAD
                 rep += ["\n".join(ll)]
             r += [",\n".join(rep)]
         r += ["    ]"]
+=======
+                l += ["\n".join(ll)]
+            r += [",\n".join(l)]
+            r += ["    ]"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Plugins
         if self.plugins:
             if not r[-1].endswith(","):
@@ -415,7 +509,10 @@ class EventClass(Document):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 rx_rule_name_quote = re.compile("[^a-zA-Z0-9]+")
 
 

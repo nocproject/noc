@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Base Validator class
 # ---------------------------------------------------------------------
@@ -9,6 +10,19 @@
 # Python modules
 import os
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Base Validator class
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+## NOC modules
+from noc.lib.solutions import solutions_roots
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.facts.error import Error
 
 
@@ -22,8 +36,15 @@ class ValidatorRegistry(object):
             return
         # Get all probes locations
         dirs = ["cm/validators"]
+<<<<<<< HEAD
         if os.path.isdir("custom/cm/validators"):
             dirs += ["custom/cm/validators"]
+=======
+        for r in solutions_roots():
+            d = os.path.join(r, "cm", "validators")
+            if os.path.isdir(d):
+                dirs += [d]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Load all probes
         for root in dirs:
             for path, dirnames, filenames in os.walk(root):
@@ -104,10 +125,13 @@ class BaseValidator(object):
         self.config = config or {}
         self.scope = scope
         self.rule = rule
+<<<<<<< HEAD
         if self.rule:
             self.rule_id = str(self.rule.id)
         else:
             self.rule_id = None
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_priority(self):
         """
@@ -209,8 +233,15 @@ class BaseValidator(object):
             return ""
 
     def assert_error(self, type, obj=None, msg=None):
+<<<<<<< HEAD
         self.engine.assert_fact(Error(type, obj=obj, msg=msg,
                                       rule=self.rule_id))
 
 #
 validator_registry.load_all()
+=======
+        self.engine.assert_fact(Error(type, obj=obj, msg=msg))
+
+#
+validator_registry.load_all()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

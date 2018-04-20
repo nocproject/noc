@@ -1,0 +1,6 @@
+{
+    "name": "DB | Ops | Update",
+    "uuid": "619e1722-1b70-4f64-9f19-203237b34fb5",
+    "description": "Database updates",
+    "measure": "ops/sec"
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Abstract script interfaces
 # ----------------------------------------------------------------------
@@ -19,6 +20,172 @@ from noc.lib.validators import is_ipv6
 from noc.core.interface.error import InterfaceTypeError
 from noc.core.interface.parameter import BaseParameter as Parameter
 from noc.core.interface.parameter import ORParameter
+=======
+##----------------------------------------------------------------------
+## Abstract script interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+import types
+import datetime
+## NOC Modules
+from noc.lib.text import list_to_ranges, ranges_to_list
+from noc.lib.ip import IPv6
+from noc.lib.mac import MAC
+from noc.lib.validators import *
+
+
+class InterfaceTypeError(Exception):
+    pass
+
+
+class Parameter(object):
+    """
+    Abstract parameter
+    """
+    def __init__(self, required=True, default=None):
+        self.required = required
+        self.default = default
+        if default is not None:
+            self.default = self.clean(default)
+
+    def __or__(self, other):
+        """ORParameter syntax sugar"""
+        return ORParameter(self, other)
+
+    def raise_error(self, value, msg=""):
+        """Raise InterfaceTypeError
+
+        :param value: Value where error detected
+        :type value: Arbitrary python type
+        :param msg: Optional message
+        :type msg: String
+        :raises InterfaceTypeError
+        """
+        raise InterfaceTypeError("%s: %s. %s" % (self.__class__.__name__,
+                                                 repr(value), msg))
+
+    def clean(self, value):
+        """
+        Input parameter normalization
+
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
+        return value
+
+    def script_clean_input(self, profile, value):
+        """
+        Clean up script input parameters. Can be overloaded to
+        handle profile specific.
+        
+        :param profile: Profile
+        :type profile: Profile instance
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
+        return self.clean(value)
+
+    def script_clean_result(self, profile, value):
+        """
+        Clean up script result parameters. Can be overloaded to
+        handle profile specific.
+
+        :param profile: Profile
+        :type profile: Profile instance
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
+        return self.clean(value)
+
+    def form_clean(self, value):
+        """
+        Clean up form field
+
+        :param value: Input parameter
+        :type value: Arbitrary python type
+        :return: Normalized value
+        """
+        if not value and not self.required:
+            return self.default if self.default else None
+        try:
+            return self.clean(value)
+        except InterfaceTypeError, why:
+            raise forms.ValidationError(why)
+
+    def get_form_field(self, label=None):
+        """
+        Get appropriative form field
+        """
+        return {
+            "xtype": "textfield",
+            "name": label,
+            "fieldLabel": label,
+            "allowBlank": not self.required
+        }
+
+
+class ORParameter(Parameter):
+    """
+    >>> ORParameter(IntParameter(),IPv4Parameter()).clean(10)
+    10
+    >>> ORParameter(IntParameter(),IPv4Parameter()).clean("192.168.1.1")
+    '192.168.1.1'
+    >>> ORParameter(IntParameter(),IPv4Parameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IPv4Parameter: 'xxx'
+    >>> (IntParameter()|IPv4Parameter()).clean(10)
+    10
+    >>> (IntParameter()|IPv4Parameter()).clean("192.168.1.1")
+    '192.168.1.1'
+    >>> (IntParameter()|IPv4Parameter()).clean("xxx") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IPv4Parameter: 'xxx'
+    >>> (IntParameter()|IPv4Parameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IPv4Parameter: None.
+    >>> (IntParameter(required=False)|IPv4Parameter(required=False)).clean(None)
+    >>> (IntParameter(required=False)|IPv4Parameter()).clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IPv4Parameter: None.
+    """
+    def __init__(self, left, right):
+        super(ORParameter, self).__init__()
+        self.left = left
+        self.right = right
+        self.required = self.left.required or self.right.required
+
+    def clean(self, value):
+        if value is None and self.required == False:
+            return None
+        try:
+            return self.left.clean(value)
+        except InterfaceTypeError:
+            return self.right.clean(value)
+
+    def script_clean_input(self, profile, value):
+        try:
+            return self.left.script_clean_input(profile, value)
+        except InterfaceTypeError:
+            return self.right.script_clean_input(profile, value)
+
+    def script_clean_result(self, profile, value):
+        try:
+            return self.left.script_clean_result(profile, value)
+        except InterfaceTypeError:
+            return self.right.script_clean_result(profile, value)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class NoneParameter(Parameter):
@@ -131,7 +298,11 @@ class REParameter(StringParameter):
     def clean(self, value):
         try:
             re.compile(value)
+<<<<<<< HEAD
         except re.error:
+=======
+        except Exception, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             self.raise_error(value)
         return value
 
@@ -149,7 +320,11 @@ class PyExpParameter(StringParameter):
     def clean(self, value):
         try:
             compile(value, "<string>", "eval")
+<<<<<<< HEAD
         except SyntaxError:
+=======
+        except SyntaxError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             self.raise_error(value)
         return value
 
@@ -180,11 +355,19 @@ class BooleanParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+<<<<<<< HEAD
         if isinstance(value, bool):
             return value
         if isinstance(value, six.integer_types):
             return value != 0
         if isinstance(value, six.string_types):
+=======
+        if type(value) == types.BooleanType:
+            return value
+        if type(value) in (types.IntType, types.LongType):
+            return value != 0
+        if type(value) in (types.StringType, types.UnicodeType):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return value.lower() in ("true", "t", "yes", "y")
         self.raise_error(value)
 
@@ -203,6 +386,7 @@ class IntParameter(Parameter):
     >>> IntParameter().clean("1")
     1
     >>> IntParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
+<<<<<<< HEAD
     Traceback (most recent call last):
         ...
     InterfaceTypeError: IntParameter: 'not a number'
@@ -225,6 +409,30 @@ class IntParameter(Parameter):
     >>> IntParameter().clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
+=======
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IntParameter: 'not a number'
+    >>> IntParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IntParameter: 5
+    >>> IntParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IntParameter: 10
+    >>> IntParameter(max_value=10, default=7).clean(5)
+    5
+    >>> IntParameter(max_value=10, default=7).clean(None)
+    7
+    >>> IntParameter(max_value=10, default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: IntParameter: 15
+    >>> IntParameter().clean(None) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     InterfaceTypeError: IntParameter: None
     None
     """
@@ -241,12 +449,64 @@ class IntParameter(Parameter):
             i = int(value)
         except (ValueError, TypeError):
             self.raise_error(value)
+<<<<<<< HEAD
         if ((self.min_value is not None and i < self.min_value) or
                 (self.max_value is not None and i > self.max_value)):
+=======
+        if ((self.min_value is not None and i < self.min_value)
+                or (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
         return i
 
 
+class FloatParameter(Parameter):
+    """
+    >>> FloatParameter().clean(1.2)
+    1.2
+    >>> FloatParameter().clean("1.2")
+    1.2
+    >>> FloatParameter().clean("not a number") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 'not a number'
+    >>> FloatParameter(min_value=10).clean(5) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 5
+    >>> FloatParameter(max_value=7).clean(10) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 10
+    >>> FloatParameter(max_value=10,default=7).clean(5)
+    5
+    >>> FloatParameter(max_value=10,default=7).clean(None)
+    7
+    >>> FloatParameter(max_value=10,default=15) #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: FloatParameter: 15
+    """
+    def __init__(self, required=True, default=None,
+                 min_value=None, max_value=None):
+        self.min_value = min_value
+        self.max_value = max_value
+        super(FloatParameter, self).__init__(required=required, default=default)
+
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        try:
+            i = float(value)
+        except:
+            self.raise_error(value)
+        if ((self.min_value is not None and i < self.min_value)
+                or (self.max_value is not None and i > self.max_value)):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
+            self.raise_error(value)
+        return i
+
+
+<<<<<<< HEAD
 class FloatParameter(Parameter):
     """
     >>> FloatParameter().clean(1.2)
@@ -293,6 +553,8 @@ class FloatParameter(Parameter):
         return i
 
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class ListParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
@@ -342,8 +604,13 @@ class InstanceOfParameter(Parameter):
         return isinstance(value, self.cls)
 
     def is_valid_classname(self, value):
+<<<<<<< HEAD
         return (hasattr(value, "__class__") and
                 value.__class__.__name__ == self.cls)
+=======
+        return (hasattr(value, "__class__")
+                and value.__class__.__name__ == self.cls)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def clean(self, value):
         if value is None:
@@ -505,15 +772,25 @@ class DictParameter(Parameter):
         ...
     InterfaceTypeError: DictParameter: {'i': '10', 'x': 'ten'}
     """
+<<<<<<< HEAD
     def __init__(self, required=True, default=None, attrs=None, truncate=False):
         super(DictParameter, self).__init__(required=required, default=default)
         self.attrs = attrs
         self.truncate = truncate
+=======
+    def __init__(self, required=True, default=None, attrs=None):
+        super(DictParameter, self).__init__(required=required, default=default)
+        self.attrs = attrs
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+<<<<<<< HEAD
         if not isinstance(value, dict):
+=======
+        if type(value) != types.DictType:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -524,6 +801,7 @@ class DictParameter(Parameter):
                 if attr.default is not None:
                     out_value[a_name] = attr.default
                 else:
+<<<<<<< HEAD
                     self.raise_error(
                         value,
                         "Attribute '%s' is required in %s" % (
@@ -532,6 +810,14 @@ class DictParameter(Parameter):
                 try:
                     out_value[a_name] = attr.clean(in_value[a_name])
                 except InterfaceTypeError as e:
+=======
+                    self.raise_error(value,
+                                     "Attribute '%s' is required in %s" % (a_name, value))
+            if a_name in in_value:
+                try:
+                    out_value[a_name] = attr.clean(in_value[a_name])
+                except InterfaceTypeError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if not in_value[a_name] and not attr.required:
                         if attr.default:
                             out_value[a_name] = attr.default
@@ -540,18 +826,29 @@ class DictParameter(Parameter):
                     else:
                         self.raise_error(
                             value,
+<<<<<<< HEAD
                             "Invalid value for '%s': %s" % (a_name, e))
                 del in_value[a_name]
         # Copy left items
         if not self.truncate:
             for k, v in in_value.items():
                 out_value[k] = v
+=======
+                            "Invalid value for '%s': %s" % (a_name, why))
+                del in_value[a_name]
+        for k, v in in_value.items():
+            out_value[k] = v
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return out_value
 
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
+<<<<<<< HEAD
         if not isinstance(value, dict):
+=======
+        if type(value) != types.DictType:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -573,7 +870,11 @@ class DictParameter(Parameter):
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
+<<<<<<< HEAD
         if not isinstance(value, dict):
+=======
+        if type(value) != types.DictType:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -586,10 +887,15 @@ class DictParameter(Parameter):
                 try:
                     out_value[a_name] = attr.script_clean_result(profile,
                                                              in_value[a_name])
+<<<<<<< HEAD
                 except InterfaceTypeError as e:
                     self.raise_error(
                         value,
                         "Invalid value for '%s': %s" % (a_name, str(e)))
+=======
+                except InterfaceTypeError, why:
+                    self.raise_error(value, "Invalid value for '%s': %s" % (a_name, str(why)))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 del in_value[a_name]
         for k, v in in_value.items():
             out_value[k] = v
@@ -656,11 +962,14 @@ class IPv4Parameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
+<<<<<<< HEAD
         try:
             int(value)
             return value
         except ValueError:
             pass
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if len(value) == 4:
             # IP address in binary form
             value = ".".join(["%02X" % ord(c) for c in value])
@@ -673,8 +982,11 @@ class IPv4Parameter(StringParameter):
                 self.raise_error(value)
         except:
             self.raise_error(value)
+<<<<<<< HEAD
         # Avoid output like 001.002.003.004
         v = ".".join("%d" % int(c) for c in X)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return v
 
 
@@ -719,9 +1031,15 @@ class IPv4PrefixParameter(StringParameter):
         return v
 
 
+<<<<<<< HEAD
 #
 # IPv6 Parameter
 #
+=======
+##
+## IPv6 Parameter
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class IPv6Parameter(StringParameter):
     """
     >>> IPv6Parameter().clean("::")
@@ -790,9 +1108,15 @@ class IPv6PrefixParameter(StringParameter):
         return "%s/%d" % (n, m)
 
 
+<<<<<<< HEAD
 #
 # IPv4/IPv6 parameter
 #
+=======
+##
+## IPv4/IPv6 parameter
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class IPParameter(StringParameter):
     def clean(self, value):
         """
@@ -807,9 +1131,15 @@ class IPParameter(StringParameter):
             return IPv4Parameter().clean(value)
 
 
+<<<<<<< HEAD
 #
 # Prefix parameter
 #
+=======
+##
+## Prefix parameter
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class PrefixParameter(StringParameter):
     def clean(self, value):
         """
@@ -822,9 +1152,15 @@ class PrefixParameter(StringParameter):
             return IPv4PrefixParameter().clean(value)
 
 
+<<<<<<< HEAD
 #
 #
 #
+=======
+##
+##
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VLANIDParameter(IntParameter):
     """
     >>> VLANIDParameter().clean(10)
@@ -868,9 +1204,15 @@ class VLANStackParameter(ListOfParameter):
         return value
 
 
+<<<<<<< HEAD
 #
 #
 #
+=======
+##
+##
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VLANIDListParameter(ListOfParameter):
     """
     >>> VLANIDListParameter().clean(["1","2","3"])
@@ -883,9 +1225,15 @@ class VLANIDListParameter(ListOfParameter):
                                            required=required, default=default)
 
 
+<<<<<<< HEAD
 #
 #
 #
+=======
+##
+##
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class VLANIDMapParameter(StringParameter):
     def clean(self, value):
         """
@@ -924,6 +1272,7 @@ class MACAddressParameter(StringParameter):
     >>> MACAddressParameter().clean("123456-789abc")
     '12:34:56:78:9A:BC'
     >>> MACAddressParameter().clean("12-34-56-78-9A-BC-DE") #doctest: +IGNORE_EXCEPTION_DETAIL
+<<<<<<< HEAD
     Traceback (most recent call last):
         ...
     InterfaceTypeError: MACAddressParameter: '12:34:56:78:9A:BC:DE'
@@ -979,6 +1328,63 @@ class OIDParameter(Parameter):
     >>> OIDParameter().clean("1.3.6.1.2.1.1.X.0")  #doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
         ...
+=======
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: MACAddressParameter: '12:34:56:78:9A:BC:DE'
+    >>> MACAddressParameter().clean("AB-CD-EF-GH-HJ-KL") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: MACAddressParameter: 'AB:CD:EF:GH:HJ:KL'
+    >>> MACAddressParameter().clean("aabb-ccdd-eeff")
+    'AA:BB:CC:DD:EE:FF'
+    >>> MACAddressParameter().clean("aabbccddeeff")
+    'AA:BB:CC:DD:EE:FF'
+    >>> MACAddressParameter().clean("AABBCCDDEEFF")
+    'AA:BB:CC:DD:EE:FF'
+    >>> MACAddressParameter().clean("\\xa8\\xf9K\\x80\\xb4\\xc0")
+    'A8:F9:4B:80:B4:C0'
+    >>> MACAddressParameter(accept_bin=False).clean("\\xa8\\xf9K\\x80\\xb4\\xc0") #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    InterfaceTypeError: MACAddressParameter: '\xa8\xf9K\x80\xb4\xc0'.
+    """
+    def __init__(self, required=True, default=None, accept_bin=True):
+        self.accept_bin = accept_bin
+        super(MACAddressParameter, self).__init__(required=required,
+                                                  default=default)
+
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        value = super(MACAddressParameter, self).clean(value)
+        if len(value) == 6 and self.accept_bin:
+            # MAC address in binary form
+            return MAC(":".join(["%02X" % ord(c) for c in value]))
+        try:
+            return MAC(value)
+        except ValueError:
+            self.raise_error(value)
+
+
+class InterfaceNameParameter(StringParameter):
+    def script_clean_input(self, profile, value):
+        return profile.convert_interface_name(value)
+
+    def script_clean_result(self, profile, value):
+        return self.script_clean_input(profile, value)
+
+
+class OIDParameter(Parameter):
+    """
+    >>> OIDParameter().clean("1.3.6.1.2.1.1.1.0")
+    '1.3.6.1.2.1.1.1.0'
+    >>> OIDParameter(default="1.3.6.1.2.1.1.1.0").clean(None)
+    '1.3.6.1.2.1.1.1.0'
+    >>> OIDParameter().clean("1.3.6.1.2.1.1.X.0")  #doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     InterfaceTypeError: OIDParameter: '1.3.6.1.2.1.1.X.0'
     """
     def clean(self, value):
@@ -1037,7 +1443,11 @@ class RDParameter(Parameter):
                 if r > 65535:  # 4-byte ASN
                     self.raise_error(value)
             else:
+<<<<<<< HEAD
                 if r > 0xFFFFFFFF:  # 2-byte ASN
+=======
+                if r > 0xFFFFFFFFL:  # 2-byte ASN
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     self.raise_error(value)
         return "%s:%s" % (l, r)
 
@@ -1095,6 +1505,7 @@ class ModelParameter(Parameter):
             value = int(value)
         except ValueError:
             self.raise_error(value)
+<<<<<<< HEAD
         try:
             return self.model.objects.get(pk=value)
         except self.model.DoesNotExist:
@@ -1200,6 +1611,237 @@ class ObjectIdParameter(REStringParameter):
 #
 # Module Test
 #
+=======
+        try:
+            return self.model.objects.get(pk=value)
+        except self.model.DoesNotExist:
+            self.raise_error("Not found: %d" % value)
+
+
+DocFieldMap = {
+    "FloatField": FloatParameter()
+}
+
+
+class DocumentParameter(Parameter):
+    """
+    Document reference parameter
+    """
+    def __init__(self, document, required=True):
+        super(DocumentParameter, self).__init__(required=required)
+        self.document = document
+
+    def clean(self, value):
+        if not value:
+            if self.required:
+                self.raise_error("Value required")
+            else:
+                return None
+        v = self.document.objects.filter(id=value).first()
+        if not v:
+            self.raise_error("Not found: %d" % value)
+        return v
+
+
+class EmbeddedDocumentParameter(Parameter):
+    def __init__(self, document, required=True):
+        super(EmbeddedDocumentParameter, self).__init__(
+            required=required)
+        self.document = document
+
+    def clean(self, value):
+        if not value:
+            if self.required:
+                self.raise_error("Value required")
+            else:
+                return None
+        if not isinstance(value, dict):
+            self.raise_error(value, "Value must be list dict")
+        for k, v in self.document._fields.iteritems():
+            if k in value and value[k] is not None:
+                p = DocFieldMap.get(v.__class__.__name__)
+                if p:
+                    value[k] = p.clean(value[k])
+        return self.document(**value)
+
+
+class TagsParameter(Parameter):
+    """
+    >>> TagsParameter().clean([1, 2, "tags"])
+    [u'1', u'2', u'tags']
+    >>> TagsParameter().clean([1, 2, "tags "])
+    [u'1', u'2', u'tags']
+    >>> TagsParameter().clean("1,2,tags")
+    [u'1', u'2', u'tags']
+    >>> TagsParameter().clean("1 , 2,  tags")
+    [u'1', u'2', u'tags']
+    """
+    def clean(self, value):
+        if type(value) in (list, tuple):
+            v = [unicode(v).strip() for v in value]
+            return [x for x in v if x]
+        elif isinstance(value, basestring):
+            v = [unicode(x.strip()) for x in value.split(",")]
+            return [x for x in v if x]
+        else:
+            self.raise_error("Invalid tags: %s" % value)
+
+
+class ColorParameter(Parameter):
+    def clean(self, value):
+        if value is None and self.default is not None:
+            return self.default
+        if type(value) in (int, long):
+            return value
+        if isinstance(value, basestring):
+            if value.startswith("#"):
+                value = value[1:]
+            if len(value) == 6:
+                try:
+                    return int(value, 16)
+                except ValueError:
+                    self.raise_error(value)
+        self.raise_error(value)
+
+
+class ObjectIdParameter(REStringParameter):
+    def __init__(self, required=True, default=None):
+        super(ObjectIdParameter, self).__init__(
+            "^[0-9a-f]{24}$", required=required, default=default
+        )
+
+
+## Stub for interface registry
+interface_registry = {}
+
+
+class InterfaceBase(type):
+    def __new__(cls, name, bases, attrs):
+        m = type.__new__(cls, name, bases, attrs)
+        interface_registry[name] = m
+        return m
+
+
+class Interface(object):
+    __metaclass__ = InterfaceBase
+
+    template = None  # Relative template path in sa/templates/
+    form = None
+    preview = None
+    RESERVED_NAMES = ("returns", "template", "form", "preview")
+
+    def gen_parameters(self):
+        """
+        Generator yielding (parameter name, parameter instance) pairs
+        """
+        for n, p in self.__class__.__dict__.items():
+            if issubclass(p.__class__, Parameter) and n not in self.RESERVED_NAMES:
+                yield (n, p)
+
+    @property
+    def has_required_params(self):
+        return any(p for n, p in self.gen_parameters() if p.required)
+
+    def clean(self, __profile=None, **kwargs):
+        """
+        Clean up all parameters except "returns"
+        """
+        in_kwargs = kwargs.copy()
+        out_kwargs = {}
+        for n, p in self.gen_parameters():
+            if n not in in_kwargs and p.required:
+                if p.default is not None:
+                    out_kwargs[n] = p.default
+                else:
+                    raise InterfaceTypeError("Parameter '%s' required" % n)
+            if n in in_kwargs:
+                if not (in_kwargs[n] is None and not p.required):
+                    try:
+                        if __profile:
+                            out_kwargs[n] = p.script_clean_input(__profile,
+                                                                 in_kwargs[n])
+                        else:
+                            out_kwargs[n] = p.clean(in_kwargs[n])
+                    except InterfaceTypeError, why:
+                        raise InterfaceTypeError("Invalid value for '%s': %s" % (n, why))
+                del in_kwargs[n]
+        # Copy other parameters
+        for k, v in in_kwargs.items():
+            if k != "__profile":
+                out_kwargs[k] = v
+        return out_kwargs
+
+    def clean_result(self, result):
+        """
+        Clean up returned result
+        """
+        try:
+            rp = self.returns
+        except AttributeError:
+            return result  # No return result restriction
+        return rp.clean(result)
+
+    def script_clean_input(self, __profile, **kwargs):
+        return self.clean(__profile, **kwargs)
+
+    def script_clean_result(self, __profile, result):
+        try:
+            rp = self.returns
+        except AttributeError:
+            return result
+        return rp.script_clean_result(__profile, result)
+
+    def template_clean_result(self, __profile, result):
+        return result
+
+    def requires_input(self):
+        for n, p in self.gen_parameters():
+            return True
+        return False
+
+    def get_form(self):
+        if self.form:
+            return self.form
+        r = []
+        for n, p in self.gen_parameters():
+            r += [p.get_form_field(n)]
+        return r
+
+
+def iparam(**params):
+    """
+    Function parameters decorator. Usage:
+
+        @iparam(mac=MACAddressParameter(), count=IntParameter(default=3))
+        def iparam_test(mac, count):
+            return (mac, count)
+
+        iparam_test(mac="1:2:3:4:5:6", count="7")
+        ("01:02:03:04:05:06", 7)
+    """
+    def decorate(f):
+        def check_params(*args, **kwargs):
+            # Clean parameters
+            for n in params:
+                p = params[n]
+                if n in kwargs:
+                    kwargs[n] = p.clean(kwargs[n])
+                elif p.default:
+                    kwargs[n] = p.default
+                elif p.required:
+                    p.raise_error(None)
+            # Call
+            return f(*args, **kwargs)
+
+        check_params.func_name = f.func_name
+        return check_params
+
+    return decorate
+
+##
+## Module Test
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 if __name__ == "__main__":
     import doctest
     doctest.testmod()

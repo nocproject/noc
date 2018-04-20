@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS.get_inventory
 # ---------------------------------------------------------------------
@@ -18,6 +19,26 @@ from noc.sa.profiles.DLink.DxS import get_platform
 class Script(BaseScript):
     name = "DLink.DxS.get_inventory"
     interface = IGetInventory
+=======
+##----------------------------------------------------------------------
+## DLink.DxS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+ 
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.sa.interfaces.base import InterfaceTypeError
+
+
+class Script(NOCScript):
+    name = "DLink.DxS.get_inventory"
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_dev = re.compile(
         r"Device Type\s+:\s*(?P<part_no>\S+).+"
@@ -27,9 +48,12 @@ class Script(BaseScript):
     rx_ser = re.compile(
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
+<<<<<<< HEAD
     rx_stack = re.compile(
         r"^\s*(?P<box_id>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>\S*)", re.MULTILINE)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_mod = re.compile(
         r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
     rx_mod1 = re.compile(
@@ -40,7 +64,11 @@ class Script(BaseScript):
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
     rx_media_type = re.compile(
+<<<<<<< HEAD
         r"^\s(?P<unit>\d+)?:?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
+=======
+        r"^\s(\d+:)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
         r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+\d+\s+\n"
         r"\s+Compatibility: Single Mode \(SM\),"
@@ -49,6 +77,7 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
+<<<<<<< HEAD
         stacks = []
         s = self.scripts.get_switch()
         match = self.rx_dev.search(s)
@@ -56,11 +85,28 @@ class Script(BaseScript):
         part_no = get_platform(match.group("part_no"), revision)
         p = {
             "type": "CHASSIS",
+=======
+        s = self.cli("show switch", cached=True)
+        match = self.rx_dev.search(s)
+        part_no = match.group("part_no")
+        revision = match.group("revision")
+        if part_no.startswith("DES-3200-") and revision != "A1":
+            part_no = "%s/%s" % (part_no, revision)
+        if (part_no.startswith("DES-1210-10/ME") or
+            part_no.startswith("DES-1210-26/ME") or
+            part_no.startswith("DES-1210-28/ME") and
+            revision != "A1"):
+            part_no = "%s/%s" % (part_no, revision)
+        p = {
+            "type": "CHASSIS",
+            "number": "1",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "vendor": "DLINK",
             "part_no": [part_no],
             "revision": revision
         }
         ser = self.rx_ser.search(s)
+<<<<<<< HEAD
         if (
             ser and ser.group("serial") != "System" and
             ser.group("serial") != "Power"
@@ -75,6 +121,13 @@ class Script(BaseScript):
             pass
         r += [p]
         box_id = 1
+=======
+        if (ser and ser.group("serial") != "System" and
+            ser.group("serial") != "Power"):
+            p["serial"] = ser.group("serial")
+        p["description"] = self.rx_des.search(s).group("descr")
+        r += [p]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         match = self.rx_mod.search(s)
         if match:
             p = {
@@ -125,6 +178,7 @@ class Script(BaseScript):
         try:
             c = self.cli("show ports media_type")
             for match in self.rx_media_type.finditer(c):
+<<<<<<< HEAD
                 if match.group("unit") and match.group("unit") != box_id:
                     box_id = match.group("unit")
                     for i in stacks:
@@ -139,6 +193,8 @@ class Script(BaseScript):
                                 p["serial"] = i["serial"]
                             r += [p]
                             break
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 vendor = match.group("vendor")
                 part_no = match.group("part_no")
                 description = match.group("part_no")
@@ -181,7 +237,11 @@ class Script(BaseScript):
                         part_no = part_no + 'Unknown SFP'
 
                 i = {
+<<<<<<< HEAD
                     "type": "XCVR",
+=======
+                    "type": "MODULE",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     "number": match.group("port"),
                     "vendor": vendor,
                     "part_no": part_no,

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlarmClass model
 # ---------------------------------------------------------------------
@@ -15,12 +16,28 @@ import operator
 from mongoengine import fields
 import cachetools
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## AlarmClass model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import hashlib
+import os
+## Third-party modules
+from mongoengine import fields
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import noc.lib.nosql as nosql
 from alarmseverity import AlarmSeverity
 from alarmclassvar import AlarmClassVar
 from datasource import DataSource
 from alarmrootcausecondition import AlarmRootCauseCondition
 from alarmclasscategory import AlarmClassCategory
+<<<<<<< HEAD
 from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
@@ -32,18 +49,34 @@ handlers_lock = Lock()
 
 
 @bi_sync
+=======
+from alarmclassjob import AlarmClassJob
+from alarmplugin import AlarmPlugin
+from noc.lib.escape import json_escape as q
+from noc.lib.text import quote_safe_path
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class AlarmClass(nosql.Document):
     """
     Alarm class
     """
     meta = {
         "collection": "noc.alarmclasses",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "json_collection": "fm.alarmclasses",
         "json_depends_on": [
             "fm.alarmseverities"
         ],
+=======
+        "allow_inheritance": False,
+        "json_collection": "fm.alarmclasses",
+        "json_depends_on": [
+            "fm.alarmseverities"
+        ]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     name = fields.StringField(required=True, unique=True)
@@ -73,17 +106,28 @@ class AlarmClass(nosql.Document):
     flap_condition = fields.StringField(
         required=False,
         choices=[("none", "none"), ("count", "count")],
+<<<<<<< HEAD
         default="none")
+=======
+        default=None)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     flap_window = fields.IntField(required=False, default=0)
     flap_threshold = fields.FloatField(required=False, default=0)
     # RCA
     root_cause = fields.ListField(
         fields.EmbeddedDocumentField(AlarmRootCauseCondition))
+<<<<<<< HEAD
     topology_rca = fields.BooleanField(default=False)
     # List of handlers to be called on alarm raising
     handlers = fields.ListField(fields.StringField())
     # List of handlers to be called on alarm clear
     clear_handlers = fields.ListField(fields.StringField())
+=======
+    # Job descriptions
+    jobs = fields.ListField(fields.EmbeddedDocumentField(AlarmClassJob))
+    #
+    handlers = fields.ListField(fields.StringField())
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     # Plugin settings
     plugins = fields.ListField(fields.EmbeddedDocumentField(AlarmPlugin))
     # Time in seconds to delay alarm risen notification
@@ -94,6 +138,7 @@ class AlarmClass(nosql.Document):
     control_time1 = fields.IntField(required=False)
     # Control time to reopen alarm after >1 reopen
     control_timeN = fields.IntField(required=False)
+<<<<<<< HEAD
     # Consequence recover time
     # Root cause will be detached if consequence alarm
     # will not clear itself in *recover_time*
@@ -158,6 +203,14 @@ class AlarmClass(nosql.Document):
 
         return _get_handlers(self)
 
+=======
+    #
+    category = nosql.ObjectIdField()
+
+    def __unicode__(self):
+        return self.name
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
         c = AlarmClassCategory.objects.filter(name=c_name).first()
@@ -228,6 +281,7 @@ class AlarmClass(nosql.Document):
             r += ["    \"handlers\": ["]
             r += [",\n\n".join(hh)]
             r += ["    ],"]
+<<<<<<< HEAD
         if self.clear_handlers:
             hh = ["        \"%s\"" % h for h in self.clear_handlers]
             r += ["    \"clear_handlers\": ["]
@@ -239,6 +293,14 @@ class AlarmClass(nosql.Document):
         r += ["    \"symptoms\": \"%s\"," % q(c.symptoms if c.symptoms else "")]
         r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes if c.probable_causes else "")]
         r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions if c.recommended_actions else "")]
+=======
+        # Text
+        r += ["    \"subject_template\": \"%s\"," % q(c.subject_template)]
+        r += ["    \"body_template\": \"%s\"," % q(c.body_template)]
+        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms)]
+        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes)]
+        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions)]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Root cause
         if self.root_cause:
             rc = []
@@ -262,10 +324,33 @@ class AlarmClass(nosql.Document):
             r += ["    \"root_cause\": ["]
             r += [",\n".join(rc)]
             r += ["    ]"]
+<<<<<<< HEAD
         if self.topology_rca:
             if r[-1][-1] != ",":
                 r[-1] += ","
             r += ["    \"topology_rca\": true"]
+=======
+        # Jobs
+        if self.jobs:
+            jobs = []
+            for job in self.jobs:
+                jd = ["        {"]
+                jd += ["            \"job\": \"%s\"," % job.job]
+                jd += ["            \"interval\": %d," % job.interval]
+                jd += ["            \"vars\": {"]
+                jv = []
+                for v in job.vars:
+                    jv += ["                \"%s\": \"%s\"" % (v, job.vars[v])]
+                jd += [",\n".join(jv)]
+                jd += ["            }"]
+                jd += ["        }"]
+                jobs += ["\n".join(jd)]
+            if r[-1][-1] != ",":
+                r[-1] += ","
+            r += ["    \"jobs\": ["]
+            r += [",\n".join(jobs)]
+            r += ["    ]"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Plugins
         if self.plugins:
             if r[-1][-1] != ",":
@@ -301,10 +386,13 @@ class AlarmClass(nosql.Document):
                 if self.control_timeN:
                     r[-1] += ","
                     r += ["    \"control_timeN\": %d" % self.control_timeN]
+<<<<<<< HEAD
         if self.recover_time:
             if r[-1][-1] != ",":
                 r[-1] += ","
             r += ["    \"recover_time\": %d" % self.recover_time]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Close
         if r[-1].endswith(","):
             r[-1] = r[-1][:-1]
@@ -344,5 +432,10 @@ class AlarmClass(nosql.Document):
             else:
                 return self.control_timeN or None
 
+<<<<<<< HEAD
 # Avoid circular references
 from alarmclassconfig import AlarmClassConfig
+=======
+## Avoid circular references
+from alarmclassconfig import AlarmClassConfig
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

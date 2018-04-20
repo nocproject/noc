@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Config | Exiting Configuration Mode (SYSLOG)",
+    "uuid": "e818f6e2-e800-4f2b-92ff-34d43dcdac0d",
+    "description": "0000000173: Feb  8 10:15:39: uzel: %CMDLINE-6-COMMAND: (1) admin: end",
+    "event_class__name": "Config | Exiting Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CMDLINE-6-COMMAND: \\(1\\)( (?P<user>\\S+):|) end$"
+        }
+    ]
+}

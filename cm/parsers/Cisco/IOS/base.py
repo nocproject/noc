@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Basic IOS parser
 # ---------------------------------------------------------------------
@@ -12,6 +13,21 @@ import re
 from pyparsing import *
 # NOC modules
 from noc.core.ip import IPv4
+=======
+##----------------------------------------------------------------------
+## Basic IOS parser
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## Third-party modules
+from pyparsing import *
+## NOC modules
+from noc.lib.ip import IPv4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS, RD
 from noc.lib.text import ranges_to_list
@@ -337,4 +353,8 @@ class BaseIOSParser(BasePyParser):
                 sf.tag = rest[1]
                 rest = rest[2:]
             else:
+<<<<<<< HEAD
                 break
+=======
+                break
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

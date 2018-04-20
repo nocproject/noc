@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # SelectorCache
 # Updated by sa.refresh_selector_cache job
@@ -24,36 +25,61 @@ from noc.core.defer import call_later
 
 logger = logging.getLogger(__name__)
 q_lock = Lock()
+=======
+##----------------------------------------------------------------------
+## SelectorCache
+## Updated by sa.refresh_selector_cache job
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.nosql import Document, IntField
+from noc.lib.scheduler.utils import sliding_job
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class SelectorCache(Document):
     meta = {
         "collection": "noc.cache.selector",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["object", "selector", "vc_domain"]
     }
     object = IntField(required=True)
     selector = IntField(required=False)
     vc_domain = IntField(required=False)
 
+<<<<<<< HEAD
     q_cache = cachetools.TTLCache(maxsize=1, ttl=60)
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def __unicode__(self):
         return "%s:%s" % (self.object, self.selector)
 
     @classmethod
     def refresh(cls):
+<<<<<<< HEAD
         call_later(
             "noc.sa.models.selectorcache.refresh",
             delay=10
         )
+=======
+        sliding_job("main.jobs", "sa.refresh_selector_cache", delta=5)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def get_object_selectors(cls, object):
         oid = object
         if hasattr(object, "id"):
             oid = object.id
+<<<<<<< HEAD
         return cls.objects.filter(
             object=oid,
             read_preference=ReadPreference.SECONDARY_PREFERRED
@@ -284,3 +310,28 @@ def refresh():
                 logger.error("Stopping check")
     logger.info("Done ")
     return
+=======
+        return cls.objects.filter(object=oid).values_list("selector")
+
+    @classmethod
+    def rebuild_for_object(cls, object):
+        # Remove old data
+        cls.objects.filter(object=object.id).delete()
+        #
+        r = []
+        for s in ManagedObjectSelector.objects.filter(is_enabled=True):
+            for o in s.managed_objects:
+                d = o.vc_domain.id if o.vc_domain else None
+                r += [
+                    {
+                        "object": o.id,
+                        "selector": s.id,
+                        "vc_domain": d
+                    }
+                ]
+        if r:
+            cls._get_collection().insert(r)
+
+##
+from managedobjectselector import ManagedObjectSelector
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

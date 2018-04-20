@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Configuration Management Object
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ from django.db.models import Q
 # NOC modules
 from noc.config import config
 from noc.core.fileutils import rewrite_when_differ, read_file, in_dir
+=======
+##----------------------------------------------------------------------
+## Configuration Management Object
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import datetime
+## Django modules
+from django.db import models
+from django.db.models import Q
+## NOC modules
+from noc.settings import config
+from noc.lib.fileutils import rewrite_when_differ, read_file, is_differ, in_dir
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.vcs import vcs_registry
 from noc.lib.validators import is_int
 from objectnotify import ObjectNotify
@@ -245,6 +264,12 @@ class Object(models.Model):
         return False
 
 
+<<<<<<< HEAD
 # Avoid circular references
 from prefixlist import PrefixList
 from rpsl import RPSL
+=======
+## Avoid circular references
+from prefixlist import PrefixList
+from rpsl import RPSL
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

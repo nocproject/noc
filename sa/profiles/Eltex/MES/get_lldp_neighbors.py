@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Eltex.MES.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -19,6 +20,30 @@ from noc.lib.text import parse_table
 class Script(BaseScript):
     name = "Eltex.MES.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## Eltex.MES.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.lib.validators import is_int, is_ipv4
+from noc.lib.text import parse_table
+
+
+class Script(NOCScript):
+    name = "Eltex.MES.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+
+    rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     CAPS_MAP = {
         "O": 1, "r": 2, "B": 4,
@@ -27,6 +52,7 @@ class Script(BaseScript):
         "H": 512, "TP": 1024,
     }
 
+<<<<<<< HEAD
     rx_detail = re.compile(
         r"^Device ID: (?P<dev_id>\S+)\s*\n"
         r"^Port ID: (?P<port_id>\S+)\s*\n"
@@ -42,6 +68,13 @@ class Script(BaseScript):
         """
         # Try SNMP first
         if self.has_snmp():
+=======
+    def execute(self):
+        r = []
+        """
+        # Try SNMP first
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 # lldpRemLocalPortNum
                 # lldpRemChassisIdSubtype lldpRemChassisId
@@ -98,6 +131,7 @@ class Script(BaseScript):
                 if c:
                     cap |= self.CAPS_MAP[c]
 
+<<<<<<< HEAD
             if (is_ipv4(remote_chassis_id) or is_ipv6(remote_chassis_id)):
                 remote_chassis_id_subtype = 5
             elif is_mac(remote_chassis_id):
@@ -114,19 +148,35 @@ class Script(BaseScript):
                 # Actually networkAddress(4)
                 remote_port_subtype = 4
             elif is_mac(remote_port):
+=======
+            # Get remote port subtype
+            remote_port_subtype = 5
+            if self.rx_mac.match(remote_port):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
                 remote_port_subtype = 3
+<<<<<<< HEAD
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = 7
+=======
+            elif is_ipv4(remote_port):
+                # Actually networkAddress(4)
+                remote_port_subtype = 4
+            elif is_int(remote_port):
+                # Actually local(7)
+                remote_port_subtype = 5
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             i = {
                 "local_interface": local_interface,
                 "neighbors": []
             }
             n = {
                 "remote_chassis_id": remote_chassis_id,
+<<<<<<< HEAD
                 "remote_chassis_id_subtype": remote_chassis_id_subtype,
                 "remote_port": remote_port,
                 "remote_port_subtype": remote_port_subtype,
@@ -171,6 +221,16 @@ class Script(BaseScript):
                         n["remote_port_description"] = port_descr
             except Exception:
                 pass
+=======
+                "remote_port": remote_port,
+                "remote_capabilities": cap,
+                "remote_port_subtype": remote_port_subtype,
+            }
+            if remote_system_name:
+                n["remote_system_name"] = remote_system_name
+            # @todo:
+            # n["remote_chassis_id_subtype"] = 4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             i["neighbors"] += [n]
             r += [i]
         return r

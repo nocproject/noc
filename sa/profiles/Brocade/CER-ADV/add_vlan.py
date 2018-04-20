@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.CER-ADV.add_vlan
 # ---------------------------------------------------------------------
@@ -12,11 +13,32 @@ from noc.sa.interfaces.iaddvlan import IAddVlan
 
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Brocade.CER-ADV.add_vlan
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IAddVlan
+
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Brocade.CER-ADV.add_vlan
     """
     name = 'Brocade.CER-ADV.add_vlan'
+<<<<<<< HEAD
     interface = IAddVlan
+=======
+    implements = [IAddVlan]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, vlan_id, name, tagged_ports):
         with self.configure():

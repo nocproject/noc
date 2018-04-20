@@ -1,0 +1,25 @@
+{
+    "name": "NOC | Periodic | Periodic Failed | PM Failed",
+    "uuid": "727ed27f-c44d-4c22-a431-7f7fab05601f",
+    "description": "PM Failed",
+    "event_class__name": "NOC | Periodic | Periodic Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NOC\\.SAE$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^Failed .+$"
+        },
+        {
+            "key_re": "^type$",
+            "value_re": "^(?P<task>pm probe)$"
+        }
+    ]
+}

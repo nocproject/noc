@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # VC Provisioning
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2009 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## VC Provisioning
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 import noc.lib.periodic
@@ -15,11 +24,19 @@ CHECK_TIMEOUT=TIMEOUT/10
 class Task(noc.lib.periodic.Task):
     name="vc.vc_provisioning"
     description=""
+<<<<<<< HEAD
 
     def execute(self):
         from noc.vc.models.vcdomain import VCDomain
         from noc.sa.models.reducetask import ReduceTask
 
+=======
+    
+    def execute(self):
+        from noc.vc.models import VCDomain
+        from noc.sa.models import ReduceTask
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         tasks=[]
         # Get config
         for vc_domain in VCDomain.objects.filter(enable_provisioning=True):

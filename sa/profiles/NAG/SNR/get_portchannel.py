@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # NAG.SNR.get_portchannel
 # ---------------------------------------------------------------------
@@ -16,11 +17,34 @@ from noc.sa.interfaces.igetportchannel import IGetPortchannel
 class Script(BaseScript):
     name = "NAG.SNR.get_portchannel"
     interface = IGetPortchannel
+=======
+##----------------------------------------------------------------------
+## NAG.SNR.get_portchannel
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetPortchannel
+
+
+class Script(NOCScript):
+    name = "NAG.SNR.get_portchannel"
+    implements = [IGetPortchannel]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             def hex2bin(ports):
                 bin = [
                     '0000', '0001', '0010', '0011',

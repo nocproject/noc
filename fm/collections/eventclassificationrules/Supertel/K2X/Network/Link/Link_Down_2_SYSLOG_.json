@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Network | Link | Link Down #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e9ac7ff3-e7f9-40e3-a3d5-0b99678807c0",
+    "description": "%LINK-W-Not Present:  ch2",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%LINK-W-Not Present:\\s+(?P<interface>\\S+)$"
+        }
+    ]
+}

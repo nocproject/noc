@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.CER.get_interfaces
 # ---------------------------------------------------------------------
@@ -20,6 +21,29 @@ from noc.core.ip import IPv4
 class Script(BaseScript):
     name = 'Brocade.CER.get_interfaces'
     interface = IGetInterfaces
+=======
+##----------------------------------------------------------------------
+## Brocade.CER.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+"""
+"""
+## Python modules
+import re
+import string
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+
+
+class Script(NOCScript):
+    name = 'Brocade.CER.get_interfaces'
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_sh_int = re.compile('^(?P<interface>.+?)\\s+is\\s+(?P<admin_status>up|down),\\s+line\\s+protocol\\s+is\\s+(?P<oper_status>up|down)', re.MULTILINE | re.IGNORECASE)
     rx_int_alias = re.compile('^(Description|Vlan alias name is)\\s*(?P<alias>.*?)$', re.MULTILINE | re.IGNORECASE)
     rx_int_mac = re.compile('address\\s+is\\s+(?P<mac>\\S+)', re.MULTILINE | re.IGNORECASE)
@@ -70,6 +94,10 @@ class Script(BaseScript):
                 ii = ii.split(' ')[0]
             elif ii != '':
                 ii = ii.split(' ')[1]
+<<<<<<< HEAD
+=======
+            self.debug(ii)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             ospf += [ii.strip()]
 
         pim = []
@@ -143,13 +171,21 @@ class Script(BaseScript):
         untagged = {}
         r = []
         for v in shrunvlan.split('!'):
+<<<<<<< HEAD
             self.logger.debug('\nPROCESSING:' + v + '\n')
+=======
+            self.debug('\nPROCESSING:' + v + '\n')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             match = self.rx_vlan_list.findall(v)
             if match:
                 tag = 1
                 m2 = match
                 for m in match:
+<<<<<<< HEAD
                     self.logger.debug('    m[0]:' + m[0] + '\n')
+=======
+                    self.debug('    m[0]:' + m[0] + '\n')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if not m[0]:
                         tag = 0
                         continue
@@ -191,7 +227,11 @@ class Script(BaseScript):
         c = c.strip('\n')
         for ii in c.split('\n'):
             if not ii.startswith('Port'):
+<<<<<<< HEAD
                 self.logger.debug('\nPROCESSING LINE: ' + ii + '\n')
+=======
+                self.debug('\nPROCESSING LINE: ' + ii + '\n')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 ii = ii.lower()
                 ii = ii.replace('disabled', ' disabled ')
                 ii = ii.replace('disabn', ' disabled n')
@@ -201,6 +241,7 @@ class Script(BaseScript):
                 if len(port) > 1:
                     ifname = port[0]
                     ift = ''
+<<<<<<< HEAD
                     self.logger.debug('INT :' + ifname + '\n')
                     if ifname.find('/') > 0:
                         ift = 'physical'
@@ -214,6 +255,21 @@ class Script(BaseScript):
                     if ifname.find('g') > 0:
                         ift = 'management'
                         self.logger.debug('FOUND MANAGEMENT\n')
+=======
+                    self.debug('INT :' + ifname + '\n')
+                    if ifname.find('/') > 0:
+                        ift = 'physical'
+                        self.debug('FOUND PHYSICAL\n')
+                    if ifname.find('e') > 0:
+                        ift = 'SVI'
+                        self.debug('FOUND VIRTUAL\n')
+                    if ifname.find('b') > 0:
+                        ift = 'loopback'
+                        self.debug('FOUND LOOPBACK\n')
+                    if ifname.find('g') > 0:
+                        ift = 'management'
+                        self.debug('FOUND MANAGEMENT\n')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     if ifname.find('n') > 0:
                         ift = 'tunnel'
                     i = {'name': ifname,
@@ -231,7 +287,11 @@ class Script(BaseScript):
                         ip_address = []
                         for l in ipal:
                             l = l.strip()
+<<<<<<< HEAD
                             self.logger.debug('ip.split len:' + str(len(l.split())))
+=======
+                            self.debug('ip.split len:' + str(len(l.split())))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                             if len(l.split()) > 3:
                                 ip_address.append('%s/%s' % (l.split()[2], IPv4.netmask_to_len(l.split()[3])))
                             else:

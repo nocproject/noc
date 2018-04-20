@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ObjectStatus
 # Updated by SAE according to ping check changes
@@ -13,13 +14,29 @@ import datetime
 from mongoengine.document import Document
 from mongoengine.fields import IntField, BooleanField, DateTimeField
 from noc.fm.models.outage import Outage
+=======
+##----------------------------------------------------------------------
+## ObjectStatus
+## Updated by SAE according to ping check changes
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.lib.nosql import Document, IntField, BooleanField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ObjectStatus(Document):
     meta = {
         "collection": "noc.cache.object_status",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+        "allow_inheritance": False,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": ["object"]
     }
     # Object id
@@ -27,23 +44,33 @@ class ObjectStatus(Document):
     # True - object is Up
     # False - object is Down
     status = BooleanField()
+<<<<<<< HEAD
     # Last update
     last = DateTimeField()
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return u"%s: %s" % (self.object, self.status)
 
     @classmethod
     def get_status(cls, object):
+<<<<<<< HEAD
         d = ObjectStatus._get_collection().find_one({
             "object": object.id
         })
         if d:
             return d["status"]
+=======
+        s = cls.objects.filter(object=object.id).first()
+        if s:
+            return s.status
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         else:
             return True
 
     @classmethod
+<<<<<<< HEAD
     def get_last_status(cls, object):
         """
         Returns last registred status and update time
@@ -112,3 +139,23 @@ class ObjectStatus(Document):
             # Status changed
             Outage.register_outage(object, not status, ts=ts)
         return True
+=======
+    def set_status(cls, object, status):
+        from noc.fm.models.outage import Outage
+        from noc.inv.models.discoveryjob import DiscoveryJob
+
+        s = cls.objects.filter(object=object.id).first()
+        if s:
+            if s.status != status:
+                s.status = status
+                s.save()
+                if status:
+                    # False -> True transition
+                    DiscoveryJob.reset_deferred(object)
+                else:
+                    # True -> False transition
+                    DiscoveryJob.set_deferred(object)
+        else:
+            cls(object=object.id, status=status).save()
+        Outage.register_outage(object, not status)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.SCOS.get_interface_status
 # ---------------------------------------------------------------------
@@ -22,6 +23,31 @@ class Script(BaseScript):
 
     def execute(self, interface=None):
         if self.has_snmp():
+=======
+##----------------------------------------------------------------------
+## Cisco.SCOS.get_interface_status
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaceStatus, MACAddressParameter
+
+##
+## Only SNMP implementation
+##
+
+class Script(NOCScript):
+    name = "Cisco.SCOS.get_interface_status"
+    implements = [IGetInterfaceStatus]
+
+    def execute(self, interface=None):
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 # Get interface status
                 r = []

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Hostname *MUST* match DB
 # ---------------------------------------------------------------------
@@ -10,6 +11,19 @@
 import re
 import logging
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Hostname *MUST* match DB
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+import logging
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.validators.base import BaseValidator
 
 logger = logging.getLogger(__name__)

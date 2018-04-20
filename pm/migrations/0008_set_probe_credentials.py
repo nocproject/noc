@@ -32,6 +32,7 @@ class Migration:
             return
         # Create user and set config
         os.system("./scripts/set-conf.py etc/noc-probe.conf autoconf user %s" % PROBEUSER)
+<<<<<<< HEAD
         r = os.system(
             "PW=`./noc user --add --username=%s --email=test@example.com --template=probe --pwgen` &&"
             "./scripts/set-conf.py etc/noc-probe.conf autoconf passwd $PW" % PROBEUSER
@@ -42,6 +43,12 @@ class Migration:
                 "\nCannot create probe user. Terminating\n"
             )
             sys.exit(1)
+=======
+        os.system(
+            "PW=`./noc user --add --username=%s --email=test@example.com --template=probe --pwgen` &&"
+            "./scripts/set-conf.py etc/noc-probe.conf autoconf passwd $PW" % PROBEUSER
+        )
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         uid = db.execute("SELECT id FROM auth_user WHERE username=%s", [PROBEUSER])[0][0]
         sid = mdb.noc.pm.storages.find_one({})["_id"]
         mdb.noc.pm.probe.update({}, {
@@ -52,4 +59,8 @@ class Migration:
         })
 
     def backwards(self):
+<<<<<<< HEAD
         pass
+=======
+        pass
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

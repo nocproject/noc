@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
@@ -9,6 +10,19 @@ import re
 # Third-party modules
 from south.db import db
 # Python modules
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## Third-party modules
+from south.db import db
+## Python modules
+from noc.fm.models import *
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Migration:    
@@ -23,6 +37,10 @@ class Migration:
         ]:
             if db.execute("SELECT COUNT(*) FROM main_style WHERE name = %s", [name])[0][0] == 0:
                 db.execute("INSERT INTO main_style(name, font_color, background_color, description) VALUES (%s, %s, %s, %s)", [name, font, background, description])
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         db.execute("DELETE FROM main_style WHERE name LIKE 'FM %%'")

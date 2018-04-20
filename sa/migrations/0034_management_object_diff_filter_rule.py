@@ -8,7 +8,14 @@ class Migration:
         PyRule = db.mock_model(model_name="PyRule", db_table="main_pyrule", db_tablespace="", pk_field_name="id", pk_field_type=models.AutoField)
         db.add_column("sa_managedobject", "config_diff_filter_rule",
             models.ForeignKey(PyRule, verbose_name="Config Notification Filter pyRule", null=True, blank=True))
+<<<<<<< HEAD
 
     def backwards(self):
         db.delete_column("sa_managedobject", "config_diff_filter_rule_id")
 
+=======
+    
+    def backwards(self):
+        db.delete_column("sa_managedobject", "config_diff_filter_rule_id")
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2012 The NOC Project
 # See LICENSE for details
@@ -10,6 +11,19 @@ from django.db import models
 from south.db import db
 # NOC modules
 from noc.core.model.fields import PickledField
+=======
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## Third-party modules
+from south.db import db
+## NOC modules
+from noc.lib.fields import PickledField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class Migration:
@@ -60,4 +74,8 @@ class Migration:
     def backwards(self):
         db.delete_table('sa_maptask')
         db.delete_table('sa_reducetask')
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

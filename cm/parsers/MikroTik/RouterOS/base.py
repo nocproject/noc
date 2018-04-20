@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Basic RouterOS parser
 # ---------------------------------------------------------------------
@@ -13,6 +14,22 @@ from collections import defaultdict
 from pyparsing import *
 # NOC modules
 from noc.core.ip import IPv4
+=======
+##----------------------------------------------------------------------
+## Basic RouterOS parser
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+from collections import defaultdict
+## Third-party modules
+from pyparsing import *
+## NOC modules
+from noc.lib.ip import IPv4
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 from noc.lib.text import ranges_to_list

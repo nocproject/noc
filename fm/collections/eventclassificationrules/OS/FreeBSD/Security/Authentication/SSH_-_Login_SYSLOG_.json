@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | SSH - Login (SYSLOG)",
+    "uuid": "ffb35401-3b65-4991-904a-bfea30ef7dce",
+    "description": "sshd[69546]: Accepted keyboard-interactive/pam for sgrant from 10.88.5.4 port 1395 ssh2",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "sshd\\[\\d+\\]: Accepted keyboard-interactive/pam for (?P<user>.+?) from (?P<ip>\\S+) port \\d+ ssh\\S+"
+        }
+    ]
+}

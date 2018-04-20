@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Arista.EOS.get_inventory
 # ---------------------------------------------------------------------
@@ -10,14 +11,34 @@
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
+=======
+##----------------------------------------------------------------------
+## Arista.EOS.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.igetinventory import IGetInventory
 from noc.lib.text import parse_table
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Arista.EOS.get_inventory"
     cache = True
     interface = IGetInventory
+=======
+class Script(NOCScript):
+    name = "Arista.EOS.get_inventory"
+    cache = True
+    implements = [IGetInventory]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_section = re.compile("System has (\d+) (.+?)$", re.MULTILINE)
 

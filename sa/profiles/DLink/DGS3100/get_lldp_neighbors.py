@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DGS3100.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -14,14 +15,37 @@
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## DLink.DGS3100.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+##
+##  This is a draft variant
+##  I need to find some missing values
+##
+
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
 import re
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "DLink.DGS3100.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+class Script(NOCScript):
+    name = "DLink.DGS3100.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_line = re.compile(r"\n\n\s*Port ID\s+:\s+", re.MULTILINE)
     rx_id = re.compile(r"^(?P<port_id>\S+)", re.MULTILINE)
@@ -66,7 +90,11 @@ class Script(BaseScript):
                 match = self.rx_remote_chassis_id_subtype.search(s1)
                 if not match:
                     # Debug string
+<<<<<<< HEAD
                     self.logger.debug('remote_chassis_id_subtype is empty!')
+=======
+                    self.debug('remote_chassis_id_subtype is empty!')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     continue
                 remote_chassis_id_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -93,7 +121,11 @@ class Script(BaseScript):
                 match = self.rx_remote_chassis_id.search(s1)
                 if not match:
                     # Debug string
+<<<<<<< HEAD
                     self.logger.debug('remote_chassis_id is empty!')
+=======
+                    self.debug('remote_chassis_id is empty!')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     continue
                 n["remote_chassis_id"] = match.group("id").strip()
 
@@ -101,7 +133,11 @@ class Script(BaseScript):
                 match = self.rx_remote_port_id_subtype.search(s1)
                 if not match:
                     # Debug string
+<<<<<<< HEAD
                     self.logger.debug('remote_port_id_subtype is empty!')
+=======
+                    self.debug('remote_port_id_subtype is empty!')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     continue
                 remote_port_subtype = match.group("subtype").strip()
                 # TODO: Find other subtypes
@@ -126,7 +162,11 @@ class Script(BaseScript):
                 match = self.rx_remote_port_id.search(s1)
                 if not match:
                     # Debug string
+<<<<<<< HEAD
                     self.logger.debug('remote_port_id is empty!')
+=======
+                    self.debug('remote_port_id is empty!')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     continue
                 n["remote_port"] = match.group("port").strip()
                 '''
@@ -146,7 +186,11 @@ class Script(BaseScript):
                     match = self.rx_remote_port_id2.search(n["remote_port"])
                     if not match:
                         # Debug string
+<<<<<<< HEAD
                         self.logger.debug('Invalid remote_port_id!')
+=======
+                        self.debug('Invalid remote_port_id!')
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         continue
                     n["remote_port"] = match.group("port")
 

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | TCAM | TCAM Error #2 (SYSLOG)",
+    "uuid": "2ad751a7-a898-431c-8c18-7f76d73d029c",
+    "description": "%HARDWARE-1-TCAM_ERROR: Found error in HFTM TCAM Space and not able to recover the error",
+    "event_class__name": "Chassis | TCAM | TCAM Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%HARDWARE-1-TCAM_ERROR: (?P<reason>.+)"
+        }
+    ]
+}

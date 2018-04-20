@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS | Unknown | Ignore STA_LEAVE (SYSLOG)",
+    "uuid": "abb1db66-84f4-4530-afd7-bb90b689ca69",
+    "description": "Jan 12 14:00:54 syslog: wevent.wevent_main(): wevent: EVENT_STA_LEAVE ath2: 3",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* EVENT_STA_LEAVE .*"
+        }
+    ]
+}

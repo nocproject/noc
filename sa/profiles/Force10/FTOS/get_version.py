@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_version
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ from noc.sa.interfaces.igetversion import IGetVersion
 #
 # A list of known F10 chasiss type from FORCE10-TC
 #
+=======
+##----------------------------------------------------------------------
+## Force10.FTOS.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+##
+## A list of known F10 chasiss type from FORCE10-TC
+##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 F10_CHASSIS = {
     1: "E1200",    # Force10 E1200 16-slot switch/router
     2: "E600",     # Force10 E600 9-slot switch/router
@@ -38,10 +57,17 @@ F10_CHASSIS = {
 }
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Force10.FTOS.get_version"
     cache = True
     interface = IGetVersion
+=======
+class Script(NOCScript):
+    name = "Force10.FTOS.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_ver = re.compile(r"Force10 Application Software Version: (?P<version>\S+).*(?:System|Chassis) Type: (?P<platform>\S+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(
@@ -49,7 +75,11 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 # Get version from sysDescr.0
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)

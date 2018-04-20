@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # Cisco.SMB.get_arp
 # ----------------------------------------------------------------------
@@ -23,6 +24,29 @@ class Script(BaseScript):
         r"^(vlan\s(?P<vlanid>\d+)\s+)?(?P<interface>\S+)\s+"
         r"(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+"
         r"(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
+=======
+##----------------------------------------------------------------------
+## Cisco.SMB.get_arp
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetARP
+from noc.lib.text import parse_table
+
+
+class Script(NOCScript):
+    name = "Cisco.SMB.get_arp"
+    implements = [IGetARP]
+    rx_line_l2 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
+    rx_line_l3 = re.compile(r"^vlan\s(?P<vlanid>\d+)\s+(?P<interface>\S+)\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<status>\S+)\s*$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, vrf=None):
         if vrf:
@@ -50,8 +74,12 @@ class Script(BaseScript):
             else:
                 reply.append({"ip": ip, "mac": mac})
         # refine interfaces by mac table
+<<<<<<< HEAD
         s = self.cli("show mac address-table")
         for row in parse_table(s):
+=======
+        for row in parse_table(self.cli("show mac address-table")):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             mac = row[1]
             port = row[2].strip()
             if port == '0':     # self
@@ -59,7 +87,11 @@ class Script(BaseScript):
             interface = self.profile.convert_interface_name(port)
             for l in reply:
                 ind = reply.index(l)
+<<<<<<< HEAD
                 if not reply[ind].get("interface"):
+=======
+                if not reply[ind].has_key("interface"):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     reply[ind]["interface"] = interface
 
         return reply

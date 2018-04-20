@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DxS.get_version
 # ---------------------------------------------------------------------
@@ -19,10 +20,31 @@ class Script(BaseScript):
     name = "DLink.DxS.get_version"
     cache = True
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## DLink.DxS.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "DLink.DxS.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_ver = re.compile(
         r"Device Type\s+:\s*(?P<platform>\S+).+"
         r"(?:Boot PROM|System [Bb]oot)\s+"
         r"[Vv]ersion\s+:\s*(?:Build\s+)?(?P<bootprom>\S+).+"
+<<<<<<< HEAD
         r"[Ff]irmware [Vv]ersion(?: 1)?\s+:\s*(?:Build\s+)?(?P<version>\S+).+"
         r"[Hh]ardware [Vv]ersion\s+:\s*(?P<hardware>\S+)",
         re.MULTILINE | re.DOTALL)
@@ -31,12 +53,18 @@ class Script(BaseScript):
         r"^System firmware version\s+:\s+(?P<version>\S+)\s*\n"
         r"^System boot version\s+:\s+(?P<bootprom>\S+)\s*\n",
         re.MULTILINE)
+=======
+        r"[Ff]irmware [Vv]ersion\s+:\s*(?:Build\s+)?(?P<version>\S+).+"
+        r"[Hh]ardware [Vv]ersion\s+:\s*(?P<hardware>\S+)",
+        re.MULTILINE | re.DOTALL)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_fwt = re.compile(
         r"(?:Firmware Type|System [Ff]irmware [Vv]ersion)\s+:\s*"
         r"(?P<fwt>\S+)\s*\n", re.MULTILINE | re.DOTALL)
     rx_ser = re.compile(
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
+<<<<<<< HEAD
     rx_platform = re.compile(
         "^(?:D-Link )?(?P<platform>\S+)(\s+(?P<version>\d+\.\d+.B\d+))?")
     rx_motd = re.compile("(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
@@ -117,6 +145,15 @@ class Script(BaseScript):
         r = {
             "vendor": "DLink",
             "platform": get_platform(platform, match.group("hardware")),
+=======
+
+    def execute(self):
+        s = self.cli("show switch", cached=True)
+        match = self.re_search(self.rx_ver, s)
+        r = {
+            "vendor": "DLink",
+            "platform": match.group("platform"),
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "version": match.group("version"),
             "attributes": {
                 "Boot PROM": match.group("bootprom"),
@@ -124,9 +161,17 @@ class Script(BaseScript):
             }
         }
         ser = self.rx_ser.search(s)
+<<<<<<< HEAD
         if ser and ser.group("serial") not in ["System", "Power"]:
             r["attributes"]["Serial Number"] = ser.group("serial")
         fwt = self.rx_fwt.search(s)
         if fwt and fwt.group("fwt") != match.group("version"):
+=======
+        if (ser and ser.group("serial") != "System" and
+            ser.group("serial") != "Power"):
+            r["attributes"]["Serial Number"] = ser.group("serial")
+        fwt = self.rx_fwt.search(s)
+        if fwt:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             r["attributes"]["Firmware Type"] = fwt.group("fwt")
         return r

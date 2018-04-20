@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore BPDUGUARD (SYSLOG)",
+    "uuid": "e184305c-4263-42b6-ab22-d5cb55f81dcd",
+    "description": "%SPANTREE-SP-2-BLOCK_BPDUGUARD: Received BPDU on port GigabitEthernet4/1 with BPDU Guard enabled. Disabling port.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SPANTREE(-SP)?-2-BLOCK_BPDUGUARD: Received BPDU on port \\S+ with BPDU Guard enabled. Disabling port."
+        }
+    ]
+}

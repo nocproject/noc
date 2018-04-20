@@ -1,0 +1,8 @@
+{
+    "name": "Transceiver | X2 | Cisco",
+    "uuid": "b540fb7a-3021-442a-a976-ff33e736c3e5",
+    "description": "Cisco-compatible X2 transceiver slot",
+    "c_group": [],
+    "extend__name": "Transceiver | X2",
+    "genders": "mf"
+}

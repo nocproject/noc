@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #11 (SYSLOG)",
+    "uuid": "77ead723-0c1c-4e84-a08a-f25c569a711d",
+    "description": "%HARDWARE-2-THERMAL_WARNING: Temperature has reached warning threshold",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "HARDWARE-\\d+-THERMAL_(?:WARNING|CRITICAL).+[Tt]emperature has reached (?:warning|critical) threshold"
+        }
+    ]
+}

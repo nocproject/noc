@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Raritan.DominionSX.get_config
 # ---------------------------------------------------------------------
@@ -15,6 +16,25 @@ import os
 class Script(BaseScript):
     name = "Raritan.DominionSX.get_config"
     interface = IGetConfig
+=======
+##----------------------------------------------------------------------
+## Raritan.DominionSX.get_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from __future__ import with_statement
+import noc.sa.script
+from noc.sa.interfaces import IGetConfig
+import urlparse
+import os
+
+class Script(noc.sa.script.Script):
+    name = "Raritan.DominionSX.get_config"
+    implements = [IGetConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         self.cli("maintenance")

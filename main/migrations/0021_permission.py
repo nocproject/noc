@@ -2,7 +2,11 @@
 
 from south.db import db
 from django.db import models
+<<<<<<< HEAD
 from django.db import models
+=======
+from noc.main.models import *
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 class Migration:
     def forwards(self):
@@ -13,7 +17,11 @@ class Migration:
         ))
         db.send_create_signal('main', ['Permission'])
         Permission = db.mock_model(model_name='Permission', db_table='main_permission', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Adding ManyToManyField 'Permission.groups'
         Group = db.mock_model(model_name='Group', db_table='auth_group', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         db.create_table('main_permission_groups', (
@@ -21,7 +29,11 @@ class Migration:
             ('permission', models.ForeignKey(Permission, null=False)),
             ('group', models.ForeignKey(Group, null=False))
         ))
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Adding ManyToManyField 'Permission.users'
         User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         db.create_table('main_permission_users', (

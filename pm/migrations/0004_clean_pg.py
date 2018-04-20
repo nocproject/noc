@@ -19,4 +19,8 @@ class Migration:
         pass
 
 
+<<<<<<< HEAD
 SP_DROP = "DROP FUNCTION IF EXISTS pm_timeseries_register(CHAR,INTEGER,DOUBLE PRECISION)"
+=======
+SP_DROP = "DROP FUNCTION IF EXISTS pm_timeseries_register(CHAR,INTEGER,DOUBLE PRECISION)"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

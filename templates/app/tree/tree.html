@@ -1,0 +1,84 @@
+{% extends "template.html" %}
+{% block extrahead %}
+      <script type="text/javascript" src="/static/js/jquery.jstree.js"></script>
+      <link rel="stylesheet" type="text/css" href="{{app.base_url}}css/" />
+{% endblock %}
+{% block content %}
+<h1>Select {{verbose_name}} to change</h1>
+<div id="content-main">
+      <ul class="object-tools">
+        <li>
+          <a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">
+            Add {{verbose_name}}
+          </a>
+        </li>
+      </ul>
+    <div class="module" id="changelist">
+      {% block extraupper %}{% endblock %}
+        <!-- search form -->
+        <!-- filter -->
+        <form id="changelist-form" action="" method="post"enctype="multipart/form-data">{% csrf_token %}
+        <!-- form -->
+        <!-- result -->
+        <div id="app-tree">Foobar</div>
+        <!-- pagination -->
+        </form>
+      {% block extralower %}{% endblock %}
+    </div>
+</div>
+<script>
+      $(document).ready(function() {
+            $("#app-tree")
+            .jstree({
+                  "core": {
+                        /*"initially_open": ["root"]*/
+                        "animation": 0,
+                        "html_titles": true
+                  },
+                  "plugins": ["themes", "json_data",
+                              "types"],
+                  "themes": {
+                        "url": "/static/themes/jstree/default/style.css"
+                  },
+                  "types": {
+                        "valid_children": ["root"],
+                        "types": {
+                              "default": {
+                                    "valid_children": "none",
+                                    "icon" : {
+                                          "image": "/static/themes/jstree/default/file.png"
+                                    }
+                              },
+                              "folder": {
+                                    "valid_children": ["default", "folder"],
+                                    "icon" : {
+                                          "image": "/static/themes/jstree/default/folder.png"
+                                    },
+                                    "select_node" : function () {return false;}
+                              },
+                              "root": {
+                                    "valid_children": ["default", "folder"],
+                                    "icon": {
+                                          "image": "/static/themes/jstree/default/root.png"
+                                    },
+                                    "hover_node": false,
+                                    "select_node" : function () {return false;}
+                              }
+
+                        }
+                  },
+                  "json_data": {
+                        "progressive_render": true,
+                        "ajax": {
+                              "url": "lookup_tree/",
+                              "data": function(n) {
+                                    return {
+                                          "node": n.attr ? n.attr("id").replace("node_", "") : "root"
+                                    };
+                              }
+                        }
+                  }
+            });
+      });
+</script>
+{% endblock %}

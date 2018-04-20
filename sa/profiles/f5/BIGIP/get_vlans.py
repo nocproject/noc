@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # f5.BIGIP.get_vlans
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ class Script(BaseScript):
     name = "f5.BIGIP.get_vlans"
     cache = True
     interface = IGetVlans
+=======
+##----------------------------------------------------------------------
+## f5.BIGIP.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(NOCScript):
+    name = "f5.BIGIP.get_vlans"
+    cache = True
+    implements = [IGetVlans]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_tag = re.compile("Tag\s+(?P<tag>\d+)", re.MULTILINE)
 

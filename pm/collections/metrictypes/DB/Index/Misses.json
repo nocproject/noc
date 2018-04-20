@@ -1,0 +1,6 @@
+{
+    "name": "DB | Index | Misses",
+    "uuid": "b855dc3a-7f34-4876-86e9-b89cfc29daf0",
+    "description": "Database index misses",
+    "measure": "ops/sec"
+}

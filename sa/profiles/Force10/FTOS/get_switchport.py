@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Force10.FTOS.get_switchport
 # ---------------------------------------------------------------------
@@ -9,14 +10,32 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+=======
+##----------------------------------------------------------------------
+## Force10.FTOS.get_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2009 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetSwitchport
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import re
 
 rx_portchannel_member = re.compile(r"^(\S+\s+\S+)\s+\((Port-channel\s+\d+)\)")
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Force10.FTOS.get_switchport"
     interface = IGetSwitchport
+=======
+class Script(noc.sa.script.Script):
+    name = "Force10.FTOS.get_switchport"
+    implements = [IGetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []

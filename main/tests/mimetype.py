@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # MIMEType model test
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ from __future__ import with_statement
 # NOC modules
 from noc.lib.test import ModelTestCase
 from noc.main.models.mimetype import MIMEType
+=======
+##----------------------------------------------------------------------
+## MIMEType model test
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+## NOC modules
+from noc.lib.test import ModelTestCase
+from noc.main.models import MIMEType
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.validators import ValidationError
 
 

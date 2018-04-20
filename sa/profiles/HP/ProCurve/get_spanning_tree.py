@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve.get_spanning_tree
 # ---------------------------------------------------------------------
@@ -9,14 +10,32 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve.get_spanning_tree
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+import noc.sa.script
+from noc.sa.interfaces import IGetSpanningTree
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 #from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import list_to_ranges
 import re
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "HP.ProCurve.get_spanning_tree"
     interface = IGetSpanningTree
+=======
+class Script(noc.sa.script.Script):
+    name = "HP.ProCurve.get_spanning_tree"
+    implements = [IGetSpanningTree]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     ##
     ## walkMIB wrapper

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Peer module models
 # ---------------------------------------------------------------------
@@ -19,6 +20,26 @@ from .person import Person
 
 class Maintainer(models.Model):
     class Meta(object):
+=======
+##----------------------------------------------------------------------
+## Peer module models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from rir import RIR
+from person import Person
+from noc.lib.rpsl import rpsl_format
+from noc.lib.crypto import md5crypt
+
+
+class Maintainer(models.Model):
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = "Maintainer"
         verbose_name_plural = "Maintainers"
         db_table = "peer_maintainer"

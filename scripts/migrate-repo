@@ -1,5 +1,6 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # migrate-repo
 # Migrate HG repo to GridVCS
@@ -9,10 +10,22 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+=======
+##----------------------------------------------------------------------
+## migrate-repo
+## Migrate HG repo to GridVCS
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import os
 import sys
 import subprocess
 import datetime
+<<<<<<< HEAD
 # Django modules
 from django.db import connection
 # NOC modules
@@ -22,6 +35,16 @@ from noc.core.gridvcs.manager import GridVCS
 
 HG = config.path.vcs_path
 REPO = config.path.repo
+=======
+## Django modules
+from django.db import connection
+## NOC modules
+from noc.settings import config
+from noc.lib.gridvcs.gridvcs import GridVCS
+
+HG = config.get("cm", "vcs_path")
+REPO = config.get("cm", "repo")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 def get_hg_revisions(path):

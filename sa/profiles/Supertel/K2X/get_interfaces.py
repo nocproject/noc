@@ -1,15 +1,25 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Supertel.K2X.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2014 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## Supertel.K2X.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 # Python modules
 import re
 from collections import defaultdict
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -17,6 +27,15 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "Supertel.K2X.get_interfaces"
     interface = IGetInterfaces
+=======
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+    name = "Supertel.K2X.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     TIMEOUT = 240
 

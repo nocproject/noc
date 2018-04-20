@@ -1,0 +1,17 @@
+{
+    "name": "PoP Links | Core",
+    "uuid": "15a6034a-12c7-4cb5-a85d-e3cb50ee0683",
+    "description": "Links beween core level points of presence",
+    "code": "pop_links4",
+    "default_zoom": 10,
+    "fill_color": 16737792,
+    "max_zoom": 19,
+    "min_zoom": 9,
+    "point_graphic": "circle",
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 16737792,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 290
+}

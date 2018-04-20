@@ -41,7 +41,11 @@ class Migration:
         ))
         #
         db.execute(SP_CREATE)
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         db.execute(SP_DROP)
         # Deleting ManyToMany field
@@ -70,7 +74,11 @@ BEGIN
         INTO ts_id
         FROM pm_timeseries
         WHERE name=p_ts_name;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         IF FOUND THEN
             EXIT;
         ELSE
@@ -78,11 +86,19 @@ BEGIN
             VALUES(p_ts_name);
         END IF;
     END LOOP;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     INSERT INTO pm_timeseriesdata(time_series_id,timestamp,value)
     VALUES(ts_id,p_timestamp,p_value);
 END;
 $$ LANGUAGE plpgsql;
 """
 
+<<<<<<< HEAD
 SP_DROP="DROP FUNCTION pm_timeseries_register(CHAR,INTEGER,DOUBLE PRECISION)"
+=======
+SP_DROP="DROP FUNCTION pm_timeseries_register(CHAR,INTEGER,DOUBLE PRECISION)"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

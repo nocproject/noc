@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #7 (SYSLOG)",
+    "uuid": "310c9f2f-9df0-494f-a3d9-75016e5c7825",
+    "description": "%PS-3-PSOK: Power System is now normal",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PS-3-PSOK: (?P<name>Power System) is now normal\\.$"
+        }
+    ]
+}

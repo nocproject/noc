@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Organisation model
 # ---------------------------------------------------------------------
@@ -12,6 +13,19 @@ from __future__ import absolute_import
 from django.db import models
 # NOC modules
 from .maintainer import Maintainer
+=======
+##----------------------------------------------------------------------
+## Organisation model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from maintainer import Maintainer
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 ORG_TYPE_CHOICES = [
@@ -20,7 +34,11 @@ ORG_TYPE_CHOICES = [
 
 
 class Organisation(models.Model):
+<<<<<<< HEAD
     class Meta(object):
+=======
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = "Organisation"
         verbose_name_plural = "Organisations"
         db_table = "peer_organisation"

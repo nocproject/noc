@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # ModelInline
 # ---------------------------------------------------------------------
@@ -7,18 +8,37 @@
 # ---------------------------------------------------------------------
 
 # Django modules
+=======
+##----------------------------------------------------------------------
+## ModelInline
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from django.db.models.fields import CharField, BooleanField, IntegerField,\
     FloatField, related
 from django.db.models import Q
 from django.db.utils import IntegrityError
+<<<<<<< HEAD
 # NOC modules
 from noc.sa.interfaces.base import (BooleanParameter, IntParameter,
+=======
+## NOC modules
+from noc.sa.interfaces import (BooleanParameter, IntParameter,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                                FloatParameter, ModelParameter,
                                StringParameter, TagsParameter,
                                StringListParameter,
                                NoneParameter, InterfaceTypeError)
 from noc.lib.validators import is_int
+<<<<<<< HEAD
 from noc.core.model.fields import TextArrayField
+=======
+from noc.lib.fields import TextArrayField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ModelInline(object):
@@ -134,7 +154,11 @@ class ModelInline(object):
         :type field: Field
         :return:
         """
+<<<<<<< HEAD
         from noc.core.model.fields import AutoCompleteTagsField
+=======
+        from noc.lib.fields import AutoCompleteTagsField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         if isinstance(field, BooleanField):
             return BooleanParameter()

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT8000S.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -19,6 +20,26 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+"
         r"(?P<interfaces>(?:\d/)?[ge]\d+)\s+(?P<type>\w+)$")
+=======
+##----------------------------------------------------------------------
+## AlliedTelesis.AT8000S.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## coded by azhur
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+import re
+
+
+class Script(NOCScript):
+    name = "AlliedTelesis.AT8000S.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+    rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+(?P<interfaces>(?:\d/)?[ge]\d+)\s+(?P<type>\w+)$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show bridge address-table"

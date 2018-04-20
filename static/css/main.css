@@ -147,6 +147,21 @@ table tbody tr.selected {
     padding: 4px;
 }
 
+<<<<<<< HEAD
+=======
+#noc-popup-iframe {
+    border: 0px;
+}
+
+/* TreeApplication */
+.noc-tree-category {
+    font-weight: bold;
+}
+
+.noc-tree-item {
+}
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 @media print {
     #menu {
         display: none;
@@ -172,7 +187,10 @@ table tbody tr.selected {
         margin-left: 0px;
     }
 }
+<<<<<<< HEAD
 
 .striped TR:nth-child(odd) {
     background: #edf3fe;
 }
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

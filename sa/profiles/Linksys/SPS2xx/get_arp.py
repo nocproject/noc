@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.get_arp
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetarp import IGetARP
 class Script(BaseScript):
     name = "Linksys.SPS2xx.get_arp"
     interface = IGetARP
+=======
+##----------------------------------------------------------------------
+## Linksys.SPS2xx.get_arp
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetARP
+
+
+class Script(NOCScript):
+    name = "Linksys.SPS2xx.get_arp"
+    implements = [IGetARP]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     cache = True
 
     rx_line = re.compile(
@@ -25,6 +45,7 @@ class Script(BaseScript):
     def execute(self):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
             try:
                 for v in self.snmp.get_tables(
@@ -32,13 +53,28 @@ class Script(BaseScript):
                      "1.3.6.1.2.1.4.22.1.2",
                      "1.3.6.1.2.1.4.22.1.3"]):
                     iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + str(v[1]), cached=True)  # IF-MIB
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                for v in self.snmp.get_tables(
+                    ["1.3.6.1.2.1.4.22.1.1", "1.3.6.1.2.1.4.22.1.2",
+                    "1.3.6.1.2.1.4.22.1.3"], bulk=True):
+                    iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[1],
+                        cached=True)  # IF-MIB
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     mac = ":".join(["%02x" % ord(c) for c in v[2]])
                     ip = ["%02x" % ord(c) for c in v[3]]
                     ip = ".".join(str(int(c, 16)) for c in ip)
                     r.append({"ip": ip,
+<<<<<<< HEAD
                               "mac": mac,
                               "interface": iface,
                               })
+=======
+                            "mac": mac,
+                            "interface": iface,
+                            })
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 return r
             except self.snmp.TimeOutError:
                 pass

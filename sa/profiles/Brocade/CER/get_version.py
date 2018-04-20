@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Brocade.CER.get_version
 # ---------------------------------------------------------------------
@@ -13,11 +14,31 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
 class Script(BaseScript):
+=======
+##----------------------------------------------------------------------
+## Brocade.CER.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+class Script(NOCScript):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     """
     Brocade.CER.get_version
     """
     name = 'Brocade.CER.get_version'
+<<<<<<< HEAD
     interface = IGetVersion
+=======
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_sw_ver = re.compile('IronWare\\s:\\sVersion\\s(?P<version>\\S+)',
         re.MULTILINE | re.DOTALL)
     rx_hw_ver = re.compile('System:\\sNetIron\\s(?P<version>\\S+)',
@@ -25,7 +46,11 @@ class Script(BaseScript):
     rx_snmp_ver = re.compile('Brocade\\sNetIron\\s(?P<platform>\\S+)\\,.*Version\\s+V(?P<version>\\S+).+$')
 
     def execute(self):
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 v = self.snmp.get('1.3.6.1.2.1.1.1.0')
                 match = self.re_search(self.rx_snmp_ver, v)

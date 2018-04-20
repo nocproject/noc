@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | OSPF | Neighbor Up (SYSLOG)",
+    "uuid": "312a0131-1bf9-404c-8098-3248ee0fc73c",
+    "description": "%OSPF-5-ADJCHG: Process 1, Nbr 10.10.20.30 on Vlan444 from LOADING to FULL, Loading Done",
+    "event_class__name": "Network | OSPF | Neighbor Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OSPF-5-ADJCHG: Process \\d+, Nbr (?P<neighbor>\\S+)\\s*on (?P<interface>.+) from (?P<from_state>LOADING) to (?P<to_state>FULL), Loading Done$"
+        }
+    ]
+}

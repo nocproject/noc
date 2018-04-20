@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOSXR.get_inventory
 # ---------------------------------------------------------------------
@@ -21,6 +22,31 @@ class Script(BaseScript):
         r"^NAME: \"(?P<name>[^\"]+)\",? DESCR: \"(?P<descr>[^\"]+)\"\n"
         r"PID:\s+(?P<pid>\S*)\s*,?\s+VID:\s+(?P<vid>\S*)\s*,? SN: (?P<serial>\S+)",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
+=======
+##----------------------------------------------------------------------
+## Cisco.IOSXR.get_inventory
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces.igetinventory import IGetInventory
+from noc.sa.interfaces.base import InterfaceTypeError
+
+
+class Script(NOCScript):
+    name = "Cisco.IOSXR.get_inventory"
+    implements = [IGetInventory]
+
+    rx_item = re.compile(
+        r"^NAME: \"(?P<name>[^\"]+)\", DESCR: \"(?P<descr>[^\"]+)\"\n"
+        r"PID:\s+(?P<pid>\S*)\s*,\s+VID:\s+(?P<vid>\S*)\s*, SN: (?P<serial>\S+)",
+        re.MULTILINE | re.DOTALL
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     )
 
     rx_trans = re.compile("((?:100|1000|10G)BASE\S+)")
@@ -34,6 +60,10 @@ class Script(BaseScript):
                 match.group("descr"), len(objects)
             )
             if not part_no:
+<<<<<<< HEAD
+=======
+                print "!!! UNKNOWN: ", match.groupdict()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"
@@ -65,6 +95,7 @@ class Script(BaseScript):
         elif "MOD" in pid:
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
+<<<<<<< HEAD
         elif (
             (
                 "LC" in descr or "Line Card" in descr or "Linecard" in descr
@@ -72,6 +103,13 @@ class Script(BaseScript):
         ):
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
+=======
+        elif (("LC" in descr or "Line Card" in descr or
+              "Linecard" in descr) and
+              "module mau" not in name):
+            number = name.split()[1].split("/")[1]
+            return "MOD", number, pid 
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         elif "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
@@ -92,8 +130,11 @@ class Script(BaseScript):
             return "PWR", number, pid
         elif name.startswith("chassis"):
             return "CHASSIS", None, pid
+<<<<<<< HEAD
         elif name.startswith("Rack") and "Slot Single Chassis" in descr:
             return "CHASSIS", None, pid
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Unknown
         return None, None, None
 

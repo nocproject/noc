@@ -1,0 +1,21 @@
+{
+    "name": "HP | 1905 | Network | LLDP | Created New Neighbor (SYSLOG)",
+    "uuid": "925feee7-32f8-45de-9bde-f5ba28f8b82a",
+    "description": "Mar 19 17:28:31 2013 Podval [LLDP]/5/CREREM Port Ethernet0/21 (IfIndex 20):Created New Neighbor,Chassis ID: 4001-c63d-7268; Port ID: GigabitEthernet1/0/1.",
+    "event_class__name": "Network | LLDP | Created New Neighbor",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1905$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "\\[LLDP\\]/5/CREREM Port (?P<interface>\\S+) \\(IfIndex \\d+\\):Created New Neighbor,Chassis ID: \\S+; Port ID: \\S+\\.$"
+        }
+    ]
+}

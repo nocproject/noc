@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | PIM | Neighbor Up (SYSLOG)",
+    "uuid": "35099687-bb96-43c9-bc65-cd3e2531e12a",
+    "description": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor 1.1.1.1 UP on BV2",
+    "event_class__name": "Network | PIM | Neighbor Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%ROUTING-IPV4_PIM-5-NBRCHG : PIM neighbor (?P<neighbor>\\S+) UP on (?P<interface>\\S+)$"
+        }
+    ]
+}

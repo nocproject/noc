@@ -1,0 +1,21 @@
+{
+    "name": "Force10 | FTOS | Config | Entering Configuration Mode (SYSLOG)",
+    "uuid": "278d8336-6580-4fe6-b68a-a8d10e090f9b",
+    "description": "Aug 9 09:32:43 UTC: %RPM0-P:CP %SYS-5-CONFIG_I: Configured from console by vty0 ( 172.19.130.250 )",
+    "event_class__name": "Config | Entering Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Force10\\.FTOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-5-CONFIG_I: Configured from \\S+ by \\S+"
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # NAG.SNR.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -48,6 +49,42 @@ class Script(BaseScript):
                      "1.0.8802.1.1.2.1.4.1.1.6", "1.0.8802.1.1.2.1.4.1.1.7",
                      "1.0.8802.1.1.2.1.4.1.1.9", "1.0.8802.1.1.2.1.4.1.1.12"
                      ], bulk=True):
+=======
+##----------------------------------------------------------------------
+## NAG.SNR.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.lib.validators import is_int, is_ipv4
+
+
+class Script(NOCScript):
+    name = "NAG.SNR.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+
+    def execute(self):
+        r = []
+        # Try SNMP first
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+
+# lldpRemLocalPortNum
+# lldpRemChassisIdSubtype lldpRemChassisId
+# lldpRemPortIdSubtype lldpRemPortId
+# lldpRemSysName lldpRemSysCapEnabled
+                for v in self.snmp.get_tables(
+                    ["1.0.8802.1.1.2.1.4.1.1.2",
+                    "1.0.8802.1.1.2.1.4.1.1.4", "1.0.8802.1.1.2.1.4.1.1.5",
+                    "1.0.8802.1.1.2.1.4.1.1.6", "1.0.8802.1.1.2.1.4.1.1.7",
+                    "1.0.8802.1.1.2.1.4.1.1.9", "1.0.8802.1.1.2.1.4.1.1.12"
+                    ], bulk=True):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                     local_interface = self.snmp.get(
                         "1.3.6.1.2.1.31.1.1.1.1." + v[1], cached=True)
                     remote_chassis_id_subtype = v[2]
@@ -75,6 +112,7 @@ class Script(BaseScript):
 
             except self.snmp.TimeOutError:
                 pass
+<<<<<<< HEAD
         """
         # Fallback to CLI
         for lldp in self.cli("show lldp neighbors interface").split("\n\n"):
@@ -111,3 +149,8 @@ class Script(BaseScript):
                 r += [i]
         return r
 
+=======
+
+        # Fallback to CLI
+        raise Exception("Not implemented")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

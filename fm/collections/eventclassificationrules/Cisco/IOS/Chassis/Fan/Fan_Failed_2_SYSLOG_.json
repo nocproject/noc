@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Fan | Fan Failed #2 (SYSLOG)",
+    "uuid": "8d25c524-f625-4621-9dff-adb6ec75cd48",
+    "description": "%SYS-2-PS_FANFAIL: Power supply 2 fan failed",
+    "event_class__name": "Chassis | Fan | Fan Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-PS_FANFAIL: (?P<name>Power supply \\d+ fan) failed"
+        }
+    ]
+}

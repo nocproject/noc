@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # AlliedTelesis.AT9400.get_mac_address_table
 # ---------------------------------------------------------------------
@@ -19,6 +20,26 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+"
         r"(?P<interfaces>\d+)\s+(?P<type>[\(\)\,\-\w\s]+)$")
+=======
+##----------------------------------------------------------------------
+## AlliedTelesis.AT9400.get_mac_address_table
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetMACAddressTable
+
+
+class Script(NOCScript):
+    name = "AlliedTelesis.AT9400.get_mac_address_table"
+    implements = [IGetMACAddressTable]
+    rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+(?P<interfaces>\d+)\s+(?P<type>[\(\)\,\-\w\s]+)$")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show switch fdb"
@@ -35,6 +56,7 @@ class Script(BaseScript):
             match = self.rx_line.match(l.strip())
             if match:
                 r += [{
+<<<<<<< HEAD
                     "vlan_id": match.group("vlan_id"),
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
@@ -44,5 +66,13 @@ class Script(BaseScript):
                         "Static (fixed,non-aging)": "S",
                         "Multicast": "M"
                     }[match.group("type")]
+=======
+                    "vlan_id"   : match.group("vlan_id"),
+                    "mac"       : match.group("mac"),
+                    "interfaces": [match.group("interfaces")],
+                    "type"      : {"Dynamic":"D", "Static":"S",
+                                   "Static (fixed,non-aging)":"S",
+                                   "Multicast":"M"}[match.group("type")],
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 }]
         return r

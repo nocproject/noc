@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # UserProfileContact model
 # ---------------------------------------------------------------------
@@ -14,6 +15,21 @@ from django.db import models
 from .userprofile import UserProfile
 from .timepattern import TimePattern
 from .notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+=======
+##----------------------------------------------------------------------
+## UserProfileContact model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.db import models
+## NOC modules
+from userprofile import UserProfile
+from timepattern import TimePattern
+from notification import USER_NOTIFICATION_METHOD_CHOICES
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class UserProfileContact(models.Model):

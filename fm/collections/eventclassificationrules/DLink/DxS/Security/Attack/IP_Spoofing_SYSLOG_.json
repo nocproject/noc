@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Attack | IP Spoofing (SYSLOG)",
+    "uuid": "31863270-2f96-4155-8827-8fb657e0d54c",
+    "description": "CRIT(2) Possible spoofing attack from (IP 10.109.36.1 MAC 00-1C-F0-21-59-03 port 19)",
+    "event_class__name": "Security | Attack | IP Spoofing",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Possible spoofing attack from \\(IP (?P<src_ip>\\S+) MAC (?P<src_mac>\\S+) port (?P<interface>\\S+)\\)$"
+        }
+    ]
+}

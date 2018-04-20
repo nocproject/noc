@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Linksys.SPS2xx.get_portchannel
 # ---------------------------------------------------------------------
@@ -16,6 +17,25 @@ from noc.sa.interfaces.igetportchannel import IGetPortchannel
 class Script(BaseScript):
     name = "Linksys.SPS2xx.get_portchannel"
     interface = IGetPortchannel
+=======
+##----------------------------------------------------------------------
+## Linksys.SPS2xx.get_portchannel
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetPortchannel
+
+
+class Script(NOCScript):
+    name = "Linksys.SPS2xx.get_portchannel"
+    implements = [IGetPortchannel]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_trunk = re.compile(
         r"^(?P<port>ch\d+)\s+(?P<type1>\S+):\s+(?P<interfaces1>\S+)+(\s+(?P<type2>\S+):\s+(?P<interfaces2>\S+)$|$)",
@@ -24,7 +44,11 @@ class Script(BaseScript):
     def execute(self):
         r = []
         # Try SNMP first
+<<<<<<< HEAD
         if self.has_snmp():
+=======
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             def hex2bin(ports):
                 bin = [
                     '0000', '0001', '0010', '0011',

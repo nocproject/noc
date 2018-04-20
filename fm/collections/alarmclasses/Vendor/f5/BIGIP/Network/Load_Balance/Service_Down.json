@@ -1,0 +1,36 @@
+{
+    "name": "Vendor | f5 | BIGIP | Network | Load Balance | Service Down",
+    "$collection": "fm.alarmclasses",
+    "uuid": "94244c8a-d185-4c50-adaa-09fe27a39f92",
+    "is_unique": true,
+    "discriminator": ["node", "port"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "node",
+            "description": "IP or hostname"
+        },
+        {
+            "name": "port",
+            "description": "Service port"
+        }
+    ],
+    "subject_template": "Service down: {{node}}:{{port}}",
+    "body_template": "Service down: {{node}}:{{port}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "root_cause": [
+        {
+            "name": "Node down",
+            "root__name": "Vendor | f5 | BIGIP | Network | Load Balance | Node Down",
+            "window": 60,
+            "condition": "True",
+            "match_condition": {
+                "vars__node": "alarm.vars['node']",
+                "managed_object": "alarm.managed_object.id"
+            }
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Config parsing basevalidator
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ import logging
 # Django modules
 from django.template import Template, Context
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Config parsing basevalidator
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## Django modules
+from django.template import Template, Context
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseValidator
 
 logger = logging.getLogger(__name__)

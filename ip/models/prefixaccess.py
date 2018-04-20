@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # PrefixAccess model
 # ---------------------------------------------------------------------
@@ -26,6 +27,29 @@ from .prefix import Prefix
 
 class PrefixAccess(models.Model):
     class Meta(object):
+=======
+##----------------------------------------------------------------------
+## PrefixAccess model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Django modules
+from django.utils.translation import ugettext_lazy as _
+from django.db import models, connection
+from django.contrib.auth.models import User
+## NOC modules
+from vrf import VRF
+from prefix import Prefix
+from afi import AFI_CHOICES
+from noc.lib.fields import CIDRField
+from noc.lib.validators import check_ipv4_prefix, check_ipv6_prefix
+
+
+class PrefixAccess(models.Model):
+    class Meta:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         verbose_name = _("Prefix Access")
         verbose_name_plural = _("Prefix Access")
         db_table = "ip_prefixaccess"
@@ -50,11 +74,16 @@ class PrefixAccess(models.Model):
         if self.can_change:
             perms += ["Change"]
         return u"%s: %s(%s): %s: %s" % (
+<<<<<<< HEAD
             self.user.username,
             self.vrf.name,
             self.afi, self.prefix,
             ", ".join(perms)
         )
+=======
+        self.user.username, self.vrf.name, self.afi, self.prefix,
+        ", ".join(perms))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def clean(self):
         """
@@ -84,6 +113,7 @@ class PrefixAccess(models.Model):
             prefix = prefix.prefix
         else:
             prefix = str(prefix)
+<<<<<<< HEAD
         if "/" not in prefix:
             if afi == "4":
                 prefix += "/32"
@@ -98,6 +128,20 @@ class PrefixAccess(models.Model):
             where=["prefix >>= %s"],
             params=[prefix]
         ).exists()
+=======
+        # @todo: PostgreSQL-independed implementation
+        c = connection.cursor()
+        c.execute("""SELECT COUNT(*)
+                     FROM %s
+                     WHERE prefix >>= %%s
+                        AND vrf_id=%%s
+                        AND afi=%%s
+                        AND user_id=%%s
+                        AND can_view=TRUE
+                 """ % PrefixAccess._meta.db_table,
+            [str(prefix), vrf.id, afi, user.id])
+        return c.fetchall()[0][0] > 0
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def user_can_change(cls, user, vrf, afi, prefix):
@@ -112,6 +156,7 @@ class PrefixAccess(models.Model):
         """
         if user.is_superuser:
             return True
+<<<<<<< HEAD
         if isinstance(prefix, Prefix):
             prefix = prefix.prefix
         else:
@@ -155,3 +200,17 @@ class PrefixAccess(models.Model):
                     vrf, afi, field, p
                 )]
         return SQL(reduce(lambda x, y: "%s OR %s" % (x, y), stmt))
+=======
+            # @todo: PostgreSQL-independed implementation
+        c = connection.cursor()
+        c.execute("""SELECT COUNT(*)
+                     FROM %s
+                     WHERE prefix >>= %%s
+                        AND vrf_id=%%s
+                        AND afi=%%s
+                        AND user_id=%%s
+                        AND can_change=TRUE
+                 """ % PrefixAccess._meta.db_table,
+            [str(prefix), vrf.id, afi, user.id])
+        return c.fetchall()[0][0] > 0
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

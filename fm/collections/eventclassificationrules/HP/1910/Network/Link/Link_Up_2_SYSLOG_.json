@@ -1,0 +1,22 @@
+{
+    "name": "HP | 1910 | Network | Link | Link Up #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6e763a97-d5b9-4118-a7f5-88b4ae9a0933",
+    "description": "May 13 07:30:45 2000 3com2952 %%10IFNET/4/UPDOWN(l):   Line protocol on the interface Vlan-interface10 is UP",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1910$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%10IFNET/4/UPDOWN\\(l\\):\\s+Line protocol on the interface (?P<interface>\\S+) is UP$"
+        }
+    ]
+}

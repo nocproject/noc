@@ -1,0 +1,37 @@
+{
+    "name": "DLink | DxS | Network | IP | Address Conflict (SNMP)",
+    "uuid": "3c722cf4-6dec-49d1-9cf9-1d9883b2d7ad",
+    "description": "AGENT-GENERAL-MIB::agentGratuitousARPTrap",
+    "event_class__name": "Network | IP | Address Conflict",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^AGENT-GENERAL-MIB::agentGratuitousARPTrap$"
+        },
+        {
+            "key_re": "^AGENT-GENERAL-MIB::ipaddr$",
+            "value_re": "^(?P<ip__bin_to_ip>.+)$"
+        },
+        {
+            "key_re": "^AGENT-GENERAL-MIB::macaddr$",
+            "value_re": "^(?P<mac>.+)$"
+        },
+        {
+            "key_re": "^AGENT-GENERAL-MIB::agentGratuitousARPInterfaceName$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^AGENT-GENERAL-MIB::portNumber$",
+            "value_re": "^(?P<port>.+)$"
+        }
+    ]
+}

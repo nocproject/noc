@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | BPI Unautorized (SYSLOG)",
+    "uuid": "98b19e65-096a-4210-9a50-c5db7e1e8837",
+    "description": "%UBR7200-5-UNAUTHSIDTIMEOUT: CMTS deleted BPI unauthorized Cable Modem 0018.c0d8.9614",
+    "event_class__name": "Network | DOCSIS | BPI Unautorized",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-5-UNAUTHSIDTIMEOUT: CMTS deleted BPI unauthorized Cable Modem (?P<mac>\\S+)"
+        }
+    ]
+}

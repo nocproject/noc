@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | PIM | Neighbor Up #1 (SYSLOG)",
+    "uuid": "ea64cdc2-1990-4e92-ac26-6ae6f8e4dd2e",
+    "description": "%PIM-5-NBRCHG: neighbor 10.10.20.21 UP on interface Vlan444 (vrf default)",
+    "event_class__name": "Network | PIM | Neighbor Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PIM-5-NBRCHG: neighbor (?P<neighbor>\\S+) UP on interface (?P<interface>\\S+)( \\(vrf (?P<vrf>\\S+)\\))?"
+        }
+    ]
+}

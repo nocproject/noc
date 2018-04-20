@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Eltex.MES.get_version
 # ---------------------------------------------------------------------
@@ -23,17 +24,45 @@ class Script(BaseScript):
     rx_version2 = re.compile(
         r"^Active-image: \S+\s*\n"
         r"^\s+Version: (?P<version>\S+)", re.MULTILINE)
+=======
+##----------------------------------------------------------------------
+## Eltex.MES.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "Eltex.MES.get_version"
+    implements = [IGetVersion]
+    cache = True
+
+    rx_version = re.compile(
+        r"^SW version+\s+(?P<version>\S+)", re.MULTILINE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_bootprom = re.compile(
         r"^Boot version+\s+(?P<bootprom>\S+)", re.MULTILINE)
     rx_hardware = re.compile(
         r"^HW version+\s+(?P<hardware>\S+)$", re.MULTILINE)
 
+<<<<<<< HEAD
     rx_serial1 = re.compile(
         r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
     rx_serial2 = re.compile(
         r"^\s+1\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
     rx_serial3 = re.compile(
         r"^\s+1\s+(?P<mac>\S+)\s+(?P<hardware>\S+)\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
+=======
+    rx_serial = re.compile(
+        r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_platform = re.compile(
         r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
 
@@ -49,6 +78,7 @@ class Script(BaseScript):
         "41": "MES-3224F",
         "42": "MES-1024",
         "43": "MES-2124",
+<<<<<<< HEAD
         "52": "MES-1124",
         "54": "MES-5248",
         "59": "MES-2124P",
@@ -87,6 +117,14 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         # Try SNMP first
         if self.has_snmp():
+=======
+        "52": "MES-1124"
+    }
+
+    def execute(self):
+        # Try SNMP first
+        if self.snmp and self.access_profile.snmp_ro:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             try:
                 platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
                 platform = platform.split('.')[8]
@@ -100,6 +138,7 @@ class Script(BaseScript):
                 serial = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.67108992",
                                        cached=True)
                 return {
+<<<<<<< HEAD
                     "vendor": "Eltex",
                     "platform": platform,
                     "version": version,
@@ -109,21 +148,37 @@ class Script(BaseScript):
                         "Serial Number": serial
                     }
                 }
+=======
+                        "vendor": "Eltex",
+                        "platform": platform,
+                        "version": version,
+                        "attributes": {
+                            "Boot PROM": bootprom,
+                            "HW version": hardware,
+                            "Serial Number": serial
+                            }
+                        }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             except self.snmp.TimeOutError:
                 pass
 
         # Fallback to CLI
+<<<<<<< HEAD
         stacked = False
         plat = self.cli("show system", cached=True)
         match = self.rx_platform.search(plat)
         if not match:
             plat = self.cli("show system unit 1", cached=True)
             stacked = True
+=======
+        plat = self.cli("show system", cached=True)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         match = self.re_search(self.rx_platform, plat)
         platform = match.group("platform")
         platform = platform.split(".")[8]
         platform = self.platforms.get(platform)
 
+<<<<<<< HEAD
         if stacked:
             ver = self.cli("show version unit 1", cached=True)
         else:
@@ -166,3 +221,23 @@ class Script(BaseScript):
             res["attributes"]["Boot PROM"] = bootprom.group("bootprom")
             res["attributes"]["HW version"] = hardware.group("hardware")
         return res
+=======
+        ver = self.cli("show version", cached=True)
+        version = self.re_search(self.rx_version, ver)
+        bootprom = self.re_search(self.rx_bootprom, ver)
+        hardware = self.re_search(self.rx_hardware, ver)
+
+        serial = self.cli("show system id", cached=True)
+        serial = self.re_search(self.rx_serial, serial)
+
+        return {
+                "vendor": "Eltex",
+                "platform": platform,
+                "version": version.group("version"),
+                "attributes": {
+                    "Boot PROM": bootprom.group("bootprom"),
+                    "HW version": hardware.group("hardware"),
+                    "Serial Number": serial.group("serial")
+                    }
+                }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

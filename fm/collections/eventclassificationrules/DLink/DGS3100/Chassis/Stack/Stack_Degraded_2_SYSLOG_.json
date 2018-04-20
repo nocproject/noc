@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Chassis | Stack | Stack Degraded #2 (SYSLOG)",
+    "uuid": "f332b9a4-1ae1-4fea-baa4-d42f22457156",
+    "description": "%Stack-E-STCK-EXCEP-HNDLR: Lost connection with unit 2 reason 0x20099. Unit will be rebooted .",
+    "event_class__name": "Chassis | Stack | Stack Degraded",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%Stack-E-STCK-EXCEP-HNDLR: Lost connection with unit (?P<unit>\\d+) reason .+"
+        }
+    ]
+}

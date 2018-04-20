@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_vlans
 # ---------------------------------------------------------------------
@@ -41,12 +42,57 @@ class Script(BaseScript):
         r"^(\S+\s+){4}(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)", re.MULTILINE)
 
     @BaseScript.match(version__contains="BC")
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.get_vlans
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVlans
+
+
+class Script(NOCScript):
+    name = "Cisco.IOS.get_vlans"
+    implements = [IGetVlans]
+
+    ##
+    ## Extract vlan information
+    ##
+    rx_vlan_line = re.compile(
+        r"^(?P<vlan_id>\d{1,4})\s+(?P<name>.+?)\s+(?:active|act/lshut)",
+        re.MULTILINE)
+
+    def extract_vlans(self, data):
+        return [
+            {
+                "vlan_id": int(match.group("vlan_id")),
+                "name": match.group("name")
+            }
+            for match in self.rx_vlan_line.finditer(data)
+        ]
+
+    ##
+    ## Cisco uBR7100, uBR7200, uBR7200VXR, uBR10000 Series
+    ##
+    rx_vlan_ubr = re.compile(
+        r"^(\S+\s+){4}(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)", re.MULTILINE)
+
+    @NOCScript.match(version__contains="BC")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_ubr(self):
         vlans = self.cli("show running-config | include cable dot1q-vc-map")
         r = []
         for match in self.rx_vlan_ubr.finditer(vlans):
             r += [{
                 "vlan_id": int(match.group("vlan_id")),
+<<<<<<< HEAD
                 "name": match.group("name")
             }]
         return r
@@ -55,12 +101,27 @@ class Script(BaseScript):
     # 18xx/28xx/36xx/37xx/38xx/72xx/73xx/75xx/107xx with EtherSwitch module;
     # C17xx, C18XX, C26xx, C29xx, C39xx, C8xx series
     #
+=======
+                 "name": match.group("name")
+            }]
+        return r
+
+    ##
+    ## 18xx/28xx/36xx/37xx/38xx/72xx/73xx/75xx/107xx with EtherSwitch module;
+    ## C17xx, C18XX, C26xx, C29xx, C39xx, C8xx series
+    ##
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_vlan_dot1q = re.compile(
         r"^Total statistics for 802.1Q VLAN (?P<vlan_id>\d{1,4}):",
         re.MULTILINE)
 
+<<<<<<< HEAD
     @BaseScript.match(platform__regex=r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
                                       r"C[23][69]00[a-z]?$|C8[7859]0|17\d\d|C18[01]X|19\d\d|2951|ASR\d+)")
+=======
+    @NOCScript.match(platform__regex=r"^([123][678]\d\d|7[235]\d\d|107\d\d|"
+        r"C[23][69]00[a-z]?$|C8[7859]0|C1700|C18[01]X|C1900|C2951|ASR\d+)")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_vlan_switch(self):
         try:
             vlans = self.cli("show vlan-switch")
@@ -84,7 +145,11 @@ class Script(BaseScript):
         re.MULTILINE)
 
     # Cisco 5350/5350XM:
+<<<<<<< HEAD
     @BaseScript.match(platform__regex=r"^5350")
+=======
+    @NOCScript.match(platform__regex=r"^5350")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def execute_vlans(self):
         r = []
         try:
@@ -98,6 +163,7 @@ class Script(BaseScript):
             }]
         return r
 
+<<<<<<< HEAD
     #
     #  Other
     #
@@ -109,4 +175,12 @@ class Script(BaseScript):
                 vlans = self.cli(cmd)
             except self.CLISyntaxError:
                 continue
+=======
+    ##
+    ## Other
+    ##
+    @NOCScript.match()
+    def execute_vlan_brief(self):
+        vlans = self.cli("show vlan brief")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return self.extract_vlans(vlans)

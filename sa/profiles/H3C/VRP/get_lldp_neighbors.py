@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # H3C.VRP.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -38,6 +39,44 @@ class Script(BaseScript):
             lldp = self.cli("display lldp neighbor")
         except self.CLISyntaxError:
             return []
+=======
+##----------------------------------------------------------------------
+## H3C.VRP.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors, MACAddressParameter
+
+
+class Script(NOCScript):
+    name = "H3C.VRP.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+
+    ##
+    ## No lldp on 3.02 and older
+    ##
+    @NOCScript.match(version__startswith="3.02")
+    def execute_old(self):
+        raise self.NotSupportedError()
+
+    ##
+    ## Other (3.03 and newer)
+    ##
+    rx_ifc_line = re.compile(r"\w*LLDP neighbor-information of port \d+\[(?P<local_if>[^\n]+)\]:\n(?P<tail>.*)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+
+    @NOCScript.match()
+    def execute_other(self):
+        r = []
+        i = {}
+        lldp = self.cli("display lldp neighbor")
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         while True:
             match = self.rx_ifc_line.search(lldp)
             if not match:

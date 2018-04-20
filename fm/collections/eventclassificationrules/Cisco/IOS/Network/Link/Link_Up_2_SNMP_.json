@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Network | Link | Link Up #2 (SNMP)",
+    "uuid": "eeda4346-8ee7-42b0-a940-5e279d7a00fd",
+    "description": "CISCO-PRODUCTS-MIB::catalyst2950t24",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<interface>\\S+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-PRODUCTS-MIB::.+"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+            "value_re": "^up$"
+        }
+    ]
+}

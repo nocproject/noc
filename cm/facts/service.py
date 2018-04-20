@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Service host
 # ---------------------------------------------------------------------
@@ -7,6 +8,16 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Service host
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseFact
 
 
@@ -27,7 +38,11 @@ class Service(BaseFact):
     @property
     def name(self):
         return self._name
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @name.setter
     def name(self, value):
         self._name = value or None
@@ -35,7 +50,11 @@ class Service(BaseFact):
     @property
     def enabled(self):
         return self._enabled
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @enabled.setter
     def enabled(self, value):
         self._enabled = bool(value)
@@ -43,7 +62,11 @@ class Service(BaseFact):
     @property
     def version(self):
         return self._version
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @version.setter
     def version(self, value):
         self._version = value
@@ -51,7 +74,11 @@ class Service(BaseFact):
     @property
     def port(self):
         return self._port
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @port.setter
     def port(self, value):
         self._port = value

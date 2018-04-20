@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # DLink.DVG.get_version
 # ---------------------------------------------------------------------
@@ -22,6 +23,29 @@ class Script(BaseScript):
         r"^Software \[(==|\S+ ==) Ver\(+(?P<version>\S+)\s+\S+\s+\S+\)\s+"
         r"PId\(+\S+\)\s+Drv\(+\S+\)\s+Hw\(+(?P<platform>\S+)+\) "
         r"(== |== (?P<hardware>\S+))+\]$",
+=======
+##----------------------------------------------------------------------
+## DLink.DVG.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "DLink.DVG.get_version"
+    implements = [IGetVersion]
+    cache = True
+
+    rx_platform = re.compile(
+        r"^Software \[(==|\S+ ==) Ver\(+(?P<version>\S+)\s+\S+\s+\S+\)\s+PId\(+\S+\)\s+Drv\(+\S+\)\s+Hw\(+(?P<platform>\S+)+\) (== |== (?P<hardware>\S+))+\]$",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         re.MULTILINE)
 
     platforms_cli = {
@@ -29,6 +53,7 @@ class Script(BaseScript):
         "DSA": "DVG-2102S",
         "PNP1632-32": "DVG-4032S",
         "SA7S4": "DVG-5004S",
+<<<<<<< HEAD
         "TSO": "DVG-7111S"
     }
 
@@ -62,6 +87,35 @@ class Script(BaseScript):
                     "platform": platform,
                     "version": version,
                 }
+=======
+        "TSO": "DVG-7111S",
+        }
+
+    platforms_snmp = {
+        "3.2.10": "DVG-2101S",
+        "?.?.?": "DVG-2102S",
+        "?.?.?": "DVG-4032S",
+        "1.2.1": "DVG-5004S",
+        "?.?.?": "DVG-7111S",
+        }
+
+    def execute(self):
+        # Try SNMP first
+        if self.snmp and self.access_profile.snmp_ro:
+            try:
+                platform = self.snmp.get("1.3.6.1.2.1.1.2.0", cached=True)
+                platform = platform.split(', ')
+                l = len(platform) - 1
+                platform = (platform[l - 2] + '.' + platform[l - 1] +
+                            '.' + platform[l])
+                platform = self.platforms_snmp.get(platform.split(')')[0],
+                                                   '????')
+                return {
+                    "vendor": "DLink",
+                    "platform": platform,
+                    "version": '1.02.38.x',
+                    }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             except self.snmp.TimeOutError:
                 pass
 
@@ -72,8 +126,13 @@ class Script(BaseScript):
         r = {
             "vendor": "DLink",
             "platform": platform,
+<<<<<<< HEAD
             "version": match.group("version")
         }
+=======
+            "version": match.group("version"),
+            }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if match.group("hardware"):
             r["attributes"]["HW version"] = match.group("hardware")
         return r

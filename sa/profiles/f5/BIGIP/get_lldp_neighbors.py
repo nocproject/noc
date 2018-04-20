@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # f5.BIGIP.get_lldp_neighbors
 # ---------------------------------------------------------------------
@@ -14,6 +15,23 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 class Script(BaseScript):
     name = "f5.BIGIP.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
+=======
+##----------------------------------------------------------------------
+## f5.BIGIP.get_lldp_neighbors
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetLLDPNeighbors
+
+
+class Script(NOCScript):
+    name = "f5.BIGIP.get_lldp_neighbors"
+    implements = [IGetLLDPNeighbors]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self):
         r = []

@@ -10,13 +10,20 @@
 /* Syntax highlight */
 /* Override default */
 pre.sh_sourceCode {
+<<<<<<< HEAD
     background-color: #e7e7e7;
+=======
+    background-color:#e7e7e7;
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 }
 
 .sh_address {
     color: darkgreen;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 /**/
 .noc-tp {
     padding: 4px;
@@ -36,7 +43,11 @@ pre.sh_sourceCode {
 
 .noc-tp TABLE TH {
     font-weight: bold;
+<<<<<<< HEAD
     background-color: #e0e0e0;
+=======
+    background-color:#e0e0e0;
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 }
 
 TABLE {
@@ -101,6 +112,50 @@ TABLE {
 .noc-int-config {
     color: #edcb44;
 }
+<<<<<<< HEAD
+=======
+/*
+ * Graph styles
+ */
+.noc-graph-container {
+    position: relative;
+    display: inline-block;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.noc-graph-tooltip {
+    position: absolute;
+    display: none;
+    border: 1px solid #000;
+    padding: 7px;
+    opacity: 0.80;
+    color: #c8c8c8;
+    background-color: #3a3939;
+    z-index: 9999;
+    overflow: hidden;
+    border-radius: 5px;
+    pointer-events: none;
+    font-size: 11pt;
+    font-weight : 200;
+    max-width: 800px;
+    max-height: 600px;
+    line-height: 14px;
+}
+
+.noc-graph-tooltip .time {
+    font-weight: bold;
+    line-height: 20px;
+}
+
+.noc-graph-control {
+    color: #e0e0e0;
+    opacity: 0.80;
+}
+
+.noc-graph-control:hover {
+    color: #b0b0b0;
+}
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 .x-boundlist-item .item-description {
     color: #404040 !important;
@@ -162,6 +217,7 @@ TABLE {
     filter: brightness(0.95);
     -webkit-filter: brightness(0.95);
 }
+<<<<<<< HEAD
 
 .noc-offset-0 {
 }
@@ -393,3 +449,5 @@ TABLE {
     margin-bottom: -2px;
     z-index: 1;
 }
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

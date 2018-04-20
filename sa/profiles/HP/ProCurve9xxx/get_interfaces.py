@@ -1,15 +1,25 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # HP.ProCurve9xxx.get_interfaces
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2010 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+=======
+##----------------------------------------------------------------------
+## HP.ProCurve9xxx.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2010 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 """
 """
 # Python modules
 import re
 # NOC modules
+<<<<<<< HEAD
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -17,6 +27,15 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_interfaces"
     interface = IGetInterfaces
+=======
+import noc.sa.script
+from noc.sa.interfaces import IGetInterfaces
+
+
+class Script(noc.sa.script.Script):
+    name = "HP.ProCurve9xxx.get_interfaces"
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_sh_int = re.compile(r"^(?P<interface>.+?)\s+is\s+(?P<admin_status>up|down),\s+line\s+protocol\s+is\s+(?P<oper_status>up|down)", re.MULTILINE | re.IGNORECASE)
     rx_int_alias = re.compile(r"^(Description|Vlan alias name is)\s*(?P<alias>.*?)$", re.MULTILINE | re.IGNORECASE)
@@ -98,12 +117,21 @@ class Script(BaseScript):
                             else:
                                 untagged[ifc] = vlan
 
+<<<<<<< HEAD
 #                    l = v[a:].split('\n')[0].split()
 #                    tagged[l[1]] = vlan
 #                a = v.find('router-interface')
 #                if a > 0:
 #                    i = v[a:].split(' ')
 #                    untagged[i[1]+i[2][:-1]] =  vlan
+=======
+#                    l = v[a:].split('\n')[0].split()
+#                    tagged[l[1]] = vlan
+#                a = v.find('router-interface')
+#                if a > 0:
+#                    i = v[a:].split(' ')
+#                    untagged[i[1]+i[2][:-1]] =  vlan
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         v = self.cli("show interfaces brief")
         for s in v.split("\n"):

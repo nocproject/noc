@@ -2,6 +2,7 @@
 
 from south.db import db
 from django.db import models
+<<<<<<< HEAD
 
 class Migration:
 
@@ -9,6 +10,16 @@ class Migration:
         TimePattern = db.mock_model(model_name='TimePattern', db_table='main_timepattern', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         Language = db.mock_model(model_name='Language', db_table='main_language', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+=======
+from noc.main.models import *
+
+class Migration:
+    
+    def forwards(self):
+        TimePattern = db.mock_model(model_name='TimePattern', db_table='main_timepattern', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        Language = db.mock_model(model_name='Language', db_table='main_language', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Adding model 'UserProfile'
         db.create_table('main_userprofile', (
             ('id', models.AutoField(primary_key=True)),
@@ -29,6 +40,7 @@ class Migration:
         db.send_create_signal('main', ['UserProfileContact'])
         # Creating unique_together for [user_profile, time_pattern, notification_method, params] on UserProfileContact.
         db.create_index('main_userprofilecontact', ['user_profile_id', 'time_pattern_id', 'notification_method', 'params'],unique=True)
+<<<<<<< HEAD
 
 
 
@@ -38,5 +50,16 @@ class Migration:
         # Deleting model 'UserProfileContact'
         db.delete_table('main_userprofilecontact')
 
+=======
+        
+        
+    
+    
+    def backwards(self):
+        
+        # Deleting model 'UserProfileContact'
+        db.delete_table('main_userprofilecontact')
+        
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Deleting model 'UserProfile'
         db.delete_table('main_userprofile')

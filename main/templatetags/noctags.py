@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Various tags
 # ---------------------------------------------------------------------
@@ -13,6 +14,22 @@ from django import template
 from django.utils.safestring import SafeString
 # NOC modules
 from noc.sa.models.managedobject import ManagedObject
+=======
+##----------------------------------------------------------------------
+## Various tags
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## Django modules
+from django import template
+from django.utils.safestring import SafeString
+## NOC modules
+from noc.sa.models import ManagedObject
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 register = template.Library()
 
@@ -78,7 +95,12 @@ function ts_on_search(s) {
         var seen = all_seen;
         if(!seen) {
             $r.children("td").each(function (j, d) {
+<<<<<<< HEAD
                 seen |= $(d).text().indexOf(search) >= 0;
+=======
+                seen = $(d).text().indexOf(search) > 0;
+                return !seen;
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             });
         }
         if(seen) {

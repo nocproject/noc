@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Basic IOS XR parser
 # ---------------------------------------------------------------------
@@ -11,6 +12,20 @@ import re
 # Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Basic IOS XR parser
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## Third-party modules
+from pyparsing import OneOrMore, Word, alphanums, QuotedString
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.cm.parsers.base import BaseParser
 from noc.lib.validators import is_ipv4, is_ipv6
 

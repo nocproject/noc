@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Base classes for geocoding parsers
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Pyton modules
 import itertools
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Base classes for geocoding parsers
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Pyton modules
+import itertools
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.gis.models.address import Address
 
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Slow operations registry
 # ---------------------------------------------------------------------
@@ -7,16 +8,34 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+=======
+##----------------------------------------------------------------------
+## Slow operations registry
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 import datetime
 import logging
 import concurrent.futures
 import cPickle
 import time
+<<<<<<< HEAD
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, FloatField, StringField
 # NOC modules
 from noc.core.debug import error_report
+=======
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import DateTimeField, FloatField, StringField
+## NOC modules
+from noc.lib.debug import error_report
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +43,11 @@ logger = logging.getLogger(__name__)
 class SlowOp(Document):
     meta = {
         "collection": "noc.slowops",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         "indexes": [
             {
                 "fields": ["expire"],

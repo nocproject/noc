@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Qtech.QSW.get_portchannel
 # ---------------------------------------------------------------------
@@ -20,6 +21,28 @@ class Script(BaseScript):
 
     rx_portgroup = re.compile(r"^(?P<pc>\d+)\s+(?P<mode>\S+)\s+(?:\S+\s+)?\S+"
                             r"\s+\S+\s*\n", re.MULTILINE)
+=======
+##----------------------------------------------------------------------
+## Qtech.QSW.get_portchannel
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetPortchannel
+
+
+class Script(NOCScript):
+    name = "Qtech.QSW2800.get_portchannel"
+    implements = [IGetPortchannel]
+
+    rx_portgroup = re.compile(r"^(?P<pc>\d+)\s+(?P<mode>\S+)\s+(?:\S+\s+)?\S+"
+                            r"\s+\S+", re.MULTILINE)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_interface = re.compile(r"^\s+(?P<interface>\S+) is LAG member port, "
                             r"LAG port:(?P<pc>\S+)", re.MULTILINE)
 

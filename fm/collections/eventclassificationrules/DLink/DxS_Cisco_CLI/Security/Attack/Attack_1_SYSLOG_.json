@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS_Cisco_CLI | Security | Attack | Attack #1 (SYSLOG)",
+    "uuid": "a0e743c5-19cb-4335-972a-cee9afc8ed3d",
+    "description": "%ARPGUARD-4-DOS_DETECTED: ARP DoS attack was detected.",
+    "event_class__name": "Security | Attack | Attack",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS_Cisco_CLI$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ARPGUARD-4-DOS_DETECTED: (?P<name>ARP DoS) attack was detected."
+        }
+    ]
+}

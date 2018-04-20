@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # f5.BIGIP.get_interfaces
 # ---------------------------------------------------------------------
@@ -18,6 +19,27 @@ class Script(BaseScript):
     name = "f5.BIGIP.get_interfaces"
     cache = True
     interface = IGetInterfaces
+=======
+##----------------------------------------------------------------------
+## f5.BIGIP.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+from collections import defaultdict
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetInterfaces
+
+
+class Script(NOCScript):
+    name = "f5.BIGIP.get_interfaces"
+    cache = True
+    implements = [IGetInterfaces]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_self = re.compile(r"^net self \S+ {", re.MULTILINE | re.DOTALL)
     rx_self_a = re.compile(

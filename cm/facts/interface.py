@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Interface
 # ---------------------------------------------------------------------
@@ -9,6 +10,18 @@
 # Python modules
 import logging
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Interface
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import logging
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseFact
 from noc.inv.models.interface import Interface as DBInterface
 
@@ -42,6 +55,7 @@ class Interface(BaseFact):
 
     def __unicode__(self):
         return "Interface %s" % self.name
+<<<<<<< HEAD
 
     @property
     def description(self):
@@ -63,6 +77,29 @@ class Interface(BaseFact):
     def has_description(self):
         return bool(self._description)
 
+=======
+        
+    @property
+    def description(self):
+        return self._description
+    
+    @description.setter
+    def description(self, value):
+        self._description = value or None
+        
+    @property
+    def admin_status(self):
+        return self._admin_status
+    
+    @admin_status.setter
+    def admin_status(self, value):
+        self._admin_status = bool(value)
+        
+    @property
+    def has_description(self):
+        return bool(self._description)
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @has_description.setter
     def has_description(self, value):
         pass
@@ -70,7 +107,11 @@ class Interface(BaseFact):
     @property
     def speed(self):
         return self._speed
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @speed.setter
     def speed(self, value):
         self._speed = value or "auto"
@@ -78,7 +119,11 @@ class Interface(BaseFact):
     @property
     def duplex(self):
         return self._duplex
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @duplex.setter
     def duplex(self, value):
         if value:
@@ -149,7 +194,11 @@ class Interface(BaseFact):
 
     def bind(self):
         if self.name:
+<<<<<<< HEAD
             self.name = self.managed_object.get_profile().convert_interface_name(self.name)
+=======
+            self.name = self.managed_object.profile.convert_interface_name(self.name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             iface = DBInterface.objects.filter(
                 managed_object=self.managed_object.id,
                 name=self.name
@@ -159,4 +208,8 @@ class Interface(BaseFact):
                 if iface.profile:
                     self.profile = iface.profile.name
             if not self.type:
+<<<<<<< HEAD
                 self.type = self.managed_object.get_profile().get_interface_type(self.name)
+=======
+                self.type = self.managed_object.profile.get_interface_type(self.name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

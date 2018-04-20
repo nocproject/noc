@@ -1,0 +1,10 @@
+{% extends "template.html" %}
+{% block content %}
+<h1>Reference Books</h1>
+<TABLE BORDER="0">
+    <TR><TH>Name</TH><TH>Description</TH></TR>
+    {% for b in ref_books %}
+    <TR><TD><A HREF="{% url main:refbook:view b.id%}">{{b.name}}</A></TD><TD>{{b.description}}</TD></TR>
+    {% endfor %}
+</TABLE>
+{% endblock %}

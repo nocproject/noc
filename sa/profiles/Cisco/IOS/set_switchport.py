@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Cisco.IOS.set_switchport
 # ---------------------------------------------------------------------
@@ -9,13 +10,33 @@
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.isetswitchport import ISetSwitchport
+=======
+##----------------------------------------------------------------------
+## Cisco.IOS.set_switchport
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+from __future__ import with_statement
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import ISetSwitchport
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from noc.lib.text import list_to_ranges
 from noc.sa.profiles.Cisco.IOS import MESeries
 
 
+<<<<<<< HEAD
 class Script(BaseScript):
     name = "Cisco.IOS.set_switchport"
     interface = ISetSwitchport
+=======
+class Script(NOCScript):
+    name = "Cisco.IOS.set_switchport"
+    implements = [ISetSwitchport]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def execute(self, configs, protect_switchport=True, protect_type=True,
                 debug=False):

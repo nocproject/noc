@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Interface Classification Rules models
@@ -18,6 +19,27 @@ from noc.main.models.prefixtable import PrefixTable
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.vc.models.vcfilter import VCFilter
 from .interfaceprofile import InterfaceProfile
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Interface Classification Rules models
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
+    ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
+    IntField, PlainReferenceField)
+from noc.lib.ip import IP
+from noc.main.models import PrefixTable
+from interfaceprofile import InterfaceProfile
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.vc.models.vcfilter import VCFilter
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class InterfaceClassificationMatch(EmbeddedDocument):
@@ -87,7 +109,10 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "def %s(iface):" % f_name,
             "    return iface.description and bool(rx_%s.search(iface.description))" % f_name
         ])
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     # IP
     def compile_ip_eq(self, f_name):
         v = IP.prefix(self.value)
@@ -125,48 +150,76 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         ]
         return "\n".join(r)
 
+<<<<<<< HEAD
     # Untagged
+=======
+    ## Untagged
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def compile_untagged_eq(self, f_name):
         vlan = int(self.value)
         if vlan < 1 or vlan > 4096:
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
+<<<<<<< HEAD
             "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())" % vlan
+=======
+            "    return bool(iface.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())" % vlan
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
         return "\n".join(r)
 
     def compile_untagged_in(self, f_name):
         r = [
+<<<<<<< HEAD
             "vcf_%s = VCFilter.get_by_id(id=%s)" % (f_name, self.vc_filter.id),
             "if not vcf_%s:" % f_name,
             "    raise ValueError('Invalid VC Filter: %s')" % self.vc_filter.name,
             "def %s(iface):" % f_name,
             "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
+=======
+            "vcf_%s = VCFilter.objects.get(id=%s)" % (f_name, self.vc_filter.id),
+            "def %s(iface):" % f_name,
+            "    for si in iface.subinterface_set.filter(enabled_afi='BRIDGE'):",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "        if si.untagged_vlan and vcf_%s.check(si.untagged_vlan):" % f_name,
             "            return True",
             "    return False"
         ]
         return "\n".join(r)
 
+<<<<<<< HEAD
     # Tagged
+=======
+    ## Tagged
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def compile_tagged_eq(self, f_name):
         vlan = int(self.value)
         if vlan < 1 or vlan > 4096:
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
+<<<<<<< HEAD
             "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())" % vlan
+=======
+            "    return bool(iface.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())" % vlan
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ]
         return "\n".join(r)
 
     def compile_tagged_in(self, f_name):
         r = [
+<<<<<<< HEAD
             "vcf_%s = VCFilter.get_by_id(id=%s)" % (f_name, self.vc_filter.id),
             "if not vcf_%s:" % f_name,
             "    raise ValueError('Invalid VC Filter: %s')" % self.vc_filter.name,
             "def %s(iface):" % f_name,
             "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
+=======
+            "vcf_%s = VCFilter.objects.get(id=%s)" % (f_name, self.vc_filter.id),
+            "def %s(iface):" % f_name,
+            "    for si in iface.subinterface_set.filter(enabled_afi='BRIDGE'):",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "        if si.tagged_vlans:",
             "            if any(vlan for vlan in si.tagged_vlans if vcf_%s.check(vlan)):" % f_name,
             "                return True",
@@ -178,8 +231,12 @@ class InterfaceClassificationMatch(EmbeddedDocument):
 class InterfaceClassificationRule(Document):
     meta = {
         "collection": "noc.inv.interfaceclassificationrules",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False
+=======
+        "allow_inheritance": False
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
     name = StringField(required=False)
     is_active = BooleanField(default=True)
@@ -190,7 +247,11 @@ class InterfaceClassificationRule(Document):
         EmbeddedDocumentField(InterfaceClassificationMatch),
         required=False)
     profile = PlainReferenceField(InterfaceProfile,
+<<<<<<< HEAD
                                   default=InterfaceProfile.get_default_profile)
+=======
+        default=InterfaceProfile.get_default_profile)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         r = [unicode(x) for x in self.match]
@@ -210,11 +271,15 @@ class InterfaceClassificationRule(Document):
 
     @classmethod
     def get_classificator_code(cls):
+<<<<<<< HEAD
         r = [
             "import re",
             "import bson",
             "from noc.sa.models.selectorcache import SelectorCache"
         ]
+=======
+        r = ["import re"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         mf = [
             "gsc = {}",
             "def classify(interface):",
@@ -224,10 +289,16 @@ class InterfaceClassificationRule(Document):
             "        if s in gsc:",
             "            selector = gsc[s]",
             "        else:",
+<<<<<<< HEAD
             "            selector = ManagedObjectSelector.get_by_id(s)",
             "            gsc[s] = selector",
             "        r = SelectorCache.is_in_selector(o, selector)",
             "        # r = o in selector",
+=======
+            "            selector = ManagedObjectSelector.objects.get(id=s)",
+            "            gsc[s] = selector",
+            "        r = o in selector",
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "        s_cache[s] = r",
             "        return r",
             "    s_cache = {}",
@@ -243,6 +314,7 @@ class InterfaceClassificationRule(Document):
             if lmn:
                 mf += [
                     "    if in_selector(mo, %d) and %s:" % (rule.selector.id, " and ".join(lmn)),
+<<<<<<< HEAD
                     "        return bson.ObjectId('%s')" % rule.profile.id
                 ]
             else:
@@ -250,6 +322,12 @@ class InterfaceClassificationRule(Document):
                     "    if in_selector(mo, %d):" % rule.selector.id,
                     "        return bson.ObjectId('%s')" % rule.profile.id
                 ]
+=======
+                    "        return %r" % rule.profile.name
+                ]
+            else:
+                mf += ["    return %r" % rule.profile.name]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         r += mf
         return "\n".join(r)
 
@@ -259,11 +337,19 @@ class InterfaceClassificationRule(Document):
         # Hack to retrieve reference
         handlers = {}
         # Compile code
+<<<<<<< HEAD
         exec(code, {
+=======
+        exec code in {
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             "re": re,
             "PrefixTable": PrefixTable,
             "VCFilter": VCFilter,
             "ManagedObjectSelector": ManagedObjectSelector,
             "handlers": handlers
+<<<<<<< HEAD
         })
+=======
+        }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         return handlers[0]

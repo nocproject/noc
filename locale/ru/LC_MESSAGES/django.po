@@ -1,0 +1,1377 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-05-17 09:41+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+
+#: dns/models.py:52
+msgid "DNS Server"
+msgstr ""
+
+#: dns/models.py:53
+msgid "DNS Servers"
+msgstr ""
+
+#: dns/models.py:55 dns/models.py:136 ip/models.py:668
+#: ip/migrations/0013_ipv6_schema.py:89 main/models.py:1162
+#: main/models.py:1175 main/migrations/0033_shard.py:15
+#: main/migrations/0035_prefix_table.py:15 sa/models.py:54 sa/models.py:71
+#: sa/models.py:107 sa/models.py:414 sa/models.py:891
+msgid "Name"
+msgstr ""
+
+#: dns/models.py:56
+msgid "Generator"
+msgstr "Генератор"
+
+#: dns/models.py:58
+msgid "IP"
+msgstr ""
+
+#: dns/models.py:59 dns/models.py:150 dns/models.py:193 ip/models.py:47
+#: ip/models.py:76 ip/models.py:147 ip/models.py:508 ip/models.py:674
+#: ip/apps/ipam/views.py:352 ip/apps/ipam/views.py:439
+#: ip/apps/ipam/views.py:520 ip/apps/reportexpanded/views.py:53
+#: main/models.py:1164 main/models.py:1176 main/migrations/0033_shard.py:17
+#: main/migrations/0035_prefix_table.py:16 sa/models.py:55 sa/models.py:115
+#: sa/models.py:415 sa/models.py:892
+msgid "Description"
+msgstr "Описание"
+
+#: dns/models.py:61
+msgid "Location"
+msgstr "Местоположение"
+
+#: dns/models.py:63
+msgid "Provisioning"
+msgstr ""
+
+#: dns/models.py:65
+msgid "Script for zone provisioning"
+msgstr "Скрипт для установки зоны"
+
+#: dns/models.py:66
+msgid "Autozones path"
+msgstr ""
+
+#: dns/models.py:68
+msgid "Prefix for autozones in config files"
+msgstr ""
+
+#: dns/models.py:133
+msgid "DNS Zone Profile"
+msgstr ""
+
+#: dns/models.py:134
+msgid "DNS Zone Profiles"
+msgstr ""
+
+#: dns/models.py:137
+msgid "Masters"
+msgstr ""
+
+#: dns/models.py:139
+msgid "Slaves"
+msgstr ""
+
+#: dns/models.py:141
+msgid "SOA"
+msgstr ""
+
+#: dns/models.py:142
+msgid "Contact"
+msgstr ""
+
+#: dns/models.py:143
+msgid "Refresh"
+msgstr ""
+
+#: dns/models.py:144
+msgid "Retry"
+msgstr ""
+
+#: dns/models.py:145
+msgid "Expire"
+msgstr ""
+
+#: dns/models.py:146
+msgid "TTL"
+msgstr ""
+
+#: dns/models.py:148 dns/models.py:200
+msgid "Notification Group"
+msgstr ""
+
+#: dns/models.py:149
+msgid "Notification group to use when zone group is not set"
+msgstr "Группа уведомлений, используемая если не задана группа для зоны"
+
+#: dns/models.py:188
+msgid "DNS Zone"
+msgstr "Зона DNS"
+
+#: dns/models.py:189
+msgid "DNS Zones"
+msgstr "Зоны DNS"
+
+#: dns/models.py:192
+msgid "Domain"
+msgstr "Домен"
+
+#: dns/models.py:195
+msgid "Auto generated?"
+msgstr "Генерировать?"
+
+#: dns/models.py:196
+msgid "Serial"
+msgstr ""
+
+#: dns/models.py:198 sa/models.py:113
+msgid "Profile"
+msgstr "Профиль"
+
+#: dns/models.py:201
+msgid "Notification group to use when zone changed"
+msgstr "Группа для уведомлений об изменениях в зоне"
+
+#: dns/models.py:202
+msgid "Paid Till"
+msgstr "Оплачено до"
+
+#: dns/models.py:203 dns/models.py:617 ip/models.py:48 ip/models.py:79
+#: ip/models.py:509 ip/models.py:683 ip/apps/ipam/views.py:353
+#: ip/apps/ipam/views.py:440 ip/apps/ipam/views.py:521
+#: ip/apps/reportexpanded/views.py:53 sa/models.py:77 sa/models.py:161
+#: sa/models.py:903
+msgid "Tags"
+msgstr "Тэги"
+
+#: dns/models.py:547
+msgid "DNS Zone Record Type"
+msgstr "Тип записи DNS"
+
+#: dns/models.py:548
+msgid "DNS Zone Record Types"
+msgstr "Типы записей DNS"
+
+#: dns/models.py:550
+msgid "Type"
+msgstr "Тип"
+
+#: dns/models.py:551
+msgid "Is Visible?"
+msgstr "Видимая?"
+
+#: dns/models.py:552
+msgid "Validation"
+msgstr "Проверка"
+
+#: dns/models.py:555
+msgid ""
+"Regular expression to validate record. Following macros can be used: OCTET, "
+"IPv4, FQDN"
+msgstr "Регулярное выражение для проверки записи. Можно использовать следующие макросы: OCTET, "
+"IPv4, FQDN"
+
+#: dns/models.py:610
+msgid "DNS Zone Record"
+msgstr "Запись DNS"
+
+#: dns/models.py:611
+msgid "DNS Zone Records"
+msgstr ""
+
+#: dns/models.py:614
+msgid "Left"
+msgstr "Левая часть"
+
+#: dns/models.py:616
+msgid "Right"
+msgstr "Правая часть"
+
+#: dns/apps/reportmissedp2p/views.py:18
+msgid "Missed Link Addresses"
+msgstr "Отсутсвующие адреса линков"
+
+#: dns/apps/reportmissedp2p/views.py:22 ip/models.py:135 ip/models.py:142
+#: ip/models.py:499 ip/models.py:593 ip/apps/ipam/views.py:348
+#: ip/apps/reportallocated/views.py:22 ip/apps/reportexpanded/views.py:22
+#: ip/apps/reportexpanded/views.py:53 ip/apps/reportfree/views.py:22
+#: ip/apps/reportsummary/views.py:26 main/models.py:1202 main/models.py:1210
+#: main/migrations/0035_prefix_table.py:28
+msgid "Prefix"
+msgstr "Префикс"
+
+#: dns/apps/reportmissedreverse/views.py:18
+msgid "Missed Reverse Zones"
+msgstr "Отсутсвующие реверсные зоны"
+
+#: fm/apps/eventclassificationrule/templates/change_form.html:7
+#: fm/apps/eventpostprocessingrule/templates/change_form.html:7
+#: kb/apps/kbentry/templates/change_form.html:7
+msgid "History"
+msgstr "История"
+
+#: ip/models.py:32 ip/models.py:72 ip/apps/reportallocated/views.py:21
+#: ip/apps/reportexpanded/views.py:21 ip/apps/reportfree/views.py:21
+#: ip/apps/reportsummary/views.py:25 main/models.py:1209
+#: main/migrations/0035_prefix_table.py:27
+msgid "IPv4"
+msgstr ""
+
+#: ip/models.py:33 ip/models.py:74 ip/apps/reportallocated/views.py:21
+#: ip/apps/reportexpanded/views.py:21 ip/apps/reportfree/views.py:21
+#: main/models.py:1209 main/migrations/0035_prefix_table.py:27
+msgid "IPv6"
+msgstr ""
+
+#: ip/models.py:40 ip/models.py:44 ip/models.py:69
+msgid "VRF Group"
+msgstr "Группа VRF"
+
+#: ip/models.py:41
+msgid "VRF Groups"
+msgstr "Группы VRF"
+
+#: ip/models.py:44
+msgid "Unique VRF Group name"
+msgstr "Уникальное имя группы VRF"
+
+#: ip/models.py:45
+msgid "Address Constraint"
+msgstr "Проверки для адресов"
+
+#: ip/models.py:46
+msgid "Addresses are unique per VRF"
+msgstr "Адреса уникальны в пределах VRF"
+
+#: ip/models.py:46
+msgid "Addresses are unique per VRF Group"
+msgstr "Адреса уникальны в пределах группы VRF"
+
+#: ip/models.py:62 ip/models.py:66 ip/models.py:140 ip/models.py:500
+#: ip/models.py:591 ip/models.py:670 ip/apps/reportallocated/views.py:20
+#: ip/apps/reportexpanded/views.py:20 ip/apps/reportfree/views.py:20
+#: ip/apps/reportsummary/views.py:24
+msgid "VRF"
+msgstr "VRF"
+
+#: ip/models.py:63
+msgid "VRFs"
+msgstr "VRFы"
+
+#: ip/models.py:67
+msgid "Unique VRF Name"
+msgstr "Уникальное имя VRF"
+
+#: ip/models.py:68 ip/models.py:669 ip/migrations/0013_ipv6_schema.py:90
+#: ip/migrations/0013_ipv6_schema.py:96 main/models.py:1163
+#: main/migrations/0033_shard.py:16 sa/models.py:76
+msgid "Is Active"
+msgstr "Активно?"
+
+#: ip/models.py:70
+msgid "RD"
+msgstr ""
+
+#: ip/models.py:71
+msgid "Route Distinguisher in form of ASN:N or IP:N"
+msgstr "Route Distinguisher в виде ASN:N или IP:N"
+
+#: ip/models.py:73
+msgid "Enable IPv4 Address Family"
+msgstr "Включить адресацию IPv4"
+
+#: ip/models.py:75
+msgid "Enable IPv6 Address Family"
+msgstr "Включить адресацию IPv6"
+
+#: ip/models.py:77 ip/models.py:510
+msgid "TT"
+msgstr "TT"
+
+#: ip/models.py:78 ip/models.py:150 ip/models.py:510 ip/models.py:684
+#: ip/apps/ipam/views.py:355 ip/apps/ipam/views.py:442
+#: ip/apps/ipam/views.py:523
+msgid "Ticket #"
+msgstr "Заявка #"
+
+#: ip/models.py:80 ip/models.py:151 ip/models.py:511 ip/apps/ipam/views.py:356
+#: ip/apps/ipam/views.py:443 ip/apps/ipam/views.py:524
+msgid "Style"
+msgstr "Стиль"
+
+#: ip/models.py:81 ip/models.py:152 ip/models.py:512 ip/models.py:685
+msgid "Allocated till"
+msgstr "Выделен до"
+
+#: ip/models.py:82 ip/models.py:153 ip/models.py:513 ip/models.py:686
+msgid "VRF temporary allocated till the date"
+msgstr "VRF временно выделен до"
+
+#: ip/models.py:136 main/models.py:1203
+msgid "Prefixes"
+msgstr "Префиксы"
+
+#: ip/models.py:139
+msgid "Parent"
+msgstr "Родитель"
+
+#: ip/models.py:141 ip/models.py:501 ip/models.py:592 ip/models.py:671
+#: ip/apps/reportallocated/views.py:21 ip/apps/reportexpanded/views.py:21
+#: ip/apps/reportfree/views.py:21 ip/apps/reportsummary/views.py:25
+#: main/models.py:1208 main/migrations/0035_prefix_table.py:26
+msgid "Address Family"
+msgstr "Семейство адресов"
+
+#: ip/models.py:143
+msgid "AS"
+msgstr ""
+
+#: ip/models.py:144
+msgid "Authonomous system granted with prefix"
+msgstr ""
+
+#: ip/models.py:145 ip/apps/ipam/views.py:437
+#: ip/apps/reportexpanded/views.py:53
+msgid "VC"
+msgstr ""
+
+#: ip/models.py:146
+msgid "VC bound to prefix"
+msgstr "VC для префикса"
+
+#: ip/models.py:495 ip/models.py:502 ip/apps/ipam/views.py:511
+#: sa/models.py:119
+msgid "Address"
+msgstr "Адрес"
+
+#: ip/models.py:496
+msgid "Addresses"
+msgstr "Адреса"
+
+#: ip/models.py:503 ip/apps/ipam/views.py:513
+msgid "FQDN"
+msgstr ""
+
+#: ip/models.py:503
+msgid "Full-qualified Domain Name"
+msgstr "Полное доменное имя"
+
+#: ip/models.py:504
+msgid "MAC Address"
+msgstr "MAC Адрес"
+
+#: ip/models.py:505
+msgid "Set to auto-update MAC field"
+msgstr "Обновлять MAC-адреса автоматически"
+
+#: ip/models.py:506 sa/models.py:103 sa/models.py:395 sa/models.py:864
+msgid "Managed Object"
+msgstr "Объект"
+
+#: ip/models.py:507
+msgid "Set if address belongs to the Managed Object's interface"
+msgstr "Устанавливается, если адрес принадлежит Объекту"
+
+#: ip/models.py:585 ip/models.py:586
+msgid "Prefix Access"
+msgstr "Доступ к префиксу"
+
+#: ip/models.py:590 sa/models.py:121 sa/models.py:588
+msgid "User"
+msgstr "Пользователь"
+
+#: ip/models.py:594
+msgid "Can View"
+msgstr "Можно Просматривать"
+
+#: ip/models.py:595
+msgid "Can Change"
+msgstr "Можно Изменять"
+
+#: ip/models.py:664
+msgid "Address Range"
+msgstr "Диапазон адресов"
+
+#: ip/models.py:665
+msgid "Address Ranges"
+msgstr "Диапазон Адресов"
+
+#: ip/models.py:672
+msgid "From Address"
+msgstr "От Адреса"
+
+#: ip/models.py:673
+msgid "To address"
+msgstr "До Адреса"
+
+#: ip/models.py:675
+msgid "Is Locked"
+msgstr "Заблокирован"
+
+#: ip/models.py:676
+msgid "Check to deny address creation or editing within the range"
+msgstr "Создание и редактирование адресов в диапазоне запрещено"
+
+#: ip/models.py:677
+msgid "Action"
+msgstr "Действие"
+
+#: ip/models.py:678
+msgid "Do nothing"
+msgstr "Ничего не делать"
+
+#: ip/models.py:678
+msgid "Generate FQDNs"
+msgstr "Генерировать FQDN"
+
+#: ip/models.py:678
+msgid "Partial reverse zone delegation"
+msgstr "Частичное делегирование реверсной зоны"
+
+#: ip/models.py:679 ip/migrations/0013_ipv6_schema.py:99
+msgid "FQDN Template"
+msgstr ""
+
+#: ip/models.py:680
+msgid "Template to generate FQDNs when 'Action' set to 'Generate FQDNs'"
+msgstr "Шаблон для генерации FQDN, если выбрано действие 'Геренировать FQDN'"
+
+#: ip/models.py:681 ip/migrations/0013_ipv6_schema.py:100
+msgid "Reverse NSes"
+msgstr ""
+
+#: ip/models.py:682
+msgid ""
+"Comma-separated list of NSes to partial reverse zone delegation when "
+"'Action' set to 'Partial reverse zone delegation"
+msgstr "Список серверов для частичной делегации реверсной зоны, если выбрано"
+"действие 'Частичное делегирование реверсной зоны'."
+"Сервера разделяются запятыми"
+
+#: ip/models.py:829
+msgid "Prefix Bookmark"
+msgstr "Закладка для префикса"
+
+#: ip/models.py:830
+msgid "Prefix Bookmarks"
+msgstr "Закладки для префиксов"
+
+#: ip/apps/addressrange/views.py:32 ip/apps/addressrange/views.py:34
+#, python-format
+msgid "Invalid IPv%(afi)s address"
+msgstr "Неверный адрес IPv%(afi)s"
+
+#: ip/apps/addressrange/views.py:37
+msgid "Must be greater or equal than 'From Address'"
+msgstr "Должно быть больше поля 'От адреса'"
+
+#: ip/apps/addressrange/views.py:40 ip/apps/addressrange/views.py:42
+msgid "Must be clean for selected 'Action'"
+msgstr "Для выбранного действия должно быть пусто"
+
+#: ip/apps/addressrange/views.py:53
+msgid "Invalid nameserver"
+msgstr "Неверный сервер"
+
+#: ip/apps/ipam/views.py:311
+msgid "Invalid address"
+msgstr "Неверный Адрес"
+
+#: ip/apps/ipam/views.py:316
+#, python-format
+msgid "Redirected to %(prefix)s"
+msgstr "Перенаправлено к %(prefix)s"
+
+#: ip/apps/ipam/views.py:334
+#, python-format
+msgid "Bookmark set to %(prefix)s"
+msgstr "Закладка для %(prefix)s установлена"
+
+#: ip/apps/ipam/views.py:336
+#, python-format
+msgid "Bookmark removed from %(prefix)s"
+msgstr "Закладка для %(prefix)s удалена"
+
+#: ip/apps/ipam/views.py:349
+#, python-format
+msgid "IPv%(afi)s prefix"
+msgstr "Префикс IPv%(afi)s"
+
+#: ip/apps/ipam/views.py:350 ip/apps/ipam/views.py:434
+msgid "ASN"
+msgstr ""
+
+#: ip/apps/ipam/views.py:351 ip/apps/ipam/views.py:435
+msgid "AS Number"
+msgstr "Номер AS"
+
+#: ip/apps/ipam/views.py:354 ip/apps/ipam/views.py:441
+#: ip/apps/ipam/views.py:522
+msgid "TT #"
+msgstr ""
+
+#: ip/apps/ipam/views.py:358 ip/apps/ipam/views.py:445
+#: ip/apps/ipam/views.py:525
+msgid "Visual appearance"
+msgstr "Внешний вид"
+
+#: ip/apps/ipam/views.py:369 ip/apps/ipam/views.py:536
+msgid "Permission denied"
+msgstr "Доступ запрещён"
+
+#: ip/apps/ipam/views.py:372
+msgid "Prefix is already exists"
+msgstr "Префикс уже существует"
+
+#: ip/apps/ipam/views.py:393
+#, python-format
+msgid "Prefix %(prefix)s was created"
+msgstr "Создан префикс %(prefix)s"
+
+#: ip/apps/ipam/views.py:438
+msgid ""
+"VC Related with prefix. Adjust VC Bind Filters if you cannot see required VC"
+msgstr "VC, связанная с префиксом. Настройте фильтры привязок VC,"
+"если вы не видите нужного"
+
+#: ip/apps/ipam/views.py:467
+#, python-format
+msgid "Prefix %(prefix)s has been changed"
+msgstr "Префикс %(prefix)s изменен"
+
+#: ip/apps/ipam/views.py:497
+#, python-format
+msgid "Prefix %(prefix)s has been successfully deleted"
+msgstr "Префикс %(prefix)s удален"
+
+#: ip/apps/ipam/views.py:501
+#, python-format
+msgid "Prefix %(prefix)s and all descendans have been successfully deleted"
+msgstr "Префикс %(prefix)s и все вложенные адреса и префиксы удалены"
+
+#: ip/apps/ipam/views.py:512
+#, python-format
+msgid "IPv%(afi)s address"
+msgstr "Адрес IPv%(afi)s"
+
+#: ip/apps/ipam/views.py:514
+msgid "MAC"
+msgstr ""
+
+#: ip/apps/ipam/views.py:515
+msgid "Auto-update MAC"
+msgstr "Авто-обновление MAC"
+
+#: ip/apps/ipam/views.py:516
+msgid "Check to automatically fetch MAC from ARP cache"
+msgstr "Извлекать MAC-адреса из ARP-кешей автоматически"
+
+#: ip/apps/ipam/views.py:519
+msgid "Set if address belong to managed object's interface"
+msgstr ""
+
+#: ip/apps/ipam/views.py:540
+msgid "Address is already exists"
+msgstr "Адрес уже существует"
+
+#: ip/apps/ipam/views.py:557
+msgid "Invalid Managed Object"
+msgstr ""
+
+#: ip/apps/ipam/views.py:583 ip/apps/ipam/views.py:660
+#: ip/apps/ipam/views.py:719
+#, python-format
+msgid "Address %(address)s is in the locked range"
+msgstr ""
+
+#: ip/apps/ipam/views.py:592
+#, python-format
+msgid "Address %(address)s was created"
+msgstr ""
+
+#: ip/apps/ipam/views.py:634
+msgid "No free addresses"
+msgstr "Нет свободных адресов"
+
+#: ip/apps/ipam/views.py:676
+#, python-format
+msgid "Address %(address)s changed"
+msgstr ""
+
+#: ip/apps/ipam/views.py:725
+#, python-format
+msgid "Address %(address)s deleted"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:35 ip/apps/reportexpanded/views.py:35
+#: ip/apps/reportfree/views.py:35 ip/apps/reportsummary/views.py:39
+msgid "Prefix not found"
+msgstr "Префикс не найден"
+
+#: ip/apps/reportallocated/views.py:42
+msgid "Allocated Blocks"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:45
+#, python-format
+msgid "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"
+msgstr ""
+
+#: ip/apps/reportexpanded/views.py:52
+#, python-format
+msgid "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"
+msgstr ""
+
+#: ip/apps/reportfree/views.py:42
+msgid "Free Blocks"
+msgstr ""
+
+#: ip/apps/reportfree/views.py:46
+#, python-format
+msgid "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"
+msgstr ""
+
+#: ip/apps/reportsummary/views.py:73
+#, python-format
+msgid "Summary for VRF %(vrf)s (IPv(afi)s): %(prefix)s"
+msgstr ""
+
+#: ip/apps/reportsummary/views.py:74
+msgid "Size"
+msgstr "Размер"
+
+#: ip/apps/reportsummary/views.py:74
+msgid "%"
+msgstr ""
+
+#: ip/apps/tools/views.py:40 ip/apps/tools/views.py:61
+#: ip/apps/tools/views.py:118
+msgid "Permission denined"
+msgstr "Доступ запрещён"
+
+#: ip/apps/tools/views.py:73
+msgid "NS"
+msgstr ""
+
+#: ip/apps/tools/views.py:73
+msgid "Name server IP address. NS must have zone transfer enabled for NOC host"
+msgstr ""
+
+#: ip/apps/tools/views.py:74
+msgid "Zone"
+msgstr "Зона"
+
+#: ip/apps/tools/views.py:74
+msgid "DNS Zone name to transfer"
+msgstr ""
+
+#: ip/apps/tools/views.py:75
+msgid "Source Address"
+msgstr ""
+
+#: ip/apps/tools/views.py:76
+msgid "Source address to issue zone transfer"
+msgstr ""
+
+#: ip/apps/tools/views.py:130
+#, python-format
+msgid "%(count)s IP addresses uploaded via zone transfer"
+msgstr ""
+
+#: ip/apps/tools/views.py:172
+#, python-format
+msgid "Prefix %(old_prefix)s is rebased to %(new_prefix)s"
+msgstr ""
+
+#: ip/migrations/0013_ipv6_schema.py:97
+msgid "FQDN Action"
+msgstr ""
+
+#: lib/dateutils.py:22
+msgid "less than a minute"
+msgstr "меньше минуты"
+
+#: lib/dateutils.py:24
+msgid "1 minute"
+msgstr "1 минута"
+
+#: lib/dateutils.py:26
+#, python-format
+msgid "%d minutes"
+msgstr ""
+
+#: lib/dateutils.py:28
+msgid "about 1 hour"
+msgstr "около 1 часа"
+
+#: lib/dateutils.py:30
+#, python-format
+msgid "about %d hours"
+msgstr ""
+
+#: lib/dateutils.py:32 lib/dateutils.py:35
+msgid "1 day"
+msgstr "1 день"
+
+#: lib/dateutils.py:37
+#, python-format
+msgid "%d days"
+msgstr ""
+
+#: lib/dateutils.py:39
+msgid "about 1 month"
+msgstr "около 1 месяца"
+
+#: lib/dateutils.py:41
+#, python-format
+msgid "%d months"
+msgstr ""
+
+#: lib/dateutils.py:43
+msgid "about 1 year"
+msgstr "около 1 года"
+
+#: lib/dateutils.py:45
+msgid "over 1 year"
+msgstr "больше 1 года"
+
+#: lib/dateutils.py:47
+msgid "almost 2 years"
+msgstr ""
+
+#: lib/dateutils.py:52
+#, python-format
+msgid "about %d years"
+msgstr ""
+
+#: lib/dateutils.py:54
+#, python-format
+msgid "over %d years"
+msgstr ""
+
+#: lib/dateutils.py:56
+#, python-format
+msgid "almost %d years"
+msgstr ""
+
+#: lib/forms.py:74
+msgid "Authentication failed"
+msgstr "Ошибка аутентификации"
+
+#: lib/forms.py:77
+msgid "This account is inactive"
+msgstr "Эта учетная запись неактивна"
+
+#: lib/forms.py:82
+msgid ""
+"Your Web browser doesn't appear to have cookies enabled. Cookies are "
+"required for logging in."
+msgstr ""
+
+#: main/models.py:1110
+msgid "Schedule"
+msgstr ""
+
+#: main/models.py:1111
+msgid "Schedules"
+msgstr ""
+
+#: main/models.py:1114
+msgid "Periodic Task"
+msgstr ""
+
+#: main/models.py:1115
+msgid "Enabled?"
+msgstr "Включена?"
+
+#: main/models.py:1117
+msgid "Time Pattern"
+msgstr ""
+
+#: main/models.py:1118
+msgid "Run Every (secs)"
+msgstr "Запускать каждые (сек)"
+
+#: main/models.py:1120
+msgid "Timeout (secs)"
+msgstr "Таймаут (сек)"
+
+#: main/models.py:1122
+msgid "Last Run"
+msgstr "Последний запуск"
+
+#: main/models.py:1123
+msgid "Last Status"
+msgstr "Последний статус"
+
+#: main/models.py:1158 sa/models.py:72
+#: sa/migrations/0038_activator_shard.py:20
+msgid "Shard"
+msgstr ""
+
+#: main/models.py:1159
+msgid "Shards"
+msgstr ""
+
+#: main/models.py:1171
+msgid "Perfix Table"
+msgstr ""
+
+#: main/models.py:1172
+msgid "Prefix Tables"
+msgstr ""
+
+#: main/models.py:1207 main/migrations/0035_prefix_table.py:25
+msgid "Prefix Table"
+msgstr ""
+
+#: main/apps/auth/templates/login.html:43
+msgid "Log in"
+msgstr ""
+
+#: main/apps/auth/templates/password_change_form.html:3
+#: main/apps/auth/templates/password_change_form.html:4
+#: main/apps/auth/templates/password_change_form.html:7
+msgid "Password change"
+msgstr ""
+
+#: main/apps/auth/templates/password_change_form.html:9
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+
+#: main/apps/auth/templates/password_change_form.html:15
+msgid "Change my password"
+msgstr "Изменить мой пароль"
+
+#: main/apps/calculator/calculators/cir2cbr.py:22
+msgid "CIR(bps). K, M and G suffixes can be used"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:24
+msgid ""
+"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 is "
+"default)"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:27
+msgid "Cisco IOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:28
+msgid "Cisco IOS rate-limit"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:29
+msgid "Juniper JUNOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:50
+msgid "Integer is required"
+msgstr "Требуется целое число"
+
+#: main/apps/calculator/calculators/cir2cbr.py:58
+msgid "CIR/CAR(bps) to Burst-rate"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:59
+msgid ""
+"Recommended way for policy-map values calculating is: normal-burst-"
+"bytes=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
+"is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
+msgstr ""
+
+#: main/apps/group/views.py:43 main/apps/user/views.py:55
+msgid "Access"
+msgstr "Доступ"
+
+#: main/apps/search/views.py:26
+msgid "Query"
+msgstr "Запрос"
+
+#: main/apps/user/views.py:22
+msgid "Username"
+msgstr "Имя Пользователя"
+
+#: main/apps/user/views.py:23
+msgid "Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"
+msgstr ""
+
+#: main/apps/user/views.py:24
+msgid "This value must contain only letters, digits and @/./+/-/_."
+msgstr ""
+
+#: main/apps/user/views.py:52
+msgid "Personal info"
+msgstr "Персональная информация"
+
+#: main/apps/user/views.py:53
+msgid "User category"
+msgstr ""
+
+#: main/apps/user/views.py:54
+msgid "Groups"
+msgstr "Группы"
+
+#: main/apps/user/views.py:56
+msgid "Important dates"
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:9
+#: main/apps/user/templates/change_password.html:43
+#: templates/admin/base.html:48
+msgid "Change password"
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:19
+#: templates/admin/change_form.html:38 templates/admin/change_list.html:74
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: main/apps/user/templates/change_password.html:23
+#, python-format
+msgid "Enter a new password for the user <strong>%(username)s</strong>."
+msgstr ""
+
+#: main/apps/user/templates/change_password.html:30 sa/models.py:122
+msgid "Password"
+msgstr "Пароль"
+
+#: main/apps/user/templates/change_password.html:36
+msgid "Password (again)"
+msgstr "Пароль (повтор)"
+
+#: main/apps/user/templates/change_password.html:37
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: sa/models.py:50 sa/models.py:110
+msgid "Administrative Domain"
+msgstr ""
+
+#: sa/models.py:51
+msgid "Administrative Domains"
+msgstr ""
+
+#: sa/models.py:67 sa/models.py:112
+msgid "Activator"
+msgstr ""
+
+#: sa/models.py:68
+msgid "Activators"
+msgstr ""
+
+#: sa/models.py:73
+msgid "From IP"
+msgstr "С IP"
+
+#: sa/models.py:74
+msgid "To IP"
+msgstr "По IP"
+
+#: sa/models.py:75
+msgid "Auth String"
+msgstr ""
+
+#: sa/models.py:104
+msgid "Managed Objects"
+msgstr ""
+
+#: sa/models.py:108
+msgid "Is Managed?"
+msgstr ""
+
+#: sa/models.py:118
+msgid "Scheme"
+msgstr ""
+
+#: sa/models.py:120
+msgid "Port"
+msgstr ""
+
+#: sa/models.py:124
+msgid "Super Password"
+msgstr ""
+
+#: sa/models.py:126
+msgid "Path"
+msgstr ""
+
+#: sa/models.py:128
+msgid "Trap Source IP"
+msgstr ""
+
+#: sa/models.py:130
+msgid "Trap Community"
+msgstr ""
+
+#: sa/models.py:132
+msgid "RO Community"
+msgstr ""
+
+#: sa/models.py:134
+msgid "RW Community"
+msgstr ""
+
+#: sa/models.py:137
+msgid "Is Configuration Managed?"
+msgstr ""
+
+#: sa/models.py:139
+msgid "Repo Path"
+msgstr ""
+
+#: sa/models.py:148
+msgid "Config Diff Filter Rule"
+msgstr ""
+
+#: sa/models.py:157
+msgid "Max. Scripts"
+msgstr ""
+
+#: sa/models.py:159
+msgid "Concurrent script session limits"
+msgstr ""
+
+#: sa/models.py:389
+msgid "Managed Object Attribute"
+msgstr ""
+
+#: sa/models.py:390
+msgid "Managed Object Attributes"
+msgstr ""
+
+#: sa/models.py:396 sa/migrations/0029_managedobjectattribute.py:16
+msgid "Key"
+msgstr "Ключ"
+
+#: sa/models.py:397 sa/migrations/0029_managedobjectattribute.py:17
+msgid "Value"
+msgstr "Значение"
+
+#: sa/models.py:410
+msgid "Managed Object Selector"
+msgstr ""
+
+#: sa/models.py:411
+msgid "Managed Object Selectors"
+msgstr ""
+
+#: sa/models.py:416
+msgid "Is Enabled"
+msgstr "Включен"
+
+#: sa/models.py:417
+msgid "Filter by ID"
+msgstr ""
+
+#: sa/models.py:418
+msgid "Filter by Name (REGEXP)"
+msgstr "Фильтр по Названию (REGEXP)"
+
+#: sa/models.py:420
+msgid "Filter by Profile"
+msgstr "Фильтр по Профилю"
+
+#: sa/models.py:423
+msgid "Filter by Address (REGEXP)"
+msgstr "Фильтр по Адресу (REGEXP)"
+
+#: sa/models.py:426
+msgid "Filter by Prefix Table"
+msgstr ""
+
+#: sa/models.py:428
+msgid "Filter by Shard"
+msgstr ""
+
+#: sa/models.py:430
+msgid "Filter by Administrative Domain"
+msgstr "Фильтр по Административному Домену"
+
+#: sa/models.py:433
+msgid "Filter by Activator"
+msgstr ""
+
+#: sa/models.py:434
+msgid "Filter by User (REGEXP)"
+msgstr "Фильтр по Пользователю (REGEXP)"
+
+#: sa/models.py:436
+msgid "Filter by Remote Path (REGEXP)"
+msgstr ""
+
+#: sa/models.py:438
+msgid "Filter by Description (REGEXP)"
+msgstr "Фильтр по Описанию (REGEXP)"
+
+#: sa/models.py:440
+msgid "Filter by Repo Path (REGEXP)"
+msgstr ""
+
+#: sa/models.py:442
+msgid "Filter By Tags"
+msgstr "Фильтр по Тэгам"
+
+#: sa/models.py:444
+msgid "Source Combine Method"
+msgstr ""
+
+#: sa/models.py:447
+msgid "Sources"
+msgstr "Источники"
+
+#: sa/models.py:564
+msgid "Managed Object Selector by Attribute"
+msgstr ""
+
+#: sa/models.py:565
+msgid "Managed Object Selectors by Attribute"
+msgstr ""
+
+#: sa/models.py:568 sa/models.py:590 sa/models.py:627 sa/models.py:898
+msgid "Object Selector"
+msgstr ""
+
+#: sa/models.py:569
+msgid "Filter by key (REGEXP)"
+msgstr "Фильтр по ключу (REGEXP)"
+
+#: sa/models.py:571
+msgid "Filter by value (REGEXP)"
+msgstr "Фильтр по значению(REGEXP)"
+
+#: sa/models.py:584 sa/models.py:585
+msgid "User Access"
+msgstr ""
+
+#: sa/models.py:621 sa/models.py:622
+msgid "Group Access"
+msgstr ""
+
+#: sa/models.py:625
+msgid "Group"
+msgstr "Группа"
+
+#: sa/models.py:654
+msgid "Map/Reduce Task"
+msgstr ""
+
+#: sa/models.py:655
+msgid "Map/Reduce Tasks"
+msgstr ""
+
+#: sa/models.py:656
+msgid "Start Time"
+msgstr ""
+
+#: sa/models.py:657
+msgid "Stop Time"
+msgstr ""
+
+#: sa/models.py:658 sa/models.py:865
+msgid "Script"
+msgstr "Скрипт"
+
+#: sa/models.py:659 sa/models.py:866
+msgid "Params"
+msgstr "Параметры"
+
+#: sa/models.py:860 sa/models.py:861
+msgid "Map/Reduce Task Data"
+msgstr ""
+
+#: sa/models.py:862
+msgid "Task"
+msgstr "Задача"
+
+#: sa/models.py:867
+msgid "Next Try"
+msgstr "Следующая Попытка"
+
+#: sa/models.py:868
+msgid "Retries Left"
+msgstr ""
+
+#: sa/models.py:869
+msgid "Status"
+msgstr "Статус"
+
+#: sa/models.py:870
+msgid "Wait"
+msgstr ""
+
+#: sa/models.py:870
+msgid "Running"
+msgstr ""
+
+#: sa/models.py:871
+msgid "Complete"
+msgstr ""
+
+#: sa/models.py:871
+msgid "Failed"
+msgstr ""
+
+#: sa/models.py:872
+msgid "Result"
+msgstr "Результат"
+
+#: sa/models.py:887
+msgid "Command Snippet"
+msgstr ""
+
+#: sa/models.py:888
+msgid "Command Snippets"
+msgstr ""
+
+#: sa/models.py:893
+msgid "Snippet"
+msgstr ""
+
+#: sa/models.py:894
+msgid "Code snippet template"
+msgstr ""
+
+#: sa/models.py:895
+msgid "Change configuration"
+msgstr ""
+
+#: sa/models.py:899
+msgid "Is Enabled?"
+msgstr ""
+
+#: sa/models.py:900
+msgid "Timeout (sec)"
+msgstr "Таймаут (сек)"
+
+#: sa/models.py:901
+msgid "Require Confirmation"
+msgstr ""
+
+#: sa/apps/managedobject/views.py:123
+msgid "All"
+msgstr "Все"
+
+#: templates/404.html:4 templates/404.html.py:8
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: templates/404.html:10
+msgid "We're sorry, but the requested page could not be found."
+msgstr ""
+
+#: templates/500.html:4
+msgid "Server error"
+msgstr ""
+
+#: templates/500.html:6
+msgid "Server error (500)"
+msgstr ""
+
+#: templates/500.html:10
+msgid "Server Error <em>(500)</em>"
+msgstr ""
+
+#: templates/500.html:11
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+
+#: templates/admin/base.html:44
+msgid "Welcome,"
+msgstr "Приветствую,"
+
+#: templates/admin/base.html:49
+msgid "Log out"
+msgstr ""
+
+#: templates/admin/base.html:59 templates/admin/invalid_setup.html:3
+msgid "Home"
+msgstr ""
+
+#: templates/admin/change_form.html:25
+msgid "Add"
+msgstr "Добавить"
+
+#: templates/admin/change_list.html:62
+#, python-format
+msgid "Add %(name)s"
+msgstr ""
+
+#: templates/admin/change_list.html:85
+msgid "Filter"
+msgstr "Фильтр"
+
+#: templates/admin/delete_confirmation.html:8
+#: templates/admin/submit_line.html:4
+msgid "Delete"
+msgstr "Удалить"
+
+#: templates/admin/delete_confirmation.html:13
+#, python-format
+msgid ""
+"Deleting the %(object_name)s '%(escaped_object)s' would result in deleting "
+"related objects, but your account doesn't have permission to delete the "
+"following types of objects:"
+msgstr ""
+
+#: templates/admin/delete_confirmation.html:20
+#, python-format
+msgid ""
+"Are you sure you want to delete the %(object_name)s \"%(escaped_object)s\"? "
+"All of the following related items will be deleted:"
+msgstr ""
+
+#: templates/admin/delete_confirmation.html:25
+msgid "Yes, I'm sure"
+msgstr "Да, я уверен(а)"
+
+#: templates/admin/filter.html:2
+#, python-format
+msgid " By %(filter_title)s "
+msgstr ""
+
+#: templates/admin/invalid_setup.html:8
+msgid ""
+"Something's wrong with your database installation. Make sure the appropriate "
+"database tables have been created, and make sure the database is readable by "
+"the appropriate user."
+msgstr ""
+
+#: templates/admin/submit_line.html:3
+msgid "Save"
+msgstr "Сохранить"
+
+#: templates/admin/submit_line.html:5
+msgid "Save as new"
+msgstr "Сохранить как новый"
+
+#: templates/admin/submit_line.html:6
+msgid "Save and add another"
+msgstr "Сохранить и добавить ещё"
+
+#: templates/admin/submit_line.html:7
+msgid "Save and continue editing"
+msgstr "Сохранить и продолжить редактирование"

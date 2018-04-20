@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # Interface
 # ---------------------------------------------------------------------
@@ -10,6 +11,19 @@
 import bisect
 import logging
 # NOC modules
+=======
+##----------------------------------------------------------------------
+## Interface
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2015 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import bisect
+import logging
+## NOC modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from base import BaseFact
 from noc.inv.models.subinterface import SubInterface as DBSubInterface
 
@@ -27,8 +41,12 @@ class SubInterface(BaseFact):
              "isis_l1_metric", "isis_l2_metric",
              "isis_ptp",
              "port_security", "port_security_max",
+<<<<<<< HEAD
              "pim_mode", "pim_version", "traffic_control_unicast",
              "traffic_control_broadcast", "traffic_control_multicast"
+=======
+             "pim_mode", "pim_version"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
              ]
     ID = ["name"]
 
@@ -42,8 +60,12 @@ class SubInterface(BaseFact):
                  isis_l1_metric=None, isis_l2_metric=None,
                  isis_ptp=None,
                  port_security=None, port_security_max=None,
+<<<<<<< HEAD
                  pim_mode=None, pim_version=None, traffic_control_unicast=None,
                  traffic_control_broadcast=None, traffic_control_multicast=None,
+=======
+                 pim_mode=None, pim_version=None,
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                  **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
@@ -70,9 +92,12 @@ class SubInterface(BaseFact):
         self.port_security_max = port_security_max
         self.pim_mode = pim_mode
         self.pim_version = pim_version
+<<<<<<< HEAD
         self.traffic_control_broadcast = traffic_control_broadcast
         self.traffic_control_multicast = traffic_control_multicast
         self.traffic_control_unicast = traffic_control_unicast
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -80,6 +105,7 @@ class SubInterface(BaseFact):
     @property
     def description(self):
         return self._description
+<<<<<<< HEAD
 
     @description.setter
     def description(self, value):
@@ -97,6 +123,25 @@ class SubInterface(BaseFact):
     def has_description(self):
         return bool(self._description)
 
+=======
+    
+    @description.setter
+    def description(self, value):
+        self._description = value or None
+        
+    @property
+    def admin_status(self):
+        return self._admin_status
+    
+    @admin_status.setter
+    def admin_status(self, value):
+        self._admin_status = bool(value)
+        
+    @property
+    def has_description(self):
+        return bool(self._description)
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @has_description.setter
     def has_description(self, value):
         pass
@@ -128,6 +173,7 @@ class SubInterface(BaseFact):
     @property
     def ip_proxy_arp(self):
         return self._ip_proxy_arp and bool(self.ipv4_addresses)
+<<<<<<< HEAD
 
     @ip_proxy_arp.setter
     def ip_proxy_arp(self, value):
@@ -145,6 +191,25 @@ class SubInterface(BaseFact):
     def tagged_vlans(self):
         return self._tagged_vlans
 
+=======
+    
+    @ip_proxy_arp.setter
+    def ip_proxy_arp(self, value):
+        self._ip_proxy_arp = bool(value)
+        
+    @property
+    def ip_redirects(self):
+        return self._ip_redirects and bool(self.ipv4_addresses)
+    
+    @ip_redirects.setter
+    def ip_redirects(self, value):
+        self._ip_redirects = bool(value)
+        
+    @property
+    def tagged_vlans(self):
+        return self._tagged_vlans
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @tagged_vlans.setter
     def tagged_vlans(self, value):
         if value:
@@ -154,7 +219,11 @@ class SubInterface(BaseFact):
     @property
     def untagged_vlan(self):
         return self._untagged_vlan
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @untagged_vlan.setter
     def untagged_vlan(self, value):
         if value:
@@ -282,6 +351,7 @@ class SubInterface(BaseFact):
             self._pim_version = None
 
     @property
+<<<<<<< HEAD
     def traffic_control_broadcast(self):
         return self._traffic_control_broadcast
 
@@ -306,6 +376,8 @@ class SubInterface(BaseFact):
         self._traffic_control_unicast = bool(value)
 
     @property
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def profile(self):
         return self._profile
 
@@ -315,7 +387,11 @@ class SubInterface(BaseFact):
 
     def bind(self):
         if self.name:
+<<<<<<< HEAD
             self.name = self.managed_object.get_profile().convert_interface_name(self.name)
+=======
+            self.name = self.managed_object.profile.convert_interface_name(self.name)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             si = DBSubInterface.objects.filter(
                 managed_object=self.managed_object.id,
                 name=self.name

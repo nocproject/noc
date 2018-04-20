@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # ObjectModel model
@@ -42,12 +43,41 @@ id_lock = Lock()
 @on_delete_check(check=[
     ("sa.ManagedObject", "container")
 ])
+=======
+## -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ObjectModel model
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2013 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import StringField, DictField, ObjectIdField
+from mongoengine import signals
+## NOC modules
+from connectiontype import ConnectionType
+from objectmodel import ObjectModel
+from modelinterface import ModelInterface
+from objectlog import ObjectLog
+from error import ConnectionError, ModelDataError
+from noc.lib.nosql import PlainReferenceField
+from noc.lib.utils import deep_merge
+from noc.lib.middleware import get_user
+from noc.lib.gridvcs.manager import GridVCSField
+
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 class Object(Document):
     """
     Inventory object
     """
     meta = {
         "collection": "noc.objects",
+<<<<<<< HEAD
         "strict": False,
         "auto_create_index": False,
         "indexes": [
@@ -57,6 +87,10 @@ class Object(Document):
             ("model", "data.asset.serial"),
             "data.management.managed_object"
         ]
+=======
+        "allow_inheritance": False,
+        "indexes": ["data", "container"]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     }
 
     name = StringField()
@@ -64,6 +98,7 @@ class Object(Document):
     data = DictField()
     container = ObjectIdField(required=False)
     comment = GridVCSField("object_comment")
+<<<<<<< HEAD
     # Map
     layer = ReferenceField(Layer)
     point = PointField(auto_index=True)
@@ -80,10 +115,13 @@ class Object(Document):
         "links",
         "conduits"
     ]
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __unicode__(self):
         return unicode(self.name or self.id)
 
+<<<<<<< HEAD
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
@@ -161,6 +199,20 @@ class Object(Document):
 
     def get_data(self, interface, key):
         attr = ModelInterface.get_interface_attr(interface, key)
+=======
+    def get_interface_attr(self, interface, key):
+        mi = ModelInterface.objects.filter(name=interface).first()
+        if not mi:
+            raise ModelDataError("Invalid interface '%s'" % interface)
+        attr = mi.get_attr(key)
+        if not attr:
+            raise ModelDataError("Invalid attribute '%s.%s'" % (
+                interface, key))
+        return attr
+
+    def get_data(self, interface, key):
+        attr = self.get_interface_attr(interface, key)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if attr.is_const:
             # Lookup model
             return self.model.get_data(interface, key)
@@ -169,7 +221,11 @@ class Object(Document):
             return v.get(key)
 
     def set_data(self, interface, key, value):
+<<<<<<< HEAD
         attr = ModelInterface.get_interface_attr(interface, key)
+=======
+        attr = self.get_interface_attr(interface, key)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if attr.is_const:
             raise ModelDataError("Cannot set read-only value")
         value = attr._clean(value)
@@ -179,7 +235,11 @@ class Object(Document):
         self.data[interface][key] = value
 
     def reset_data(self, interface, key):
+<<<<<<< HEAD
         attr = ModelInterface.get_interface_attr(interface, key)
+=======
+        attr = self.get_interface_attr(interface, key)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if attr.is_const:
             raise ModelDataError("Cannot reset read-only value")
         if interface in self.data and key in self.data[interface]:
@@ -272,7 +332,12 @@ class Object(Document):
             if ec is not None:
                 # Connection exists
                 if reconnect:
+<<<<<<< HEAD
                     if r_object.id == remote_object.id and r_name == remote_name:
+=======
+                    if (r_object.id == remote_object.id and
+                        r_name == remote_name):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         # Same connection exists
                         n_data = deep_merge(ec.data, data)
                         if n_data != ec.data:
@@ -303,7 +368,11 @@ class Object(Document):
         return c
 
     def connect_genderless(self, name, remote_object, remote_name,
+<<<<<<< HEAD
                            data=None, type=None, layer=None):
+=======
+                           data=None, type=None):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         """
         Connect two genderless connections
         """
@@ -325,9 +394,12 @@ class Object(Document):
                 c.data = data or {}
                 c.save()
                 return
+<<<<<<< HEAD
         # Normalize layer
         if layer and isinstance(layer, six.string_types):
             layer = Layer.get_by_code(layer)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         # Create connection
         ObjectConnection(
             connection=[
@@ -336,8 +408,12 @@ class Object(Document):
                                      name=remote_name)
             ],
             data=data or {},
+<<<<<<< HEAD
             type=type or None,
             layer=layer
+=======
+            type=type or None
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         ).save()
         self.log(u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
                  system="CORE", op="CONNECT")
@@ -404,7 +480,11 @@ class Object(Document):
             user = user.username
         if not user:
             user = "NOC"
+<<<<<<< HEAD
         if not isinstance(managed_object, six.string_types):
+=======
+        if not isinstance(managed_object, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             managed_object = unicode(managed_object)
         ObjectLog(
             object=self.id,
@@ -500,6 +580,36 @@ class Object(Document):
         return list(self.iter_outer_connections())
 
     @classmethod
+<<<<<<< HEAD
+=======
+    def set_geo_point(cls, sender, document, target=None, **kwargs):
+        """
+        Update map point
+        """
+        from noc.gis.map import map
+        # Check geopoint interface is supported
+        layer = document.get_data("geopoint", "layer")
+        if not layer:
+            return
+        x = document.get_data("geopoint", "x")
+        y = document.get_data("geopoint", "y")
+        srid = document.get_data("geopoint", "srid")
+        if not x or not y:
+            map.delete_point(document.id, layer)
+        else:
+            map.set_point(document, layer, x, y, srid=srid, label=document.name)
+
+    @classmethod
+    def delete_geo_point(cls, sender, document, target=None):
+        # Check geopoint interface is supported
+        from noc.gis.map import map
+        layer = document.get_data("geopoint", "layer")
+        if not layer:
+            return
+        map.delete_point(document)
+
+    @classmethod
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def delete_disconnect(cls, sender, document, target=None):
         for c in ObjectConnection.objects.filter(
                 connection__object=document.id):
@@ -519,14 +629,19 @@ class Object(Document):
         """
         c = self.container
         while c:
+<<<<<<< HEAD
             o = Object.get_by_id(c)
             if not o:
                 break
+=======
+            o = Object.objects.get(id=c)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if o.get_data("pop", "level"):
                 return o
             c = o.container
         return None
 
+<<<<<<< HEAD
     def get_coordinates_zoom(self):
         """
         Get managed object's coordinates
@@ -547,6 +662,8 @@ class Object(Document):
             break
         return None, None, None
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @classmethod
     def get_managed(cls, mo):
         """
@@ -559,6 +676,7 @@ class Object(Document):
         return cls.objects.filter(data__management__managed_object=mo)
 
     @classmethod
+<<<<<<< HEAD
     def get_root(cls):
         """
         Returns Root container
@@ -588,12 +706,15 @@ class Object(Document):
         return current
 
     @classmethod
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def change_container(cls, sender, document, target=None,
                          created=False, **kwargs):
         if created:
             if document.container:
                 pop = document.get_pop()
                 if pop:
+<<<<<<< HEAD
                     call_later(
                         "noc.inv.util.pop_links.update_pop_links",
                         20,
@@ -602,6 +723,14 @@ class Object(Document):
             return
         # Changed object
         if not hasattr(document, "_changed_fields") or "container" not in document._changed_fields:
+=======
+                    refresh_schedule(
+                        "main.jobs", "inv.update_pop_links",
+                        key=pop.id, delta=5)
+            return
+        # Changed object
+        if "container" not in document._changed_fields:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return
         old_container = getattr(document, "_cache_container", None)
         old_pop = None
@@ -621,6 +750,7 @@ class Object(Document):
             new_pop = pop.id
         if old_pop != new_pop:
             if old_pop:
+<<<<<<< HEAD
                 call_later(
                     "noc.inv.util.pop_links.update_pop_links",
                     20,
@@ -632,6 +762,15 @@ class Object(Document):
                     20,
                     pop_id=new_pop
                 )
+=======
+                refresh_schedule(
+                    "main.jobs", "inv.update_pop_links",
+                    key=old_pop, delta=5)
+            if new_pop:
+                refresh_schedule(
+                    "main.jobs", "inv.update_pop_links",
+                    key=new_pop, delta=5)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @classmethod
     def _pre_init(cls, sender, document, values, **kwargs):
@@ -641,6 +780,7 @@ class Object(Document):
         if "container" in values and values["container"]:
             document._cache_container = values["container"]
 
+<<<<<<< HEAD
     def get_address_text(self):
         """
         Return first found address.text value upwards the path
@@ -665,3 +805,15 @@ signals.pre_init.connect(Object._pre_init, sender=Object)
 
 # Avoid circular references
 from .objectconnection import ObjectConnection, ObjectConnectionItem
+=======
+signals.pre_delete.connect(Object.detach_children, sender=Object)
+signals.pre_delete.connect(Object.delete_geo_point, sender=Object)
+signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
+signals.post_save.connect(Object.change_container, sender=Object)
+signals.post_save.connect(Object.set_geo_point, sender=Object)
+signals.pre_init.connect(Object._pre_init, sender=Object)
+
+## Avoid circular references
+from objectconnection import ObjectConnection, ObjectConnectionItem
+from noc.lib.scheduler.utils import refresh_schedule
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

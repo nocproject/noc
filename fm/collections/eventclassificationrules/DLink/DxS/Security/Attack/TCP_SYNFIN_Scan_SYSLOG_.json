@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Attack | TCP SYNFIN Scan (SYSLOG)",
+    "uuid": "fea38fcc-82be-42bf-94ff-001b70400fdd",
+    "description": "CRIT: TCP SYNFIN is detected from (IP: 95.84.197.193 Port: 24)",
+    "event_class__name": "Security | Attack | TCP SYNFIN Scan",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "TCP SYNFIN is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)$"
+        }
+    ]
+}

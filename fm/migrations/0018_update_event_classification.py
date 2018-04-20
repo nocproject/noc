@@ -1,5 +1,6 @@
 
 from south.db import db
+<<<<<<< HEAD
 
 
 class Migration:
@@ -8,6 +9,16 @@ class Migration:
         db.execute("DROP FUNCTION update_event_classification(INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT[][])")
         db.execute(PROC)
 
+=======
+from noc.fm.models import *
+
+class Migration:
+    
+    def forwards(self):
+        db.execute("DROP FUNCTION update_event_classification(INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT[][])")
+        db.execute(PROC)
+    
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     def backwards(self):
         pass
 
@@ -61,4 +72,8 @@ BEGIN
     VALUES(p_event_id,'now','U','A','CLASSIFICATION RULE: '||rule_name);
 END;
 $$ LANGUAGE plpgsql;
+<<<<<<< HEAD
 """
+=======
+"""
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

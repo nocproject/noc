@@ -1,0 +1,21 @@
+{
+    "name": "HP | 1905 | Network | Link | Link Up (SYSLOG)",
+    "uuid": "b7b5a8a6-886f-4851-878c-3c8719445210",
+    "description": "Dec 25 14:22:45 2012 Office [PHY]/5/PORT LINK STATUS CHANGE: Ethernet0/22 turns into UP state",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1905$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "\\[PHY\\]/5/PORT LINK STATUS CHANGE: (?P<interface>\\S+) turns into UP state$"
+        }
+    ]
+}

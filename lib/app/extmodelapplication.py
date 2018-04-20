@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # ExtModelApplication implementation
 # ----------------------------------------------------------------------
@@ -11,11 +12,24 @@ from __future__ import absolute_import
 import datetime
 from functools import reduce
 # Third-party modules
+=======
+##----------------------------------------------------------------------
+## ExtModelApplication implementation
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2014 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## Django modules
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 from django.http import HttpResponse
 from django.db.models.fields import (
     CharField, BooleanField, IntegerField, FloatField,
     DateField, DateTimeField, related)
 from django.db.models import Q
+<<<<<<< HEAD
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 import six
@@ -32,6 +46,23 @@ from noc.main.models.tag import Tag
 from noc.core.stencil import stencil_registry
 from .extapplication import ExtApplication, view
 from .interfaces import DateParameter, DateTimeParameter
+=======
+from django.contrib.contenttypes.models import ContentType
+from django.db.utils import IntegrityError
+## NOC modules
+from extapplication import ExtApplication, view
+from noc.sa.interfaces import (BooleanParameter, IntParameter,
+                               FloatParameter, ModelParameter,
+                               StringParameter, TagsParameter,
+                               NoneParameter, StringListParameter,
+                               DictParameter, ListOfParameter,
+                               ModelParameter)
+from interfaces import DateParameter, DateTimeParameter
+from noc.lib.validators import is_int
+from noc.sa.interfaces import InterfaceTypeError
+from noc.lib.db import QTags
+from noc.main.models.slowop import SlowOp
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
 
 class ExtModelApplication(ExtApplication):
@@ -41,11 +72,16 @@ class ExtModelApplication(ExtApplication):
     query_condition = "startswith"  # Match method for string fields
     int_query_fields = []  # Query integer fields for exact match
     pk_field_name = None  # Set by constructor
+<<<<<<< HEAD
     clean_fields = {"id": IntParameter()}  # field name -> Parameter instance
     custom_fields = {}  # name -> handler, populated automatically
     order_map = {}  # field name -> SQL query for ordering
     lookup_default = [{"id": "Leave unchanged", "label": "Leave unchanged"}]
     ignored_fields = set(["id", "bi_id"])
+=======
+    clean_fields = {}  # field name -> Parameter instance
+    custom_fields = {}  # name -> handler, populated automatically
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def __init__(self, *args, **kwargs):
         super(ExtModelApplication, self).__init__(*args, **kwargs)
@@ -81,7 +117,11 @@ class ExtModelApplication(ExtApplication):
                                  if f.unique and isinstance(f, CharField)]
         # Add searchable custom fields
         self.query_fields += ["%s__%s" % (f.name, self.query_condition)
+<<<<<<< HEAD
                               for f in self.get_custom_fields() if f.is_searchable]
+=======
+            for f in self.get_custom_fields() if f.is_searchable]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def get_validator(self, field):
         """
@@ -90,7 +130,11 @@ class ExtModelApplication(ExtApplication):
         :type field: Field
         :return:
         """
+<<<<<<< HEAD
         from noc.core.model.fields import TagsField, TextArrayField
+=======
+        from noc.lib.fields import TagsField, TextArrayField
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         if isinstance(field, BooleanField):
             return BooleanParameter()
@@ -109,7 +153,11 @@ class ExtModelApplication(ExtApplication):
         elif isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.rel.to
             return ModelParameter(field.rel.to,
+<<<<<<< HEAD
                                   required=not field.null)
+=======
+                required=not field.null)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         else:
             return None
 
@@ -147,8 +195,13 @@ class ExtModelApplication(ExtApplication):
                 return f
 
         q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
+<<<<<<< HEAD
                    self.query_fields[1:],
                    Q(**{get_q(self.query_fields[0]): query}))
+=======
+            self.query_fields[1:],
+            Q(**{get_q(self.query_fields[0]): query}))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         if self.int_query_fields and is_int(query):
             v = int(query)
             for f in self.int_query_fields:
@@ -172,10 +225,17 @@ class ExtModelApplication(ExtApplication):
         :return: dict of cleaned parameters of raised InterfaceTypeError
         :rtype: dict
         """
+<<<<<<< HEAD
         # Strip ignored fields and convert empty strings to None
         data = dict(
             (str(k), data[k] if data[k] != "" else None)
             for k in data if k not in self.ignored_fields
+=======
+        # Strip "id" and convert empty strings to None
+        data = dict(
+            (k, data[k] if data[k] != "" else None)
+            for k in data if k != "id"
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         )
         # Clean up fields
         for f in self.clean_fields:
@@ -193,20 +253,28 @@ class ExtModelApplication(ExtApplication):
                     data[l] = self.clean_fields[l].clean(0)
                 del data[r]  # Dereferenced
         # Clone data
+<<<<<<< HEAD
         return data
+=======
+        return dict((str(k), data[k]) for k in data)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     def cleaned_query(self, q):
         nq = {}
         for p in q:
+<<<<<<< HEAD
             if p.endswith("__exists"):
                 v = BooleanParameter().clean(q[p])
                 nq[p.replace("__exists", "__isnull")] = not v
                 continue
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if "__" in p:
                 np, lt = p.split("__", 1)
             else:
                 np, lt = p, None
                 # Skip ignored params
+<<<<<<< HEAD
             if np in self.ignored_params or p in (self.limit_param,
                                                   self.page_param, self.start_param,
                                                   self.format_param, self.sort_param,
@@ -215,6 +283,14 @@ class ExtModelApplication(ExtApplication):
             v = q[p]
             if self.in_param in p:
                 v = v.split(",")
+=======
+            if np in self.ignored_params or p in (
+                self.limit_param, self.page_param, self.start_param,
+                self.format_param, self.sort_param, self.query_param,
+                self.only_param):
+                continue
+            v = q[p]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             if v == "\x00":
                 v = None
             # Pass through interface cleaners
@@ -222,6 +298,7 @@ class ExtModelApplication(ExtApplication):
                 # Unroll __referred
                 app, fn = v.split("__", 1)
                 model = self.site.apps[app].model
+<<<<<<< HEAD
                 if not is_document(model):
                     extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
                         self.model._meta.db_table, self.model._meta.pk.name,
@@ -232,6 +309,17 @@ class ExtModelApplication(ExtApplication):
                         nq[None] += [extra_where]
                     else:
                         nq[None] = [extra_where]
+=======
+                extra_where = "%s.\"%s\" IN (SELECT \"%s\" FROM %s)" % (
+                    self.model._meta.db_table, self.model._meta.pk.name,
+                    model._meta.get_field_by_name(fn)[0].attname,
+                    model._meta.db_table
+                    )
+                if None in nq:
+                    nq[None] += [extra_where]
+                else:
+                    nq[None] = [extra_where]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 continue
             elif lt and hasattr(self, "lookup_%s" % lt):
                 # Custom lookup
@@ -258,11 +346,14 @@ class ExtModelApplication(ExtApplication):
             if f.name == "tags":
                 # Send tags as a list
                 r[f.name] = getattr(o, f.name)
+<<<<<<< HEAD
             elif f.name == "shape":
                 if o.shape:
                     v = stencil_registry.get(o.shape)
                     r[f.name] = v.id
                     r["%s__label" % f.name] = unicode(v.title)
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             elif hasattr(f, "document"):
                 # DocumentReferenceField
                 v = getattr(o, f.name)
@@ -274,8 +365,14 @@ class ExtModelApplication(ExtApplication):
                     r["%s__label" % f.name] = ""
             elif f.rel is None:
                 v = f._get_val_from_obj(o)
+<<<<<<< HEAD
                 if v is not None and not isinstance(v, (str, unicode, int, long, bool, list)):
                     if isinstance(v, datetime.datetime):
+=======
+                if (v is not None and
+                    type(v) not in (str, unicode, int, long, bool, list)):
+                    if type(v) == datetime.datetime:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                         v = v.isoformat()
                     else:
                         v = unicode(v)
@@ -308,7 +405,11 @@ class ExtModelApplication(ExtApplication):
     def lookup_tags(self, q, name, value):
         if not value:
             return
+<<<<<<< HEAD
         if isinstance(value, six.string_types):
+=======
+        if isinstance(value, basestring):
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             value = [value]
         tq = ("%%s::text[] <@ %s.tags" % self.db_table, [value])
         if None in q:
@@ -355,6 +456,7 @@ class ExtModelApplication(ExtApplication):
         else:
             return pdata, {}
 
+<<<<<<< HEAD
     def extra_query(self, q, order):
         new_order = []
         extra_select = {}
@@ -404,12 +506,15 @@ class ExtModelApplication(ExtApplication):
         """
         return True
 
+=======
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):
+<<<<<<< HEAD
         try:
             return self.list_data(request, self.instance_to_lookup)
         except ValueError:
@@ -417,23 +522,70 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
+=======
+        return self.list_data(request, self.instance_to_lookup)
+
+    @view(method=["POST"], url="^$", access="create", api=True)
+    def api_create(self, request):
+        def _create_object(attrs, m2m_attrs):
+            o = self.model(**attrs)
+            try:
+                o.save()
+                if m2m_attrs:
+                    self.update_m2ms(o, m2m_attrs)
+            except IntegrityError:
+                return self.render_json(
+                    {
+                        "status": False,
+                        "message": "Integrity error"
+                    }, status=self.CONFLICT)
+            # Check format
+            if request.is_extjs:
+                rs = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                rs = self.instance_to_dict(o)
+            return self.response(rs, status=self.CREATED)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
             attrs = self.clean(attrs)
+<<<<<<< HEAD
         except ValueError as e:
+=======
+        except ValueError, why:
             return self.render_json(
                 {
                     "success": False,
                     "message": "Bad request",
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
+        except InterfaceTypeError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
+            return self.render_json(
+                {
+                    "success": False,
+                    "message": "Bad request",
+<<<<<<< HEAD
                     "traceback": str(e)
+=======
+                    "traceback": str(why)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
                 }, status=self.BAD_REQUEST)
         try:
             # Exclude callable values from query
             # (Django raises exception on pyRules)
             # @todo: Check unique fields only?
             qattrs = dict((k, attrs[k])
+<<<<<<< HEAD
                           for k in attrs if not callable(attrs[k]))
+=======
+                for k in attrs if not callable(attrs[k]))
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.render_json(
@@ -443,6 +595,7 @@ class ExtModelApplication(ExtApplication):
                 },
                 status=self.CONFLICT)
         except self.model.MultipleObjectsReturned:
+<<<<<<< HEAD
             return self.render_json({
                 "status": False,
                 "message": "Duplicated record"
@@ -486,6 +639,18 @@ class ExtModelApplication(ExtApplication):
             else:
                 rs = self.instance_to_dict(o)
             return self.response(rs, status=self.CREATED)
+=======
+            return self.render_json(
+                    {
+                    "status": False,
+                    "message": "Duplicated record"
+                }, status=self.CONFLICT)
+        except self.model.DoesNotExist:
+            return self.submit_slow_op(
+                request, _create_object,
+                attrs, m2m_attrs
+            )
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @view(method=["GET"], url="^(?P<id>\d+)/?$", access="read", api=True)
     def api_read(self, request, id):
@@ -500,33 +665,78 @@ class ExtModelApplication(ExtApplication):
         if only:
             only = only.split(",")
         return self.response(self.instance_to_dict(o, fields=only),
+<<<<<<< HEAD
                              status=self.OK)
 
     @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
     def api_update(self, request, id):
+=======
+            status=self.OK)
+
+    @view(method=["PUT"], url="^(?P<id>\d+)/?$", access="update", api=True)
+    def api_update(self, request, id):
+        def _update_object(o, attrs, m2m_attrs):
+            for k, v in attrs.items():
+                setattr(o, k, v)
+            try:
+                o.save()
+                if m2m_attrs:
+                    self.update_m2ms(o, m2m_attrs)
+            except IntegrityError:
+                return self.render_json(
+                    {
+                        "success": False,
+                        "message": "Integrity error"
+                    }, status=self.CONFLICT)
+            if request.is_extjs:
+                r = {
+                    "success": True,
+                    "data": self.instance_to_dict(o)
+                }
+            else:
+                r = self.instance_to_dict(o)
+            return self.response(r, status=self.OK)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         attrs, m2m_attrs = self.split_mtm(
             self.deserialize(request.raw_post_data))
         try:
             attrs = self.clean(attrs)
+<<<<<<< HEAD
         except ValueError as e:
+=======
+        except ValueError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return self.render_json(
                 {
                     "success": False,
                     "message": "Bad request",
+<<<<<<< HEAD
                     "traceback": str(e)
                 }, status=self.BAD_REQUEST)
         except InterfaceTypeError as e:
+=======
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
+        except InterfaceTypeError, why:
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             return self.render_json(
                 {
                     "success": False,
                     "message": "Bad request",
+<<<<<<< HEAD
                     "traceback": str(e)
                 }, status=self.BAD_REQUEST)
         # Find object
+=======
+                    "traceback": str(why)
+                }, status=self.BAD_REQUEST)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
+<<<<<<< HEAD
         # Tags
         if hasattr(o, "tags") and attrs.get("tags"):
             for t in set(getattr(o, "tags") or []) - (set(attrs.get("tags", []))):
@@ -577,6 +787,17 @@ class ExtModelApplication(ExtApplication):
 
     @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
     def api_delete(self, request, id):
+=======
+        return self.submit_slow_op(request, _update_object,
+                                   o, attrs, m2m_attrs)
+
+    @view(method=["DELETE"], url="^(?P<id>\d+)/?$", access="delete", api=True)
+    def api_delete(self, request, id):
+        def _delete_object(o):
+            o.delete()  # @todo: Detect errors
+            return HttpResponse(status=self.DELETED)
+
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
         except self.model.DoesNotExist:
@@ -584,6 +805,7 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
+<<<<<<< HEAD
         # Check permissions
         if not self.can_delete(request.user, o):
             return self.render_json({
@@ -599,6 +821,9 @@ class ExtModelApplication(ExtApplication):
                     "message": "ERROR: %s" % e
                 }, status=self.CONFLICT)
         return HttpResponse(status=self.DELETED)
+=======
+        return self.submit_slow_op(request, _delete_object, o)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     @view(url="^actions/group_edit/$", method=["POST"],
           access="update", api=True)
@@ -610,21 +835,37 @@ class ExtModelApplication(ExtApplication):
         rv = self.deserialize(request.raw_post_data)
         try:
             v = validator.clean(rv)
+<<<<<<< HEAD
         except InterfaceTypeError as e:
             return self.render_json({
                 "status": False,
                 "message": "Bad request",
                 "traceback": str(e)
+=======
+        except InterfaceTypeError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }, status=self.BAD_REQUEST)
         objects = v["ids"]
         del v["ids"]
         try:
             v = self.clean(v)
+<<<<<<< HEAD
         except ValueError as e:
             return self.render_json({
                 "status": False,
                 "message": "Bad request",
                 "traceback": str(e)
+=======
+        except ValueError, why:
+            return self.render_json({
+                "status": False,
+                "message": "Bad request",
+                "traceback": str(why)
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
             }, status=self.BAD_REQUEST)
         for o in objects:
             for p in v:

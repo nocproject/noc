@@ -1,0 +1,8 @@
+{
+    "name": "Interface | IP Redirects Enabled",
+    "$collection": "cm.errortypes",
+    "uuid": "49108f66-7e99-4311-8e0b-17f5063a458f",
+    "description": "Interface must not have IP redirects enabled",
+    "subject_template": "Interface {{obj}} has enabled IP redirects",
+    "body_template": "Interface {{obj}} must have IP redirects disabled"
+}

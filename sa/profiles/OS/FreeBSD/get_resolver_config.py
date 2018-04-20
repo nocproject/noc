@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ---------------------------------------------------------------------
 # OS.FreeBSD.get_resolver_config
 # ---------------------------------------------------------------------
@@ -15,6 +16,24 @@ import re
 class Script(BaseScript):
     name = "OS.FreeBSD.get_resolver_config"
     interface = IGetResolverConfig
+=======
+##----------------------------------------------------------------------
+## OS.FreeBSD.get_resolver_config
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2012 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetResolverConfig
+import re
+
+
+class Script(NOCScript):
+    name = "OS.FreeBSD.get_resolver_config"
+    implements = [IGetResolverConfig]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
     rx_domain = re.compile(r"^\s*domain\s+(?P<domain>\S+)")
     rx_search = re.compile(r"^\s*search\s+(?P<search>.+)")
     rx_nameserver = re.compile(r"^\s*nameserver\s+(?P<server>\S+)")

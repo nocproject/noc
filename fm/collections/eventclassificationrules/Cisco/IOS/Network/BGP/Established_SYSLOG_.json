@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | BGP | Established (SYSLOG)",
+    "uuid": "e956ba30-3395-43f7-8d21-d84c67a6d2f2",
+    "description": "%BGP-5-ADJCHANGE: neighbor 10.110.0.60 Up",
+    "event_class__name": "Network | BGP | Established",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%BGP-5-ADJCHANGE: neighbor (?P<peer>\\S+)( vpn vrf (?P<vrf>\\S+))? Up"
+        }
+    ]
+}

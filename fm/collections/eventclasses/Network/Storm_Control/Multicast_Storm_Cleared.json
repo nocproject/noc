@@ -1,0 +1,28 @@
+{
+    "name": "Network | Storm Control | Multicast Storm Cleared",
+    "$collection": "fm.eventclasses",
+    "uuid": "c7a095cd-875d-40fc-afc5-ca0a463fa294",
+    "description": "Multicast Storm Cleared",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Interface",
+            "type": "interface_name",
+            "required": true
+        }
+    ],
+    "subject_template": "Multicast Storm Cleared on port {{interface}}",
+    "body_template": "Multicast Storm Cleared on port {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | Storm Control | Multicast Storm Detected"
+        }
+    ]
+}

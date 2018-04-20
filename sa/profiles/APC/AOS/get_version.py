@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+<<<<<<< HEAD
 # ----------------------------------------------------------------------
 # APC.AOS.get_version
 # ----------------------------------------------------------------------
@@ -19,12 +20,33 @@ class Script(BaseScript):
     name = "APC.AOS.get_version"
     cache = True
     interface = IGetVersion
+=======
+##----------------------------------------------------------------------
+## APC.AOS.get_version
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2011 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import re
+## NOC modules
+from noc.sa.script import Script as NOCScript
+from noc.sa.interfaces import IGetVersion
+
+
+class Script(NOCScript):
+    name = "APC.AOS.get_version"
+    cache = True
+    implements = [IGetVersion]
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
     rx_fwver = re.compile(r"Network Management Card AOS\s+v(?P<version>\S+)$",
                           re.MULTILINE)
     rx_platform = re.compile(r"^(?P<platform>.+?)\s+named\s+", re.MULTILINE)
 
     rx_platform1 = re.compile(r"^Name\s+: (?P<platform>.+?)\s+Date",
+<<<<<<< HEAD
                               re.MULTILINE)
 
     def execute_snmp(self, **kwargs):
@@ -56,9 +78,24 @@ class Script(BaseScript):
                           "firmware revision": "version"}, v)
             platform = d["platform"]
             version = d["version"]
+=======
+        re.MULTILINE)
+
+    def execute(self):
+        m = self.motd
+        match = self.rx_platform.search(m)
+        if not match:
+            match = self.rx_platform1.search(m)
+        platform = match.group("platform").strip()
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce
 
         return {
             "vendor": "APC",
             "platform": platform,
+<<<<<<< HEAD
             "version": version
         }
+=======
+            "version": self.re_search(self.rx_fwver, m).group("version")
+            }
+>>>>>>> 2ab0ab7718bb7116da2c3953efd466757e11d9ce

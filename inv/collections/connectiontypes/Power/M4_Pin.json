@@ -1,0 +1,7 @@
+{
+    "name": "Power | M4 Pin",
+    "uuid": "6440b55a-888c-409e-86e1-a922f5162cd6",
+    "description": "M4 pin",
+    "c_group": ["power_m4_pin", "power_naked"],
+    "genders": "m"
+}
