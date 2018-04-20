@@ -20,9 +20,9 @@ class AutoCompleteTags(Input):
 
     class Media(object):
         css = {
-            "all": ["/ui/pkg/jquery-tokeninput/jquery.tokeninput.css"]
+            "all": ["/ui/pkg/jquery.tokeninput/jquery.tokeninput.css"]
         }
-        js = ["/ui/pkg/jquery-tokeninput/jquery.tokeninput.js"]
+        js = ["/ui/pkg/jquery.tokeninput/jquery.tokeninput.js"]
 
     def render(self, name, value=None, attrs=None):
         initial = []
