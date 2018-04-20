@@ -14,38 +14,54 @@ file:
     filetype: directory
     contains: []
 port:
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
   tcp:8300:
     listening: true
     ip:
     - {{ ansible_host }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   tcp:8301:
     listening: true
     ip:
     - {{ ansible_host }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
   tcp:8302:
     listening: true
     ip:
     - {{ ansible_host }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   tcp6:8500:
     listening: true
     ip:
     - '::'
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   tcp6:8600:
     listening: true
     ip:
     - '::'
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   udp:8301:
     listening: true
     ip:
     - {{ ansible_host }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' %}
   udp:8302:
     listening: true
     ip:
     - {{ ansible_host }}
+{% endif %}
+{% if consul_power == 'bootstrap' or consul_power == 'server' or consul_power == 'agent' %}
   udp6:8600:
     listening: true
     ip:
     - '::'
+{% endif %}
 service:
   consul:
     enabled: true
