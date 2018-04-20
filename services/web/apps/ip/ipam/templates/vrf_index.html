@@ -160,7 +160,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
             {% if f %}
                 <tr {% if p.style %}class="{{p.style.css_class_name}}"{% endif %}>
                     <td>
-                        <a href="{% url ip:ipam:toggle_bookmark p.vrf.id p.afi p.prefix %}"><i class="fa fa-2x fa-star{% if is_bookmarked %} favorite{% endif %}" title="Toggle Bookmark"></i></a>
+                        <a href="{% url ip:ipam:toggle_bookmark p.vrf.id p.afi p.prefix %}"><i class="fa fa-2x fa-star {% if is_bookmarked %}favorite-active{% else %}favorite-inactive{% endif %}" title="Toggle Bookmark"></i></a>
                     </td>
                     <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
                     <td title="{{ p.state.description|safe }}">{{ p.state.name }}</td>
@@ -497,9 +497,9 @@ document.currentPrefix = "{{ prefix.prefix }}";
     <table class="table table-striped">
         <caption class="module">
             {% if has_bookmark %}
-                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star favorite" title="Remove Bookmark"></i></a>
+                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star favorite-active" title="Remove Bookmark"></i></a>
             {% else %}
-                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star" title="Add Bookmark"></i></a>
+                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star favorite-inactive" title="Add Bookmark"></i></a>
             {% endif %}
             {{prefix.prefix}} Info</caption>
         <tbody>

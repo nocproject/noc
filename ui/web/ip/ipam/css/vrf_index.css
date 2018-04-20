@@ -134,6 +134,10 @@ caption.module {
     padding-top: 4px;
 }
 
-.favorite {
+.favorite-active {
     color:#f1c40f;
+}
+
+.favorite-inactive {
+    color:#7f8c8d;
 }
