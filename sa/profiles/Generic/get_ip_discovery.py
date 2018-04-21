@@ -50,12 +50,14 @@ class Script(BaseScript):
             except self.CLISyntaxError:
                 r = []
             if r:
-                vrfs["default"]["addresses"] += [{
-                    "ip": x["ip"],
-                    "afi": "6",
-                    "mac": x["mac"],
-                    "interface": x["interface"]}
-                for x in r if x["state"] == "reachable"
+                vrfs["default"]["addresses"] += [
+                    {
+                        "ip": x["ip"],
+                        "afi": "6",
+                        "mac": x["mac"],
+                        "interface": x["interface"]
+                    }
+                    for x in r if x["state"] == "reachable"
                 ]
         # Iterate through VRF
         data = []
