@@ -17,6 +17,7 @@ from noc.core.handler import get_handler
 DiscoveredVPN = namedtuple("DiscoveredVPN", [
     "type",
     "rd",
+    "vpn_id",
     "name",
     "profile",
     "description",
@@ -44,9 +45,9 @@ class VPNCheck(DiscoveryCheck):
     def get_vpns(self):
         """
         Discover VPNs
-        :return: dict of rd => DiscoveredVPN
+        :return: dict of vpn_id => DiscoveredVPN
         """
-        # rd => DiscoveredVPNs
+        # vpn_id => DiscoveredVPNs
         vpns = {}
         # Apply interface prefixes
         if self.object.object_profile.enable_box_discovery_vpn_interface:
@@ -65,27 +66,27 @@ class VPNCheck(DiscoveryCheck):
     def sync_vpns(self, vpns):
         """
         Apply VPNs to database.
-        Temporary solution, applies only type == "vrf"
+        Temporary solution, applies only type == "VRF"
         :param vpns:
         :return:
         """
         # Get existing VRFs
         self.logger.debug("Getting VRFs to synchronize")
-        vrfs = dict((vrf.rd, vrf) for vrf in VRF.objects.filter(rd__in=list(vpns)))
+        vrfs = dict((vrf.vpn_id, vrf) for vrf in VRF.objects.filter(vpn_id__in=list(vpns)))
         #
         seen = set()
         # Apply changes
-        for rd in vpns:
-            vpn = vpns[rd]
+        for vpn_id in vpns:
+            vpn = vpns[vpn_id]
             if vpn.type != "VRF":
                 continue  # @todo: Only VRFs for now
-            if rd in vrfs:
+            if vpn_id in vrfs:
                 # Confirmed VPN, apply changes and touch
-                self.apply_vpn_changes(vrfs[rd], vpn)
-                seen.add(rd)
+                self.apply_vpn_changes(vrfs[vpn_id], vpn)
+                seen.add(vpn_id)
         # Create new VPNs
-        for rd in set(vpns) - seen:
-            vpn = vpns[rd]
+        for vpn_id in set(vpns) - seen:
+            vpn = vpns[vpn_id]
             if vpn.type != "VRF":
                 continue  # @todo: Only VRFs for now
             self.create_vpn(vpn)
@@ -94,22 +95,22 @@ class VPNCheck(DiscoveryCheck):
     def apply_vpns(vpns, discovered_vpns):
         """
         Apply list of discovered vpns to vpn dict
-        :param vpns: dict of rd => DiscoveredVPN
+        :param vpns: dict of vpn_id => DiscoveredVPN
         :param discovered_vpns: List of [DiscoveredVPN]
         :returns: Resulted vpns
         """
         for vpn in discovered_vpns:
-            if not vpn.rd:
-                metrics["vpn_wo_rd"] += 1
+            if not vpn.vpn_id:
+                metrics["vpn_wo_vpn_id"] += 1
                 continue
-            old = vpns.get(vpn.rd)
+            old = vpns.get(vpn.vpn_id)
             if old:
                 if VPNCheck.is_preferred(old.source, vpn.source):
                     # New prefix is preferable, replace
-                    vpns[vpn.rd] = vpn
+                    vpns[vpn.vpn_id] = vpn
             else:
                 # Not seen yet
-                vpns[vpn.rd] = vpn
+                vpns[vpn.vpn_id] = vpn
         return vpns
 
     def is_enabled(self):
@@ -134,6 +135,7 @@ class VPNCheck(DiscoveryCheck):
         return [
             DiscoveredVPN(
                 rd=p["rd"],
+                vpn_id=p.get("vpn_id"),
                 name=p["name"],
                 type=p["type"],
                 profile=self.object.object_profile.vpn_profile_interface,
@@ -160,12 +162,13 @@ class VPNCheck(DiscoveryCheck):
         r = [
             DiscoveredVPN(
                 rd=vpn["rd"],
+                vpn_id=vpn["vpn_id"],
                 name=vpn["name"],
                 type=vpn["type"],
                 profile=self.object.object_profile.vpn_profile_mpls,
                 description=vpn.get("description"),
                 source=SRC_MPLS
-            ) for vpn in vpns if vpn.get("rd")
+            ) for vpn in vpns if vpn.get("vpn_id")
         ]
         return r
 
@@ -189,8 +192,8 @@ class VPNCheck(DiscoveryCheck):
         """
         if not self.has_vpn_permission(vpn):
             self.logger.debug(
-                "Do not creating rd=%s name=%s Disabled by policy",
-                vpn.rd, vpn.name
+                "Do not creating rd=%s vpn_id=%s name=%s Disabled by policy",
+                vpn.rd, vpn.vpn_id, vpn.name
             )
             metrics["vpn_creation_denied"] += 1
             return
@@ -201,7 +204,7 @@ class VPNCheck(DiscoveryCheck):
             old_name = name
             name = self.get_unique_vpn_name(vpn)
             self.logger.info(
-                "Name '%s' is already exists with other rd. Rename to '%s'",
+                "Name '%s' is already exists with other vpn_id. Rename to '%s'",
                 old_name, name
             )
             metrics["vpn_name_clash"] += 1
@@ -209,12 +212,13 @@ class VPNCheck(DiscoveryCheck):
         p = VRF(
             name=name,
             rd=vpn.rd,
+            vpn_id=vpn.vpn_id,
             profile=vpn.profile,
             source=vpn.source
         )
         self.logger.info(
-            "Creating vpn %s : name=%s profile=%s source=%s",
-            p.rd, p.name, p.profile.name, p.source
+            "Creating vpn %s: name=%s rd=%s profile=%s source=%s",
+            p.vpn_id, p.name, p.rd, p.profile.name, p.source
         )
         p.save()
         p.fire_event("seen")
@@ -242,15 +246,15 @@ class VPNCheck(DiscoveryCheck):
             if changes:
                 self.logger.info(
                     "Changing %s: %s",
-                    vpn.rd,
+                    vpn.vpn_id,
                     ", ".join(changes)
                 )
                 vpn.save()
                 metrics["vpn_updated"] += 1
         else:
             self.logger.debug(
-                "Do not updating rd=%s. Source level too low",
-                discovered_vpn.rd
+                "Do not updating vpn_id=%s. Source level too low",
+                discovered_vpn.vpn_id
             )
             metrics["vpn_update_denied"] += 1
         vpn.fire_event("seen")
@@ -275,7 +279,7 @@ class VPNCheck(DiscoveryCheck):
                 **self.get_template_context(vpn)
             )
             return self.strip(name)
-        return vpn.name or vpn.rd
+        return vpn.name or vpn.vpn_id or vpn.rd
 
     @staticmethod
     def strip(s):
@@ -297,11 +301,11 @@ class VPNCheck(DiscoveryCheck):
 
     def get_unique_vpn_name(self, vpn):
         """
-        Generate unique VPN name by adding rd
+        Generate unique VPN name by adding vpn_id or rd
         :param vpn: DiscoveredVPN
         :return: unique name
         """
         return "%s (%s)" % (
             self.get_vpn_name(vpn),
-            vpn.rd
+            vpn.vpn_id or vpn.rd
         )

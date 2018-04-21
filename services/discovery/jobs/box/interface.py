@@ -44,7 +44,8 @@ class InterfaceCheck(DiscoveryCheck):
                 name=fi["forwarding_instance"],
                 type=fi["type"],
                 rd=fi.get("rd"),
-                vr=fi.get("vr")
+                vr=fi.get("vr"),
+                vpn_id=fi.get("vpn_id")
             )
             # Move LAG members to the end
             # for effective caching
@@ -130,7 +131,7 @@ class InterfaceCheck(DiscoveryCheck):
         self.set_artefact("interface_vpn", self.vrf_artefact)
         self.set_artefact("interface_prefix", self.interface_prefix_artefact)
 
-    def submit_forwarding_instance(self, name, type, rd, vr):
+    def submit_forwarding_instance(self, name, type, rd, vr, vpn_id=None):
         if name == "default":
             return None
         forwarding_instance = ForwardingInstance.objects.filter(
@@ -166,7 +167,8 @@ class InterfaceCheck(DiscoveryCheck):
         self.vrf_artefact[name] = {
             "name": name,
             "type": type,
-            "rd": rd
+            "rd": rd,
+            "vpn_id": vpn_id
         }
         return forwarding_instance
 

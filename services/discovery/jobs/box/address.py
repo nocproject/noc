@@ -19,7 +19,7 @@ from noc.lib.validators import is_fqdn
 
 
 DiscoveredAddress = namedtuple("DiscoveredAddress", [
-    "rd",
+    "vpn_id",
     "address",
     "profile",
     "description",
@@ -56,9 +56,9 @@ class AddressCheck(DiscoveryCheck):
     def get_addresses(self):
         """
         Discover addresses
-        :return: dict of (rd, address) => DiscoveredAddress
+        :return: dict of (vpn_id, address) => DiscoveredAddress
         """
-        # rd, address => DiscoveredAddress
+        # vpn_id, address => DiscoveredAddress
         addresses = {}
         # Apply interface addresses
         if self.object.object_profile.enable_box_discovery_address_interface:
@@ -92,37 +92,37 @@ class AddressCheck(DiscoveryCheck):
         :param addresses:
         :return:
         """
-        # rd -> [address, ]
+        # vpn_id -> [address, ]
         vrf_addresses = defaultdict(list)
-        for rd, a in addresses:
-            vrf_addresses[rd] += [a]
-        # build rd -> VRF mapping
+        for vpn_id, a in addresses:
+            vrf_addresses[vpn_id] += [a]
+        # build vpn_id -> VRF mapping
         self.logger.debug("Building VRF map")
         vrfs = {}
-        for rd in vrf_addresses:
-            vrf = VRF.get_by_rd(rd)
+        for vpn_id in vrf_addresses:
+            vrf = VRF.get_by_vpn_id(vpn_id)
             if vrf:
-                vrfs[rd] = vrf
-        missed_rd = set(vrf_addresses) - set(vrfs)
-        if missed_rd:
-            self.logger.info("RD missed in VRF database and to be ignored: %s", ", ".join(missed_rd))
+                vrfs[vpn_id] = vrf
+        missed_vpn_id = set(vrf_addresses) - set(vrfs)
+        if missed_vpn_id:
+            self.logger.info("VPN ID are missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id))
         #
         self.logger.debug("Getting addresses to synchronize")
-        for rd in vrfs:
-            vrf = vrfs[rd]
+        for vpn_id in vrfs:
+            vrf = vrfs[vpn_id]
             seen = set()
-            for a in Address.objects.filter(vrf=vrf, address__in=vrf_addresses[rd]):
+            for a in Address.objects.filter(vrf=vrf, address__in=vrf_addresses[vpn_id]):
                 # Confirmed address, apply changes and touch
-                address = addresses[rd, a.address]
+                address = addresses[vpn_id, a.address]
                 self.apply_address_changes(a, address)
                 seen.add(address.address)
-            for a in set(vrf_addresses[rd]) - seen:
+            for a in set(vrf_addresses[vpn_id]) - seen:
                 # New address, create
-                self.create_address(addresses[rd, a])
+                self.create_address(addresses[vpn_id, a])
         # Detaching hanging addresses
         self.logger.debug("Checking for hanging addresses")
         for a in Address.objects.filter(managed_object=self.object):
-            address = addresses.get((a.vrf.rd, a.address))
+            address = addresses.get((a.vrf.vpn_id, a.address))
             if not address or address.source not in LOCAL_SRC:
                 self.logger.info("Detaching %s:%s", a.vrf.name, a.address)
                 a.managed_object = None
@@ -132,19 +132,19 @@ class AddressCheck(DiscoveryCheck):
     def apply_addresses(addresses, discovered_addresses):
         """
         Apply list of discovered addresses to addresses dict
-        :param addresses: dict of (rd, address) => DiscoveredAddress
+        :param addresses: dict of (vpn_id, address) => DiscoveredAddress
         :param discovered_addresses: List of [DiscoveredAddress]
         :returns: Resulted addresses
         """
         for address in discovered_addresses:
-            old = addresses.get((address.rd, address.address))
+            old = addresses.get((address.vpn_id, address.address))
             if old:
                 if AddressCheck.is_preferred(old.source, address.source):
                     # New address is preferable, replace
-                    addresses[address.rd, address.address] = address
+                    addresses[address.vpn_id, address.address] = address
             else:
                 # Not seen yet
-                addresses[address.rd, address.address] = address
+                addresses[address.vpn_id, address.address] = address
         return addresses
 
     def is_enabled(self):
@@ -168,7 +168,7 @@ class AddressCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredAddress(
-                rd=a["rd"] or GLOBAL_VRF,
+                vpn_id=a["vpn_id"] or GLOBAL_VRF,
                 address=a["address"].rsplit("/", 1)[0],
                 profile=self.object.object_profile.address_profile_interface,
                 source=SRC_INTERFACE,
@@ -191,7 +191,7 @@ class AddressCheck(DiscoveryCheck):
         if self.object.address:
             addresses = [
                 DiscoveredAddress(
-                    rd=self.object.vrf.rd if self.object.vrf else GLOBAL_VRF,
+                    vpn_id=self.object.vrf.vpn_id if self.object.vrf else GLOBAL_VRF,
                     address=self.object.address,
                     profile=self.object.object_profile.address_profile_management,
                     source=SRC_MANAGEMENT,
@@ -218,7 +218,7 @@ class AddressCheck(DiscoveryCheck):
         leases = self.object.scripts.get_dhcp_binding()
         r = [
             DiscoveredAddress(
-                rd=self.object.vrf.rd if self.object.vrf else GLOBAL_VRF,
+                vpn_id=self.object.vrf.vpn_id if self.object.vrf else GLOBAL_VRF,
                 address=a["ip"],
                 profile=self.object.object_profile.address_profile_dhcp,
                 source=SRC_DHCP,
@@ -243,11 +243,11 @@ class AddressCheck(DiscoveryCheck):
         self.logger.debug("Getting neighbor addresses")
         neighbors = self.object.scripts.get_ip_discovery()
         r = []
-        for rd in neighbors:
-            for a in rd["addresses"]:
+        for vpn in neighbors:
+            for a in vpn["addresses"]:
                 r += [
                     DiscoveredAddress(
-                        rd=rd.get("rd", GLOBAL_VRF) or GLOBAL_VRF,
+                        vpn_id=vpn.get("vpn_id", GLOBAL_VRF) or GLOBAL_VRF,
                         address=a["ip"],
                         profile=self.object.object_profile.address_profile_neighbor,
                         source=SRC_NEIGHBOR,
@@ -278,12 +278,12 @@ class AddressCheck(DiscoveryCheck):
         """
         if self.is_ignored_address(address):
             return
-        vrf = VRF.get_by_rd(address.rd)
+        vrf = VRF.get_by_vpn_id(address.vpn_id)
         self.ensure_afi(vrf, address)
         if not self.has_address_permission(vrf, address):
             self.logger.debug(
-                "Do not creating rd=%s address=%s: Disabled by policy",
-                address.rd, address.address
+                "Do not creating vpn_id=%s address=%s: Disabled by policy",
+                address.vpn_id, address.address
             )
             metrics["address_creation_denied"] += 1
             return
@@ -363,15 +363,16 @@ class AddressCheck(DiscoveryCheck):
                 self.logger.info(
                     "Changing %s (%s): %s",
                     address.address,
-                    discovered_address.rd,
+                    discovered_address.vpn_id,
                     ", ".join(changes)
                 )
                 address.save()
                 metrics["address_updated"] += 1
         else:
             self.logger.debug(
-                "Do not updating rd=%s address=%s. Source level too low",
-                discovered_address.address, discovered_address.rd
+                "Do not updating vpn_id=%s address=%s. Source level too low",
+                discovered_address.vpn_id,
+                discovered_address.address
             )
             metrics["address_update_denied"] += 1
         address.fire_event("seen")
@@ -455,13 +456,13 @@ class AddressCheck(DiscoveryCheck):
         if ":" in address.address:
             # IPv6
             if not vrf.afi_ipv6:
-                self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.rd)
+                self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.vpn_id)
                 vrf.afi_ipv6 = True
                 vrf.save()
         else:
             # IPv4
             if not vrf.afi_ipv4:
-                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.rd)
+                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
                 vrf.afi_ipv4 = True
                 vrf.save()
 

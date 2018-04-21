@@ -18,7 +18,7 @@ from noc.core.ip import IP
 
 
 DiscoveredPrefix = namedtuple("DiscoveredPrefix", [
-    "rd",
+    "vpn_id",
     "prefix",
     "profile",
     "description",
@@ -51,9 +51,9 @@ class PrefixCheck(DiscoveryCheck):
     def get_prefixes(self):
         """
         Discover prefixes
-        :return: dict of (rd, prefix) => DiscoveredPrefix
+        :return: dict of (vpn_id, prefix) => DiscoveredPrefix
         """
-        # rd, prefix => DiscoveredPrefix
+        # vpn_id, prefix => DiscoveredPrefix
         prefixes = {}
         # Apply interface prefixes
         if self.object.object_profile.enable_box_discovery_prefix_interface:
@@ -69,51 +69,51 @@ class PrefixCheck(DiscoveryCheck):
         :param prefixes:
         :return:
         """
-        # rd -> [prefix, ]
+        # vpn_id -> [prefix, ]
         vrf_prefixes = defaultdict(list)
-        for rd, p in prefixes:
-            vrf_prefixes[rd] += [p]
-        # build rd -> VRF mapping
+        for vpn_id, p in prefixes:
+            vrf_prefixes[vpn_id] += [p]
+        # build vpn_id -> VRF mapping
         self.logger.debug("Building VRF map")
         vrfs = {}
-        for rd in vrf_prefixes:
-            vrf = VRF.get_by_rd(rd)
+        for vpn_id in vrf_prefixes:
+            vrf = VRF.get_by_vpn_id(vpn_id)
             if vrf:
-                vrfs[rd] = vrf
-        missed_rd = set(vrf_prefixes) - set(vrfs)
-        if missed_rd:
-            self.logger.info("RD missed in VRF database and to be ignored: %s", ", ".join(missed_rd))
+                vrfs[vpn_id] = vrf
+        missed_vpn_id = set(vrf_prefixes) - set(vrfs)
+        if missed_vpn_id:
+            self.logger.info("RD missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id))
         #
         self.logger.debug("Getting prefixes to synchronize")
-        for rd in vrfs:
-            vrf = vrfs[rd]
+        for vpn_id in vrfs:
+            vrf = vrfs[vpn_id]
             seen = set()
-            for p in Prefix.objects.filter(vrf=vrf, prefix__in=vrf_prefixes[rd]):
+            for p in Prefix.objects.filter(vrf=vrf, prefix__in=vrf_prefixes[vpn_id]):
                 # Confirmed prefix, apply changes and touch
-                prefix = prefixes[rd, p.prefix]
+                prefix = prefixes[vpn_id, p.prefix]
                 self.apply_prefix_changes(p, prefix)
                 seen.add(prefix.prefix)
-            for p in set(vrf_prefixes[rd]) - seen:
+            for p in set(vrf_prefixes[vpn_id]) - seen:
                 # New prefix, create
-                self.create_prefix(prefixes[rd, p])
+                self.create_prefix(prefixes[vpn_id, p])
 
     @staticmethod
     def apply_prefixes(prefixes, discovered_prefixes):
         """
         Apply list of discovered prefixes to prefix dict
-        :param prefixes: dict of (rd, prefix) => DiscoveredAddress
+        :param prefixes: dict of (vpn_id, prefix) => DiscoveredAddress
         :param discovered_prefixes: List of [DiscoveredAddress]
         :returns: Resulted prefixes
         """
         for prefix in discovered_prefixes:
-            old = prefixes.get((prefix.rd, prefix.prefix))
+            old = prefixes.get((prefix.vpn_id, prefix.prefix))
             if old:
                 if PrefixCheck.is_preferred(old.source, prefix.source):
                     # New prefix is preferable, replace
-                    prefixes[prefix.rd, prefix.prefix] = prefix
+                    prefixes[prefix.vpn_id, prefix.prefix] = prefix
             else:
                 # Not seen yet
-                prefixes[prefix.rd, prefix.prefix] = prefix
+                prefixes[prefix.vpn_id, prefix.prefix] = prefix
         return prefixes
 
     def is_enabled(self):
@@ -143,7 +143,7 @@ class PrefixCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredPrefix(
-                rd=p["rd"] or GLOBAL_VRF,
+                vpn_id=p["vpn_id"] or GLOBAL_VRF,
                 prefix=str(IP.prefix(p["address"]).first),
                 profile=self.object.object_profile.prefix_profile_interface,
                 source=SRC_INTERFACE,
@@ -173,12 +173,12 @@ class PrefixCheck(DiscoveryCheck):
         """
         if self.is_ignored_prefix(prefix):
             return
-        vrf = VRF.get_by_rd(prefix.rd)
+        vrf = VRF.get_by_vpn_id(prefix.vpn_id)
         self.ensure_afi(vrf, prefix)
         if not self.has_prefix_permission(vrf, prefix):
             self.logger.debug(
-                "Do not creating rd=%s prefix=%s: Disabled by policy",
-                prefix.rd, prefix.prefix
+                "Do not creating vpn_id=%s prefix=%s: Disabled by policy",
+                prefix.vpn_id, prefix.prefix
             )
             metrics["prefix_creation_denied"] += 1
             return
@@ -224,15 +224,15 @@ class PrefixCheck(DiscoveryCheck):
                 self.logger.info(
                     "Changing %s (%s): %s",
                     prefix.prefix,
-                    discovered_prefix.rd,
+                    discovered_prefix.vpn_id,
                     ", ".join(changes)
                 )
                 prefix.save()
                 metrics["prefix_updated"] += 1
         else:
             self.logger.debug(
-                "Do not updating rd=%s prefix=%s. Source level too low",
-                discovered_prefix.prefix, discovered_prefix.rd
+                "Do not updating vpn_id=%s prefix=%s. Source level too low",
+                discovered_prefix.prefix, discovered_prefix.vpn_id
             )
             metrics["prefix_update_denied"] += 1
         prefix.fire_event("seen")
@@ -291,13 +291,13 @@ class PrefixCheck(DiscoveryCheck):
         if ":" in prefix.prefix:
             # IPv6
             if not vrf.afi_ipv6:
-                self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.rd)
+                self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.vpn_id)
                 vrf.afi_ipv6 = True
                 vrf.save()
         else:
             # IPv4
             if not vrf.afi_ipv4:
-                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.rd)
+                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
                 vrf.afi_ipv4 = True
                 vrf.save()
 
