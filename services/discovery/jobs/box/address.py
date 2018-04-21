@@ -168,7 +168,7 @@ class AddressCheck(DiscoveryCheck):
             return []
         return [
             DiscoveredAddress(
-                vpn_id=a["vpn_id"] or GLOBAL_VRF,
+                vpn_id=a.get("vpn_id", GLOBAL_VRF) or GLOBAL_VRF,
                 address=a["address"].rsplit("/", 1)[0],
                 profile=self.object.object_profile.address_profile_interface,
                 source=SRC_INTERFACE,
