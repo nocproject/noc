@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Interface check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,13 +39,14 @@ class InterfaceCheck(DiscoveryCheck):
         result = self.object.scripts.get_interfaces()
         # Process forwarding instances
         for fi in result:
+            vpn_id = fi.get("vpn_id")
             # Apply forwarding instance
             forwarding_instance = self.submit_forwarding_instance(
                 name=fi["forwarding_instance"],
                 type=fi["type"],
                 rd=fi.get("rd"),
                 vr=fi.get("vr"),
-                vpn_id=fi.get("vpn_id")
+                vpn_id=vpn_id
             )
             # Move LAG members to the end
             # for effective caching
@@ -99,6 +100,7 @@ class InterfaceCheck(DiscoveryCheck):
                         rd = forwarding_instance.rd if forwarding_instance else "0:0"
                         for a in addresses:
                             self.interface_prefix_artefact += [{
+                                "vpn_id": vpn_id,
                                 "rd": rd,
                                 "address": a,
                                 "subinterface": si["name"],
