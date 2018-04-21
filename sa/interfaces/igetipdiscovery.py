@@ -16,6 +16,7 @@ class IGetIPDiscovery(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "name": StringParameter(),
         "rd": RDParameter(required=False),
+        "vpn_id": StringParameter(required=False),
         "addresses": ListOfParameter(element=DictParameter(attrs={
             "ip": IPParameter(),
             "afi": StringParameter(choices=["4", "6"]),

@@ -40,6 +40,8 @@ class Script(BaseScript):
                     }
                     if "rd" in v:
                         vrf["rd"] = v["rd"]
+                    if "vpn_id" in v:
+                        vrf["vpn_id"] = v["vpn_id"]
                     vrfs[v["name"]] = vrf
         # Get IPv6 neighbors (global?)
         if "get_ipv6_neighbor" in self.scripts:
