@@ -69,6 +69,7 @@ th[class=rd] {
             <th class="vrf">VRF</th>
             <th class="state">State</th>
             <th class="rd">RD</th>
+            <th class="vpn_id">VPN ID</th>
             <th class="addresses">IPv4</th>
             <th class="addresses">IPv6</th>
             <th class="project">Project</th>
@@ -81,7 +82,7 @@ th[class=rd] {
 
 {% for g in groups %}
     <tr>
-        <td colspan="9" class="group-name">
+        <td colspan="10" class="group-name">
             <i class="fa fa-chevron-right"></i>
             {{ g.0.name }}
         </td>
@@ -92,6 +93,7 @@ th[class=rd] {
             <td style="padding-left: 16px">{{vrf.name}}</td>
             <td title="{{ vrf.state.description|safe }}">{{vrf.state.name}}</td>
             <td>{{vrf.rd}}</td>
+            <td>{{vrf.vpn_id}}</td>
             <td>{% if vrf.afi_ipv4 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '4' '0.0.0.0/0' %}" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
             <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '6' '::/0' %}" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
             <td>{% if vrf.project %}{{ vrf.project.code }}{% endif %}</td>

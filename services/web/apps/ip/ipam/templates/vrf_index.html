@@ -17,7 +17,7 @@
   <ol class="breadcrumb">
       <li class="breadcrumb-item">IPAM</li>
       <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">VRF</a></li>
-      <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">{{vrf.name}} ({{ vrf.rd }})</a></li>
+      <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">{{vrf.name}} ({{ vrf.vpn_id }})</a></li>
       <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">IPv{{prefix.afi}}</a></li>
      {% for p in path %}
          <li class="breadcrumb-item>"><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{p.short_description}}">{{p.prefix}}</a></li>

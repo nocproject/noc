@@ -54,6 +54,11 @@ Ext.define("NOC.ip.vrf.Application", {
                     width: 100
                 },
                 {
+                    text: __("VPN ID"),
+                    dataIndex: "vpn_id",
+                    width: 100
+                },
+                {
                     text: __("IPv4"),
                     dataIndex: "afi_ipv4",
                     renderer: NOC.render.Bool,
@@ -119,7 +124,14 @@ Ext.define("NOC.ip.vrf.Application", {
                     name: "rd",
                     xtype: "textfield",
                     fieldLabel: __("RD"),
-                    allowBlank: false,
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "vpn_id",
+                    xtype: "textfield",
+                    fieldLabel: __("VPN ID"),
+                    allowBlank: true,
                     uiStyle: "medium"
                 },
                 {

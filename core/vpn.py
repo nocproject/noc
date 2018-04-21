@@ -34,6 +34,8 @@ def get_vpn_id(vpn):
     if rt_export:
         identity = ":".join(sorted(rt_export))
     elif vpn.get("rd"):
+        if vpn["rd"] == "0:0":
+            return "0:0"
         identity = vpn["rd"]
     elif vpn.get("name"):
         identity = vpn["name"]

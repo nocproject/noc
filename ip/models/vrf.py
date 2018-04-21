@@ -28,6 +28,7 @@ from noc.vc.models.vpnprofile import VPNProfile
 from noc.wf.models.state import State
 from .vrfgroup import VRFGroup
 from noc.core.wf.decorator import workflow
+from noc.core.vpn import get_vpn_id
 
 
 id_lock = Lock()
@@ -74,6 +75,13 @@ class VRF(models.Model):
         max_length=21,
         validators=[check_rd],
         help_text=_("Route Distinguisher in form of ASN:N or IP:N"))
+    # RFC2685-compatible VPN id
+    vpn_id = models.CharField(
+        _("VPN ID"),
+        max_length=15,
+        help_text=_("RFC2685 compatible VPN ID"),
+        unique=True
+    )
     afi_ipv4 = models.BooleanField(
         _("IPv4"),
         default=True,
@@ -126,6 +134,7 @@ class VRF(models.Model):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _rd_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _vpn_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(
@@ -143,6 +152,16 @@ class VRF(models.Model):
         lock=lambda _: id_lock)
     def get_by_rd(cls, rd):
         vrf = VRF.objects.filter(rd=rd)[:1]
+        if vrf:
+            return vrf[0]
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_vpn_id_cache"),
+        lock=lambda _: id_lock)
+    def get_by_vpn_id(cls, vpn_id):
+        vrf = VRF.objects.filter(vpn_id=vpn_id)[:1]
         if vrf:
             return vrf[0]
         return None
@@ -172,6 +191,13 @@ class VRF(models.Model):
         # Generate unique rd, if empty
         if not self.rd:
             self.rd = self.generate_rd(self.name)
+        if not self.vpn_id:
+            vdata = {
+                "type": "VRF",
+                "name": self.name,
+                "rd": self.rd
+            }
+            self.vpn_id = get_vpn_id(vdata)
         if self.initial_data["id"]:
             # Delete empty ipv4 root if AFI changed
             if self.initial_data.get("afi_ipv4") != self.afi_ipv4 and not self.afi_ipv4:

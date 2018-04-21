@@ -33,6 +33,10 @@ Ext.define("NOC.ip.vrf.Model", {
             type: "string"
         },
         {
+            name: "vpn_id",
+            type: "string"
+        },
+        {
             name: "afi_ipv4",
             type: "boolean",
             defaultValue: true
