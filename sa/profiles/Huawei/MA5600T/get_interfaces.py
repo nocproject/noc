@@ -177,8 +177,8 @@ class Script(BaseScript):
                         for t in self.rx_tagged.finditer(m.group("tagged")):
                             if int(t.group("tagged")) != untagged:
                                 tagged += [int(t.group("tagged"))]
-                        iface["subinterfaces"][0]["untagged"] = untagged
-                        iface["subinterfaces"][0]["tagged"] = tagged
+                        iface["subinterfaces"][0]["untagged_vlan"] = untagged
+                        iface["subinterfaces"][0]["tagged_vlans"] = tagged
                     interfaces += [iface]
             if ports[i]["t"] in ["ADSL", "VDSL", "GPON"]:
                 oper_states = []

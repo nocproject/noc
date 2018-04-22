@@ -80,9 +80,13 @@ class Profile(BaseProfile):
             i += 1
         return r
 
+    rx_port_name = re.compile("(\S+)(\d+\/\d+\/\d+)")
+
     def convert_interface_name(self, interface):
         if " " in interface:
             return interface.split()[1]
         if "ethernet" in interface:
             return interface[8:]
+        if self.rx_port_name.match(interface):
+            return self.rx_port_name.findall(interface)[0][1]
         return interface
