@@ -166,7 +166,7 @@ class ReportMetric(object):
         query = self.get_query(query_map, f_date, to_date)
         while mos_name[n:n + self.CHUNK_SIZE]:
             m_r = "(%s)" % " OR ".join(["object = '%s'" % name for name in mos_name[n:n + self.CHUNK_SIZE]])
-            print query % m_r
+            # print query % m_r
 
             for row in client.query(query % m_r):
                 if self.reporttype in ["ping", "load_cpu"]:
@@ -238,7 +238,8 @@ class ReportTraffic(SimpleReport):
 
         report_map = {
             "load_interfaces": {
-                "url": """%(path)s?title=interface&biid=%(biid)s&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s""",
+                "url": '%(path)s?title=interface&biid=%(biid)s'
+                       '&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s',
                 "q_group": ["interface"],
                 "columns": [_("Int Name"), _("Int Descr"),
                             TableColumn(_("IN bps"), align="right"),
