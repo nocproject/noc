@@ -58,7 +58,7 @@
     {% if prefix.parent %}
     <button type="button"
             class="btn btn-danger"
-            onclick="document.location = '{% url ip:ipam:delete_prefix vrf.id prefix.afi prefix.prefix %}'"><i class="fa fa-times"></i> Delete</button>
+            onclick="app.onDeletePrefix({{ prefix.id }})"><i class="fa fa-times"></i> Delete</button>
     {% endif %}
     </div>
 {% endif %}
