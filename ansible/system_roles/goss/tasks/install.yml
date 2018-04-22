@@ -1,3 +1,4 @@
+---
 - name: Get goss release
   get_url:
     url: "{{ goss_download_url }}"

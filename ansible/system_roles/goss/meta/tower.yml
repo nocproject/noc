@@ -12,7 +12,7 @@ forms:
       label: "Goss version"
       type: str
     validate_fw:
-      default: True
+      default: True  # yamllint disable-line rule:truthy
       label: Validate firewall
       type: bool
 

@@ -1,3 +1,4 @@
+---
 - name: place goss tests file
   template:
     src: "{{goss_service_name}}.goss.yml.j2"
