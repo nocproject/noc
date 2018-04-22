@@ -279,7 +279,7 @@ class ReportTraffic(SimpleReport):
                              "quantile(0.98)(errors_in) as err_in", "quantile(0.98)(errors_out) as err_out",
                              "quantile(0.98)(discards_in) as dis_in", "quantile(0.98)(discards_out) as dis_out"],
                 "q_group": ["path"],
-                "q_where": ["(errors_in != 0 and errors_out != 0 and discards_in != 0 and discards_out != 0)"] if zero
+                "q_where": ["(errors_in != 0 or errors_out != 0 or discards_in != 0 or discards_out != 0)"] if zero
                 else []})
             report_map["load_cpu"].update({"q_select": ["arrayStringConcat(path)", "quantile(0.98)(usage) as usage"],
                                            "q_group": ["path"]})
