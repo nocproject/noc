@@ -165,7 +165,7 @@ node
 **YAML Path**       node
 **Key-Value Path**  node
 **Environment**     NOC_NODE
-**Default Value**   socket.gethostname()
+**Default Value**   *host name*
 ==================  ====================
 
 
@@ -178,7 +178,7 @@ pool
 **YAML Path**       pool
 **Key-Value Path**  pool
 **Environment**     NOC_POOL
-**Default Value**   os.environ.get("NOC_POOL", "")
+**Default Value**
 ==================  ==============================
 
 
