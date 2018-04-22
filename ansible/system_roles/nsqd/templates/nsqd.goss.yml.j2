@@ -53,10 +53,10 @@ http:
     timeout: 5000
     body:
     - OK
-command:
-  'consul catalog nodes -service=nsqd -near=_agent|sed -n 2p|cut -f1 -d " "':
-    exit-status: 0
-    stdout:
-    - {{ansible_hostname}}
-    stderr: []
-    timeout: 10000
+{#command:#}
+{#  'consul catalog nodes -service=nsqd -near=_agent|sed -n 2p|cut -f1 -d " "':#}
+{#    exit-status: 0#}
+{#    stdout:#}
+{#    - {{ansible_hostname}}#}
+{#    stderr: []#}
+{#    timeout: 10000#}
