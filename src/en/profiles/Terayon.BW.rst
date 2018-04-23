@@ -1,7 +1,7 @@
 .. _profile-Terayon-BW:
 
 =======================================
-Juniper.EX2500
+Terayon.BW
 =======================================
 
 .. contents:: On this page
