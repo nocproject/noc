@@ -1,0 +1,13 @@
+{
+    "name": "AlliedTelesis | ATI | AT-8000GS sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "70fb50a0-76f6-4850-841a-4487f81e0f90",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "re",
+    "value": "1.3.6.1.4.1.207.1.4.14[34]",
+    "action": "match",
+    "profile__name": "AlliedTelesis.AT8000S"
+}
