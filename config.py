@@ -497,6 +497,15 @@ class Config(BaseConfig):
         events_path = StringParameter(default="collections/test.events")
         profilecheck_path = StringParameter(default="collections/test.profilecheck")
 
+    class peer(ConfigSection):
+        enable_ripe = BooleanParameter(default=True)
+        enable_arin = BooleanParameter(default=True)
+        enable_radb = BooleanParameter(default=True)
+        prefix_list_optimization = BooleanParameter(default=True)
+        prefix_list_optimization_threshold = IntParameter(default=1000)
+        max_prefix_length = IntParameter(default=24)
+
+
     def __init__(self):
         self.setup_logging()
 
