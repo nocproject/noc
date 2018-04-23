@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 
 
 class WhoisCacheLoader(object):
-    RIPE_AS_SET_MEMBERS = "ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.as-set.gz"
-    RIPE_ROUTE_ORIGIN = "ftp://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz"
-    ARIN = "ftp://ftp.arin.net/pub/rr/arin.db"
+    RIPE_AS_SET_MEMBERS = "https://ftp.ripe.net/ripe/dbase/split/ripe.db.as-set.gz"
+    RIPE_ROUTE_ORIGIN = "https://ftp.ripe.net/ripe/dbase/split/ripe.db.route.gz"
+    ARIN = "https://ftp.arin.net/pub/rr/arin.db"
     RADB = "ftp://ftp.radb.net/radb/dbase/radb.db.gz"
 
     to_cache = [ARIN, RADB]
