@@ -104,6 +104,7 @@ Profiles
     /profiles/Huawei.UMG8900
     /profiles/Huawei.VRP
     /profiles/Huawei.VRP3
+    /profiles/IBM.NOS
     /profiles/InfiNet.WANFlexX
     /profiles/Iskratel.ESCOM
     /profiles/Iskratel.MBAN
@@ -162,6 +163,7 @@ Profiles
     /profiles/TFortis.PSW
     /profiles/Tangram.GT21
     /profiles/Telindus.SHDSL
+    /profiles/Terayon.BW
     /profiles/UTST.ONU
     /profiles/Ubiquiti.AirOS
     /profiles/Vitesse.VSC
