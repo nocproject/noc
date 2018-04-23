@@ -155,9 +155,9 @@ command:
     - '!/\\sM/'
     stderr: []
     timeout: 10000
-  consul catalog nodes -service=nsqd -near=_agent|sed -n 2p|cut -f1 -d " ":
-    exit-status: 0
-    stdout:
-    - {{ ansible_host }}
-    stderr: []
-    timeout: 10000
+{#  consul catalog nodes -service=nsqd -near=_agent|sed -n 2p|cut -f1 -d " ":#}
+{#    exit-status: 0#}
+{#    stdout:#}
+{#    - {{ ansible_host }}#}
+{#    stderr: []#}
+{#    timeout: 10000#}
