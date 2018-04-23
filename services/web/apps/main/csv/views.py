@@ -69,7 +69,7 @@ class CSVApplication(Application):
         ])
         referer = forms.CharField(widget=forms.HiddenInput)
 
-    @view(url=r"^import/(?P<model>[a-z1-9]+\.[a-z1-9]+)/$",
+    @view(url=r"^import/(?P<model>[a-zA-Z1-9]+\.[a-zA-Z1-9]+)/$",
           url_name="import", access="import")
     def view_import(self, request, model):
         """
