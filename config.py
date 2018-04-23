@@ -505,7 +505,6 @@ class Config(BaseConfig):
         prefix_list_optimization_threshold = IntParameter(default=1000)
         max_prefix_length = IntParameter(default=24)
 
-
     def __init__(self):
         self.setup_logging()
 
