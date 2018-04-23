@@ -141,3 +141,16 @@ caption.module {
 .favorite-inactive {
     color:#7f8c8d;
 }
+
+.progress-bar {
+    position: relative;
+}
+
+.progress-bar span {
+    position: absolute;
+    display: block;
+    width: 100%;
+    color: #ffffff;
+    mix-blend-mode: difference;
+    padding-left: 4px;
+}
