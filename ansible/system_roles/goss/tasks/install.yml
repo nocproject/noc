@@ -10,7 +10,7 @@
   environment:
     https_proxy: "{{http_proxy}}"
 
-- name: create goss tmp dir
+- name: create goss dirs
   file:
     dest: "{{ item }}"
     state: directory

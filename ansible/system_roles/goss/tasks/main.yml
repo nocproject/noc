@@ -22,3 +22,7 @@
   import_tasks: service.yml
   when:
     - goss_service_name is defined
+
+- name: set goss complete
+  set_fact:
+    goss_complete: "True"
