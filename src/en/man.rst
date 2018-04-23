@@ -73,5 +73,6 @@ Command Reference
     /man/update-addr
     /man/user
     /man/verify-model
+    /man/whois
     /man/wipe
     /man/workflow
