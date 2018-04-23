@@ -395,54 +395,6 @@ class IPAMApplication(ExtApplication):
                 "prefix": prefix.prefix})
         return self.response_redirect_to_referrer(request)
 
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/delete/$",
-          url_name="delete_prefix", access="change")
-    def view_delete_prefix(self, request, vrf_id, afi, prefix):
-        """
-        Delete prefix
-        """
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
-            return self.response_forbidden("Invalid AFI")
-        if not PrefixAccess.user_can_change(request.user, vrf, afi, prefix):
-            return self.response_forbidden()
-        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
-        parent = prefix.parent
-        if not parent:
-            return self.response_forbidden("Cannot delete root prefix")
-        if request.POST:
-            if "scope" in request.POST and request.POST["scope"][0] in ("p", "r"):
-                if "delete_transition" in request.POST:
-                    prefix_transition = prefix.ipv6_transition if prefix.ipv6_transition else prefix.ipv4_transition
-                    if request.POST["scope"] == "p":
-                        # Delete prefix only
-                        prefix_transition.delete()
-                        self.message_user(request, _(
-                            "Prefix %(prefix)s has been successfully deleted") % {
-                            "prefix": prefix_transition.prefix})
-                    else:
-                        # Delete recursive prefixes
-                        prefix_transition.delete_recursive()
-                        self.message_user(request, _(
-                            "Prefix %(prefix)s and all descendans have been successfully deleted") % {
-                            "prefix": prefix_transition.prefix})
-                if request.POST["scope"] == "p":
-                    # Delete prefix only
-                    prefix.delete()
-                    self.message_user(request, _(
-                        "Prefix %(prefix)s has been successfully deleted") % {
-                        "prefix": prefix.prefix})
-                else:
-                    # Delete recursive prefixes
-                    prefix.delete_recursive()
-                    self.message_user(request, _(
-                        "Prefix %(prefix)s and all descendans have been successfully deleted") % {
-                        "prefix": prefix.prefix})
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
-                                              parent.prefix)
-            # Display form
-        return self.render(request, "delete_prefix.html", prefix=prefix)
-
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/delete_address/$",
         url_name="delete_address", access="change")
