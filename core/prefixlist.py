@@ -153,31 +153,32 @@ def optimize_prefix_list(prefix_list):
     """
     return Node(prefixes=prefix_list).get_prefixes()
 
+
 def optimize_prefix_list_maxlen(prefix_list):
     """
     Optimize prefix list. Prefix list is a list of prefixes.
     Returns reduced list of prefixes
 
     Check optimization #1
-    >>> optimize_prefix_list_maxlen(["192.168.128.0/24","192.168.0.0/16"])
+    >>> optimize_prefix_list_maxlen(["192.168.128.0/24", "192.168.0.0/16"])
     [(<IPv4 192.168.0.0/16>, 24)]
 
     Check optimization #2
-    >>> optimize_prefix_list_maxlen(["192.168.0.0/16","192.168.128.0/24"])
+    >>> optimize_prefix_list_maxlen(["192.168.0.0/16", "192.168.128.0/24"])
     [(<IPv4 192.168.0.0/16>, 24)]
 
     Check optimization #3
-    >>> optimize_prefix_list_maxlen(["192.168.0.0/24","192.168.1.0/24"])
+    >>> optimize_prefix_list_maxlen(["192.168.0.0/24", "192.168.1.0/24"])
     [(<IPv4 192.168.0.0/23>, 24)]
 
     Check optimization #4
-    >>> optimize_prefix_list_maxlen(["192.168.0.0/24","192.168.1.0/24","192.168.2.0/24","192.168.3.0/24"])
+    >>> optimize_prefix_list_maxlen(["192.168.0.0/24", "192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24"])
     [(<IPv4 192.168.0.0/22>, 24)]
 
-    >>> optimize_prefix_list_maxlen(["192.168.%d.0/24"%i for i in range(16)])
+    >>> optimize_prefix_list_maxlen(["192.168.%d.0/24" % i for i in range(16)])
     [(<IPv4 192.168.0.0/20>, 24)]
 
-    >>> optimize_prefix_list_maxlen(["192.168.%d.0/24"%i for i in range(17)])
+    >>> optimize_prefix_list_maxlen(["192.168.%d.0/24" % i for i in range(17)])
     [(<IPv4 192.168.0.0/20>, 24), (<IPv4 192.168.16.0/24>, 24)]
 
     Check duplication

@@ -10,7 +10,7 @@
 from noc.config import config
 from noc.lib.validators import is_asn
 from noc.core.ip import IP
-from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
+from noc.core.prefixlist import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.lib import nosql
 
 
