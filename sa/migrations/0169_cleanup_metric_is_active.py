@@ -11,7 +11,7 @@ from south.db import db
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
-class Migration:
+class Migration(object):
     def forwards(self):
         # Check ManagedObjectProfile in DB
         mop_req = db.execute("SELECT count(*) FROM sa_managedobjectprofile")
