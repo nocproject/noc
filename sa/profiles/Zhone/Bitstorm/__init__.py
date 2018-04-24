@@ -3,7 +3,7 @@
 # Vendor: Zhone
 # OS:     Bitstorm
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -24,7 +24,8 @@ class Profile(BaseProfile):
     # pattern_prompt = r"^(?P<hostname>\S+)(?<!Login)(?<!Password)\s*[#>]"
     pattern_prompt = \
         r"^[\s\*]*(?P<hostname>[\S\s]+)(?<!Login)(?<!Password)\s*(\(\S+\)){0,4}(]|)[#>]"
-    pattern_syntax_error = r"ERROR: Permission denied."
+    pattern_syntax_error = r"Syntax error"
+    pattern_operation_error = r"ERROR: Permission denied."
     pattern_more = \
         "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
     command_more = "a"
