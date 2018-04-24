@@ -2,9 +2,9 @@
 - name: Initialize virtualenv
   pip:
     chdir: "{{noc_root}}"
-    name: "pip==9.0.3"
+    name: "pip"
     virtualenv: "{{ noc_root }}"
-    state: "present"
+    state: "latest"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

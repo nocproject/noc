@@ -13,9 +13,7 @@
     state: "directory"
     owner: "{{noc_user}}"
     mode: 0755
-    recurse: "True"
   with_items:
-    - "{{noc_etc}}"
     - "{{noc_root}}/var"
     - "{{noc_logs}}"
     - "{{noc_var_lib}}"

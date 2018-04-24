@@ -4,7 +4,7 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/web.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

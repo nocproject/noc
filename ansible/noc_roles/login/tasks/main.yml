@@ -4,7 +4,7 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/login-radius.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   when:
     - login_methods is defined
     - "'radius' in login_methods"
@@ -21,7 +21,7 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/login-ldap.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   when:
     - login_methods is defined
     - "'ldap' in login_methods"
