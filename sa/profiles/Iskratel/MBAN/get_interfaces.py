@@ -70,21 +70,21 @@ class Script(BaseScript):
                 vpi = match.group("vpi")
                 vci = match.group("vci")
                 i["subinterfaces"] += [{
-                        "name": "%s:%s_%s" % (ifname, vpi, vci),
-                        "admin_status": match.group('admin_status') == "Yes",
-                        "oper_status": match.group('oper_status') == "Yes",
-                        "enabled_afi": ["BRIDGE", "ATM"],
-                        "vpi": vpi,
-                        "vci": vci
-                    }]
+                    "name": "%s:%s_%s" % (ifname, vpi, vci),
+                    "admin_status": match.group('admin_status') == "Yes",
+                    "oper_status": match.group('oper_status') == "Yes",
+                    "enabled_afi": ["BRIDGE", "ATM"],
+                    "vpi": vpi,
+                    "vci": vci
+                }]
                 sub_map["%s:%s_%s" % (ifname, vpi, vci)] = i["subinterfaces"][-1]
             else:
                 i["subinterfaces"] += [{
-                        "name": ifname,
-                        "admin_status": match.group('admin_status') == "Yes",
-                        "oper_status": match.group('oper_status') == "Yes",
-                        "enabled_afi": ["BRIDGE"]
-                    }]
+                    "name": ifname,
+                    "admin_status": match.group('admin_status') == "Yes",
+                    "oper_status": match.group('oper_status') == "Yes",
+                    "enabled_afi": ["BRIDGE"]
+                }]
                 sub_map[ifname] = i["subinterfaces"][-1]
 
             interfaces += [i]
