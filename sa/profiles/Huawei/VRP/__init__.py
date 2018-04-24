@@ -50,11 +50,15 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
     def generate_prefix_list(self, name, pl, strict=True):
-        p = "ip ip-prefix %s permit %%s" % name
-        if not strict:
-            p += " le 32"
-        return "undo ip ip-prefix %s\n" % name + "\n".join(
-            [p % x.replace("/", " ") for x in pl])
+        me = "ip ip-prefix %s permit %%s" % name
+        mne = "ip ip-prefix %s permit %%s le %%d" % name
+        r = ["undo ip ip-prefix %s" % name]
+        for prefix, min_len, max_len in pl:
+            if min_len == max_len:
+                r += [me % prefix]
+            else:
+                r += [mne % (prefix, max_len)]
+        return "\n".join(r)
 
     rx_interface_name = re.compile(
         r"^(?P<type>XGE|Ten-GigabitEthernet|(?<!100)GE|Eth|MEth)"
