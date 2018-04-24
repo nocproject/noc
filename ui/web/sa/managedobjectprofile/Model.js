@@ -166,12 +166,17 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_vrf",
+            name: "enable_box_discovery_vpn_interface",
             type: "boolean",
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_prefix",
+            name: "enable_box_discovery_vpn_mpls",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_prefix_neighbor",
             type: "boolean",
             defaultValue: false
         },
@@ -181,12 +186,22 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
-            name: "enable_box_discovery_address",
+            name: "enable_box_discovery_address_neighbor",
             type: "boolean",
             defaultValue: false
         },
         {
             name: "enable_box_discovery_address_interface",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_address_management",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_address_dhcp",
             type: "boolean",
             defaultValue: false
         },
@@ -491,6 +506,78 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "event_processing_policy",
             type: "string"
-        }
+        },
+        {
+            name: "address_profile_interface",
+            type: "string"
+        },
+        {
+            name: "address_profile_interface__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "address_profile_management",
+            type: "string"
+        },
+        {
+            name: "address_profile_management__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "address_profile_neighbor",
+            type: "string"
+        },
+        {
+            name: "address_profile_neighbor__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "address_profile_dhcp",
+            type: "string"
+        },
+        {
+            name: "address_profile_dhcp__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "prefix_profile_interface",
+            type: "string"
+        },
+        {
+            name: "prefix_profile_interface__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "prefix_profile_neighbor",
+            type: "string"
+        },
+        {
+            name: "prefix_profile_neighbor__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "vpn_profile_interface",
+            type: "string"
+        },
+        {
+            name: "vpn_profile_interface__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "vpn_profile_mpls",
+            type: "string"
+        },
+        {
+            name: "vpn_profile_mpls__label",
+            type: "string",
+            persist: false
+        },
     ]
 });

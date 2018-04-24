@@ -36,6 +36,9 @@ from .bfd import BFDCheck
 from .fdp import FDPCheck
 from .rep import REPCheck
 from .hk import HouseKeepingCheck
+from .vpn import VPNCheck
+from .prefix import PrefixCheck
+from .address import AddressCheck
 from .segmentation import SegmentationCheck
 from noc.services.discovery.jobs.periodic.mac import MACCheck
 from noc.services.discovery.jobs.periodic.metrics import MetricsCheck
@@ -108,6 +111,12 @@ class BoxDiscoveryJob(MODiscoveryJob):
             CPECheck(self).run()
         if self.object.object_profile.enable_box_discovery_mac:
             MACCheck(self).run()
+        if VPNCheck.is_enabled_for_object(self.object):
+            VPNCheck(self).run()
+        if PrefixCheck.is_enabled_for_object(self.object):
+            PrefixCheck(self).run()
+        if AddressCheck.is_enabled_for_object(self.object):
+            AddressCheck(self).run()
         if self.object.enable_autosegmentation:
             SegmentationCheck(self).run()
         # Topology discovery

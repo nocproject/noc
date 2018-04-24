@@ -38,12 +38,26 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     uiStyle: "medium"
                 },
                 {
+                    name: "name",
+                    xtype: "textfield",
+                    fieldLabel: __("Name"),
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
                     name: "fqdn",
                     xtype: "textfield",
                     fieldLabel: __("FQDN"),
-                    allowBlank: false,
+                    allowBlank: true,
                     uiStyle: "medium",
                     regex: /^[0-9a-z\-]+(\.[0-9a-z\-]+)+$/
+                },
+                {
+                    name: "mac",
+                    xtype: "textfield",
+                    fieldLabel: __("MAC"),
+                    allowBlank: true,
+                    uiStyle: "medium"
                 },
                 {
                     name: "description",
@@ -91,6 +105,18 @@ Ext.define("NOC.ip.ipam.AddressPanel", {
                     name: "managed_object",
                     xtype: "sa.managedobject.LookupField",
                     fieldLabel: __("Managed Object"),
+                    allowBlank: true
+                },
+                {
+                    name: "subinterface",
+                    xtype: "textfield",
+                    fieldLabel: __("Interface"),
+                    allowBlank: true
+                },
+                {
+                    name: "source",
+                    xtype: "displayfield",
+                    fieldLabel: __("Source"),
                     allowBlank: true
                 }
             ]

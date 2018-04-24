@@ -8,15 +8,11 @@
 
 # Python modules
 from __future__ import absolute_import
-import struct
-# Third-party modules
-from csiphash import siphash24
 # NOC modules
 from noc.core.interface.base import BaseInterface
 from .base import (ListOfParameter, DictParameter, InterfaceNameParameter,
                    StringParameter, BooleanParameter, RDParameter)
-
-SIPHASH_SEED = b"\x00" * 16
+from noc.core.vpn import get_vpn_id
 
 
 class IGetMPLSVPN(BaseInterface):
@@ -57,7 +53,7 @@ class IGetMPLSVPN(BaseInterface):
         """
         result = super(IGetMPLSVPN, self).clean_result(result)
         for vpn in result:
-            vpn["vpn_id"] = self.get_vpn_id(vpn)
+            vpn["vpn_id"] = get_vpn_id(vpn)
         return result
 
     def script_clean_result(self, __profile, result):
@@ -68,32 +64,5 @@ class IGetMPLSVPN(BaseInterface):
         """
         result = super(IGetMPLSVPN, self).script_clean_result(__profile, result)
         for vpn in result:
-            vpn["vpn_id"] = self.get_vpn_id(vpn)
+            vpn["vpn_id"] = get_vpn_id(vpn)
         return result
-
-    @staticmethod
-    def get_vpn_id(vpn):
-        """
-        Calculate RFC2685-compatible VPN ID
-        :param vpn:
-        :return:
-        """
-        vpn_id = vpn.get("vpn_id")
-        if vpn_id:
-            # Already calculated
-            return vpn_id.lower()
-        # Generate VPN identity fingerprint
-        rt_export = vpn.get("rt_export", [])
-        if rt_export:
-            identity = ":".join(sorted(rt_export))
-        elif vpn.get("rd"):
-            identity = vpn["rd"]
-        else:
-            identity = vpn.name
-        identity = "%s:%s" % (vpn["type"], identity)
-        # RFC2685 declares VPN ID as <IEEE OUI (3 octets)>:<VPN number (4 octets)
-        # Use reserved OUI range 00 00 00 - 00 00 FF to generate
-        # So we have 5 octets to fill vpn id
-        # Use last 5 octets of siphash 2-4
-        i_hash = siphash24(SIPHASH_SEED, str(identity))
-        return "%x:%x" % struct.unpack("!BI", i_hash[3:])

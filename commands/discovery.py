@@ -32,7 +32,7 @@ class Command(BaseCommand):
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri", "udld",
             "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe",
-            "lacp", "hk", "mac", "bfd", "fdp"
+            "lacp", "hk", "mac", "bfd", "fdp", "vpn", "prefix", "address"
         ],
         "periodic": [
             "uptime", "interfacestatus",
@@ -52,7 +52,7 @@ class Command(BaseCommand):
         )
         run_parser.add_argument(
             "--trace",
-            type=bool,
+            action="store_true",
             default=False,
             help="Trace process"
         )

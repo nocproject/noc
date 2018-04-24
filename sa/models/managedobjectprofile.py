@@ -33,6 +33,10 @@ from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, Boolea
                                     IntParameter, StringParameter)
 from noc.core.bi.decorator import bi_sync
 from noc.core.window import wf_choices
+from noc.ip.models.prefixprofile import PrefixProfile
+from noc.ip.models.addressprofile import AddressProfile
+from noc.vc.models.vpnprofile import VPNProfile
+
 
 m_valid = DictListParameter(attrs={
     "metric_type": ObjectIdParameter(required=True),
@@ -93,7 +97,9 @@ class ManagedObjectProfile(models.Model):
                                      blank=True, null=True)
     # IPAM Synchronization
     # During ManagedObject save
+    # @todo: Remove
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
+    # @todo: Remove
     fqdn_template = models.TextField(_("FQDN template"),
                                      null=True, blank=True)
     # @todo: Name validation function
@@ -171,16 +177,22 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_asset = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_nri = models.BooleanField(default=False)
-    # VRF discovery
-    enable_box_discovery_vrf = models.BooleanField(default=False)
-    # IP discovery (neighbbors)
-    enable_box_discovery_address = models.BooleanField(default=False)
+    # VPN discovery (interface)
+    enable_box_discovery_vpn_interface = models.BooleanField(default=False)
+    # VPN discovery (MPLS)
+    enable_box_discovery_vpn_mpls = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_address_interface = models.BooleanField(default=False)
+    # IP discovery (Management)
+    enable_box_discovery_address_management = models.BooleanField(default=False)
+    # IP discovery (DHCP)
+    enable_box_discovery_address_dhcp = models.BooleanField(default=False)
     # IP discovery (neighbbors)
-    enable_box_discovery_prefix = models.BooleanField(default=False)
+    enable_box_discovery_address_neighbor = models.BooleanField(default=False)
     # IP discovery (interface)
     enable_box_discovery_prefix_interface = models.BooleanField(default=False)
+    # IP discovery (neighbbors)
+    enable_box_discovery_prefix_neighbor = models.BooleanField(default=False)
     # Collect static vlans
     enable_box_discovery_vlan = models.BooleanField(default=False)
     # L2 topology using BFD
@@ -420,6 +432,41 @@ class ManagedObjectProfile(models.Model):
     neighbor_cache_ttl = models.IntegerField(
         "Neighbor Cache TTL",
         default=0
+    )
+    # VPN discovery profiles
+    vpn_profile_interface = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
+    vpn_profile_mpls = DocumentReferenceField(
+        VPNProfile,
+        null=True, blank=True
+    )
+    # Prefix discovery profiles
+    prefix_profile_interface = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    prefix_profile_neighbor = DocumentReferenceField(
+        PrefixProfile,
+        null=True, blank=True
+    )
+    # Address discovery profiles
+    address_profile_interface = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_management = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_dhcp = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
+    )
+    address_profile_neighbor = DocumentReferenceField(
+        AddressProfile,
+        null=True, blank=True
     )
     #
     metrics = PickledField(blank=True)

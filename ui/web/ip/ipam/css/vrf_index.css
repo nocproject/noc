@@ -1,3 +1,7 @@
+BODY {
+    padding: 4px;
+}
+
 .parents, .parents li {
     margin: 0px;
     padding: 0px;
@@ -31,6 +35,10 @@ td[class=nav-form] {
 }
 
 /* Column widths */
+th[class=fav] {
+    width: 1em;
+}
+
 th[class=status] {
     width: 1em;
 }
@@ -74,17 +82,20 @@ th[class=project] {
 th[class=ippoll-tg] {
     width: 12em;
 }
+
 th[class=ippool-name] {
     width: 7em;
 }
+
 th[class=ippool-type] {
     width: 5em;
 }
+
 th[class=ippool-from] {
     width: 7em;
 }
-th[class=ippool-to]
 
+th[class=ippool-to]
 #ranges th[class=legend] {
     width: 1em;
 }
@@ -95,4 +106,51 @@ th[class=ippool-to]
 
 #ranges th[class=address] {
     width: 7em;
+}
+
+.free-prefix {
+    background-color: #ccc;
+    font-style: italic;
+}
+
+#quickjump-form {
+    display: inline-block;
+}
+
+.free-address {
+    background-color: #ccc;
+}
+
+.free-address-sep {
+    background-color: #ccc;
+}
+
+caption.module {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.description {
+    padding-top: 4px;
+}
+
+.favorite-active {
+    color:#f1c40f;
+}
+
+.favorite-inactive {
+    color:#7f8c8d;
+}
+
+.progress-bar {
+    position: relative;
+}
+
+.progress-bar span {
+    position: absolute;
+    display: block;
+    width: 100%;
+    color: #ffffff;
+    mix-blend-mode: difference;
+    padding-left: 4px;
 }

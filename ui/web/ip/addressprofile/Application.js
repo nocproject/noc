@@ -12,7 +12,8 @@ Ext.define("NOC.ip.addressprofile.Application", {
         "NOC.ip.addressprofile.Model",
         "NOC.wf.workflow.LookupField",
         "NOC.main.style.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.main.template.LookupField"
     ],
     model: "NOC.ip.addressprofile.Model",
     search: true,
@@ -59,6 +60,18 @@ Ext.define("NOC.ip.addressprofile.Application", {
                     name: "style",
                     xtype: "main.style.LookupField",
                     fieldLabel: __("Style"),
+                    allowBlank: true
+                },
+                {
+                    name: "name_template",
+                    xtype: "main.template.LookupField",
+                    fieldLabel: __("Name Template"),
+                    allowBlank: true
+                },
+                {
+                    name: "fqdn_template",
+                    xtype: "main.template.LookupField",
+                    fieldLabel: __("FQDN Template"),
                     allowBlank: true
                 },
                 {

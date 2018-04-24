@@ -61,6 +61,24 @@ Ext.define("NOC.ip.addressprofile.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "name_template",
+            type: "string",
+        },
+        {
+            name: "name_template__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "fqdn_template",
+            type: "string",
+        },
+        {
+            name: "fqdn_template__label",
+            type: "string",
+            persist: false
         }
     ]
 });

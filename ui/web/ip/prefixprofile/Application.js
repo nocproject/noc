@@ -10,9 +10,10 @@ Ext.define("NOC.ip.prefixprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.ip.prefixprofile.Model",
-        "NOC.ip.prefixprofile.LookupField",
         "NOC.main.style.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.template.LookupField",
+        "NOC.main.remotesystem.LookupField",
+        "NOC.wf.workflow.LookupField"
     ],
     model: "NOC.ip.prefixprofile.Model",
     search: true,
@@ -26,6 +27,30 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     text: __("Name"),
                     dataIndex: "name",
                     width: 150
+                },
+                {
+                    text: __("Workflow"),
+                    dataIndex: "workflow",
+                    width: 100,
+                    renderer: NOC.render.Lookup("workflow")
+                },
+                {
+                    text: __("Prefix"),
+                    dataIndex: "prefix_discovery_policy",
+                    width: 100,
+                    renderer: NOC.render.Choices({
+                        E: __("Enabled"),
+                        D: __("Disabled")
+                    })
+                },
+                {
+                    text: __("Address"),
+                    dataIndex: "address_discovery_policy",
+                    width: 100,
+                    renderer: NOC.render.Choices({
+                        E: __("Enabled"),
+                        D: __("Disabled")
+                    })
                 }
             ],
 
@@ -44,19 +69,26 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "enable_prefix_discovery",
-                    xtype: "checkbox",
-                    boxLabel: __("Prefix Discovery")
+                    name: "prefix_discovery_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Prefix Discovery"),
+                    store: [
+                        ["E", "Enable"],
+                        ["D", "Disable"]
+                    ],
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
-                    name: "autocreated_prefix_profile",
-                    xtype: "ip.prefixprofile.LookupField",
-                    fieldLabel: __("Discovered Prefix Profile")
-                },
-                {
-                    name: "enable_ip_discovery",
-                    xtype: "checkbox",
-                    boxLabel: __("IP Discovery")
+                    name: "address_discovery_policy",
+                    xtype: "combobox",
+                    fieldLabel: __("Address Discovery"),
+                    store: [
+                        ["E", "Enable"],
+                        ["D", "Disable"]
+                    ],
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
                     name: "enable_ip_ping_discovery",
@@ -64,9 +96,21 @@ Ext.define("NOC.ip.prefixprofile.Application", {
                     boxLabel: __("IP Discovery (Ping)")
                 },
                 {
+                    name: "workflow",
+                    xtype: "wf.workflow.LookupField",
+                    fieldLabel: __("Workflow"),
+                    allowBlank: false
+                },
+                {
                     name: "style",
                     xtype: "main.style.LookupField",
                     fieldLabel: __("Style"),
+                    allowBlank: true
+                },
+                {
+                    name: "name_template",
+                    xtype: "main.template.LookupField",
+                    fieldLabel: __("Template"),
                     allowBlank: true
                 },
                 {
