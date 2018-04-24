@@ -38,27 +38,55 @@ class Script(BaseScript):
     def execute(self):
         interfaces = []
         v = self.cli("show interface")
+        iface_procc = set()
+        sub_map = {}
         for match in self.rx_port.finditer(v):
             ifname = match.group('port')
-            i = {
-                "name": ifname,
-                "type": "physical",
-                "admin_status": match.group('admin_status') == "Yes",
-                "oper_status": match.group('oper_status') == "Yes",
-                "subinterfaces": [{
+            if ifname not in iface_procc:
+                i = {
                     "name": ifname,
+                    "type": "physical",
                     "admin_status": match.group('admin_status') == "Yes",
                     "oper_status": match.group('oper_status') == "Yes",
-                    "enabled_afi": ["BRIDGE"]
-                }]
-            }
+                    "subinterfaces": []
+                }
+                iface_procc.add(ifname)
+            elif match.group("vpi") and match.group("vci"):
+                vpi = match.group("vpi")
+                vci = match.group("vci")
+                for ii in interfaces:
+                    if ii["name"] == ifname:
+                        ii["subinterfaces"] += [{
+                            "name": "%s:%s_%s" % (ifname, vpi, vci),
+                            "admin_status": match.group('admin_status') == "Yes",
+                            "oper_status": match.group('oper_status') == "Yes",
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "vpi": vpi,
+                            "vci": vci
+                        }]
+                        sub_map["%s:%s_%s" % (ifname, vpi, vci)] = ii["subinterfaces"][-1]
+                continue
             if match.group("vpi") and match.group("vci"):
                 vpi = match.group("vpi")
                 vci = match.group("vci")
-                i["subinterfaces"][0]["name"] = "%s:%s_%s" % (ifname, vpi, vci)
-                i["subinterfaces"][0]["vpi"] = vpi
-                i["subinterfaces"][0]["vci"] = vci
-                i["subinterfaces"][0]["enabled_afi"] += ["ATM"]
+                i["subinterfaces"] += [{
+                        "name": "%s:%s_%s" % (ifname, vpi, vci),
+                        "admin_status": match.group('admin_status') == "Yes",
+                        "oper_status": match.group('oper_status') == "Yes",
+                        "enabled_afi": ["BRIDGE", "ATM"],
+                        "vpi": vpi,
+                        "vci": vci
+                    }]
+                sub_map["%s:%s_%s" % (ifname, vpi, vci)] = i["subinterfaces"][-1]
+            else:
+                i["subinterfaces"] += [{
+                        "name": ifname,
+                        "admin_status": match.group('admin_status') == "Yes",
+                        "oper_status": match.group('oper_status') == "Yes",
+                        "enabled_afi": ["BRIDGE"]
+                    }]
+                sub_map[ifname] = i["subinterfaces"][-1]
+
             interfaces += [i]
         for match in self.rx_ip.finditer(v):
             ifname = match.group('port')
@@ -75,18 +103,20 @@ class Script(BaseScript):
         v = self.cli("show vlan detail")
         for match in self.rx_vlan.finditer(v):
             ifname = match.group('port')
-            for i in interfaces:
-                if i['subinterfaces'][0]["name"] == ifname:
-                    if "tagged" in i['subinterfaces'][0]:
-                        i['subinterfaces'][0]["tagged"] += [match.group("vlan_id")]
+            # for i in interfaces:
+            #    if i['subinterfaces'][0]["name"] == ifname:
+            if ifname in sub_map:
+                    if "tagged" in sub_map[ifname]:
+                        sub_map[ifname]["tagged"] += [match.group("vlan_id")]
                     else:
-                        i['subinterfaces'][0]["tagged"] = [match.group("vlan_id")]
+                        sub_map[ifname]["tagged"] = [match.group("vlan_id")]
         for match in self.rx_vlan1.finditer(v):
             ifname = match.group('port')
-            for i in interfaces:
-                if i['subinterfaces'][0]["name"] == ifname:
+            # for i in interfaces:
+            #    if i['subinterfaces'][0]["name"] == ifname:
+            if ifname in sub_map:
                     if match.group("mode") == "trunk":
-                        i['subinterfaces'][0]["untagged"] = match.group("vlan_id")
+                        sub_map[ifname]["untagged"] = match.group("vlan_id")
                     else:
-                        i['subinterfaces'][0]["vlan_ids"] = [match.group("vlan_id")]
+                        sub_map[ifname]["vlan_ids"] = [match.group("vlan_id")]
         return [{"interfaces": interfaces}]
