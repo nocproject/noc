@@ -72,15 +72,13 @@ class CSVApplication(Application):
         ])
         referer = forms.CharField(widget=forms.HiddenInput)
 
-
-    def addressInNetwork(self, ip, net):
-        "Is an address in a network"
+    def address_in_network(self, ip, net):
+        """Is an address in a network"""
         ipaddr = int(''.join(['%02x' % int(x) for x in ip.split('.')]), 16)
         netstr, bits = net.split('/')
         netaddr = int(''.join(['%02x' % int(x) for x in netstr.split('.')]), 16)
         mask = (0xffffffff << (32 - int(bits))) & 0xffffffff
         return (ipaddr & mask) == (netaddr & mask)
-
 
     @view(url=r"^import/(?P<model>[a-zA-Z1-9]+\.[a-zA-Z1-9]+)/$",
           url_name="import", access="import")
@@ -107,7 +105,7 @@ class CSVApplication(Application):
                     csv_reader = csv.DictReader(request.FILES['file'])
                     for row in csv_reader:
                         for prefix in accepted_prefixes:
-                            if self.addressInNetwork(row['address'], prefix):
+                            if self.address_in_network(row['address'], prefix):
                                 accepted_row.append(row)
                                 forbidden_row.remove(row['address'])
                             else:
