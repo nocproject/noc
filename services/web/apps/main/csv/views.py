@@ -139,7 +139,7 @@ class CSVApplication(Application):
                                       "Error importing data: %s" % error)
                 else:
                     return HttpResponse("%d records are imported/updated" % count + resp_msg, content_type="text/plain")
-                    #self.message_user(request, "%d records are imported/updated" % count + resp_msg)
+                    # self.message_user(request, "%d records are imported/updated" % count + resp_msg)
                 return self.response_redirect(form.cleaned_data["referer"])
         else:
             form = self.ImportForm({
