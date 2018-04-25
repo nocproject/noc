@@ -18,7 +18,6 @@ from noc.project.models.project import Project
 from noc.config import config
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.fields import TagsField
-from noc.lib.app.site import site
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.model.fields import DocumentReferenceField
@@ -95,7 +94,6 @@ class AS(models.Model):
 
     def __unicode__(self):
         return u"AS%d (%s)" % (self.asn, self.description)
-
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
