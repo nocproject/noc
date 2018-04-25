@@ -13,10 +13,13 @@ from django.db import models
 # NOC modules
 from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
+from noc.core.model.decorator import on_save
+from noc.core.gridvcs.manager import GridVCSField
 from .rir import RIR
 from .person import Person
 
 
+@on_save
 class Maintainer(models.Model):
     class Meta(object):
         verbose_name = "Maintainer"
@@ -31,12 +34,12 @@ class Maintainer(models.Model):
     rir = models.ForeignKey(RIR, verbose_name="RIR")
     admins = models.ManyToManyField(Person, verbose_name="admin-c")
     extra = models.TextField("extra", blank=True, null=True)
+    rpsl = GridVCSField("rpsl_maintainer")
 
     def __unicode__(self):
         return self.maintainer
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         s = []
         s += ["mntner: %s" % self.maintainer]
         s += ["descr: %s" % self.description]
@@ -47,3 +50,13 @@ class Maintainer(models.Model):
         if self.extra:
             s += [self.extra]
         return rpsl_format("\n".join(s))
+
+    def touch_rpsl(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+
+    def on_save(self):
+        self.touch_rpsl()

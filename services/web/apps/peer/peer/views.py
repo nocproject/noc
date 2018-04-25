@@ -11,6 +11,7 @@ from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models.peer import Peer
 from noc.lib.validators import is_prefix
 from noc.core.ip import IP
+from noc.lib.app.repoinline import RepoInline
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.core.translation import ugettext as _
 
@@ -27,6 +28,7 @@ class PeerApplication(ExtModelApplication):
         "local_ip__icontains", "local_backup_ip__icontains",
         "remote_ip__icontains", "remote_backup_ip__icontains"
     ]
+    rpsl = RepoInline("rpsl")
 
     def clean(self, data):
         data = super(PeerApplication, self).clean(data)
