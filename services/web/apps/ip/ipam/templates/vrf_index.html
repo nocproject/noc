@@ -155,6 +155,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                 <th class="ip">Prefix</th>
                 <th class="status">State</th>
                 <th class="project">Project</th>
+                <th class="as">AS</th>
                 <th class="vc">VC</th>
                 <th class="description">Description</th>
                 <th class="usage">Usage</th>
@@ -172,6 +173,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                     <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
                     <td title="{{ p.state.description|safe }}">{{ p.state.name }}</td>
                     <td>{% if p.project %}{{ p.project.code }}{% endif %}</td>
+                    <td>{% if p.asn %}AS{{p.asn.asn}}{% endif %}</td>
                     <td>{% if p.vc %}{{p.vc}}{% endif %}</td>
                     <td title="{{p.description}}">{{p.short_description}}</td>
                     <td>

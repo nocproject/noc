@@ -144,6 +144,7 @@ class Prefix(models.Model):
         choices=[
             ("M", "Manual"),
             ("i", "Interface"),
+            ("w", "Whois"),
             ("n", "Neighbor")
         ],
         null=False, blank=False,

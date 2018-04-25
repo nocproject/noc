@@ -189,6 +189,13 @@ class IPAMApplication(ExtApplication):
         else:
             t = dmap[prefix.address_discovery_policy]
         prefix_info += [("Address Discovery", t)]
+        # Source
+        prefix_info += [("Source", {
+            "M": "Manual",
+            "i": "Interface",
+            "w": "Whois Route",
+            "n": "Neighbor"
+        }.get(prefix.source, "-"))]
         #
         ippools = prefix.ippools
         # Add custom fields

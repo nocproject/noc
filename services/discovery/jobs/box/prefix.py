@@ -24,18 +24,21 @@ DiscoveredPrefix = namedtuple("DiscoveredPrefix", [
     "description",
     "source",
     "subinterface",
-    "vlan"
+    "vlan",
+    "asn"
 ])
 
 GLOBAL_VRF = "0:0"
 SRC_INTERFACE = "i"
 SRC_NEIGHBOR = "n"
+SRC_WHOIS_ROUTE = "w"
 SRC_MANUAL = "M"
 
 PREF_VALUE = {
     SRC_NEIGHBOR: 0,
-    SRC_INTERFACE: 1,
-    SRC_MANUAL: 2
+    SRC_WHOIS_ROUTE: 1,
+    SRC_INTERFACE: 2,
+    SRC_MANUAL: 3
 }
 
 LOCAL_SRC = {SRC_INTERFACE}
@@ -149,7 +152,8 @@ class PrefixCheck(DiscoveryCheck):
                 source=SRC_INTERFACE,
                 description=p["description"],
                 subinterface=p["subinterface"],
-                vlan=get_vlan(p)
+                vlan=get_vlan(p),
+                asn=None
             ) for p in prefixes
         ]
 
@@ -177,8 +181,10 @@ class PrefixCheck(DiscoveryCheck):
         self.ensure_afi(vrf, prefix)
         if not self.has_prefix_permission(vrf, prefix):
             self.logger.debug(
-                "Do not creating vpn_id=%s prefix=%s: Disabled by policy",
-                prefix.vpn_id, prefix.prefix
+                "Do not creating vpn_id=%s asn=%s prefix=%s: Disabled by policy",
+                prefix.vpn_id,
+                prefix.asn.asn if prefix.asn else None,
+                prefix.prefix
             )
             metrics["prefix_creation_denied"] += 1
             return
@@ -187,6 +193,7 @@ class PrefixCheck(DiscoveryCheck):
             prefix=prefix.prefix,
             name=self.get_prefix_name(prefix),
             profile=prefix.profile,
+            asn=prefix.asn,
             description=prefix.description,
             source=prefix.source
         )
@@ -220,6 +227,12 @@ class PrefixCheck(DiscoveryCheck):
                 if name != prefix.name:
                     changes += ["name: %s -> %s" % (prefix.name, name)]
                     prefix.name = name
+            if discovered_prefix.asn and prefix.asn != discovered_prefix.asn:
+                changes += ["asn: %s -> %s" % (
+                    prefix.asn.asn if prefix.asn else None,
+                    discovered_prefix.asn.asn if discovered_prefix.asn else None
+                )]
+                prefix.asn = prefix.asn
             if changes:
                 self.logger.info(
                     "Changing %s (%s): %s",
