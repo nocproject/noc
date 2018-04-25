@@ -22,4 +22,3 @@ class MaintainerApplication(ExtModelApplication):
     model = Maintainer
 
     rpsl = RepoInline("rpsl")
-
