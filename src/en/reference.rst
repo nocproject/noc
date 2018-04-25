@@ -18,6 +18,8 @@ Reference
     /reference/service-profile
     /reference/vpn
     /reference/vpn-profile
+    /reference/prefix
+    /reference/prefix-profile
     /reference/vlan
     /reference/vlan-profile
     /reference/allocation-group
@@ -33,3 +35,5 @@ Reference
     /reference/pool
     /reference/notification-group
     /reference/template
+    /reference/threshold-profile
+    /reference/handler

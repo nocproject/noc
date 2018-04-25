@@ -1,7 +1,7 @@
-.. _profile-Cisco.IOS:
+.. _profile-Terayon-BW:
 
 =======================================
-Cisco.IOS
+Terayon.BW
 =======================================
 
 .. contents:: On this page
@@ -11,5 +11,4 @@ Cisco.IOS
     :class: singlecol
 
 .. todo::
-    Describe *Cisco.IOS* profile
-
+    Describe *Terayon.BW* profile

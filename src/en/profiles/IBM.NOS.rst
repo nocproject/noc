@@ -1,7 +1,7 @@
-.. _profile-Cisco.IOS:
+.. _profile-IBM-NOS:
 
 =======================================
-Cisco.IOS
+IBM.NOS
 =======================================
 
 .. contents:: On this page
@@ -11,5 +11,4 @@ Cisco.IOS
     :class: singlecol
 
 .. todo::
-    Describe *Cisco.IOS* profile
-
+    Describe *IBM.NOS* profile
