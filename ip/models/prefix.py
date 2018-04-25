@@ -22,7 +22,7 @@ from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
-from noc.core.model.fields import DocumentReferenceField
+from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
@@ -54,7 +54,7 @@ class Prefix(models.Model):
         verbose_name=_("Parent"),
         null=True,
         blank=True)
-    vrf = models.ForeignKey(
+    vrf = CachedForeignKey(
         VRF,
         verbose_name=_("VRF"),
         default=VRF.get_global
@@ -73,12 +73,12 @@ class Prefix(models.Model):
         PrefixProfile,
         null=False, blank=False
     )
-    asn = models.ForeignKey(
+    asn = CachedForeignKey(
         AS, verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
         null=True, blank=True
     )
-    project = models.ForeignKey(
+    project = CachedForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
         null=True, blank=True, related_name="prefix_set")

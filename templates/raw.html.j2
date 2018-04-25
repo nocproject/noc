@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<META NAME="Copyright" CONTENT="2007-2018, nocproject.org" />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
+<META HTTP-EQUIV="Expires" CONTENT="0" />
+{% block extrahead %}{% endblock %}
+</head>
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+        onmousemove="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();"
+        onkeydown="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();">
+{% block content %}{% endblock %}
+</body>
+</html>

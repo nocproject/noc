@@ -150,7 +150,7 @@ class IPAMApplication(ExtApplication):
             IP.prefix(prefix.prefix).iter_free([pp.prefix for pp in prefixes]))
         l_prefixes = sorted(
             ([(True, IP.prefix(pp.prefix), pp, pp.prefix in s_bookmarks) for pp in prefixes] +
-             [(False, pp) for pp in free_prefixes]), key=lambda x: x[1])
+             [(False, pp, None, None) for pp in free_prefixes]), key=lambda x: x[1])
         # List of nested addresses
         # @todo: prefetch_related
         addresses = list(prefix.address_set.select_related().order_by("address"))
@@ -301,7 +301,8 @@ class IPAMApplication(ExtApplication):
         styles = "\n".join(styles.values())
         # Render
         return self.render(
-            request, "vrf_index.html",
+            request, "vrf_index.html.j2",
+            user=request.user,
             vrf=vrf,
             prefix=prefix,
             path=path,

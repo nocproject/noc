@@ -1,4 +1,4 @@
-{% extends "raw.html" %}
+{% extends "raw.html.j2" %}
 {% block extrahead %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" type="text/css" href="/ui/pkg/bootstrap/css/bootstrap.min.css" />
@@ -9,16 +9,15 @@
 <script TYPE="text/javascript" SRC="/ui/pkg/bootstrap/js/bootstrap.min.js"></script>
 <div class="container-fluid">
 {% endblock %}
-{% load tags %}
 {% block content %}
 <div class="row">
 <!-- breadcrumb -->
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
       <li class="breadcrumb-item">IPAM</li>
-      <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">VRF</a></li>
-      <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">{{vrf.name}} ({{ vrf.vpn_id }})</a></li>
-      <li class="breadcrumb-item"><a href="{% url ip:ipam:index %}">IPv{{prefix.afi}}</a></li>
+      <li class="breadcrumb-item"><a href="/ip/ipam/">VRF</a></li>
+      <li class="breadcrumb-item"><a href="/ip/ipam/">{{vrf.name}} ({{ vrf.vpn_id }})</a></li>
+      <li class="breadcrumb-item"><a href="/ip/ipam/">IPv{{prefix.afi}}</a></li>
      {% for p in path %}
          <li class="breadcrumb-item>"><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{p.short_description}}">{{p.prefix}}</a></li>
      {% endfor %}
@@ -40,7 +39,7 @@
     {% if user.is_superuser %}
         <button type="button"
                 class="btn btn-primary"
-                onclick="document.location = '{% url ip:tools:index prefix.vrf.id prefix.afi prefix.prefix %}'"><i class="fa fa-wrench"></i> Tools</button>
+                onclick="document.location = '/ip/tools/{{ prefix.vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/'"><i class="fa fa-wrench"></i> Tools</button>
     {% endif %}
     {% if can_add_prefix %}
         <button type="button"
@@ -63,7 +62,7 @@
     </div>
 {% endif %}
     <div style="display: flex;justify-content: flex-end;width: 50%;padding: 10px;">
-    <form method="POST" id="quickjump-form" action="{% url ip:ipam:quickjump vrf.id prefix.afi %}">{% csrf_token %}
+    <form method="POST" id="quickjump-form" action="/ip/ipam/{{ vrf.id }}/{{ prefix.afi }}/quickjump/">
         <input type="search"
                name="jump"
                autofocus
@@ -168,7 +167,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
             {% if f %}
                 <tr {% if p.style %}class="{{p.style.css_class_name}}"{% endif %}>
                     <td>
-                        <a href="{% url ip:ipam:toggle_bookmark p.vrf.id p.afi p.prefix %}"><i class="fa fa-2x fa-star {% if is_bookmarked %}favorite-active{% else %}favorite-inactive{% endif %}" title="Toggle Bookmark"></i></a>
+                        <a href="/ip/ipam/{{ p.vrf.id }}/{{ p.afi }}/{{ p.prefix }}/toggle_bookmark/"><i class="fa fa-2x fa-star {% if is_bookmarked %}favorite-active{% else %}favorite-inactive{% endif %}" title="Toggle Bookmark"></i></a>
                     </td>
                     <td><a href="#" onclick="app.showPrefix({{ p.vrf.id }}, '{{ p.afi }}', '{{ p.prefix }}')" title="{{ p.description }}">{{p.prefix}}</a></td>
                     <td title="{{ p.state.description|safe }}">{{ p.state.name }}</td>
@@ -188,7 +187,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                         </div>
                     </td>
                     <td>{% if p.tt %}{{p.tt}}{% endif %}</td>
-                    <td>{% tags p %}</td>
+                    <td>{% if p.tags %}{% for tag in p.tags %}<span class="badge badge-secondary">{{ tag }}</span>{% endfor %}{% endif %}</td>
                 </tr>
             {% else %}
                 <tr class='free-prefix' style='display:none'>
@@ -352,7 +351,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
             function check_ping_task() {
                 if(!_in_pingtest) 
                     return;
-                $.get("{% url ip:ipam:ping_check vrf.id prefix.afi prefix.prefix %}"+_ping_task_id+"/",function(data,status,request) {
+                $.get("/ip/ipam/{{ vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/ping_check/"+_ping_task_id+"/",function(data,status,request) {
                     if(data==null) {
                         if(_in_pingtest)
                             setTimeout(check_ping_task,5000);
@@ -366,9 +365,9 @@ document.currentPrefix = "{{ prefix.prefix }}";
             }
 
             function run_pingtest() {
-                $.get("{% url ip:ipam:ping_check vrf.id prefix.afi prefix.prefix %}",function(data,status,request){
+                $.get("/ip/ipam/{{ vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/ping_check/",function(data,status,request){
                     _ping_task_id=data;
-                    $.get("{% url ip:ipam:ping_check vrf.id prefix.afi prefix.prefix %}"+_ping_task_id+"/",check_ping_task);
+                    $.get("/ip/ipam/{{ vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/ping_check/"+_ping_task_id+"/",check_ping_task);
                 });
             }
         </script>
@@ -420,7 +419,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                         {%endif%}
                     </td>
                     <td>{{ a.name }}</td>
-                    <td class="state" title="{{ p.state.description|safe }}">{{ a.state.name }}</td>
+                    <td class="state" title="{{ a.state.description|safe }}">{{ a.state.name }}</td>
                     <td class="state">{% if a.project %}{{ a.project.code }}{% endif %}</td>
                     <td style="width: auto">{% if a.fqdn %}{{a.fqdn}}{% endif %}</td>
                     <td>{% if a.mac %}{{a.mac}}{% endif %}</td>
@@ -428,14 +427,10 @@ document.currentPrefix = "{{ prefix.prefix }}";
                     <td>{% if a.managed_object and a.managed_object.is_router %}<i class='noc-yes fa fa-check'></i>{% endif %}</td>
                     <td title="{{a.description}}">{{a.short_description}}</td>
                     <td>
-                        {% ifequal a.source "M" %}Manual{% endifequal %}
-                        {% ifequal a.source "i" %}Interface{% endifequal %}
-                        {% ifequal a.source "m" %}Mgmt{% endifequal %}
-                        {% ifequal a.source "d" %}DHCP{% endifequal %}
-                        {% ifequal a.source "n" %}Neighbor{% endifequal %}
+                        {{ {"M": "Manual", "I": "Interface", "m": "Mgmt", "d": "DHCP", "n": "Neighbor"}.get(a.source, "-")}}
                     </td>
                     <td>{%if a.tt %}#{{a.tt}}{%endif%}</td>
-                    <td>{% tags a %}</td>
+                    <td>{% if a.tags %}{% for tag in a.tags %}<span class="badge badge-secondary">{{ tag }}</span>{% endfor %}{% endif %}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -492,7 +487,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
                     <td>{% if p.type == 'D' %}Dynamic{% else %}Static{% endif %}</td>
                     <td>{{ p.from_address }}</td>
                     <td>{{ p.to_address }}</td>
-                    <td>{{ p.technologies|join:", " }}</td>
+                    <td>{{ p.technologies|join(", ") }}</td>
                 </tr>
             {%  endfor %}
         </table>
@@ -506,9 +501,9 @@ document.currentPrefix = "{{ prefix.prefix }}";
     <table class="table table-striped">
         <caption class="module">
             {% if has_bookmark %}
-                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star favorite-active" title="Remove Bookmark"></i></a>
+                <a href="/ip/ipam/{{ prefix.vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/toggle_bookmark/"><i class="fa fa-star favorite-active" title="Remove Bookmark"></i></a>
             {% else %}
-                <a href="{% url ip:ipam:toggle_bookmark prefix.vrf.id prefix.afi prefix.prefix %}"><i class="fa fa-star favorite-inactive" title="Add Bookmark"></i></a>
+                <a href="/ip/ipam/{{ prefix.vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/toggle_bookmark/"><i class="fa fa-star favorite-inactive" title="Add Bookmark"></i></a>
             {% endif %}
             {{prefix.prefix}} Info</caption>
         <tbody>
@@ -535,7 +530,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
             </tr>
         {%  endif %}
         {% if prefix.tags %}
-            <tr><td><b>Tags</b></td><td>{% tags prefix %}</td></tr>
+            <tr><td><b>Tags</b></td><td>{% if prefix.tags %}{% for tag in prefix.tags %}<span class="badge badge-secondary">{{ tag }}</span>{% endfor %}{% endif %}</td></tr>
         {% endif %}
         <!-- ASN -->
         {% if prefix.asn %}
@@ -557,7 +552,7 @@ document.currentPrefix = "{{ prefix.prefix }}";
         <!-- End Project -->
         <tr>
             <td><b>Maintainers</b></td>
-            <td>{{prefix.maintainers|join:", "}} {% comment %}{%if can_change_maintainers %}<a href="{% url ip:prefixaccess:add %}?vrf={{vrf.id}}&afi={{prefix.afi}}&prefix={{prefix.prefix}}" class="changelink">Change...</a>{%endif%}{% endcomment %}</td>
+            <td>{{ prefix.maintainers|join(", ") }} {# {%if can_change_maintainers %}<a href="url ip:prefixaccess:add?vrf={{vrf.id}}&afi={{prefix.afi}}&prefix={{prefix.prefix}}" class="changelink">Change...</a>{%endif%} #}</td>
         </tr>
         {% for k,v in prefix_info %}
             <tr>
