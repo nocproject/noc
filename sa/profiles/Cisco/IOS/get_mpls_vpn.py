@@ -25,7 +25,7 @@ class Script(BaseScript):
     rx_portchannel = re.compile(r"^Po\s*\d+(?:A|B)?$")
 
     rx_vrf = re.compile(r"^VRF\s*(?P<vrf>[\S+\s]+)?\s*\(.+\)?\s*;\s*default\s*RD\s*"
-                        r"(?P<rd>\d+:\d+);\s*default\s*VPNID\s*(?P<vpnid>.+)")
+                        r"(?P<rd>\d+:\d+|<not set>);\s*default\s*VPNID\s*(?P<vpnid>\S+|<not set>)")
 
     portchannel_members = {}
 
@@ -59,9 +59,10 @@ class Script(BaseScript):
                         "vpn_id": "",
                         "status": True,
                         "name": vrf.strip(),
-                        "rd": rd.strip(),
                         "interfaces": []
                     }]
+                    if rd and rd.strip() != '<not set>':
+                        vpns[-1]["rd"] = rd.strip()
                     if vrf_block["interfaces:"]:
                         for iface in vrf_block["interfaces:"]:
                             po_match = self.rx_portchannel.match(iface)
@@ -102,9 +103,10 @@ class Script(BaseScript):
                 "vpn_id": "",
                 "status": True,
                 "name": vrf.strip(),
-                "rd": rd.strip(),
                 "interfaces": []
             }]
+            if rd and rd.strip() != '<not set>':
+                vpns[-1]["rd"] = rd.strip()
             if vrf_block["interfaces:"]:
                 for iface in vrf_block["interfaces:"]:
                     po_match = self.rx_portchannel.match(iface)
