@@ -48,6 +48,7 @@ class Template(models.Model):
     body = models.TextField("Body", validators=[template_validator])
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -55,10 +56,18 @@ class Template(models.Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return Template.objects.get(id=id)
-        except Template.DoesNotExist:
-            return None
+        t = Template.objects.filter(id=id)[:1]
+        if t:
+            return t[0]
+        return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        t = Template.objects.filter(name=name)[:1]
+        if t:
+            return t[0]
+        return None
 
     def render_subject(self, LANG=None, **kwargs):
         return jinja2.Template(self.subject).render(**kwargs)
