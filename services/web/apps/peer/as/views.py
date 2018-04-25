@@ -22,3 +22,8 @@ class ASApplication(ExtModelApplication):
     model = AS
 
     rpsl = RepoInline("rpsl")
+
+    query_fields = ["as_name", "description"]
+    int_query_fields = ["asn"]
+
+    query_condition = "contains"
