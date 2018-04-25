@@ -25,17 +25,26 @@ class ReportHistoryApplication(SimpleReport):
 
     class form(forms.Form):
         days = forms.IntegerField(label="Days", initial=3)
+        date_from = forms.DateField(label="Date from (YYYY-MM-DD)", required=False,
+                                    help_text='If empty, the Days parameter will be used')
+        date_to = forms.DateField(label="Date to (YYYY-MM-DD)", initial=datetime.date.today(), required=False,
+                                  help_text='If empty, the Days parameter will be used')
+        search_ip = forms.CharField(label="Search by ip", required=False)
+        search_prefix = forms.CharField(label="Search by prefix", required=False)
+        search_user = forms.CharField(label="Search by user", required=False)
         include_prefixes = forms.BooleanField(
             label="Include Prefixes",
-            required=False
+            required=False,
+            initial=True
         )
         include_addresses = forms.BooleanField(
             label="Include Addresses",
-            required=False
+            required=False,
+            initial=True
         )
 
     rx_detail = re.compile(r"^(.+?): (.+?) -> (.+?)$",
-        re.MULTILINE | re.UNICODE)
+                           re.MULTILINE | re.UNICODE)
 
     MODELS = {
         "ip.Prefix": Prefix,
@@ -51,9 +60,8 @@ class ReportHistoryApplication(SimpleReport):
                 self.html_escape(g[2])) for g in r)
         return SafeString(s)
 
-    def get_data(self, days, include_prefixes,
-                 include_addresses,**kwargs):
-        dt = datetime.date.today() - datetime.timedelta(days=days)
+    def get_data(self, days, date_from, date_to, include_prefixes, search_ip, search_prefix, search_user,
+                 include_addresses, **kwargs):
         scope = []
         if include_prefixes:
             scope += ["ip.Prefix"]
@@ -61,9 +69,21 @@ class ReportHistoryApplication(SimpleReport):
             scope += ["ip.Address"]
         last = None
         r = []
-        for l in AuditTrail.objects.filter(timestamp__gte=dt,
-                                           model_id__in=scope)\
-                                   .order_by("-timestamp"):
+        if date_from and date_to:
+            audit_trail = AuditTrail.objects.filter(timestamp__gte=date_from,
+                                                    timestamp__lte=date_to + datetime.timedelta(days=1),
+                                                    model_id__in=scope
+                                                    ).order_by("-timestamp")
+        else:
+            dt = datetime.date.today() - datetime.timedelta(days=days)
+            audit_trail = AuditTrail.objects.filter(timestamp__gte=dt, model_id__in=scope).order_by("-timestamp")
+        if search_ip:
+            audit_trail = audit_trail.filter(object=str(Address.objects.get(address=search_ip).id))
+        if search_prefix:
+            audit_trail = audit_trail.filter(object=str(Prefix.objects.get(prefix=search_prefix).id))
+        if search_user:
+            audit_trail = audit_trail.filter(user__iexact=search_user)
+        for l in audit_trail:
             d = l.timestamp.date()
             if d != last:
                 last = d
