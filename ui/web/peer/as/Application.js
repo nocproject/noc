@@ -9,6 +9,7 @@ console.debug("Defining NOC.peer.as.Application");
 Ext.define("NOC.peer.as.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.RepoPreview",
         "NOC.peer.as.Model",
         "NOC.peer.person.M2MField",
         "NOC.peer.maintainer.M2MField",
@@ -119,5 +120,11 @@ Ext.define("NOC.peer.as.Application", {
                 fontFamily: "Courier"
             }
         }
-    ]
+    ],
+    preview: {
+        xtype: "NOC.core.RepoPreview",
+        syntax: "rpsl",
+        previewName: 'AS RPSL: {0}',
+        restUrl: '/peer/as/{0}/repo/rpsl/'
+    }
 });

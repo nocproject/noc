@@ -504,6 +504,7 @@ class Config(BaseConfig):
         prefix_list_optimization = BooleanParameter(default=True)
         prefix_list_optimization_threshold = IntParameter(default=1000)
         max_prefix_length = IntParameter(default=24)
+        rpsl_inverse_pref_style = BooleanParameter(default=False)
 
     def __init__(self):
         self.setup_logging()
