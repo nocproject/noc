@@ -13,7 +13,7 @@ from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.lib.rpsl import rpsl_format
 from noc.core.gridvcs.manager import GridVCSField
-from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.model.decorator import on_save
 
 
 @on_save
@@ -42,9 +42,13 @@ class ASSet(models.Model):
     def member_list(self):
         if self.members is None:
             return []
-        m = sorted(self.members.replace(",", " ")
-            .replace("\n", " ")
-            .replace("\r", " ").upper().split())
+        m = sorted(
+            self.members.replace(",", " ")
+                .replace("\n", " ")
+                .replace("\r", " ")
+                .upper()
+                .split()
+        )
         return m
 
     def get_rpsl(self):
