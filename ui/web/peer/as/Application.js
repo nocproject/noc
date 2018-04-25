@@ -11,6 +11,7 @@ Ext.define("NOC.peer.as.Application", {
     requires: [
         "NOC.core.RepoPreview",
         "NOC.peer.as.Model",
+        "NOC.peer.asprofile.LookupField",
         "NOC.peer.person.M2MField",
         "NOC.peer.maintainer.M2MField",
         "NOC.peer.rir.LookupField",
@@ -18,12 +19,19 @@ Ext.define("NOC.peer.as.Application", {
         "NOC.project.project.LookupField"
     ],
     model: "NOC.peer.as.Model",
+    rowClassField: "row_class",
     search: true,
     columns: [
         {
             text: __("AS"),
             dataIndex: "asn",
             width: 50
+        },
+        {
+            text: __("Profile"),
+            dataIndex: "profile",
+            width: 100,
+            renderer: NOC.render.Lookup("profile")
         },
         {
             text: __("Description"),
@@ -45,6 +53,12 @@ Ext.define("NOC.peer.as.Application", {
             allowBlank: false,
             uiStyle: "medium",
             vtype: "ASN"
+        },
+        {
+            name: "profile",
+            xtype: "peer.asprofile.LookupField",
+            fieldLabel: __("Profile"),
+            allowBlank: false
         },
         {
             name: "description",

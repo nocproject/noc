@@ -18,10 +18,12 @@ from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.gridvcs.manager import GridVCSField
+from noc.core.model.fields import DocumentReferenceField
 from .person import Person
 from .organisation import Organisation
 from .maintainer import Maintainer
 from .rir import RIR
+from .asprofile import ASProfile
 
 
 @on_delete_check(check=[
@@ -40,6 +42,10 @@ class AS(models.Model):
     asn = models.IntegerField("ASN", unique=True)
     # as-name RPSL Field
     as_name = models.CharField("AS Name", max_length=64, null=True, blank=True)
+    profile = DocumentReferenceField(
+        ASProfile,
+        null=False, blank=False
+    )
     project = models.ForeignKey(
         Project, verbose_name="Project",
         null=True, blank=True, related_name="as_set")

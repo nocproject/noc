@@ -10,7 +10,8 @@ Ext.define("NOC.peer.asprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.peer.asprofile.Model",
-        "NOC.ip.prefixprofile.LookupField"
+        "NOC.ip.prefixprofile.LookupField",
+        "NOC.main.style.LookupField"
     ],
     model: "NOC.peer.asprofile.Model",
     search: true,
@@ -19,6 +20,7 @@ Ext.define("NOC.peer.asprofile.Application", {
             enableDiscoveryPrefixWhoisRoute: false
         }
     },
+    rowClassField: "row_class",
 
     initComponent: function () {
         var me = this;
@@ -46,6 +48,12 @@ Ext.define("NOC.peer.asprofile.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "style",
+                    xtype: "main.style.LookupField",
+                    fieldLabel: __("Style"),
+                    allowBlank: true
+                },
+                {
                     xtype: "fieldset",
                     title: __("Discovery (Prefix)"),
                     layout: {
@@ -70,7 +78,7 @@ Ext.define("NOC.peer.asprofile.Application", {
                             xtype: "ip.prefixprofile.LookupField",
                             allowBlank: true,
                             bind: {
-                                disabled: "{!enableBoxDiscoveryVPNInterface.checked}"
+                                disabled: "{!enableDiscoveryPrefixWhoisRoute.checked}"
                             }
                         }
                     ]

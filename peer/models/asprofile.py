@@ -15,7 +15,8 @@ from mongoengine.fields import StringField, BooleanField
 import cachetools
 # NOC modules
 from noc.core.model.decorator import on_delete_check
-from noc.lib.nosql import PlainReferenceField
+from noc.lib.nosql import PlainReferenceField, ForeignKeyField
+from noc.main.models.style import Style
 
 id_lock = Lock()
 
@@ -32,6 +33,7 @@ class ASProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
+    style = ForeignKeyField(Style, required=False)
 
     enable_discovery_prefix_whois_route = BooleanField(default=False)
     prefix_profile_whois_route = PlainReferenceField("ip.PrefixProfile")

@@ -33,6 +33,15 @@ Ext.define("NOC.peer.as.Model", {
             persist: false
         },
         {
+            name: "profile",
+            type: "string"
+        },
+        {
+            name: "profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "organisation",
             type: "string"
         },
@@ -77,6 +86,12 @@ Ext.define("NOC.peer.as.Model", {
         {
             name: "tags",
             type: "auto"
+        },
+        // CSS
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

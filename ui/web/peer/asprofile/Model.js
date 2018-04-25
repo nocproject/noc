@@ -28,11 +28,25 @@ Ext.define("NOC.peer.asprofile.Model", {
             type: "string"
         },
         {
+            name: "style",
+            type: "string"
+        },
+        {
+            name: "style__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "prefix_profile_whois_route",
             type: "string"
         },
         {
             name: "prefix_profile_whois_route__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "row_class",
             type: "string",
             persist: false
         }
