@@ -62,8 +62,6 @@ Ext.define("NOC.peer.maintainer.Application", {
         {
             xtype: "peer.person.M2MField",
             name: "admins",
-            height: 220,
-            width: 600,
             fieldLabel: __("Admin-c"),
             buttons: ['add', 'remove'],
             allowBlank: false
