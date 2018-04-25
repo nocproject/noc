@@ -30,3 +30,30 @@ class Profile(BaseProfile):
         "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
     command_more = "a"
     command_exit = "exit"
+
+    def convert_interface_name(self, s):
+        s = s.lower().strip()
+        if " " in s:
+            # SNMP Output ifName
+            name, num = s.rsplit(" ", 1)
+            if name.startswith("ethernet"):
+                s = "eth" + num
+            elif name.startswith("dsl port"):
+                # DSL PORT 5
+                s = num
+            elif name == "dsl":
+                # dsl 6
+                s = num
+            elif name.startswith("dsl ethernet interface"):
+                # DSL Ethernet Interface
+                s = "dsl_ethernet" + num
+            elif name.startswith("dsl atm interface"):
+                # DSL ATM Interface
+                s = "dsl_atm" + num
+            elif name.startswith("management in-band ethernet interface"):
+                s = "mgmt_i"
+            elif name.startswith("'management out-of-band ethernet interface"):
+                s = "mgmt_o"
+            elif num.isdigit():
+                s = name.replace(" ", "_") + num
+        return s
