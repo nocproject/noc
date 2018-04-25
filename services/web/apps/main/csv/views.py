@@ -107,7 +107,8 @@ class CSVApplication(Application):
                         for prefix in accepted_prefixes:
                             if self.address_in_network(row['address'], prefix):
                                 accepted_row.append(row)
-                                forbidden_row.remove(row['address'])
+                                if row['address'] in forbidden_row:
+                                    forbidden_row.remove(row['address'])
                             else:
                                 forbidden_row.append(row['address'])
                     forbidden_ip = list(set(forbidden_row))
