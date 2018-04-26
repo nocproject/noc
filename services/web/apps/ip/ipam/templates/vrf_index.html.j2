@@ -36,11 +36,6 @@
                 id="pingtest"
                 onclick="toggle_pingtest()">Start Ping</button>
     {%endif%}
-    {% if user.is_superuser %}
-        <button type="button"
-                class="btn btn-primary"
-                onclick="document.location = '/ip/tools/{{ prefix.vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/'"><i class="fa fa-wrench"></i> Tools</button>
-    {% endif %}
     {% if can_add_prefix %}
         <button type="button"
                 class="btn btn-primary"
@@ -54,6 +49,11 @@
     <button type="button"
             class="btn btn-primary"
             onclick="app.onChangePrefix({{ prefix.id }})"><i class="fa fa-edit"></i> Change</button>
+    {% if user.is_superuser %}
+        <button type="button"
+                class="btn btn-secondary"
+                onclick="document.location = '/ip/tools/{{ prefix.vrf.id }}/{{ prefix.afi }}/{{ prefix.prefix }}/'"><i class="fa fa-wrench"></i> Tools</button>
+    {% endif %}
     {% if prefix.parent %}
     <button type="button"
             class="btn btn-danger"
