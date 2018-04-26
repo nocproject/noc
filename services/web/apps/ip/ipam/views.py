@@ -132,6 +132,8 @@ class IPAMApplication(ExtApplication):
         # List of nested prefixes
         # @todo: prefetch_related
         prefixes = list(prefix.children_set.select_related().order_by("prefix"))
+        # Bulk utilization
+        Prefix.update_prefixes_usage(prefixes)
         # Get permissions
         user = request.user
         can_view = prefix.can_view(user)
