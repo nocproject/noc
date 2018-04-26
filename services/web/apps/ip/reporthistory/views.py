@@ -78,9 +78,15 @@ class ReportHistoryApplication(SimpleReport):
             dt = datetime.date.today() - datetime.timedelta(days=days)
             audit_trail = AuditTrail.objects.filter(timestamp__gte=dt, model_id__in=scope).order_by("-timestamp")
         if search_ip:
-            audit_trail = audit_trail.filter(object=str(Address.objects.get(address=search_ip).id))
+            try:
+                audit_trail = audit_trail.filter(object=str(Address.objects.get(address=search_ip).id))
+            except Address.DoesNotExist:
+                audit_trail = audit_trail.none()
         if search_prefix:
-            audit_trail = audit_trail.filter(object=str(Prefix.objects.get(prefix=search_prefix).id))
+            try:
+                audit_trail = audit_trail.filter(object=str(Prefix.objects.get(prefix=search_prefix).id))
+            except Prefix.DoesNotExist:
+                audit_trail = audit_trail.none()
         if search_user:
             audit_trail = audit_trail.filter(user__iexact=search_user)
         for l in audit_trail:
