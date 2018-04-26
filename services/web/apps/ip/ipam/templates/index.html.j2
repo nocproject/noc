@@ -1,4 +1,4 @@
-{% extends "raw.html" %}
+{% extends "raw.html.j2" %}
 {% block extrahead %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" type="text/css" href="/ui/pkg/bootstrap/css/bootstrap.min.css" />
@@ -8,7 +8,6 @@
 <script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
 <script TYPE="text/javascript" SRC="/ui/pkg/bootstrap/js/bootstrap.min.js"></script>
 {% endblock %}
-{% load tags %}
 {% block content %}
 <style>
 th[class=vrf] {
@@ -49,7 +48,7 @@ th[class=rd] {
 </div>
 
 <div id="toolbar">
-    <form id="changelist-search" action="" method="get">{% csrf_token %}
+    <form id="changelist-search" action="" method="get">
         <input
           type="text"
           class="form-control position-static"
@@ -94,8 +93,8 @@ th[class=rd] {
             <td title="{{ vrf.state.description|safe }}">{{vrf.state.name}}</td>
             <td>{{vrf.rd}}</td>
             <td>{{vrf.vpn_id}}</td>
-            <td>{% if vrf.afi_ipv4 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '4' '0.0.0.0/0' %}" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
-            <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="{% url ip:ipam:vrf_index vrf.id '6' '::/0' %}" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
+            <td>{% if vrf.afi_ipv4 %}<a class="changelink" href="/ip/ipam/{{ vrf.id }}/4/0.0.0.0/0/" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
+            <td>{% if vrf.afi_ipv6 %}<a class="changelink" href="/ip/ipam/{{ vrf.id }}/6/::/0/'" title="View"><i class="fa fa-eye"></i></a>{% endif %}</td>
             <td>{% if vrf.project %}{{ vrf.project.code }}{% endif %}</td>
             <td>{% if vrf.description %}{{vrf.description}}{% endif %}</td>
             <td>
@@ -109,13 +108,13 @@ th[class=rd] {
                         </button>
                       <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         {% for p in vrf.bookmarks %}
-                            <li><a class="dropdown-item" href="{% url ip:ipam:vrf_index p.vrf.id p.afi p.prefix %}">{{p.prefix}} {{p.short_description}}</a></li>
+                            <li><a class="dropdown-item" href="/ip/ipam/{{ p.vrf.id }}/{{ p.afi }}/{{ p.prefix }}/">{{p.prefix}} {{p.short_description}}</a></li>
                         {% endfor %}
                       </ul>
                     </div>
                 {% endif %}
             </td>
-            <td>{%tags vrf%}</td>
+            <td>{% if vrf.tags %}{% for tag in vrf.tags %}<span class="badge badge-secondary">{{ tag }}</span>{% endfor %}{% endif %}</td>
         </tr>
     {%endfor%}
 {%endfor%}

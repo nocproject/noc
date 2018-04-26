@@ -105,7 +105,7 @@ class IPAMApplication(ExtApplication):
                     )
                     # Add to groups
                 groups += [(vg, vrfs)]
-        return self.render(request, "index.html", groups=groups, query=query)
+        return self.render(request, "index.html.j2", groups=groups, query=query)
 
     @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>[0-9a-f.:/]+)/$",
           url_name="vrf_index", access="view")
