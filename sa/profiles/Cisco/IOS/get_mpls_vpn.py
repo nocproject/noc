@@ -24,7 +24,7 @@ class Script(BaseScript):
     rx_cont = re.compile("^\s{6,}(?P<iface>.+?)\s*$")
     rx_portchannel = re.compile(r"^Po\s*\d+(?:A|B)?$")
 
-    rx_vrf = re.compile(r"^VRF\s*(?P<vrf>[\S+]+)( \(.+\)?\s*;|;)\s*default\s*RD\s*"
+    rx_vrf = re.compile(r"^VRF\s*(?P<vrf>[\S+\s]+?)\s*(\(.+\))?\s*;\s*default\s*RD\s*"
                         r"(?P<rd>\d+:\d+|<not set>);\s*default\s*VPNID\s*(?P<vpnid>\S+|<not set>)")
 
     portchannel_members = {}
@@ -119,10 +119,10 @@ class Script(BaseScript):
                             vpns[-1]["interfaces"] += [iface]
                 if vrf_block["export vpn route-target communities"]:
                     vpns[-1]["rt_export"] = [":".join(lll.split(":")[1:])
-                                         for lll in vrf_block["export vpn route-target communities"][:] if lll]
+                                             for lll in vrf_block["export vpn route-target communities"][:] if lll]
                 if vrf_block["import vpn route-target communities"]:
                     vpns[-1]["rt_import"] = [":".join(lll.split(":")[1:])
-                                         for lll in vrf_block["import vpn route-target communities"][:] if lll]
+                                             for lll in vrf_block["import vpn route-target communities"][:] if lll]
 
         return vpns
 
