@@ -21,14 +21,14 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r".*Series Software, Version (?P<version>[^ ,]+)\, RELEASE SOFTWARE\n"
+        r".*Series Software, Version (?P<version>[\S\s]*)\, RELEASE SOFTWARE"
         r".*ROM: System Bootstrap, Version (?P<bootrom>[^ ,]+)\n"
-        r"^Serial num:(?P<sn>[^ ,]+),.*\n"
-        r"Nateks (?P<platform>[^ ,]+) RISC\n",
+        r"Serial num:(?P<sn>[^ ,]+),.*\n"
+        r"Nateks (?P<platform>.*) RISC",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self):
-        v = self.cli("show version ", cached=True)
+        v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
 
         return {
@@ -40,3 +40,4 @@ class Script(BaseScript):
                 "SN": match.group("sn"),
             }
         }
+
