@@ -24,7 +24,7 @@ class Script(BaseScript):
     rx_cont = re.compile("^\s{6,}(?P<iface>.+?)\s*$")
     rx_portchannel = re.compile(r"^Po\s*\d+(?:A|B)?$")
 
-    rx_vrf = re.compile(r"^VRF\s*(?P<vrf>[\S+\s]+)?\s*\(.+\)?\s*;\s*default\s*RD\s*"
+    rx_vrf = re.compile(r"^VRF\s*(?P<vrf>[\S+]+)( \(.+\)?\s*;|;)\s*default\s*RD\s*"
                         r"(?P<rd>\d+:\d+|<not set>);\s*default\s*VPNID\s*(?P<vpnid>\S+|<not set>)")
 
     portchannel_members = {}
@@ -52,6 +52,7 @@ class Script(BaseScript):
         tab = 100
         for l in v.splitlines():
             # VRF VPN_VRF1 (VRF Id = 00); default RD 65501:4579033191; default VPNID <not set>
+            # VRF VPN_VRF1; default RD 65501:4579033191; default VPNID <not set>
             if self.rx_vrf.match(l):
                 if vrf and rd:
                     vpns += [{
@@ -98,28 +99,29 @@ class Script(BaseScript):
                 tab = 100
                 block = None
         else:
-            vpns += [{
-                "type": "VRF",
-                "vpn_id": "",
-                "status": True,
-                "name": vrf.strip(),
-                "interfaces": []
-            }]
-            if rd and rd.strip() != '<not set>':
-                vpns[-1]["rd"] = rd.strip()
-            if vrf_block["interfaces:"]:
-                for iface in vrf_block["interfaces:"]:
-                    po_match = self.rx_portchannel.match(iface)
-                    if po_match:
-                        members = self._get_portchannel_members(iface)
-                        vpns[-1]["interfaces"] += members
-                    else:
-                        vpns[-1]["interfaces"] += [iface]
-            if vrf_block["export vpn route-target communities"]:
-                vpns[-1]["rt_export"] = [":".join(lll.split(":")[1:])
+            if vrf:
+                vpns += [{
+                    "type": "VRF",
+                    "vpn_id": "",
+                    "status": True,
+                    "name": vrf.strip(),
+                    "interfaces": []
+                }]
+                if rd and rd.strip() != '<not set>':
+                    vpns[-1]["rd"] = rd.strip()
+                if vrf_block["interfaces:"]:
+                    for iface in vrf_block["interfaces:"]:
+                        po_match = self.rx_portchannel.match(iface)
+                        if po_match:
+                            members = self._get_portchannel_members(iface)
+                            vpns[-1]["interfaces"] += members
+                        else:
+                            vpns[-1]["interfaces"] += [iface]
+                if vrf_block["export vpn route-target communities"]:
+                    vpns[-1]["rt_export"] = [":".join(lll.split(":")[1:])
                                          for lll in vrf_block["export vpn route-target communities"][:] if lll]
-            if vrf_block["import vpn route-target communities"]:
-                vpns[-1]["rt_import"] = [":".join(lll.split(":")[1:])
+                if vrf_block["import vpn route-target communities"]:
+                    vpns[-1]["rt_import"] = [":".join(lll.split(":")[1:])
                                          for lll in vrf_block["import vpn route-target communities"][:] if lll]
 
         return vpns
