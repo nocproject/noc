@@ -707,6 +707,11 @@ class Prefix(models.Model):
         """
         # Filter IPv4 only
         ipv4_prefixes = [p for p in prefixes if p.is_ipv4]
+        # Calculate prefix sizes
+        p_size = {}
+        for p in ipv4_prefixes:
+            ln = int(p.prefix.split("/")[1])
+            p_size[p.id] = 2 ** (32 - ln)
         # Calculate nested prefixrs
         usage = defaultdict(int)
         for parent, prefix in Prefix.objects.filter(
@@ -723,8 +728,9 @@ class Prefix(models.Model):
             usage[parent] += count
         # Update usage cache
         for p in ipv4_prefixes:
-            ln = int(p.prefix.split("/")[1])
-            size = 2 ** (32 - ln)
+            size = p_size[p.id]
+            if size > 2:  # Not /31 or /32
+                size -= 2  # Exclude broadcast and network
             p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     def is_empty(self):
