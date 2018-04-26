@@ -105,7 +105,7 @@ class IPAMApplication(ExtApplication):
                     )
                     # Add to groups
                 groups += [(vg, vrfs)]
-        return self.render(request, "index.html", groups=groups, query=query)
+        return self.render(request, "index.html.j2", groups=groups, query=query)
 
     @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>[0-9a-f.:/]+)/$",
           url_name="vrf_index", access="view")
@@ -132,6 +132,8 @@ class IPAMApplication(ExtApplication):
         # List of nested prefixes
         # @todo: prefetch_related
         prefixes = list(prefix.children_set.select_related().order_by("prefix"))
+        # Bulk utilization
+        Prefix.update_prefixes_usage(prefixes)
         # Get permissions
         user = request.user
         can_view = prefix.can_view(user)
@@ -150,7 +152,7 @@ class IPAMApplication(ExtApplication):
             IP.prefix(prefix.prefix).iter_free([pp.prefix for pp in prefixes]))
         l_prefixes = sorted(
             ([(True, IP.prefix(pp.prefix), pp, pp.prefix in s_bookmarks) for pp in prefixes] +
-             [(False, pp) for pp in free_prefixes]), key=lambda x: x[1])
+             [(False, pp, None, None) for pp in free_prefixes]), key=lambda x: x[1])
         # List of nested addresses
         # @todo: prefetch_related
         addresses = list(prefix.address_set.select_related().order_by("address"))
@@ -189,6 +191,13 @@ class IPAMApplication(ExtApplication):
         else:
             t = dmap[prefix.address_discovery_policy]
         prefix_info += [("Address Discovery", t)]
+        # Source
+        prefix_info += [("Source", {
+            "M": "Manual",
+            "i": "Interface",
+            "w": "Whois Route",
+            "n": "Neighbor"
+        }.get(prefix.source, "-"))]
         #
         ippools = prefix.ippools
         # Add custom fields
@@ -294,7 +303,8 @@ class IPAMApplication(ExtApplication):
         styles = "\n".join(styles.values())
         # Render
         return self.render(
-            request, "vrf_index.html",
+            request, "vrf_index.html.j2",
+            user=request.user,
             vrf=vrf,
             prefix=prefix,
             path=path,

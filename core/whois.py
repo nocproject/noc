@@ -12,11 +12,12 @@ import urllib2
 import socket
 from collections import defaultdict
 # NOC modules
-import noc.lib.nosql  # noqa Connect to MongoDB
 from noc.config import config
 from noc.core.fileutils import urlopen
 from noc.peer.models.whoisassetmembers import WhoisASSetMembers
 from noc.peer.models.whoisoriginroute import WhoisOriginRoute
+from noc.peer.models.asn import AS
+from noc.core.scheduler.job import Job
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,9 @@ class WhoisCacheLoader(object):
     RADB = "ftp://ftp.radb.net/radb/dbase/radb.db.gz"
 
     to_cache = [ARIN, RADB]
+
+    JCLS_WHOIS_PREFIX = "noc.services.discovery.jobs.as.job.ASDiscoveryJob"
+    PER_AS_DELAY = 10
 
     def __init__(
             self,
@@ -171,27 +175,71 @@ class WhoisCacheLoader(object):
         Update origin -> route
         :return:
         """
+        # Get AS with discovered routes
+        discoverable_as = set(
+            "AS%s" % a.asn
+            for a in AS.objects.all()
+            if a.profile.enable_discovery_prefix_whois_route and a.profile
+        )
+        # as -> [(prefix, description)]
+        as_routes = defaultdict(list)
+        if discoverable_as:
+            logger.info(
+                "Collecting prefix discovery information for AS: %s",
+                ", ".join(a for a in discoverable_as)
+            )
+
+            def parser(f, fields=None):
+                for obj in self.parse_rpsl(f):
+                    if obj and "route" in obj and "origin" in obj:
+                        origin = obj["origin"][0]
+                        if origin in discoverable_as:
+                            as_routes[origin] += [(
+                                obj["route"][0],
+                                "\n".join(obj["descr"]) if "descr" in obj else None
+                            )]
+                    yield obj
+
+        else:
+            parser = self.parse_rpsl
+        #
         r = defaultdict(list)
         if self.use_ripe:
             logger.info("Processing RIPE origin -> route")
             v = self.update_from_rpsl(self.RIPE_ROUTE_ORIGIN, r,
-                                      "route", "origin", False, self.parse_rpsl)
+                                      "route", "origin", False, parser)
             logger.info("Processed RIPE origin -> route: %d records" % v)
         if self.use_arin:
             logger.info("Processing ARIN origin -> route")
             v = self.update_from_rpsl(self.ARIN, r,
-                                      "route", "origin", False, self.parse_rpsl)
+                                      "route", "origin", False, parser)
             logger.info("Processed ARIN origin -> route: %d records" % v)
         if self.use_radb:
             logger.info("Processing RADb origin -> route")
             v = self.update_from_rpsl(self.RADB, r,
-                                      "route", "origin", False, self.parse_rpsl)
+                                      "route", "origin", False, parser)
             logger.info("Processed RADb origin -> route: %d records" % v)
         if r:
+            import noc.lib.nosql  # noqa Connect to MongoDB
             # Upload to database
             logger.info("Updating noc.whois.origin.route collection")
             count = WhoisOriginRoute.upload(r)
             logger.info("%d records written into noc.whois.origin.route collection" % count)
+        if as_routes:
+            import noc.lib.nosql  # noqa Connect to MongoDB
+            delay = 0
+            for a in as_routes:
+                logger.info("[%s] Sending %d prefixes to AS discovery", a, len(as_routes[a]))
+                Job.submit(
+                    "scheduler",
+                    self.JCLS_WHOIS_PREFIX,
+                    key=AS.get_by_asn(int(a[2:])).id,
+                    delta=delay,
+                    data={
+                        "whois_route": as_routes[a]
+                    }
+                )
+                delay += self.PER_AS_DELAY
 
     def update(self):
         self.process_as_set_members()

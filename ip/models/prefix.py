@@ -10,6 +10,7 @@
 from __future__ import absolute_import
 import operator
 from threading import Lock
+from collections import defaultdict
 # Third-party modules
 from django.db import models, connection
 from django.contrib.auth.models import User
@@ -22,7 +23,7 @@ from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
-from noc.core.model.fields import DocumentReferenceField
+from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 from noc.core.translation import ugettext as _
@@ -54,7 +55,7 @@ class Prefix(models.Model):
         verbose_name=_("Parent"),
         null=True,
         blank=True)
-    vrf = models.ForeignKey(
+    vrf = CachedForeignKey(
         VRF,
         verbose_name=_("VRF"),
         default=VRF.get_global
@@ -73,12 +74,12 @@ class Prefix(models.Model):
         PrefixProfile,
         null=False, blank=False
     )
-    asn = models.ForeignKey(
+    asn = CachedForeignKey(
         AS, verbose_name=_("AS"),
         help_text=_("Autonomous system granted with prefix"),
         null=True, blank=True
     )
-    project = models.ForeignKey(
+    project = CachedForeignKey(
         Project, verbose_name="Project",
         on_delete=models.SET_NULL,
         null=True, blank=True, related_name="prefix_set")
@@ -144,6 +145,7 @@ class Prefix(models.Model):
         choices=[
             ("M", "Manual"),
             ("i", "Interface"),
+            ("w", "Whois"),
             ("n", "Neighbor")
         ],
         null=False, blank=False,
@@ -670,6 +672,10 @@ class Prefix(models.Model):
     @property
     def usage(self):
         if self.is_ipv4:
+            usage = getattr(self, "_usage_cache", None)
+            if usage is not None:
+                # Use update_prefixes_usage results
+                return usage
             size = IPv4(self.prefix).size
             if not size:
                 return 100.0
@@ -691,6 +697,39 @@ class Prefix(models.Model):
         if u is None:
             return ""
         return "%.2f%%" % u
+
+    @staticmethod
+    def update_prefixes_usage(prefixes):
+        """
+        Bulk calculate and update prefixes usages
+        :param prefixes: List of Prefix instances
+        :return:
+        """
+        # Filter IPv4 only
+        ipv4_prefixes = [p for p in prefixes if p.is_ipv4]
+        # Calculate nested prefixrs
+        usage = defaultdict(int)
+        for parent, prefix in Prefix.objects.filter(
+                parent__in=ipv4_prefixes
+        ).values_list("parent", "prefix"):
+            ln = int(prefix.split("/")[1])
+            usage[parent] += 2 ** (32 - ln)
+        # Calculate nested addresses
+        has_address = set()
+        for parent, count in Address.objects.filter(
+                prefix__in=ipv4_prefixes
+        ).values("prefix").annotate(
+            count=models.Count("prefix")
+        ).values_list("prefix", "count"):
+            usage[parent] += count
+            has_address.add(parent)
+        # Update usage cache
+        for p in ipv4_prefixes:
+            ln = int(p.prefix.split("/")[1])
+            size = 2 ** (32 - ln)
+            if p.id in has_address and size > 2:  # Not /31 or /32
+                size -= 2  # Exclude broadcast and network
+            p._usage_cache = float(usage[p.id]) * 100.0 / float(size)
 
     def is_empty(self):
         """

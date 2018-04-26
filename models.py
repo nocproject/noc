@@ -262,6 +262,7 @@ _MODELS = {
     "dns.DNSZoneProfile": "noc.dns.models.dnszoneprofile.DNSZoneProfile",
     "dns.DNSZoneRecord": "noc.dns.models.dnszonerecord.DNSZoneRecord",
     # peer models
+    "peer.ASProfile": "noc.peer.models.asprofile.ASProfile",
     "peer.AS": "noc.peer.models.asn.AS",
     "peer.ASSet": "noc.peer.models.asset.ASSet",
     "peer.Community": "noc.peer.models.community.Community",

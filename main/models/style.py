@@ -33,6 +33,7 @@ id_lock = Lock()
         ("vc.VPNProfile", "style"),
         ("fm.AlarmSeverity", "style"),
         ("fm.ActiveAlarm", "style"),
+        ("peer.ASProfile", "style"),
         ("phone.PhoneNumberProfile", "style"),
         ("phone.PhoneRangeProfile", "style")
     ]
