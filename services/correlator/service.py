@@ -464,18 +464,21 @@ class CorrelatorService(Service):
         env.update(kwargs)
         return eval(expression, {}, env)
 
-    def on_dispose_event(self, message, event_id, *args, **kwargs):
+    def on_dispose_event(self, message, event_id, event=None, *args, **kwargs):
         """
         Called on new dispose message
         """
         self.logger.info("[%s] Receiving message", event_id)
         message.enable_async()
-        self.get_executor("max").submit(self.dispose_worker, message, event_id)
+        self.get_executor("max").submit(self.dispose_worker, message, event_id, event)
 
-    def dispose_worker(self, message, event_id):
+    def dispose_worker(self, message, event_id, event_hint=None):
         self.perf_metrics["alarm_dispose"] += 1
         try:
-            event = self.lookup_event(event_id)
+            if event_hint:
+                event = self.get_event_from_hint(event_hint)
+            else:
+                event = self.lookup_event(event_id)
             if event:
                 self.dispose_event(event)
         except Exception:
@@ -495,6 +498,20 @@ class CorrelatorService(Service):
         if not e:
             self.logger.info("[%s] Event not found, skipping", event_id)
             self.perf_metrics["event_lookup_failed"] += 1
+        self.perf_metrics["event_lookups"] += 1
+        return e
+
+    def get_event_from_hint(self, hint):
+        """
+        Get ActiveEvent from json hint
+        :param hint:
+        :return:
+        """
+        self.perf_metrics["event_hints"] += 1
+        e = ActiveEvent.from_json(hint)
+        # Prevent TypeError: can't compare offset-naive and offset-aware datetimes
+        # when calculating alarm timestamp
+        e.timestamp = e.timestamp.replace(tzinfo=None)
         return e
 
     def dispose_event(self, e):

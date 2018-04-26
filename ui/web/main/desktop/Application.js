@@ -179,7 +179,9 @@ Ext.define("NOC.main.desktop.Application", {
                     params
                 );
                 // restore saved hash
-                Ext.History.setHash(app);
+                if(index !== -1) {
+                    Ext.History.setHash(app);
+                }
             },
             failure: function() {
                 NOC.error(__("Failed to launch application ") + " " + app);

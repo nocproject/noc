@@ -12,11 +12,12 @@ from __future__ import absolute_import
 from django.db import models
 # NOC modules
 from noc.project.models.project import Project
-from noc.settings import config
+from noc.config import config
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.gridvcs.manager import GridVCSField
 from .person import Person
 from .organisation import Organisation
 from .maintainer import Maintainer
@@ -28,6 +29,7 @@ from .rir import RIR
     ("peer.PeeringPoint", "local_as"),
     ("ip.Prefix", "asn")
 ])
+@on_save
 class AS(models.Model):
     class Meta(object):
         verbose_name = "AS"
@@ -75,6 +77,7 @@ class AS(models.Model):
     footer_remarks = models.TextField("Footer Remarks", null=True, blank=True)
     rir = models.ForeignKey(RIR, verbose_name="RIR")  # source:
     tags = TagsField("Tags", null=True, blank=True)
+    rpsl = GridVCSField("rpsl_as")
 
     def __unicode__(self):
         return u"AS%d (%s)" % (self.asn, self.description)
@@ -96,8 +99,7 @@ class AS(models.Model):
             a.save()
             return a
 
-    @property
-    def rpsl(self):
+    def get_rpsl(self):
         sep = "remarks: %s" % ("-" * 72)
         s = []
         s += ["aut-num: AS%s" % self.asn]
@@ -137,7 +139,7 @@ class AS(models.Model):
                       peer.effective_local_pref, e_import_med, e_export_med,
                       peer.rpsl_remark)]
         # Build RPSL
-        inverse_pref = config.getboolean("peer", "rpsl_inverse_pref_style")
+        inverse_pref = config.peer.rpsl_inverse_pref_style
         for peer_group in pg:
             s += [sep]
             s += ["remarks: -- %s" % x
@@ -188,6 +190,16 @@ class AS(models.Model):
             s += ["remarks: %s" % x
                   for x in self.footer_remarks.split("\n")]
         return rpsl_format("\n".join(s))
+
+    def touch_rpsl(self):
+        c_rpsl = self.rpsl.read()
+        n_rpsl = self.get_rpsl()
+        if c_rpsl == n_rpsl:
+            return  # Not changed
+        self.rpsl.write(n_rpsl)
+
+    def on_save(self):
+        self.touch_rpsl()
 
     @property
     def dot(self):

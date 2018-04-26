@@ -272,6 +272,7 @@ class Script(BaseScript):
                     "forwarding_instance": v["name"],
                     "type": "VRF",
                     "rd": v["rd"],
+                    "vpn_id": v.get("vpn_id"),
                     "interfaces": []
                 }
                 for i in v["interfaces"]:

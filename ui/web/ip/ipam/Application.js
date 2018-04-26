@@ -32,6 +32,10 @@ Ext.define("NOC.ip.ipam.Application", {
             Ext.create("NOC.ip.ipam.RebasePanel", {app: me})
         );
 
+        me.ITEM_DELETE_PREFIX_FORM = me.registerItem(
+            Ext.create("NOC.ip.ipam.DeletePrefixPanel", {app: me})
+        );
+
         Ext.apply(me, {
             items: me.getRegisteredItems(),
             activeItem: me.ITEM_LEGACY
@@ -75,6 +79,16 @@ Ext.define("NOC.ip.ipam.Application", {
         var me = this;
         me.previewItem(
             me.ITEM_PREFIX_FORM,
+            {
+                id: prefixId
+            }
+        )
+    },
+    //
+    onDeletePrefix: function(prefixId) {
+        var me = this;
+        me.previewItem(
+            me.ITEM_DELETE_PREFIX_FORM,
             {
                 id: prefixId
             }

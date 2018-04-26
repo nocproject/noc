@@ -18,12 +18,28 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "Ext.ux.form.MultiIntervalField",
         "NOC.pm.metrictype.LookupField",
         "NOC.pm.thresholdprofile.LookupField",
-        "NOC.main.remotesystem.LookupField"
+        "NOC.main.remotesystem.LookupField",
+        "NOC.ip.prefixprofile.LookupField",
+        "NOC.ip.addressprofile.LookupField",
+        "NOC.vc.vpnprofile.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
     rowClassField: "row_class",
     validationModelId: "sa.ManagedObjectProfile",
+    viewModel: {
+        data: {
+            enableBoxDiscoveryVPNInterface: false,
+            enableBoxDiscoveryVPNMPLS: false,
+            enableBoxDiscoveryPrefixInterface: false,
+            enableBoxDiscoveryPrefixNeighbor: false,
+            enableBoxDiscoveryAddressInterface: false,
+            enableBoxDiscoveryAddressManagement: false,
+            enableBoxDiscoveryAddressDHCP: false,
+            enableBoxDiscoveryAddressNeighbor: false,
+            enableBoxDiscoveryHK: false
+        }
+    },
 
     initComponent: function() {
         var me = this;
@@ -68,13 +84,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         }
                         return v
                     },
-                    align: "center"
-                },
-                {
-                    text: __("Sync IPAM"),
-                    dataIndex: "sync_ipam",
-                    width: 60,
-                    renderer: NOC.render.Bool,
                     align: "center"
                 },
                 {
@@ -254,24 +263,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     fieldLabel: __("Card Title Template"),
                                     labelWidth: 200,
                                     allowBlank: false,
-                                    uiStyle: "extra"
-                                }
-                            ]
-                        },
-                        {
-                            title: "IPAM",
-                            items: [
-                                {
-                                    name: "sync_ipam",
-                                    xtype: "checkboxfield",
-                                    boxLabel: __("Enable IPAM synchronization"),
-                                    allowBlank: false
-                                },
-                                {
-                                    name: "fqdn_template",
-                                    xtype: "textarea",
-                                    fieldLabel: __("FQDN template"),
-                                    allowBlank: true,
                                     uiStyle: "extra"
                                 }
                             ]
@@ -607,11 +598,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Interface")
                                         },
                                         {
-                                            name: "enable_box_discovery_prefix",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Prefix")
-                                        },
-                                        {
                                             name: "enable_box_discovery_id",
                                             xtype: "checkboxfield",
                                             boxLabel: __("ID")
@@ -744,36 +730,214 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
-                                    title: __("IPAM"),
-                                    layout: "hbox",
+                                    title: __("IPAM (VPN)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
                                     defaults: {
-                                        padding: "0 8 0 0"
+                                        padding: "2px 4px 2px 4px"
                                     },
                                     items: [
                                         {
-                                            name: "enable_box_discovery_vrf",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("VRF")
+                                            xtype: "label",
+                                            text: __("Type")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("VPN Profile")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_vpn_interface",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryVPNInterface"
+                                        },
+                                        {
+                                            name: "vpn_profile_interface",
+                                            xtype: "vc.vpnprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVPNInterface.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("MPLS")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_vpn_mpls",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryVPNMPLS"
+                                        },
+                                        {
+                                            name: "vpn_profile_mpls",
+                                            xtype: "vc.vpnprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryVPNMPLS.checked}"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IPAM (Prefix)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
+                                    defaults: {
+                                        padding: "2px 4px 2px 4px"
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "label",
+                                            text: __("Type")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Prefix Profile")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
                                         },
                                         {
                                             name: "enable_box_discovery_prefix_interface",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Prefix (Interface)")
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryPrefixInterface"
                                         },
                                         {
-                                            name: "enable_box_discovery_prefix",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Prefix (Neighbors)")
+                                            name: "prefix_profile_interface",
+                                            xtype: "ip.prefixprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryPrefixInterface.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Neighbor")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_prefix_neighbor",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryPrefixNeighbor"
+                                        },
+                                        {
+                                            name: "prefix_profile_neighbor",
+                                            xtype: "ip.prefixprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryPrefixNeighbor.checked}"
+                                            }
+
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("IPAM (Address)"),
+                                    layout: {
+                                        type: "table",
+                                        columns: 3
+                                    },
+                                    defaults: {
+                                        padding: "2px 4px 2px 4px"
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "label",
+                                            text: __("Type")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Enable")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Address Profile")
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Interface")
                                         },
                                         {
                                             name: "enable_box_discovery_address_interface",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Address (Interface)")
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressInterface"
                                         },
                                         {
-                                            name: "enable_box_discovery_address",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("Address (Neighbors)")
+                                            name: "address_profile_interface",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressInterface.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Management")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_management",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressManagement"
+                                        },
+                                        {
+                                            name: "address_profile_management",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressManagement.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("DHCP")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_dhcp",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressDHCP"
+                                        },
+                                        {
+                                            name: "address_profile_dhcp",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressDHCP.checked}"
+                                            }
+                                        },
+                                        {
+                                            xtype: "label",
+                                            text: __("Neighbor")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_address_neighbor",
+                                            xtype: "checkbox",
+                                            reference: "enableBoxDiscoveryAddressNeighbor"
+                                        },
+                                        {
+                                            name: "address_profile_neighbor",
+                                            xtype: "ip.addressprofile.LookupField",
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryAddressNeighbor.checked}"
+                                            }
+
                                         }
                                     ]
                                 },
@@ -902,14 +1066,18 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_hk",
                                             xtype: "checkboxfield",
-                                            boxLabel: __("Housekeeping")
+                                            boxLabel: __("Housekeeping"),
+                                            reference: "enableBoxDiscoveryHK"
                                         },
                                         {
                                             name: "hk_handler",
                                             xtype: "textfield",
                                             labelAlign: "left",
                                             fieldLabel: __("Handler"),
-                                            allowBlank: true
+                                            allowBlank: true,
+                                            bind: {
+                                                disabled: "{!enableBoxDiscoveryHK.checked}"
+                                            }
                                         }
                                     ]
                                 },

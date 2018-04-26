@@ -9,6 +9,7 @@ console.debug("Defining NOC.peer.peer.Application");
 Ext.define("NOC.peer.peer.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.RepoPreview",
         "NOC.peer.peer.Model",
         "NOC.peer.peeringpoint.LookupField",
         "NOC.peer.peergroup.LookupField",
@@ -370,5 +371,11 @@ Ext.define("NOC.peer.peer.Application", {
             return;
         }
         me.callParent([action, op, status]);
+    },
+    preview: {
+        xtype: "NOC.core.RepoPreview",
+        syntax: "rpsl",
+        previewName: 'Peer RPSL: {0}',
+        restUrl: '/peer/peer/{0}/repo/rpsl/'
     }
 });

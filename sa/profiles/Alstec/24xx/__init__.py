@@ -24,6 +24,9 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"ERROR: Wrong or incomplete command"
     command_super = "enable"
     command_exit = "logout"
+    command_enter_config = "configure"
+    command_leave_config = "exit"
+    command_save_config = "write memory"
 
     @staticmethod
     def parse_kv_out(out):

@@ -451,12 +451,5 @@ Ext.define('NOC.fm.alarmclass.Application', {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
-    },
-    //
-    addTooltip: function(element) {
-        Ext.create('Ext.tip.ToolTip', {
-            target: element.getEl(),
-            html: element.tooltip
-        });
     }
 });

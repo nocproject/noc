@@ -31,6 +31,16 @@ Ext.define("NOC.sa.managedobject.scripts.ShowMPLSVPN", {
             width: 100
         },
         {
+            text: __("RT Export"),
+            dataIndex: "rt_export",
+            width: 200
+        },
+        {
+            text: __("RT Import"),
+            dataIndex: "rt_import",
+            width: 200
+        },
+        {
             text: __("Interfaces"),
             dataIndex: "interfaces",
             flex: 1,

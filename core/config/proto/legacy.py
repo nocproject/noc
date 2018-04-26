@@ -9,10 +9,13 @@
 # Python modules
 from __future__ import absolute_import
 import os
+import logging
 # Third-party modules
 import yaml
 # NOC modules
 from .base import BaseProtocol
+
+logger = logging.getLogger(__name__)
 
 
 class LegacyProtocol(BaseProtocol):
@@ -165,6 +168,8 @@ class LegacyProtocol(BaseProtocol):
 
         if not os.path.exists(self.path):
             return
+        logger.info("Legacy config will be deprecated after 1 June 2018. "
+                    "Please update tower and remove from used config options.")
         with open(self.path) as f:
             data = yaml.load(f)["config"]
         for legacy_key, new_key in self.NOC_MAPPINGS:

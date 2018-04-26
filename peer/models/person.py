@@ -60,13 +60,12 @@ class Person(models.Model):
             s += [self.extra]
         return rpsl_format("\n".join(s))
 
-    def touch(self):
+    def touch_rpsl(self):
         c_rpsl = self.rpsl.read()
         n_rpsl = self.get_rpsl()
         if c_rpsl == n_rpsl:
             return  # Not changed
         self.rpsl.write(n_rpsl)
-        # todo: sliding job
 
     def on_save(self):
-        self.touch()
+        self.touch_rpsl()

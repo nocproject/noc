@@ -151,6 +151,8 @@ class ReportObjectsSummary(SimpleReport):
         for c in cursor.fetchall():
             if report_type == "profile":
                 data += [(profile.get(c[0]), c[1])]
+            elif report_type == "domain-profile":
+                data += [(c[0], profile.get(c[1]), c[2])]
             elif report_type == "platform":
                 data += [(profile.get(c[0]), platform.get(c[1]), c[2])]
             elif report_type == "version":

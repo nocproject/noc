@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.core.translation import ugettext as _
 from noc.pm.models.metrictype import MetricType
@@ -20,6 +20,10 @@ class ManagedObjectProfileApplication(ExtModelApplication):
     title = _("Managed Object Profile")
     menu = [_("Setup"), _("Managed Object Profiles")]
     model = ManagedObjectProfile
+
+    implied_permissions = {
+        "launch": ["ip:addressprofile:lookup"]
+    }
 
     def field_row_class(self, o):
         return o.style.css_class_name if o.style else ""

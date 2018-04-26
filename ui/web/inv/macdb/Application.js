@@ -16,6 +16,8 @@ Ext.define("NOC.inv.macdb.Application", {
     ],
     model: "NOC.inv.macdb.Model",
     search: true,
+    searchPlaceholder: "insert MAC address to search",
+    searchTooltip: __("Insert MAC address to this field one of format:<li>FULL: AA:AA:AA:AA:AA:AA</li><li>Left part: AA:AA:</li><li>Right part: :AA:AA</li>"),
     canCreate: false,
     rowClassField: "row_class",
 

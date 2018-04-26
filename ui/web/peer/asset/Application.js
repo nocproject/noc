@@ -9,6 +9,7 @@ console.debug("Defining NOC.peer.asset.Application");
 Ext.define("NOC.peer.asset.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
+        "NOC.core.RepoPreview",
         "NOC.peer.asset.Model",
         "Ext.ux.form.UCField"
     ],
@@ -63,7 +64,6 @@ Ext.define("NOC.peer.asset.Application", {
             width: 600,
             height: 100,
             plugins: [ 'ucfield' ],
-            vtype: "ASorASSET",
             fieldStyle: {
                 fontFamily: "Courier"
             }
@@ -97,11 +97,11 @@ Ext.define("NOC.peer.asset.Application", {
             width: 400,     
             allowBlank: true
         }
-//    ],
-//    actions: [
-//        {
-//            title: "RPSL",
-//            action: "rpsl"
-//        }
-    ]
+    ],
+    preview: {
+        xtype: "NOC.core.RepoPreview",
+        syntax: "rpsl",
+        previewName: 'AS-set RPSL: {0}',
+        restUrl: '/peer/asset/{0}/repo/rpsl/'
+    }
 });

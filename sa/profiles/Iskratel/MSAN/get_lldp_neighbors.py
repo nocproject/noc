@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Iskratel.MSAN.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,10 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4, is_ipv6
 from noc.lib.text import parse_table
-from noc.core.mac import MAC
 
 
 class Script(BaseScript):
@@ -26,11 +23,11 @@ class Script(BaseScript):
         r"^Chassis ID: (?P<chassis_id>.+)\n"
         r"^Port ID Subtype: (?P<port_id_subtype>.+)\n"
         r"^Port ID: (?P<port_id>.+)\n"
-        r"^System Name: (?P<system_name>.*)\n"
-        r"^System Description: (?P<system_description>.*)\n"
-        r"^Port Description: (?P<port_description>.*)\n"
-        r"^System Capabilities Supported: .+\n"
-        r"^System Capabilities Enabled: (?P<system_capabilities>.+?)\n",
+        r"^System Name:(?P<system_name>.*)\n"
+        r"^System Description:(?P<system_description>.*)\n"
+        r"^Port Description:(?P<port_description>.*)\n"
+        r"^System Capabilities Supported:.*\n"
+        r"^System Capabilities Enabled:(?P<system_capabilities>.*?)\n",
         re.MULTILINE | re.DOTALL
     )
 

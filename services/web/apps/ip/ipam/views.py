@@ -60,7 +60,7 @@ class IPAMApplication(ExtApplication):
         @todo: Display only VRFs accessible by user
         """
         # Check only one active VRF with only one active address family exists
-        vl = list(VRF.objects.filter(state__is_provisioned=True))
+        vl = list(VRF.objects.all()[:2])
         if len(vl) == 1:
             vrf = vl.pop()
             if vrf.afi_ipv4 ^ vrf.afi_ipv6:
@@ -77,20 +77,32 @@ class IPAMApplication(ExtApplication):
         query = ""
         if "q" in request.GET:
             query = request.GET["q"]
-            q = Q(name__icontains=query) | Q(rd=query) | Q(
-                description__icontains=query)
+            q = (
+                Q(name__icontains=query) |
+                Q(rd=query) | Q(description__icontains=query)
+            )
         else:
             q = Q()
         # Display grouped VRFs
         q_afi = Q(afi_ipv4=True) | Q(afi_ipv6=True)
         groups = []
+        if not query:
+            ungroupped = list(VRF.objects.filter(vrf_group__isnull=True).order_by("name"))
+            if ungroupped:
+                # Add Ungroupped virtual group
+                groups += [(
+                    VRFGroup(name="Ungroupped"),
+                    ungroupped
+                )]
         for vg in VRFGroup.objects.all().order_by("name"):
-            vrfs = list(vg.vrf_set.filter(state__is_provisioned=True).filter(q_afi).filter(q).order_by("name"))
+            vrfs = list(vg.vrf_set.filter(q_afi).filter(q).order_by("name"))
             if len(vrfs):
                 # Set up bookmarks
                 for v in vrfs:
-                    v.bookmarks = PrefixBookmark.user_bookmarks(request.user,
-                                                                vrf=v)
+                    v.bookmarks = PrefixBookmark.user_bookmarks(
+                        request.user,
+                        vrf=v
+                    )
                     # Add to groups
                 groups += [(vg, vrfs)]
         return self.render(request, "index.html", groups=groups, query=query)
@@ -129,11 +141,15 @@ class IPAMApplication(ExtApplication):
         can_change_maintainers = user.is_superuser
         can_add_prefix = can_change
         can_add_address = can_change and len(prefixes) == 0
+        # Bookmarks
+        has_bookmark = prefix.has_bookmark(user)
+        bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
+        s_bookmarks = set(b.prefix for b in bookmarks)
         # Add free prefixes
         free_prefixes = list(
             IP.prefix(prefix.prefix).iter_free([pp.prefix for pp in prefixes]))
         l_prefixes = sorted(
-            ([(True, IP.prefix(pp.prefix), pp) for pp in prefixes] +
+            ([(True, IP.prefix(pp.prefix), pp, pp.prefix in s_bookmarks) for pp in prefixes] +
              [(False, pp) for pp in free_prefixes]), key=lambda x: x[1])
         # List of nested addresses
         # @todo: prefetch_related
@@ -157,22 +173,28 @@ class IPAMApplication(ExtApplication):
                 prefix_info += [
                     ("Free addresses", free - 2 if free >= 2 else free)
                 ]
-        t = {
+        # Prefix discovery
+        dmap = {
             "E": "Enabled",
             "D": "Disabled"
-        }[prefix.effective_ip_discovery]
-        if prefix.enable_ip_discovery == "I":
-            t = "Inherit (%s)" % t
-        prefix_info += [("IP Discovery", t)]
+        }
+        if prefix.prefix_discovery_policy == "P":
+            t = "Profile (%s)" % dmap[prefix.profile.prefix_discovery_policy]
+        else:
+            t = dmap[prefix.prefix_discovery_policy]
+        prefix_info += [("Prefix Discovery", t)]
+        # Address discovery
+        if prefix.address_discovery_policy == "P":
+            t = "Profile (%s)" % dmap[prefix.profile.address_discovery_policy]
+        else:
+            t = dmap[prefix.address_discovery_policy]
+        prefix_info += [("Address Discovery", t)]
         #
         ippools = prefix.ippools
         # Add custom fields
         for f in CustomField.table_fields("ip_prefix"):
             v = getattr(prefix, f.name)
             prefix_info += [(f.label, v if v is not None else "")]
-        # Bookmarks
-        has_bookmark = prefix.has_bookmark(user)
-        bookmarks = PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=afi)
         # Ranges
         ranges = []
         rs = []
@@ -271,23 +293,33 @@ class IPAMApplication(ExtApplication):
                 styles[a.profile.style.css_class_name] = a.profile.style.css
         styles = "\n".join(styles.values())
         # Render
-        return self.render(request, "vrf_index.html",
-                           vrf=vrf, afi=afi, prefix=prefix, path=path,
-                           short_description=short_description,
-                           long_description=long_description,
-                           prefixes=prefixes, addresses=addresses,
-                           ippools=ippools,
-                           prefix_info=prefix_info,
-                           display_empty_message=not addresses and not prefixes,
-                           can_view=can_view, can_change=can_change,
-                           can_bind_vc=can_bind_vc,
-                           can_change_maintainers=can_change_maintainers,
-                           can_add_prefix=can_add_prefix,
-                           can_add_address=can_add_address,
-                           has_bookmark=has_bookmark, bookmarks=bookmarks,
-                           spot=spot, can_ping=can_ping, styles=styles,
-                           ranges=ranges, max_slots=max_slots,
-                           l_prefixes=l_prefixes)
+        return self.render(
+            request, "vrf_index.html",
+            vrf=vrf,
+            prefix=prefix,
+            path=path,
+            short_description=short_description,
+            long_description=long_description,
+            prefixes=prefixes,
+            addresses=addresses,
+            ippools=ippools,
+            prefix_info=prefix_info,
+            display_empty_message=not addresses and not prefixes,
+            can_view=can_view,
+            can_change=can_change,
+            can_bind_vc=can_bind_vc,
+            can_change_maintainers=can_change_maintainers,
+            can_add_prefix=can_add_prefix,
+            can_add_address=can_add_address,
+            has_bookmark=has_bookmark,
+            bookmarks=bookmarks,
+            spot=spot,
+            can_ping=can_ping,
+            styles=styles,
+            ranges=ranges,
+            max_slots=max_slots,
+            l_prefixes=l_prefixes
+        )
 
     class QuickJumpForm(forms.Form):
         jump = forms.CharField()
@@ -362,54 +394,6 @@ class IPAMApplication(ExtApplication):
             self.message_user(request, _("Bookmark removed from %(prefix)s") % {
                 "prefix": prefix.prefix})
         return self.response_redirect_to_referrer(request)
-
-    @view(url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<prefix>\S+)/delete/$",
-          url_name="delete_prefix", access="change")
-    def view_delete_prefix(self, request, vrf_id, afi, prefix):
-        """
-        Delete prefix
-        """
-        vrf = self.get_object_or_404(VRF, id=int(vrf_id))
-        if (afi == "4" and not vrf.afi_ipv4) or (afi == "6" and not vrf.afi_ipv6):
-            return self.response_forbidden("Invalid AFI")
-        if not PrefixAccess.user_can_change(request.user, vrf, afi, prefix):
-            return self.response_forbidden()
-        prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)
-        parent = prefix.parent
-        if not parent:
-            return self.response_forbidden("Cannot delete root prefix")
-        if request.POST:
-            if "scope" in request.POST and request.POST["scope"][0] in ("p", "r"):
-                if "delete_transition" in request.POST:
-                    prefix_transition = prefix.ipv6_transition if prefix.ipv6_transition else prefix.ipv4_transition
-                    if request.POST["scope"] == "p":
-                        # Delete prefix only
-                        prefix_transition.delete()
-                        self.message_user(request, _(
-                            "Prefix %(prefix)s has been successfully deleted") % {
-                            "prefix": prefix_transition.prefix})
-                    else:
-                        # Delete recursive prefixes
-                        prefix_transition.delete_recursive()
-                        self.message_user(request, _(
-                            "Prefix %(prefix)s and all descendans have been successfully deleted") % {
-                            "prefix": prefix_transition.prefix})
-                if request.POST["scope"] == "p":
-                    # Delete prefix only
-                    prefix.delete()
-                    self.message_user(request, _(
-                        "Prefix %(prefix)s has been successfully deleted") % {
-                        "prefix": prefix.prefix})
-                else:
-                    # Delete recursive prefixes
-                    prefix.delete_recursive()
-                    self.message_user(request, _(
-                        "Prefix %(prefix)s and all descendans have been successfully deleted") % {
-                        "prefix": prefix.prefix})
-                return self.response_redirect("ip:ipam:vrf_index", vrf.id, afi,
-                                              parent.prefix)
-            # Display form
-        return self.render(request, "delete_prefix.html", prefix=prefix)
 
     @view(
         url=r"^(?P<vrf_id>\d+)/(?P<afi>[46])/(?P<address>[^/]+)/delete_address/$",

@@ -40,6 +40,8 @@ class Script(BaseScript):
                     }
                     if "rd" in v:
                         vrf["rd"] = v["rd"]
+                    if "vpn_id" in v:
+                        vrf["vpn_id"] = v["vpn_id"]
                     vrfs[v["name"]] = vrf
         # Get IPv6 neighbors (global?)
         if "get_ipv6_neighbor" in self.scripts:
@@ -48,12 +50,14 @@ class Script(BaseScript):
             except self.CLISyntaxError:
                 r = []
             if r:
-                vrfs["default"]["addresses"] += [{
-                    "ip": x["ip"],
-                    "afi": "6",
-                    "mac": x["mac"],
-                    "interface": x["interface"]}
-                for x in r if x["state"] == "reachable"
+                vrfs["default"]["addresses"] += [
+                    {
+                        "ip": x["ip"],
+                        "afi": "6",
+                        "mac": x["mac"],
+                        "interface": x["interface"]
+                    }
+                    for x in r if x["state"] == "reachable"
                 ]
         # Iterate through VRF
         data = []

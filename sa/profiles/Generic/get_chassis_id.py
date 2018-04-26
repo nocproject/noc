@@ -18,13 +18,18 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
+    OIDS_CHECK = [mib["LLDP-MIB::lldpLocChassisId"] + ".0",
+                  mib["BRIDGE-MIB::dot1dBaseBridgeAddress"] + ".0"]
+
     def execute_snmp(self):
         # OIDs for LLDP and STP
-        oids = [mib["LLDP-MIB::lldpLocChassisId"], mib["BRIDGE-MIB::dot1dBaseBridgeAddress"]]
         r = []
         if self.has_snmp():
-            for o in oids:
-                s = self.snmp.get(o + ".0")
+            for o in self.OIDS_CHECK:
+                try:
+                    s = self.snmp.get(o)
+                except self.snmp.TimeOutError:
+                    s = None
                 if s is None:
                     continue
                 r += [{"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}]

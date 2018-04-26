@@ -14,7 +14,9 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "APC.AOS"
     pattern_username = r"^User Name\s+:"
+    username_submit = "\r"
     pattern_password = r"^Password\s+:"
+    password_submit = "\r"
     pattern_prompt = r"^(\S+)?>"
     pattern_more = r"^Press <ENTER> to continue...$"
     command_submit = "\r"

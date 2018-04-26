@@ -210,6 +210,8 @@ class IGetInterfaces(BaseInterface):
         "type": StringParameter(choices=["ip", "bridge", "VRF",
                                          "VPLS", "VLL"], default="ip"),
         "rd": RDParameter(required=False),
+        # Refer IGetMPLSVPN.vpn_id for details
+        "vpn_id": StringParameter(required=False),
         "interfaces": ListOfParameter(element=DictParameter(attrs={
             "name": InterfaceNameParameter(),
             "type": StringParameter(choices=[
