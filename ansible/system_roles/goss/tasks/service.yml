@@ -1,5 +1,5 @@
 ---
-- name: place goss tests file
+- name: place goss tests file for service {{goss_service_name}}
   template:
     src: "{{goss_service_name}}.goss.yml.j2"
     dest: "{{goss_conf_dir}}/{{goss_service_name}}.yml"
